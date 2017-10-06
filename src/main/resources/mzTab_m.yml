@@ -1,4 +1,4 @@
-swagger: '2.0'
+openapi: '3.0.1'
 info:
   description: This is an mzTab validation service.
   version: 1.1.0
@@ -41,276 +41,322 @@ paths:
       responses:
         '405':
           description: Invalid input
-definitions:
-  MzTab:
-    type: object
-    required:
-      - metadata
-      - smallMoleculeSummary
-      - smallMoleculeFeature
-      - smallMoleculeEvidence
-    properties:
-      metadata:
-        $ref: '#/definitions/Metadata'
-      smallMoleculeSummary:
-        $ref: '#/definitions/SmallMoleculeSummary'
-      smallMoleculeFeature:
-        $ref: '#/definitions/SmallMoleculeFeature'
-      smallMoleculeEvidence:
-        $ref: '#/definitions/SmallMoleculeEvidence'
-  Metadata:
-    type: object
-    required:
-     - mzTab-ID
-     - mzTab-version
-    properties:
-      mzTab-ID:
-        type: string
-      mzTab-version:
-        type: string
-        default: '1.1.0'
-      title:
-        type: string
-      description:
-        type: string
-      sample_processing:
-        $ref: '#/definitions/ParameterList'
-      instruments:
-        type: array
-        items: 
-          $ref: '#/definitions/Instrument'
-      software:
-        type: array
-        items:
-          $ref: '#/definitions/Software'
-      contacts:
-        type: array
-        items:
-          $ref: '#/definitions/Contact'
-      uri:
-        type: array
-        items:
+components:          
+  schemas:
+    MzTab:
+      required:
+        - metadata
+        - smallMoleculeSummary
+        - smallMoleculeFeature
+        - smallMoleculeEvidence
+      properties:
+        metadata:
+          $ref: '#/definitions/Metadata'
+        smallMoleculeSummary:
+          $ref: '#/definitions/SmallMoleculeSummary'
+        smallMoleculeFeature:
+          $ref: '#/definitions/SmallMoleculeFeature'
+        smallMoleculeEvidence:
+          $ref: '#/definitions/SmallMoleculeEvidence'
+    Metadata:
+      required:
+       - mzTab-ID
+       - mzTab-version
+      # - small_molecule_quantification_unit
+      properties:
+        mzTab-ID:
           type: string
-      quantification_method:
-        type: array
-        items: 
+        mzTab-version:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        sample_processing:
+          $ref: '#/definitions/ParameterList'
+          #type: array
+          #  items:
+          #    $ref: '#/definitions/Parameter'  
+        instruments:
+          type: array
+          items: 
+            $ref: '#/definitions/Instrument'
+        software:
+          type: array
+          items:
+            $ref: '#/definitions/Software'
+        contacts:
+          type: array
+          items:
+            $ref: '#/definitions/Contact'
+        uri:
+          type: array
+          items:
+            type: string
+        quantification_method:
+          type: array
+          items: 
+            $ref: '#/definitions/Parameter'
+        assay:
+          type: array
+          items:
+            $ref: '#/definitions/Assay'
+        msrun:
+          type: array
+          items:
+            $ref: '#/definitions/MsRun'
+        small_molecule_quantification_unit:
           $ref: '#/definitions/Parameter'
-      assay:
-        type: array
-        items:
-          $ref: '#/definitions/Assay'
-      msrun:
-        type: array
-        items:
-          $ref: '#/definitions/MsRun'
-      
-  SmallMoleculeSummary:
-    type: object
-    properties:
-      id:
-        type: integer
-        format: int64
-      username:
-        type: string
-      firstName:
-        type: string
-      lastName:
-        type: string
-      email:
-        type: string
-      password:
-        type: string
-      phone:
-        type: string
-      userStatus:
-        type: integer
-        format: int32
-        description: User Status
-  SmallMoleculeFeature:
-    type: object
-    properties:
-      id:
-        type: integer
-        format: int64
-      username:
-        type: string
-      firstName:
-        type: string
-      lastName:
-        type: string
-      email:
-        type: string
-      password:
-        type: string
-      phone:
-        type: string
-      userStatus:
-        type: integer
-        format: int32
-        description: User Status
-  SmallMoleculeEvidence:
-    type: object
-    properties:
-      id:
-        type: integer
-        format: int64
-      username:
-        type: string
-      firstName:
-        type: string
-      lastName:
-        type: string
-      email:
-        type: string
-      password:
-        type: string
-      phone:
-        type: string
-      userStatus:
-        type: integer
-        format: int32
-        description: User Status
-  ParameterList:
-    type: array
-    items: 
-      $ref: '#/definitions/Parameter'
-  Parameter:
-    type: object
-    required:
-      - cv_prefix
-      - cv_term
-      - cv_name
-    properties:
-      cv_prefix:
-        type: string
-      cv_term:
-        type: string
-      cv_name:
-        type: string
-  Instrument:
-    type: object
-    properties:
-      id:
-        type: integer
-        format: int32
-      instrument_name:
-        $ref: '#/definitions/Parameter'
-      instrument_source:
-        $ref: '#/definitions/Parameter'
-      instrument_analyzer:
-        type: array
-        items:
-          $ref: '#/definitions/Parameter'    
-      instrument_detector:
-        $ref: '#/definitions/Parameter'
-  Software:
-    type: object
-    examples:
-    properties:
-      id:
-        type: integer
-        format: int32
-      parameter:
-        $ref: '#/definitions/Parameter'
-        examples:
-          example: 
-            description: "Software used to analyze the data and obtain the reported results. The parameter’s value SHOULD contain the software’s version. The order (numbering) should reflect the order in which the tools were used."
-            value: "MTD software[1] [MS, MS:1001207, Mascot, 2.3] \
-                 MTD software[2] [MS, MS:1001561, Scaffold, 1.0]"
-      setting:
-        type: array
-        items:
+        small_molecule_feature-quantification_unit:
+          $ref: '#/definitions/Parameter'
+        small_molecule-identification_reliability:
+          $ref: '#/definitions/Parameter'
+        id_confidence_measure:
+          type: array
+          items:
+            $ref: '#/definitions/Parameter'
+        colunit-small_molecule:
+          type: array
+          items:
+            $ref: '#/definitions/ColumnParameterMapping'
+        colunit-small_molecule_feature:
+          type: array
+          items:
+            $ref: '#/definitions/ColumnParameterMapping'
+        colunit-small_molecule_evidence:
+          type: array
+          items:
+            $ref: '#/definitions/ColumnParameterMapping'            
+    SmallMoleculeSummary:
+      properties:
+        id:
+          type: integer
+          format: int64
+        username:
           type: string
-        examples:
-          example: 
-            description: "A software setting used. This field MAY occur multiple times for a single software. The value of this field is deliberately set as a String, since there currently do not exist cvParams for every possible setting."
-            value: "MTD software[1]-setting Fragment tolerance = 0.1 Da \
-                   …
-                   MTD software[2]-setting Parent tolerance = 0.5 Da"
-  Publication:
-    type: object
-    examples:
-      example: 
-        description: "A publication associated with this file. Several publications can be given by indicating the number in the square brackets after “publication”. PubMed ids must be prefixed by “pubmed:”, DOIs by “doi:”. Multiple identifiers MUST be separated by “|”."
-        value: "MTD publication[1] pubmed:21063943|doi:10.1007/978-1-60761-987-1_6 \
-                MTD publication[2] pubmed:20615486|doi:10.1016/j.jprot.2010.06.008"
-  StringList:
-    type: array
-    items:
-      type: string
-  Contact:
-    type: object
-    properties:
-      name:
-        type: string
-      affiliation:
-        type: string
-      email:
-        type: string
-        #could add pattern here
-  Sample:
-    type: object
-    properties:
-      name: 
-        type: string
-      custom:
-        $ref: '#/definitions/ParameterList'
-      species:
-        $ref: '#/definitions/ParameterList'
-      tissue:
-        $ref: '#/definitions/ParameterList'
-      cell_type:
-        $ref: '#/definitions/ParameterList'
-      disease:
-        $ref: '#/definitions/ParameterList'
-      description:
-        type: string
-  MsRun:
-    type: object
-    properties:
-      location:
-        type: string
-      format:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+        phone:
+          type: string
+        userStatus:
+          type: integer
+          format: int32
+          description: User Status
+    SmallMoleculeFeature:
+      properties:
+        id:
+          type: integer
+          format: int64
+        username:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+        phone:
+          type: string
+        userStatus:
+          type: integer
+          format: int32
+          description: User Status
+    SmallMoleculeEvidence:
+      properties:
+        id:
+          type: integer
+          format: int64
+        username:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+        phone:
+          type: string
+        userStatus:
+          type: integer
+          format: int32
+          description: User Status
+    ParameterList:
+      type: array
+      items: 
         $ref: '#/definitions/Parameter'
-      id_format:
-        $ref: '#/definitions/Parameter'
-      fragmentation_method:
-        $ref: '#/definitions/ParameterList'
-      hash:
+    Parameter:
+      required:
+        - cv_prefix
+        - cv_term
+        - cv_name
+      properties:
+        cv_prefix:
+          type: string
+        cv_term:
+          type: string
+        cv_name:
+          type: string
+    Instrument:
+      properties:
+        id:
+          type: integer
+          format: int32
+        instrument_name:
+          $ref: '#/definitions/Parameter'
+        instrument_source:
+          $ref: '#/definitions/Parameter'
+        instrument_analyzer:
+          type: array
+          items:
+            $ref: '#/definitions/Parameter'    
+        instrument_detector:
+          $ref: '#/definitions/Parameter'
+    Software:
+      description: "Software used to analyze the data and obtain the reported results. The parameter’s value SHOULD contain the software’s version. The order (numbering) should reflect the order in which the tools were used."
+      examples:
+        - "MTD software[1] [MS, MS:1001207, Mascot, 2.3] \
+           MTD software[2] [MS, MS:1001561, Scaffold, 1.0]"
+      properties:
+        id:
+          type: integer
+          format: int32
+        parameter:
+          $ref: '#/definitions/Parameter'
+        setting:
+          type: array
+          description: "A software setting used. This field MAY occur multiple times for a single software. The value of this field is deliberately set as a String, since there currently do not exist cvParams for every possible setting."
+          items:
+            type: string
+          examples:
+            - "MTD software[1]-setting Fragment tolerance = 0.1 Da \
+               …
+               MTD software[2]-setting Parent tolerance = 0.5 Da"
+    Publication:
+      description: "A publication associated with this file. Several publications can be given by indicating the number in the square brackets after “publication”. PubMed ids must be prefixed by “pubmed:”, DOIs by “doi:”. Multiple identifiers MUST be separated by “|”."
+      examples: 
+        - "MTD publication[1] pubmed:21063943|doi:10.1007/978-1-60761-987-1_6 \
+           MTD publication[2] pubmed:20615486|doi:10.1016/j.jprot.2010.06.008"
+    StringList:
+      type: array
+      items:
         type: string
-      hash_method:
-        $ref: '#/definitions/Parameter'
-  StudyVariable:
-    type: object
-    properties:
-      name:
-        type: string
-      assay_refs:
-        type: array
-        items:
-          $ref: '#/definitions/Assay'
-      quantification_value_function:
-        $ref: '#/definitions/ParameterList'
-      description:
-        type: string
-      factors:
-        $ref: '#/definitions/ParameterList'
-  Assay:
-    type: object
-    properties:
-      name:
-        type: string
-      custom:
-        $ref: '#/definitions/ParameterList'
-      external_uri:
-        type: string
-        #could add pattern here
-      sample_ref:
-        $ref: '#/definitions/Sample'
-      ms_run_ref:
-        type: array
-        items:
-          $ref: '#/definitions/MsRun'
+    Contact:
+      properties:
+        name:
+          type: string
+        affiliation:
+          type: string
+        email:
+          type: string
+          #could add pattern here
+    Sample:
+      properties:
+        name: 
+          type: string
+        custom:
+          $ref: '#/definitions/ParameterList'
+        species:
+          $ref: '#/definitions/ParameterList'
+        tissue:
+          $ref: '#/definitions/ParameterList'
+        cell_type:
+          $ref: '#/definitions/ParameterList'
+        disease:
+          $ref: '#/definitions/ParameterList'
+        description:
+          type: string
+    MsRun:
+      properties:
+        location:
+          type: string
+        format:
+          $ref: '#/definitions/Parameter'
+        id_format:
+          $ref: '#/definitions/Parameter'
+        fragmentation_method:
+          $ref: '#/definitions/ParameterList'
+        hash:
+          type: string
+        hash_method:
+          $ref: '#/definitions/Parameter'
+    StudyVariable:
+      properties:
+        name:
+          type: string
+        assay_refs:
+          type: array
+          items:
+            $ref: '#/definitions/Assay'
+        quantification_value_function:
+          $ref: '#/definitions/ParameterList'
+        description:
+          type: string
+        factors:
+          $ref: '#/definitions/ParameterList'
+    Assay:
+      properties:
+        name:
+          type: string
+        custom:
+          $ref: '#/definitions/ParameterList'
+        external_uri:
+          type: string
+          #could add pattern here
+        sample_ref:
+          $ref: '#/definitions/Sample'
+        ms_run_ref:
+          type: array
+          items:
+            $ref: '#/definitions/MsRun'
+    CV:
+      required:
+        - label
+        - full_name
+        - version
+        - url
+      properties:
+        label:
+          type: string
+        full_name:
+          type: string
+        version:
+          type: string
+        url:
+          type: string
+    Database:
+      required:
+        - param
+        - prefix
+        - version
+        - url
+      properties:
+        param:
+          $ref: '#/definitions/Parameter'
+        prefix:
+          type: string
+        version:
+          type: string
+        url:
+          type: string
+    ColumnParameterMapping:
+      required:
+        - column_name
+        - param
+      properties:
+        column_name:
+          type: string
+        param:
+          $ref: '#/definitions/Parameter'
 externalDocs:
   description: Find out more about mzTab for Metabolomics
   url: 'https://github.com/HUPO-PSI/mzTab'
