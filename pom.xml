@@ -52,15 +52,32 @@
                 <version>2.2.2</version>
                 <executions>
                     <execution>
+			<id>generate-server</id>
                         <goals>
                             <goal>generate</goal>
                         </goals>
                         <configuration>
                             <!-- target to generate java client code -->
-                            <inputSpec>src/main/resources/mzTab_m.yml</inputSpec>
-                            <language>java</language>
+                            <inputSpec>src/main/resources/mzTab_m_swagger.yml</inputSpec>
+                            <language>spring</language>
+                            <library>spring-boot</library>
                             <configOptions>
-                                <sourceFolder>src/gen/java/main</sourceFolder>
+                                <sourceFolder>src/gen/server/java/main</sourceFolder>
+                            </configOptions>
+                        </configuration>
+                    </execution>
+                    <execution>
+			<id>generate-client</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <!-- target to generate java client code -->
+                            <inputSpec>src/main/resources/mzTab_m_swagger.yml</inputSpec>
+                            <language>java</language>
+                            <library>jersey2</library>
+                            <configOptions>
+                                <sourceFolder>src/gen/client/java/main</sourceFolder>
                             </configOptions>
                         </configuration>
                     </execution>

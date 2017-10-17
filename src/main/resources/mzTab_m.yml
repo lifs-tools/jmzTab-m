@@ -1,47 +1,74 @@
-openapi: '3.0.1'
+openapi: "3.0.0"
 info:
   description: This is an mzTab validation service.
   version: 1.1.0
   title: mzTab
   contact:
-    email: apiteam@swagger.io
+    email: nils.hoffmann@isas.de
   license:
     name: Apache 2.0
     url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
-host: lifs.isas.de
-basePath: /mzTab/metabolomics/v1_1/
+servers:
+  - url: http://lifs.isas.de/mztab/metabolomics/v1_1/
 tags:
   - name: validate
     description: mzTab validation
     externalDocs:
       description: Find out more
       url: 'https://github.com/HUPO-PSI/mzTab'
-schemes:
-  - http
 paths:
   /validate:
     post:
+      description: |
+        Validates an mzTab file in plain text, XML or JSON representation and reports syntactic, structural, and semantic
+        errors.
+      operationId: validateMzTabFile
       tags:
         - validate
-      summary: Validate an mzTab file
-      description: Validates an mzTab file and reports syntactic, structural, and semantic errors.
-      operationId: validateMzTab
-      consumes:
-        - application/json
-        - text/xml
-      produces:
-        - application/json
-      parameters:
-        - in: body
-          name: body
-          description: mzTab object that should be validated.
-          required: true
-          schema:
-            $ref: '#/definitions/MzTab'
+      requestBody:
+        description: mzTab file that should be validated.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MzTab'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/MzTab'
+          text/tab-separated-values:
+            schema:
+              type: string
+              format: base64
+          text/plain:
+            schema:
+              type: string
+              format: base64
       responses:
+        '200':
+          description: Validation Okay
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ValidationMessage'
         '405':
           description: Invalid input
-components:          
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ValidationMessage'
+        '415':
+          description: Unsupported content type
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
   schemas:
     MzTab:
       required:
@@ -51,201 +78,354 @@ components:
         - smallMoleculeEvidence
       properties:
         metadata:
-          $ref: '#/definitions/Metadata'
+          $ref: '#/components/schemas/Metadata'
         smallMoleculeSummary:
-          $ref: '#/definitions/SmallMoleculeSummary'
+          type: array
+          items:
+            $ref: '#/components/schemas/SmallMoleculeSummary'
         smallMoleculeFeature:
-          $ref: '#/definitions/SmallMoleculeFeature'
+          type: array
+          items:
+            $ref: '#/components/schemas/SmallMoleculeFeature'
         smallMoleculeEvidence:
-          $ref: '#/definitions/SmallMoleculeEvidence'
+          type: array
+          items:
+            $ref: '#/components/schemas/SmallMoleculeEvidence'
     Metadata:
       required:
-       - mzTab-ID
-       - mzTab-version
-      # - small_molecule_quantification_unit
+        - mzTab-ID
+        - mzTab-version
       properties:
-        mzTab-ID:
-          type: string
         mzTab-version:
           type: string
+          example: >-
+            MTD mzTab-version 1.1.0
+        mzTab-ID:
+          type: string
+          example: >-
+            MTD mzTab-ID PRIDE_1234
         title:
           type: string
+          example: >-
+            MTD title My first test experiment
         description:
           type: string
+          example: >-
+            MTD description An experiment investigating the effects of Il-6.
         sample_processing:
-          $ref: '#/definitions/ParameterList'
-          #type: array
-          #  items:
-          #    $ref: '#/definitions/Parameter'  
+          $ref: '#/components/schemas/ParameterList'
+          example: >-
+            MTD sample_processing[1] [SEP, SEP:00173, SDS PAGE,] \
+            MTD sample_processing[2] [SEP, SEP:00142, enzyme digestion,]|[MS, … MS:1001251, Trypsin, ]
         instruments:
           type: array
-          items: 
-            $ref: '#/definitions/Instrument'
+          items:
+            $ref: '#/components/schemas/Instrument'
         software:
           type: array
           items:
-            $ref: '#/definitions/Software'
+            $ref: '#/components/schemas/Software'
         contacts:
           type: array
           items:
-            $ref: '#/definitions/Contact'
+            $ref: '#/components/schemas/Contact'
         uri:
           type: array
           items:
             type: string
         quantification_method:
           type: array
-          items: 
-            $ref: '#/definitions/Parameter'
+          items:
+            $ref: '#/components/schemas/Parameter'
         assay:
           type: array
           items:
-            $ref: '#/definitions/Assay'
+            $ref: '#/components/schemas/Assay'
         msrun:
           type: array
           items:
-            $ref: '#/definitions/MsRun'
-        small_molecule_quantification_unit:
-          $ref: '#/definitions/Parameter'
-        small_molecule_feature-quantification_unit:
-          $ref: '#/definitions/Parameter'
-        small_molecule-identification_reliability:
-          $ref: '#/definitions/Parameter'
-        id_confidence_measure:
+            $ref: '#/components/schemas/MsRun'
+        custom:
           type: array
           items:
-            $ref: '#/definitions/Parameter'
+            $ref: '#/components/schemas/Parameter'
+        sample:
+          type: array
+          items:
+            $ref: '#/components/schemas/Sample'
+        cv:
+          type: array
+          items:
+            $ref: '#/components/schemas/CV'
+        database:
+          type: array
+          items:
+            $ref: '#/components/schemas/Database'
+        chemical_modification:
+          $ref: '#/components/schemas/ParameterList'
+        small_molecule_quantification_unit:
+          $ref: '#/components/schemas/Parameter'
+        small_molecule_feature-quantification_unit:
+          $ref: '#/components/schemas/Parameter'
+        small_molecule-identification_reliability:
+          $ref: '#/components/schemas/Parameter'
+        id_confidence_measure:
+          $ref: '#/components/schemas/ParameterList'
         colunit-small_molecule:
           type: array
           items:
-            $ref: '#/definitions/ColumnParameterMapping'
+            $ref: '#/components/schemas/ColumnParameterMapping'
         colunit-small_molecule_feature:
           type: array
           items:
-            $ref: '#/definitions/ColumnParameterMapping'
+            $ref: '#/components/schemas/ColumnParameterMapping'
         colunit-small_molecule_evidence:
           type: array
           items:
-            $ref: '#/definitions/ColumnParameterMapping'            
+            $ref: '#/components/schemas/ColumnParameterMapping'
     SmallMoleculeSummary:
+      required:
+        - sml_id
+        - smf_id_refs
       properties:
-        id:
-          type: integer
-          format: int64
-        username:
+        sml_id:
           type: string
-        firstName:
+        sml_id_refs:
+          type: array
+          items:
+            type: string
+        database_identifier:
+          type: array
+          items:
+            type: string
+        chemical_formula:
+          type: array
+          items:
+            type: string
+        smiles:
+          type: array
+          items:
+            type: string
+        inchi:
+          type: array
+          items:
+            type: string
+        chemical_name:
+          type: array
+          items:
+            type: string
+        uri:
+          type: array
+          items:
+            type: string
+        theoretical_neutral_mass:
+          type: array
+          items:
+            type: number
+            format: double
+        exp_mass_to_charge:
+          type: number
+          format: double
+        retention_time:
+          type: number
+          format: double
+        adduct_ions:
+          type: array
+          items:
+            type: string
+        reliability:
           type: string
-        lastName:
-          type: string
-        email:
-          type: string
-        password:
-          type: string
-        phone:
-          type: string
-        userStatus:
-          type: integer
-          format: int32
-          description: User Status
+        best_id_confidence_measure:
+          $ref: '#/components/schemas/Parameter'
+        best_id_confidence_value:
+          type: number
+          format: double
+        abundance_assay:
+          type: array
+          items:
+            type: number
+            format: double
+        abundance_study_variable:
+          type: array
+          items:
+            type: number
+            format: double
+        abundance_coeffvar_study_variable:
+          type: array
+          items:
+            type: number
+            format: double
+        opt:
+          type: array
+          items:
+            $ref: '#/components/schemas/OptColumnMapping'
     SmallMoleculeFeature:
+      required:
+        - smf_id
+        - sme_id_refs
       properties:
-        id:
-          type: integer
-          format: int64
-        username:
+        smf_id:
           type: string
-        firstName:
-          type: string
-        lastName:
-          type: string
-        email:
-          type: string
-        password:
-          type: string
-        phone:
-          type: string
-        userStatus:
+        sme_id_refs:
+          type: array
+          items:
+            type: string
+        sme_id_ref_ambiguity_code:
           type: integer
           format: int32
-          description: User Status
+        adduct_ion:
+          type: string
+          #regex
+        isotopomer:
+          $ref: '#/components/schemas/Parameter'
+        exp_mass_to_charge:
+          type: number
+          format: double
+        charge:
+          type: integer
+          format: int32
+        retention_time:
+          type: number
+          format: double
+        retention_time_start:
+          type: number
+          format: double
+        retention_time_end:
+          type: number
+          format: double
+        abundance_assay:
+          type: array
+          items:
+            type: number
+            format: double
+        opt:
+          type: array
+          items:
+            $ref: '#/components/schemas/OptColumnMapping'
     SmallMoleculeEvidence:
       properties:
-        id:
-          type: integer
-          format: int64
-        username:
+        sme_id:
           type: string
-        firstName:
+        evidence_unique_id:
           type: string
-        lastName:
+        database_identifier:
           type: string
-        email:
+        chemical_formula:
           type: string
-        password:
+        smiles:
           type: string
-        phone:
+        inchi:
           type: string
-        userStatus:
+        chemical_name:
+          type: string
+        uri:
+          type: string
+        derivatized_form:
+          $ref: '#/components/schemas/Parameter'
+        adduct_ion:
+          type: string
+          #regex
+        exp_mass_to_charge:
+          type: number
+          format: double
+        charge:
           type: integer
           format: int32
-          description: User Status
-    ParameterList:
-      type: array
-      items: 
-        $ref: '#/definitions/Parameter'
+        theoretical_mass_to_charge:
+          type: number
+          format: double
+        spectra_ref:
+          $ref: '#/components/schemas/StringList'
+        identification_method:
+          $ref: '#/components/schemas/Parameter'
+        ms_level:
+          $ref: '#/components/schemas/Parameter'
+        id_confidence_measure:
+          type: array
+          items:
+            type: number
+            format: double
+        rank:
+          type: integer
+          format: int64
+        opt:
+          type: array
+          items:
+            $ref: '#/components/schemas/OptColumnMapping'
     Parameter:
       required:
-        - cv_prefix
-        - cv_term
-        - cv_name
+        - name
+        - value
       properties:
-        cv_prefix:
+        cv_label:
           type: string
-        cv_term:
+        cv_accession:
           type: string
-        cv_name:
+        name:
           type: string
+        value:
+          type: string
+    ParameterList:
+      type: array
+      items:
+        $ref: '#/components/schemas/Parameter'
     Instrument:
       properties:
         id:
           type: integer
           format: int32
         instrument_name:
-          $ref: '#/definitions/Parameter'
+          $ref: '#/components/schemas/Parameter'
+          example:
+            - >-
+              MTD instrument[1]-name [MS, MS:1000449, LTQ Orbitrap,]
+            - >-
+              MTD instrument[2]-name [MS, MS:1000031, Instrument model, name of the instrument not included in the CV]
         instrument_source:
-          $ref: '#/definitions/Parameter'
+          $ref: '#/components/schemas/Parameter'
         instrument_analyzer:
           type: array
           items:
-            $ref: '#/definitions/Parameter'    
+            $ref: '#/components/schemas/Parameter'
         instrument_detector:
-          $ref: '#/definitions/Parameter'
+          $ref: '#/components/schemas/Parameter'
     Software:
-      description: "Software used to analyze the data and obtain the reported results. The parameter’s value SHOULD contain the software’s version. The order (numbering) should reflect the order in which the tools were used."
-      examples:
-        - "MTD software[1] [MS, MS:1001207, Mascot, 2.3] \
-           MTD software[2] [MS, MS:1001561, Scaffold, 1.0]"
+      description: >-
+        Software used to analyze the data and obtain the reported results. The
+        parameter’s value SHOULD contain the software’s version. The order
+        (numbering) should reflect the order in which the tools were used.
+      example:
+        - >-
+          MTD software[1] [MS, MS:1001207, Mascot, 2.3] MTD software[2] [MS, MS:1001561, Scaffold, 1.0]
       properties:
         id:
           type: integer
           format: int32
         parameter:
-          $ref: '#/definitions/Parameter'
+          $ref: '#/components/schemas/Parameter'
         setting:
           type: array
-          description: "A software setting used. This field MAY occur multiple times for a single software. The value of this field is deliberately set as a String, since there currently do not exist cvParams for every possible setting."
+          description: >-
+            A software setting used. This field MAY occur multiple times for a
+            single software. The value of this field is deliberately set as a
+            String, since there currently do not exist cvParams for every
+            possible setting.
           items:
             type: string
-          examples:
-            - "MTD software[1]-setting Fragment tolerance = 0.1 Da \
-               …
-               MTD software[2]-setting Parent tolerance = 0.5 Da"
+          example:
+            - >-
+              MTD software[1]-setting Fragment tolerance = 0.1 Da … MTD
+              software[2]-setting Parent tolerance = 0.5 Da
     Publication:
-      description: "A publication associated with this file. Several publications can be given by indicating the number in the square brackets after “publication”. PubMed ids must be prefixed by “pubmed:”, DOIs by “doi:”. Multiple identifiers MUST be separated by “|”."
-      examples: 
-        - "MTD publication[1] pubmed:21063943|doi:10.1007/978-1-60761-987-1_6 \
-           MTD publication[2] pubmed:20615486|doi:10.1016/j.jprot.2010.06.008"
+      description: >-
+        A publication associated with this file. Several publications can be
+        given by indicating the number in the square brackets after
+        “publication”. PubMed ids must be prefixed by “pubmed:”, DOIs by “doi:”.
+        Multiple identifiers MUST be separated by “|”.
+      example:
+        - >-
+          MTD publication[1] pubmed:21063943|doi:10.1007/978-1-60761-987-1_6 MTD
+          publication[2] pubmed:20615486|doi:10.1016/j.jprot.2010.06.008
     StringList:
       type: array
       items:
@@ -258,21 +438,20 @@ components:
           type: string
         email:
           type: string
-          #could add pattern here
     Sample:
       properties:
-        name: 
+        name:
           type: string
         custom:
-          $ref: '#/definitions/ParameterList'
+          $ref: '#/components/schemas/ParameterList'
         species:
-          $ref: '#/definitions/ParameterList'
+          $ref: '#/components/schemas/ParameterList'
         tissue:
-          $ref: '#/definitions/ParameterList'
+          $ref: '#/components/schemas/ParameterList'
         cell_type:
-          $ref: '#/definitions/ParameterList'
+          $ref: '#/components/schemas/ParameterList'
         disease:
-          $ref: '#/definitions/ParameterList'
+          $ref: '#/components/schemas/ParameterList'
         description:
           type: string
     MsRun:
@@ -280,15 +459,15 @@ components:
         location:
           type: string
         format:
-          $ref: '#/definitions/Parameter'
+          $ref: '#/components/schemas/Parameter'
         id_format:
-          $ref: '#/definitions/Parameter'
+          $ref: '#/components/schemas/Parameter'
         fragmentation_method:
-          $ref: '#/definitions/ParameterList'
+          $ref: '#/components/schemas/ParameterList'
         hash:
           type: string
         hash_method:
-          $ref: '#/definitions/Parameter'
+          $ref: '#/components/schemas/Parameter'
     StudyVariable:
       properties:
         name:
@@ -296,28 +475,27 @@ components:
         assay_refs:
           type: array
           items:
-            $ref: '#/definitions/Assay'
+            $ref: '#/components/schemas/Assay'
         quantification_value_function:
-          $ref: '#/definitions/ParameterList'
+          $ref: '#/components/schemas/ParameterList'
         description:
           type: string
         factors:
-          $ref: '#/definitions/ParameterList'
+          $ref: '#/components/schemas/ParameterList'
     Assay:
       properties:
         name:
           type: string
         custom:
-          $ref: '#/definitions/ParameterList'
+          $ref: '#/components/schemas/ParameterList'
         external_uri:
           type: string
-          #could add pattern here
         sample_ref:
-          $ref: '#/definitions/Sample'
+          $ref: '#/components/schemas/Sample'
         ms_run_ref:
           type: array
           items:
-            $ref: '#/definitions/MsRun'
+            $ref: '#/components/schemas/MsRun'
     CV:
       required:
         - label
@@ -341,7 +519,7 @@ components:
         - url
       properties:
         param:
-          $ref: '#/definitions/Parameter'
+          $ref: '#/components/schemas/Parameter'
         prefix:
           type: string
         version:
@@ -356,7 +534,44 @@ components:
         column_name:
           type: string
         param:
-          $ref: '#/definitions/Parameter'
+          $ref: '#/components/schemas/Parameter'
+    OptColumnMapping:
+      required:
+        - identifier
+      properties:
+        identifier:
+          type: string
+        param:
+          $ref: '#/components/schemas/Parameter'
+        value:
+          type: string
+    Error:
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+    ValidationMessage:
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+        message_type:
+          enum:
+            - 'error'
+            - 'warning'
+            - 'information'
+          default: 'information'
+        message:
+          type: string
+        line_number:
+          type: integer
 externalDocs:
   description: Find out more about mzTab for Metabolomics
   url: 'https://github.com/HUPO-PSI/mzTab'
