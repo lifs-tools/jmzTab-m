@@ -81,6 +81,23 @@
                             </configOptions>
                         </configuration>
                     </execution>
+                    <execution>
+			<id>generate-lib</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <!-- target to generate java client code -->
+                            <inputSpec>src/main/resources/mzTab_m_swagger.yml</inputSpec>
+                            <language>java</language>
+                            <library>jersey2</library>
+                            <configOptions>
+                                <sourceFolder>src/gen/lib/java/main</sourceFolder>
+				<withXml>true</withXml>
+				<generateApis>false</generateApis>
+                            </configOptions>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
         </plugins>
