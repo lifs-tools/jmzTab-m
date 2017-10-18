@@ -1,26 +1,96 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>de.isas.lipidomics</groupId>
+    <groupId>de.isas.mztab</groupId>
     <artifactId>jmztabm</artifactId>
     <version>1.0.0-SNAPSHOT</version>
-    <packaging>jar</packaging>
+    <packaging>pom</packaging>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>${lombok.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-engine</artifactId>
+                <version>${junit.jupiter.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.junit.vintage</groupId>
+                <artifactId>junit-vintage-engine</artifactId>
+                <version>${junit.vintage.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>io.swagger</groupId>
+                <artifactId>swagger-annotations</artifactId>
+                <version>${swagger.version}</version>
+            </dependency>
+
+            <!-- HTTP client: jersey-client -->
+            <dependency>
+                <groupId>org.glassfish.jersey.core</groupId>
+                <artifactId>jersey-client</artifactId>
+                <version>${jersey.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.jersey.media</groupId>
+                <artifactId>jersey-media-multipart</artifactId>
+                <version>${jersey.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.jersey.media</groupId>
+                <artifactId>jersey-media-json-jackson</artifactId>
+                <version>${jersey.version}</version>
+            </dependency>
+
+            <!-- JSON processing: jackson -->
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-core</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-annotations</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.datatype</groupId>
+                <artifactId>jackson-datatype-joda</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>joda-time</groupId>
+                <artifactId>joda-time</artifactId>
+                <version>${jodatime.version}</version>
+            </dependency>
+
+            <!-- Base64 encoding that works in both JVM and Android -->
+            <dependency>
+                <groupId>com.brsanthu</groupId>
+                <artifactId>migbase64</artifactId>
+                <version>${migbase.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
     <dependencies>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>1.16.18</version>
-        </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
-            <version>${junit.jupiter.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.junit.vintage</groupId>
             <artifactId>junit-vintage-engine</artifactId>
-            <version>${junit.vintage.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -29,77 +99,19 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <java.version>1.8</java.version>
+        <lombok.version>1.16.18</lombok.version>
         <junit.jupiter.version>5.0.1</junit.jupiter.version>
         <junit.vintage.version>4.12.1</junit.vintage.version>
         <junit.platform.version>1.0.1</junit.platform.version>
+        <swagger.version>1.5.16</swagger.version>
+        <jersey.version>2.22.2</jersey.version>
+        <jackson.version>2.7.5</jackson.version>
+        <jodatime.version>2.9.4</jodatime.version>
+        <migbase.version>2.2</migbase.version>
     </properties>
-    <build>
-        <plugins>
-            <plugin>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.19</version>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.junit.platform</groupId>
-                        <artifactId>junit-platform-surefire-provider</artifactId>
-                        <version>${junit.platform.version}</version>
-                    </dependency>
-                </dependencies>
-            </plugin>
-            <plugin>
-                <groupId>io.swagger</groupId>
-                <artifactId>swagger-codegen-maven-plugin</artifactId>
-                <version>2.2.2</version>
-                <executions>
-                    <execution>
-			<id>generate-server</id>
-                        <goals>
-                            <goal>generate</goal>
-                        </goals>
-                        <configuration>
-                            <!-- target to generate java client code -->
-                            <inputSpec>src/main/resources/mzTab_m_swagger.yml</inputSpec>
-                            <language>spring</language>
-                            <library>spring-boot</library>
-                            <configOptions>
-                                <sourceFolder>src/gen/server/java/main</sourceFolder>
-                            </configOptions>
-                        </configuration>
-                    </execution>
-                    <execution>
-			<id>generate-client</id>
-                        <goals>
-                            <goal>generate</goal>
-                        </goals>
-                        <configuration>
-                            <!-- target to generate java client code -->
-                            <inputSpec>src/main/resources/mzTab_m_swagger.yml</inputSpec>
-                            <language>java</language>
-                            <library>jersey2</library>
-                            <configOptions>
-                                <sourceFolder>src/gen/client/java/main</sourceFolder>
-                            </configOptions>
-                        </configuration>
-                    </execution>
-                    <execution>
-			<id>generate-lib</id>
-                        <goals>
-                            <goal>generate</goal>
-                        </goals>
-                        <configuration>
-                            <!-- target to generate java client code -->
-                            <inputSpec>src/main/resources/mzTab_m_swagger.yml</inputSpec>
-                            <language>java</language>
-                            <library>jersey2</library>
-                            <configOptions>
-                                <sourceFolder>src/gen/lib/java/main</sourceFolder>
-				<withXml>true</withXml>
-				<generateApis>false</generateApis>
-                            </configOptions>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
+
+    <modules>
+        <module>api</module>
+        <module>io</module>
+    </modules>
 </project>

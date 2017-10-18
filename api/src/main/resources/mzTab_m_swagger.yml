@@ -119,11 +119,36 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/SmallMoleculeEvidence'
+      comment:
+        type: array
+        items:
+          $ref: '#/definitions/Comment'
+  Comment:
+    required:
+      - prefix
+    properties:
+      prefix:
+        type: string
+        enum:
+          - COM
+        default: COM
+      msg:
+        type: string
+      line_number:
+        type: integer
+        format: int64
   Metadata:
     required:
+      - prefix
       - mzTab-ID
       - mzTab-version
     properties:
+      prefix:
+        type: string
+        enum:
+          - MTD
+        default: MTD
+        readOnly: true
       mzTab-version:
         type: string
         example: >-
@@ -213,9 +238,23 @@ definitions:
           $ref: '#/definitions/ColumnParameterMapping'
   SmallMoleculeSummary:
     required:
+      - prefix
+      - header_prefix
       - sml_id
       - smf_id_refs
     properties:
+      prefix:
+        type: string
+        enum:
+          - SML
+        default: SML
+        readOnly: true
+      header_prefix:
+        type: string
+        enum:
+          - SMH
+        default: SMH
+        readOnly: true
       sml_id:
         type: string
       smf_id_refs:
@@ -287,11 +326,29 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/OptColumnMapping'
+      comment:
+        type: array
+        items:
+          $ref: '#/definitions/Comment'
   SmallMoleculeFeature:
     required:
+      - prefix
+      - header_prefix
       - smf_id
       - sme_id_refs
     properties:
+      prefix:
+        type: string
+        enum:
+          - SMF
+        default: SMF
+        readOnly: true
+      header_prefix:
+        type: string
+        enum:
+          - SFH
+        default: SFH
+        readOnly: true
       smf_id:
         type: string
       sme_id_refs:
@@ -330,8 +387,27 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/OptColumnMapping'
+      comment:
+        type: array
+        items:
+          $ref: '#/definitions/Comment'
   SmallMoleculeEvidence:
+    required:
+      - prefix
+      - header_prefix
     properties:
+      prefix:
+        type: string
+        enum:
+          - SME
+        default: SME
+        readOnly: true
+      header_prefix:
+        type: string
+        enum:
+          - SHE
+        default: SHE
+        readOnly: true
       sme_id:
         type: string
       evidence_unique_id:
@@ -380,6 +456,10 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/OptColumnMapping'
+      comment:
+        type: array
+        items:
+          $ref: '#/definitions/Comment'
   Parameter:
     required:
       - name
@@ -592,14 +672,15 @@ definitions:
         type: string
       message_type:
         enum:
-          - 'error'
-          - 'warning'
-          - 'information'
-        default: 'information'
+          - error
+          - warning
+          - information
+        default: information
       message:
         type: string
       line_number:
         type: integer
+        format: int64
 externalDocs:
   description: Find out more about mzTab for Metabolomics
   url: 'https://github.com/HUPO-PSI/mzTab'
