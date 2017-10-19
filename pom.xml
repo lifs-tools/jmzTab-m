@@ -69,6 +69,11 @@
                 <version>${jackson.version}</version>
             </dependency>
             <dependency>
+                <groupId>com.fasterxml.jackson.dataformat</groupId>
+                <artifactId>jackson-dataformat-csv</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>joda-time</groupId>
                 <artifactId>joda-time</artifactId>
                 <version>${jodatime.version}</version>
@@ -105,7 +110,7 @@
         <junit.platform.version>1.0.1</junit.platform.version>
         <swagger.version>1.5.16</swagger.version>
         <jersey.version>2.22.2</jersey.version>
-        <jackson.version>2.7.5</jackson.version>
+        <jackson.version>2.9.2</jackson.version>
         <jodatime.version>2.9.4</jodatime.version>
         <migbase.version>2.2</migbase.version>
     </properties>

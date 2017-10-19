@@ -166,7 +166,9 @@ definitions:
         example: >-
           MTD description An experiment investigating the effects of Il-6.
       sample_processing:
-        $ref: '#/definitions/ParameterList'
+        type: array
+        items:
+          $ref: '#/definitions/ParameterList'
         example: >-
           MTD sample_processing[1] [SEP, SEP:00173, SDS PAGE,] \
           MTD sample_processing[2] [SEP, SEP:00142, enzyme digestion,]|[MS, … MS:1001251, Trypsin, ]

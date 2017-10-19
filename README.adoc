@@ -1,0 +1,15 @@
+= mzTab Swagger API
+Nils Hoffmann <nils.hoffmann@isas.de>
+
+This project defines the structure of an mzTab document based on JSON-Schema
+and Swagger https://swagger.io/.
+
+Swagger provides many templates to generate client / server implementations
+based on a Swagger yaml or json definition.
+
+This mechanism can be used to generate the domain-specific model classes in
+any of the supported languages, omitting the web-specific parts.
+
+The https://editor.swagger.io/[Swagger editor] can be used to import the file,
+edit it with assistance and preview, and export it after editing. It additionally 
+supports the generation of server and client code to represent the mzTab object structure.

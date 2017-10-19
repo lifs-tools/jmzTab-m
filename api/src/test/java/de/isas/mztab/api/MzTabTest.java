@@ -1,5 +1,5 @@
 /*
- * 
+ *
  */
 package de.isas.mztab.api;
 
@@ -91,12 +91,14 @@ MTD	id_confidence_measure[3]	[,,Isotopic fit Score,]
                         )
                 )
         );
+        //referencing inside while building the datastructure is not possible
+        //thus, some elements need to be created separately.
         mztabfile.getMetadata().addAssayItem(
             new Assay().
                 name("assay1").
                 addMsRunRefItem(mztabfile.getMetadata().getMsrun().get(0))
         );
-        
+
         System.out.println(mztabfile);
     }
 }
