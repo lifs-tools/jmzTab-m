@@ -13,3 +13,5 @@ any of the supported languages, omitting the web-specific parts.
 The https://editor.swagger.io/[Swagger editor] can be used to import the file,
 edit it with assistance and preview, and export it after editing. It additionally 
 supports the generation of server and client code to represent the mzTab object structure.
+
+The swagger API definition is https://gitlab.isas.de/hoffmann/jmzTab-m/blob/master/api/src/main/resources/mzTab_m_swagger.yml[available here].
