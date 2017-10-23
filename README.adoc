@@ -14,4 +14,11 @@ The https://editor.swagger.io/[Swagger editor] can be used to import the file,
 edit it with assistance and preview, and export it after editing. It additionally 
 supports the generation of server and client code to represent the mzTab object structure.
 
-The swagger API definition is https://gitlab.isas.de/hoffmann/jmzTab-m/blob/master/api/src/main/resources/mzTab_m_swagger.yml[available here].
+To launch the editor via https://www.docker.com/[Docker] on Unix, use the script
+`run-swagger-editor.sh` in this directory.
+
+The swagger API definition is in the following file: `api/src/main/resources/mzTab_m_swagger.yml`.
+
+You can open it in the Swagger Editor via File -> Import File. If you are done editing, go to File -> Download YAML and save the file at the location of the mzTab_m_swagger.yml file, thereby replacing the original file.
+
+You can create server and client code in a multitude of languages from the Generate Server and Generate Client menu items.
