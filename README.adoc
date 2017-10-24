@@ -1,6 +1,8 @@
 = mzTab Swagger API
 Nils Hoffmann <nils.hoffmann@isas.de>
 
+Build status: image:https://travis-ci.org/nilshoffmann/jmzTab-m.svg?branch=master["Build Status", link="https://travis-ci.org/nilshoffmann/jmzTab-m"]
+
 This project defines the structure of an mzTab document based on JSON-Schema
 and Swagger https://swagger.io/.
 
