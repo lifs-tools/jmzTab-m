@@ -5,7 +5,6 @@
         <artifactId>jmztabm</artifactId>
         <groupId>de.isas.mztab</groupId>
         <version>1.0.0-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>api</artifactId>
     <version>1.0.0-SNAPSHOT</version>
