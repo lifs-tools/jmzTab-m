@@ -22,3 +22,19 @@ The swagger API definition is in the following file: `api/src/main/resources/mzT
 You can open it in the Swagger Editor via File -> Import File. If you are done editing, go to File -> Download YAML and save the file at the location of the mzTab_m_swagger.yml file, thereby replacing the original file.
 
 You can create server and client code in a multitude of languages from the Generate Server and Generate Client menu items.
+
+== Generating client code from the command-line
+
+In order to build the client code and run the unit tests, execute the following command from a terminal:
+
+	./mvnw install
+
+This generates the necessary domain specific code for a number of different languages, e.g. for Python, JAVA and R.
+In general, any language and framework for which swagger-codegen has templates available may be used. For details, please 
+look at the `api/pom.xml` file and at the https://github.com/swagger-api/swagger-codegen[swagger-codegen repository and documentation].
+
+The generated code is available below the `api/target/generated-sources/` directory:
+
+. mztab-java
+. mztab-python
+. mztab-r
