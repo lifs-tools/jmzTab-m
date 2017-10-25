@@ -3,6 +3,7 @@ package de.isas.lipidomics.jmztabm.io;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import static de.isas.lipidomics.jmztabm.io.MzTabWriter.SEP;
 import de.isas.mztab1_1.model.Contact;
 import de.isas.mztab1_1.model.MsRun;
@@ -30,24 +31,8 @@ import org.junit.jupiter.api.Test;
  */
 public class MzTabWriterTest {
 
-    @Test
-    void testWrite() {
-
-        CsvMapper mapper = new CsvMapper();
-        CsvSchema metadataSchema = CsvSchema.builder().addColumn("PREFIX", CsvSchema.ColumnType.STRING).addColumn("KEY", CsvSchema.ColumnType.STRING).addColumn("VALUE", CsvSchema.ColumnType.STRING).build();
-                metadataSchema.withAllowComments(true).
-                withLineSeparator(SEP).
-                withUseHeader(false).
-                withArrayElementSeparator("|").
-                withNullValue("null").
-                withColumnSeparator('\t');
-        CsvSchema schema = mapper.schemaFor(Metadata.class).
-                withAllowComments(true).
-                withLineSeparator(SEP).
-                withUseHeader(false).
-                withArrayElementSeparator("|").
-                withNullValue("null").
-                withColumnSeparator('\t');
+    static MzTab createTestFile() {
+    
         final MzTab mztabfile = new MzTab().metadata(
                 new de.isas.mztab1_1.model.Metadata().
                         mzTabVersion("1.1.0").
@@ -78,17 +63,50 @@ public class MzTabWriterTest {
                                         )
                         )
         );
+	return mztabfile;
+    }
+
+    @Test
+    void testWriteDefaultToString() {
+        try(BufferedWriter bw = Files.newBufferedWriter(File.createTempFile("testWriteDefaultToString", ".txt").toPath(), Charset.forName("UTF-8"), StandardOpenOption.WRITE)) {
+            bw.write(createTestFile().toString());
+        } catch (IOException ex) {
+            Logger.getLogger(MzTabWriterTest.class.getName()).
+                    log(Level.SEVERE, null, ex);
+        }
+    }
+
+    @Test
+    void testWriteJsonMapper() {
+        try(BufferedWriter bw = Files.newBufferedWriter(File.createTempFile("testWriteJson", ".json").toPath(), Charset.forName("UTF-8"), StandardOpenOption.WRITE)) {
+            ObjectMapper mapper = new ObjectMapper();
+            bw.write(mapper.writeValueAsString(createTestFile()));
+        } catch (IOException ex) {
+            Logger.getLogger(MzTabWriterTest.class.getName()).
+                    log(Level.SEVERE, null, ex);
+        }
+    }
+    @Test
+    void testWriteCsv() {
+	MzTab mztabfile = createTestFile();
+        CsvMapper mapper = new CsvMapper();
+        CsvSchema metadataSchema = CsvSchema.builder().addColumn("PREFIX", CsvSchema.ColumnType.STRING).addColumn("KEY", CsvSchema.ColumnType.STRING).addColumn("VALUE", CsvSchema.ColumnType.STRING).build();
+                metadataSchema.withAllowComments(true).
+                withLineSeparator(SEP).
+                withUseHeader(false).
+                withArrayElementSeparator("|").
+                withNullValue("null").
+                withColumnSeparator('\t');
+        CsvSchema schema = mapper.schemaFor(Metadata.class).
+                withAllowComments(true).
+                withLineSeparator(SEP).
+                withUseHeader(false).
+                withArrayElementSeparator("|").
+                withNullValue("null").
+                withColumnSeparator('\t');
         try {
             System.out.println(mapper.writer(metadataSchema).
                     writeValueAsString(mztabfile.getMetadata()));
-//        try(BufferedWriter bw = Files.newBufferedWriter(File.createTempFile("testWriteFile", ".mzTab").toPath(), Charset.forName("UTF-8"), StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE)) {
-//            MzTabWriter writer = new MzTabWriter();
-//            MzTab mztab = new MzTab();
-//            writer.write(bw, mztab);
-//        } catch (IOException ex) {
-//            Logger.getLogger(MzTabWriterTest.class.getName()).
-//                    log(Level.SEVERE, null, ex);
-//        }
         } catch (JsonProcessingException ex) {
             Logger.getLogger(MzTabWriterTest.class.getName()).
                     log(Level.SEVERE, null, ex);
