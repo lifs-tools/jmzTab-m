@@ -1,6 +1,5 @@
 package de.isas.lipidomics.jmztabm.io;
 
-import de.isas.lipidomics.jmztabm.model.MzTabFile;
 import java.io.InputStream;
 
 /**

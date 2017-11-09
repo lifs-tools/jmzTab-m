@@ -106,6 +106,7 @@ definitions:
       - smallMoleculeEvidence
     properties:
       metadata:
+        description: The metadata block of an mzTab file.
         $ref: '#/definitions/Metadata'
       smallMoleculeSummary:
         type: array
@@ -165,6 +166,8 @@ definitions:
         type: string
         example: >-
           MTD description An experiment investigating the effects of Il-6.
+      study:
+        $ref: '#/definitions/ExternalStudy'
       sample_processing:
         type: array
         items:
@@ -180,6 +183,12 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/Software'
+      publications:
+        required:
+          - items
+        type: array
+        items:
+          $ref: '#/definitions/Publication'
       contacts:
         type: array
         items:
@@ -188,6 +197,7 @@ definitions:
         type: array
         items:
           type: string
+          format: uri
       quantification_method:
         type: array
         items:
@@ -287,6 +297,7 @@ definitions:
         type: array
         items:
           type: string
+          format: uri
       theoretical_neutral_mass:
         type: array
         items:
@@ -426,6 +437,7 @@ definitions:
         type: string
       uri:
         type: string
+        format: uri
       derivatized_form:
         $ref: '#/definitions/Parameter'
       adduct_ion:
@@ -477,6 +489,7 @@ definitions:
         type: string
   ParameterList:
     type: array
+    collectionFormat: pipes
     items:
       $ref: '#/definitions/Parameter'
   Instrument:
@@ -498,6 +511,39 @@ definitions:
         items:
           $ref: '#/definitions/Parameter'
       instrument_detector:
+        $ref: '#/definitions/Parameter'
+  ExternalStudy:
+    description: >-
+      An external study, holding e.g. detailed information about the study data and metadata. A link to an ISA-Tab file deposited at 
+      MetaboLights is a good example for such a use case.
+    example:
+      - >-
+        MTD study-url	https://www.ebi.ac.uk/metabolights/MTBLS517
+        MTD study-id	MTBLS517
+        MTD study-id-format	[,EMBL-EBI Metabolights,https://fairsharing.org/biodbcore-000168, ]
+        MTD study-title	MaHPIC Experiment 04: Metabolomics from Macaca mulatta infected with Plasmodium cynomolgi B strain to produce and integrate clinical, hematological, parasitological, and omics measures of acute primary infection and relapses
+        MTD study-version	1.0
+        MTD study-format [, , ISA-Tab file,]
+    required:
+      - id
+      - title
+      - url
+      - id-format
+      - version
+      - format
+    properties:
+      url:
+        type: string
+        format: uri
+      id:
+        type: string
+      id-format:
+        $ref: '#/definitions/Parameter'
+      title:
+        type: string
+      version:
+        type: string
+      format:
         $ref: '#/definitions/Parameter'
   Software:
     description: >-
@@ -528,16 +574,36 @@ definitions:
             software[2]-setting Parent tolerance = 0.5 Da
   Publication:
     description: >-
-      A publication associated with this file. Several publications can be
+      A publication associated with this file. Several publication items can be
       given by indicating the number in the square brackets after
       “publication”. PubMed ids must be prefixed by “pubmed:”, DOIs by “doi:”.
       Multiple identifiers MUST be separated by “|”.
     example:
       - >-
-        MTD publication[1] pubmed:21063943|doi:10.1007/978-1-60761-987-1_6 MTD
-        publication[2] pubmed:20615486|doi:10.1016/j.jprot.2010.06.008
+        MTD publication[1] pubmed:21063943|doi:10.1007/978-1-60761-987-1_6
+        MTD publication[2] pubmed:20615486|doi:10.1016/j.jprot.2010.06.008
+    required:
+      - items
+    type: array
+    items:
+      $ref: '#/definitions/PublicationItem'
+  PublicationItem:
+    required:
+      - type
+      - accession  
+    properties:
+      type:
+        type: string
+        enum:
+          - doi
+          - pubmed
+          - url
+        default: doi
+      accession:
+        type: string
   StringList:
     type: array
+    collectionFormat: pipes
     items:
       type: string
   Contact:
@@ -600,6 +666,7 @@ definitions:
         $ref: '#/definitions/ParameterList'
       external_uri:
         type: string
+        format: uri
       sample_ref:
         $ref: '#/definitions/Sample'
       ms_run_ref:

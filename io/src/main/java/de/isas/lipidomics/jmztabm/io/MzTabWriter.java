@@ -69,7 +69,7 @@ public class MzTabWriter {
     }
     
     public static void getJsonPropertyFields(Class<?> c) {
-        Field[] fields = c.getFields();
+        Field[] fields = c.getDeclaredFields();
         for(Field f:fields) {
             JsonProperty annotation = f.getAnnotation(JsonProperty.class);
             if(annotation != null) {
