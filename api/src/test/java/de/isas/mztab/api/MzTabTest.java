@@ -3,6 +3,7 @@
  */
 package de.isas.mztab.api;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import de.isas.mztab1_1.model.Assay;
 import de.isas.mztab1_1.model.Contact;
 import de.isas.mztab1_1.model.Metadata;
@@ -11,9 +12,17 @@ import de.isas.mztab1_1.model.MzTab;
 import de.isas.mztab1_1.model.MzTabFileDescription;
 import de.isas.mztab1_1.model.Parameter;
 import de.isas.mztab1_1.model.ParameterList;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.junit.Test;
 
 /**
@@ -68,6 +77,11 @@ MTD	id_confidence_measure[3]	[,,Isotopic fit Score,]
      */
     @Test
     public void testMzTabObjectCreation() {
+
+        System.out.println(createTestFile());
+    }
+
+    private MzTab createTestFile() {
         List<MsRun> msRuns = new ArrayList<MsRun>();
         msRuns.add(new MsRun().
                 location("file:///path/to/file1.mzML").
@@ -121,7 +135,19 @@ MTD	id_confidence_measure[3]	[,,Isotopic fit Score,]
                                         getMsrun().
                                         get(0))
                 );
+        return mztabfile;
+    }
 
-        System.out.println(mztabfile);
+    @Test
+    public void testWriteJsonMapper() {
+        try (BufferedWriter bw = Files.newBufferedWriter(File.createTempFile(
+                "testWriteJson", ".json").
+                toPath(), Charset.forName("UTF-8"), StandardOpenOption.WRITE)) {
+            ObjectMapper mapper = new ObjectMapper();
+            bw.write(mapper.writeValueAsString(createTestFile()));
+        } catch (IOException ex) {
+            Logger.getLogger(MzTabTest.class.getName()).
+                    log(Level.SEVERE, null, ex);
+        }
     }
 }
