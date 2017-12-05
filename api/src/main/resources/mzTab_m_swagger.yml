@@ -141,8 +141,7 @@ definitions:
   Metadata:
     required:
       - prefix
-      - mzTab-ID
-      - mzTab-version
+      - fileDescription
     properties:
       prefix:
         type: string
@@ -150,22 +149,9 @@ definitions:
           - MTD
         default: MTD
         readOnly: true
-      mzTab-version:
-        type: string
-        example: >-
-          MTD mzTab-version 1.1.0
-      mzTab-ID:
-        type: string
-        example: >-
-          MTD mzTab-ID PRIDE_1234
-      title:
-        type: string
-        example: >-
-          MTD title My first test experiment
-      description:
-        type: string
-        example: >-
-          MTD description An experiment investigating the effects of Il-6.
+      fileDescription:
+        type: object
+        $ref: '#/definitions/MzTabFileDescription'
       study:
         $ref: '#/definitions/ExternalStudy'
       sample_processing:
@@ -750,6 +736,24 @@ definitions:
       line_number:
         type: integer
         format: int64
+  MzTabFileDescription:
+    properties:
+        mzTab-version:
+          type: string
+          example: >-
+            MTD mzTab-version 1.1.0
+        mzTab-ID:
+          type: string
+          example: >-
+            MTD mzTab-ID PRIDE_1234
+        title:
+          type: string
+          example: >-
+            MTD title My first test experiment
+        description:
+          type: string
+          example: >-
+            MTD description An experiment investigating the effects of Il-6.
 externalDocs:
   description: Find out more about mzTab for Metabolomics
   url: 'https://github.com/HUPO-PSI/mzTab'

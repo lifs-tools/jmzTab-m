@@ -8,15 +8,20 @@ import de.isas.mztab1_1.model.Contact;
 import de.isas.mztab1_1.model.Metadata;
 import de.isas.mztab1_1.model.MsRun;
 import de.isas.mztab1_1.model.MzTab;
+import de.isas.mztab1_1.model.MzTabFileDescription;
 import de.isas.mztab1_1.model.Parameter;
+import de.isas.mztab1_1.model.ParameterList;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *
  * @author Nils Hoffmann <nils.hoffmann@isas.de>
  */
 public class MzTabTest {
+
     /*
     MTD	mzTab-version	1.1.0
 MTD	mzTab-ID	JetBike Test
@@ -60,44 +65,62 @@ MTD	small_molecule_feature-quantification_unit	[,,Progenesis QI Normalised Abund
 MTD	id_confidence_measure[1]	[,,Progenesis MetaScope Score,]
 MTD	id_confidence_measure[2]	[,,Fragmentation Score,]
 MTD	id_confidence_measure[3]	[,,Isotopic fit Score,]
-    */
+     */
     @Test
     public void testMzTabObjectCreation() {
-        final MzTab mztabfile = new MzTab().metadata(
-            new Metadata().
-                mzTabVersion("1.1.0").
-                mzTabID("ISAS_2017_M_11451").
-                title("A minimal test file").
-                description("A description of an mzTab file.").
-                addContactsItem(
-                    new Contact().
-                        name("Nils Hoffmann").
-                        email("nils.hoffmann_at_isas.de").
-                        affiliation("ISAS e.V. Dortmund, Germany")
-                ).addMsrunItem(
-                    new MsRun().
-                        location("file:///path/to/file1.mzML").
-                        format(
-                            new Parameter().
+        List<MsRun> msRuns = new ArrayList<MsRun>();
+        msRuns.add(new MsRun().
+                location("file:///path/to/file1.mzML").
+                format(
+                        new Parameter().
                                 cvLabel("MS").
                                 cvAccession("MS:1000584").
                                 name("mzML file")
-                        ).
-                        idFormat(
-                            new Parameter().
+                ).
+                idFormat(
+                        new Parameter().
                                 cvLabel("MS").
                                 cvAccession("MS:1001530").
                                 name("mzML unique identifier")
-                        )
-                )
+                ));
+        ParameterList assayPl = new ParameterList();
+        assayPl.add(new Parameter().name("my-custom-param").
+                value("my-custom-value"));
+        List<Assay> assays = new ArrayList<>(Arrays.asList(
+                new Assay().name("my first assay").
+                        externalUri(
+                                "http://github,com/nilshoffmann/someRepository").
+                        addMsRunRefItem(msRuns.get(0)).
+                        custom(assayPl)
+        ));
+        final MzTab mztabfile = new MzTab().metadata(
+                new Metadata().
+                        fileDescription(new MzTabFileDescription().mzTabID(
+                                "ISAS-2017-12-01-LP-9891").
+                                mzTabVersion("1.1").
+                                title("A sample study").
+                                description(
+                                        "This sample study has been created with the sole purpose of testing.")).
+                        addContactsItem(
+                                new Contact().
+                                        name("Nils Hoffmann").
+                                        email("nils.hoffmann_at_isas.de").
+                                        affiliation(
+                                                "ISAS e.V. Dortmund, Germany")
+                        ).
+                        msrun(msRuns).
+                        assay(assays)
         );
         //referencing inside while building the datastructure is not possible
         //thus, some elements need to be created separately.
-        mztabfile.getMetadata().addAssayItem(
-            new Assay().
-                name("assay1").
-                addMsRunRefItem(mztabfile.getMetadata().getMsrun().get(0))
-        );
+        mztabfile.getMetadata().
+                addAssayItem(
+                        new Assay().
+                                name("assay1").
+                                addMsRunRefItem(mztabfile.getMetadata().
+                                        getMsrun().
+                                        get(0))
+                );
 
         System.out.println(mztabfile);
     }

@@ -10,6 +10,7 @@ import de.isas.mztab1_1.model.Contact;
 import de.isas.mztab1_1.model.Instrument;
 import de.isas.mztab1_1.model.MsRun;
 import de.isas.mztab1_1.model.MzTab;
+import de.isas.mztab1_1.model.MzTabFileDescription;
 import de.isas.mztab1_1.model.Parameter;
 import de.isas.mztab1_1.model.ParameterList;
 import de.isas.mztab1_1.model.Publication;
@@ -42,10 +43,11 @@ public class MzTabWriterTest {
 
         final MzTab mztabfile = new MzTab().metadata(
                 new de.isas.mztab1_1.model.Metadata().
-                        mzTabVersion("1.1.0").
-                        mzTabID("ISAS_2017_M_11451").
-                        title("A minimal test file").
-                        description("A description of an mzTab file.").
+                        fileDescription(new MzTabFileDescription().mzTabVersion(
+                                "1.1.0").
+                                mzTabID("ISAS_2017_M_11451").
+                                title("A minimal test file").
+                                description("A description of an mzTab file.")).
                         addContactsItem(
                                 new Contact().
                                         name("Nils Hoffmann").
@@ -70,15 +72,34 @@ public class MzTabWriterTest {
                                         )
                         )
         );
+        PublicationItem item1_1 = new PublicationItem().type(
+                PublicationItem.TypeEnum.PUBMED).
+                accession("21063943");
+        PublicationItem item1_2 = new PublicationItem().type(
+                PublicationItem.TypeEnum.DOI).
+                accession("10.1007/978-1-60761-987-1_6");
+        Publication publication1 = new Publication();
+        publication1.addAll(Arrays.asList(item1_1, item1_2));
+
+        PublicationItem item2_1 = new PublicationItem().type(
+                PublicationItem.TypeEnum.PUBMED).
+                accession("20615486");
+        PublicationItem item2_2 = new PublicationItem().type(
+                PublicationItem.TypeEnum.DOI).
+                accession("10.1016/j.jprot.2010.06.008");
+        Publication publication2 = new Publication();
+        publication2.addAll(Arrays.asList(item2_1, item2_2));
+
+        mztabfile.getMetadata().addPublicationsItem(publication1).
+                addPublicationsItem(publication2);
         return mztabfile;
     }
 
     static MzTab create1_0TestFile() {
         de.isas.mztab1_1.model.Metadata mtd = new de.isas.mztab1_1.model.Metadata();
-        mtd.setMzTabID("PRIDE_1234");
-
-        mtd.setTitle("My first test experiment");
-        mtd.setDescription("An experiment investigating the effects of Il-6.");
+        mtd.fileDescription(new MzTabFileDescription().mzTabID("PRIDE_1234").
+                title("My first test experiment").
+                description("An experiment investigating the effects of Il-6."));
         ParameterList list1 = new ParameterList();
         list1.add(new Parameter().cvLabel("SEP").
                 cvAccession("SEP:00173").
@@ -174,9 +195,13 @@ public class MzTabWriterTest {
 
         mtd.addPublicationsItem(publication1).
                 addPublicationsItem(publication2);
-        
-        mtd.addContactsItem(new Contact().name("James D. Watson").affiliation("Cambridge University, UK").email("watson@cam.ac.uk"));
-        mtd.addContactsItem(new Contact().name("Francis Crick").affiliation("Cambridge University, UK").email("crick@cam.ac.uk"));
+
+        mtd.addContactsItem(new Contact().name("James D. Watson").
+                affiliation("Cambridge University, UK").
+                email("watson@cam.ac.uk"));
+        mtd.addContactsItem(new Contact().name("Francis Crick").
+                affiliation("Cambridge University, UK").
+                email("crick@cam.ac.uk"));
 
 //        mtd.addUriItem(new URI("http://www.ebi.ac.uk/pride/url/to/experiment"));
 //        mtd.addUriItem(new URI(
@@ -347,36 +372,36 @@ public class MzTabWriterTest {
         }
     }
 
-    @Test
-    public void testWriteCsv() {
-        MzTab mztabfile = createTestFile();
-        CsvMapper mapper = new CsvMapper();
-        CsvSchema metadataSchema = CsvSchema.builder().
-                addColumn("PREFIX", CsvSchema.ColumnType.STRING).
-                addColumn("KEY", CsvSchema.ColumnType.STRING).
-                addColumn("VALUE", CsvSchema.ColumnType.STRING).
-                build();
-        metadataSchema.withAllowComments(true).
-                withLineSeparator(SEP).
-                withUseHeader(false).
-                withArrayElementSeparator("|").
-                withNullValue("null").
-                withColumnSeparator('\t');
-        CsvSchema schema = mapper.schemaFor(Metadata.class).
-                withAllowComments(true).
-                withLineSeparator(SEP).
-                withUseHeader(false).
-                withArrayElementSeparator("|").
-                withNullValue("null").
-                withColumnSeparator('\t');
-        try {
-            System.out.println(mapper.writer(metadataSchema).
-                    writeValueAsString(mztabfile.getMetadata()));
-        } catch (JsonProcessingException ex) {
-            Logger.getLogger(MzTabWriterTest.class.getName()).
-                    log(Level.SEVERE, null, ex);
-        }
-    }
+//    @Test
+//    public void testWriteCsv() {
+//        MzTab mztabfile = createTestFile();
+//        CsvMapper mapper = new CsvMapper();
+//        CsvSchema metadataSchema = CsvSchema.builder().
+//                addColumn("PREFIX", CsvSchema.ColumnType.STRING).
+//                addColumn("KEY", CsvSchema.ColumnType.STRING).
+//                addColumn("VALUE", CsvSchema.ColumnType.STRING).
+//                build();
+//        metadataSchema.withAllowComments(true).
+//                withLineSeparator(SEP).
+//                withUseHeader(false).
+//                withArrayElementSeparator("|").
+//                withNullValue("null").
+//                withColumnSeparator('\t');
+//        CsvSchema schema = mapper.schemaFor(Metadata.class).
+//                withAllowComments(true).
+//                withLineSeparator(SEP).
+//                withUseHeader(false).
+//                withArrayElementSeparator("|").
+//                withNullValue("null").
+//                withColumnSeparator('\t');
+//        try {
+//            System.out.println(mapper.writer(metadataSchema).
+//                    writeValueAsString(mztabfile.getMetadata()));
+//        } catch (JsonProcessingException ex) {
+//            Logger.getLogger(MzTabWriterTest.class.getName()).
+//                    log(Level.SEVERE, null, ex);
+//        }
+//    }
 
     @Test
     public void testCvParameterToString() {
@@ -432,14 +457,8 @@ public class MzTabWriterTest {
     @Test
     public void testGetJsonPropertyFields() {
         MzTab mzTabFile = createTestFile();
-        MzTabWriter.getJsonPropertyFields(mzTabFile.getClass());
-        MzTabWriter.getJsonPropertyFields(mzTabFile.getMetadata().
-                getClass());
-        MzTabWriter.getJsonPropertyFields(mzTabFile.getSmallMoleculeSummary().
-                getClass());
-        MzTabWriter.getJsonPropertyFields(mzTabFile.getSmallMoleculeFeature().
-                getClass());
-        MzTabWriter.getJsonPropertyFields(mzTabFile.getSmallMoleculeEvidence().
-                getClass());
+        String s = MzTabWriter.writeWithJackson(mzTabFile);
+        System.out.println("Serialized Metadata: ");
+        System.out.println(s);
     }
 }

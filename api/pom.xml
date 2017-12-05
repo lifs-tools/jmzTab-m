@@ -33,7 +33,7 @@
                             <withXml>true</withXml>
                             <generateApis>false</generateApis>
                             <generateModelTests>true</generateModelTests>
-                            <generateSupportingFiles>false></generateSupportingFiles>
+                            <generateSupportingFiles>false</generateSupportingFiles>
                             <generateApiDocumentation>false</generateApiDocumentation>
                             <configOptions>
                                 <!--<sourceFolder>swagger</sourceFolder>-->

@@ -127,6 +127,7 @@
     <modules>
         <module>api</module>
         <module>io</module>
+        <module>webapp</module>
     </modules>
     
     <repositories>
