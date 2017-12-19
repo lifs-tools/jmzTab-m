@@ -148,8 +148,8 @@ public class MTDLineParser extends MZTabLineParser {
      * Parse valueLabel to a list of '|' separated parameters.
      * If exists parse error, add it into {@link MZTabErrorList}
      */
-    private SplitList<Parameter> checkParameterList(String defineLabel, String valueLabel) {
-        SplitList<Parameter> paramList = parseParamList(valueLabel);
+    private List<Parameter> checkParameterList(String defineLabel, String valueLabel) {
+        List<Parameter> paramList = parseParamList(valueLabel);
 
         if (paramList.size() == 0) {
             errorList.add(new MZTabError(FormatErrorType.ParamList, lineNumber, Error_Header + defineLabel, valueLabel));
