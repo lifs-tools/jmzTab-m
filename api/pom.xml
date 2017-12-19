@@ -43,6 +43,7 @@
                                 <useBeanValidation>true</useBeanValidation>
                                 <performBeanValidation>true</performBeanValidation>
                                 <withXml>true</withXml>
+                                <supportsInheritance>true</supportsInheritance>
                             </configOptions>
                             <output>${project.build.directory}/generated-sources/</output>
                             <addCompileSourceRoot>true</addCompileSourceRoot>
@@ -74,12 +75,19 @@
                             <!-- target to generate java client code -->
                             <inputSpec>${project.basedir}/src/main/resources/mzTab_m_swagger.yml</inputSpec>
                             <language>r</language>
+                            <templateDirectory>${project.basedir}/src/main/resources/r</templateDirectory>
                             <withXml>true</withXml>
-                            <generateApis>false</generateApis>
+                            <generateApis>true</generateApis>
                             <generateModelTests>true</generateModelTests>
                             <generateSupportingFiles>true</generateSupportingFiles>
-                            <generateApiDocumentation>false</generateApiDocumentation>
+                            <generateApiDocumentation>true</generateApiDocumentation>
+                            <configOptions>
+                                <packageName>rmztab</packageName>
+                            </configOptions>
                             <output>${project.build.directory}/generated-sources/mztab-r</output>
+                            <modelPackage>mztab-r</modelPackage>
+                            <apiPackage>mztab-r</apiPackage>
+                            <invokerPackage>mztab-r</invokerPackage>
                         </configuration>
                     </execution>
                 </executions>
@@ -204,7 +212,7 @@
         <dependency>
             <groupId>javax.validation</groupId>
             <artifactId>validation-api</artifactId>
-            <version>1.1.0.Final</version>
+            <version>2.0.0.Final</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.dataformat</groupId>
