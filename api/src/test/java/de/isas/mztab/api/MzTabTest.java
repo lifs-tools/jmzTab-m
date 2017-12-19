@@ -9,9 +9,7 @@ import de.isas.mztab1_1.model.Contact;
 import de.isas.mztab1_1.model.Metadata;
 import de.isas.mztab1_1.model.MsRun;
 import de.isas.mztab1_1.model.MzTab;
-import de.isas.mztab1_1.model.MzTabFileDescription;
 import de.isas.mztab1_1.model.Parameter;
-import de.isas.mztab1_1.model.ParameterList;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
@@ -84,70 +82,69 @@ MTD	id_confidence_measure[3]	[,,Isotopic fit Score,]
     private MzTab createTestFile() {
         List<MsRun> msRuns = new ArrayList<MsRun>();
         msRuns.add(new MsRun().
-                location("file:///path/to/file1.mzML").
-                format(
-                        new Parameter().
-                                cvLabel("MS").
-                                cvAccession("MS:1000584").
-                                name("mzML file")
-                ).
-                idFormat(
-                        new Parameter().
-                                cvLabel("MS").
-                                cvAccession("MS:1001530").
-                                name("mzML unique identifier")
-                ));
-        ParameterList assayPl = new ParameterList();
+            location("file:///path/to/file1.mzML").
+            format(
+                new Parameter().
+                    cvLabel("MS").
+                    cvAccession("MS:1000584").
+                    name("mzML file")
+            ).
+            idFormat(
+                new Parameter().
+                    cvLabel("MS").
+                    cvAccession("MS:1001530").
+                    name("mzML unique identifier")
+            ));
+        ArrayList<Parameter> assayPl = new ArrayList<>();
         assayPl.add(new Parameter().name("my-custom-param").
-                value("my-custom-value"));
+            value("my-custom-value"));
         List<Assay> assays = new ArrayList<>(Arrays.asList(
-                new Assay().name("my first assay").
-                        externalUri(
-                                "http://github,com/nilshoffmann/someRepository").
-                        addMsRunRefItem(msRuns.get(0)).
-                        custom(assayPl)
+            new Assay().name("my first assay").
+                externalUri(
+                    "http://github.com/nilshoffmann/someRepository").
+                msRunRef(msRuns.get(0)).
+                custom(assayPl)
         ));
         final MzTab mztabfile = new MzTab().metadata(
-                new Metadata().
-                        fileDescription(new MzTabFileDescription().mzTabID(
-                                "ISAS-2017-12-01-LP-9891").
-                                mzTabVersion("1.1").
-                                title("A sample study").
-                                description(
-                                        "This sample study has been created with the sole purpose of testing.")).
-                        addContactsItem(
-                                new Contact().
-                                        name("Nils Hoffmann").
-                                        email("nils.hoffmann_at_isas.de").
-                                        affiliation(
-                                                "ISAS e.V. Dortmund, Germany")
-                        ).
-                        msrun(msRuns).
-                        assay(assays)
+            new Metadata().mzTabID(
+                "ISAS-2017-12-01-LP-9891").
+                mzTabVersion("1.1").
+                title("A sample study").
+                description(
+                    "This sample study has been created with the sole purpose of testing.").
+                addContactsItem(
+                    new Contact().
+                        name("Nils Hoffmann").
+                        email("nils.hoffmann_at_isas.de").
+                        affiliation(
+                            "ISAS e.V. Dortmund, Germany")
+                ).
+                msrun(msRuns).
+                assay(assays)
         );
         //referencing inside while building the datastructure is not possible
         //thus, some elements need to be created separately.
         mztabfile.getMetadata().
-                addAssayItem(
-                        new Assay().
-                                name("assay1").
-                                addMsRunRefItem(mztabfile.getMetadata().
-                                        getMsrun().
-                                        get(0))
-                );
+            addAssayItem(
+                new Assay().
+                    name("assay1").
+                    msRunRef(mztabfile.getMetadata().
+                        getMsrun().
+                        get(0))
+            );
         return mztabfile;
     }
 
     @Test
     public void testWriteJsonMapper() {
         try (BufferedWriter bw = Files.newBufferedWriter(File.createTempFile(
-                "testWriteJson", ".json").
-                toPath(), Charset.forName("UTF-8"), StandardOpenOption.WRITE)) {
+            "testWriteJson", ".json").
+            toPath(), Charset.forName("UTF-8"), StandardOpenOption.WRITE)) {
             ObjectMapper mapper = new ObjectMapper();
             bw.write(mapper.writeValueAsString(createTestFile()));
         } catch (IOException ex) {
             Logger.getLogger(MzTabTest.class.getName()).
-                    log(Level.SEVERE, null, ex);
+                log(Level.SEVERE, null, ex);
         }
     }
 }

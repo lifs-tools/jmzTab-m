@@ -6,11 +6,19 @@ package de.isas.lipidomics.jmztabm.io.serialization;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+import static de.isas.lipidomics.jmztabm.io.serialization.Serializers.addLine;
 import de.isas.mztab1_1.model.Contact;
 import de.isas.mztab1_1.model.Metadata;
 import de.isas.mztab1_1.model.Publication;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import uk.ac.ebi.pride.jmztab.model.MZTabUtils;
 
 /**
  *
@@ -30,50 +38,65 @@ public class MetadataSerializer extends StdSerializer<Metadata> {
     public void serialize(Metadata t, JsonGenerator jg, SerializerProvider sp) throws IOException {
         if (t != null) {
             String prefix = t.getPrefix().
-                    name();
-            addLine(jg, prefix, "mzTab-ID", t.getFileDescription().
-                    getMzTabID());
-            addLine(jg, prefix, "mzTab-version", t.getFileDescription().
-                    getMzTabVersion());
-            addLine(jg, prefix, "title", t.getFileDescription().
-                    getTitle());
-            addLine(jg, prefix, "description", t.getFileDescription().
-                    getDescription());
-            for (int i = 0; i < t.getContacts().
-                    size(); i++) {
-                Contact contact = t.getContacts().
-                        get(i);
-                addLine(jg, prefix, "contact[" + (i + 1) + "]-name", contact.
-                        getName());
-                addLine(jg, prefix, "contact[" + (i + 1) + "]-email", contact.
-                        getEmail());
-                addLine(jg, prefix, "contact[" + (i + 1) + "]-affiliation",
+                name();
+            addLine(jg, prefix, "mzTab-version", t.
+                getMzTabVersion());
+            addLine(jg, prefix, "mzTab-ID", t.
+                getMzTabID());
+            addLine(jg, prefix, "title", t.
+                getTitle());
+            addLine(jg, prefix, "description", t.
+                getDescription());
+            
+            //sample processing
+            final AtomicInteger cnt = new AtomicInteger(1);
+            t.getSampleProcessing().getSampleProcessing().stream().forEach((sampleProcessing) ->
+                {
+                    Serializers.addIndexedLine(jg, prefix, t.getSampleProcessing(), cnt.get(), sampleProcessing);
+                    cnt.incrementAndGet();
+                });
+            
+            //contacts
+            t.getContacts().
+                stream().
+                sorted((contact1,
+                    contact2) ->
+                {
+                    return Integer.compare(contact1.getId(), contact2.getId());
+                }).
+                forEach((contact) ->
+                {
+                    addLine(jg, prefix, "contact[" + contact.getId() + "]-name",
+                        contact.
+                            getName());
+                    addLine(jg, prefix, "contact[" + contact.getId() + "]-email",
+                        contact.
+                            getEmail());
+                    addLine(jg, prefix,
+                        "contact[" + contact.getId() + "]-affiliation",
                         contact.getAffiliation());
-            }
-            for (int i = 0; i < t.getPublications().
-                    size(); i++) {
-                Publication p = t.getPublications().
-                        get(i);
-                addLine(jg, prefix, "publication[" + (i + 1)+"]", p.stream().
+                });
+            //publications
+            t.getPublications().
+                stream().
+                sorted((publication1,
+                    publication2) ->
+                {
+                    return Integer.compare(publication1.getId(), publication2.
+                        getId());
+                }).
+                forEach((p) ->
+                {
+                    addLine(jg, prefix, "publication[" + p.getId() + "]", p.
+                        getPublicationItems().
+                        stream().
                         map(pitem ->
-                                pitem.getType().
-                                        name() + ":" + pitem.getAccession()).
+                            pitem.getType().
+                                name() + ":" + pitem.getAccession()).
                         collect(Collectors.joining(
-                                "|", "", "")));
-            }
+                            "|", "", "")));
+                });
         }
-    }
-
-    public void addLine(JsonGenerator jg, String prefix, String key,
-            String value) throws IOException {
-        jg.writeStartArray();
-        //prefix
-        jg.writeString(prefix);
-        //key
-        jg.writeString(key);
-        //value
-        jg.writeString(value);
-        jg.writeEndArray();
     }
 
 }

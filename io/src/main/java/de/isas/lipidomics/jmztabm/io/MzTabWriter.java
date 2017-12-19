@@ -8,6 +8,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvParser;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
+import com.fasterxml.jackson.dataformat.csv.CsvSchema.Builder;
 import de.isas.lipidomics.jmztabm.io.formats.MetadataFormat;
 import de.isas.mztab1_1.model.MzTab;
 import de.isas.mztab1_1.model.Metadata;
@@ -28,57 +29,60 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import uk.ac.ebi.pride.jmztab.model.MZTabColumnFactory;
+import uk.ac.ebi.pride.jmztab.model.Section;
+import uk.ac.ebi.pride.jmztab.model.SmallMoleculeColumn;
 
 /**
  *
  * @author Nils Hoffmann <nils.hoffmann@isas.de>
  */
 public class MzTabWriter {
-    
+
     public final static String EOL = "\n\r";
     public final static String SEP = "\t";
-    
+
     public void write(OutputStreamWriter os, MzTab mzTab) throws IOException {
         if (!os.getEncoding().
-                equals("UTF-8")) {
+            equals("UTF-8")) {
             throw new IllegalArgumentException(
-                    "OutputStreamWriter encoding must be UTF-8");
+                "OutputStreamWriter encoding must be UTF-8");
         }
         os.write(metadataString(mzTab.getMetadata()).
-                toString());
+            toString());
     }
-    
+
     public void write(Path path, MzTab mzTab) throws IOException {
         BufferedWriter writer = Files.newBufferedWriter(path, Charset.forName(
-                "UTF-8"), StandardOpenOption.CREATE_NEW,
-                StandardOpenOption.WRITE);
+            "UTF-8"), StandardOpenOption.CREATE_NEW,
+            StandardOpenOption.WRITE);
         writer.write(metadataString(mzTab.getMetadata()).
-                toString());
+            toString());
     }
-    
+
     public String metadataString(Metadata metadata) {
         StringBuilder sb = new StringBuilder();
         sb.
-                append(toLine(metadata.getPrefix(), "mzTab-version", metadata.
-                        getFileDescription().
-                        getMzTabVersion())).
-                append(toLine(metadata.getPrefix(), "mzTab-ID", metadata.
-                        getFileDescription().
-                        getMzTabID())).
-                append(toLine(metadata.getPrefix(), "title", metadata.
-                        getFileDescription().
-                        getTitle())).
-                append(toLine(metadata.getPrefix(), "description", metadata.
-                        getFileDescription().
-                        getDescription()));
+            append(toLine(metadata.getPrefix(), "mzTab-version", metadata.
+                getFileDescription().
+                getMzTabVersion())).
+            append(toLine(metadata.getPrefix(), "mzTab-ID", metadata.
+                getFileDescription().
+                getMzTabID())).
+            append(toLine(metadata.getPrefix(), "title", metadata.
+                getFileDescription().
+                getTitle())).
+            append(toLine(metadata.getPrefix(), "description", metadata.
+                getFileDescription().
+                getDescription()));
         return sb.toString();
     }
-    
+
     public static String toLine(Enum<?> prefix, String... args) {
         return Arrays.asList(args).
-                stream().
-                collect(
-                        Collectors.joining(SEP, prefix + "\t", EOL));
+            stream().
+            collect(
+                Collectors.joining(SEP, prefix + "\t", EOL));
     }
 
 //    public static Map<String, Method> getJsonPropertyFields(Class<?> c) {
@@ -119,11 +123,11 @@ public class MzTabWriter {
         String[] values = {parameter.getCvLabel(), parameter.getCvAccession(),
             parameter.getName(), parameter.getValue()};
         return Arrays.asList(values).
-                stream().
-                map(elem ->
-                        (elem == null) ? "" : elem.trim()).
-                collect(Collectors.joining(
-                        ", ", "[", "]"));
+            stream().
+            map(elem ->
+                (elem == null) ? "" : elem.trim()).
+            collect(Collectors.joining(
+                ", ", "[", "]"));
     }
 
     /*
@@ -132,40 +136,70 @@ public class MzTabWriter {
     }
      */
     public static String mtdParameterToMzTabLine(int index, String name,
-            Parameter parameter) {
+        Parameter parameter) {
         if (index <= 0) {
             throw new IllegalArgumentException(
-                    "value for parameter index must be >= 0");
+                "value for parameter index must be >= 0");
         }
         return Arrays.asList(new String[]{name + "[" + index + "]",
             parameterToString(parameter)}).
-                stream().
-                collect(
-                        Collectors.joining(SEP, "MTD\t", EOL));
+            stream().
+            collect(
+                Collectors.joining(SEP, "MTD\t", EOL));
     }
-    
-    public static String writeWithJackson(MzTab mztabfile) {
+
+    public static String writeMetadataWithJackson(MzTab mztabfile) {
         CsvMapper mapper = new CsvMapper();
         mapper.addMixIn(Metadata.class, MetadataFormat.class);
 // important: we need "array wrapping" (see next section) here:
 //        mapper.enable(CsvParser.Feature.WRAP_AS_ARRAY);
         CsvSchema schema = mapper.schema().
-                builder().
-                addColumn("PREFIX", CsvSchema.ColumnType.STRING).
-                addColumn("KEY", CsvSchema.ColumnType.STRING).addArrayColumn("VALUES", "|").build().
-        withAllowComments(true).
-                withArrayElementSeparator("|").
-                withNullValue("null").
-                withUseHeader(false).
-                withoutQuoteChar().
-                withoutEscapeChar().
-                withColumnSeparator('\t');
+            builder().
+            addColumn("PREFIX", CsvSchema.ColumnType.STRING).
+            addColumn("KEY", CsvSchema.ColumnType.STRING).
+            addArrayColumn("VALUES", "|").
+            build().
+            withAllowComments(true).
+            withArrayElementSeparator("|").
+            withNullValue("null").
+            withUseHeader(false).
+            withoutQuoteChar().
+            withoutEscapeChar().
+            withColumnSeparator('\t');
         try {
             return mapper.writer(schema).
-                    writeValueAsString(mztabfile.getMetadata());
+                writeValueAsString(mztabfile.getMetadata());
         } catch (JsonProcessingException ex) {
             Logger.getLogger(MzTabWriter.class.getName()).
-                    log(Level.SEVERE, null, ex);
+                log(Level.SEVERE, null, ex);
+        }
+        return "";
+    }
+
+    public static String writeSmallMoleculeSummaryWithJackson(MzTab mztabfile) {
+        CsvMapper mapper = new CsvMapper();
+        mapper.addMixIn(Metadata.class, MetadataFormat.class);
+// important: we need "array wrapping" (see next section) here:
+//        mapper.enable(CsvParser.Feature.WRAP_AS_ARRAY);
+        Builder builder = mapper.schema().
+            builder();
+        MZTabColumnFactory.getInstance(Section.Small_Molecule).get
+
+//                addColumn("PREFIX", CsvSchema.ColumnType.STRING).
+//                addColumn("KEY", CsvSchema.ColumnType.STRING).addArrayColumn("VALUES", "|").build().
+//        withAllowComments(true).
+//                withArrayElementSeparator("|").
+//                withNullValue("null").
+//                withUseHeader(false).
+//                withoutQuoteChar().
+//                withoutEscapeChar().
+//                withColumnSeparator('\t');
+        try {
+            return mapper.writer(schema).
+                writeValueAsString(mztabfile.getMetadata());
+        } catch (JsonProcessingException ex) {
+            Logger.getLogger(MzTabWriter.class.getName()).
+                log(Level.SEVERE, null, ex);
         }
         return "";
     }

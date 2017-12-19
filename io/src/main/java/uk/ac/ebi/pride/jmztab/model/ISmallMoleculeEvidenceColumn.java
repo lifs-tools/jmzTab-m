@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Leibniz Institut für Analytische Wissenschaften - ISAS e.V..
+ * Copyright 2017 Nils Hoffmann <nils.hoffmann@isas.de>.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,16 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.isas.lipidomics.mztab.validator.webapp.service;
-
-import de.isas.lipidomics.mztab.validator.webapp.service.validation.ValidationResult;
-import java.util.List;
+package uk.ac.ebi.pride.jmztab.model;
 
 /**
  *
  * @author Nils Hoffmann <nils.hoffmann@isas.de>
+ * @since 1.1
  */
-public interface ValidationService {
-    static enum MzTabVersion{MZTAB_1_0, MZTAB_1_1};
-    List<ValidationResult> validate(MzTabVersion version, String filename);
+public interface ISmallMoleculeEvidenceColumn extends ISmallMoleculeColumn {
+    
 }

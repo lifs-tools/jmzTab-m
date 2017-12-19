@@ -1,34 +1,26 @@
 package de.isas.lipidomics.jmztabm.io;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.dataformat.csv.CsvMapper;
-import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import static de.isas.lipidomics.jmztabm.io.MzTabWriter.SEP;
-import de.isas.mztab1_1.model.Assay;
 import de.isas.mztab1_1.model.Contact;
 import de.isas.mztab1_1.model.Instrument;
 import de.isas.mztab1_1.model.MsRun;
 import de.isas.mztab1_1.model.MzTab;
-import de.isas.mztab1_1.model.MzTabFileDescription;
 import de.isas.mztab1_1.model.Parameter;
-import de.isas.mztab1_1.model.ParameterList;
 import de.isas.mztab1_1.model.Publication;
 import de.isas.mztab1_1.model.PublicationItem;
-import de.isas.mztab1_1.model.Sample;
+import de.isas.mztab1_1.model.SampleProcessing;
 import de.isas.mztab1_1.model.Software;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.aopalliance.reflect.Metadata;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -42,121 +34,119 @@ public class MzTabWriterTest {
     static MzTab createTestFile() {
 
         final MzTab mztabfile = new MzTab().metadata(
-                new de.isas.mztab1_1.model.Metadata().
-                        fileDescription(new MzTabFileDescription().mzTabVersion(
-                                "1.1.0").
-                                mzTabID("ISAS_2017_M_11451").
-                                title("A minimal test file").
-                                description("A description of an mzTab file.")).
-                        addContactsItem(
-                                new Contact().
-                                        name("Nils Hoffmann").
-                                        email("nils.hoffmann_at_isas.de").
-                                        affiliation(
-                                                "ISAS e.V. Dortmund, Germany")
+            new de.isas.mztab1_1.model.Metadata().mzTabVersion("1.1.0").
+                mzTabID("ISAS_2017_M_11451").
+                title("A minimal test file").
+                description("A description of an mzTab file.").
+                addContactsItem(
+                    new Contact().
+                        name("Nils Hoffmann").
+                        email("nils.hoffmann_at_isas.de").
+                        affiliation(
+                            "ISAS e.V. Dortmund, Germany")
+                ).
+                addMsrunItem(
+                    new MsRun().
+                        location("file:///path/to/file1.mzML").
+                        format(
+                            new Parameter().
+                                cvLabel("MS").
+                                cvAccession("MS:1000584").
+                                name("mzML file")
                         ).
-                        addMsrunItem(
-                                new MsRun().
-                                        location("file:///path/to/file1.mzML").
-                                        format(
-                                                new Parameter().
-                                                        cvLabel("MS").
-                                                        cvAccession("MS:1000584").
-                                                        name("mzML file")
-                                        ).
-                                        idFormat(
-                                                new Parameter().
-                                                        cvLabel("MS").
-                                                        cvAccession("MS:1001530").
-                                                        name("mzML unique identifier")
-                                        )
+                        idFormat(
+                            new Parameter().
+                                cvLabel("MS").
+                                cvAccession("MS:1001530").
+                                name("mzML unique identifier")
                         )
+                )
         );
         PublicationItem item1_1 = new PublicationItem().type(
-                PublicationItem.TypeEnum.PUBMED).
-                accession("21063943");
+            PublicationItem.TypeEnum.PUBMED).
+            accession("21063943");
         PublicationItem item1_2 = new PublicationItem().type(
-                PublicationItem.TypeEnum.DOI).
-                accession("10.1007/978-1-60761-987-1_6");
+            PublicationItem.TypeEnum.DOI).
+            accession("10.1007/978-1-60761-987-1_6");
         Publication publication1 = new Publication();
-        publication1.addAll(Arrays.asList(item1_1, item1_2));
+        publication1.setPublicationItems(Arrays.asList(item1_1, item1_2));
 
         PublicationItem item2_1 = new PublicationItem().type(
-                PublicationItem.TypeEnum.PUBMED).
-                accession("20615486");
+            PublicationItem.TypeEnum.PUBMED).
+            accession("20615486");
         PublicationItem item2_2 = new PublicationItem().type(
-                PublicationItem.TypeEnum.DOI).
-                accession("10.1016/j.jprot.2010.06.008");
+            PublicationItem.TypeEnum.DOI).
+            accession("10.1016/j.jprot.2010.06.008");
         Publication publication2 = new Publication();
-        publication2.addAll(Arrays.asList(item2_1, item2_2));
+        publication2.setPublicationItems(Arrays.asList(item2_1, item2_2));
 
-        mztabfile.getMetadata().addPublicationsItem(publication1).
-                addPublicationsItem(publication2);
+        mztabfile.getMetadata().
+            addPublicationsItem(publication1).
+            addPublicationsItem(publication2);
         return mztabfile;
     }
 
     static MzTab create1_0TestFile() {
         de.isas.mztab1_1.model.Metadata mtd = new de.isas.mztab1_1.model.Metadata();
-        mtd.fileDescription(new MzTabFileDescription().mzTabID("PRIDE_1234").
-                title("My first test experiment").
-                description("An experiment investigating the effects of Il-6."));
-        ParameterList list1 = new ParameterList();
-        list1.add(new Parameter().cvLabel("SEP").
+        mtd.mzTabID("PRIDE_1234").
+            title("My first test experiment").
+            description("An experiment investigating the effects of Il-6.");
+        SampleProcessing sp = new SampleProcessing().
+            addSampleProcessingItem(new Parameter().cvLabel("SEP").
+                cvAccession("SEP:00142").
+                name("enzyme digestion").
+                value(null)).
+            addSampleProcessingItem(new Parameter().cvLabel("MS").
+                cvAccession("MS:1001251").
+                name("Trypsin").
+                value(null)).
+            addSampleProcessingItem(new Parameter().cvLabel("SEP").
                 cvAccession("SEP:00173").
                 name("SDS PAGE").
                 value(null));
-        mtd.addSampleProcessingItem(list1);
-        ParameterList list2 = new ParameterList();
-        list2.add(new Parameter().cvLabel("SEP").
-                cvAccession("SEP:00142").
-                name("enzyme digestion").
-                value(null));
-        list2.add(new Parameter().cvLabel("MS").
-                cvAccession("MS:1001251").
-                name("Trypsin").
-                value(null));
+        mtd.sampleProcessing(sp);
 
         Instrument instrument1 = new Instrument().instrumentName(
+            new Parameter().cvLabel("MS").
+                cvAccession("MS:100049").
+                name("LTQ Orbitrap")).
+            instrumentSource(
                 new Parameter().cvLabel("MS").
-                        cvAccession("MS:100049").
-                        name("LTQ Orbitrap")).
-                instrumentSource(
-                        new Parameter().cvLabel("MS").
-                                cvAccession("MS:1000073").
-                                name("ESI")).
-                instrumentAnalyzer(Arrays.asList(
-                        new Parameter().cvLabel("MS").
-                                cvAccession("MS:1000291").
-                                name("linear ion trap"))
-                ).
-                instrumentDetector(
-                        new Parameter().cvLabel("MS").
-                                cvAccession("MS:1000253").
-                                name("electron multiplier")
-                );
+                    cvAccession("MS:1000073").
+                    name("ESI")).
+            instrumentAnalyzer(Arrays.asList(
+                new Parameter().cvLabel("MS").
+                    cvAccession("MS:1000291").
+                    name("linear ion trap"))
+            ).
+            instrumentDetector(
+                new Parameter().cvLabel("MS").
+                    cvAccession("MS:1000253").
+                    name("electron multiplier")
+            );
         mtd.addInstrumentsItem(instrument1);
         Instrument instrument2 = new Instrument().instrumentName(
-                new Parameter().cvLabel("MS").
-                        cvAccession("MS:1000031").
-                        name("instrument model").
-                        value("name of the instrument not included in the CV")).
-                instrumentSource(new Parameter().cvLabel("MS").
-                        cvAccession("MS:1000598").
-                        name("ETD")).
-                addInstrumentAnalyzerItem(new Parameter().cvLabel("MS").
-                        cvAccession("MS:1000484").
-                        name("orbitrap")).
-                instrumentDetector(new Parameter().cvLabel("MS").
-                        cvAccession("MS:1000348").
-                        name("focal plane collector"));
+            new Parameter().cvLabel("MS").
+                cvAccession("MS:1000031").
+                name("instrument model").
+                value("name of the instrument not included in the CV")).
+            instrumentSource(new Parameter().cvLabel("MS").
+                cvAccession("MS:1000598").
+                name("ETD")).
+            addInstrumentAnalyzerItem(new Parameter().cvLabel("MS").
+                cvAccession("MS:1000484").
+                name("orbitrap")).
+            instrumentDetector(new Parameter().cvLabel("MS").
+                cvAccession("MS:1000348").
+                name("focal plane collector"));
         mtd.addInstrumentsItem(instrument2);
         Software software1 = new Software().parameter(new Parameter().cvLabel(
-                "MS").
-                cvAccession("MS:1001207").
-                name("Mascot").
-                value("2.3")).
-                setting(Arrays.asList("Fragment tolerance = 0.1Da",
-                        "Parent tolerance = 0.5Da"));
+            "MS").
+            cvAccession("MS:1001207").
+            name("Mascot").
+            value("2.3")).
+            setting(Arrays.asList("Fragment tolerance = 0.1Da",
+                "Parent tolerance = 0.5Da"));
         mtd.addSoftwareItem(software1);
 
 //        mtd.addProteinSearchEngineScoreParam(1, new CVParam("MS", "MS:1001171",
@@ -176,32 +166,32 @@ public class MzTabWriterTest {
 //        mtd.addFalseDiscoveryRateParam(new CVParam("MS", "MS:1001214",
 //                "pep:global FDR", "0.08"));
         PublicationItem item1_1 = new PublicationItem().type(
-                PublicationItem.TypeEnum.PUBMED).
-                accession("21063943");
+            PublicationItem.TypeEnum.PUBMED).
+            accession("21063943");
         PublicationItem item1_2 = new PublicationItem().type(
-                PublicationItem.TypeEnum.DOI).
-                accession("10.1007/978-1-60761-987-1_6");
+            PublicationItem.TypeEnum.DOI).
+            accession("10.1007/978-1-60761-987-1_6");
         Publication publication1 = new Publication();
-        publication1.addAll(Arrays.asList(item1_1, item1_2));
+        publication1.setPublicationItems(Arrays.asList(item1_1, item1_2));
 
         PublicationItem item2_1 = new PublicationItem().type(
-                PublicationItem.TypeEnum.PUBMED).
-                accession("20615486");
+            PublicationItem.TypeEnum.PUBMED).
+            accession("20615486");
         PublicationItem item2_2 = new PublicationItem().type(
-                PublicationItem.TypeEnum.DOI).
-                accession("10.1016/j.jprot.2010.06.008");
+            PublicationItem.TypeEnum.DOI).
+            accession("10.1016/j.jprot.2010.06.008");
         Publication publication2 = new Publication();
-        publication2.addAll(Arrays.asList(item2_1, item2_2));
+        publication2.setPublicationItems(Arrays.asList(item2_1, item2_2));
 
         mtd.addPublicationsItem(publication1).
-                addPublicationsItem(publication2);
+            addPublicationsItem(publication2);
 
         mtd.addContactsItem(new Contact().name("James D. Watson").
-                affiliation("Cambridge University, UK").
-                email("watson@cam.ac.uk"));
+            affiliation("Cambridge University, UK").
+            email("watson@cam.ac.uk"));
         mtd.addContactsItem(new Contact().name("Francis Crick").
-                affiliation("Cambridge University, UK").
-                email("crick@cam.ac.uk"));
+            affiliation("Cambridge University, UK").
+            email("crick@cam.ac.uk"));
 
 //        mtd.addUriItem(new URI("http://www.ebi.ac.uk/pride/url/to/experiment"));
 //        mtd.addUriItem(new URI(
@@ -349,26 +339,26 @@ public class MzTabWriterTest {
     @Test
     public void testWriteDefaultToString() {
         try (BufferedWriter bw = Files.newBufferedWriter(File.createTempFile(
-                "testWriteDefaultToString", ".txt").
-                toPath(), Charset.forName("UTF-8"), StandardOpenOption.WRITE)) {
+            "testWriteDefaultToString", ".txt").
+            toPath(), Charset.forName("UTF-8"), StandardOpenOption.WRITE)) {
             bw.write(createTestFile().
-                    toString());
+                toString());
         } catch (IOException ex) {
             Logger.getLogger(MzTabWriterTest.class.getName()).
-                    log(Level.SEVERE, null, ex);
+                log(Level.SEVERE, null, ex);
         }
     }
 
     @Test
     public void testWriteJsonMapper() {
         try (BufferedWriter bw = Files.newBufferedWriter(File.createTempFile(
-                "testWriteJson", ".json").
-                toPath(), Charset.forName("UTF-8"), StandardOpenOption.WRITE)) {
+            "testWriteJson", ".json").
+            toPath(), Charset.forName("UTF-8"), StandardOpenOption.WRITE)) {
             ObjectMapper mapper = new ObjectMapper();
             bw.write(mapper.writeValueAsString(createTestFile()));
         } catch (IOException ex) {
             Logger.getLogger(MzTabWriterTest.class.getName()).
-                    log(Level.SEVERE, null, ex);
+                log(Level.SEVERE, null, ex);
         }
     }
 
@@ -402,13 +392,12 @@ public class MzTabWriterTest {
 //                    log(Level.SEVERE, null, ex);
 //        }
 //    }
-
     @Test
     public void testCvParameterToString() {
         Parameter p = new Parameter().cvLabel("MS").
-                cvAccession("MS:100179").
-                name("made up for testing").
-                value(null);
+            cvAccession("MS:100179").
+            name("made up for testing").
+            value(null);
         String s = MzTabWriter.parameterToString(p);
         System.out.println(s);
         String expected = "[MS, MS:100179, made up for testing, ]";
@@ -423,7 +412,7 @@ public class MzTabWriterTest {
     @Test
     public void testUserParameterToString() {
         Parameter p = new Parameter().name("made up for testing").
-                value("some arbitrary value");
+            value("some arbitrary value");
         String s = MzTabWriter.parameterToString(p);
         System.out.println(s);
         String expected = "[, , made up for testing, some arbitrary value]";
@@ -433,12 +422,12 @@ public class MzTabWriterTest {
     @Test
     public void testMtdParameterToMzTabLine() {
         Parameter p = new Parameter().cvLabel("MS").
-                cvAccession("MS:100179").
-                name("made up for testing").
-                value(null);
+            cvAccession("MS:100179").
+            name("made up for testing").
+            value(null);
         String s = MzTabWriter.parameterToString(p);
         String actual = MzTabWriter.mtdParameterToMzTabLine(1,
-                "sample_processing", p);
+            "sample_processing", p);
         String expected = "MTD\tsample_processing[1]\t" + s + "\n\r";
         System.out.println(actual);
         Assert.assertEquals(expected, actual);
@@ -447,17 +436,17 @@ public class MzTabWriterTest {
     @Test(expected = IllegalArgumentException.class)
     public void testMtdParameterToMzTabLineException() {
         Parameter p = new Parameter().cvLabel("MS").
-                cvAccession("MS:100179").
-                name("made up for testing").
-                value(null);
+            cvAccession("MS:100179").
+            name("made up for testing").
+            value(null);
         MzTabWriter.mtdParameterToMzTabLine(0,
-                "sample_processing", p);
+            "sample_processing", p);
     }
 
     @Test
     public void testGetJsonPropertyFields() {
         MzTab mzTabFile = createTestFile();
-        String s = MzTabWriter.writeWithJackson(mzTabFile);
+        String s = MzTabWriter.writeMetadataWithJackson(mzTabFile);
         System.out.println("Serialized Metadata: ");
         System.out.println(s);
     }

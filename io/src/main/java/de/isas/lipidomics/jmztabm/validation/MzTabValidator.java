@@ -11,6 +11,10 @@ import de.isas.mztab1_1.model.SmallMoleculeSummary;
 import de.isas.mztab1_1.model.ValidationMessage;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.ValidatorFactory;
 
 /**
  *
@@ -21,34 +25,12 @@ public class MzTabValidator implements Validator {
     @Override
     public List<ValidationMessage> validate(MzTab mzTab) {
         List<ValidationMessage> list = new LinkedList<>();
-        
-        List<SmallMoleculeSummary> sms = mzTab.getSmallMoleculeSummary();
-        List<SmallMoleculeFeature> smf = mzTab.getSmallMoleculeFeature();
-        List<SmallMoleculeEvidence> sme = mzTab.getSmallMoleculeEvidence();
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        javax.validation.Validator validator = factory.getValidator();
+        Set<ConstraintViolation<MzTab>> violations = validator.validate(mzTab);
+        for(ConstraintViolation<MzTab> violation:violations) {
+            list.add(new ValidationMessage().message(violation.getPropertyPath().toString()+": "+violation.getMessage()));
+        }
         return list;
-    }
-    
-    protected List<ValidationMessage> validateMetadata(MzTab mzTab) {
-        List<ValidationMessage> validationMessages = new LinkedList<>();
-        Metadata mtd = mzTab.getMetadata();
-        return validationMessages;
-    }
-    
-    protected List<ValidationMessage> validateSmallMoleculeSummary(MzTab mzTab) {
-        List<ValidationMessage> validationMessages = new LinkedList<>();
-        Metadata mtd = mzTab.getMetadata();
-        return validationMessages;
-    }
-    
-    protected List<ValidationMessage> validateSmallMoleculeFeature(MzTab mzTab) {
-        List<ValidationMessage> validationMessages = new LinkedList<>();
-        Metadata mtd = mzTab.getMetadata();
-        return validationMessages;
-    }
-    
-    protected List<ValidationMessage> validateSmallMoleculeEvidence(MzTab mzTab) {
-        List<ValidationMessage> validationMessages = new LinkedList<>();
-        Metadata mtd = mzTab.getMetadata();
-        return validationMessages;
     }
 }

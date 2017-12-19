@@ -44,12 +44,14 @@ paths:
           description: Validation Okay
           schema:
             type: array
+            default: []
             items:
               $ref: '#/definitions/ValidationMessage'
         '405':
           description: Invalid input
           schema:
             type: array
+            default: []
             items:
               $ref: '#/definitions/ValidationMessage'
         '415':
@@ -83,12 +85,14 @@ paths:
           description: Validation Okay
           schema:
             type: array
+            default: []
             items:
               $ref: '#/definitions/ValidationMessage'
         '405':
           description: Invalid input
           schema:
             type: array
+            default: []
             items:
               $ref: '#/definitions/ValidationMessage'
         '415':
@@ -99,6 +103,7 @@ paths:
             $ref: '#/definitions/Error'
 definitions:
   MzTab:
+    type: object
     required:
       - metadata
       - smallMoleculeSummary
@@ -110,23 +115,29 @@ definitions:
         $ref: '#/definitions/Metadata'
       smallMoleculeSummary:
         type: array
+        default: []
         items:
           $ref: '#/definitions/SmallMoleculeSummary'
       smallMoleculeFeature:
         type: array
+        default: []
         items:
           $ref: '#/definitions/SmallMoleculeFeature'
       smallMoleculeEvidence:
         type: array
+        default: []
         items:
           $ref: '#/definitions/SmallMoleculeEvidence'
       comment:
         type: array
+        default: []
         items:
           $ref: '#/definitions/Comment'
   Comment:
+    type: object
     required:
       - prefix
+      - msg
     properties:
       prefix:
         type: string
@@ -138,82 +149,122 @@ definitions:
       line_number:
         type: integer
         format: int64
+  IndexedElement:
+    type: object
+    discriminator: elementType
+    required:
+      - id
+      - elementType
+    properties:
+      id:
+        type: integer
+        format: int32
+        minimum: 1
+      elementType:
+        type: string
   Metadata:
+    type: object
     required:
       - prefix
       - fileDescription
+      - mzTab-version
+      - mzTab-ID
+      - title
+      - description
     properties:
       prefix:
         type: string
         enum:
           - MTD
         default: MTD
-        readOnly: true
-      fileDescription:
-        type: object
-        $ref: '#/definitions/MzTabFileDescription'
+      mzTab-version:
+        type: string
+        example: >-
+          MTD mzTab-version 1.1.0
+      mzTab-ID:
+        type: string
+        example: >-
+          MTD mzTab-ID PRIDE_1234
+      title:
+        type: string
+        example: >-
+          MTD title My first test experiment
+      description:
+        type: string
+        example: >-
+          MTD description An experiment investigating the effects of Il-6.
       study:
         $ref: '#/definitions/ExternalStudy'
       sample_processing:
-        type: array
-        items:
-          $ref: '#/definitions/ParameterList'
-        example: >-
-          MTD sample_processing[1] [SEP, SEP:00173, SDS PAGE,] \
-          MTD sample_processing[2] [SEP, SEP:00142, enzyme digestion,]|[MS, … MS:1001251, Trypsin, ]
+        $ref: '#/definitions/SampleProcessing'
       instruments:
         type: array
+        default: []
         items:
           $ref: '#/definitions/Instrument'
       software:
         type: array
+        default: []
         items:
           $ref: '#/definitions/Software'
       publications:
         required:
           - items
         type: array
+        default: []
         items:
           $ref: '#/definitions/Publication'
       contacts:
         type: array
+        default: []
         items:
           $ref: '#/definitions/Contact'
       uri:
         type: array
+        default: []
         items:
           type: string
           format: uri
       quantification_method:
         type: array
+        default: []
         items:
           $ref: '#/definitions/Parameter'
       assay:
         type: array
+        default: []
         items:
           $ref: '#/definitions/Assay'
       msrun:
         type: array
+        default: []
         items:
           $ref: '#/definitions/MsRun'
       custom:
         type: array
+        default: []
         items:
           $ref: '#/definitions/Parameter'
       sample:
         type: array
+        default: []
         items:
           $ref: '#/definitions/Sample'
       cv:
         type: array
+        default: []
         items:
           $ref: '#/definitions/CV'
       database:
         type: array
+        default: []
         items:
           $ref: '#/definitions/Database'
       chemical_modification:
-        $ref: '#/definitions/ParameterList'
+        type: array
+        default: []
+        items:
+          $ref: '#/definitions/Parameter'
       small_molecule_quantification_unit:
         $ref: '#/definitions/Parameter'
       small_molecule_feature-quantification_unit:
@@ -221,20 +272,27 @@ definitions:
       small_molecule-identification_reliability:
         $ref: '#/definitions/Parameter'
       id_confidence_measure:
-        $ref: '#/definitions/ParameterList'
+        type: array
+        default: []
+        items:
+          $ref: '#/definitions/Parameter'
       colunit-small_molecule:
         type: array
+        default: []
         items:
           $ref: '#/definitions/ColumnParameterMapping'
       colunit-small_molecule_feature:
         type: array
+        default: []
         items:
           $ref: '#/definitions/ColumnParameterMapping'
       colunit-small_molecule_evidence:
         type: array
+        default: []
         items:
           $ref: '#/definitions/ColumnParameterMapping'
   SmallMoleculeSummary:
+    type: object
     required:
       - prefix
       - header_prefix
@@ -257,35 +315,43 @@ definitions:
         type: string
       smf_id_refs:
         type: array
+        default: []
         items:
           type: string
       database_identifier:
         type: array
+        default: []
         items:
           type: string
       chemical_formula:
         type: array
+        default: []
         items:
           type: string
       smiles:
         type: array
+        default: []
         items:
           type: string
       inchi:
         type: array
+        default: []
         items:
           type: string
       chemical_name:
         type: array
+        default: []
         items:
           type: string
       uri:
         type: array
+        default: []
         items:
           type: string
           format: uri
       theoretical_neutral_mass:
         type: array
+        default: []
         items:
           type: number
           format: double
@@ -297,6 +363,7 @@ definitions:
         format: double
       adduct_ions:
         type: array
+        default: []
         items:
           type: string
       reliability:
@@ -308,28 +375,34 @@ definitions:
         format: double
       abundance_assay:
         type: array
+        default: []
         items:
           type: number
           format: double
       abundance_study_variable:
         type: array
+        default: []
         items:
           type: number
           format: double
       abundance_coeffvar_study_variable:
         type: array
+        default: []
         items:
           type: number
           format: double
       opt:
         type: array
+        default: []
         items:
           $ref: '#/definitions/OptColumnMapping'
       comment:
         type: array
+        default: []
         items:
           $ref: '#/definitions/Comment'
   SmallMoleculeFeature:
+    type: object
     required:
       - prefix
       - header_prefix
@@ -352,6 +425,7 @@ definitions:
         type: string
       sme_id_refs:
         type: array
+        default: []
         items:
           type: string
       sme_id_ref_ambiguity_code:
@@ -379,18 +453,22 @@ definitions:
         format: double
       abundance_assay:
         type: array
+        default: []
         items:
           type: number
           format: double
       opt:
         type: array
+        default: []
         items:
           $ref: '#/definitions/OptColumnMapping'
       comment:
         type: array
+        default: []
         items:
           $ref: '#/definitions/Comment'
   SmallMoleculeEvidence:
+    type: object
     required:
       - prefix
       - header_prefix
@@ -439,13 +517,17 @@ definitions:
         type: number
         format: double
       spectra_ref:
-        $ref: '#/definitions/StringList'
+        type: array
+        default: []
+        items:
+          $ref: '#/definitions/SpectraRef'
       identification_method:
         $ref: '#/definitions/Parameter'
       ms_level:
         $ref: '#/definitions/Parameter'
       id_confidence_measure:
         type: array
+        default: []
         items:
           type: number
           format: double
@@ -454,50 +536,64 @@ definitions:
         format: int64
       opt:
         type: array
+        default: []
         items:
           $ref: '#/definitions/OptColumnMapping'
       comment:
         type: array
+        default: []
         items:
           $ref: '#/definitions/Comment'
   Parameter:
-    required:
-      - name
-      - value
-    properties:
-      cv_label:
-        type: string
-      cv_accession:
-        type: string
-      name:
-        type: string
-      value:
-        type: string
-  ParameterList:
-    type: array
-    collectionFormat: pipes
-    items:
-      $ref: '#/definitions/Parameter'
+    allOf:
+    - $ref: '#/definitions/IndexedElement'
+    - type: object
+      required:
+        - name
+        - value
+      properties:
+        cv_label:
+          type: string
+        cv_accession:
+          type: string
+        name:
+          type: string
+        value:
+          type: string
   Instrument:
-    properties:
-      id:
-        type: integer
-        format: int32
-      instrument_name:
-        $ref: '#/definitions/Parameter'
-        example:
-          - >-
-            MTD instrument[1]-name [MS, MS:1000449, LTQ Orbitrap,]
-          - >-
-            MTD instrument[2]-name [MS, MS:1000031, Instrument model, name of the instrument not included in the CV]
-      instrument_source:
-        $ref: '#/definitions/Parameter'
-      instrument_analyzer:
-        type: array
-        items:
+    allOf:
+    - $ref: '#/definitions/IndexedElement'
+    - type: object
+      properties:
+        instrument_name:
           $ref: '#/definitions/Parameter'
-      instrument_detector:
-        $ref: '#/definitions/Parameter'
+          example:
+            - >-
+              MTD instrument[1]-name [MS, MS:1000449, LTQ Orbitrap,]
+            - >-
+              MTD instrument[2]-name [MS, MS:1000031, Instrument model, name of the instrument not included in the CV]
+        instrument_source:
+          $ref: '#/definitions/Parameter'
+        instrument_analyzer:
+          type: array
+          default: []
+          items:
+            $ref: '#/definitions/Parameter'
+        instrument_detector:
+          $ref: '#/definitions/Parameter'
+  SampleProcessing:
+    allOf:
+    - $ref: '#/definitions/IndexedElement'
+    - type: object
+      properties:
+        sampleProcessing:
+          type: array
+          default: []
+          items:
+            $ref: '#/definitions/Parameter'
+    example: >-
+      MTD sample_processing[1] [SEP, SEP:00173, SDS PAGE,] \
+      MTD sample_processing[2] [SEP, SEP:00142, enzyme digestion,]|[MS, … MS:1001251, Trypsin, ]
   ExternalStudy:
     description: >-
       An external study, holding e.g. detailed information about the study data and metadata. A link to an ISA-Tab file deposited at 
@@ -532,48 +628,57 @@ definitions:
       format:
         $ref: '#/definitions/Parameter'
   Software:
-    description: >-
-      Software used to analyze the data and obtain the reported results. The
-      parameter’s value SHOULD contain the software’s version. The order
-      (numbering) should reflect the order in which the tools were used.
-    example:
-      - >-
-        MTD software[1] [MS, MS:1001207, Mascot, 2.3] MTD software[2] [MS, MS:1001561, Scaffold, 1.0]
-    properties:
-      id:
-        type: integer
-        format: int32
-      parameter:
-        $ref: '#/definitions/Parameter'
-      setting:
-        type: array
-        description: >-
-          A software setting used. This field MAY occur multiple times for a
-          single software. The value of this field is deliberately set as a
-          String, since there currently do not exist cvParams for every
-          possible setting.
-        items:
-          type: string
-        example:
-          - >-
-            MTD software[1]-setting Fragment tolerance = 0.1 Da … MTD
-            software[2]-setting Parent tolerance = 0.5 Da
+    allOf:
+    - $ref: '#/definitions/IndexedElement'
+    - type: object
+      description: >-
+        Software used to analyze the data and obtain the reported results. The
+        parameter’s value SHOULD contain the software’s version. The order
+        (numbering) should reflect the order in which the tools were used.
+      example:
+        - >-
+          MTD\tsoftware[1]\t[MS, MS:1001207, Mascot, 2.3]
+          MTD\tsoftware[2]\t[MS, MS:1001561, Scaffold, 1.0]
+      properties:
+        parameter:
+          $ref: '#/definitions/Parameter'
+        setting:
+          type: array
+          default: []
+          description: >-
+            A software setting used. This field MAY occur multiple times for a
+            single software. The value of this field is deliberately set as a
+            String, since there currently do not exist cvParams for every
+            possible setting.
+          items:
+            type: string
+          example:
+            - >-
+              MTD software[1]-setting Fragment tolerance = 0.1 Da … MTD
+              software[2]-setting Parent tolerance = 0.5 Da
   Publication:
-    description: >-
-      A publication associated with this file. Several publication items can be
-      given by indicating the number in the square brackets after
-      “publication”. PubMed ids must be prefixed by “pubmed:”, DOIs by “doi:”.
-      Multiple identifiers MUST be separated by “|”.
-    example:
-      - >-
-        MTD publication[1] pubmed:21063943|doi:10.1007/978-1-60761-987-1_6
-        MTD publication[2] pubmed:20615486|doi:10.1016/j.jprot.2010.06.008
-    required:
-      - items
-    type: array
-    items:
-      $ref: '#/definitions/PublicationItem'
+    allOf:
+    - $ref: '#/definitions/IndexedElement'
+    - type: object
+      description: >-
+        A publication associated with this file. Several publication items can be
+        given by indicating the number in the square brackets after
+        “publication”. PubMed ids must be prefixed by “pubmed:”, DOIs by “doi:”.
+        Multiple identifiers MUST be separated by “|”.
+      example:
+        - >-
+          MTD publication[1] pubmed:21063943|doi:10.1007/978-1-60761-987-1_6
+          MTD publication[2] pubmed:20615486|doi:10.1016/j.jprot.2010.06.008
+      required:
+        - publicationItems
+      properties:
+        publicationItems:
+          type: array
+          default: []
+          items:
+            $ref: '#/definitions/PublicationItem'
   PublicationItem:
+    type: object
     required:
       - type
       - accession  
@@ -587,94 +692,164 @@ definitions:
         default: doi
       accession:
         type: string
+  SpectraRef:
+    type: object
+    required:
+      - ms_run
+      - reference
+    properties:
+      ms_run:
+        $ref: '#/definitions/MsRun'
+      reference:
+        type: string
   StringList:
     type: array
-    collectionFormat: pipes
+    default: []
     items:
       type: string
   Contact:
-    properties:
-      name:
-        type: string
-      affiliation:
-        type: string
-      email:
-        type: string
+    allOf:
+    - $ref: '#/definitions/IndexedElement'
+    - type: object
+      properties:
+        name:
+          type: string
+        affiliation:
+          type: string
+        email:
+          type: string
   Sample:
-    properties:
-      name:
-        type: string
-      custom:
-        $ref: '#/definitions/ParameterList'
-      species:
-        $ref: '#/definitions/ParameterList'
-      tissue:
-        $ref: '#/definitions/ParameterList'
-      cell_type:
-        $ref: '#/definitions/ParameterList'
-      disease:
-        $ref: '#/definitions/ParameterList'
-      description:
-        type: string
+    allOf:
+    - $ref: '#/definitions/IndexedElement'
+    - type: object
+      properties:
+        name:
+          type: string
+        custom:
+          type: array
+          default: []
+          items:
+            $ref: '#/definitions/Parameter'
+        id_confidence_measure:
+          type: array
+          default: []
+          items:
+            $ref: '#/definitions/Parameter'
+        species:
+          type: array
+          default: []
+          items:
+            $ref: '#/definitions/Parameter'
+        tissue:
+          type: array
+          default: []
+          items:
+            $ref: '#/definitions/Parameter'
+        cell_type:
+          type: array
+          default: []
+          items:
+            $ref: '#/definitions/Parameter'
+        disease:
+          type: array
+          default: []
+          items:
+            $ref: '#/definitions/Parameter'
+        description:
+          type: string
   MsRun:
-    properties:
-      location:
-        type: string
-      format:
-        $ref: '#/definitions/Parameter'
-      id_format:
-        $ref: '#/definitions/Parameter'
-      fragmentation_method:
-        $ref: '#/definitions/ParameterList'
-      hash:
-        type: string
-      hash_method:
-        $ref: '#/definitions/Parameter'
+    allOf:
+    - $ref: '#/definitions/IndexedElement'
+    - type: object
+      properties:
+        location:
+          type: string
+        format:
+          $ref: '#/definitions/Parameter'
+        id_format:
+          $ref: '#/definitions/Parameter'
+        fragmentation_method:
+          type: array
+          default: []
+          items:
+            $ref: '#/definitions/Parameter'
+        hash:
+          type: string
+        hash_method:
+          $ref: '#/definitions/Parameter'
   StudyVariable:
-    properties:
-      name:
-        type: string
-      assay_refs:
-        type: array
-        items:
-          $ref: '#/definitions/Assay'
-      quantification_value_function:
-        $ref: '#/definitions/ParameterList'
-      description:
-        type: string
-      factors:
-        $ref: '#/definitions/ParameterList'
+    allOf:
+    - $ref: '#/definitions/IndexedElement'
+    - type: object
+      properties:
+        name:
+          type: string
+        assay_refs:
+          type: array
+          default: []
+          items:
+            $ref: '#/definitions/Assay'
+        sample_refs:
+          type: array
+          default: []
+          items:
+            $ref: '#/definitions/Sample'
+        quantification_value_function:
+          type: array
+          default: []
+          items:
+            $ref: '#/definitions/Parameter'
+        description:
+          type: string
+        factors:
+          type: array
+          default: []
+          items:
+            $ref: '#/definitions/Parameter'
   Assay:
-    properties:
-      name:
-        type: string
-      custom:
-        $ref: '#/definitions/ParameterList'
-      external_uri:
-        type: string
-        format: uri
-      sample_ref:
-        $ref: '#/definitions/Sample'
-      ms_run_ref:
-        type: array
-        items:
+    allOf:
+    - $ref: '#/definitions/IndexedElement'
+    - type: object
+      required:
+      - name
+      - sample_ref
+      - ms_run_ref
+      properties:
+        name:
+          type: string
+        custom:
+          type: array
+          default: []
+          items:
+            $ref: '#/definitions/Parameter'
+        external_uri:
+          type: string
+          format: uri
+        sample_ref:
+          $ref: '#/definitions/Sample'
+        ms_run_ref:
           $ref: '#/definitions/MsRun'
   CV:
-    required:
-      - label
-      - full_name
-      - version
-      - url
-    properties:
-      label:
-        type: string
-      full_name:
-        type: string
-      version:
-        type: string
-      url:
-        type: string
+    allOf:
+    - $ref: '#/definitions/IndexedElement'
+    - type: object
+      required:
+        - label
+        - full_name
+        - version
+        - url
+      properties:
+        label:
+          type: string
+        full_name:
+          type: string
+        version:
+          type: string
+        url:
+          type: string
+          pattern: '(http|ftp|https)://[\w-]+(\.[\w-]+)+([\w.,@?^=%&amp;:/~+#-]*[\w@?^=%&amp;/~+#-])?'
   Database:
+    type: object
     required:
       - param
       - prefix
@@ -690,6 +865,7 @@ definitions:
       url:
         type: string
   ColumnParameterMapping:
+    type: object
     required:
       - column_name
       - param
@@ -699,6 +875,7 @@ definitions:
       param:
         $ref: '#/definitions/Parameter'
   OptColumnMapping:
+    type: object
     required:
       - identifier
     properties:
@@ -709,6 +886,7 @@ definitions:
       value:
         type: string
   Error:
+    type: object
     required:
       - code
       - message
@@ -719,6 +897,7 @@ definitions:
       message:
         type: string
   ValidationMessage:
+    type: object
     required:
       - code
       - message
@@ -736,24 +915,6 @@ definitions:
       line_number:
         type: integer
         format: int64
-  MzTabFileDescription:
-    properties:
-        mzTab-version:
-          type: string
-          example: >-
-            MTD mzTab-version 1.1.0
-        mzTab-ID:
-          type: string
-          example: >-
-            MTD mzTab-ID PRIDE_1234
-        title:
-          type: string
-          example: >-
-            MTD title My first test experiment
-        description:
-          type: string
-          example: >-
-            MTD description An experiment investigating the effects of Il-6.
 externalDocs:
   description: Find out more about mzTab for Metabolomics
   url: 'https://github.com/HUPO-PSI/mzTab'
