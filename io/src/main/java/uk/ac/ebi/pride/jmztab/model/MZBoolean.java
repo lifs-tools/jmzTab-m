@@ -25,6 +25,13 @@ public enum MZBoolean {
     public String toString() {
         return value;
     }
+    
+    public Boolean toBoolean() {
+        if(this == MZBoolean.True) {
+            return Boolean.TRUE;
+        }
+        return Boolean.FALSE;
+    }
 
     /**
      * @param booleanLabel "0" or "1" which used to define a boolean used in mzTab.

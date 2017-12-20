@@ -43,21 +43,21 @@ public class SmallMoleculeFeatureColumn implements ISmallMoleculeFeatureColumn {
         RETENTION_TIME_END("retention_time_end", Double.class, true, "10");
         // FIXME abundance_assay[1-n] is not yet handled -> optional column???
 
-        private final ISmallMoleculeColumn column;
+        private final ISmallMoleculeFeatureColumn column;
 
         private Stable(String name, Class columnType, boolean optional,
                 String order) {
-            this.column = new SmallMoleculeColumn(name, columnType, optional,
+            this.column = new SmallMoleculeFeatureColumn(name, columnType, optional,
                     order);
         }
 
         private Stable(String name, Class columnType, boolean optional,
                 String order, Integer id) {
-            this.column = new SmallMoleculeColumn(name, columnType, optional,
+            this.column = new SmallMoleculeFeatureColumn(name, columnType, optional,
                     order, id);
         }
 
-        public ISmallMoleculeColumn getColumn() {
+        public ISmallMoleculeFeatureColumn getColumn() {
             return this.column;
         }
 
@@ -111,7 +111,7 @@ public class SmallMoleculeFeatureColumn implements ISmallMoleculeFeatureColumn {
             this.column.setOrder(order);
         }
 
-        public static ISmallMoleculeFeatureColumn forName(String name) throws IllegalArgumentException {
+        public static Stable forName(String name) throws IllegalArgumentException {
             return Arrays.stream(Stable.values()).
                     filter((v) ->
                             v.getColumn().
@@ -128,15 +128,15 @@ public class SmallMoleculeFeatureColumn implements ISmallMoleculeFeatureColumn {
         }
     };
 
-    private static Map<String, ISmallMoleculeColumn> optionalColumns = new LinkedHashMap<>();
+    private static Map<String, ISmallMoleculeFeatureColumn> optionalColumns = new LinkedHashMap<>();
 
-    public static ISmallMoleculeColumn optional(String name, Class columnType,
+    public static ISmallMoleculeFeatureColumn optional(String name, Class columnType,
             boolean optional,
             String order, Integer id) {
         if (optionalColumns.containsKey(name)) {
             return optionalColumns.get(name);
         }
-        ISmallMoleculeColumn c = new SmallMoleculeFeatureColumn(name, columnType,
+        ISmallMoleculeFeatureColumn c = new SmallMoleculeFeatureColumn(name, columnType,
                 optional, order, id);
         optionalColumns.put(name, c);
         return c;

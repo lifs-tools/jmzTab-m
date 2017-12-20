@@ -36,6 +36,7 @@ public class MZTabFileParser {
     private File tabFile;
 
     private MZTabErrorList errorList;
+    private MZTabParserContext context;
 
     private void init(File tabFile) {
         if (tabFile == null || !tabFile.exists()) {
@@ -87,6 +88,7 @@ public class MZTabFileParser {
         init(tabFile);
 
         try {
+            context = new MZTabParserContext();
             errorList = new MZTabErrorList(level, maxErrorCount);
             check();
             refine();
@@ -190,8 +192,8 @@ public class MZTabFileParser {
     private void check() throws IOException, MZTabException, MZTabErrorOverflowException {
         BufferedReader reader = readFile(tabFile);
 
-        COMLineParser comParser = new COMLineParser();
-        MTDLineParser mtdParser = new MTDLineParser();
+        COMLineParser comParser = new COMLineParser(context);
+        MTDLineParser mtdParser = new MTDLineParser(context);
 //        PRHLineParser prhParser = null;
 //        PRTLineParser prtParser = null;
 //        PEHLineParser pehParser = null;
@@ -364,7 +366,7 @@ public class MZTabFileParser {
                     }
 
                     // small molecule header section
-                    smhParser = new SMHLineParser(mtdParser.getMetadata());
+                    smhParser = new SMHLineParser(context, mtdParser.getMetadata());
                     smhParser.parse(lineNumber, line, errorList);
                     smlPositionMapping = new PositionMapping(smhParser.
                         getFactory(), line);
@@ -381,7 +383,7 @@ public class MZTabFileParser {
                     }
 
                     if (smlParser == null) {
-                        smlParser = new SMLLineParser(smhParser.getFactory(),
+                        smlParser = new SMLLineParser(context, smhParser.getFactory(),
                             smlPositionMapping, mtdParser.getMetadata(),
                             errorList);
                     }
@@ -391,7 +393,7 @@ public class MZTabFileParser {
 
                     break;
                 case 10:
-                    if (smhParser != null) {
+                    if (sfhParser != null) {
                         // header line only display once!
                         error = new MZTabError(LogicalErrorType.HeaderLine,
                             lineNumber, subString(line));
@@ -399,29 +401,64 @@ public class MZTabFileParser {
                     }
 
                     // small molecule header section
-                    smhParser = new SMHLineParser(mtdParser.getMetadata());
-                    smhParser.parse(lineNumber, line, errorList);
-                    smlPositionMapping = new PositionMapping(smhParser.
+                    sfhParser = new SFHLineParser(context, mtdParser.getMetadata());
+                    sfhParser.parse(lineNumber, line, errorList);
+                    smfPositionMapping = new PositionMapping(sfhParser.
                         getFactory(), line);
 
                     // tell system to continue check small molecule data line.
                     highWaterMark = 11;
                     break;
                 case 11:
-                    if (smhParser == null) {
+                    if (sfhParser == null) {
                         // header line should be check first.
                         error = new MZTabError(LogicalErrorType.NoHeaderLine,
                             lineNumber, subString(line));
                         throw new MZTabException(error);
                     }
 
-                    if (smlParser == null) {
-                        smlParser = new SMLLineParser(smhParser.getFactory(),
-                            smlPositionMapping, mtdParser.getMetadata(),
+                    if (smfParser == null) {
+                        smfParser = new SMFLineParser(context, sfhParser.getFactory(),
+                            smfPositionMapping, mtdParser.getMetadata(),
                             errorList);
                     }
-                    smlParser.parse(lineNumber, line, errorList);
-                    smallMoleculeSummaryMap.put(lineNumber, smlParser.
+                    smfParser.parse(lineNumber, line, errorList);
+                    smallMoleculeFeatureMap.put(lineNumber, smfParser.
+                        getRecord());
+
+                    break;
+                case 12:
+                    if (sehParser != null) {
+                        // header line only display once!
+                        error = new MZTabError(LogicalErrorType.HeaderLine,
+                            lineNumber, subString(line));
+                        throw new MZTabException(error);
+                    }
+
+                    // small molecule header section
+                    sehParser = new SEHLineParser(context, mtdParser.getMetadata());
+                    sehParser.parse(lineNumber, line, errorList);
+                    smePositionMapping = new PositionMapping(sfhParser.
+                        getFactory(), line);
+
+                    // tell system to continue check small molecule data line.
+                    highWaterMark = 13;
+                    break;
+                case 13:
+                    if (sehParser == null) {
+                        // header line should be check first.
+                        error = new MZTabError(LogicalErrorType.NoHeaderLine,
+                            lineNumber, subString(line));
+                        throw new MZTabException(error);
+                    }
+
+                    if (smeParser == null) {
+                        smeParser = new SMELineParser(context, sehParser.getFactory(),
+                            smePositionMapping, mtdParser.getMetadata(),
+                            errorList);
+                    }
+                    smeParser.parse(lineNumber, line, errorList);
+                    smallMoleculeEvidenceMap.put(lineNumber, smeParser.
                         getRecord());
 
                     break;
@@ -433,9 +470,10 @@ public class MZTabFileParser {
         }
 
         if (errorList.isEmpty()) {
-            mzTabFile = new MzTab(mtdParser.getMetadata());
+            mzTabFile = new MzTab();
+            mzTabFile.metadata(mtdParser.getMetadata());
             for (Integer id : commentMap.keySet()) {
-                mzTabFile.addComment(id, commentMap.get(id));
+                mzTabFile.addCommentItem(commentMap.get(id));
             }
 
 //            if (prhParser != null) {
@@ -462,12 +500,22 @@ public class MZTabFileParser {
 //                }
 //            }
             if (smhParser != null) {
-                MZTabColumnFactory smallMoleculeColumnFactory = smhParser.
-                    getFactory();
-                mzTabFile.setSmallMoleculeColumnFactory(
-                    smallMoleculeColumnFactory);
                 for (Integer id : smallMoleculeSummaryMap.keySet()) {
-                    mzTabFile.addSmallMolecule(id, smallMoleculeSummaryMap.get(
+                    mzTabFile.addSmallMoleculeSummaryItem(smallMoleculeSummaryMap.get(
+                        id));
+                }
+            }
+            
+            if (smfParser != null) {
+                for (Integer id : smallMoleculeFeatureMap.keySet()) {
+                    mzTabFile.addSmallMoleculeFeatureItem(smallMoleculeFeatureMap.get(
+                        id));
+                }
+            }
+            
+            if (smeParser != null) {
+                for (Integer id : smallMoleculeEvidenceMap.keySet()) {
+                    mzTabFile.addSmallMoleculeEvidenceItem(smallMoleculeEvidenceMap.get(
                         id));
                 }
             }

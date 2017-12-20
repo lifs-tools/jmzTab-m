@@ -1,7 +1,5 @@
 package uk.ac.ebi.pride.jmztab.utils;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import uk.ac.ebi.pride.jmztab.utils.errors.LogicalErrorType;
 
 import java.io.IOException;
@@ -16,23 +14,23 @@ import static uk.ac.ebi.pride.jmztab.model.MZTabConstants.NEW_LINE;
  * @since 29/01/13
  */
 public class MZTabProperties {
-    private static Logger logger = LoggerFactory.getLogger(MZTabProperties.class);
+//    private static Logger logger = LoggerFactory.getLogger(MZTabProperties.class);
 
     private static Properties properties;
     static {
-        String mzTabProperties = "conf/mztab.properties";
-        String formatProperties = "conf/mztab_format_error.properties";
-        String logicalProperties = "conf/mztab_logical_error.properties";
-        String crosscheckProperties = "conf/mztab_crosscheck_error.properties";
+        String mzTabProperties = "/conf/mztab.properties";
+        String formatProperties = "/conf/mztab_format_error.properties";
+        String logicalProperties = "/conf/mztab_logical_error.properties";
+        String crosscheckProperties = "/conf/mztab_crosscheck_error.properties";
         try {
             properties = new Properties();
 
-            properties.load(MZTabProperties.class.getClassLoader().getResourceAsStream(mzTabProperties));
-            properties.load(MZTabProperties.class.getClassLoader().getResourceAsStream(formatProperties));
-            properties.load(MZTabProperties.class.getClassLoader().getResourceAsStream(logicalProperties));
-            properties.load(MZTabProperties.class.getClassLoader().getResourceAsStream(crosscheckProperties));
+            properties.load(MZTabProperties.class.getResourceAsStream(mzTabProperties));
+            properties.load(MZTabProperties.class.getResourceAsStream(formatProperties));
+            properties.load(MZTabProperties.class.getResourceAsStream(logicalProperties));
+            properties.load(MZTabProperties.class.getResourceAsStream(crosscheckProperties));
         } catch (IOException e) {
-            logger.error(e.getMessage());
+//            logger.error(e.getMessage());
         }
     }
 

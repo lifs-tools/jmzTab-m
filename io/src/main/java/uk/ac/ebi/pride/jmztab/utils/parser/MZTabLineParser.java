@@ -31,7 +31,15 @@ public class MZTabLineParser {
      */
     protected String[] items;
 
+    protected final MZTabParserContext context;
     protected MZTabErrorList errorList;
+    
+    protected MZTabLineParser(MZTabParserContext context) {
+        if (context == null) {
+            throw new NullPointerException("Parser context should be created first!");
+        }
+        this.context = context;
+    }
 
     /**
      * We assume that user before call this method, have parse the raw line

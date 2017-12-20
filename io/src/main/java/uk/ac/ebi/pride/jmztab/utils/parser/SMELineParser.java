@@ -1,6 +1,7 @@
 package uk.ac.ebi.pride.jmztab.utils.parser;
 
 import de.isas.mztab1_1.model.Metadata;
+import de.isas.mztab1_1.model.OptColumnMapping;
 import de.isas.mztab1_1.model.SmallMoleculeEvidence;
 import uk.ac.ebi.pride.jmztab.model.*;
 import uk.ac.ebi.pride.jmztab.utils.errors.FormatErrorType;
@@ -18,13 +19,13 @@ import static uk.ac.ebi.pride.jmztab.model.SmallMoleculeColumn.*;
  * @author nils.hoffmann
  * @since 11/09/17
  */
-public class SMELineParser extends MZTabDataLineParser {
+public class SMELineParser extends MZTabDataLineParser<SmallMoleculeEvidence> {
 
     private SmallMoleculeEvidence smallMoleculeEvidence;
 
-    public SMELineParser(MZTabColumnFactory factory, PositionMapping positionMapping,
+    public SMELineParser(MZTabParserContext context, MZTabColumnFactory factory, PositionMapping positionMapping,
                          Metadata metadata, MZTabErrorList errorList) {
-        super(factory, positionMapping, metadata, errorList);
+        super(context, factory, positionMapping, metadata, errorList);
     }
 
     @Override
@@ -44,70 +45,80 @@ public class SMELineParser extends MZTabDataLineParser {
             if (column != null) {
                 columnName = column.getName();
                 target = items[physicalPosition];
-                if (column instanceof SmallMoleculeColumn) {
-
-                    if (columnName.equals(IDENTIFIER.getName())) {
-                        smallMoleculeEvidence.setDatabaseIdentifier(checkIdentifier(column, target));
-                    } else if (columnName.equals(CHEMICAL_FORMULA.getName())) {
-                        smallMoleculeEvidence.setChemicalFormula(checkChemicalFormula(column, target));
-                    } else if (columnName.equals(SMILES.getName())) {
-                        smallMoleculeEvidence.setSmiles(checkSmiles(column, target));
-                    } else if (columnName.equals(INCHI_KEY.getName())) {
-                        smallMoleculeEvidence.setInchi(checkInchiKey(column, target));
-                    } else if (columnName.equals(DESCRIPTION.getName())) {
-                        smallMoleculeEvidence.setChemicalName(checkDescription(column, target));
-                    } else if (columnName.equals(EXP_MASS_TO_CHARGE.getName())) {
-                        smallMoleculeEvidence.setExpMassToCharge(checkExpMassToCharge(column, target));
-                    } else if (columnName.equals(CALC_MASS_TO_CHARGE.getName())) {
-                        smallMoleculeEvidence.setTheorNeutralMass(checkCalcMassToCharge(column, target));
-                    } else if (columnName.equals(CHARGE.getName())) {
-                        smallMoleculeEvidence.setCharge(checkCharge(column, target));
-                    } else if (columnName.equals(RETENTION_TIME.getName())) {
-                        smallMoleculeEvidence.setRetentionTime(checkRetentionTime(column, target));
-                    } else if (columnName.equals(TAXID.getName())) {
-                        smallMoleculeEvidence.setTaxid(checkTaxid(column, target));
-                    } else if (columnName.equals(SPECIES.getName())) {
-                        smallMoleculeEvidence.setSpecies(checkSpecies(column, target));
-                    } else if (columnName.equals(DATABASE.getName())) {
-                        smallMoleculeEvidence.setDatabase(checkDatabase(column, target));
-                    } else if (columnName.equals(DATABASE_VERSION.getName())) {
-                        smallMoleculeEvidence.setDatabaseVersion(checkDatabaseVersion(column, target));
-                    } else if (columnName.equals(RELIABILITY.getName())) {
-                        smallMoleculeEvidence.setReliability(checkReliability(column, target));
-                    } else if (columnName.equals(URI.getName())) {
-                        smallMoleculeEvidence.setURI(checkURI(column, target));
-                    } else if (columnName.equals(SPECTRA_REF.getName())) {
-                        smallMoleculeEvidence.setSpectraRef(checkSpectraRef(column, target));
-                    } else if (columnName.equals(SEARCH_ENGINE.getName())) {
-                        smallMoleculeEvidence.setSearchEngine(checkSearchEngine(column, target));
-                    } else if (columnName.startsWith(BEST_SEARCH_ENGINE_SCORE.getName())) {
-                        int id = loadBestSearchEngineScoreId(column.getHeader());
-                        smallMoleculeEvidence.setBestSearchEngineScore(id, checkBestSearchEngineScore(column, target));
-                    } else if (columnName.startsWith(SEARCH_ENGINE_SCORE.getName())) {
-                        int id = loadSearchEngineScoreId(column.getHeader());
-                        MsRun msRun = (MsRun) column.getElement();
-                        smallMoleculeEvidence.setSearchEngineScore(id, msRun, checkSearchEngineScore(column, target));
-                    } else if (columnName.equals(MODIFICATIONS.getName())) {
-                        smallMoleculeEvidence.setModifications(checkModifications(column, target));
+                if (column instanceof ISmallMoleculeEvidenceColumn) {
+                    SmallMoleculeEvidenceColumn.Stable stableColumn = SmallMoleculeEvidenceColumn.Stable.forName(columnName);
+                    switch(stableColumn) {
+                        case ADDUCT_ION:
+                            smallMoleculeEvidence.adductIon(checkString(column,
+                                target));
+                            break;
+                        case CHARGE:
+                            smallMoleculeEvidence.charge(checkInteger(column,
+                                target));
+                            break;
+                        case CHEMICAL_FORMULA:
+                            smallMoleculeEvidence.chemicalFormula(
+                                checkString(column, target));
+                            break;
+                        case CHEMICAL_NAME:
+                            smallMoleculeEvidence.chemicalName(checkString(column, target));
+                            break;
+                        case DATABASE_IDENTIFIER:
+                            smallMoleculeEvidence.databaseIdentifier(checkString(column, target));
+                            break;
+                        case DERIVATIZED_FORM:
+                            smallMoleculeEvidence.derivatizedForm(checkParameter(column, target));
+                            break;
+                        case EVIDENCE_UNIQUE_ID:
+                            smallMoleculeEvidence.databaseIdentifier(checkString(column, target));
+                            break;
+                        case EXP_MASS_TO_CHARGE:
+                            smallMoleculeEvidence.expMassToCharge(checkDouble(column, target));
+                            break;
+                        case IDENTIFICATION_METHOD:
+                            smallMoleculeEvidence.identificationMethod(checkParameter(column, target));
+                            break;
+                        case INCHI:
+                            smallMoleculeEvidence.inchi(checkString(column, target));
+                            break;
+                        case MS_LEVEL:
+                            smallMoleculeEvidence.msLevel(checkParameter(column, target));
+                            break;
+                        case RANK:
+                            smallMoleculeEvidence.rank(checkInteger(column, target));
+                            break;
+                        case SME_ID:
+                            smallMoleculeEvidence.smeId(checkString(column, target));
+                            break;
+                        case SMILES:
+                            smallMoleculeEvidence.smiles(checkString(column, target));
+                            break;
+                        case SPECTRA_REF:
+                            smallMoleculeEvidence.spectraRef(checkSpectraRef(context, column, target));
+                            break;
+                        case THEORETICAL_MASS_TO_CHARGE:
+                            smallMoleculeEvidence.theoreticalMassToCharge(checkDouble(column, target));
+                            break;
+                        case URI:
+                            smallMoleculeEvidence.uri(checkURI(column, target).toASCIIString());
+                            break;
                     }
 
-                } else if (column instanceof AbundanceColumn) {
-                    //Double check, the column name should contain
-                    if (columnName.contains("abundance")) {
-                        smallMoleculeEvidence.setValue(logicalPosition, checkDouble(column, target));
-                    }
                 } else if (column instanceof OptionColumn) {
                     //Double check, the column name should opt
-                    if (columnName.startsWith("opt_")) {
+                   if (columnName.startsWith("opt_")) {
                         Class dataType = column.getDataType();
+                        OptColumnMapping optColMapping = new OptColumnMapping();
+                        optColMapping.identifier(columnName.substring("opt_".length()));
                         if (dataType.equals(String.class)) {
-                            smallMoleculeEvidence.setValue(column.getLogicPosition(), checkString(column, target));
+                            optColMapping.value(checkString(column, target));
                         } else if (dataType.equals(Double.class)) {
-                            smallMoleculeEvidence.setValue(column.getLogicPosition(), checkDouble(column, target));
+                            optColMapping.value(Double.toString(checkDouble(column, target)));
                         } else if (dataType.equals(MZBoolean.class)) {
-                            smallMoleculeEvidence.setValue(column.getLogicPosition(), checkMZBoolean(column, target));
+                            optColMapping.value(Boolean.toString(checkMZBoolean(column, target).toBoolean()));
                         }
-                    }
+                        smallMoleculeEvidence.addOptItem(optColMapping);
+                   }
                 }
             }
         }
@@ -115,10 +126,11 @@ public class SMELineParser extends MZTabDataLineParser {
         return physicalPosition;
     }
 
+    @Override
     public SmallMoleculeEvidence getRecord() {
 
         if(smallMoleculeEvidence == null){
-            smallMoleculeEvidence = new SmallMoleculeEvidence(factory, metadata);
+            smallMoleculeEvidence = new SmallMoleculeEvidence();//factory, metadata);
         }
         return smallMoleculeEvidence;
     }

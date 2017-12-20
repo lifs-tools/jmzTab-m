@@ -19,7 +19,7 @@ import static uk.ac.ebi.pride.jmztab.model.MZTabUtils.*;
 /**
  * This class allows the validation and loading of the data into the {@link MZTabRecord}.
  *
- * NOTICE: {@link MZTabColumnFactory} maintain a couple of {@link MZTabColumn} which have internal logical
+ * NOTICE: {@link MZTabColumnFactory} maintain a couple of {@link IMZTabColumn} which have internal logical
  * position and order. In physical mzTab file, we allow user not obey this logical position organized way,
  * and provide their date with own order. In order to distinguish them, we use physical position (a positive
  * integer) to record the column location in mzTab file. And use {@link PositionMapping} structure to maintain
@@ -33,7 +33,7 @@ import static uk.ac.ebi.pride.jmztab.model.MZTabUtils.*;
  * @author qingwei
  * @since 14/02/13
  */
-public abstract class MZTabDataLineParser extends MZTabLineParser {
+public abstract class MZTabDataLineParser<T> extends MZTabLineParser {
     protected MZTabColumnFactory factory;
     protected PositionMapping positionMapping;
     protected SortedMap<String, Integer> exchangeMapping; // reverse the key and value of positionMapping.
@@ -42,21 +42,28 @@ public abstract class MZTabDataLineParser extends MZTabLineParser {
     protected Metadata metadata;
     protected MZTabRecord record;
 
+    protected MZTabDataLineParser(MZTabParserContext context) {
+        super(context);
+    }
+    
     /**
      * Generate a mzTab data line parser.
      *
-     * NOTICE: {@link MZTabColumnFactory} maintain a couple of {@link MZTabColumn} which have internal logical
+     * NOTICE: {@link MZTabColumnFactory} maintain a couple of {@link IMZTabColumn} which have internal logical
      * position and order. In physical mzTab file, we allow user not obey this logical position organized way,
      * and provide their date with own order. In order to distinguish them, we use physical position (a positive
      * integer) to record the column location in mzTab file. And use {@link PositionMapping} structure the maintain
      * the mapping between them.
      *
+     * @param context the parser context, keeping dynamic state and lookup associations.
      * @param factory SHOULD NOT set null
      * @param positionMapping SHOULD NOT set null
      * @param metadata SHOULD NOT set null
+     * @param errorList
      */
-    protected MZTabDataLineParser(MZTabColumnFactory factory, PositionMapping positionMapping,
+    protected MZTabDataLineParser(MZTabParserContext context, MZTabColumnFactory factory, PositionMapping positionMapping,
                                   Metadata metadata, MZTabErrorList errorList) {
+        this(context);
         if (factory == null) {
             throw new NullPointerException("Column header factory should be create first.");
         }
@@ -105,7 +112,7 @@ public abstract class MZTabDataLineParser extends MZTabLineParser {
     /**
      * Retrieve the data line to a {@link MZTabRecord}.
      */
-    public abstract MZTabRecord getRecord();
+    public abstract T getRecord();
 
 
     /**
@@ -149,7 +156,7 @@ public abstract class MZTabDataLineParser extends MZTabLineParser {
      * @param column SHOULD NOT set null
      * @param target SHOULD NOT be empty.
      */
-    protected String checkData(MZTabColumn column, String target, boolean allowNull) {
+    protected String checkData(IMZTabColumn column, String target, boolean allowNull) {
         if (target == null) {
             this.errorList.add(new MZTabError(LogicalErrorType.NULL, lineNumber, column.getHeader()));
             return null;
@@ -178,7 +185,7 @@ public abstract class MZTabDataLineParser extends MZTabLineParser {
      * @param column SHOULD NOT set null
      * @param target SHOULD NOT be empty.
      */
-    protected String checkString(MZTabColumn column, String target) {
+    protected String checkString(IMZTabColumn column, String target) {
         return checkData(column, target, true);
     }
 
@@ -188,7 +195,7 @@ public abstract class MZTabDataLineParser extends MZTabLineParser {
      * @param column SHOULD NOT set null
      * @param target SHOULD NOT be empty.
      */
-    protected Integer checkInteger(MZTabColumn column, String target) {
+    protected Integer checkInteger(IMZTabColumn column, String target) {
         String result = checkData(column, target, true);
 
         if (result == null || result.equalsIgnoreCase(NULL)) {
@@ -212,7 +219,7 @@ public abstract class MZTabDataLineParser extends MZTabLineParser {
      * @param column SHOULD NOT set null
      * @param target SHOULD NOT be empty.
      */
-    protected Double checkDouble(MZTabColumn column, String target) {
+    protected Double checkDouble(IMZTabColumn column, String target) {
         String result = checkData(column, target, true);
 
         if (result == null || result.equalsIgnoreCase(NULL)) {
@@ -238,7 +245,7 @@ public abstract class MZTabDataLineParser extends MZTabLineParser {
      * @param column SHOULD NOT set null
      * @param target SHOULD NOT be empty.
      */
-    protected List<Parameter> checkParamList(MZTabColumn column, String target) {
+    protected List<Parameter> checkParamList(IMZTabColumn column, String target) {
         String result = checkData(column, target, true);
 
         if (result == null || result.equalsIgnoreCase(NULL)) {
@@ -252,6 +259,14 @@ public abstract class MZTabDataLineParser extends MZTabLineParser {
 
         return paramList;
     }
+    
+    protected Parameter checkParameter(IMZTabColumn column, String target) {
+        String result = checkData(column, target, true);
+        if(result == null || result.equalsIgnoreCase(NULL)) {
+            this.errorList.add(new MZTabError(FormatErrorType.Param, lineNumber, "Column " + column.getHeader(), target));
+        }
+        return MZTabUtils.parseParam(target);
+    }
 
     /**
      * Check and translate target string into parameter list which split by splitChar character..
@@ -260,7 +275,7 @@ public abstract class MZTabDataLineParser extends MZTabLineParser {
      * @param column SHOULD NOT set null
      * @param target SHOULD NOT be empty.
      */
-    protected List<String> checkStringList(MZTabColumn column, String target, char splitChar) {
+    protected List<String> checkStringList(IMZTabColumn column, String target, char splitChar) {
         String result = checkData(column, target, true);
 
         if (result == null || result.equalsIgnoreCase(NULL)) {
@@ -274,6 +289,28 @@ public abstract class MZTabDataLineParser extends MZTabLineParser {
 
         return stringList;
     }
+    
+    /**
+     * Check and translate target string into parameter list which split by splitChar character..
+     * If parse incorrect, raise {@link FormatErrorType#StringList} error.
+     *
+     * @param column SHOULD NOT set null
+     * @param target SHOULD NOT be empty.
+     */
+    protected List<Double> checkDoubleList(IMZTabColumn column, String target) {
+        String result = checkData(column, target, true);
+
+        if (result == null || result.equalsIgnoreCase(NULL)) {
+            return new ArrayList<Double>(MZTabConstants.BAR);
+        }
+
+        List<Double> doubleList = parseDoubleList(target);
+        if (doubleList.size() == 0) {
+            this.errorList.add(new MZTabError(FormatErrorType.DoubleList, lineNumber, column.getHeader(), result, "" + MZTabConstants.BAR));
+        }
+
+        return doubleList;
+    }
 
     /**
      * Check and translate target to {@link MZBoolean}. Only "0" and "1" allow used in express Boolean (0/1).
@@ -282,7 +319,7 @@ public abstract class MZTabDataLineParser extends MZTabLineParser {
      * @param column SHOULD NOT set null
      * @param target SHOULD NOT be empty.
      */
-    protected MZBoolean checkMZBoolean(MZTabColumn column, String target) {
+    protected MZBoolean checkMZBoolean(IMZTabColumn column, String target) {
         String result = checkData(column, target, true);
 
         if (result == null || result.equalsIgnoreCase(NULL)) {
@@ -301,12 +338,12 @@ public abstract class MZTabDataLineParser extends MZTabLineParser {
      * Check target string. Normally, description can set "null". But
      * in "Complete" file, in general "null" values SHOULD not be given.
      *
-     * @see #checkData(MZTabColumn, String, boolean)
+     * @see #checkData(IMZTabColumn, String, boolean)
      *
      * @param column SHOULD NOT set null
      * @param description SHOULD NOT be empty.
      */
-    protected String checkDescription(MZTabColumn column, String description) {
+    protected String checkDescription(IMZTabColumn column, String description) {
         return checkData(column, description, true);
     }
 
@@ -317,7 +354,7 @@ public abstract class MZTabDataLineParser extends MZTabLineParser {
      * @param column SHOULD NOT set null
      * @param taxid SHOULD NOT be empty.
      */
-    protected Integer checkTaxid(MZTabColumn column, String taxid) {
+    protected Integer checkTaxid(IMZTabColumn column, String taxid) {
         return checkInteger(column, taxid);
     }
 
@@ -325,12 +362,12 @@ public abstract class MZTabDataLineParser extends MZTabLineParser {
      * Check target string. Normally, species can set "null". But
      * in "Complete" file, in general "null" values SHOULD not be given.
      *
-     * @see #checkData(MZTabColumn, String, boolean)
+     * @see #checkData(IMZTabColumn, String, boolean)
      *
      * @param column SHOULD NOT set null
      * @param species SHOULD NOT be empty.
      */
-    protected String checkSpecies(MZTabColumn column, String species) {
+    protected String checkSpecies(IMZTabColumn column, String species) {
         return checkData(column, species, true);
     }
 
@@ -338,12 +375,12 @@ public abstract class MZTabDataLineParser extends MZTabLineParser {
      * Check target string. Normally, database can set "null". But
      * in "Complete" file, in general "null" values SHOULD not be given.
      *
-     * @see #checkData(MZTabColumn, String, boolean)
+     * @see #checkData(IMZTabColumn, String, boolean)
      *
      * @param column SHOULD NOT set null
      * @param database SHOULD NOT be empty.
      */
-    protected String checkDatabase(MZTabColumn column, String database) {
+    protected String checkDatabase(IMZTabColumn column, String database) {
         return checkData(column, database, true);
     }
 
@@ -351,12 +388,12 @@ public abstract class MZTabDataLineParser extends MZTabLineParser {
      * Check target string. Normally, databaseVersion can set "null". But
      * in "Complete" file, in general "null" values SHOULD not be given.
      *
-     * @see #checkData(MZTabColumn, String, boolean)
+     * @see #checkData(IMZTabColumn, String, boolean)
      *
      * @param column SHOULD NOT set null
      * @param databaseVersion SHOULD NOT be empty.
      */
-    protected String checkDatabaseVersion(MZTabColumn column, String databaseVersion) {
+    protected String checkDatabaseVersion(IMZTabColumn column, String databaseVersion) {
         return checkData(column, databaseVersion, true);
     }
 
@@ -368,7 +405,7 @@ public abstract class MZTabDataLineParser extends MZTabLineParser {
      * @param column SHOULD NOT set null
      * @param searchEngine SHOULD NOT be empty.
      */
-    protected List<Parameter> checkSearchEngine(MZTabColumn column, String searchEngine) {
+    protected List<Parameter> checkSearchEngine(IMZTabColumn column, String searchEngine) {
         return checkParamList(column, searchEngine);
     }
 
@@ -380,7 +417,7 @@ public abstract class MZTabDataLineParser extends MZTabLineParser {
      * @param column SHOULD NOT set null
      * @param bestSearchEngineScore SHOULD NOT be empty.
      */
-    protected Double checkBestSearchEngineScore(MZTabColumn column, String bestSearchEngineScore) {
+    protected Double checkBestSearchEngineScore(IMZTabColumn column, String bestSearchEngineScore) {
         return checkDouble(column, bestSearchEngineScore);
     }
 
@@ -392,7 +429,7 @@ public abstract class MZTabDataLineParser extends MZTabLineParser {
      * @param column SHOULD NOT set null
      * @param searchEngineScore SHOULD NOT be empty.
      */
-    protected Double checkSearchEngineScore(MZTabColumn column, String searchEngineScore) {
+    protected Double checkSearchEngineScore(IMZTabColumn column, String searchEngineScore) {
         return checkDouble(column, searchEngineScore);
     }
 
@@ -404,7 +441,7 @@ public abstract class MZTabDataLineParser extends MZTabLineParser {
      * @param column SHOULD NOT set null
      * @param reliability SHOULD NOT be empty.
      */
-//    protected Reliability checkReliability(MZTabColumn column, String reliability) {
+//    protected Reliability checkReliability(IMZTabColumn column, String reliability) {
 //        String result_reliaility = checkData(column, reliability, true);
 //
 //        if (result_reliaility == null || result_reliaility.equalsIgnoreCase(NULL)) {
@@ -426,7 +463,7 @@ public abstract class MZTabDataLineParser extends MZTabLineParser {
      * @param column SHOULD NOT set null
      * @param numPSMs SHOULD NOT be empty.
      */
-    protected Integer checkNumPSMs(MZTabColumn column, String numPSMs) {
+    protected Integer checkNumPSMs(IMZTabColumn column, String numPSMs) {
         return checkInteger(column, numPSMs);
     }
 
@@ -437,7 +474,7 @@ public abstract class MZTabDataLineParser extends MZTabLineParser {
      * @param column SHOULD NOT set null
      * @param numPeptidesDistinct SHOULD NOT be empty.
      */
-    protected Integer checkNumPeptidesDistinct(MZTabColumn column, String numPeptidesDistinct) {
+    protected Integer checkNumPeptidesDistinct(IMZTabColumn column, String numPeptidesDistinct) {
         return checkInteger(column, numPeptidesDistinct);
     }
 
@@ -448,7 +485,7 @@ public abstract class MZTabDataLineParser extends MZTabLineParser {
      * @param column SHOULD NOT set null
      * @param numPeptidesUnique SHOULD NOT be empty.
      */
-    protected Integer checkNumPeptidesUnique(MZTabColumn column, String numPeptidesUnique) {
+    protected Integer checkNumPeptidesUnique(IMZTabColumn column, String numPeptidesUnique) {
         return checkInteger(column, numPeptidesUnique);
     }
 
@@ -460,7 +497,7 @@ public abstract class MZTabDataLineParser extends MZTabLineParser {
      * @param column SHOULD NOT set null
      * @param ambiguityMembers SHOULD NOT be empty.
      */
-    protected List<String> checkAmbiguityMembers(MZTabColumn column, String ambiguityMembers) {
+    protected List<String> checkAmbiguityMembers(IMZTabColumn column, String ambiguityMembers) {
         return checkStringList(column, ambiguityMembers, COMMA);
     }
 
@@ -476,7 +513,7 @@ public abstract class MZTabDataLineParser extends MZTabLineParser {
      * @param column SHOULD NOT set null
      * @param modificationsLabel SHOULD NOT be empty.
      */
-//    protected SplitList<Modification> checkModifications(Section section, MZTabColumn column, String modificationsLabel) {
+//    protected SplitList<Modification> checkModifications(Section section, IMZTabColumn column, String modificationsLabel) {
 //        String result_modifications = checkData(column, modificationsLabel, true);
 //
 //        if (result_modifications == null || result_modifications.equalsIgnoreCase(NULL) || result_modifications.equals("0")) {
@@ -491,7 +528,7 @@ public abstract class MZTabDataLineParser extends MZTabLineParser {
 //        return modificationList;
 //    }
 
-    protected java.net.URI checkURI(MZTabColumn column, String uri) {
+    protected java.net.URI checkURI(IMZTabColumn column, String uri) {
         String result_uri = checkData(column, uri, true);
 
         if (result_uri == null || result_uri.equalsIgnoreCase(NULL)) {
@@ -514,7 +551,7 @@ public abstract class MZTabDataLineParser extends MZTabLineParser {
      * @param column SHOULD NOT set null
      * @param spectraRef SHOULD NOT be empty.
      */
-    protected List<SpectraRef> checkSpectraRef(MZTabParserContext context, MZTabColumn column, String spectraRef) {
+    protected List<SpectraRef> checkSpectraRef(MZTabParserContext context, IMZTabColumn column, String spectraRef) {
         String result_spectraRef = checkData(column, spectraRef, true);
 
         if (result_spectraRef == null || result_spectraRef.equalsIgnoreCase(NULL)) {
@@ -541,12 +578,12 @@ public abstract class MZTabDataLineParser extends MZTabLineParser {
      * Check target string. Normally, pre can set "null". But
      * in "Complete" file, in general "null" values SHOULD not be given.
      *
-     * @see #checkData(MZTabColumn, String, boolean)
+     * @see #checkData(IMZTabColumn, String, boolean)
      *
      * @param column SHOULD NOT set null
      * @param pre SHOULD NOT be empty.
      */
-    protected String checkPre(MZTabColumn column, String pre) {
+    protected String checkPre(IMZTabColumn column, String pre) {
         return checkData(column, pre, true);
     }
 
@@ -554,12 +591,12 @@ public abstract class MZTabDataLineParser extends MZTabLineParser {
      * Check target string. Normally, post can set "null". But
      * in "Complete" file, in general "null" values SHOULD not be given.
      *
-     * @see #checkData(MZTabColumn, String, boolean)
+     * @see #checkData(IMZTabColumn, String, boolean)
      *
      * @param column SHOULD NOT set null
      * @param post SHOULD NOT be empty.
      */
-    protected String checkPost(MZTabColumn column, String post) {
+    protected String checkPost(IMZTabColumn column, String post) {
         return checkData(column, post, true);
     }
 
@@ -567,12 +604,12 @@ public abstract class MZTabDataLineParser extends MZTabLineParser {
      * Check target string. Normally, start can set "null". But
      * in "Complete" file, in general "null" values SHOULD not be given.
      *
-     * @see #checkData(MZTabColumn, String, boolean)
+     * @see #checkData(IMZTabColumn, String, boolean)
      *
      * @param column SHOULD NOT set null
      * @param start SHOULD NOT be empty.
      */
-    protected String checkStart(MZTabColumn column, String start) {
+    protected String checkStart(IMZTabColumn column, String start) {
         return checkData(column, start, true);
     }
 
@@ -580,12 +617,12 @@ public abstract class MZTabDataLineParser extends MZTabLineParser {
      * Check target string. Normally, end can set "null". But
      * in "Complete" file, in general "null" values SHOULD not be given.
      *
-     * @see #checkData(MZTabColumn, String, boolean)
+     * @see #checkData(IMZTabColumn, String, boolean)
      *
      * @param column SHOULD NOT set null
      * @param end SHOULD NOT be empty.
      */
-    protected String checkEnd(MZTabColumn column, String end) {
+    protected String checkEnd(IMZTabColumn column, String end) {
         return checkData(column, end, true);
     }
 
@@ -598,7 +635,7 @@ public abstract class MZTabDataLineParser extends MZTabLineParser {
      * @param column SHOULD NOT set null
      * @param go_terms SHOULD NOT be empty.
      */
-    protected List<String> checkGOTerms(MZTabColumn column, String go_terms) {
+    protected List<String> checkGOTerms(IMZTabColumn column, String go_terms) {
         String result_go_terms = checkData(column, go_terms, true);
 
         if (result_go_terms == null || result_go_terms.equalsIgnoreCase(NULL)) {
@@ -624,7 +661,7 @@ public abstract class MZTabDataLineParser extends MZTabLineParser {
      * @param column SHOULD NOT set null
      * @param protein_coverage SHOULD NOT be empty.
      */
-    protected Double checkProteinCoverage(MZTabColumn column, String protein_coverage) {
+    protected Double checkProteinCoverage(IMZTabColumn column, String protein_coverage) {
         Double result = checkDouble(column, protein_coverage);
 
         if (result == null) {
@@ -646,7 +683,7 @@ public abstract class MZTabDataLineParser extends MZTabLineParser {
      * @param column SHOULD NOT set null
      * @param sequence SHOULD NOT be empty.
      */
-    protected String checkSequence(MZTabColumn column, String sequence) {
+    protected String checkSequence(IMZTabColumn column, String sequence) {
         String result = checkData(column, sequence, true);
 
         if (result == null) {
@@ -671,7 +708,7 @@ public abstract class MZTabDataLineParser extends MZTabLineParser {
      * @param column SHOULD NOT set null
      * @param psm_id SHOULD NOT be empty.
      */
-    protected Integer checkPSMID(MZTabColumn column, String psm_id) {
+    protected Integer checkPSMID(IMZTabColumn column, String psm_id) {
         return checkInteger(column, psm_id);
     }
 
@@ -682,7 +719,7 @@ public abstract class MZTabDataLineParser extends MZTabLineParser {
      * @param column SHOULD NOT set null
      * @param unique SHOULD NOT be empty.
      */
-    protected MZBoolean checkUnique(MZTabColumn column, String unique) {
+    protected MZBoolean checkUnique(IMZTabColumn column, String unique) {
         return checkMZBoolean(column, unique);
     }
 
@@ -693,7 +730,7 @@ public abstract class MZTabDataLineParser extends MZTabLineParser {
      * @param column SHOULD NOT set null
      * @param charge SHOULD NOT be empty.
      */
-    protected Integer checkCharge(MZTabColumn column, String charge) {
+    protected Integer checkCharge(IMZTabColumn column, String charge) {
         return checkInteger(column, charge);
     }
 
@@ -706,7 +743,7 @@ public abstract class MZTabDataLineParser extends MZTabLineParser {
      * @param column SHOULD NOT set null
      * @param mass_to_charge SHOULD NOT be empty.
      */
-    protected Double checkMassToCharge(MZTabColumn column, String mass_to_charge) {
+    protected Double checkMassToCharge(IMZTabColumn column, String mass_to_charge) {
         return checkDouble(column, mass_to_charge);
     }
 
@@ -719,7 +756,7 @@ public abstract class MZTabDataLineParser extends MZTabLineParser {
      * @param column SHOULD NOT set null
      * @param exp_mass_to_charge SHOULD NOT be empty.
      */
-    protected Double checkExpMassToCharge(MZTabColumn column, String exp_mass_to_charge) {
+    protected Double checkExpMassToCharge(IMZTabColumn column, String exp_mass_to_charge) {
         return checkDouble(column, exp_mass_to_charge);
     }
 
@@ -732,7 +769,7 @@ public abstract class MZTabDataLineParser extends MZTabLineParser {
      * @param column SHOULD NOT set null
      * @param calc_mass_to_charge SHOULD NOT be empty.
      */
-    protected Double checkCalcMassToCharge(MZTabColumn column, String calc_mass_to_charge) {
+    protected Double checkCalcMassToCharge(IMZTabColumn column, String calc_mass_to_charge) {
         return checkDouble(column, calc_mass_to_charge);
     }
 
@@ -744,7 +781,7 @@ public abstract class MZTabDataLineParser extends MZTabLineParser {
      * @param column SHOULD NOT set null
      * @param identifier SHOULD NOT be empty.
      */
-    protected List<String> checkIdentifier(MZTabColumn column, String identifier) {
+    protected List<String> checkIdentifier(IMZTabColumn column, String identifier) {
         return checkStringList(column, identifier, BAR);
     }
 
@@ -752,12 +789,12 @@ public abstract class MZTabDataLineParser extends MZTabLineParser {
      * Check chemical_formula string. Normally, chemical_formula can set "null". But
      * in "Complete" file, in general "null" values SHOULD not be given.
      *
-     * @see #checkData(MZTabColumn, String, boolean)
+     * @see #checkData(IMZTabColumn, String, boolean)
      *
      * @param column SHOULD NOT set null
      * @param chemical_formula SHOULD NOT be empty.
      */
-    protected String checkChemicalFormula(MZTabColumn column, String chemical_formula) {
+    protected String checkChemicalFormula(IMZTabColumn column, String chemical_formula) {
         return checkData(column, chemical_formula, true);
     }
 
@@ -769,7 +806,7 @@ public abstract class MZTabDataLineParser extends MZTabLineParser {
      * @param column SHOULD NOT set null
      * @param smiles SHOULD NOT be empty.
      */
-    protected List<String> checkSmiles(MZTabColumn column, String smiles) {
+    protected List<String> checkSmiles(IMZTabColumn column, String smiles) {
         return checkStringList(column, smiles, BAR);
     }
 
@@ -781,7 +818,7 @@ public abstract class MZTabDataLineParser extends MZTabLineParser {
      * @param column SHOULD NOT set null
      * @param inchi_key SHOULD NOT be empty.
      */
-    protected List<String> checkInchiKey(MZTabColumn column, String inchi_key) {
+    protected List<String> checkInchiKey(IMZTabColumn column, String inchi_key) {
         return checkStringList(column, inchi_key, BAR);
     }
 
@@ -793,7 +830,7 @@ public abstract class MZTabDataLineParser extends MZTabLineParser {
      * @param column SHOULD NOT set null
      * @param retention_time SHOULD NOT be empty.
      */
-    protected List<Double> checkRetentionTime(MZTabColumn column, String retention_time) {
+    protected List<Double> checkRetentionTime(IMZTabColumn column, String retention_time) {
         String result = checkData(column, retention_time, true);
 
         if (result == null || result.equalsIgnoreCase(NULL)) {
@@ -816,7 +853,7 @@ public abstract class MZTabDataLineParser extends MZTabLineParser {
      * @param column SHOULD NOT set null
      * @param retention_time_window SHOULD NOT be empty.
      */
-    protected List<Double> checkRetentionTimeWindow(MZTabColumn column, String retention_time_window) {
+    protected List<Double> checkRetentionTimeWindow(IMZTabColumn column, String retention_time_window) {
         String result = checkData(column, retention_time_window, true);
 
         if (result == null || result.equalsIgnoreCase(NULL)) {

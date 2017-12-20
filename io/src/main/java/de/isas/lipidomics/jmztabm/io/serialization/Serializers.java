@@ -38,6 +38,7 @@ import static uk.ac.ebi.pride.jmztab.model.MZTabConstants.MINUS;
 import static uk.ac.ebi.pride.jmztab.model.MZTabConstants.NEW_LINE;
 import static uk.ac.ebi.pride.jmztab.model.MZTabConstants.NULL;
 import static uk.ac.ebi.pride.jmztab.model.MZTabConstants.TAB;
+import uk.ac.ebi.pride.jmztab.model.MetadataElement;
 import static uk.ac.ebi.pride.jmztab.model.MetadataElement.MZTAB;
 import static uk.ac.ebi.pride.jmztab.model.MetadataProperty.MZTAB_ID;
 import static uk.ac.ebi.pride.jmztab.model.MetadataProperty.MZTAB_VERSION;
@@ -552,6 +553,9 @@ public class Serializers {
 //    }
     public static Optional<String> getElementName(Object element) {
 //        @JacksonXmlRootElement(localName = "Assay")
+        if(element instanceof MetadataElement) {
+            return Optional.ofNullable(((MetadataElement)element).getName());
+        }
         JacksonXmlRootElement rootElement = element.getClass().
             getAnnotation(JacksonXmlRootElement.class);
         if (rootElement != null) {

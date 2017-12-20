@@ -33,28 +33,24 @@ import static uk.ac.ebi.pride.jmztab.model.MZTabUtils.parseParam;
 public abstract class MZTabHeaderLineParser extends MZTabLineParser {
 
     protected MZTabColumnFactory factory;
-    protected MZTabParserContext context;
     protected Metadata metadata;
 
     /**
      * Parse a header line into {@link MZTabColumnFactory} structure.
      *
+     * @param context the parser context, keeping dynamic state and lookup associations.
      * @param factory  SHOULD NOT set null
      * @param metadata SHOULD NOT set null
      */
-    protected MZTabHeaderLineParser(MZTabColumnFactory factory, MZTabParserContext context, Metadata metadata) {
+    protected MZTabHeaderLineParser(MZTabParserContext context, MZTabColumnFactory factory, Metadata metadata) {
+        super(context);
         if (factory == null) {
-            throw new NullPointerException("Header line should be parse first!");
+            throw new NullPointerException("Header line should be parsed first!");
         }
         this.factory = factory;
-        
-        if (context == null) {
-            throw new NullPointerException("Parser context should be created first!");
-        }
-        this.context = context;
 
         if (metadata == null) {
-            throw new NullPointerException("Metadata should be create first!");
+            throw new NullPointerException("Metadata should be created first!");
         }
         this.metadata = metadata;
     }
@@ -98,12 +94,11 @@ public abstract class MZTabHeaderLineParser extends MZTabLineParser {
      * Refine optional columns based one {@link MZTabDescription#mode} and {@link MZTabDescription#type}
      * These re-validate operation will called in {@link #refine()} method.
      */
-//    protected void refineOptionalColumn(MZTabDescription.Mode mode, MZTabDescription.Type type,
-//                                        String columnHeader) throws MZTabException {
-//        if (factory.findColumnByHeader(columnHeader) == null) {
-//            throw new MZTabException(new MZTabError(LogicalErrorType.NotDefineInHeader, lineNumber, columnHeader, mode.toString(), type.toString()));
-//        }
-//    }
+    protected void refineOptionalColumn(String columnHeader) throws MZTabException {
+        if (factory.findColumnByHeader(columnHeader) == null) {
+            throw new MZTabException(new MZTabError(LogicalErrorType.NotDefineInHeader, lineNumber, columnHeader));
+        }
+    }
 
     protected String fromIndexToOrder(Integer index) {
         return String.format("%02d", index);

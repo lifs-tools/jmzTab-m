@@ -50,9 +50,9 @@ public class MetadataSerializer extends StdSerializer<Metadata> {
             
             //sample processing
             final AtomicInteger cnt = new AtomicInteger(1);
-            t.getSampleProcessing().getSampleProcessing().stream().forEach((sampleProcessing) ->
+            t.getSampleProcessing().stream().forEach((sampleProcessing) ->
                 {
-                    Serializers.addIndexedLine(jg, prefix, t.getSampleProcessing(), cnt.get(), sampleProcessing);
+                    Serializers.addIndexedLine(jg, prefix, sampleProcessing, cnt.get(), sampleProcessing.getSampleProcessing());
                     cnt.incrementAndGet();
                 });
             

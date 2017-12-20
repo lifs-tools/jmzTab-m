@@ -23,14 +23,14 @@ public enum MetadataProperty {
     CONTACT_AFFILIATION                   (MetadataElement.CONTACT,                             "affiliation"),
     CONTACT_EMAIL                         (MetadataElement.CONTACT,                             "email"),
 
-    FIXED_MOD_SITE                        (MetadataElement.FIXED_MOD,                           "site"),
-    FIXED_MOD_POSITION                    (MetadataElement.FIXED_MOD,                           "position"),
-
-    VARIABLE_MOD_SITE                     (MetadataElement.VARIABLE_MOD,                         "site"),
-    VARIABLE_MOD_POSITION                 (MetadataElement.VARIABLE_MOD,                         "position"),
-
-    PROTEIN_QUANTIFICATION_UNIT           (MetadataElement.PROTEIN,                             "quantification_unit"),
-    PEPTIDE_QUANTIFICATION_UNIT           (MetadataElement.PEPTIDE,                             "quantification_unit"),
+//    FIXED_MOD_SITE                        (MetadataElement.FIXED_MOD,                           "site"),
+//    FIXED_MOD_POSITION                    (MetadataElement.FIXED_MOD,                           "position"),
+//
+//    VARIABLE_MOD_SITE                     (MetadataElement.VARIABLE_MOD,                         "site"),
+//    VARIABLE_MOD_POSITION                 (MetadataElement.VARIABLE_MOD,                         "position"),
+//
+//    PROTEIN_QUANTIFICATION_UNIT           (MetadataElement.PROTEIN,                             "quantification_unit"),
+//    PEPTIDE_QUANTIFICATION_UNIT           (MetadataElement.PEPTIDE,                             "quantification_unit"),
     SMALL_MOLECULE_QUANTIFICATION_UNIT    (MetadataElement.SMALL_MOLECULE,                      "quantification_unit"),
 
     MS_RUN_FORMAT                         (MetadataElement.MS_RUN,                              "format"),
@@ -53,8 +53,8 @@ public enum MetadataProperty {
     ASSAY_CUSTOM                          (MetadataElement.ASSAY,                               "custom"),
     ASSAY_EXTERNAL_URI                    (MetadataElement.ASSAY,                               "external_uri"),
 
-    ASSAY_QUANTIFICATION_MOD_SITE         (MetadataSubElement.ASSAY_QUANTIFICATION_MOD,         "site"),
-    ASSAY_QUANTIFICATION_MOD_POSITION     (MetadataSubElement.ASSAY_QUANTIFICATION_MOD,         "position"),
+//    ASSAY_QUANTIFICATION_MOD_SITE         (MetadataSubElement.ASSAY_QUANTIFICATION_MOD,         "site"),
+//    ASSAY_QUANTIFICATION_MOD_POSITION     (MetadataSubElement.ASSAY_QUANTIFICATION_MOD,         "position"),
 
     STUDY_VARIABLE_ASSAY_REFS             (MetadataElement.STUDY_VARIABLE,                      "assay_refs"),
     STUDY_VARIABLE_SAMPLE_REFS            (MetadataElement.STUDY_VARIABLE,                      "sample_refs"),
@@ -65,9 +65,9 @@ public enum MetadataProperty {
     CV_VERSION                            (MetadataElement.CV,                                  "version"),
     CV_URL                                (MetadataElement.CV,                                  "url"),
 
-    COLUNIT_PROTEIN                       (MetadataElement.COLUNIT,                             "protein"),
-    COLUNIT_PEPTIDE                       (MetadataElement.COLUNIT,                             "peptide"),
-    COLUNIT_PSM                           (MetadataElement.COLUNIT,                             "psm"),
+//    COLUNIT_PROTEIN                       (MetadataElement.COLUNIT,                             "protein"),
+//    COLUNIT_PEPTIDE                       (MetadataElement.COLUNIT,                             "peptide"),
+//    COLUNIT_PSM                           (MetadataElement.COLUNIT,                             "psm"),
     COLUNIT_SMALL_MOLECULE                (MetadataElement.COLUNIT,                             "small_molecule");
 
     private String name;

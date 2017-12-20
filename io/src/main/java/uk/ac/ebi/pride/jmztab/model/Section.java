@@ -67,24 +67,24 @@ public enum Section {
             case 1:
                 section = Metadata;
                 break;
-            case 2:
-                section = Protein_Header;
-                break;
-            case 3:
-                section = Protein;
-                break;
-            case 4:
-                section = Peptide_Header;
-                break;
-            case 5:
-                section = Peptide;
-                break;
-            case 6:
-                section = PSM_Header;
-                break;
-            case 7:
-                section = PSM;
-                break;
+//            case 2:
+//                section = Protein_Header;
+//                break;
+//            case 3:
+//                section = Protein;
+//                break;
+//            case 4:
+//                section = Peptide_Header;
+//                break;
+//            case 5:
+//                section = Peptide;
+//                break;
+//            case 6:
+//                section = PSM_Header;
+//                break;
+//            case 7:
+//                section = PSM;
+//                break;
             case 8:
                 section = Small_Molecule_Header;
                 break;
@@ -153,18 +153,18 @@ public enum Section {
     public static Section toHeaderSection(Section section) {
         Section header;
         switch (section) {
-            case Peptide:
-            case Peptide_Header:
-                header = Section.Peptide_Header;
-                break;
-            case Protein:
-            case Protein_Header:
-                header = Section.Protein_Header;
-                break;
-            case PSM:
-            case PSM_Header:
-                header = Section.PSM_Header;
-                break;
+//            case Peptide:
+//            case Peptide_Header:
+//                header = Section.Peptide_Header;
+//                break;
+//            case Protein:
+//            case Protein_Header:
+//                header = Section.Protein_Header;
+//                break;
+//            case PSM:
+//            case PSM_Header:
+//                header = Section.PSM_Header;
+//                break;
             case Small_Molecule:
             case Small_Molecule_Header:
                 header = Section.Small_Molecule_Header;
@@ -199,18 +199,18 @@ public enum Section {
     public static Section toDataSection(Section section) {
         Section data;
         switch (section) {
-            case Peptide:
-            case Peptide_Header:
-                data = Section.Peptide;
-                break;
-            case Protein:
-            case Protein_Header:
-                data = Section.Protein;
-                break;
-            case PSM:
-            case PSM_Header:
-                data = Section.PSM;
-                break;
+//            case Peptide:
+//            case Peptide_Header:
+//                data = Section.Peptide;
+//                break;
+//            case Protein:
+//            case Protein_Header:
+//                data = Section.Protein;
+//                break;
+//            case PSM:
+//            case PSM_Header:
+//                data = Section.PSM;
+//                break;
             case Small_Molecule:
             case Small_Molecule_Header:
                 data = Section.Small_Molecule;
@@ -248,18 +248,18 @@ public enum Section {
             return Comment;
         } else if (key.equalsIgnoreCase(Metadata.getName()) || key.equalsIgnoreCase(Metadata.getPrefix())) {
             return Metadata;
-        } else if (key.equalsIgnoreCase(Peptide_Header.getName()) || key.equalsIgnoreCase(Peptide_Header.getPrefix())) {
-            return Peptide_Header;
-        } else if (key.equalsIgnoreCase(Peptide.getName()) || key.equalsIgnoreCase(Peptide.getPrefix())) {
-            return Peptide;
-        } else if (key.equalsIgnoreCase(Protein_Header.getName()) || key.equalsIgnoreCase(Protein_Header.getPrefix())) {
-            return Protein_Header;
-        } else if (key.equalsIgnoreCase(Protein.getName()) || key.equalsIgnoreCase(Protein.getPrefix())) {
-            return Protein;
-        } else if (key.equalsIgnoreCase(PSM_Header.getName()) || key.equalsIgnoreCase(PSM_Header.getPrefix())) {
-            return PSM_Header;
-        } else if (key.equalsIgnoreCase(PSM.getName()) || key.equalsIgnoreCase(PSM.getPrefix())) {
-            return PSM;
+//        } else if (key.equalsIgnoreCase(Peptide_Header.getName()) || key.equalsIgnoreCase(Peptide_Header.getPrefix())) {
+//            return Peptide_Header;
+//        } else if (key.equalsIgnoreCase(Peptide.getName()) || key.equalsIgnoreCase(Peptide.getPrefix())) {
+//            return Peptide;
+//        } else if (key.equalsIgnoreCase(Protein_Header.getName()) || key.equalsIgnoreCase(Protein_Header.getPrefix())) {
+//            return Protein_Header;
+//        } else if (key.equalsIgnoreCase(Protein.getName()) || key.equalsIgnoreCase(Protein.getPrefix())) {
+//            return Protein;
+//        } else if (key.equalsIgnoreCase(PSM_Header.getName()) || key.equalsIgnoreCase(PSM_Header.getPrefix())) {
+//            return PSM_Header;
+//        } else if (key.equalsIgnoreCase(PSM.getName()) || key.equalsIgnoreCase(PSM.getPrefix())) {
+//            return PSM;
         } else if (key.equalsIgnoreCase(Small_Molecule_Header.getName()) || key.equalsIgnoreCase(Small_Molecule_Header.getPrefix())) {
             return Small_Molecule_Header;
         } else if (key.equalsIgnoreCase(Small_Molecule.getName()) || key.equalsIgnoreCase(Small_Molecule.getPrefix())) {

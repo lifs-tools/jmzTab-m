@@ -9,12 +9,14 @@ import de.isas.mztab1_1.model.ColumnParameterMapping;
 import de.isas.mztab1_1.model.ColumnParameterMapping;
 import de.isas.mztab1_1.model.Contact;
 import de.isas.mztab1_1.model.Instrument;
+import de.isas.mztab1_1.model.Metadata;
 import de.isas.mztab1_1.model.MsRun;
 import de.isas.mztab1_1.model.Parameter;
 import de.isas.mztab1_1.model.Parameter;
 import de.isas.mztab1_1.model.Publication;
 import de.isas.mztab1_1.model.PublicationItem;
 import de.isas.mztab1_1.model.Sample;
+import de.isas.mztab1_1.model.SampleProcessing;
 import de.isas.mztab1_1.model.Software;
 import de.isas.mztab1_1.model.StudyVariable;
 import java.net.URI;
@@ -28,6 +30,7 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 import lombok.Data;
 import uk.ac.ebi.pride.jmztab.model.MZTabColumn;
+import uk.ac.ebi.pride.jmztab.model.MZTabConstants;
 import static uk.ac.ebi.pride.jmztab.model.MZTabConstants.BAR;
 import static uk.ac.ebi.pride.jmztab.model.MZTabUtils.isEmpty;
 import uk.ac.ebi.pride.jmztab.model.SplitList;
@@ -38,7 +41,7 @@ import uk.ac.ebi.pride.jmztab.model.SplitList;
  */
 @Data
 public class MZTabParserContext {
-    private SortedMap<Integer, List<Parameter>> sampleProcessingMap = new TreeMap<Integer, List<Parameter>>(); //1.1
+    private SortedMap<Integer, SampleProcessing> sampleProcessingMap = new TreeMap<Integer, SampleProcessing>(); //1.1
     private SortedMap<Integer, Instrument> instrumentMap = new TreeMap<Integer, Instrument>(); //1.1
     private SortedMap<Integer, Software> softwareMap = new TreeMap<Integer, Software>(); //1.1
 //    private SortedMap<Integer, ProteinSearchEngineScore> proteinSearchEngineScoreMap = new TreeMap<Integer, ProteinSearchEngineScore>(); 
@@ -65,6 +68,8 @@ public class MZTabParserContext {
 //    private List<ColUnit> peptideColUnitList = new ArrayList<ColUnit>();
 //    private List<ColUnit> psmColUnitList = new ArrayList<ColUnit>();
     private List<ColumnParameterMapping> smallMoleculeColUnitList = new ArrayList<ColumnParameterMapping>();
+    private List<ColumnParameterMapping> smallMoleculeFeatureColUnitList = new ArrayList<ColumnParameterMapping>();
+    private List<ColumnParameterMapping> smallMoleculeEvidenceColUnitList = new ArrayList<ColumnParameterMapping>();
     private Map<String, String> colUnitMap = new HashMap<String, String>();
     
         /**
@@ -73,12 +78,14 @@ public class MZTabParserContext {
      *
      * @param sample SHOULD NOT set null.
      */
-    public void addSample(Sample sample) {
+    public Sample addSample(Metadata metadata, Sample sample) {
         if (sample == null) {
             throw new IllegalArgumentException("Sample should not be null");
         }
 
         this.sampleMap.put(sample.getId(), sample);
+        metadata.addSampleItem(sample);
+        return sample;
     }
 
     /**
@@ -87,23 +94,25 @@ public class MZTabParserContext {
      * @param id SHOULD be positive integer.
      * @param species if null ignore operation.
      */
-    public void addSampleSpecies(Integer id, Parameter species) {
+    public Sample addSampleSpecies(Metadata metadata, Integer id, Parameter species) {
         if (id <= 0) {
             throw new IllegalArgumentException("Sample id should be great than 0!");
         }
+        Sample sample = sampleMap.get(id);
         if (species == null) {
-            return;
+            return sample;
         }
 
-        Sample sample = sampleMap.get(id);
         if (sample == null) {
             sample = new Sample();
             sample.id(id);
             sample.addSpeciesItem(species);
             sampleMap.put(id, sample);
+            metadata.addSampleItem(sample);
         } else {
             sample.addSpeciesItem(species);
         }
+        return sample;
     }
 
     /**
@@ -112,23 +121,25 @@ public class MZTabParserContext {
      * @param id SHOULD be positive integer.
      * @param tissue if null ignore operation.
      */
-    public void addSampleTissue(Integer id, Parameter tissue) {
+    public Sample addSampleTissue(Metadata metadata, Integer id, Parameter tissue) {
         if (id <= 0) {
             throw new IllegalArgumentException("Sample id should be great than 0!");
         }
+        Sample sample = sampleMap.get(id);
         if (tissue == null) {
-            return;
+            return sample;
         }
 
-        Sample sample = sampleMap.get(id);
         if (sample == null) {
             sample = new Sample();
             sample.id(id);
             sample.addTissueItem(tissue);
             sampleMap.put(id, sample);
+            metadata.addSampleItem(sample);
         } else {
             sample.addTissueItem(tissue);
         }
+        return sample;
     }
 
     /**
@@ -137,23 +148,25 @@ public class MZTabParserContext {
      * @param id SHOULD be positive integer.
      * @param cellType if null ignore operation.
      */
-    public void addSampleCellType(Integer id, Parameter cellType) {
+    public Sample addSampleCellType(Metadata metadata, Integer id, Parameter cellType) {
         if (id <= 0) {
             throw new IllegalArgumentException("Sample id should be great than 0!");
         }
+        Sample sample = sampleMap.get(id);
         if (cellType == null) {
-            return;
+            return sample;
         }
 
-        Sample sample = sampleMap.get(id);
         if (sample == null) {
             sample = new Sample();
             sample.id(id);
             sample.addCellTypeItem(cellType);
             sampleMap.put(id, sample);
+            metadata.addSampleItem(sample);
         } else {
             sample.addCellTypeItem(cellType);
         }
+        return sample;
     }
 
     /**
@@ -162,23 +175,25 @@ public class MZTabParserContext {
      * @param id SHOULD be positive integer.
      * @param disease if null ignore operation.
      */
-    public void addSampleDisease(Integer id, Parameter disease) {
+    public Sample addSampleDisease(Metadata metadata, Integer id, Parameter disease) {
         if (id <= 0) {
             throw new IllegalArgumentException("Sample id should be great than 0!");
         }
+        Sample sample = sampleMap.get(id);
         if (disease == null) {
-            return;
+            return sample;
         }
 
-        Sample sample = sampleMap.get(id);
         if (sample == null) {
             sample = new Sample();
             sample.id(id);
             sample.addDiseaseItem(disease);
             sampleMap.put(id, sample);
+            metadata.addSampleItem(sample);
         } else {
             sample.addDiseaseItem(disease);
         }
+        return sample;
     }
 
     /**
@@ -187,24 +202,26 @@ public class MZTabParserContext {
      * @param id SHOULD be positive integer.
      * @param description if empty ignore operation.
      */
-    public void addSampleDescription(Integer id, String description) {
+    public Sample addSampleDescription(Metadata metadata, Integer id, String description) {
         if (id <= 0) {
             throw new IllegalArgumentException("Sample id should be great than 0!");
         }
 
+        Sample sample = sampleMap.get(id);
         if (isEmpty(description)) {
-            return;
+            return sample;
         }
 
-        Sample sample = sampleMap.get(id);
         if (sample == null) {
             sample = new Sample();
             sample.id(id);
             sample.setDescription(description);
             sampleMap.put(id, sample);
+            metadata.addSampleItem(sample);
         } else {
             sample.setDescription(description);
         }
+        return sample;
     }
 
     /**
@@ -213,23 +230,25 @@ public class MZTabParserContext {
      * @param id SHOULD be positive integer.
      * @param custom if null ignore operation.
      */
-    public void addSampleCustom(Integer id, Parameter custom) {
+    public Sample addSampleCustom(Metadata metadata, Integer id, Parameter custom) {
         if (id <= 0) {
             throw new IllegalArgumentException("Sample id should be great than 0!");
         }
+        Sample sample = sampleMap.get(id);
         if (custom == null) {
-            return;
+            return sample;
         }
 
-        Sample sample = sampleMap.get(id);
         if (sample == null) {
             sample = new Sample();
             sample.id(id);
             sample.addCustomItem(custom);
             sampleMap.put(id, sample);
+            metadata.addSampleItem(sample);
         } else {
             sample.addCustomItem(custom);
         }
+        return sample;
     }
 
     /**
@@ -240,16 +259,21 @@ public class MZTabParserContext {
      * @param id SHOULD be positive integer.
      * @param sampleProcessing if null ignore operation.
      */
-    public void addSampleProcessing(Integer id, List<Parameter> sampleProcessing) {
+    public SampleProcessing addSampleProcessing(Metadata metadata, Integer id, List<Parameter> sampleProcessing) {
         if (id <= 0) {
             throw new IllegalArgumentException("Sample id should be great than 0!");
         }
         if (sampleProcessing == null) {
-            return;
+            return null;
         }
 
 //        sampleProcessing.setSplitChar(BAR);
-        this.sampleProcessingMap.put(id, sampleProcessing);
+        SampleProcessing sp = new SampleProcessing();
+        sp.id(id);
+        sp.sampleProcessing(sampleProcessing);
+        metadata.addSampleProcessingItem(sp);
+        sampleProcessingMap.put(id, sp);
+        return sp;
     }
 
     /**
@@ -258,22 +282,25 @@ public class MZTabParserContext {
      * @param id SHOULD be positive integer.
      * @param param if null ignore operation.
      */
-    public void addSampleProcessingParameter(Integer id, Parameter param) {
+    public SampleProcessing addSampleProcessingParameter(Metadata metadata, Integer id, Parameter param) {
         if (id <= 0) {
             throw new IllegalArgumentException("Sample processing id should be great than 0!");
         }
+        SampleProcessing sampleProcessing = sampleProcessingMap.get(id);
         if (param == null) {
-            return;
+            return sampleProcessing;
         }
 
-        List<Parameter> sampleProcessing = sampleProcessingMap.get(id);
         if (sampleProcessing == null) {
-            sampleProcessing = new ArrayList<Parameter>();
-            sampleProcessing.add(param);
+            sampleProcessing = new SampleProcessing();
+            sampleProcessing.id(id);
+            sampleProcessing.addSampleProcessingItem(param);
             sampleProcessingMap.put(id, sampleProcessing);
+            metadata.addSampleProcessingItem(sampleProcessing);
         } else {
-            sampleProcessing.add(param);
+            sampleProcessing.addSampleProcessingItem(param);
         }
+        return sampleProcessing;
     }
 
     /**
@@ -281,12 +308,13 @@ public class MZTabParserContext {
      *
      * @param instrument SHOULD NOT set null.
      */
-    public void addInstrument(Instrument instrument) {
+    public Instrument addInstrument(Metadata metadata, Instrument instrument) {
         if (instrument == null) {
             throw new IllegalArgumentException("Instrument should not be null");
         }
-
         instrumentMap.put(instrument.getId(), instrument);
+        metadata.addInstrumentsItem(instrument);
+        return instrument;
     }
 
     /**
@@ -295,23 +323,25 @@ public class MZTabParserContext {
      * @param id SHOULD be positive integer.
      * @param name if null ignore operation.
      */
-    public void addInstrumentName(Integer id, Parameter name) {
+    public Instrument addInstrumentName(Metadata metadata, Integer id, Parameter name) {
         if (id <= 0) {
             throw new IllegalArgumentException("Instrument id should be great than 0!");
         }
+        Instrument instrument = instrumentMap.get(id);
         if (name == null) {
-            return;
+            return instrument;
         }
 
-        Instrument instrument = instrumentMap.get(id);
         if (instrument == null) {
             instrument = new Instrument();
             instrument.id(id);
             instrument.instrumentName(name);
             instrumentMap.put(id, instrument);
+            metadata.addInstrumentsItem(instrument);
         } else {
             instrument.instrumentName(name);
         }
+        return instrument;
     }
 
     /**
@@ -320,23 +350,25 @@ public class MZTabParserContext {
      * @param id SHOULD be positive integer.
      * @param source if null ignore operation.
      */
-    public void addInstrumentSource(Integer id, Parameter source) {
+    public Instrument addInstrumentSource(Metadata metadata, Integer id, Parameter source) {
         if (id <= 0) {
             throw new IllegalArgumentException("Instrument id should be great than 0!");
         }
+        Instrument instrument = instrumentMap.get(id);
         if (source == null) {
-            return;
+            return instrument;
         }
 
-        Instrument instrument = instrumentMap.get(id);
         if (instrument == null) {
             instrument = new Instrument();
             instrument.id(id);
             instrument.setInstrumentSource(source);
             instrumentMap.put(id, instrument);
+            metadata.addInstrumentsItem(instrument);
         } else {
             instrument.setInstrumentSource(source);
         }
+        return instrument;
     }
 
     /**
@@ -345,23 +377,25 @@ public class MZTabParserContext {
      * @param id SHOULD be positive integer.
      * @param analyzer if null ignore operation.
      */
-    public void addInstrumentAnalyzer(Integer id, Parameter analyzer) {
+    public Instrument addInstrumentAnalyzer(Metadata metadata, Integer id, Parameter analyzer) {
         if (id <= 0) {
             throw new IllegalArgumentException("Instrument id should be great than 0!");
         }
+        Instrument instrument = instrumentMap.get(id);
         if (analyzer == null) {
-            return;
+            return instrument;
         }
 
-        Instrument instrument = instrumentMap.get(id);
         if (instrument == null) {
             instrument = new Instrument();
             instrument.id(id);
             instrument.addInstrumentAnalyzerItem(analyzer);
             instrumentMap.put(id, instrument);
+            metadata.addInstrumentsItem(instrument);
         } else {
             instrument.addInstrumentAnalyzerItem(analyzer);
         }
+        return instrument;
     }
 
     /**
@@ -370,23 +404,26 @@ public class MZTabParserContext {
      * @param id SHOULD be positive integer.
      * @param detector if null ignore operation.
      */
-    public void addInstrumentDetector(Integer id, Parameter detector) {
+    public Instrument addInstrumentDetector(Metadata metadata, Integer id, Parameter detector) {
         if (id <= 0) {
             throw new IllegalArgumentException("Instrument id should be great than 0!");
         }
-        if (detector == null) {
-            return;
-        }
 
         Instrument instrument = instrumentMap.get(id);
+        if (detector == null) {
+            return instrument;
+        }
+
         if (instrument == null) {
             instrument = new Instrument();
             instrument.id(id);
             instrument.setInstrumentDetector(detector);
             instrumentMap.put(id, instrument);
+            metadata.addInstrumentsItem(instrument);
         } else {
             instrument.setInstrumentDetector(detector);
         }
+        return instrument;
     }
 
     /**
@@ -394,12 +431,14 @@ public class MZTabParserContext {
      *
      * @param software SHOULD NOT set null
      */
-    public void addSoftware(Software software) {
+    public Software addSoftware(Metadata metadata, Software software) {
         if (software == null) {
             throw new IllegalArgumentException("Software should not be null");
         }
 
-        this.softwareMap.put(software.getId(), software);
+        softwareMap.put(software.getId(), software);
+        metadata.addSoftwareItem(software);
+        return software;
     }
 
     /**
@@ -409,23 +448,25 @@ public class MZTabParserContext {
      * @param id SHOULD be positive integer.
      * @param param if null ignore operation.
      */
-    public void addSoftwareParameter(Integer id, Parameter param) {
+    public Software addSoftwareParameter(Metadata metadata, Integer id, Parameter param) {
         if (id <= 0) {
             throw new IllegalArgumentException("Software id should be great than 0!");
         }
+        Software software = softwareMap.get(id);
         if (param == null) {
-            return;
+            return software;
         }
 
-        Software software = softwareMap.get(id);
         if (software == null) {
             software = new Software();
             software.id(id);
             software.setParameter(param);
             softwareMap.put(id, software);
+            metadata.addSoftwareItem(software);
         } else {
             software.setParameter(param);
         }
+        return software;
     }
 
     /**
@@ -436,23 +477,25 @@ public class MZTabParserContext {
      * @param id SHOULD be positive integer.
      * @param setting if empty ignore operation.
      */
-    public void addSoftwareSetting(Integer id, String setting) {
+    public Software addSoftwareSetting(Metadata metadata, Integer id, String setting) {
         if (id <= 0) {
             throw new IllegalArgumentException("Software id should be great than 0!");
         }
+        Software software = softwareMap.get(id);
         if (isEmpty(setting)) {
-            return;
+            return software;
         }
 
-        Software software = softwareMap.get(id);
         if (software == null) {
             software = new Software();
             software.id(id);
             software.addSettingItem(setting);
             softwareMap.put(id, software);
+            metadata.addSoftwareItem(software);
         } else  {
             software.addSettingItem(setting);
         }
+        return software;
     }
 
     /**
@@ -541,23 +584,23 @@ public class MZTabParserContext {
      * @param id SHOULD be positive integer.
      * @param param if null ignore operation.
      */
-    public void addSmallMoleculeSearchEngineScoreParameter(Integer id, Parameter param) {
-        if (id <= 0) {
-            throw new IllegalArgumentException("PSM search engine score id should be great than 0!");
-        }
-        if (param == null) {
-            return;
-        }
-
-        SmallMoleculeSearchEngineScore searchEngineScore = smallMoleculeSearchEngineScoreMap.get(id);
-        if (searchEngineScore == null) {
-            searchEngineScore = new SmallMoleculeSearchEngineScore(id);
-            searchEngineScore.setParameter(param);
-            smallMoleculeSearchEngineScoreMap.put(id, searchEngineScore);
-        } else {
-            searchEngineScore.setParameter(param);
-        }
-    }
+//    public void addSmallMoleculeSearchEngineScoreParameter(Integer id, Parameter param) {
+//        if (id <= 0) {
+//            throw new IllegalArgumentException("PSM search engine score id should be great than 0!");
+//        }
+//        if (param == null) {
+//            return;
+//        }
+//
+//        SmallMoleculeSearchEngineScore searchEngineScore = smallMoleculeSearchEngineScoreMap.get(id);
+//        if (searchEngineScore == null) {
+//            searchEngineScore = new SmallMoleculeSearchEngineScore(id);
+//            searchEngineScore.setParameter(param);
+//            smallMoleculeSearchEngineScoreMap.put(id, searchEngineScore);
+//        } else {
+//            searchEngineScore.setParameter(param);
+//        }
+//    }
 
     /**
      * Add a false_discovery_rate parameter to metadata. The file's false discovery rate(s) reported at the PSM,
@@ -581,12 +624,13 @@ public class MZTabParserContext {
      *
      * @param publication SHOULD NOT set null.
      */
-    public void addPublication(Publication publication) {
+    public Publication addPublication(Metadata metadata, Publication publication) {
         if (publication == null) {
             throw new IllegalArgumentException("Publication should not be null");
         }
-
-        this.publicationMap.put(publication.getId(), publication);
+        publicationMap.put(publication.getId(), publication);
+        metadata.addPublicationsItem(publication);
+        return publication;
     }
 
     /**
@@ -597,7 +641,7 @@ public class MZTabParserContext {
      * @param type SHOULD NOT set null.
      * @param accession SHOULD NOT set empty.
      */
-    public void addPublicationItem(Integer id, PublicationItem.TypeEnum type, String accession) {
+    public Publication addPublicationItem(Metadata metadata, Integer id, PublicationItem.TypeEnum type, String accession) {
         if (id <= 0) {
             throw new IllegalArgumentException("Publication id should be great than 0!");
         }
@@ -614,9 +658,11 @@ public class MZTabParserContext {
             publication.id(id);
             publication.addPublicationItemsItem(new PublicationItem().type(type).accession(accession));
             publicationMap.put(id, publication);
+            metadata.addPublicationsItem(publication);
         } else {
             publication.addPublicationItemsItem(new PublicationItem().type(type).accession(accession));
         }
+        return publication;
     }
 
     /**
@@ -627,7 +673,7 @@ public class MZTabParserContext {
      * @param id SHOULD be positive integer.
      * @param items SHOULD NOT set null.
      */
-    public void addPublicationItems(Integer id, Collection<PublicationItem> items) {
+    public Publication addPublicationItems(Metadata metadata, Integer id, Collection<PublicationItem> items) {
         if (id <= 0) {
             throw new IllegalArgumentException("Publication id should be great than 0!");
         }
@@ -641,9 +687,11 @@ public class MZTabParserContext {
             publication.id(id);
             publication.setPublicationItems(new ArrayList<>(items));
             publicationMap.put(id, publication);
+            metadata.addPublicationsItem(publication);
         } else {
             publication.setPublicationItems(new ArrayList<>(items));
         }
+        return publication;
     }
 
     /**
@@ -651,12 +699,14 @@ public class MZTabParserContext {
      *
      * @param contact SHOULD NOT set null.
      */
-    public void addContact(Contact contact) {
+    public Contact addContact(Metadata metadata, Contact contact) {
         if (contact == null) {
             throw new IllegalArgumentException("Contact should not be null");
         }
 
-        this.contactMap.put(contact.getId(), contact);
+        contactMap.put(contact.getId(), contact);
+        metadata.addContactsItem(contact);
+        return contact;
     }
 
     /**
@@ -666,7 +716,7 @@ public class MZTabParserContext {
      * @param id SHOULD be positive integer.
      * @param name SHOULD NOT set empty.
      */
-    public void addContactName(Integer id, String name) {
+    public Contact addContactName(Metadata metadata, Integer id, String name) {
         if (id <= 0) {
             throw new IllegalArgumentException("Contact id should be great than 0!");
         }
@@ -680,9 +730,11 @@ public class MZTabParserContext {
             contact.id(id);
             contact.setName(name);
             contactMap.put(id, contact);
+            metadata.addContactsItem(contact);
         } else {
             contact.setName(name);
         }
+        return contact;
     }
 
     /**
@@ -691,7 +743,7 @@ public class MZTabParserContext {
      * @param id SHOULD be positive integer.
      * @param affiliation SHOULD NOT set empty.
      */
-    public void addContactAffiliation(Integer id, String affiliation) {
+    public Contact addContactAffiliation(Metadata metadata, Integer id, String affiliation) {
         if (id <= 0) {
             throw new IllegalArgumentException("Contact id should be great than 0!");
         }
@@ -705,9 +757,11 @@ public class MZTabParserContext {
             contact.id(id);
             contact.setAffiliation(affiliation);
             contactMap.put(id, contact);
+            metadata.addContactsItem(contact);
         } else {
             contact.setAffiliation(affiliation);
         }
+        return contact;
     }
 
     /**
@@ -716,7 +770,7 @@ public class MZTabParserContext {
      * @param id SHOULD be positive integer.
      * @param email SHOULD NOT set empty.
      */
-    public void addContactEmail(Integer id, String email) {
+    public Contact addContactEmail(Metadata metadata, Integer id, String email) {
         if (id <= 0) {
             throw new IllegalArgumentException("Contact id should be great than 0!");
         }
@@ -730,21 +784,25 @@ public class MZTabParserContext {
             contact.id(id);
             contact.setEmail(email);
             contactMap.put(id, contact);
+            metadata.addContactsItem(contact);
         } else {
             contact.setEmail(email);
         }
+        return contact;
     }
 
     /**
      * Add uri into metadata. The URI pointing to the file's source data (e.g., a PRIDE experiment or a PeptideAtlas build).
      * @param uri if null ignore operation.
      */
-    public void addUri(URI uri) {
+    public URI addUri(Metadata metadata, URI uri) {
         if (uri == null) {
-            return;
+            return null;
         }
 
         this.uriList.add(uri);
+        metadata.addUriItem(uri.toASCIIString());
+        return uri;
     }
 
     /**
@@ -933,12 +991,14 @@ public class MZTabParserContext {
      *
      * @param msRun SHOULD NOT set null.
      */
-    public void addMsRun(MsRun msRun) {
+    public MsRun addMsRun(Metadata metadata, MsRun msRun) {
         if (msRun == null) {
             throw new IllegalArgumentException("MsRun should not be null");
         }
 
         msRunMap.put(msRun.getId(), msRun);
+        metadata.addMsrunItem(msRun);
+        return msRun;
     }
 
     /**
@@ -947,23 +1007,25 @@ public class MZTabParserContext {
      * @param id SHOULD be positive integer.
      * @param format if null ignore operation.
      */
-    public void addMsRunFormat(Integer id, Parameter format) {
+    public MsRun addMsRunFormat(Metadata metadata, Integer id, Parameter format) {
         if (id <= 0) {
             throw new IllegalArgumentException("ms_run id should be great than 0!");
         }
+        MsRun msRun = msRunMap.get(id);
         if (format == null) {
-            return;
+            return msRun;
         }
 
-        MsRun msRun = msRunMap.get(id);
         if (msRun == null) {
             msRun = new MsRun();
             msRun.id(id);
             msRun.setFormat(format);
             msRunMap.put(id, msRun);
+            metadata.addMsrunItem(msRun);
         } else {
             msRun.setFormat(format);
         }
+        return msRun;
     }
 
     /**
@@ -973,7 +1035,7 @@ public class MZTabParserContext {
      * @param id SHOULD be positive integer.
      * @param location if null ignore operation.
      */
-    public void addMsRunLocation(Integer id, URL location) {
+    public MsRun addMsRunLocation(Metadata metadata, Integer id, URL location) {
         if (id <= 0) {
             throw new IllegalArgumentException("ms_run id should be great than 0!");
         }
@@ -986,11 +1048,13 @@ public class MZTabParserContext {
         if (msRun == null) {
             msRun = new MsRun();
             msRun.id(id);
-            msRun.setLocation(location.toString());
+            msRun.setLocation(location==null?null:location.toString());
             msRunMap.put(id, msRun);
+            metadata.addMsrunItem(msRun);
         } else {
             msRun.setLocation(location.toString());
         }
+        return msRun;
     }
 
     /**
@@ -999,23 +1063,25 @@ public class MZTabParserContext {
      * @param id SHOULD be positive integer.
      * @param idFormat if null ignore operation.
      */
-    public void addMsRunIdFormat(Integer id, Parameter idFormat) {
+    public MsRun addMsRunIdFormat(Metadata metadata, Integer id, Parameter idFormat) {
         if (id <= 0) {
             throw new IllegalArgumentException("ms_run id should be great than 0!");
         }
+        MsRun msRun = msRunMap.get(id);
         if (idFormat == null) {
-            return;
+            return msRun;
         }
 
-        MsRun msRun = msRunMap.get(id);
         if (msRun == null) {
             msRun = new MsRun();
             msRun.id(id);
             msRun.setIdFormat(idFormat);
             msRunMap.put(id, msRun);
+            metadata.addMsrunItem(msRun);
         } else {
             msRun.setIdFormat(idFormat);
         }
+        return msRun;
     }
 
     /**
@@ -1025,26 +1091,28 @@ public class MZTabParserContext {
      * @param id SHOULD be positive integer.
      * @param fragmentationMethod if null ignore operation.
      */
-    public void addMsRunFragmentationMethod(Integer id, Parameter fragmentationMethod) {
+    public MsRun addMsRunFragmentationMethod(Metadata metadata, Integer id, Parameter fragmentationMethod) {
         if (id <= 0) {
             throw new IllegalArgumentException("ms_run id should be great than 0!");
         }
+        MsRun msRun = msRunMap.get(id);
         if (fragmentationMethod == null) {
-            return;
+            return msRun;
         }
 
-        MsRun msRun = msRunMap.get(id);
         if (msRun == null) {
             msRun = new MsRun();
             msRun.id(id);
             msRun.addFragmentationMethodItem(fragmentationMethod);
             msRunMap.put(id, msRun);
+            metadata.addMsrunItem(msRun);
         } else {
             msRun.addFragmentationMethodItem(fragmentationMethod);
         }
+        return msRun;
     }
 
-    public void addMsRunHash(Integer id, String hash) {
+    public MsRun addMsRunHash(Metadata metadata, Integer id, String hash) {
         if (id <= 0) {
             throw new IllegalArgumentException("ms_run id should be great than 0!");
         }
@@ -1058,28 +1126,32 @@ public class MZTabParserContext {
             msRun.id(id);
             msRun.setHash(hash);
             msRunMap.put(id, msRun);
+            metadata.addMsrunItem(msRun);
         } else {
             msRun.setHash(hash);
         }
+        return msRun;
     }
 
-    public void addMsRunHashMethod(Integer id, Parameter hashMethod) {
+    public MsRun addMsRunHashMethod(Metadata metadata, Integer id, Parameter hashMethod) {
         if (id <= 0) {
             throw new IllegalArgumentException("ms_run id should be great than 0!");
         }
+        MsRun msRun = msRunMap.get(id);
         if (hashMethod == null) {
-            return;
+            return msRun;
         }
 
-        MsRun msRun = msRunMap.get(id);
         if (msRun == null) {
             msRun = new MsRun();
             msRun.id(id);
             msRun.setHashMethod(hashMethod);
             msRunMap.put(id, msRun);
+            metadata.addMsrunItem(msRun);
         } else {
             msRun.setHashMethod(hashMethod);
         }
+        return msRun;
     }
 
     /**
@@ -1087,12 +1159,14 @@ public class MZTabParserContext {
      *
      * @param custom if null ignore operation.
      */
-    public void addCustom(Parameter custom) {
+    public Parameter addCustom(Metadata metadata, Parameter custom) {
         if (custom == null) {
-            return;
+            return null;
         }
 
         this.customList.add(custom);
+        metadata.addCustomItem(custom);
+        return custom;
     }
 
     /**
@@ -1103,12 +1177,14 @@ public class MZTabParserContext {
      *
      * @param assay SHOULD NOT set null.
      */
-    public void addAssay(Assay assay) {
+    public Assay addAssay(Metadata metadata, Assay assay) {
         if (assay == null) {
             throw new IllegalArgumentException("Assay should not be null");
         }
 
         assayMap.put(assay.getId(), assay);
+        metadata.addAssayItem(assay);
+        return assay;
     }
 
     /**
@@ -1144,7 +1220,7 @@ public class MZTabParserContext {
      * @param id SHOULD be positive integer.
      * @param sample SHOULD NOT set null, and SHOULD be defined in metadata first.
      */
-    public void addAssaySample(Integer id, Sample sample) {
+    public Assay addAssaySample(Metadata metadata, Integer id, Sample sample) {
         if (id <= 0) {
             throw new IllegalArgumentException("assay id should be great than 0!");
         }
@@ -1161,9 +1237,11 @@ public class MZTabParserContext {
             assay.id(id);
             assay.setSampleRef(sample);
             assayMap.put(id, assay);
+            metadata.addAssayItem(assay);
         } else {
             assay.setSampleRef(sample);
         }
+        return assay;
     }
 
     /**
@@ -1172,7 +1250,7 @@ public class MZTabParserContext {
      * @param id SHOULD be positive integer.
      * @param msRun SHOULD NOT set null, and SHOULD be defined in metadata first.
      */
-    public void addAssayMsRun(Integer id, MsRun msRun) {
+    public Assay addAssayMsRun(Metadata metadata, Integer id, MsRun msRun) {
         if (id <= 0) {
             throw new IllegalArgumentException("assay id should be great than 0!");
         }
@@ -1189,9 +1267,11 @@ public class MZTabParserContext {
             assay.id(id);
             assay.setMsRunRef(msRun);
             assayMap.put(id, assay);
+            metadata.addAssayItem(assay);
         } else {
             assay.setMsRunRef(msRun);
         }
+        return assay;
     }
 
     /**
@@ -1317,12 +1397,13 @@ public class MZTabParserContext {
      *
      * @param studyVariable SHOULD NOT set null.
      */
-    public void addStudyVariable(StudyVariable studyVariable) {
+    public StudyVariable addStudyVariable(Metadata metadata, StudyVariable studyVariable) {
         if (studyVariable == null) {
             throw new IllegalArgumentException("StudyVariable should not be null");
         }
-
         studyVariableMap.put(studyVariable.getId(), studyVariable);
+        metadata.addStudyVariableItem(studyVariable);
+        return studyVariable;
     }
 
     /**
@@ -1331,7 +1412,7 @@ public class MZTabParserContext {
      * @param id SHOULD be positive integer.
      * @param assay SHOULD NOT set null, and should be defined in metadata first.
      */
-    public void addStudyVariableAssay(Integer id, Assay assay) {
+    public StudyVariable addStudyVariableAssay(Metadata metadata, Integer id, Assay assay) {
         if (id <= 0) {
             throw new IllegalArgumentException("study variable id should be great than 0!");
         }
@@ -1348,9 +1429,11 @@ public class MZTabParserContext {
             studyVariable.id(id);
             studyVariable.addAssayRefsItem(assay);
             studyVariableMap.put(id, studyVariable);
+            metadata.addStudyVariableItem(studyVariable);
         } else {
             studyVariable.addAssayRefsItem(assay);
         }
+        return studyVariable;
     }
 
     /**
@@ -1359,7 +1442,7 @@ public class MZTabParserContext {
      * @param id SHOULD be positive integer.
      * @param sample SHOULD NOT set null, and should be defined in metadata first.
      */
-    public void addStudyVariableSample(Integer id, Sample sample) {
+    public StudyVariable addStudyVariableSample(Metadata metadata, Integer id, Sample sample) {
         if (id <= 0) {
             throw new IllegalArgumentException("study variable id should be great than 0!");
         }
@@ -1376,9 +1459,11 @@ public class MZTabParserContext {
             studyVariable.id(id);
             studyVariable.addSampleRefsItem(sample);
             studyVariableMap.put(id, studyVariable);
+            metadata.addStudyVariableItem(studyVariable);
         } else {
             studyVariable.addSampleRefsItem(sample);
         }
+        return studyVariable;
     }
 
     /**
@@ -1387,22 +1472,23 @@ public class MZTabParserContext {
      * @param id SHOULD be positive integer.
      * @param description if empty ignore operation.
      */
-    public void addStudyVariableDescription(Integer id, String description) {
+    public StudyVariable addStudyVariableDescription(Metadata metadata, Integer id, String description) {
         if (id <= 0) {
             throw new IllegalArgumentException("study variable id should be great than 0!");
         }
+        StudyVariable studyVariable = studyVariableMap.get(id);
         if (isEmpty(description)) {
-            return;
+            return studyVariable;
         }
 
-        StudyVariable studyVariable = studyVariableMap.get(id);
         if (studyVariable == null) {
             studyVariable = new StudyVariable();
             studyVariable.id(id);
+            metadata.addStudyVariableItem(studyVariable);
         }
 
         studyVariable.setDescription(description);
-        studyVariableMap.put(id, studyVariable);
+        return studyVariableMap.put(id, studyVariable);
     }
 
     /**
@@ -1411,12 +1497,14 @@ public class MZTabParserContext {
      *
      * @param cv SHOULD NOT set null.
      */
-    public void addCV(CV cv) {
+    public CV addCV(Metadata metadata, CV cv) {
         if (cv == null) {
             throw new NullPointerException("Controlled vocabularies/ontologies can not set null!");
         }
 
         cvMap.put(cv.getId(), cv);
+        metadata.addCvItem(cv);
+        return cv;
     }
 
     /**
@@ -1424,7 +1512,7 @@ public class MZTabParserContext {
      *
      * @param id SHOULD be positive integer.
      */
-    public void addCVLabel(Integer id, String label) {
+    public CV addCVLabel(Metadata metadata, Integer id, String label) {
         if (id <= 0) {
             throw new IllegalArgumentException("controlled vocabularies id should be great than 0!");
         }
@@ -1433,10 +1521,11 @@ public class MZTabParserContext {
         if (cv == null) {
             cv = new CV();
             cv.id(id);
+            metadata.addCvItem(cv);
         }
 
         cv.setLabel(label);
-        cvMap.put(id, cv);
+        return cvMap.put(id, cv);
     }
 
     /**
@@ -1445,7 +1534,7 @@ public class MZTabParserContext {
      *
      * @param id SHOULD be positive integer.
      */
-    public void addCVFullName(Integer id, String fullName) {
+    public CV addCVFullName(Metadata metadata, Integer id, String fullName) {
         if (id <= 0) {
             throw new IllegalArgumentException("controlled vocabularies id should be great than 0!");
         }
@@ -1454,10 +1543,11 @@ public class MZTabParserContext {
         if (cv == null) {
             cv = new CV();
             cv.id(id);
+            metadata.addCvItem(cv);
         }
 
         cv.setFullName(fullName);
-        cvMap.put(id, cv);
+        return cvMap.put(id, cv);
     }
 
     /**
@@ -1466,7 +1556,7 @@ public class MZTabParserContext {
      *
      * @param id SHOULD be positive integer.
      */
-    public void addCVVersion(Integer id, String version) {
+    public CV addCVVersion(Metadata metadata, Integer id, String version) {
         if (id <= 0) {
             throw new IllegalArgumentException("controlled vocabularies id should be great than 0!");
         }
@@ -1475,10 +1565,11 @@ public class MZTabParserContext {
         if (cv == null) {
             cv = new CV();
             cv.id(id);
+            metadata.addCvItem(cv);
         }
 
         cv.setVersion(version);
-        cvMap.put(id, cv);
+        return cvMap.put(id, cv);
     }
 
     /**
@@ -1487,7 +1578,7 @@ public class MZTabParserContext {
      *
      * @param id SHOULD be positive integer.
      */
-    public void addCVURL(Integer id, String url) {
+    public CV addCVURL(Metadata metadata, Integer id, String url) {
         if (id <= 0) {
             throw new IllegalArgumentException("controlled vocabularies id should be great than 0!");
         }
@@ -1496,10 +1587,11 @@ public class MZTabParserContext {
         if (cv == null) {
             cv = new CV();
             cv.id(id);
+            metadata.addCvItem(cv);
         }
 
         cv.setUrl(url);
-        cvMap.put(id, cv);
+        return cvMap.put(id, cv);
     }
 
     /**
@@ -1552,8 +1644,43 @@ public class MZTabParserContext {
      * @param column SHOULD NOT set null
      * @param param SHOULD NOT set null
      */
-    public void addSmallMoleculeColUnit(MZTabColumn column, Parameter param) {
-        this.smallMoleculeColUnitList.add(new ColUnit(column, param));
+    public void addSmallMoleculeColUnit(Metadata metadata, MZTabColumn column, Parameter param) {
+        ColumnParameterMapping cpm = new ColumnParameterMapping();
+        cpm.columnName(column.getName()).param(param);
+        this.smallMoleculeColUnitList.add(cpm);
+        metadata.addColunitSmallMoleculeItem(cpm);
+    }
+    
+    /**
+     * Defines the unit for the data reported in a column of the small molecule section. Defines the used unit for a column
+     * in the small molecule section. The format of the value has to be {column name}={Parameter defining the unit}
+     * This field MUST NOT be used to define a unit for quantification columns. The unit used for small molecule quantification
+     * values MUST be set in small_molecule-quantification_unit.
+     *
+     * @param column SHOULD NOT set null
+     * @param param SHOULD NOT set null
+     */
+    public void addSmallMoleculeFeatureColUnit(Metadata metadata, MZTabColumn column, Parameter param) {
+        ColumnParameterMapping cpm = new ColumnParameterMapping();
+        cpm.columnName(column.getName()).param(param);
+        this.smallMoleculeFeatureColUnitList.add(cpm);
+        metadata.addColunitSmallMoleculeFeatureItem(cpm);
+    }
+    
+    /**
+     * Defines the unit for the data reported in a column of the small molecule section. Defines the used unit for a column
+     * in the small molecule section. The format of the value has to be {column name}={Parameter defining the unit}
+     * This field MUST NOT be used to define a unit for quantification columns. The unit used for small molecule quantification
+     * values MUST be set in small_molecule-quantification_unit.
+     *
+     * @param column SHOULD NOT set null
+     * @param param SHOULD NOT set null
+     */
+    public void addSmallMoleculeEvidenceColUnit(Metadata metadata, MZTabColumn column, Parameter param) {
+        ColumnParameterMapping cpm = new ColumnParameterMapping();
+        cpm.columnName(column.getName()).param(param);
+        this.smallMoleculeEvidenceColUnitList.add(cpm);
+        metadata.addColunitSmallMoleculeEvidenceItem(cpm);
     }
 
     /**

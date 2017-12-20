@@ -131,7 +131,7 @@ public class SmallMoleculeColumn implements ISmallMoleculeColumn {
             this.column.setOrder(order);
         }
 
-        public static ISmallMoleculeColumn forName(String name) {
+        public static Stable forName(String name) {
             return Arrays.stream(Stable.values()).
                     filter((v) ->
                             v.getColumn().

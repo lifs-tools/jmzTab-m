@@ -25,7 +25,7 @@ public class SEHLineParser extends MZTabHeaderLineParser {
 
 
     public SEHLineParser(MZTabParserContext context, Metadata metadata) {
-        super(MZTabColumnFactory.getInstance(Section.Small_Molecule_Header), context, metadata);
+        super(context, MZTabColumnFactory.getInstance(Section.Small_Molecule_Header), metadata);
     }
 
     @Override
@@ -47,55 +47,15 @@ public class SEHLineParser extends MZTabHeaderLineParser {
             column = null;
             header = items[physicalPosition];
 
-            if (header.equals(IDENTIFIER.getName())) {
-                column = IDENTIFIER;
-            } else if (header.equals(CHEMICAL_FORMULA.getName())) {
-                column = CHEMICAL_FORMULA;
-            } else if (header.equals(SMILES.getName())) {
-                column = SMILES;
-            } else if (header.equals(INCHI.getName())) {
-                column = INCHI;
-            } else if (header.equals(EXP_MASS_TO_CHARGE.getName())) {
-                column = EXP_MASS_TO_CHARGE;
-            } else if (header.equals(CALC_MASS_TO_CHARGE.getName())) {
-                column = CALC_MASS_TO_CHARGE;
-            } else if (header.equals(CHARGE.getName())) {
-                column = CHARGE;
-            } else if (header.equals(RETENTION_TIME.getName())) {
-                column = RETENTION_TIME;
-            } else if (header.equals(TAXID.getName())) {
-                column = TAXID;
-            } else if (header.equals(SPECIES.getName())) {
-                column = SPECIES;
-            } else if (header.equals(DATABASE.getName())) {
-                column = DATABASE;
-            } else if (header.equals(DATABASE_VERSION.getName())) {
-                column = DATABASE_VERSION;
-            } else if (header.equals(RELIABILITY.getName())) {
-                column = RELIABILITY;
-            } else if (header.equals(URI.getName())) {
-                column = URI;
-            } else if (header.equals(SPECTRA_REF.getName())) {
-                column = SPECTRA_REF;
-            } else if (header.equals(SEARCH_ENGINE.getName())) {
-                column = SEARCH_ENGINE;
-            } else if (header.startsWith(BEST_SEARCH_ENGINE_SCORE.getName())) {
-                addBestSearchEngineScoreColumn(header, physicalPosition);
-            } else if (header.startsWith(SEARCH_ENGINE_SCORE.getName())) {
-                addSearchEngineScoreColumn(header, physicalPosition);
-            } else if (header.equals(MODIFICATIONS.getName())) {
-                column = MODIFICATIONS;
-            } else if (header.contains("abundance_assay")) {
-                checkAbundanceColumns(physicalPosition, physPositionToOrder.get(physicalPosition));
-            } else if (header.contains("abundance_study_variable")) {
-                checkAbundanceColumns(physicalPosition, physPositionToOrder.get(physicalPosition));
-                // stdev_study_variable and std_error_will be process inside
-            } else if (header.contains("abundance_stdev") || header.contains("abundance_std_error")) {
-                // ignore then, they have been process....
-            } else if (header.startsWith("opt_")) {
+            if (header.startsWith("opt_")) {
                 checkOptColumnName(header);
             } else {
-                throw new MZTabException(new MZTabError(LogicalErrorType.ColumnNotValid,lineNumber,header,section.getName()));
+                try {
+                    column = SmallMoleculeEvidenceColumn.Stable.forName(header);
+                } catch(IllegalArgumentException ex) {
+                    throw new MZTabException(new MZTabError(LogicalErrorType.ColumnNotValid,lineNumber,header,section.getName()));    
+                }
+                
             }
 
             if (column != null) {
@@ -126,67 +86,67 @@ public class SEHLineParser extends MZTabHeaderLineParser {
 
             columnHeader = items[physicalPosition];
 
-            if (columnHeader.startsWith(BEST_SEARCH_ENGINE_SCORE.getName())) {
-                //We assume that columns which start with the same name they are contiguous in the table
-                if (firstBSES) {
-                    physicalPositionToOrder.put(physicalPosition, fromIndexToOrder(++order));
-                    firstBSES = false;
-                } else {
-                    physicalPositionToOrder.put(physicalPosition, fromIndexToOrder(order));
-                }
-            } else if (columnHeader.startsWith(SEARCH_ENGINE_SCORE.getName())) {
-                if (firstSES) {
-                    physicalPositionToOrder.put(physicalPosition, fromIndexToOrder(++order));
-                    firstSES = false;
-                } else {
-                    physicalPositionToOrder.put(physicalPosition, fromIndexToOrder(order));
-                }
-            } else {
+//            if (columnHeader.startsWith(BEST_SEARCH_ENGINE_SCORE.getName())) {
+//                //We assume that columns which start with the same name they are contiguous in the table
+//                if (firstBSES) {
+//                    physicalPositionToOrder.put(physicalPosition, fromIndexToOrder(++order));
+//                    firstBSES = false;
+//                } else {
+//                    physicalPositionToOrder.put(physicalPosition, fromIndexToOrder(order));
+//                }
+//            } else if (columnHeader.startsWith(SEARCH_ENGINE_SCORE.getName())) {
+//                if (firstSES) {
+//                    physicalPositionToOrder.put(physicalPosition, fromIndexToOrder(++order));
+//                    firstSES = false;
+//                } else {
+//                    physicalPositionToOrder.put(physicalPosition, fromIndexToOrder(order));
+//                }
+//            } else {
                 physicalPositionToOrder.put(physicalPosition, fromIndexToOrder(++order));
-            }
+//            }
         }
         return physicalPositionToOrder;
     }
 
-    private void addBestSearchEngineScoreColumn(String header, Integer physicalPosition) throws MZTabException {
-        Pattern pattern = Pattern.compile("best_search_engine_score\\[(\\d+)\\]");
-        Matcher matcher = pattern.matcher(header);
-        SmallMoleculeColumn column;
-        int id;
+//    private void addBestSearchEngineScoreColumn(String header, Integer physicalPosition) throws MZTabException {
+//        Pattern pattern = Pattern.compile("best_search_engine_score\\[(\\d+)\\]");
+//        Matcher matcher = pattern.matcher(header);
+//        SmallMoleculeColumn column;
+//        int id;
+//
+//        if (matcher.find()) {
+//            id = parseIndex(header, matcher.group(1));
+//            if (!metadata.getSmallMoleculeSearchEngineScoreMap().containsKey(id)) {
+//                throw new MZTabException(new MZTabError(LogicalErrorType.SmallMoleculeSearchEngineScoreNotDefined, lineNumber, header));
+//            } else {
+//                column = BEST_SEARCH_ENGINE_SCORE;
+//                column.setOrder(physPositionToOrder.get(physicalPosition));
+//                factory.addBestSearchEngineScoreOptionalColumn(column, id);
+//            }
+//        }
+//    }
 
-        if (matcher.find()) {
-            id = parseIndex(header, matcher.group(1));
-            if (!metadata.getSmallMoleculeSearchEngineScoreMap().containsKey(id)) {
-                throw new MZTabException(new MZTabError(LogicalErrorType.SmallMoleculeSearchEngineScoreNotDefined, lineNumber, header));
-            } else {
-                column = BEST_SEARCH_ENGINE_SCORE;
-                column.setOrder(physPositionToOrder.get(physicalPosition));
-                factory.addBestSearchEngineScoreOptionalColumn(column, id);
-            }
-        }
-    }
-
-    private void addSearchEngineScoreColumn(String header, Integer physicalPosition) throws MZTabException {
-        Pattern pattern = Pattern.compile("search_engine_score\\[(\\d+)\\]_ms_run\\[(\\d+)\\]");
-        Matcher matcher = pattern.matcher(header);
-        SmallMoleculeColumn column;
-
-        if (matcher.find()) {
-            Integer score_id = parseIndex(header, matcher.group(1));
-            Integer ms_run_id = parseIndex(header, matcher.group(2));
-            MsRun msRun = metadata.getMsRunMap().get(ms_run_id);
-
-            if (msRun == null) {
-                throw new MZTabException(new MZTabError(LogicalErrorType.MsRunNotDefined, lineNumber, header));
-            } else if (!metadata.getSmallMoleculeSearchEngineScoreMap().containsKey(score_id)) {
-                throw new MZTabException(new MZTabError(LogicalErrorType.SmallMoleculeSearchEngineScoreNotDefined, lineNumber, header + "_ms_run[" + msRun.getId() + "]"));
-            } else {
-                column = SEARCH_ENGINE_SCORE;
-                column.setOrder(physPositionToOrder.get(physicalPosition));
-                factory.addSearchEngineScoreOptionalColumn(column, score_id, msRun);
-            }
-        }
-    }
+//    private void addSearchEngineScoreColumn(String header, Integer physicalPosition) throws MZTabException {
+//        Pattern pattern = Pattern.compile("search_engine_score\\[(\\d+)\\]_ms_run\\[(\\d+)\\]");
+//        Matcher matcher = pattern.matcher(header);
+//        SmallMoleculeColumn column;
+//
+//        if (matcher.find()) {
+//            Integer score_id = parseIndex(header, matcher.group(1));
+//            Integer ms_run_id = parseIndex(header, matcher.group(2));
+//            MsRun msRun = metadata.getMsRunMap().get(ms_run_id);
+//
+//            if (msRun == null) {
+//                throw new MZTabException(new MZTabError(LogicalErrorType.MsRunNotDefined, lineNumber, header));
+//            } else if (!metadata.getSmallMoleculeSearchEngineScoreMap().containsKey(score_id)) {
+//                throw new MZTabException(new MZTabError(LogicalErrorType.SmallMoleculeSearchEngineScoreNotDefined, lineNumber, header + "_ms_run[" + msRun.getId() + "]"));
+//            } else {
+//                column = SEARCH_ENGINE_SCORE;
+//                column.setOrder(physPositionToOrder.get(physicalPosition));
+//                factory.addSearchEngineScoreOptionalColumn(column, score_id, msRun);
+//            }
+//        }
+//    }
 
     /**
      * In "Quantification" file, following optional columns are mandatory:
@@ -220,14 +180,14 @@ public class SEHLineParser extends MZTabHeaderLineParser {
         }
 
         //smallmolecule_search_engine_score
-        if (metadata.getSmallMoleculeSearchEngineScoreMap().size() == 0) {
-            throw new MZTabException(new MZTabError(LogicalErrorType.NotDefineInMetadata, lineNumber, "smallmolecule_search_engine_score[1-n]", mode.toString(), type.toString()));
-        }
+//        if (metadata.getSmallMoleculeSearchEngineScoreMap().size() == 0) {
+//            throw new MZTabException(new MZTabError(LogicalErrorType.NotDefineInMetadata, lineNumber, "smallmolecule_search_engine_score[1-n]", mode.toString(), type.toString()));
+//        }
 
         //Mandatory in all modes
-        for (SearchEngineScore searchEngineScore : metadata.getSmallMoleculeSearchEngineScoreMap().values()) {
-            String searchEngineScoreLabel = "[" + searchEngineScore.getId() + "]";
-            refineOptionalColumn(mode, type, "best_search_engine_score" + searchEngineScoreLabel);
-        }
+//        for (SearchEngineScore searchEngineScore : metadata.getSmallMoleculeSearchEngineScoreMap().values()) {
+//            String searchEngineScoreLabel = "[" + searchEngineScore.getId() + "]";
+//            refineOptionalColumn(mode, type, "best_search_engine_score" + searchEngineScoreLabel);
+//        }
     }
 }

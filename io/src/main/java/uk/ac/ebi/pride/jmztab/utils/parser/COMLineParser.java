@@ -15,12 +15,18 @@ import uk.ac.ebi.pride.jmztab.utils.errors.MZTabException;
  * @since 10/02/13
  */
 public class COMLineParser extends MZTabLineParser {
+
+    public COMLineParser(MZTabParserContext context) {
+        super(context);
+    }
+
+    @Override
     public void parse(int lineNumber, String line, MZTabErrorList errorList) throws MZTabException {
         super.parse(lineNumber, line, errorList);
     }
 
     public Comment getComment() {
         String msg = items.length == 1 ? "" : items[1];
-        return new Comment().msg(msg).lineNumber(Long.valueOf(lineNumber));
+        return new Comment().msg(msg).lineNumber(Integer.valueOf(lineNumber));
     }
 }

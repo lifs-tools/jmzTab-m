@@ -25,7 +25,7 @@ public class SFHLineParser extends MZTabHeaderLineParser {
 
 
     public SFHLineParser(MZTabParserContext context, Metadata metadata) {
-        super(MZTabColumnFactory.getInstance(Section.Small_Molecule_Header), context, metadata);
+        super(context, MZTabColumnFactory.getInstance(Section.Small_Molecule_Header), metadata);
     }
 
     @Override
@@ -58,7 +58,7 @@ public class SFHLineParser extends MZTabHeaderLineParser {
                 checkOptColumnName(header);
             } else {
                 try {
-                    column = Stable.forName(header);
+                    column = SmallMoleculeFeatureColumn.Stable.forName(header);
                 } catch(IllegalArgumentException ex) {
                     throw new MZTabException(new MZTabError(LogicalErrorType.ColumnNotValid,lineNumber,header,section.getName()));    
                 }

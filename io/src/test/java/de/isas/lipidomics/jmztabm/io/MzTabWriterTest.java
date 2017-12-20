@@ -104,7 +104,7 @@ public class MzTabWriterTest {
                 cvAccession("SEP:00173").
                 name("SDS PAGE").
                 value(null));
-        mtd.sampleProcessing(sp);
+        mtd.sampleProcessing(Arrays.asList(sp));
 
         Instrument instrument1 = new Instrument().instrumentName(
             new Parameter().cvLabel("MS").

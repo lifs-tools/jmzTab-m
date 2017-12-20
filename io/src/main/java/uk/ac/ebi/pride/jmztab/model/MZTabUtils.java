@@ -327,6 +327,19 @@ public class MZTabUtils {
 
         return value;
     }
+    
+    public static Long parseLong(String target) {
+        target = parseString(target);
+        if (target == null) {
+            return null;
+        }
+
+        try {
+            return new Long(target);
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
 
     public static List<Double> parseDoubleList(String target) {
         List<String> list = parseStringList(BAR, target);

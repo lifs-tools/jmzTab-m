@@ -148,7 +148,7 @@ definitions:
         type: string
       line_number:
         type: integer
-        format: int64
+        format: int32
   IndexedElement:
     type: object
     discriminator: elementType
@@ -162,6 +162,7 @@ definitions:
         minimum: 1
       elementType:
         type: string
+        default: indexed_element
   Metadata:
     type: object
     required:
@@ -196,7 +197,10 @@ definitions:
       study:
         $ref: '#/definitions/ExternalStudy'
       sample_processing:
-        $ref: '#/definitions/SampleProcessing'
+        type: array
+        default: []
+        items:
+          $ref: '#/definitions/SampleProcessing'
       instruments:
         type: array
         default: []
@@ -230,6 +234,11 @@ definitions:
         default: []
         items:
           $ref: '#/definitions/Parameter'
+      study_variable:
+        type: array
+        default: []
+        items:
+          $ref: '#/definitions/StudyVariable'
       assay:
         type: array
         default: []
@@ -533,7 +542,7 @@ definitions:
           format: double
       rank:
         type: integer
-        format: int64
+        format: int32
       opt:
         type: array
         default: []

@@ -56,17 +56,17 @@ public class SmallMoleculeEvidenceColumn implements ISmallMoleculeEvidenceColumn
         // FIXME check whether this works (indexed columns), may require custom serializer
 //        ID_CONFIDENCE_MEASURE("id_confidence_measure", StringList.class, true, "18");
 
-        private final ISmallMoleculeColumn column;
+        private final ISmallMoleculeEvidenceColumn column;
 
         private Stable(String name, Class columnType, boolean optional,
                 String order) {
-            this.column = new SmallMoleculeColumn(name, columnType, optional,
+            this.column = new SmallMoleculeEvidenceColumn(name, columnType, optional,
                     order);
         }
 
         private Stable(String name, Class columnType, boolean optional,
                 String order, Integer id) {
-            this.column = new SmallMoleculeColumn(name, columnType, optional,
+            this.column = new SmallMoleculeEvidenceColumn(name, columnType, optional,
                     order, id);
         }
 
@@ -124,7 +124,7 @@ public class SmallMoleculeEvidenceColumn implements ISmallMoleculeEvidenceColumn
             this.column.setOrder(order);
         }
 
-        public static ISmallMoleculeColumn forName(String name) {
+        public static Stable forName(String name) {
             return Arrays.stream(Stable.values()).
                     filter((v) ->
                             v.getColumn().
@@ -141,15 +141,15 @@ public class SmallMoleculeEvidenceColumn implements ISmallMoleculeEvidenceColumn
         }
     };
 
-    private static Map<String, ISmallMoleculeColumn> optionalColumns = new LinkedHashMap<>();
+    private static Map<String, ISmallMoleculeEvidenceColumn> optionalColumns = new LinkedHashMap<>();
 
-    public static ISmallMoleculeColumn optional(String name, Class columnType,
+    public static ISmallMoleculeEvidenceColumn optional(String name, Class columnType,
             boolean optional,
             String order, Integer id) {
         if (optionalColumns.containsKey(name)) {
             return optionalColumns.get(name);
         }
-        ISmallMoleculeColumn c = new SmallMoleculeEvidenceColumn(name, columnType,
+        ISmallMoleculeEvidenceColumn c = new SmallMoleculeEvidenceColumn(name, columnType,
                 optional, order, id);
         optionalColumns.put(name, c);
         return c;

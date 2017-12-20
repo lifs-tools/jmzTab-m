@@ -64,16 +64,12 @@ public class MzTabWriter {
         StringBuilder sb = new StringBuilder();
         sb.
             append(toLine(metadata.getPrefix(), "mzTab-version", metadata.
-                getFileDescription().
                 getMzTabVersion())).
             append(toLine(metadata.getPrefix(), "mzTab-ID", metadata.
-                getFileDescription().
                 getMzTabID())).
             append(toLine(metadata.getPrefix(), "title", metadata.
-                getFileDescription().
                 getTitle())).
             append(toLine(metadata.getPrefix(), "description", metadata.
-                getFileDescription().
                 getDescription()));
         return sb.toString();
     }
@@ -183,7 +179,7 @@ public class MzTabWriter {
 //        mapper.enable(CsvParser.Feature.WRAP_AS_ARRAY);
         Builder builder = mapper.schema().
             builder();
-        MZTabColumnFactory.getInstance(Section.Small_Molecule).get
+//        MZTabColumnFactory.getInstance(Section.Small_Molecule).get
 
 //                addColumn("PREFIX", CsvSchema.ColumnType.STRING).
 //                addColumn("KEY", CsvSchema.ColumnType.STRING).addArrayColumn("VALUES", "|").build().
@@ -194,13 +190,13 @@ public class MzTabWriter {
 //                withoutQuoteChar().
 //                withoutEscapeChar().
 //                withColumnSeparator('\t');
-        try {
-            return mapper.writer(schema).
-                writeValueAsString(mztabfile.getMetadata());
-        } catch (JsonProcessingException ex) {
-            Logger.getLogger(MzTabWriter.class.getName()).
-                log(Level.SEVERE, null, ex);
-        }
+//        try {
+//            return mapper.writer(schema).
+//                writeValueAsString(mztabfile.getMetadata());
+//        } catch (JsonProcessingException ex) {
+//            Logger.getLogger(MzTabWriter.class.getName()).
+//                log(Level.SEVERE, null, ex);
+//        }
         return "";
     }
 //    
