@@ -203,7 +203,7 @@ public class MZTabUtils {
     /**
      * parse the target into a {@link Parameter} object.
      */
-    public static Parameter parseIndexedElement(String target, MetadataElement element) {
+    public static IndexedElement parseParameter(String target, MetadataElement element) {
         target = parseString(target);
         if (target == null) {
             return null;
@@ -213,8 +213,8 @@ public class MZTabUtils {
         Matcher matcher = pattern.matcher(target);
         if (matcher.find()) {
             Integer id = new Integer(matcher.group(1));
-            Parameter p = new Parameter();
-            p.elementType(Serializers.getElementName(element).get()).id(id);
+            IndexedElement p = new IndexedElement().id(id);
+            p.elementType(element.getName());
             return p;
         } else {
             return null;
@@ -224,13 +224,13 @@ public class MZTabUtils {
     /**
      * Parse the target into a {@link Parameter} list.
      */
-    public static List<IndexedElement> parseIndexedElementList(String target, MetadataElement element) {
+    public static List<IndexedElement> parseRefList(String target, MetadataElement element) {
         List<String> list = parseStringList(MZTabConstants.COMMA, target);
 
         List<IndexedElement> indexedElementList = new ArrayList<>();
-        Parameter indexedElement;
+        IndexedElement indexedElement;
         for (String item : list) {
-            indexedElement = parseIndexedElement(item, element);
+            indexedElement = parseParameter(item, element);
             if (indexedElement == null) {
                 indexedElementList.clear();
                 return indexedElementList;
@@ -403,34 +403,29 @@ public class MZTabUtils {
         PublicationItem.TypeEnum type;
         String accession;
         PublicationItem item;
-//        SplitList<PublicationItem> itemList = new SplitList<PublicationItem>(BAR);
         for (String pub : list) {
-            pub = parseString(pub);
+            pub = parseString(pub).toLowerCase();
             if (pub == null) {
                 publication.getPublicationItems().clear();
-                break;
+                return publication;
             }
-
-            if(pub.startsWith(PublicationItem.TypeEnum.DOI.name()) && !pub.contains(PublicationItem.TypeEnum.PUBMED.name())){
-                type = PublicationItem.TypeEnum.DOI;
-            } else if(pub.startsWith(PublicationItem.TypeEnum.PUBMED.name()) && !pub.contains(PublicationItem.TypeEnum.DOI.name())){
-                type = PublicationItem.TypeEnum.PUBMED;
-            }
-            else {
-                publication.getPublicationItems().clear();
-                //Publication not supported
-                break;
-            }
-
-            String[] items = pub.split(type.name() + COLON);
+            String[] items = pub.split(""+COLON);
             if (items.length == 2) {
+                type = PublicationItem.TypeEnum.fromValue(items[0]);
+                if(type == null) {
+                    //FIXME add logging?
+                    publication.getPublicationItems().clear();
+                    //Publication not supported
+                    return publication;
+                }
                 accession = items[1].trim();
                 item = new PublicationItem().type(type).accession(accession);
                 publication.addPublicationItemsItem(item);
             }  else {
+                //FIXME add logging?
                 publication.getPublicationItems().clear();
                 //Publication not supported
-                break;
+                return publication;
             }
 
         }

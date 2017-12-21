@@ -23,6 +23,7 @@ public class FormatErrorType extends MZTabErrorType {
     public static MZTabErrorType MTDDefineLabel = createError(Format, "MTDDefineLabel");
     public static MZTabErrorType MZTabMode = createError(Format, "MZTabMode");
     public static MZTabErrorType MZTabType = createError(Format, "MZTabType");
+    public static MZTabErrorType MZTabVersion = createError(Format, "MZTabVersion");
     public static MZTabErrorType Param = createError(Format, "Param");
     public static MZTabErrorType ParamList = createError(Format, "ParamList");
     public static MZTabErrorType Publication = createError(Format, "Publication");

@@ -2,6 +2,7 @@ package uk.ac.ebi.pride.jmztab.utils.parser;
 
 
 
+import de.isas.lipidomics.jmztabm.io.serialization.Serializers;
 import de.isas.mztab1_1.model.Assay;
 import de.isas.mztab1_1.model.Metadata;
 import de.isas.mztab1_1.model.MsRun;
@@ -20,6 +21,7 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 import uk.ac.ebi.pride.jmztab.model.MZTabUtils;
+import uk.ac.ebi.pride.jmztab.model.MetadataProperty;
 import uk.ac.ebi.pride.jmztab.utils.errors.MZTabErrorList;
 
 /**
@@ -192,7 +194,7 @@ public class MTDLineParserTest {
         assertTrue(context.getMsRunMap().size() == 3);
         MsRun msRun1 = context.getMsRunMap().get(1);
         assertNull(msRun1.getLocation());
-        assertEquals(msRun1.toString(),"MTD\tms_run[1]-location\tnull\n");
+        assertEquals(Serializers.printProperty(msRun1, msRun1.getId(), MetadataProperty.MS_RUN_LOCATION, msRun1.getLocation()),"MTD\tms_run[1]-location\tnull");
 
 
         MsRun msRun2 = context.getMsRunMap().get(2);
@@ -299,7 +301,7 @@ public class MTDLineParserTest {
         context.addAssay(metadata, assay2);
         parser.parse(1, "MTD\tstudy_variable[2]-assay_refs\tassay[1], assay[2]", errorList);
         assertTrue(context.getStudyVariableMap().get(2).getAssayRefs().size() == 2);
-        assertTrue(context.getStudyVariableMap().get(2).getAssayRefs().get((1-0)) == assay1);
+        assertTrue(context.getStudyVariableMap().get(2).getAssayRefs().get(0) == assay1);
     }
 
 

@@ -23,7 +23,7 @@ public enum MetadataElement {
     URI                               ("uri"),
 //    FIXED_MOD                         ("fixed_mod"),
 //    VARIABLE_MOD                      ("variable_mod"),
-//    QUANTIFICATION_METHOD             ("quantification_method"),
+    QUANTIFICATION_METHOD             ("quantification_method"),
 //    PROTEIN                           ("protein"),
 //    PEPTIDE                           ("peptide"),
     SMALL_MOLECULE                    ("small_molecule"),

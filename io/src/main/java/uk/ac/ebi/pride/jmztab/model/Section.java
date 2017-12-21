@@ -1,5 +1,7 @@
 package uk.ac.ebi.pride.jmztab.model;
 
+import de.isas.mztab1_1.model.Assay;
+
 /**
  * Every line in an mzTab file MUST start with a three letter code identifying the type of line delimited by
  * a Tab character. The three letter codes are as follows :
@@ -274,6 +276,39 @@ public enum Section {
             return Small_Molecule_Evidence;
         } else {
             return null;
+        }
+    }
+    
+    public static Section findSection(Object object) throws IllegalArgumentException {
+        switch(object.getClass().getSimpleName()) {
+            case "Assay":
+            case "CV":
+            case "ColumnParameterMapping":
+            case "Contact":
+            case "Database":
+            case "ExternalStudy":
+            case "Instrument":
+            case "Metadata":
+            case "MsRun":
+            case "OptColumnMapping":
+            case "Parameter":
+            case "Publication":
+            case "PublicationItem":
+            case "Sample":
+            case "SampleProcessing":
+            case "Software":
+            case "StudyVariable":
+                return Metadata;
+            case "Comment":
+                return Comment;
+            case "SmallMoleculeSummary":
+                return Small_Molecule;
+            case "SmallMoleculeFeature":
+                return Small_Molecule_Feature;
+            case "SmallMoleculeEvidence":
+                return Small_Molecule_Evidence;
+            default:
+                return null;
         }
     }
 }

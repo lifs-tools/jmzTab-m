@@ -49,21 +49,21 @@ public class MTDLineValidateTest {
             logger.debug(e.getMessage());
         }
 
-        try {
-            parser.parse(1, "MTD\tmzTab-mode\tUnknow", errorList);
-            assertTrue(false);
-        } catch (MZTabException e) {
-            assertTrue(e.getError().getType() == FormatErrorType.MZTabMode);
-            logger.debug(e.getMessage());
-        }
-
-        try {
-            parser.parse(1, "MTD\tmzTab-type\tUnknow", errorList);
-            assertTrue(false);
-        } catch (MZTabException e) {
-            assertTrue(e.getError().getType() == FormatErrorType.MZTabType);
-            logger.debug(e.getMessage());
-        }
+//        try {
+//            parser.parse(1, "MTD\tmzTab-mode\tUnknow", errorList);
+//            assertTrue(false);
+//        } catch (MZTabException e) {
+//            assertTrue(e.getError().getType() == FormatErrorType.MZTabMode);
+//            logger.debug(e.getMessage());
+//        }
+//
+//        try {
+//            parser.parse(1, "MTD\tmzTab-type\tUnknow", errorList);
+//            assertTrue(false);
+//        } catch (MZTabException e) {
+//            assertTrue(e.getError().getType() == FormatErrorType.MZTabType);
+//            logger.debug(e.getMessage());
+//        }
     }
 
     @Test
@@ -93,7 +93,13 @@ public class MTDLineValidateTest {
         }
 
         // param error.
-        parser.parse(1, "MTD\tinstrument[1]-analyzer[1]\t[MS, MS:1000291, ,]", errorList);
+        try {
+            parser.parse(1, "MTD\tinstrument[1]-analyzer[1]\t[MS, MS:1000291, ,]", errorList);
+            assertTrue(false);
+        } catch(MZTabException e) {
+            assertTrue(e.getError().getType() == LogicalErrorType.NULL);
+            logger.debug(e.getMessage());
+        }
         assertTrue(errorList.size() == 4);
         assertTrue(errorList.getError(3).getType() ==  FormatErrorType.Param);
     }
