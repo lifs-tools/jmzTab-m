@@ -30,19 +30,19 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import static uk.ac.ebi.pride.jmztab.model.MZTabConstants.COMMA;
-import uk.ac.ebi.pride.jmztab.model.MZTabUtils;
-import uk.ac.ebi.pride.jmztab.model.MetadataProperty;
-import uk.ac.ebi.pride.jmztab.model.Section;
-import static uk.ac.ebi.pride.jmztab.model.MZTabConstants.MINUS;
-import static uk.ac.ebi.pride.jmztab.model.MZTabConstants.NEW_LINE;
-import static uk.ac.ebi.pride.jmztab.model.MZTabConstants.NULL;
-import static uk.ac.ebi.pride.jmztab.model.MZTabConstants.TAB;
-import uk.ac.ebi.pride.jmztab.model.MetadataElement;
-import static uk.ac.ebi.pride.jmztab.model.MetadataElement.MZTAB;
-import static uk.ac.ebi.pride.jmztab.model.MetadataProperty.MZTAB_ID;
-import static uk.ac.ebi.pride.jmztab.model.MetadataProperty.MZTAB_VERSION;
-import static uk.ac.ebi.pride.jmztab.model.MetadataProperty.STUDY_VARIABLE_DESCRIPTION;
+import static uk.ac.ebi.pride.jmztab1_1.model.MZTabConstants.COMMA;
+import uk.ac.ebi.pride.jmztab1_1.model.MZTabUtils;
+import uk.ac.ebi.pride.jmztab1_1.model.MetadataProperty;
+import uk.ac.ebi.pride.jmztab1_1.model.Section;
+import static uk.ac.ebi.pride.jmztab1_1.model.MZTabConstants.MINUS;
+import static uk.ac.ebi.pride.jmztab1_1.model.MZTabConstants.NEW_LINE;
+import static uk.ac.ebi.pride.jmztab1_1.model.MZTabConstants.NULL;
+import static uk.ac.ebi.pride.jmztab1_1.model.MZTabConstants.TAB;
+import uk.ac.ebi.pride.jmztab1_1.model.MetadataElement;
+import static uk.ac.ebi.pride.jmztab1_1.model.MetadataElement.MZTAB;
+import static uk.ac.ebi.pride.jmztab1_1.model.MetadataProperty.MZTAB_ID;
+import static uk.ac.ebi.pride.jmztab1_1.model.MetadataProperty.MZTAB_VERSION;
+import static uk.ac.ebi.pride.jmztab1_1.model.MetadataProperty.STUDY_VARIABLE_DESCRIPTION;
 
 /**
  *

@@ -73,7 +73,12 @@
             <version>${jmztab.version}</version>
             <!-- based on mzTab specification version 1.0 -->
         </dependency>
-       
+        <dependency>
+            <groupId>de.isas.mztab</groupId>
+            <artifactId>io</artifactId>
+            <version>${project.version}</version>
+            <type>jar</type>
+        </dependency>
     </dependencies>
 
     <build>

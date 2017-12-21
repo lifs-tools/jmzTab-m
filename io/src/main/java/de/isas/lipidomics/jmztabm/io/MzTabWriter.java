@@ -29,9 +29,9 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-import uk.ac.ebi.pride.jmztab.model.MZTabColumnFactory;
-import uk.ac.ebi.pride.jmztab.model.Section;
-import uk.ac.ebi.pride.jmztab.model.SmallMoleculeColumn;
+import uk.ac.ebi.pride.jmztab1_1.model.MZTabColumnFactory;
+import uk.ac.ebi.pride.jmztab1_1.model.Section;
+import uk.ac.ebi.pride.jmztab1_1.model.SmallMoleculeColumn;
 
 /**
  *

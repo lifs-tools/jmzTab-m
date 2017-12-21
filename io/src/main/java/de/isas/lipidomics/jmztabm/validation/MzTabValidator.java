@@ -3,22 +3,14 @@
  */
 package de.isas.lipidomics.jmztabm.validation;
 
-import de.isas.lipidomics.jmztabm.io.serialization.Serializers;
-import de.isas.mztab1_1.model.IndexedElement;
 import de.isas.mztab1_1.model.MzTab;
-import de.isas.mztab1_1.model.SmallMoleculeSummary;
 import de.isas.mztab1_1.model.ValidationMessage;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import javax.validation.ConstraintViolation;
-import javax.validation.Path;
 import javax.validation.Validation;
 import javax.validation.ValidatorFactory;
-import uk.ac.ebi.pride.jmztab.model.MZTabColumnFactory;
-import uk.ac.ebi.pride.jmztab.model.MZTabConstants;
-import uk.ac.ebi.pride.jmztab.model.MZTabUtils;
-import uk.ac.ebi.pride.jmztab.model.Section;
 
 /**
  *

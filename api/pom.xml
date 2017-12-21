@@ -26,7 +26,6 @@
                             <!-- target to generate java client code -->
                             <inputSpec>${project.basedir}/src/main/resources/mzTab_m_swagger.yml</inputSpec>
                             <language>java</language>
-                            <templateDirectory>${project.basedir}/src/main/resources/java</templateDirectory>
                             <library>jersey2</library>
                             <modelPackage>de.isas.mztab1_1.model</modelPackage>
                             <apiPackage>de.isas.mztab1_1.api</apiPackage>

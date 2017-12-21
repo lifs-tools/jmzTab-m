@@ -84,7 +84,7 @@ public class FileUploadController {
     public ModelAndView validateFile(@PathVariable String filename) {
         ModelAndView modelAndView = new ModelAndView("validationResult");
         modelAndView.addObject("validationFile", filename);
-        modelAndView.addObject("validationResults", validationService.validate(filename));
+        modelAndView.addObject("validationResults", validationService.validate(ValidationService.MzTabVersion.MZTAB_1_1, filename));
         return modelAndView;
     }
 
