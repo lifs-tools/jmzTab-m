@@ -17,6 +17,7 @@ package de.isas.lipidomics.mztab.validator.webapp.service.validation;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 import uk.ac.ebi.pride.jmztab.utils.MZTabFileParser;
@@ -29,11 +30,12 @@ import uk.ac.ebi.pride.jmztab.utils.errors.MZTabErrorType;
  * @author Nils Hoffmann <nils.hoffmann@isas.de>
  */
 public class EbiValidator implements Validator {
-    public void validate(Path filepath,
-            String validationLevel, List<ValidationResult> validationResults) throws IllegalStateException, IOException {
+    public List<ValidationResult> validate(Path filepath,
+            String validationLevel, int maxErrors) throws IllegalStateException, IOException {
         MZTabFileParser parser = new MZTabFileParser(filepath.toFile(),
-                System.out, MZTabErrorType.findLevel(validationLevel), 1000);
+                System.out, MZTabErrorType.findLevel(validationLevel), maxErrors);
         MZTabErrorList errorList = parser.getErrorList();
+        List<ValidationResult> validationResults = new ArrayList<>(errorList.size());
         for (MZTabError error : errorList.getErrorList()) {
             de.isas.lipidomics.mztab.validator.webapp.service.validation.Level level = de.isas.lipidomics.mztab.validator.webapp.service.validation.Level.INFO;
             switch (error.getType().
@@ -57,5 +59,6 @@ public class EbiValidator implements Validator {
                     info(vr.toString());
             validationResults.add(vr);
         }
+        return validationResults;
     }
 }

@@ -43,16 +43,17 @@ public class MzTabValidationService implements ValidationService {
 
     @Override
     public List<ValidationResult> validate(MzTabVersion mzTabVersion,
-            String filename) {
+            String filename, int maxErrors) {
         Path filepath = storageService.load(filename);
+        
         try {
             List<ValidationResult> validationResults = new ArrayList<>();
-            validate(mzTabVersion, filepath, Level.Error,
-                validationResults);
-            validate(mzTabVersion, filepath, Level.Warn,
-                validationResults);
-            validate(mzTabVersion, filepath, Level.Info,
-                validationResults);
+            validationResults.addAll(validate(mzTabVersion, filepath, Level.Error,
+                maxErrors));
+            validationResults.addAll(validate(mzTabVersion, filepath, Level.Warn,
+                maxErrors));
+            validationResults.addAll(validate(mzTabVersion, filepath, Level.Info,
+                maxErrors));
             return validationResults;
         } catch (IOException ex) {
             Logger.getLogger(MzTabValidationService.class.getName()).
@@ -61,17 +62,15 @@ public class MzTabValidationService implements ValidationService {
         return Collections.emptyList();
     }
 
-    private void validate(MzTabVersion mzTabVersion, Path filepath,
-            Level validationLevel, List<ValidationResult> validationResults) throws IllegalStateException, IOException {
+    private List<ValidationResult> validate(MzTabVersion mzTabVersion, Path filepath,
+            Level validationLevel, int maxErrors) throws IllegalStateException, IOException {
         switch(mzTabVersion) {
             case MZTAB_1_0:
-                new EbiValidator().validate(filepath, validationLevel.name(),
-                    validationResults);
-                break;
+                return new EbiValidator().validate(filepath, validationLevel.name(),
+                    maxErrors);
             case MZTAB_1_1:
-                new IsasValidator().validate(filepath, validationLevel.name(),
-                    validationResults);
-                break;
+                return new IsasValidator().validate(filepath, validationLevel.name(),
+                    maxErrors);
             default:
                 throw new IllegalStateException("Unsupported mzTab version: "+mzTabVersion.toString());
         }

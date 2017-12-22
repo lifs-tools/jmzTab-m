@@ -24,5 +24,5 @@ import java.util.List;
  */
 public interface ValidationService {
     static enum MzTabVersion{MZTAB_1_0, MZTAB_1_1};
-    List<ValidationResult> validate(MzTabVersion version, String filename);
+    List<ValidationResult> validate(MzTabVersion version, String filename, int maxErrors);
 }

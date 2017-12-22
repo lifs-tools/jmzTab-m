@@ -24,6 +24,6 @@ import java.util.List;
  * @author Nils Hoffmann <nils.hoffmann@isas.de>
  */
 public interface Validator {
-    public void validate(Path filepath,
-             String validationLevel, List<ValidationResult> validationResults) throws IllegalStateException, IOException;
+    public List<ValidationResult> validate(Path filepath,
+             String validationLevel, int maxErrors) throws IllegalStateException, IOException;
 }
