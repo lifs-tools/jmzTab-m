@@ -15,27 +15,30 @@
  */
 package de.isas.lipidomics.mztab.validator.webapp.controller;
 
+import de.isas.lipidomics.mztab.validator.webapp.domain.Page;
+import de.isas.lipidomics.mztab.validator.webapp.domain.ValidationForm;
 import de.isas.lipidomics.mztab.validator.webapp.service.StorageService;
 import de.isas.lipidomics.mztab.validator.webapp.service.ValidationService;
 import de.isas.lipidomics.mztab.validator.webapp.service.storage.StorageFileNotFoundException;
 import java.io.IOException;
-import java.util.stream.Collectors;
+import java.util.Date;
+import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.QueryParam;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.Resource;
-import org.springframework.http.HttpHeaders;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.Mapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import org.springframework.web.util.UriComponents;
 
 /**
  *
@@ -48,66 +51,81 @@ public class ValidationController {
     private final ValidationService validationService;
     private int maxErrors = 100;
 
+    @Value("${version.number}")
+    private String versionNumber;
+
     @Autowired
-    public ValidationController(StorageService storageService, ValidationService validationService) {
+    public ValidationController(StorageService storageService,
+        ValidationService validationService) {
         this.storageService = storageService;
         this.validationService = validationService;
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ModelAndView handleError(HttpServletRequest req, Exception exception)
+        throws Exception {
+
+        ModelAndView mav = new ModelAndView();
+        mav.addObject("page", new Page("mzTabValidator", versionNumber));
+        mav.addObject("error", exception);
+        mav.addObject("url", req.getRequestURL());
+        mav.addObject("timestamp", new Date().toString());
+        mav.addObject("status", 500);
+        mav.setViewName("error");
+        return mav;
     }
 
     @GetMapping("/")
     public ModelAndView listUploadedFiles() throws IOException {
         ModelAndView model = new ModelAndView("index");
-//        model.addObject("files", storageService.loadAll().map(
-//                path -> MvcUriComponentsBuilder.fromMethodName(FileUploadController.class,
-//                        "validateFile", path.getFileName().toString()).build().toString())
-//                .collect(Collectors.toList()));
-        model.addObject("allVersions", ValidationService.MzTabVersion.values());
-        model.addObject("version", ValidationService.MzTabVersion.MZTAB_1_1);
-        model.addObject("maxErrors", Integer.valueOf(maxErrors));
+        model.addObject("page", new Page("mzTabValidator", versionNumber));
+        model.addObject("validationForm", new ValidationForm());
         return model;
     }
 
-//    @GetMapping(value = "/files/{filename:.+}", produces = {"text/plain"})
-//    @ResponseBody
-//    public ResponseEntity<Resource> serveFile(@PathVariable String filename) {
-//        Resource file = storageService.loadAsResource(filename);
-//        return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION,
-//                "attachment; filename=\"" + file.getFilename() + "\"").body(file);
-//    }
-
     @PostMapping("/")
-    public ModelAndView handleFileUpload(@RequestParam("file") MultipartFile file, @RequestParam("version") String version, @RequestParam("maxErrors") int maxErrors, RedirectAttributes redirectAttributes) {
-        String filename = storageService.store(file);
+    public ModelAndView handleFileUpload(
+        @ModelAttribute ValidationForm validationForm,
+        RedirectAttributes redirectAttributes, HttpServletRequest request) {
+        String filename = storageService.store(validationForm.getFile());
+        UriComponents uri = ServletUriComponentsBuilder
+                            .fromServletMapping(request).pathSegment("validate", filename).queryParam("version", validationForm.getMzTabVersion()).queryParam("maxErrors", validationForm.getMaxErrors())
+                            .build();
         ModelAndView modelAndView = new ModelAndView(
-            "redirect:/validate/"+filename+
-            "?version="+(version==null?ValidationService.MzTabVersion.MZTAB_1_1:ValidationService.MzTabVersion.valueOf(version))+
-            "&maxErrors="+(maxErrors>0?maxErrors:this.maxErrors));
-//        redirectAttributes.addFlashAttribute("message",
-//                "You successfully uploaded " + file.getOriginalFilename() + "!");
+            "redirect:"+uri.toUriString());
         return modelAndView;
     }
 
-    @GetMapping(value="/validate/{filename:.+}")
-    public ModelAndView validateFile(@PathVariable String filename, @QueryParam("version") ValidationService.MzTabVersion version, @QueryParam("maxErrors") int maxErrors) {
+    @GetMapping(value = "/validate/{filename:.+}")
+    public ModelAndView validateFile(@PathVariable String filename, @QueryParam(
+        "version") ValidationService.MzTabVersion version, @QueryParam(
+        "maxErrors") int maxErrors) {
         ModelAndView modelAndView = new ModelAndView("validationResult");
+        modelAndView.
+            addObject("page", new Page("mzTabValidator", versionNumber));
         modelAndView.addObject("validationFile", filename);
-        if(version!=null) {
-            modelAndView.addObject("validationVersion", version);
+        ValidationService.MzTabVersion validationVersion = version;
+        if (validationVersion != null) {
+            modelAndView.addObject("validationVersion", validationVersion);
         } else {
-            modelAndView.addObject("validationVersion", ValidationService.MzTabVersion.MZTAB_1_1);
+            validationVersion = ValidationService.MzTabVersion.MZTAB_1_1;
+            modelAndView.addObject("validationVersion", validationVersion);
         }
-        if(maxErrors>0) {
+        if (maxErrors > 0) {
             modelAndView.addObject("validationMaxErrors", maxErrors);
         } else {
             modelAndView.addObject("validationMaxErrors", 100);
         }
-        modelAndView.addObject("validationResults", validationService.validate(ValidationService.MzTabVersion.MZTAB_1_1, filename, maxErrors));
+        modelAndView.addObject("validationResults", validationService.validate(
+            validationVersion, filename, maxErrors));
         return modelAndView;
     }
 
     @ExceptionHandler(StorageFileNotFoundException.class)
-    public ResponseEntity<?> handleStorageFileNotFound(StorageFileNotFoundException exc) {
-        return ResponseEntity.notFound().build();
+    public ResponseEntity<?> handleStorageFileNotFound(
+        StorageFileNotFoundException exc) {
+        return ResponseEntity.notFound().
+            build();
     }
 
 }

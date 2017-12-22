@@ -15,6 +15,7 @@
  */
 package de.isas.lipidomics.mztab.validator.webapp.service.validation;
 
+import de.isas.lipidomics.mztab.validator.webapp.domain.ValidationResult;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -37,17 +38,17 @@ public class EbiValidator implements Validator {
         MZTabErrorList errorList = parser.getErrorList();
         List<ValidationResult> validationResults = new ArrayList<>(errorList.size());
         for (MZTabError error : errorList.getErrorList()) {
-            de.isas.lipidomics.mztab.validator.webapp.service.validation.Level level = de.isas.lipidomics.mztab.validator.webapp.service.validation.Level.INFO;
+            de.isas.lipidomics.mztab.validator.webapp.domain.ValidationLevel level = de.isas.lipidomics.mztab.validator.webapp.domain.ValidationLevel.INFO;
             switch (error.getType().
                     getLevel()) {
                 case Error:
-                    level = de.isas.lipidomics.mztab.validator.webapp.service.validation.Level.ERROR;
+                    level = de.isas.lipidomics.mztab.validator.webapp.domain.ValidationLevel.ERROR;
                     break;
                 case Info:
-                    level = de.isas.lipidomics.mztab.validator.webapp.service.validation.Level.INFO;
+                    level = de.isas.lipidomics.mztab.validator.webapp.domain.ValidationLevel.INFO;
                     break;
                 case Warn:
-                    level = de.isas.lipidomics.mztab.validator.webapp.service.validation.Level.WARN;
+                    level = de.isas.lipidomics.mztab.validator.webapp.domain.ValidationLevel.WARN;
                     break;
                 default:
                     throw new IllegalStateException("State " + error.getType().

@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.isas.lipidomics.mztab.validator.webapp.service.validation;
+package de.isas.lipidomics.mztab.validator.webapp.domain;
 
+import de.isas.lipidomics.mztab.validator.webapp.domain.ValidationLevel;
 import java.util.Objects;
 
 /**
@@ -25,12 +26,12 @@ public class ValidationResult {
 
 
     private final int lineNumber;
-    private final Level level;
+    private final ValidationLevel level;
     private final String message;
     private final String ruleId;
     private final String styleClass;
 
-    public ValidationResult(int lineNumber, Level level, String message, String ruleId) {
+    public ValidationResult(int lineNumber, ValidationLevel level, String message, String ruleId) {
         this.lineNumber = lineNumber;
         this.level = level;
         this.message = message;
@@ -51,7 +52,7 @@ public class ValidationResult {
         return lineNumber;
     }
 
-    public Level getLevel() {
+    public ValidationLevel getLevel() {
         return level;
     }
 

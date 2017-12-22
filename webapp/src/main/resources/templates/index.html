@@ -1,80 +1,94 @@
-<!DOCTYPE  HTML>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<!DOCTYPE HTML>
+<html html-lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout}">
   <head>
-    <meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
-    <meta name="description" content="mzTab online validator"/>
-    <meta name="author" content="Nils Hoffmann"/>
-    <!--<link rel="icon" href="../../../../favicon.ico">-->
+  <th:block th:include="fragments/html-head :: html-head"></th:block>
+</head>
+<body>
+  <div class="container">
 
-    <title>mzTab Online Validator</title>
+    <div class="row">
 
-    <!-- Bootstrap core CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous"/>
-    <style type="text/css">#customFile .custom-file-control:lang(en)::after {  content: "Select file...";}#customFile .custom-file-control:lang(en)::before {  content: "Click me";}/*when a value is selected, this class removes the content */.custom-file-control.selected:lang(en)::after {  content: "" !important;}.custom-file {  overflow: hidden;}.custom-file-control {  white-space: nowrap;}</style>
-  </head>
-  <body>
-    <div class="container">
+      <div class="container">
+        <header class="masthead clearfix">
+          <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <span class="navbar-brand text-muted"><small th:text="${page.appVersion}">DEVELOPMENT</small></span>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
 
-      <div class="row">
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+              <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                  <a class="navbar-brand" href="/" th:href="@{/}">Home</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://github.com/HUPO-PSI/mzTab">mzTab@GitHub</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://github.com/nilshoffmann/jmzTab-m">This project@GitHub</a>
+                </li>
+              </ul>
+              <a class="btn btn-secondary float-right" href="https://github.com/nilshoffmann/jmzTab-m/issues/new">Report Issue</a>
+            </div> 
+          </nav>
+          <div th:if="${message}">
+            <h2 th:text="${message}"/>
+          </div>
+        </header>
 
-        <div class="container">
-          <header class="masthead clearfix">
-            <div class="inner">
-              <h3 class="masthead-brand">mzTab Validator</h3>
-              <!--              <nav class="nav nav-masthead">
-                              <a class="nav-link active" href="#">Home</a>
-                              <a class="nav-link" href="#">Features</a>
-                              <a class="nav-link" href="#">Contact</a>
-                            </nav>-->
+        <main role="main" class="my-3">
+          <div class="card my-2">
+            <div class="card-header">
+              Example files
             </div>
-            <div th:if="${message}">
-              <h2 th:text="${message}"/>
+            <div class="card-body">
+              <h4 class="card-title">Download one of these example files:</h4>
+              <ul>
+                <li><a href="/static/examples/mtdFile.txt" th:href="@{/examples/mtdFile.txt}">mtdFile.txt</a> (Metadata only)</li>
+              </ul>
             </div>
-          </header>
-
-          <main role="main" class="inner cover">
-            <h1 class="cover-heading">Validate your mzTab file.</h1>
-            <div>
-              <form method="POST" enctype="multipart/form-data" action="/">
-                <fieldset>
-
-                  <div class="input-group">
-                    <input id="file" name="file" type="file"/>
+          </div>
+          <div class="card my-2">
+            <div class="card-header">
+              Validation
+            </div>
+            <div class="card-body"><h4 class="card-title">Upload your mzTab file for validation:</h4>
+              <form method="POST" enctype="multipart/form-data" action="/" th:action="@{/}">
+                <!--<fieldset>-->
+                <div class="form-group row">
+                  <label for="file" class="col-sm-5 col-form-label">mzTab File to validate</label>
+                  <div class="col-sm-7 no-gutters">
+                    <input id="file" name="file" type="file" th:field="*{validationForm.file}"/>
                   </div>
-                  <input type="text" th:field="*{maxErrors}"/>
-                  <select th:field="*{version}">
-                    <option th:each="version : ${allVersions}" 
+                </div>
+                <div class="form-group row">
+                  <label for="maxErrors" class="col-sm-5 col-form-label">Maximum number of errors to report</label>
+                  <input class="col-sm-7" type="text" th:field="*{validationForm.maxErrors}"/>
+                </div>
+                <div class="form-group row">
+                  <label for="version" class="col-sm-5 col-form-label">mzTab specification version to validate against</label>
+                  <select class="col-sm-7" th:field="*{validationForm.mzTabVersion}">
+                    <option th:each="version : *{validationForm.allVersions}" 
                             th:value="${version}" 
                             th:text="${version}">MZTab1_1</option>
                   </select>
-                  <button type="submit" class="btn btn-primary">Validate</button>
-                </fieldset>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Validate</button>
+                <!--</fieldset>-->
               </form>
             </div>
-          </main>
+          </div>
+        </main>
 
-          <footer class="mastfoot">
-            <div class="inner">
-              <p>Fork me on <a href="https://github.com/nilshoffmann/jmzTab-m">GitHub</a></p>
-            </div>
-          </footer>
-        </div>
+        <th:block th:include="fragments/footer :: footer"></th:block>
 
       </div>
 
     </div>
-    <!-- Bootstrap core JavaScript
-================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
-    <script src="/static/js/bootstrap-fileselect.min.js" th:src="@{/js/bootstrap-fileselect.min.js}"></script>
-    <script>
-      $(function () {
-        $('#file').fileselect();
-      });
-    </script>
-  </body>
+
+  </div>
+<th:block th:include="fragments/script-footer :: script-footer"></th:block>
+</body>
 </html>

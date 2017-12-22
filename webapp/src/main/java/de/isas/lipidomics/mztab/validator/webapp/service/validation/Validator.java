@@ -15,6 +15,7 @@
  */
 package de.isas.lipidomics.mztab.validator.webapp.service.validation;
 
+import de.isas.lipidomics.mztab.validator.webapp.domain.ValidationResult;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;

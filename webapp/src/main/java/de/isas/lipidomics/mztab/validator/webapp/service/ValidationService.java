@@ -15,7 +15,7 @@
  */
 package de.isas.lipidomics.mztab.validator.webapp.service;
 
-import de.isas.lipidomics.mztab.validator.webapp.service.validation.ValidationResult;
+import de.isas.lipidomics.mztab.validator.webapp.domain.ValidationResult;
 import java.util.List;
 
 /**

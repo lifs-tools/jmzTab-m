@@ -17,6 +17,7 @@ package de.isas.lipidomics.mztab.validator.webapp;
 
 import de.isas.lipidomics.mztab.validator.webapp.service.StorageService;
 import de.isas.lipidomics.mztab.validator.webapp.service.storage.StorageProperties;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -25,7 +26,7 @@ import org.springframework.context.annotation.Bean;
 
 /**
  *
- * @author nilshoffmann
+ * @author Nils Hoffmann <nils.hoffmann@isas.de>
  */
 @SpringBootApplication
 @EnableConfigurationProperties(StorageProperties.class)
@@ -42,5 +43,4 @@ public class Application {
             storageService.init();
         };
     }
-
 }

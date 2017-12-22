@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.isas.lipidomics.mztab.validator.webapp.service.validation;
+package de.isas.lipidomics.mztab.validator.webapp.domain;
 
 import java.util.Objects;
 
@@ -21,42 +21,36 @@ import java.util.Objects;
  *
  * @author Nils Hoffmann <nils.hoffmann@isas.de>
  */
-public class ValidationFile {
+public class Page {
+    private String title;
+    private String appVersion;
 
-    private String file;
-    private String mzTabVersion;
-
-    public ValidationFile() {
-
+    public Page(String title, String appVersion) {
+        this.title = title;
+        this.appVersion = appVersion;
     }
 
-    public ValidationFile(String file, String mzTabVersion) {
-        this();
-        this.file = file;
-        this.mzTabVersion = mzTabVersion;
+    public String getTitle() {
+        return title;
     }
 
-    public String getFile() {
-        return file;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
-    public void setFile(String file) {
-        this.file = file;
+    public String getAppVersion() {
+        return appVersion;
     }
 
-    public String getMzTabVersion() {
-        return mzTabVersion;
-    }
-
-    public void setMzTabVersion(String mzTabVersion) {
-        this.mzTabVersion = mzTabVersion;
+    public void setAppVersion(String appVersion) {
+        this.appVersion = appVersion;
     }
 
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 97 * hash + Objects.hashCode(this.file);
-        hash = 97 * hash + Objects.hashCode(this.mzTabVersion);
+        hash = 67 * hash + Objects.hashCode(this.title);
+        hash = 67 * hash + Objects.hashCode(this.appVersion);
         return hash;
     }
 
@@ -71,11 +65,11 @@ public class ValidationFile {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final ValidationFile other = (ValidationFile) obj;
-        if (!Objects.equals(this.file, other.file)) {
+        final Page other = (Page) obj;
+        if (!Objects.equals(this.title, other.title)) {
             return false;
         }
-        if (!Objects.equals(this.mzTabVersion, other.mzTabVersion)) {
+        if (!Objects.equals(this.appVersion, other.appVersion)) {
             return false;
         }
         return true;
@@ -83,7 +77,7 @@ public class ValidationFile {
 
     @Override
     public String toString() {
-        return "ValidationFile{" + "file=" + file + ", mzTabVersion=" + mzTabVersion + '}';
+        return "Page{" + "title=" + title + ", appVersion=" + appVersion + '}';
     }
 
 }

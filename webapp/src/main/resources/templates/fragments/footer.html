@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head></head>
+  <body>
+    <hr />
+    <footer th:fragment="footer" class="sticky-bottom footer mastfooter" style="background-color: #FFFFFF;">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-md-4">
+            <figure class="figure float-left m-2 p-2">
+              <a href="https://www.isas.de/en" target="_blank"><img src="/static/img/isas-logo.jpg" th:src="@{/img/isas-logo.jpg}" width="200px" class="figure-img img-fluid" alt="ISAS Logo"/></a>
+            </figure>
+          </div>
+          <div class="col-md-4">
+            <!--<p class="float-right m-2 p-2">&nbsp;&copy;2017&nbsp;ISAS e.V.</p>-->
+          </div>
+          <div class="col-md-4">
+            <figure class="figure float-right m-2 p-2">
+              <a href="https://lifs.isas.de" target="_blank"><img src="/static/img/LIFS-signet-2017x03x13-transp-small.png" th:src="@{/img/LIFS-signet-2017x03x13-transp-small.png}" width="200px" class="figure-img img-fluid" alt="LIFS Logo"/></a>
+            </figure>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

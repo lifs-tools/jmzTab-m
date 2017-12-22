@@ -79,6 +79,10 @@ public class MZTabErrorTypeMap {
         add(LogicalErrorType.PeptideSection);
         add(LogicalErrorType.QuantificationAbundance);
         add(LogicalErrorType.DuplicationID);
+        
+        add(LogicalErrorType.NoSmallMoleculeSummarySection);
+        add(LogicalErrorType.NoSmallMoleculeFeatureSection);
+        add(LogicalErrorType.NoSmallMoleculeEvidenceSection);
     }
 
     public MZTabErrorType getType(int code) {

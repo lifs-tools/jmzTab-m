@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.isas.lipidomics.mztab.validator.webapp.service.validation;
+package de.isas.lipidomics.mztab.validator.webapp.domain;
 
 /**
  *
  * @author Nils Hoffmann <nils.hoffmann@isas.de>
  */
-public enum Level {
+public enum ValidationLevel {
     INFO, WARN, ERROR
 
 }

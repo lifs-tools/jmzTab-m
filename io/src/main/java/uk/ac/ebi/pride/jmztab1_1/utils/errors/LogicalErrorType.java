@@ -56,5 +56,9 @@ public class LogicalErrorType extends MZTabErrorType {
 
     public static MZTabErrorType ColumnNotValid = createError(Category.Logical, "ColumnNotValid");
     public static MZTabErrorType HeaderNotValid = createError(Category.Logical, "HeaderNotValid");
+    
+    public static MZTabErrorType NoSmallMoleculeEvidenceSection = createInfo(Category.Logical, "NoSmallMoleculeEvidenceSection");
+    public static MZTabErrorType NoSmallMoleculeFeatureSection = createInfo(Category.Logical, "NoSmallMoleculeFeatureSection");
+    public static MZTabErrorType NoSmallMoleculeSummarySection = createWarn(Category.Logical, "NoSmallMoleculeSummarySection");
 
 }

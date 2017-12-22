@@ -1,92 +1,123 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>de.isas.mztab</groupId>
-        <artifactId>jmztabm</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
-    </parent>
-    <artifactId>mztab-validator-webapp</artifactId>
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>de.isas.mztab</groupId>
+    <artifactId>jmztabm</artifactId>
     <version>1.0.0-SNAPSHOT</version>
-    <packaging>jar</packaging>
+  </parent>
+  <artifactId>mztab-validator-webapp</artifactId>
+  <version>1.0.0-SNAPSHOT</version>
+  <packaging>jar</packaging>
     
-    <organization>
-        <name>Leibniz Institut f&uuml;r Analytische Wissenschaften - ISAS e.V.</name>
-        <url>https://www.isas.de</url>
-    </organization>
+  <organization>
+    <name>Leibniz Institut f&uuml;r Analytische Wissenschaften - ISAS e.V.</name>
+    <url>https://www.isas.de</url>
+  </organization>
     
-    <inceptionYear>2017</inceptionYear>
+  <inceptionYear>2017</inceptionYear>
     
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
-        <jmztab.version>3.0.4</jmztab.version>
-        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <java.version>1.8</java.version>
-        <vaadin.version>8.1.0</vaadin.version>
-    </properties>
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
+    <jmztab.version>3.0.4</jmztab.version>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <java.version>1.8</java.version>
+    <vaadin.version>8.1.0</vaadin.version>
+    <application.version.number>${project.version}</application.version.number>
+  </properties>
 
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <!-- Import dependency management from Spring Boot -->
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-dependencies</artifactId>
-                <version>1.5.9.RELEASE</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
-
+  <dependencyManagement>
     <dependencies>
-        <!--        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-thymeleaf</artifactId>
-        </dependency>-->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-thymeleaf</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-devtools</artifactId>
-            <optional>true</optional>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-        
-        <dependency>
-            <groupId>uk.ac.ebi.pride</groupId>
-            <artifactId>jmztab-modular-model</artifactId>
-            <version>${jmztab.version}</version>
-            <!-- based on mzTab specification version 1.0 -->
-        </dependency>
-        <dependency>
-            <groupId>uk.ac.ebi.pride</groupId>
-            <artifactId>jmztab-modular-util</artifactId>
-            <version>${jmztab.version}</version>
-            <!-- based on mzTab specification version 1.0 -->
-        </dependency>
-        <dependency>
-            <groupId>de.isas.mztab</groupId>
-            <artifactId>io</artifactId>
-            <version>${project.version}</version>
-            <type>jar</type>
-        </dependency>
+      <dependency>
+        <!-- Import dependency management from Spring Boot -->
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-dependencies</artifactId>
+        <version>1.5.9.RELEASE</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
     </dependencies>
+  </dependencyManagement>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
-        </plugins>
-    </build>
+  <dependencies>
+    <!--        <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-thymeleaf</artifactId>
+    </dependency>-->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-thymeleaf</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-devtools</artifactId>
+      <optional>true</optional>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+        
+    <dependency>
+      <groupId>uk.ac.ebi.pride</groupId>
+      <artifactId>jmztab-modular-model</artifactId>
+      <version>${jmztab.version}</version>
+      <!-- based on mzTab specification version 1.0 -->
+    </dependency>
+    <dependency>
+      <groupId>uk.ac.ebi.pride</groupId>
+      <artifactId>jmztab-modular-util</artifactId>
+      <version>${jmztab.version}</version>
+      <!-- based on mzTab specification version 1.0 -->
+    </dependency>
+    <dependency>
+      <groupId>de.isas.mztab</groupId>
+      <artifactId>io</artifactId>
+      <version>${project.version}</version>
+      <type>jar</type>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>true</filtering>
+      </resource>
+    </resources>
+    <plugins>
+      <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+        <configuration>
+          <executable>true</executable>
+          <mainClass>${start-class}</mainClass>
+          <layout>ZIP</layout>
+        </configuration>
+        <version>1.5.9.RELEASE</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>repackage</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
+        <version>3.0.2</version>
+        <configuration>
+          <delimiters>
+            <delimiter>@</delimiter>
+          </delimiters>
+          <useDefaultDelimiters>false</useDefaultDelimiters>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>

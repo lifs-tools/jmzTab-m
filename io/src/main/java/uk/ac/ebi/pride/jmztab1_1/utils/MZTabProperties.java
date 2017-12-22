@@ -18,10 +18,10 @@ public class MZTabProperties {
 
     private static Properties properties;
     static {
-        String mzTabProperties = "/conf/mztab.properties";
-        String formatProperties = "/conf/mztab_format_error.properties";
-        String logicalProperties = "/conf/mztab_logical_error.properties";
-        String crosscheckProperties = "/conf/mztab_crosscheck_error.properties";
+        String mzTabProperties = "/conf1_1/mztab.properties";
+        String formatProperties = "/conf1_1/mztab_format_error.properties";
+        String logicalProperties = "/conf1_1/mztab_logical_error.properties";
+        String crosscheckProperties = "/conf1_1/mztab_crosscheck_error.properties";
         try {
             properties = new Properties();
 

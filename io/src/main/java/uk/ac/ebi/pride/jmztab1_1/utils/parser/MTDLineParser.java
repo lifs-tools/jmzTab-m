@@ -718,25 +718,29 @@ public class MTDLineParser extends MZTabLineParser {
     private void addMsRun(Metadata metadata, MetadataProperty property, Integer id,
         String defineLabel, String valueLabel) throws MZTabException{
         MsRun msRun = null;
-        switch (property != null ? property : null) {
-            case MS_RUN_FORMAT:
-                msRun = context.addMsRunFormat(metadata, id, checkParameter(defineLabel, valueLabel));
-                break;
-            case MS_RUN_LOCATION:
-                msRun = context.addMsRunLocation(metadata, id, checkURL(defineLabel, valueLabel));
-                break;
-            case MS_RUN_ID_FORMAT:
-                msRun = context.addMsRunIdFormat(metadata, id, checkParameter(defineLabel, valueLabel));
-                break;
-            case MS_RUN_FRAGMENTATION_METHOD:
-                msRun = context.addMsRunFragmentationMethod(metadata, id, checkParameter(defineLabel, valueLabel));
-                break;
-            case MS_RUN_HASH:
-                msRun = context.addMsRunHash(metadata, id, valueLabel);
-                break;
-            case MS_RUN_HASH_METHOD:
-                msRun = context.addMsRunHashMethod(metadata, id, checkParameter(defineLabel, valueLabel));
-                break;
+        if(property==null) {
+            msRun = context.addMsRun(metadata, new MsRun().id(id).name(valueLabel));
+        } else {
+            switch (property != null ? property : null) {
+                case MS_RUN_FORMAT:
+                    msRun = context.addMsRunFormat(metadata, id, checkParameter(defineLabel, valueLabel));
+                    break;
+                case MS_RUN_LOCATION:
+                    msRun = context.addMsRunLocation(metadata, id, checkURL(defineLabel, valueLabel));
+                    break;
+                case MS_RUN_ID_FORMAT:
+                    msRun = context.addMsRunIdFormat(metadata, id, checkParameter(defineLabel, valueLabel));
+                    break;
+                case MS_RUN_FRAGMENTATION_METHOD:
+                    msRun = context.addMsRunFragmentationMethod(metadata, id, checkParameter(defineLabel, valueLabel));
+                    break;
+                case MS_RUN_HASH:
+                    msRun = context.addMsRunHash(metadata, id, valueLabel);
+                    break;
+                case MS_RUN_HASH_METHOD:
+                    msRun = context.addMsRunHashMethod(metadata, id, checkParameter(defineLabel, valueLabel));
+                    break;
+            }
         }
         if(msRun == null) {
             throw new MZTabException(new MZTabError(LogicalErrorType.NULL, lineNumber, "ms_run["+id+"]"));
@@ -803,47 +807,51 @@ public class MTDLineParser extends MZTabLineParser {
     private void addStudyVariable(Metadata metadata, MetadataProperty property, String defineLabel,
         String valueLabel, Integer id) throws MZTabErrorOverflowException, MZTabException {
         List<IndexedElement> indexedElementList;
-        switch (property != null ? property : null) {
-            case STUDY_VARIABLE_ASSAY_REFS:
-                indexedElementList = checkIndexedElementList(defineLabel, valueLabel, MetadataElement.ASSAY);
-                // detect duplicates
-                indexedElementList.stream().filter(i -> Collections.frequency(indexedElementList, i) >1)
-                .collect(Collectors.toSet()).forEach((indexedElement) ->
-                    {
-                        errorList.add(new MZTabError(LogicalErrorType.DuplicationID, lineNumber, valueLabel));
-                    });
-                // check that assays exist
-                for (IndexedElement e : indexedElementList) {
-                    //assays need to be defined before
-                    if (! context.getAssayMap().containsKey(e.getId())) {
-                        // can not find assay[id] in metadata.
-                        throw new MZTabException(new MZTabError(LogicalErrorType.NotDefineInMetadata, lineNumber, valueLabel,
-                            valueLabel));
+        if(property!=null) {
+            switch (property) {
+                case STUDY_VARIABLE_ASSAY_REFS:
+                    indexedElementList = checkIndexedElementList(defineLabel, valueLabel, MetadataElement.ASSAY);
+                    // detect duplicates
+                    indexedElementList.stream().filter(i -> Collections.frequency(indexedElementList, i) >1)
+                    .collect(Collectors.toSet()).forEach((indexedElement) ->
+                        {
+                            errorList.add(new MZTabError(LogicalErrorType.DuplicationID, lineNumber, valueLabel));
+                        });
+                    // check that assays exist
+                    for (IndexedElement e : indexedElementList) {
+                        //assays need to be defined before
+                        if (! context.getAssayMap().containsKey(e.getId())) {
+                            // can not find assay[id] in metadata.
+                            throw new MZTabException(new MZTabError(LogicalErrorType.NotDefineInMetadata, lineNumber, valueLabel,
+                                valueLabel));
+                        }
+                        context.addStudyVariableAssay(metadata, id, context.getAssayMap().get(e.getId()));
                     }
-                    context.addStudyVariableAssay(metadata, id, context.getAssayMap().get(e.getId()));
-                }
-                break;
-            case STUDY_VARIABLE_SAMPLE_REFS:
-                indexedElementList = checkIndexedElementList(defineLabel, valueLabel, MetadataElement.SAMPLE);
-                // detect duplicates
-                indexedElementList.stream().filter(i -> Collections.frequency(indexedElementList, i) >1)
-                .collect(Collectors.toSet()).forEach((indexedElement) ->
-                    {
-                        errorList.add(new MZTabError(LogicalErrorType.DuplicationID, lineNumber, valueLabel));
-                    });
-                // check that sample exist
-                for (IndexedElement e : indexedElementList) {
-                    if (! context.getSampleMap().containsKey(e.getId())) {
-                        // can not find assay[id] in metadata.
-                        throw new MZTabException(new MZTabError(LogicalErrorType.NotDefineInMetadata, lineNumber, valueLabel,
-                            valueLabel));
+                    break;
+                case STUDY_VARIABLE_SAMPLE_REFS:
+                    indexedElementList = checkIndexedElementList(defineLabel, valueLabel, MetadataElement.SAMPLE);
+                    // detect duplicates
+                    indexedElementList.stream().filter(i -> Collections.frequency(indexedElementList, i) >1)
+                    .collect(Collectors.toSet()).forEach((indexedElement) ->
+                        {
+                            errorList.add(new MZTabError(LogicalErrorType.DuplicationID, lineNumber, valueLabel));
+                        });
+                    // check that sample exist
+                    for (IndexedElement e : indexedElementList) {
+                        if (! context.getSampleMap().containsKey(e.getId())) {
+                            // can not find assay[id] in metadata.
+                            throw new MZTabException(new MZTabError(LogicalErrorType.NotDefineInMetadata, lineNumber, valueLabel,
+                                valueLabel));
+                        }
+                        context.addStudyVariableSample(metadata, id, context.getSampleMap().get(e.getId()));
                     }
-                    context.addStudyVariableSample(metadata, id, context.getSampleMap().get(e.getId()));
-                }
-                break;
-            case STUDY_VARIABLE_DESCRIPTION:
-                context.addStudyVariableDescription(metadata, id, valueLabel);
-                break;
+                    break;
+                case STUDY_VARIABLE_DESCRIPTION:
+                    context.addStudyVariableDescription(metadata, id, valueLabel);
+                    break;
+            }
+        } else {
+            context.addStudyVariable(metadata, new StudyVariable().id(id).name(valueLabel));
         }
     }
 
