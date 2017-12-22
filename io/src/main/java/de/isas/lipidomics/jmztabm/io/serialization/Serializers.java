@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import static uk.ac.ebi.pride.jmztab1_1.model.MZTabConstants.COMMA;
@@ -547,10 +548,6 @@ public class Serializers {
         }
     }
 
-//    public static void addLine(JsonGenerator jg, String prefix, String key,
-//        ParameterList value) {
-//
-//    }
     public static Optional<String> getElementName(Object element) {
 //        @JacksonXmlRootElement(localName = "Assay")
         if(element instanceof MetadataElement) {
@@ -566,7 +563,7 @@ public class Serializers {
     }
 
     public static String camelCaseToUnderscoreLowerCase(String camelCase) {
-        return camelCase.replaceAll("(.)(\\p{Upper})", "$1_$2").
+        return camelCase.replaceAll("(.)(\\p{Upper}+)", "$1_$2").
             toLowerCase();
     }
 

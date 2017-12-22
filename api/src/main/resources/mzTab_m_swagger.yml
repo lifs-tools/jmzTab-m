@@ -161,6 +161,7 @@ definitions:
         format: int32
       elementType:
         type: string
+        default: element_type
   Metadata:
     type: object
     required:
