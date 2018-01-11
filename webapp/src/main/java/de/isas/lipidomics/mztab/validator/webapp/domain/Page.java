@@ -24,10 +24,12 @@ import java.util.Objects;
 public class Page {
     private String title;
     private String appVersion;
+    private String gaId; 
 
-    public Page(String title, String appVersion) {
+    public Page(String title, String appVersion, String gaId) {
         this.title = title;
         this.appVersion = appVersion;
+        this.gaId = gaId;
     }
 
     public String getTitle() {
@@ -45,12 +47,21 @@ public class Page {
     public void setAppVersion(String appVersion) {
         this.appVersion = appVersion;
     }
+    
+    public void setGaId(String gaId) {
+        this.gaId = gaId;
+    }
+    
+    public String getGaId() {
+        return this.gaId;
+    }
 
     @Override
     public int hashCode() {
         int hash = 7;
         hash = 67 * hash + Objects.hashCode(this.title);
         hash = 67 * hash + Objects.hashCode(this.appVersion);
+        hash = 67 * hash + Objects.hashCode(this.gaId);
         return hash;
     }
 
@@ -72,12 +83,15 @@ public class Page {
         if (!Objects.equals(this.appVersion, other.appVersion)) {
             return false;
         }
+        if (!Objects.equals(this.gaId, other.gaId)) {
+            return false;
+        }
         return true;
     }
 
     @Override
     public String toString() {
-        return "Page{" + "title=" + title + ", appVersion=" + appVersion + '}';
+        return "Page{" + "title=" + title + ", appVersion=" + appVersion + ", gaId="+ gaId +'}';
     }
 
 }

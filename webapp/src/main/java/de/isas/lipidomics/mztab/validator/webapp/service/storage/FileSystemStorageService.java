@@ -16,6 +16,7 @@
 package de.isas.lipidomics.mztab.validator.webapp.service.storage;
 
 
+import de.isas.lipidomics.mztab.validator.webapp.domain.UserSessionFile;
 import de.isas.lipidomics.mztab.validator.webapp.service.StorageService;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -23,6 +24,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.UUID;
 import java.util.stream.Stream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -47,21 +49,18 @@ public class FileSystemStorageService implements StorageService {
     }
 
     @Override
-    public String store(MultipartFile file) {
+    public UserSessionFile store(MultipartFile file, String sessionId) {
         String filename = StringUtils.cleanPath(file.getOriginalFilename());
         try {
             if (file.isEmpty()) {
                 throw new StorageException("Failed to store empty file " + filename);
             }
-            if (filename.contains("..")) {
-                // This is a security check
-                throw new StorageException(
-                        "Cannot store file with relative path outside current directory "
-                                + filename);
-            }
-            Files.copy(file.getInputStream(), this.rootLocation.resolve(filename),
+            
+            Path sessionPath = buildSessionPath(sessionId);
+            Files.createDirectories(sessionPath);
+            Files.copy(file.getInputStream(), buildPathToFile(sessionPath, filename),
                     StandardCopyOption.REPLACE_EXISTING);
-            return filename;
+            return new UserSessionFile(filename, sessionId);
         }
         catch (IOException e) {
             throw new StorageException("Failed to store file " + filename, e);
@@ -69,45 +68,74 @@ public class FileSystemStorageService implements StorageService {
     }
 
     @Override
-    public Stream<Path> loadAll() {
+    public Stream<Path> loadAll(String sessionId) {
+        Path sessionPath = buildSessionPath(sessionId);
         try {
-            return Files.walk(this.rootLocation, 1)
-                    .filter(path -> !path.equals(this.rootLocation))
-                    .map(path -> this.rootLocation.relativize(path));
+            return Files.walk(sessionPath, 1)
+                    .filter(path -> !path.equals(sessionPath))
+                    .map(path -> sessionPath.relativize(path));
         }
         catch (IOException e) {
             throw new StorageException("Failed to read stored files", e);
         }
 
     }
-
-    @Override
-    public Path load(String filename) {
-        return rootLocation.resolve(filename);
+    
+    private Path buildSessionPath(String sessionId) {
+        if(sessionId == null) {
+            throw new StorageException("Cannot store file when sessionId is null!");
+        }
+        String sessionPathId = UUID.nameUUIDFromBytes(sessionId.getBytes()).toString();
+        return this.rootLocation.resolve(sessionPathId);
+    }
+    
+    private Path buildPathToFile(Path sessionPath, String filename) {
+        if (filename.contains("..")) {
+            // This is a security check
+            throw new StorageException(
+                    "Cannot store file with relative path outside current directory "
+                            + filename);
+        }
+        return sessionPath.resolve(filename);
     }
 
     @Override
-    public Resource loadAsResource(String filename) {
+    public Path load(UserSessionFile userSessionFile) {
+        Path p = buildSessionPath(userSessionFile.getSessionId());
+        return p.resolve(userSessionFile.getFilename());
+    }
+
+    @Override
+    public Resource loadAsResource(UserSessionFile userSessionFile) {
+        if(userSessionFile == null) {
+            throw new StorageException("Cannot retrieve file when userSessionFile is null!");
+        }
         try {
-            Path file = load(filename);
+            Path file = load(userSessionFile);
             Resource resource = new UrlResource(file.toUri());
             if (resource.exists() || resource.isReadable()) {
                 return resource;
             }
             else {
                 throw new StorageFileNotFoundException(
-                        "Could not read file: " + filename);
+                        "Could not read file: " + userSessionFile.getFilename());
 
             }
         }
         catch (MalformedURLException e) {
-            throw new StorageFileNotFoundException("Could not read file: " + filename, e);
+            throw new StorageFileNotFoundException("Could not read file: " + userSessionFile.getFilename(), e);
         }
     }
 
     @Override
+    public void deleteAll(String sessionId) {
+        Path sessionPath = buildSessionPath(sessionId);
+        FileSystemUtils.deleteRecursively(sessionPath.toFile());
+    }
+    
+    @Override
     public void deleteAll() {
-        FileSystemUtils.deleteRecursively(rootLocation.toFile());
+        FileSystemUtils.deleteRecursively(this.rootLocation.toFile());
     }
 
     @Override

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+  </head>
+  <body>
+    <header class="masthead clearfix" th:fragment="nav">
+      <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <span class="navbar-brand text-muted"><small>@application.version.number@</small></span>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+              <a class="navbar-brand" href="/" th:href="@{/}">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="https://github.com/HUPO-PSI/mzTab">mzTab@GitHub</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="https://github.com/nilshoffmann/jmzTab-m">This project@GitHub</a>
+            </li>
+          </ul>
+          <a class="btn btn-secondary float-right" href="https://github.com/nilshoffmann/jmzTab-m/issues/new">Report Issue</a>
+        </div> 
+      </nav>
+      <div th:if="${message}">
+        <h2 th:text="${message}"/>
+      </div>
+    </header>
+  </body>
+</html>

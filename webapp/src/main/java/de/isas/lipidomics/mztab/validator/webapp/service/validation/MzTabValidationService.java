@@ -15,6 +15,7 @@
  */
 package de.isas.lipidomics.mztab.validator.webapp.service.validation;
 
+import de.isas.lipidomics.mztab.validator.webapp.domain.UserSessionFile;
 import de.isas.lipidomics.mztab.validator.webapp.domain.ValidationResult;
 import de.isas.lipidomics.mztab.validator.webapp.service.StorageService;
 import de.isas.lipidomics.mztab.validator.webapp.service.ValidationService;
@@ -44,15 +45,11 @@ public class MzTabValidationService implements ValidationService {
 
     @Override
     public List<ValidationResult> validate(MzTabVersion mzTabVersion,
-            String filename, int maxErrors) {
-        Path filepath = storageService.load(filename);
+            UserSessionFile userSessionFile, int maxErrors) {
+        Path filepath = storageService.load(userSessionFile);
         
         try {
             List<ValidationResult> validationResults = new ArrayList<>();
-//            validationResults.addAll(validate(mzTabVersion, filepath, Level.Error,
-//                maxErrors));
-//            validationResults.addAll(validate(mzTabVersion, filepath, Level.Warn,
-//                maxErrors));
             validationResults.addAll(validate(mzTabVersion, filepath, Level.Info,
                 maxErrors));
             return validationResults;

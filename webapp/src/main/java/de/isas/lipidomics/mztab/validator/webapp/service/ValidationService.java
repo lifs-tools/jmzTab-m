@@ -15,6 +15,7 @@
  */
 package de.isas.lipidomics.mztab.validator.webapp.service;
 
+import de.isas.lipidomics.mztab.validator.webapp.domain.UserSessionFile;
 import de.isas.lipidomics.mztab.validator.webapp.domain.ValidationResult;
 import java.util.List;
 
@@ -24,5 +25,5 @@ import java.util.List;
  */
 public interface ValidationService {
     static enum MzTabVersion{MZTAB_1_0, MZTAB_1_1};
-    List<ValidationResult> validate(MzTabVersion version, String filename, int maxErrors);
+    List<ValidationResult> validate(MzTabVersion version, UserSessionFile userSessionFile, int maxErrors);
 }
