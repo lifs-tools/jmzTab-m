@@ -30,6 +30,8 @@ public interface StorageService {
     void init();
 
     UserSessionFile store(MultipartFile file, String sessionId);
+    
+    UserSessionFile store(String fileContent, String sessionId);
 
     Stream<Path> loadAll(String sessionId);
 

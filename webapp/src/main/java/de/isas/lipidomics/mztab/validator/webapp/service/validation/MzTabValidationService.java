@@ -16,15 +16,18 @@
 package de.isas.lipidomics.mztab.validator.webapp.service.validation;
 
 import de.isas.lipidomics.mztab.validator.webapp.domain.UserSessionFile;
+import de.isas.lipidomics.mztab.validator.webapp.domain.ValidationLevel;
 import de.isas.lipidomics.mztab.validator.webapp.domain.ValidationResult;
 import de.isas.lipidomics.mztab.validator.webapp.service.StorageService;
 import de.isas.lipidomics.mztab.validator.webapp.service.ValidationService;
+import de.isas.mztab1_1.model.ValidationMessage;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.ac.ebi.pride.jmztab.utils.errors.MZTabErrorType.Level;
@@ -44,34 +47,60 @@ public class MzTabValidationService implements ValidationService {
     }
 
     @Override
-    public List<ValidationResult> validate(MzTabVersion mzTabVersion,
-            UserSessionFile userSessionFile, int maxErrors) {
+    public List<ValidationMessage> validate(MzTabVersion mzTabVersion,
+        UserSessionFile userSessionFile, int maxErrors) {
         Path filepath = storageService.load(userSessionFile);
-        
+
         try {
-            List<ValidationResult> validationResults = new ArrayList<>();
-            validationResults.addAll(validate(mzTabVersion, filepath, Level.Info,
-                maxErrors));
+            List<ValidationMessage> validationResults = new ArrayList<>();
+            validationResults.addAll(
+                validate(mzTabVersion, filepath, Level.Info,
+                    maxErrors));
+            validationResults.addAll(
+                validate(mzTabVersion, filepath, Level.Warn,
+                    maxErrors));
+            validationResults.addAll(
+                validate(mzTabVersion, filepath, Level.Error,
+                    maxErrors));
             return validationResults;
         } catch (IOException ex) {
             Logger.getLogger(MzTabValidationService.class.getName()).
-                    log(java.util.logging.Level.SEVERE, null, ex);
+                log(java.util.logging.Level.SEVERE, null, ex);
         }
         return Collections.emptyList();
     }
 
-    private List<ValidationResult> validate(MzTabVersion mzTabVersion, Path filepath,
-            Level validationLevel, int maxErrors) throws IllegalStateException, IOException {
-        switch(mzTabVersion) {
+    private List<ValidationMessage> validate(MzTabVersion mzTabVersion,
+        Path filepath,
+        Level validationLevel, int maxErrors) throws IllegalStateException, IOException {
+        switch (mzTabVersion) {
             case MZTAB_1_0:
-                return new EbiValidator().validate(filepath, validationLevel.name(),
+                return new EbiValidator().validate(filepath, validationLevel.
+                    name(),
                     maxErrors);
             case MZTAB_1_1:
-                return new IsasValidator().validate(filepath, validationLevel.name(),
+                return new IsasValidator().validate(filepath, validationLevel.
+                    name(),
                     maxErrors);
             default:
-                throw new IllegalStateException("Unsupported mzTab version: "+mzTabVersion.toString());
+                throw new IllegalStateException(
+                    "Unsupported mzTab version: " + mzTabVersion.toString());
         }
-        
+
+    }
+
+    @Override
+    public List<ValidationResult> asValidationResults(
+        List<ValidationMessage> validationMessage) {
+        return validationMessage.stream().
+            map((message) ->
+            {
+                ValidationLevel level = ValidationLevel.valueOf(message.
+                    getMessageType().
+                    getValue().toUpperCase());
+                return new ValidationResult(message.getLineNumber(), level,
+                    message.getMessage(), message.getCode());
+            }).
+            collect(Collectors.toList());
     }
 }

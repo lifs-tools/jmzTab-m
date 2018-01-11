@@ -132,11 +132,12 @@ public class ValidationController {
             modelAndView.addObject("validationMaxErrors", 100);
         }
         UserSessionFile usf = new UserSessionFile(filename, session.getId());
-        modelAndView.addObject("validationResults", validationService.validate(
-            validationVersion, usf, maxErrors));
+        modelAndView.addObject("validationResults", validationService.
+            asValidationResults(validationService.validate(
+                validationVersion, usf, maxErrors)));
         return modelAndView;
     }
-    
+
     @ExceptionHandler(StorageFileNotFoundException.class)
     public ResponseEntity<?> handleStorageFileNotFound(
         StorageFileNotFoundException exc) {
@@ -156,7 +157,7 @@ public class ValidationController {
         mav.setViewName("error");
         return mav;
     }
-    
+
     @ExceptionHandler(NoHandlerFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ModelAndView handleUnmapped(HttpServletRequest req) {

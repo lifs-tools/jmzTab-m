@@ -25,13 +25,13 @@ import java.util.Objects;
 public class ValidationResult {
 
 
-    private final int lineNumber;
+    private final Long lineNumber;
     private final ValidationLevel level;
     private final String message;
     private final String ruleId;
     private final String styleClass;
 
-    public ValidationResult(int lineNumber, ValidationLevel level, String message, String ruleId) {
+    public ValidationResult(Long lineNumber, ValidationLevel level, String message, String ruleId) {
         this.lineNumber = lineNumber;
         this.level = level;
         this.message = message;
@@ -48,7 +48,7 @@ public class ValidationResult {
         }
     }
 
-    public int getLineNumber() {
+    public Long getLineNumber() {
         return lineNumber;
     }
 
@@ -70,11 +70,11 @@ public class ValidationResult {
 
     @Override
     public int hashCode() {
-        int hash = 5;
-        hash = 59 * hash + this.lineNumber;
-        hash = 59 * hash + Objects.hashCode(this.level);
-        hash = 59 * hash + Objects.hashCode(this.message);
-        hash = 59 * hash + Objects.hashCode(this.ruleId);
+        int hash = 7;
+        hash = 53 * hash + Objects.hashCode(this.lineNumber);
+        hash = 53 * hash + Objects.hashCode(this.level);
+        hash = 53 * hash + Objects.hashCode(this.message);
+        hash = 53 * hash + Objects.hashCode(this.ruleId);
         return hash;
     }
 
@@ -90,7 +90,7 @@ public class ValidationResult {
             return false;
         }
         final ValidationResult other = (ValidationResult) obj;
-        if (this.lineNumber != other.lineNumber) {
+        if (!Objects.equals(this.lineNumber, other.lineNumber)) {
             return false;
         }
         if (!Objects.equals(this.message, other.message)) {

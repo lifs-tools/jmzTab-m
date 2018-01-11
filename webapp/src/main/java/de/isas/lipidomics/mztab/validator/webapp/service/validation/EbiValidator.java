@@ -16,6 +16,7 @@
 package de.isas.lipidomics.mztab.validator.webapp.service.validation;
 
 import de.isas.lipidomics.mztab.validator.webapp.domain.ValidationResult;
+import de.isas.mztab1_1.model.ValidationMessage;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -31,33 +32,38 @@ import uk.ac.ebi.pride.jmztab.utils.errors.MZTabErrorType;
  * @author Nils Hoffmann <nils.hoffmann@isas.de>
  */
 public class EbiValidator implements Validator {
-    public List<ValidationResult> validate(Path filepath,
-            String validationLevel, int maxErrors) throws IllegalStateException, IOException {
+
+    public List<ValidationMessage> validate(Path filepath,
+        String validationLevel, int maxErrors) throws IllegalStateException, IOException {
         MZTabFileParser parser = new MZTabFileParser(filepath.toFile(),
-                System.out, MZTabErrorType.findLevel(validationLevel), maxErrors);
+            System.out, MZTabErrorType.findLevel(validationLevel), maxErrors);
         MZTabErrorList errorList = parser.getErrorList();
-        List<ValidationResult> validationResults = new ArrayList<>(errorList.size());
+        List<ValidationMessage> validationResults = new ArrayList<>(errorList.
+            size());
         for (MZTabError error : errorList.getErrorList()) {
-            de.isas.lipidomics.mztab.validator.webapp.domain.ValidationLevel level = de.isas.lipidomics.mztab.validator.webapp.domain.ValidationLevel.INFO;
+            ValidationMessage.MessageTypeEnum level = ValidationMessage.MessageTypeEnum.INFO;
             switch (error.getType().
-                    getLevel()) {
+                getLevel()) {
                 case Error:
-                    level = de.isas.lipidomics.mztab.validator.webapp.domain.ValidationLevel.ERROR;
+                    level = ValidationMessage.MessageTypeEnum.ERROR;
                     break;
                 case Info:
-                    level = de.isas.lipidomics.mztab.validator.webapp.domain.ValidationLevel.INFO;
+                    level = ValidationMessage.MessageTypeEnum.INFO;
                     break;
                 case Warn:
-                    level = de.isas.lipidomics.mztab.validator.webapp.domain.ValidationLevel.WARN;
+                    level = ValidationMessage.MessageTypeEnum.WARN;
                     break;
                 default:
                     throw new IllegalStateException("State " + error.getType().
-                            getLevel() + " is not handled in switch/case statement!");
+                        getLevel() + " is not handled in switch/case statement!");
             }
-            ValidationResult vr = new ValidationResult(error.getLineNumber(),
-                    level, error.getMessage(), error.toString());
+            ValidationMessage vr = new ValidationMessage().lineNumber(Long.
+                valueOf(error.getLineNumber())).
+                messageType(level).
+                message(error.getMessage()).
+                code(error.toString());
             Logger.getLogger(MzTabValidationService.class.getName()).
-                    info(vr.toString());
+                info(vr.toString());
             validationResults.add(vr);
         }
         return validationResults;

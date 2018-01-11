@@ -15,7 +15,6 @@
  */
 package de.isas.lipidomics.mztab.validator.webapp.service.storage;
 
-
 import de.isas.lipidomics.mztab.validator.webapp.domain.UserSessionFile;
 import de.isas.lipidomics.mztab.validator.webapp.service.StorageService;
 import java.io.IOException;
@@ -24,6 +23,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.nio.file.StandardOpenOption;
 import java.util.UUID;
 import java.util.stream.Stream;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,16 +53,32 @@ public class FileSystemStorageService implements StorageService {
         String filename = StringUtils.cleanPath(file.getOriginalFilename());
         try {
             if (file.isEmpty()) {
-                throw new StorageException("Failed to store empty file " + filename);
+                throw new StorageException(
+                    "Failed to store empty file " + filename);
             }
-            
+
             Path sessionPath = buildSessionPath(sessionId);
             Files.createDirectories(sessionPath);
-            Files.copy(file.getInputStream(), buildPathToFile(sessionPath, filename),
-                    StandardCopyOption.REPLACE_EXISTING);
+            Files.copy(file.getInputStream(), buildPathToFile(sessionPath,
+                filename),
+                StandardCopyOption.REPLACE_EXISTING);
             return new UserSessionFile(filename, sessionId);
+        } catch (IOException e) {
+            throw new StorageException("Failed to store file " + filename, e);
         }
-        catch (IOException e) {
+    }
+
+    @Override
+    public UserSessionFile store(String fileContent, String sessionId) {
+        String filename = UUID.randomUUID() + ".mztab";
+        try {
+            Path sessionPath = buildSessionPath(sessionId);
+            Files.createDirectories(sessionPath);
+            Files.write(buildPathToFile(sessionPath, filename), fileContent.
+                getBytes("UTF-8"), StandardOpenOption.CREATE,
+                StandardOpenOption.WRITE);
+            return new UserSessionFile(filename, sessionId);
+        } catch (IOException e) {
             throw new StorageException("Failed to store file " + filename, e);
         }
     }
@@ -71,30 +87,33 @@ public class FileSystemStorageService implements StorageService {
     public Stream<Path> loadAll(String sessionId) {
         Path sessionPath = buildSessionPath(sessionId);
         try {
-            return Files.walk(sessionPath, 1)
-                    .filter(path -> !path.equals(sessionPath))
-                    .map(path -> sessionPath.relativize(path));
-        }
-        catch (IOException e) {
+            return Files.walk(sessionPath, 1).
+                filter(path ->
+                    !path.equals(sessionPath)).
+                map(path ->
+                    sessionPath.relativize(path));
+        } catch (IOException e) {
             throw new StorageException("Failed to read stored files", e);
         }
 
     }
-    
+
     private Path buildSessionPath(String sessionId) {
-        if(sessionId == null) {
-            throw new StorageException("Cannot store file when sessionId is null!");
+        if (sessionId == null) {
+            throw new StorageException(
+                "Cannot store file when sessionId is null!");
         }
-        String sessionPathId = UUID.nameUUIDFromBytes(sessionId.getBytes()).toString();
+        String sessionPathId = UUID.nameUUIDFromBytes(sessionId.getBytes()).
+            toString();
         return this.rootLocation.resolve(sessionPathId);
     }
-    
+
     private Path buildPathToFile(Path sessionPath, String filename) {
         if (filename.contains("..")) {
             // This is a security check
             throw new StorageException(
-                    "Cannot store file with relative path outside current directory "
-                            + filename);
+                "Cannot store file with relative path outside current directory "
+                + filename);
         }
         return sessionPath.resolve(filename);
     }
@@ -107,23 +126,23 @@ public class FileSystemStorageService implements StorageService {
 
     @Override
     public Resource loadAsResource(UserSessionFile userSessionFile) {
-        if(userSessionFile == null) {
-            throw new StorageException("Cannot retrieve file when userSessionFile is null!");
+        if (userSessionFile == null) {
+            throw new StorageException(
+                "Cannot retrieve file when userSessionFile is null!");
         }
         try {
             Path file = load(userSessionFile);
             Resource resource = new UrlResource(file.toUri());
             if (resource.exists() || resource.isReadable()) {
                 return resource;
-            }
-            else {
+            } else {
                 throw new StorageFileNotFoundException(
-                        "Could not read file: " + userSessionFile.getFilename());
+                    "Could not read file: " + userSessionFile.getFilename());
 
             }
-        }
-        catch (MalformedURLException e) {
-            throw new StorageFileNotFoundException("Could not read file: " + userSessionFile.getFilename(), e);
+        } catch (MalformedURLException e) {
+            throw new StorageFileNotFoundException(
+                "Could not read file: " + userSessionFile.getFilename(), e);
         }
     }
 
@@ -132,7 +151,7 @@ public class FileSystemStorageService implements StorageService {
         Path sessionPath = buildSessionPath(sessionId);
         FileSystemUtils.deleteRecursively(sessionPath.toFile());
     }
-    
+
     @Override
     public void deleteAll() {
         FileSystemUtils.deleteRecursively(this.rootLocation.toFile());
@@ -142,8 +161,7 @@ public class FileSystemStorageService implements StorageService {
     public void init() {
         try {
             Files.createDirectories(rootLocation);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new StorageException("Could not initialize storage", e);
         }
     }

@@ -17,12 +17,16 @@ package de.isas.lipidomics.mztab.validator.webapp;
 
 import de.isas.lipidomics.mztab.validator.webapp.service.StorageService;
 import de.isas.lipidomics.mztab.validator.webapp.service.storage.StorageProperties;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.ExitCodeGenerator;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.ComponentScan;
+
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 /**
  *
@@ -30,6 +34,9 @@ import org.springframework.context.annotation.Bean;
  */
 @SpringBootApplication
 @EnableConfigurationProperties(StorageProperties.class)
+@EnableSwagger2
+@ComponentScan(basePackages = {"de.isas.mztab1_1.server.invoker",
+    "de.isas.mztab1_1.server.api", "de.isas.lipidomics.mztab", "io.swagger.configuration"})
 public class Application {
 
     public static void main(String[] args) {
@@ -38,9 +45,24 @@ public class Application {
 
     @Bean
     CommandLineRunner init(StorageService storageService) {
-        return (args) -> {
+        return (args) ->
+        {
+            if (args.length > 0 && args[0].equals("exitcode")) {
+                throw new ExitException();
+            }
             storageService.deleteAll();
             storageService.init();
         };
+    }
+
+    class ExitException extends RuntimeException implements ExitCodeGenerator {
+
+        private static final long serialVersionUID = 1L;
+
+        @Override
+        public int getExitCode() {
+            return 10;
+        }
+
     }
 }

@@ -51,13 +51,47 @@
                             <addCompileSourceRoot>true</addCompileSourceRoot>
                         </configuration>
                     </execution>
+<!--                    <execution>
+                        <id>generate-java-spring-boot-backend</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                             target to generate java client code 
+                            <inputSpec>${project.basedir}/src/main/resources/mzTab_m_swagger.yml</inputSpec>
+                            <language>spring</language>
+                            <templateDirectory>${project.basedir}/src/main/resources/java</templateDirectory>
+                            <library>spring-boot</library>
+                            <modelPackage>de.isas.mztab1_1.model</modelPackage>
+                            <apiPackage>de.isas.mztab1_1.server.api</apiPackage>
+                            <invokerPackage>de.isas.mztab1_1.server.invoker</invokerPackage>
+                            <withXml>true</withXml>
+                            <generateApis>true</generateApis>
+                            <generateModels>false</generateModels>
+                            <generateModelTests>true</generateModelTests>
+                            <generateSupportingFiles>true</generateSupportingFiles>
+                            <generateApiDocumentation>true</generateApiDocumentation>
+                            <configOptions>
+                                <sourceFolder>swagger</sourceFolder>
+                                <dateLibrary>joda</dateLibrary>
+                                <dateLibrary>java8</dateLibrary>
+                                <sourceFolder>mztab-java-server</sourceFolder>
+                                <useBeanValidation>true</useBeanValidation>
+                                <performBeanValidation>true</performBeanValidation>
+                                <withXml>true</withXml>
+                                <supportsInheritance>true</supportsInheritance>
+                            </configOptions>
+                            <output>${project.build.directory}/generated-sources/</output>
+                            <addCompileSourceRoot>true</addCompileSourceRoot>
+                        </configuration>
+                    </execution>-->
                     <execution>
                         <id>generate-python-client-lib</id>
                         <goals>
                             <goal>generate</goal>
                         </goals>
                         <configuration>
-                            <!-- target to generate java client code -->
+                            <!-- target to generate python client code -->
                             <inputSpec>${project.basedir}/src/main/resources/mzTab_m_swagger.yml</inputSpec>
                             <language>python</language>
                             <withXml>true</withXml>
@@ -74,7 +108,7 @@
                             <goal>generate</goal>
                         </goals>
                         <configuration>
-                             target to generate java client code 
+                             <!--target to generate r client code--> 
                             <inputSpec>${project.basedir}/src/main/resources/mzTab_m_swagger.yml</inputSpec>
                             <language>r</language>
                             <!--<templateDirectory>${project.basedir}/src/main/resources/r</templateDirectory>-->

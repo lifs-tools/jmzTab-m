@@ -9,7 +9,7 @@ info:
     name: Apache 2.0
     url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
 host: lifs.isas.de
-basePath: /mztab/metabolomics/v1_1/
+basePath: /mztabvalidator/rest/v1_1/
 schemes:
   - http
 tags:
@@ -971,9 +971,9 @@ definitions:
       message_type:
         enum:
           - error
-          - warning
-          - information
-        default: information
+          - warn
+          - info
+        default: info
       message:
         type: string
       line_number:

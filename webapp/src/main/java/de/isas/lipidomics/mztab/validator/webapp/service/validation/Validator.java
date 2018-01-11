@@ -15,7 +15,7 @@
  */
 package de.isas.lipidomics.mztab.validator.webapp.service.validation;
 
-import de.isas.lipidomics.mztab.validator.webapp.domain.ValidationResult;
+import de.isas.mztab1_1.model.ValidationMessage;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
@@ -25,6 +25,6 @@ import java.util.List;
  * @author Nils Hoffmann <nils.hoffmann@isas.de>
  */
 public interface Validator {
-    public List<ValidationResult> validate(Path filepath,
+    public List<ValidationMessage> validate(Path filepath,
              String validationLevel, int maxErrors) throws IllegalStateException, IOException;
 }

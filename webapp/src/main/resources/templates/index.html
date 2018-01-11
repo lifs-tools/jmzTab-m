@@ -46,7 +46,7 @@
                   <select class="col-sm-7" th:field="*{validationForm.mzTabVersion}">
                     <option th:each="version : *{validationForm.allVersions}" 
                             th:value="${version}" 
-                            th:text="${version}">MZTab1_1</option>
+                            th:text="#{${version}}">MZTab1_1</option>
                   </select>
                 </div>
 
