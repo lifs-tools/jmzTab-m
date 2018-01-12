@@ -39,6 +39,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -143,6 +144,20 @@ public class ValidationController {
         StorageFileNotFoundException exc) {
         return ResponseEntity.notFound().
             build();
+    }
+
+    @ExceptionHandler(MultipartException.class)
+    @ResponseStatus(HttpStatus.PAYLOAD_TOO_LARGE)
+    public ModelAndView handleMultipartError(HttpServletRequest req, MultipartException exception)
+        throws Exception {
+        ModelAndView mav = new ModelAndView();
+        mav.addObject("page", new Page("mzTabValidator", versionNumber, gaId));
+        mav.addObject("error", exception);
+        mav.addObject("url", req.getRequestURL());
+        mav.addObject("timestamp", new Date().toString());
+        mav.addObject("status", 413);
+        mav.setViewName("error");
+        return mav;
     }
 
     @ExceptionHandler(Exception.class)

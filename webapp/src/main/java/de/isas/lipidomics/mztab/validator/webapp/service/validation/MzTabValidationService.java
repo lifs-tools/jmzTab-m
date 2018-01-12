@@ -57,9 +57,6 @@ public class MzTabValidationService implements ValidationService {
                 validate(mzTabVersion, filepath, Level.Info,
                     maxErrors));
             validationResults.addAll(
-                validate(mzTabVersion, filepath, Level.Warn,
-                    maxErrors));
-            validationResults.addAll(
                 validate(mzTabVersion, filepath, Level.Error,
                     maxErrors));
             return validationResults;
