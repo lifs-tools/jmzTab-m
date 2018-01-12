@@ -35,8 +35,29 @@ This generates the necessary domain specific code for a number of different lang
 In general, any language and framework for which swagger-codegen has templates available may be used. For details, please 
 look at the `api/pom.xml` file and at the https://github.com/swagger-api/swagger-codegen[swagger-codegen repository and documentation].
 
-The generated code is available below the `api/target/generated-sources/` directory:
+The generated code is available in the zip archives below the `api/target` directory:
 
 . mztab-java
-. mztab-python
-. mztab-r
+. mztab-api-python
+. mztab-api-r
+
+The generated client libraries only contain the basid domain object code. Parsing from mzTab and writing to mzTab still need to be 
+implementd separately. 
+
+== Running a validation with the command-line interface
+The `cli` sub-project provides a command line interface for validation of files using the mzTab 1.1 draft validator. 
+
+NOTE: Currently, we do not plan to provide a CLI-based validator for mzTab 1.0, since that is still being provided by the original https://github.com/PRIDE-Utilities/jmzTab[jmzTab project].
+
+After building the project as mentioned above with `./mvnw install`, the `cli/target` folder will contain the `cli-<version>-jmztabm-deployment.zip` file.
+
+In order to run the validator, unzip that file, change into the unzipped `cli` folder and run
+
+  java -jar mzTabCLI.jar
+
+to see the available options.
+
+To validate a particular file with a given level (one of: Info, Warn, Error), run
+
+  java -jar mzTabCLI.jar -check inFile=/path/to/your/file.mztab -level Warn
+
