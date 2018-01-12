@@ -3,3 +3,5 @@
 /api/nbproject/
 /io/nbproject/
 /webapp/target/
+.Rproj.user
+/cli/target/

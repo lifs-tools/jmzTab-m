@@ -15,8 +15,6 @@
                 <groupId>io.swagger</groupId>
                 <artifactId>swagger-codegen-maven-plugin</artifactId>
                 <version>2.3.0</version> 
-                <!--<version>3.0.0-20171222.035347-11</version>-->
-                <!--<version>3.0.0-SNAPSHOT</version>-->
                 <executions>
                     <execution>
                         <id>generate-java-client-lib</id>
@@ -98,7 +96,7 @@
                             <generateApis>false</generateApis>
                             <generateModelTests>true</generateModelTests>
                             <generateSupportingFiles>true</generateSupportingFiles>
-                            <generateApiDocumentation>false</generateApiDocumentation>
+                            <generateApiDocumentation>true</generateApiDocumentation>
                             <output>${project.build.directory}/generated-sources/mztab-python</output>
                         </configuration>
                     </execution>
@@ -111,9 +109,9 @@
                              <!--target to generate r client code--> 
                             <inputSpec>${project.basedir}/src/main/resources/mzTab_m_swagger.yml</inputSpec>
                             <language>r</language>
-                            <!--<templateDirectory>${project.basedir}/src/main/resources/r</templateDirectory>-->
+                            <templateDirectory>${project.basedir}/src/main/swagger/r-templates</templateDirectory>
                             <withXml>true</withXml>
-                            <generateApis>true</generateApis>
+                            <generateApis>false</generateApis>
                             <generateModelTests>true</generateModelTests>
                             <generateSupportingFiles>true</generateSupportingFiles>
                             <generateApiDocumentation>true</generateApiDocumentation>
@@ -153,7 +151,7 @@
                 <version>3.1.0</version>
                 <executions>
                     <execution>
-                        <id>make-assembly</id>
+                        <id>make-adoc-assembly</id>
                         <phase>package</phase>
                         <goals>
                             <goal>single</goal>
@@ -161,10 +159,37 @@
                         <configuration>
                             <descriptors>
                                 <descriptor>src/assembly/asciidoc-zip.xml</descriptor> <!-- path to the descriptor -->
+                            </descriptors>
+                            <finalName>mztab-api-adoc-${project.version}</finalName>
+                            <appendAssemblyId>false</appendAssemblyId>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>make-python-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <descriptors>
                                 <descriptor>src/assembly/python-zip.xml</descriptor> <!-- path to the descriptor -->
+                            </descriptors>
+                            <finalName>mztab-api-python-${project.version}</finalName>
+                            <appendAssemblyId>false</appendAssemblyId>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>make-r-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <descriptors>
                                 <descriptor>src/assembly/r-zip.xml</descriptor> <!-- path to the descriptor -->
                             </descriptors>
-                            <appendAssemblyId>true</appendAssemblyId>
+                            <finalName>mztab-api-r-${project.version}</finalName>
+                            <appendAssemblyId>false</appendAssemblyId>
                         </configuration>
                     </execution>
                 </executions>

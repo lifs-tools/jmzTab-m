@@ -275,26 +275,26 @@ definitions:
           $ref: '#/definitions/Parameter'
       small_molecule_quantification_unit:
         $ref: '#/definitions/Parameter'
-      small_molecule_feature-quantification_unit:
+      small_molecule_feature_quantification_unit:
         $ref: '#/definitions/Parameter'
-      small_molecule-identification_reliability:
+      small_molecule_identification_reliability:
         $ref: '#/definitions/Parameter'
       id_confidence_measure:
         type: array
         default: []
         items:
           $ref: '#/definitions/Parameter'
-      colunit-small_molecule:
+      colunit_small_molecule:
         type: array
         default: []
         items:
           $ref: '#/definitions/ColumnParameterMapping'
-      colunit-small_molecule_feature:
+      colunit_small_molecule_feature:
         type: array
         default: []
         items:
           $ref: '#/definitions/ColumnParameterMapping'
-      colunit-small_molecule_evidence:
+      colunit_small_molecule_evidence:
         type: array
         default: []
         items:
