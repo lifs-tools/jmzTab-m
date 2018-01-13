@@ -41,7 +41,7 @@ The generated code is available in the zip archives below the `api/target` direc
 . mztab-api-python
 . mztab-api-r
 
-The generated client libraries only contain the basid domain object code. Parsing from mzTab and writing to mzTab still need to be 
+The generated client libraries only contain the basic domain object code. Parsing from mzTab and writing to mzTab still need to be 
 implementd separately. 
 
 == Running a validation with the command-line interface
