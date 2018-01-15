@@ -27,6 +27,11 @@
     <vaadin.version>8.1.0</vaadin.version>
     <application.version.number>${project.version}</application.version.number>
     <springfox.version>2.7.0</springfox.version>
+    <docker.image.prefix>isas</docker.image.prefix>
+    <dockerfile.plugin.version>1.3.7</dockerfile.plugin.version>
+    <app.name>mztabvalidator</app.name>
+    <contextPath>/</contextPath>
+    <ga.id></ga.id>
   </properties>
 
   <dependencyManagement>
@@ -136,6 +141,66 @@
           <useDefaultDelimiters>false</useDefaultDelimiters>
         </configuration>
       </plugin>
+
+      <plugin>
+        <groupId>com.spotify</groupId>
+        <artifactId>dockerfile-maven-plugin</artifactId>
+        <version>${dockerfile.plugin.version}</version>
+        <executions>
+          <execution>
+            <id>default</id>
+            <goals>
+              <goal>build</goal>
+              <goal>push</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <repository>${docker.image.prefix}/${project.artifactId}</repository>
+          <tag>${project.version}</tag>
+          <buildArgs>
+            <JAR_FILE>${project.build.finalName}.jar</JAR_FILE>
+            <APP_NAME>${app.name}</APP_NAME>
+          </buildArgs>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
+  <profiles>
+    <profile>
+      <id>prod</id>
+      <properties>
+        <contextPath>/mztabvalidator</contextPath>
+      </properties>
+    </profile>
+    <profile>
+      <id>docker</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>com.spotify</groupId>
+            <artifactId>dockerfile-maven-plugin</artifactId>
+            <version>${dockerfile.plugin.version}</version>
+            <executions>
+              <execution>
+                <id>default</id>
+                <goals>
+                  <goal>build</goal>
+                  <goal>push</goal>
+                </goals>
+              </execution>
+            </executions>
+            <configuration>
+              <repository>${docker.image.prefix}/${project.artifactId}</repository>
+              <tag>${project.version}</tag>
+              <buildArgs>
+                <JAR_FILE>${project.build.finalName}.jar</JAR_FILE>
+                <APP_NAME>${app.name}</APP_NAME>
+              </buildArgs>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 </project>

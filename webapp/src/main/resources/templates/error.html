@@ -18,6 +18,7 @@
             </div>
             <div class="card-body"><h4 class="card-title  ">Sorry... the requested resource does not exist.</h4>
               <h5 th:text="${status + ' ' + error}"></h5>
+              <a class="btn btn-primary float-left" href="/" th:href="@{/}">Dismiss</a>
               <a class="btn btn-danger float-right" href="https://github.com/nilshoffmann/jmzTab-m/issues/new">Report issue.</a>
             </div>
           </div>
