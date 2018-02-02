@@ -3,35 +3,58 @@
  */
 package de.isas.lipidomics.jmztabm.io;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
-import com.fasterxml.jackson.dataformat.csv.CsvParser;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema.Builder;
+import de.isas.lipidomics.jmztabm.io.formats.AssayFormat;
+import de.isas.lipidomics.jmztabm.io.formats.ContactFormat;
+import de.isas.lipidomics.jmztabm.io.formats.CvFormat;
+import de.isas.lipidomics.jmztabm.io.formats.DatabaseFormat;
+import de.isas.lipidomics.jmztabm.io.formats.ExternalStudyFormat;
+import de.isas.lipidomics.jmztabm.io.formats.InstrumentFormat;
 import de.isas.lipidomics.jmztabm.io.formats.MetadataFormat;
+import de.isas.lipidomics.jmztabm.io.formats.MsRunFormat;
+import de.isas.lipidomics.jmztabm.io.formats.ParameterFormat;
+import de.isas.lipidomics.jmztabm.io.formats.PublicationFormat;
+import de.isas.lipidomics.jmztabm.io.formats.SampleFormat;
+import de.isas.lipidomics.jmztabm.io.formats.SampleProcessingFormat;
+import de.isas.lipidomics.jmztabm.io.formats.SmallMoleculeEvidenceFormat;
+import de.isas.lipidomics.jmztabm.io.formats.SmallMoleculeFeatureFormat;
+import de.isas.lipidomics.jmztabm.io.formats.SmallMoleculeSummaryFormat;
+import de.isas.lipidomics.jmztabm.io.formats.SoftwareFormat;
+import de.isas.lipidomics.jmztabm.io.formats.StudyVariableFormat;
+import de.isas.mztab1_1.model.Assay;
+import de.isas.mztab1_1.model.CV;
+import de.isas.mztab1_1.model.Contact;
+import de.isas.mztab1_1.model.Database;
+import de.isas.mztab1_1.model.ExternalStudy;
+import de.isas.mztab1_1.model.Instrument;
 import de.isas.mztab1_1.model.MzTab;
 import de.isas.mztab1_1.model.Metadata;
+import de.isas.mztab1_1.model.MsRun;
 import de.isas.mztab1_1.model.Parameter;
-import java.beans.Introspector;
+import de.isas.mztab1_1.model.Publication;
+import de.isas.mztab1_1.model.Sample;
+import de.isas.mztab1_1.model.SampleProcessing;
+import de.isas.mztab1_1.model.SmallMoleculeEvidence;
+import de.isas.mztab1_1.model.SmallMoleculeFeature;
+import de.isas.mztab1_1.model.SmallMoleculeSummary;
+import de.isas.mztab1_1.model.Software;
+import de.isas.mztab1_1.model.StudyVariable;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
-import uk.ac.ebi.pride.jmztab1_1.model.MZTabColumnFactory;
-import uk.ac.ebi.pride.jmztab1_1.model.Section;
 import uk.ac.ebi.pride.jmztab1_1.model.SmallMoleculeColumn;
+import uk.ac.ebi.pride.jmztab1_1.model.SmallMoleculeEvidenceColumn;
+import uk.ac.ebi.pride.jmztab1_1.model.SmallMoleculeFeatureColumn;
 
 /**
  *
@@ -44,111 +67,43 @@ public class MzTabWriter {
 
     public void write(OutputStreamWriter os, MzTab mzTab) throws IOException {
         if (!os.getEncoding().
-            equals("UTF-8")) {
+            equals("UTF8")) {
             throw new IllegalArgumentException(
-                "OutputStreamWriter encoding must be UTF-8");
+                "OutputStreamWriter encoding must be UTF8 but is "+os.getEncoding());
         }
-        os.write(metadataString(mzTab.getMetadata()).
-            toString());
+        os.write(writeMetadataWithJackson(mzTab));
+        os.write(writeSmallMoleculeSummaryWithJackson(mzTab));
+        os.write(writeSmallMoleculeFeaturesWithJackson(mzTab));
+        os.write(writeSmallMoleculeEvidenceWithJackson(mzTab));
     }
 
     public void write(Path path, MzTab mzTab) throws IOException {
         BufferedWriter writer = Files.newBufferedWriter(path, Charset.forName(
             "UTF-8"), StandardOpenOption.CREATE_NEW,
             StandardOpenOption.WRITE);
-        writer.write(metadataString(mzTab.getMetadata()).
-            toString());
+        writer.write(writeMetadataWithJackson(mzTab));
+        writer.write(writeSmallMoleculeSummaryWithJackson(mzTab));
+        writer.write(writeSmallMoleculeFeaturesWithJackson(mzTab));
+        writer.write(writeSmallMoleculeEvidenceWithJackson(mzTab));
     }
 
-    public String metadataString(Metadata metadata) {
-        StringBuilder sb = new StringBuilder();
-        sb.
-            append(toLine(metadata.getPrefix(), "mzTab-version", metadata.
-                getMzTabVersion())).
-            append(toLine(metadata.getPrefix(), "mzTab-ID", metadata.
-                getMzTabID())).
-            append(toLine(metadata.getPrefix(), "title", metadata.
-                getTitle())).
-            append(toLine(metadata.getPrefix(), "description", metadata.
-                getDescription()));
-        return sb.toString();
-    }
-
-    public static String toLine(Enum<?> prefix, String... args) {
-        return Arrays.asList(args).
-            stream().
-            collect(
-                Collectors.joining(SEP, prefix + "\t", EOL));
-    }
-
-//    public static Map<String, Method> getJsonPropertyFields(Class<?> c) {
-//        Field[] fields = c.getDeclaredFields();
-//        Map<String, Method> fieldToMethod = new LinkedHashMap<>();
-//        for(Field f:fields) {
-//            JsonProperty annotation = f.getAnnotation(JsonProperty.class);
-//            if(annotation != null) {
-//                String jsonPropertyFieldName = annotation.value();
-//                System.out.println(jsonPropertyFieldName);
-//                fieldToMethod.put(jsonPropertyFieldName, c.get);
-//            }
-//        }
-//    }
-//    
-//    public static Method getMethodForField(Class<?> c, String fieldName) {
-//        c.getMethod("", parameterTypes)
-//    }
-//    
-//    public static String getMethodNameForField(String fieldName) {
-//        // Assume the method starts with either get or is.
-//        return Introspector.decapitalize(methodName.substring(methodName.startsWith("is") ? 2 : 3));
-//    }
-//    
-//    public StringBuilder sampleProcessing(Metadata metadata) {
-//        StringBuilder sampleProcessing = new StringBuilder();
-//        metadata.getSampleProcessing();
-//    }
-//    
-//    public static String parameterListToMzTabLines(String prefix, String elementName, ParameterList list) {
-//        list.stream().map(parameter -> {
-//            String[] param = new String[]{prefix, elementName, };
-//            sb.append(prefix)
-//        }).collect(Collectors.joining(", "));
-//        
-//    }
-    public static String parameterToString(Parameter parameter) {
-        String[] values = {parameter.getCvLabel(), parameter.getCvAccession(),
-            parameter.getName(), parameter.getValue()};
-        return Arrays.asList(values).
-            stream().
-            map(elem ->
-                (elem == null) ? "" : elem.trim()).
-            collect(Collectors.joining(
-                ", ", "[", "]"));
-    }
-
-    /*
-    public static String mtdInstrumentToMzTabLine(int index, String name, Instrument instrument) {
-    	
-    }
-     */
-    public static String mtdParameterToMzTabLine(int index, String name,
-        Parameter parameter) {
-        if (index <= 0) {
-            throw new IllegalArgumentException(
-                "value for parameter index must be >= 0");
-        }
-        return Arrays.asList(new String[]{name + "[" + index + "]",
-            parameterToString(parameter)}).
-            stream().
-            collect(
-                Collectors.joining(SEP, "MTD\t", EOL));
-    }
-
-    public static String writeMetadataWithJackson(MzTab mztabfile) {
+    String writeMetadataWithJackson(MzTab mztabfile) {
         CsvMapper mapper = new CsvMapper();
         mapper.addMixIn(Metadata.class, MetadataFormat.class);
-// important: we need "array wrapping" (see next section) here:
-//        mapper.enable(CsvParser.Feature.WRAP_AS_ARRAY);
+        mapper.addMixIn(Assay.class, AssayFormat.class);
+        mapper.addMixIn(Contact.class, ContactFormat.class);
+        mapper.addMixIn(Publication.class, PublicationFormat.class);
+        mapper.addMixIn(ExternalStudy.class, ExternalStudyFormat.class);
+        mapper.addMixIn(Instrument.class, InstrumentFormat.class);
+        mapper.addMixIn(Sample.class, SampleFormat.class);
+        mapper.addMixIn(SampleProcessing.class, SampleProcessingFormat.class);
+        mapper.addMixIn(Software.class, SoftwareFormat.class);
+        mapper.addMixIn(StudyVariable.class, StudyVariableFormat.class);
+        mapper.addMixIn(MsRun.class, MsRunFormat.class);
+        mapper.addMixIn(Database.class, DatabaseFormat.class);
+        mapper.addMixIn(Parameter.class, ParameterFormat.class);
+        mapper.addMixIn(CV.class, CvFormat.class);
+
         CsvSchema schema = mapper.schema().
             builder().
             addColumn("PREFIX", CsvSchema.ColumnType.STRING).
@@ -172,35 +127,157 @@ public class MzTabWriter {
         return "";
     }
 
-    public static String writeSmallMoleculeSummaryWithJackson(MzTab mztabfile) {
+    String writeSmallMoleculeSummaryWithJackson(MzTab mztabfile) {
         CsvMapper mapper = new CsvMapper();
-        mapper.addMixIn(Metadata.class, MetadataFormat.class);
-// important: we need "array wrapping" (see next section) here:
-//        mapper.enable(CsvParser.Feature.WRAP_AS_ARRAY);
+        mapper.addMixIn(SmallMoleculeSummary.class,
+            SmallMoleculeSummaryFormat.class);
+        List<SmallMoleculeSummary> sm = mztabfile.getSmallMoleculeSummary();
         Builder builder = mapper.schema().
             builder();
-//        MZTabColumnFactory.getInstance(Section.Small_Molecule).get
+        builder.addColumn("SMH", CsvSchema.ColumnType.STRING).
+            addColumn(SmallMoleculeColumn.Stable.SML_ID.getHeader(), CsvSchema.ColumnType.STRING).
+            addColumn(SmallMoleculeColumn.Stable.SMF_ID_REFS.getHeader(), CsvSchema.ColumnType.ARRAY).
+            addColumn(SmallMoleculeColumn.Stable.DATABASE_IDENTIFIER.getHeader(), CsvSchema.ColumnType.ARRAY).
+            addColumn(SmallMoleculeColumn.Stable.CHEMICAL_FORMULA.getHeader(), CsvSchema.ColumnType.ARRAY).
+            addColumn(SmallMoleculeColumn.Stable.SMILES.getHeader(), CsvSchema.ColumnType.ARRAY).
+            addColumn(SmallMoleculeColumn.Stable.INCHI.getHeader(), CsvSchema.ColumnType.ARRAY).
+            addColumn(SmallMoleculeColumn.Stable.CHEMICAL_NAME.getHeader(), CsvSchema.ColumnType.ARRAY).
+            addColumn(SmallMoleculeColumn.Stable.URI.getHeader(), CsvSchema.ColumnType.ARRAY).
+            addColumn(SmallMoleculeColumn.Stable.THEOR_NEUTRAL_MASS.getHeader(), CsvSchema.ColumnType.ARRAY).
+            addColumn(SmallMoleculeColumn.Stable.EXP_MASS_TO_CHARGE.getHeader(), CsvSchema.ColumnType.NUMBER).
+            addColumn(SmallMoleculeColumn.Stable.RETENTION_TIME.getHeader(), CsvSchema.ColumnType.NUMBER).
+            addColumn(SmallMoleculeColumn.Stable.ADDUCT_IONS.getHeader(), CsvSchema.ColumnType.ARRAY).
+            addColumn(SmallMoleculeColumn.Stable.RELIABILITY.getHeader(), CsvSchema.ColumnType.STRING).
+            addColumn(SmallMoleculeColumn.Stable.BEST_ID_CONFIDENCE_MEASURE.getHeader(), CsvSchema.ColumnType.STRING).
+            addColumn(SmallMoleculeColumn.Stable.BEST_ID_CONFIDENCE_VALUE.getHeader(), CsvSchema.ColumnType.NUMBER);
+        mztabfile.getMetadata().
+            getAssay().
+            forEach((assay) ->
+            {
+                builder.addColumn("abundance_assay[" + assay.getId() + "]",
+                    CsvSchema.ColumnType.NUMBER);
+            });
+        mztabfile.getMetadata().
+            getStudyVariable().
+            forEach((studyVariable) ->
+            {
+                builder.addColumn("abundance_study_variable[" + studyVariable.
+                    getId() + "]", CsvSchema.ColumnType.NUMBER);
+            });
+        mztabfile.getMetadata().
+            getStudyVariable().
+            forEach((studyVariable) ->
+            {
+                builder.addColumn(
+                    "abundance_coeffvar_study_variable[" + studyVariable.getId() + "]",
+                    CsvSchema.ColumnType.NUMBER);
+            });
+        //TODO add optional columns
+        CsvSchema schema = defaultSchemaForBuilder(builder);
 
-//                addColumn("PREFIX", CsvSchema.ColumnType.STRING).
-//                addColumn("KEY", CsvSchema.ColumnType.STRING).addArrayColumn("VALUES", "|").build().
-//        withAllowComments(true).
-//                withArrayElementSeparator("|").
-//                withNullValue("null").
-//                withUseHeader(false).
-//                withoutQuoteChar().
-//                withoutEscapeChar().
-//                withColumnSeparator('\t');
-//        try {
-//            return mapper.writer(schema).
-//                writeValueAsString(mztabfile.getMetadata());
-//        } catch (JsonProcessingException ex) {
-//            Logger.getLogger(MzTabWriter.class.getName()).
-//                log(Level.SEVERE, null, ex);
-//        }
+        try {
+            return mapper.writer(schema).
+                writeValueAsString(mztabfile.getSmallMoleculeSummary());
+        } catch (JsonProcessingException ex) {
+            Logger.getLogger(MzTabWriter.class.getName()).
+                log(Level.SEVERE, null, ex);
+        }
         return "";
     }
-//    
-//    public List<String> toStringList() {
-//        
-//    }
+
+    static CsvSchema defaultSchemaForBuilder(Builder builder) {
+        return builder.
+            build().
+            withAllowComments(true).
+            withArrayElementSeparator("|").
+            withNullValue("null").
+            withUseHeader(true).
+            withoutQuoteChar().
+            withoutEscapeChar().
+            withColumnSeparator('\t');
+    }
+
+    String writeSmallMoleculeFeaturesWithJackson(MzTab mztabfile) {
+        CsvMapper mapper = new CsvMapper();
+        mapper.addMixIn(SmallMoleculeFeature.class,
+            SmallMoleculeFeatureFormat.class);
+
+        Builder builder = mapper.schema().
+            builder();
+        builder.addColumn("SFH", CsvSchema.ColumnType.STRING).
+            addColumn(SmallMoleculeFeatureColumn.Stable.SMF_ID.getHeader(), CsvSchema.ColumnType.STRING).
+            addColumn(SmallMoleculeFeatureColumn.Stable.SME_ID_REFS.getHeader(), CsvSchema.ColumnType.ARRAY).
+            addColumn(SmallMoleculeFeatureColumn.Stable.SME_ID_REF_AMBIGUITY_CODE.getHeader(), CsvSchema.ColumnType.NUMBER).
+            addColumn(SmallMoleculeFeatureColumn.Stable.ADDUCT_ION.getHeader(), CsvSchema.ColumnType.STRING).
+            addColumn(SmallMoleculeFeatureColumn.Stable.ISOTOPOMER.getHeader(), CsvSchema.ColumnType.STRING).
+            addColumn(SmallMoleculeFeatureColumn.Stable.EXP_MASS_TO_CHARGE.getHeader(), CsvSchema.ColumnType.NUMBER).
+            addColumn(SmallMoleculeFeatureColumn.Stable.CHARGE.getHeader(), CsvSchema.ColumnType.NUMBER).
+            addColumn(SmallMoleculeFeatureColumn.Stable.RETENTION_TIME.getHeader(), CsvSchema.ColumnType.NUMBER).
+            addColumn(SmallMoleculeFeatureColumn.Stable.RETENTION_TIME_START.getHeader(), CsvSchema.ColumnType.NUMBER).
+            addColumn(SmallMoleculeFeatureColumn.Stable.RETENTION_TIME_END.getHeader(), CsvSchema.ColumnType.NUMBER);
+
+        mztabfile.getMetadata().
+            getAssay().
+            forEach((assay) ->
+            {
+                builder.addColumn("abundance_assay[" + assay.getId() + "]",
+                    CsvSchema.ColumnType.NUMBER);
+            });
+
+        //TODO add optional columns
+        CsvSchema schema = defaultSchemaForBuilder(builder);
+        try {
+            return mapper.writer(schema).
+                writeValueAsString(mztabfile.getSmallMoleculeFeature());
+        } catch (JsonProcessingException ex) {
+            Logger.getLogger(MzTabWriter.class.getName()).
+                log(Level.SEVERE, null, ex);
+        }
+        return "";
+    }
+
+    String writeSmallMoleculeEvidenceWithJackson(MzTab mztabfile) {
+        CsvMapper mapper = new CsvMapper();
+        mapper.addMixIn(SmallMoleculeEvidence.class,
+            SmallMoleculeEvidenceFormat.class);
+        Builder builder = mapper.schema().
+            builder();
+        builder.addColumn("SEH", CsvSchema.ColumnType.STRING).
+            addColumn(SmallMoleculeEvidenceColumn.Stable.SME_ID.getHeader(), CsvSchema.ColumnType.STRING).
+            addColumn(SmallMoleculeEvidenceColumn.Stable.EVIDENCE_UNIQUE_ID.getHeader(), CsvSchema.ColumnType.NUMBER).
+            addColumn(SmallMoleculeEvidenceColumn.Stable.DATABASE_IDENTIFIER.getHeader(), CsvSchema.ColumnType.STRING).
+            addColumn(SmallMoleculeEvidenceColumn.Stable.CHEMICAL_FORMULA.getHeader(), CsvSchema.ColumnType.STRING).
+            addColumn(SmallMoleculeEvidenceColumn.Stable.SMILES.getHeader(), CsvSchema.ColumnType.STRING).
+            addColumn(SmallMoleculeEvidenceColumn.Stable.INCHI.getHeader(), CsvSchema.ColumnType.STRING).
+            addColumn(SmallMoleculeEvidenceColumn.Stable.CHEMICAL_NAME.getHeader(), CsvSchema.ColumnType.STRING).
+            addColumn(SmallMoleculeEvidenceColumn.Stable.URI.getHeader(), CsvSchema.ColumnType.STRING).
+            addColumn(SmallMoleculeEvidenceColumn.Stable.DERIVATIZED_FORM.getHeader(), CsvSchema.ColumnType.STRING).
+            addColumn(SmallMoleculeEvidenceColumn.Stable.ADDUCT_ION.getHeader(), CsvSchema.ColumnType.STRING).
+            addColumn(SmallMoleculeEvidenceColumn.Stable.EXP_MASS_TO_CHARGE.getHeader(), CsvSchema.ColumnType.NUMBER).
+            addColumn(SmallMoleculeEvidenceColumn.Stable.CHARGE.getHeader(), CsvSchema.ColumnType.NUMBER).
+            addColumn(SmallMoleculeEvidenceColumn.Stable.THEORETICAL_MASS_TO_CHARGE.getHeader(), CsvSchema.ColumnType.NUMBER).
+            addColumn(SmallMoleculeEvidenceColumn.Stable.SPECTRA_REF.getHeader(), CsvSchema.ColumnType.STRING).
+            addColumn(SmallMoleculeEvidenceColumn.Stable.IDENTIFICATION_METHOD.getHeader(), CsvSchema.ColumnType.STRING).
+            addColumn(SmallMoleculeEvidenceColumn.Stable.MS_LEVEL.getHeader(), CsvSchema.ColumnType.STRING);
+        mztabfile.getMetadata().
+            getIdConfidenceMeasure().
+            forEach((param) ->
+            {
+                builder.
+                    addColumn("id_confidence_measure[" + param.getId() + "]",
+                        CsvSchema.ColumnType.NUMBER);
+            });
+        builder.addColumn(SmallMoleculeEvidenceColumn.Stable.RANK.getHeader(), CsvSchema.ColumnType.NUMBER);
+        //TODO add optional columns
+        CsvSchema schema = defaultSchemaForBuilder(builder);
+        try {
+            return mapper.writer(schema).
+                writeValueAsString(mztabfile.getSmallMoleculeFeature());
+        } catch (JsonProcessingException ex) {
+            Logger.getLogger(MzTabWriter.class.getName()).
+                log(Level.SEVERE, null, ex);
+        }
+        return "";
+    }
+
 }

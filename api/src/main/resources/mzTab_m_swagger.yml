@@ -887,6 +887,7 @@ definitions:
           format: uri
         sample_ref:
           $ref: '#/definitions/Sample'
+#possible n-multiplicity
         ms_run_ref:
           $ref: '#/definitions/MsRun'
   CV:
@@ -913,21 +914,27 @@ definitions:
           type: string
           pattern: '(http|ftp|https)://[\w-]+(\.[\w-]+)+([\w.,@?^=%&amp;:/~+#-]*[\w@?^=%&amp;/~+#-])?'
   Database:
-    type: object
-    required:
-      - param
-      - prefix
-      - version
-      - url
-    properties:
-      param:
-        $ref: '#/definitions/Parameter'
-      prefix:
-        type: string
-      version:
-        type: string
-      url:
-        type: string
+    allOf:
+    - $ref: '#/definitions/IndexedElement'
+    - type: object
+      required:
+        - param
+        - prefix
+        - version
+        - url
+      properties:
+        id:
+          type: integer
+          format: int32
+          minimum: 1
+        param:
+          $ref: '#/definitions/Parameter'
+        prefix:
+          type: string
+        version:
+          type: string
+        url:
+          type: string
   ColumnParameterMapping:
     type: object
     required:

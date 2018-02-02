@@ -1,8 +1,8 @@
 COM	mandatory
 MTD	mzTab-version	1.1.0
 COM	mandatory
-MTD	mzTab-ID MINIMAL_1
-COM the next line could be proposed to simplify parsing
+MTD	mzTab-ID	MINIMAL_1
+COM	the next line could be proposed to simplify parsing
 MTD	mzTab-dialect metabolomics
 MTD	title
 MTD	description	A minimal example for mzTab for metabolomics.

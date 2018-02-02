@@ -1,28 +1,39 @@
 package de.isas.lipidomics.jmztabm.io;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import de.isas.lipidomics.jmztabm.io.serialization.ParameterSerializer;
+import de.isas.mztab1_1.model.Assay;
+import de.isas.mztab1_1.model.CV;
+import de.isas.mztab1_1.model.ColumnParameterMapping;
 import de.isas.mztab1_1.model.Contact;
+import de.isas.mztab1_1.model.ExternalStudy;
 import de.isas.mztab1_1.model.Instrument;
 import de.isas.mztab1_1.model.MsRun;
 import de.isas.mztab1_1.model.MzTab;
 import de.isas.mztab1_1.model.Parameter;
 import de.isas.mztab1_1.model.Publication;
 import de.isas.mztab1_1.model.PublicationItem;
+import de.isas.mztab1_1.model.Sample;
 import de.isas.mztab1_1.model.SampleProcessing;
 import de.isas.mztab1_1.model.Software;
+import de.isas.mztab1_1.model.StudyVariable;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.PrintStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.junit.Assert;
 import org.junit.Test;
+import uk.ac.ebi.pride.jmztab1_1.model.SmallMoleculeEvidenceColumn;
+import uk.ac.ebi.pride.jmztab1_1.model.SmallMoleculeFeatureColumn;
 
 /**
  * Test class for MzTabWriter.
@@ -39,14 +50,14 @@ public class MzTabWriterTest {
                 title("A minimal test file").
                 description("A description of an mzTab file.").
                 addContactsItem(
-                    new Contact().
+                    new Contact().id(1).
                         name("Nils Hoffmann").
                         email("nils.hoffmann_at_isas.de").
                         affiliation(
                             "ISAS e.V. Dortmund, Germany")
                 ).
                 addMsrunItem(
-                    new MsRun().
+                    new MsRun().id(1).
                         location("file:///path/to/file1.mzML").
                         format(
                             new Parameter().
@@ -68,7 +79,7 @@ public class MzTabWriterTest {
         PublicationItem item1_2 = new PublicationItem().type(
             PublicationItem.TypeEnum.DOI).
             accession("10.1007/978-1-60761-987-1_6");
-        Publication publication1 = new Publication();
+        Publication publication1 = new Publication().id(1);
         publication1.setPublicationItems(Arrays.asList(item1_1, item1_2));
 
         PublicationItem item2_1 = new PublicationItem().type(
@@ -77,7 +88,7 @@ public class MzTabWriterTest {
         PublicationItem item2_2 = new PublicationItem().type(
             PublicationItem.TypeEnum.DOI).
             accession("10.1016/j.jprot.2010.06.008");
-        Publication publication2 = new Publication();
+        Publication publication2 = new Publication().id(2);
         publication2.setPublicationItems(Arrays.asList(item2_1, item2_2));
 
         mztabfile.getMetadata().
@@ -86,30 +97,29 @@ public class MzTabWriterTest {
         return mztabfile;
     }
 
-    static MzTab create1_0TestFile() {
+    static MzTab create1_1TestFile() {
         de.isas.mztab1_1.model.Metadata mtd = new de.isas.mztab1_1.model.Metadata();
         mtd.mzTabID("PRIDE_1234").
+            mzTabVersion("1.1").
             title("My first test experiment").
             description("An experiment investigating the effects of Il-6.");
-        SampleProcessing sp = new SampleProcessing().
+        SampleProcessing sp = new SampleProcessing().id(1).
             addSampleProcessingItem(new Parameter().cvLabel("SEP").
                 cvAccession("SEP:00142").
-                name("enzyme digestion").
-                value(null)).
+                name("enzyme digestion")).
             addSampleProcessingItem(new Parameter().cvLabel("MS").
                 cvAccession("MS:1001251").
-                name("Trypsin").
-                value(null)).
+                name("Trypsin")).
             addSampleProcessingItem(new Parameter().cvLabel("SEP").
                 cvAccession("SEP:00173").
-                name("SDS PAGE").
-                value(null));
+                name("SDS PAGE"));
         mtd.sampleProcessing(Arrays.asList(sp));
 
-        Instrument instrument1 = new Instrument().instrumentName(
-            new Parameter().cvLabel("MS").
-                cvAccession("MS:100049").
-                name("LTQ Orbitrap")).
+        Instrument instrument1 = new Instrument().id(1).
+            instrumentName(
+                new Parameter().cvLabel("MS").
+                    cvAccession("MS:100049").
+                    name("LTQ Orbitrap")).
             instrumentSource(
                 new Parameter().cvLabel("MS").
                     cvAccession("MS:1000073").
@@ -125,11 +135,12 @@ public class MzTabWriterTest {
                     name("electron multiplier")
             );
         mtd.addInstrumentsItem(instrument1);
-        Instrument instrument2 = new Instrument().instrumentName(
-            new Parameter().cvLabel("MS").
-                cvAccession("MS:1000031").
-                name("instrument model").
-                value("name of the instrument not included in the CV")).
+        Instrument instrument2 = new Instrument().id(2).
+            instrumentName(
+                new Parameter().cvLabel("MS").
+                    cvAccession("MS:1000031").
+                    name("instrument model").
+                    value("name of the instrument not included in the CV")).
             instrumentSource(new Parameter().cvLabel("MS").
                 cvAccession("MS:1000598").
                 name("ETD")).
@@ -140,38 +151,23 @@ public class MzTabWriterTest {
                 cvAccession("MS:1000348").
                 name("focal plane collector"));
         mtd.addInstrumentsItem(instrument2);
-        Software software1 = new Software().parameter(new Parameter().cvLabel(
-            "MS").
-            cvAccession("MS:1001207").
-            name("Mascot").
-            value("2.3")).
+        Software software1 = new Software().id(1).
+            parameter(new Parameter().cvLabel(
+                "MS").
+                cvAccession("MS:1001207").
+                name("Mascot").
+                value("2.3")).
             setting(Arrays.asList("Fragment tolerance = 0.1Da",
                 "Parent tolerance = 0.5Da"));
         mtd.addSoftwareItem(software1);
 
-//        mtd.addProteinSearchEngineScoreParam(1, new CVParam("MS", "MS:1001171",
-//                "Mascot:score", null));
-//        mtd.addPeptideSearchEngineScoreParam(1, new CVParam("MS", "MS:1001153",
-//                "search engine specific score", null));
-//        mtd.addSmallMoleculeSearchEngineScoreParam(1, new CVParam("MS",
-//                "MS:1001420", "SpectraST:delta", null));
-//
-//        mtd.addPsmSearchEngineScoreParam(1, new CVParam("MS", "MS:1001330",
-//                "X!Tandem:expect", null));
-//        mtd.addPsmSearchEngineScoreParam(2, new CVParam("MS", "MS:1001331",
-//                "X!Tandem:hyperscore", null));
-//
-//        mtd.addFalseDiscoveryRateParam(new CVParam("MS", "MS:1001364",
-//                "pep:global FDR", "0.01"));
-//        mtd.addFalseDiscoveryRateParam(new CVParam("MS", "MS:1001214",
-//                "pep:global FDR", "0.08"));
         PublicationItem item1_1 = new PublicationItem().type(
             PublicationItem.TypeEnum.PUBMED).
             accession("21063943");
         PublicationItem item1_2 = new PublicationItem().type(
             PublicationItem.TypeEnum.DOI).
             accession("10.1007/978-1-60761-987-1_6");
-        Publication publication1 = new Publication();
+        Publication publication1 = new Publication().id(1);
         publication1.setPublicationItems(Arrays.asList(item1_1, item1_2));
 
         PublicationItem item2_1 = new PublicationItem().type(
@@ -180,142 +176,191 @@ public class MzTabWriterTest {
         PublicationItem item2_2 = new PublicationItem().type(
             PublicationItem.TypeEnum.DOI).
             accession("10.1016/j.jprot.2010.06.008");
-        Publication publication2 = new Publication();
+        Publication publication2 = new Publication().id(2);
         publication2.setPublicationItems(Arrays.asList(item2_1, item2_2));
 
         mtd.addPublicationsItem(publication1).
             addPublicationsItem(publication2);
 
-        mtd.addContactsItem(new Contact().name("James D. Watson").
+        mtd.addContactsItem(new Contact().id(1).
+            name("James D. Watson").
             affiliation("Cambridge University, UK").
             email("watson@cam.ac.uk"));
-        mtd.addContactsItem(new Contact().name("Francis Crick").
+        mtd.addContactsItem(new Contact().id(2).
+            name("Francis Crick").
             affiliation("Cambridge University, UK").
             email("crick@cam.ac.uk"));
 
-//        mtd.addUriItem(new URI("http://www.ebi.ac.uk/pride/url/to/experiment"));
-//        mtd.addUriItem(new URI(
-//                "http://proteomecentral.proteomexchange.org/cgi/GetDataset"));
+        ExternalStudy es = new ExternalStudy().id("MTBLS400").
+            idFormat(new Parameter().name("METABOLIGHTS")).
+            title("Some external metabolights study.").
+            version("1.0").
+            url("https://www.ebi.ac.uk/metabolights/MTBLS400").
+            format(new Parameter().name("ISATAB"));
+        mtd.setStudy(es);
+        try {
+            mtd.addUriItem(new URI(
+                "http://www.ebi.ac.uk/pride/url/to/experiment").toASCIIString());
+            mtd.addUriItem(new URI(
+                "http://proteomecentral.proteomexchange.org/cgi/GetDataset").
+                toASCIIString());
+        } catch (URISyntaxException ex) {
+            Logger.getLogger(MzTabWriterTest.class.getName()).
+                log(Level.SEVERE, null, ex);
+        }
+        MsRun msRun1 = new MsRun().id(1).
+            location("file://ftp.ebi.ac.uk/path/to/file").
+            idFormat(new Parameter().cvLabel("MS").
+                cvAccession("MS:1001530").
+                name(
+                    "mzML unique identifier")).
+            format(new Parameter().cvLabel("MS").
+                cvAccession("MS:1000584").
+                name("mzML file")).
+            addFragmentationMethodItem(
+                new Parameter().cvLabel("MS").
+                    cvAccession("MS:1000133").
+                    name("CID"));
+        mtd.addMsrunItem(msRun1);
+        MsRun msRun2 = new MsRun().id(2).
+            location("ftp://ftp.ebi.ac.uk/path/to/file").
+            format(new Parameter().cvLabel("MS").
+                cvAccession("MS:1001062").
+                name("Mascot MGF file")).
+            hash("de9f2c7fd25e1b3afad3e85a0bd17d9b100db4b3").
+            hashMethod(
+                new Parameter().cvLabel("MS").
+                    cvAccession("MS:1000569").
+                    name("SHA-1")).
+            addFragmentationMethodItem(new Parameter().cvLabel("MS").
+                cvAccession("MS:1000422").
+                name("HCD"));
+        mtd.addMsrunItem(msRun2);
+        mtd.addCustomItem(new Parameter().id(1).
+            name("MS operator").
+            value("Florian"));
+
+        Sample sample1 = new Sample().id(1).
+            description("Hepatocellular carcinoma samples.").
+            addSpeciesItem(new Parameter().cvLabel("NEWT").
+                cvAccession("9606").
+                name(
+                    "Homo sapiens (Human)")).
+            addSpeciesItem(new Parameter().cvLabel("NEWT").
+                cvAccession("573824").
+                name("Human rhinovirus 1")).
+            addTissueItem(new Parameter().cvLabel("BTO").
+                cvAccession("BTO:0000759").
+                name("liver")).
+            addCellTypeItem(new Parameter().cvLabel("CL").
+                cvAccession("CL:0000182").
+                name("hepatocyte")).
+            addDiseaseItem(new Parameter().cvLabel("DOID").
+                cvAccession("DOID:684").
+                name("hepatocellular carcinoma")).
+            addDiseaseItem(new Parameter().cvLabel("DOID").
+                cvAccession("DOID:9451").
+                name("alcoholic fatty liver")).
+            addCustomItem(new Parameter().name("Extraction date").
+                value("2011-12-21")).
+            addCustomItem(new Parameter().name("Extraction reason").
+                value("liver biopsy")).
+            addIdConfidenceMeasureItem(new Parameter().name(
+                "coelution with authentic standard"));
+        mtd.addSampleItem(sample1);
+        Sample sample2 = new Sample().id(2).
+            name("Sample 2").
+            description("Healthy control samples.").
+            addSpeciesItem(new Parameter().cvLabel("NEWT").
+                cvAccession("9606").
+                name(
+                    "Homo sapiens (Human)")).
+            addSpeciesItem(new Parameter().cvLabel("NEWT").
+                cvAccession("12130").
+                name("Human rhinovirus 2")).
+            addTissueItem(new Parameter().cvLabel("BTO").
+                cvAccession("BTO:0000759").
+                name("liver")).
+            addCellTypeItem(new Parameter().cvLabel("CL").
+                cvAccession("CL:0000182").
+                name("hepatocyte")).
+            addCustomItem(new Parameter().name("Extraction date").
+                value("2011-12-19")).
+            addCustomItem(new Parameter().name("Extraction reason").
+                value("liver biopsy")).
+            addIdConfidenceMeasureItem(new Parameter().name(
+                "coelution with authentic standard"));
+        mtd.addSampleItem(sample2);
+
+        Assay assay1 = new Assay().id(1).
+            name("Assay 1").
+            msRunRef(msRun1).
+            sampleRef(sample1);
+        mtd.addAssayItem(assay1);
+        Assay assay2 = new Assay().id(2).
+            name("Assay 2").
+            msRunRef(msRun2).
+            sampleRef(sample2);
+        mtd.addAssayItem(assay2);
+
+        StudyVariable studyVariable1 = new StudyVariable().
+            id(1).
+            description(
+                "Group A").
+            addAssayRefsItem(
+                assay1).
+            addAssayRefsItem(assay2).
+            addSampleRefsItem(sample1).
+            addFactorsItem(new Parameter().name("spike-in").
+                value("0.74 fmol/uL"));
+        mtd.addStudyVariableItem(studyVariable1);
+        StudyVariable studyVariable2 = new StudyVariable().
+            id(2).
+            description("Group B").
+            addAssayRefsItem(assay1).
+            addAssayRefsItem(assay2).
+            addSampleRefsItem(sample2).
+            addFactorsItem(new Parameter().name("spike-in").
+                value("0.74 fmol/uL"));
+        mtd.addStudyVariableItem(studyVariable2);
+        mtd.addCvItem(new CV().id(1).
+            label("MS").
+            fullName("PSI-MS ontology").
+            version("3.54.0").
+            url("https://raw.githubusercontent.com/HUPO-PSI/psi-ms-CV/master/psi-ms.obo"));
 //
-//        mtd.addFixedModParam(1, new CVParam("UNIMOD", "UNIMOD:4",
-//                "Carbamidomethyl", null));
-//        mtd.addFixedModSite(1, "M");
-//        mtd.addFixedModParam(2, new CVParam("UNIMOD", "UNIMOD:35", "Oxidation",
-//                null));
-//        mtd.addFixedModSite(2, "N-term");
-//        mtd.addFixedModParam(3,
-//                new CVParam("UNIMOD", "UNIMOD:1", "Acetyl", null));
-//        mtd.addFixedModPosition(3, "Protein C-term");
-//
-//        mtd.addVariableModParam(1, new CVParam("UNIMOD", "UNIMOD:21", "Phospho",
-//                null));
-//        mtd.addVariableModSite(1, "M");
-//        mtd.addVariableModParam(2, new CVParam("UNIMOD", "UNIMOD:35",
-//                "Oxidation", null));
-//        mtd.addVariableModSite(2, "N-term");
-//        mtd.addVariableModParam(3, new CVParam("UNIMOD", "UNIMOD:1", "Acetyl",
-//                null));
-//        mtd.addVariableModPosition(3, "Protein C-term");
-//
-//        mtd.setQuantificationMethod(new CVParam("MS", "MS:1001837",
-//                "iTRAQ quantitation analysis", null));
-//        mtd.setProteinQuantificationUnit(new CVParam("PRIDE", "PRIDE:0000395",
-//                "Ratio", null));
-//        mtd.setPeptideQuantificationUnit(new CVParam("PRIDE", "PRIDE:0000395",
-//                "Ratio", null));
-//        mtd.setSmallMoleculeQuantificationUnit(new CVParam("PRIDE",
-//                "PRIDE:0000395", "Ratio", null));
-//
-//        mtd.
-//                addMsRunFormat(1, new CVParam("MS", "MS:1000584", "mzML file",
-//                        null));
-//        mtd.addMsRunFormat(2, new CVParam("MS", "MS:1001062", "Mascot MGF file",
-//                null));
-//        mtd.addMsRunLocation(1, new URL("file://ftp.ebi.ac.uk/path/to/file"));
-//        mtd.addMsRunLocation(2, new URL("ftp://ftp.ebi.ac.uk/path/to/file"));
-//        mtd.addMsRunIdFormat(1, new CVParam("MS", "MS:1001530",
-//                "mzML unique identifier", null));
-//        mtd.addMsRunFragmentationMethod(1,
-//                new CVParam("MS", "MS:1000133", "CID", null));
-//        mtd.addMsRunHash(2, "de9f2c7fd25e1b3afad3e85a0bd17d9b100db4b3");
-//        mtd.
-//                addMsRunHashMethod(2, new CVParam("MS", "MS:1000569", "SHA-1",
-//                        null));
-////        mtd.addMsRunFragmentationMethod(2, new CVParam("MS", "MS:1000422", "HCD", null));
-//
-//        mtd.addCustom(new UserParam("MS operator", "Florian"));
-//
-//        mtd.addSampleSpecies(1, new CVParam("NEWT", "9606",
-//                "Homo sapiens (Human)", null));
-//        mtd.addSampleSpecies(1, new CVParam("NEWT", "573824",
-//                "Human rhinovirus 1", null));
-//        mtd.addSampleSpecies(2, new CVParam("NEWT", "9606",
-//                "Homo sapiens (Human)", null));
-//        mtd.addSampleSpecies(2, new CVParam("NEWT", "12130",
-//                "Human rhinovirus 2", null));
-//        mtd.addSampleTissue(1, new CVParam("BTO", "BTO:0000759", "liver", null));
-//        mtd.addSampleCellType(1, new CVParam("CL", "CL:0000182", "hepatocyte",
-//                null));
-//        mtd.addSampleDisease(1, new CVParam("DOID", "DOID:684",
-//                "hepatocellular carcinoma", null));
-//        mtd.addSampleDisease(1, new CVParam("DOID", "DOID:9451",
-//                "alcoholic fatty liver", null));
-//        mtd.addSampleDescription(1, "Hepatocellular carcinoma samples.");
-//        mtd.addSampleDescription(2, "Healthy control samples.");
-//        mtd.addSampleCustom(1, new UserParam("Extraction date", "2011-12-21"));
-//        mtd.addSampleCustom(1,
-//                new UserParam("Extraction reason", "liver biopsy"));
-//
-//        Sample sample1 = mtd.getSampleMap().
-//                get(1);
-//        Sample sample2 = mtd.getSampleMap().
-//                get(2);
-//        mtd.addAssayQuantificationReagent(1, new CVParam("PRIDE",
-//                "PRIDE:0000114", "iTRAQ reagent", "114"));
-//        mtd.addAssayQuantificationReagent(2, new CVParam("PRIDE",
-//                "PRIDE:0000115", "iTRAQ reagent", "115"));
-//        mtd.addAssayQuantificationReagent(1, new CVParam("PRIDE", "MS:1002038",
-//                "unlabeled sample", null));
-//        mtd.addAssaySample(1, sample1);
-//        mtd.addAssaySample(2, sample2);
-//
-//        mtd.addAssayQuantificationModParam(2, 1, new CVParam("UNIMOD",
-//                "UNIMOD:188", "Label:13C(6)", null));
-//        mtd.addAssayQuantificationModParam(2, 2, new CVParam("UNIMOD",
-//                "UNIMOD:188", "Label:13C(6)", null));
-//        mtd.addAssayQuantificationModSite(2, 1, "R");
-//        mtd.addAssayQuantificationModSite(2, 2, "K");
-//        mtd.addAssayQuantificationModPosition(2, 1, "Anywhere");
-//        mtd.addAssayQuantificationModPosition(2, 2, "Anywhere");
-//
-//        MsRun msRun1 = mtd.getMsRunMap().
-//                get(1);
-//        mtd.addAssayMsRun(1, msRun1);
-//
-//        Assay assay1 = mtd.getAssayMap().
-//                get(1);
-//        Assay assay2 = mtd.getAssayMap().
-//                get(2);
-//
-//        mtd.addStudyVariableAssay(1, assay1);
-//        mtd.addStudyVariableAssay(1, assay2);
-//        mtd.addStudyVariableSample(1, sample1);
-//        mtd.addStudyVariableDescription(1,
-//                "description Group B (spike-in 0.74 fmol/uL)");
-//
-//        mtd.addStudyVariableAssay(2, assay1);
-//        mtd.addStudyVariableAssay(2, assay2);
-//        mtd.addStudyVariableSample(2, sample1);
-//        mtd.addStudyVariableDescription(2,
-//                "description Group B (spike-in 0.74 fmol/uL)");
-//
-//        mtd.addCVLabel(1, "MS");
-//        mtd.addCVFullName(1, "MS");
-//        mtd.addCVVersion(1, "3.54.0");
-//        mtd.addCVURL(1,
-//                "http://psidev.cvs.sourceforge.net/viewvc/psidev/psi/psi-ms/mzML/controlledVocabulary/psi-ms.obo");
-//
-//        mtd.addProteinColUnit(ProteinColumn.RELIABILITY, new CVParam("MS",
+        mtd.addQuantificationMethodItem(new Parameter().cvLabel("MS").
+            cvAccession("MS:1001837").
+            name("iTRAQ quantitation analysis"));
+        mtd.addQuantificationMethodItem(new Parameter().cvLabel("MS").
+            cvAccession("MS:1001838").
+            name("SRM quantitation analysis"));
+
+        mtd.addIdConfidenceMeasureItem(new Parameter().id(1).
+            name("some confidence measure term"));
+
+        //column names can be defined as strings
+        mtd.addColunitSmallMoleculeItem(new ColumnParameterMapping().columnName(
+            "retention_time").
+            param(new Parameter().id(1).
+                cvLabel("UO").
+                cvAccession("UO:0000031").
+                name("minute")));
+        //or via the respective enum member's getName() method, for fixed columns
+        mtd.addColunitSmallMoleculeFeatureItem(new ColumnParameterMapping().
+            columnName(SmallMoleculeFeatureColumn.Stable.RETENTION_TIME.
+                getName()).
+            param(new Parameter().id(1).
+                cvLabel("UO").
+                cvAccession("UO:0000031").
+                name("minute")));
+
+        mtd.addColunitSmallMoleculeEvidenceItem(new ColumnParameterMapping().
+            columnName(SmallMoleculeEvidenceColumn.Stable.RANK.
+                getName()).
+            param(new Parameter().id(1).
+                name("semi-stable sorted ascending order")));
+//        mtd.addProteinColUnit(ProteinColumn.RELIABILITY, new Parameter("MS",
 //                "MS:00001231", "PeptideProphet:Score", null));
 //
 //        MZTabColumnFactory peptideFactory = MZTabColumnFactory.getInstance(
@@ -324,13 +369,11 @@ public class MzTabWriterTest {
 //
 //        PeptideColumn peptideColumn = (PeptideColumn) peptideFactory.
 //                findColumnByHeader("retention_time");
-//        mtd.addPeptideColUnit(peptideColumn, new CVParam("UO", "UO:0000031",
+//        mtd.addPeptideColUnit(peptideColumn, new Parameter("UO", "UO:0000031",
 //                "minute", null));
 //
-//        mtd.addPSMColUnit(PSMColumn.RETENTION_TIME, new CVParam("UO",
+//        mtd.addPSMColUnit(PSMColumn.RETENTION_TIME, new Parameter("UO",
 //                "UO:0000031", "minute", null));
-//        mtd.addSmallMoleculeColUnit(SmallMoleculeColumn.RETENTION_TIME,
-//                new CVParam("UO", "UO:0000031", "minute", null));
 //
 //        System.out.println(mtd);
         return new MzTab().metadata(mtd);
@@ -341,7 +384,7 @@ public class MzTabWriterTest {
         try (BufferedWriter bw = Files.newBufferedWriter(File.createTempFile(
             "testWriteDefaultToString", ".txt").
             toPath(), Charset.forName("UTF-8"), StandardOpenOption.WRITE)) {
-            bw.write(createTestFile().
+            bw.write(create1_1TestFile().
                 toString());
         } catch (IOException ex) {
             Logger.getLogger(MzTabWriterTest.class.getName()).
@@ -355,55 +398,25 @@ public class MzTabWriterTest {
             "testWriteJson", ".json").
             toPath(), Charset.forName("UTF-8"), StandardOpenOption.WRITE)) {
             ObjectMapper mapper = new ObjectMapper();
-            bw.write(mapper.writeValueAsString(createTestFile()));
+            bw.write(mapper.writeValueAsString(create1_1TestFile()));
         } catch (IOException ex) {
             Logger.getLogger(MzTabWriterTest.class.getName()).
                 log(Level.SEVERE, null, ex);
         }
     }
 
-//    @Test
-//    public void testWriteCsv() {
-//        MzTab mztabfile = createTestFile();
-//        CsvMapper mapper = new CsvMapper();
-//        CsvSchema metadataSchema = CsvSchema.builder().
-//                addColumn("PREFIX", CsvSchema.ColumnType.STRING).
-//                addColumn("KEY", CsvSchema.ColumnType.STRING).
-//                addColumn("VALUE", CsvSchema.ColumnType.STRING).
-//                build();
-//        metadataSchema.withAllowComments(true).
-//                withLineSeparator(SEP).
-//                withUseHeader(false).
-//                withArrayElementSeparator("|").
-//                withNullValue("null").
-//                withColumnSeparator('\t');
-//        CsvSchema schema = mapper.schemaFor(Metadata.class).
-//                withAllowComments(true).
-//                withLineSeparator(SEP).
-//                withUseHeader(false).
-//                withArrayElementSeparator("|").
-//                withNullValue("null").
-//                withColumnSeparator('\t');
-//        try {
-//            System.out.println(mapper.writer(metadataSchema).
-//                    writeValueAsString(mztabfile.getMetadata()));
-//        } catch (JsonProcessingException ex) {
-//            Logger.getLogger(MzTabWriterTest.class.getName()).
-//                    log(Level.SEVERE, null, ex);
-//        }
-//    }
     @Test
     public void testCvParameterToString() {
         Parameter p = new Parameter().cvLabel("MS").
             cvAccession("MS:100179").
             name("made up for testing").
             value(null);
-        String s = MzTabWriter.parameterToString(p);
+        String s = ParameterSerializer.toString(p);
         System.out.println(s);
         String expected = "[MS, MS:100179, made up for testing, ]";
         Assert.assertEquals(expected, s);
         p.value("some value");
-        s = MzTabWriter.parameterToString(p);
+        s = ParameterSerializer.toString(p);
         System.out.println(s);
         expected = "[MS, MS:100179, made up for testing, some value]";
         Assert.assertEquals(expected, s);
@@ -413,41 +426,84 @@ public class MzTabWriterTest {
     public void testUserParameterToString() {
         Parameter p = new Parameter().name("made up for testing").
             value("some arbitrary value");
-        String s = MzTabWriter.parameterToString(p);
+        String s = ParameterSerializer.toString(p);
         System.out.println(s);
         String expected = "[, , made up for testing, some arbitrary value]";
         Assert.assertEquals(expected, s);
     }
 
     @Test
-    public void testMtdParameterToMzTabLine() {
-        Parameter p = new Parameter().cvLabel("MS").
-            cvAccession("MS:100179").
-            name("made up for testing").
-            value(null);
-        String s = MzTabWriter.parameterToString(p);
-        String actual = MzTabWriter.mtdParameterToMzTabLine(1,
-            "sample_processing", p);
-        String expected = "MTD\tsample_processing[1]\t" + s + "\n\r";
-        System.out.println(actual);
-        Assert.assertEquals(expected, actual);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testMtdParameterToMzTabLineException() {
-        Parameter p = new Parameter().cvLabel("MS").
-            cvAccession("MS:100179").
-            name("made up for testing").
-            value(null);
-        MzTabWriter.mtdParameterToMzTabLine(0,
-            "sample_processing", p);
-    }
-
-    @Test
-    public void testGetJsonPropertyFields() {
-        MzTab mzTabFile = createTestFile();
-        String s = MzTabWriter.writeMetadataWithJackson(mzTabFile);
+    public void testWriteMetadataToTsvWithJackson() {
+        MzTab mzTabFile = create1_1TestFile();
+        String metadata = new MzTabWriter().writeMetadataWithJackson(mzTabFile);
         System.out.println("Serialized Metadata: ");
-        System.out.println(s);
+        System.out.println(metadata);
     }
+    
+    @Test
+    public void testWriteSmallMoleculeSummaryToTsvWithJackson() {
+        MzTab mzTabFile = create1_1TestFile();
+        String smallMoleculeSummary = new MzTabWriter().
+            writeSmallMoleculeSummaryWithJackson(mzTabFile);
+        System.out.println("Serialized SmallMoleculeSummary: ");
+        System.out.println(smallMoleculeSummary);
+    }
+    
+    @Test
+    public void testWriteSmallMoleculeFeaturesToTsvWithJackson() {
+        MzTab mzTabFile = create1_1TestFile();
+        String smallMoleculeFeatures = new MzTabWriter().
+            writeSmallMoleculeFeaturesWithJackson(mzTabFile);
+        System.out.println("Serialized SmallMoleculeFeatures: ");
+        System.out.println(smallMoleculeFeatures);
+    }
+    
+    @Test
+    public void testWriteSmallMoleculeEvidenceToTsvWithJackson() {
+        MzTab mzTabFile = create1_1TestFile();
+        String smallMoleculeEvidences = new MzTabWriter().
+            writeSmallMoleculeEvidenceWithJackson(mzTabFile);
+        System.out.println("Serialized SmallMoleculeEvidence: ");
+        System.out.println(smallMoleculeEvidences);
+    }
+    
+    @Test
+    public void testWriteMzTabToTsvWithJackson() throws IOException {
+        MzTab mzTabFile = create1_1TestFile();
+        MzTabWriter writer = new MzTabWriter();
+        
+        writer.write(new OutputStreamWriter(System.out, Charset.forName(
+            "UTF-8")), mzTabFile);
+    }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void testWriteMzTabToTsvWithJacksonInvalidEncoding() throws IOException {
+        MzTab mzTabFile = create1_1TestFile();
+        MzTabWriter writer = new MzTabWriter();
+        writer.write(new OutputStreamWriter(System.out, Charset.forName("ISO-8859-15")), mzTabFile);
+    }
+
+//    @Test
+//    public void testReadWriteRoundtripWithJackson() throws IOException, URISyntaxException {
+//        MzTab mzTabFile = MzTabRawParserTest.parseResource(
+//            "metabolomics/lipidomics-example.mzTab");
+//        String metadata = MzTabWriter.writeMetadataWithJackson(mzTabFile);
+//        System.out.println("Serialized Metadata: ");
+//        System.out.println(metadata);
+//
+//        String smallMoleculeSummary = MzTabWriter.
+//            writeSmallMoleculeSummaryWithJackson(mzTabFile);
+//        System.out.println("Serialized SmallMoleculeSummary: ");
+//        System.out.println(smallMoleculeSummary);
+//
+//        String smallMoleculeFeatures = MzTabWriter.
+//            writeSmallMoleculeFeaturesWithJackson(mzTabFile);
+//        System.out.println("Serialized SmallMoleculeFeatures: ");
+//        System.out.println(smallMoleculeFeatures);
+//
+//        String smallMoleculeEvidences = MzTabWriter.
+//            writeSmallMoleculeEvidenceWithJackson(mzTabFile);
+//        System.out.println("Serialized SmallMoleculeEvidence: ");
+//        System.out.println(smallMoleculeEvidences);
+//    }
 }

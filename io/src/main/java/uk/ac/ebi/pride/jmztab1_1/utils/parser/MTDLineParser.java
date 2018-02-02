@@ -544,6 +544,12 @@ public class MTDLineParser extends MZTabLineParser {
                     property = checkProperty(element, matcher.group(5));
                     addCv(metadata, property, id, valueLabel);
                     break;
+//                case DATABASE:
+////                    id = checkIndex(defineLabel, matcher.group(3));
+////                    property = checkProperty(element, matcher.group(5));
+////                    addDatabase(metadata, property, id, valueLabel);
+//                    //TODO currently not handled
+//                    break;
                 case COLUNIT:
                     // In this stage, just store them into colUnitMap<defineLabel, valueLabel>.
                     // after the section columns is created we will add the col unit.
@@ -602,6 +608,19 @@ public class MTDLineParser extends MZTabLineParser {
 //                }
 //            }
 //        }
+
+        for (Integer id : assayMap.keySet()) {
+            if (assayMap.get(id).getMsRunRef() == null) {
+                throw new MZTabException(new MZTabError(LogicalErrorType.NotDefineInMetadata, lineNumber, "assay[" + id + "]-ms_run_ref"));
+            }
+        }
+        if (svMap.size() > 0 && assayMap.size() > 0) {
+            for (Integer id : svMap.keySet()) {
+                if (svMap.get(id).getAssayRefs().size() == 0) {
+                    throw new MZTabException(new MZTabError(LogicalErrorType.AssayRefs, lineNumber, "study_variable[" + id + "]-assay_refs"));
+                }
+            }
+        }
 
         // Complete and Summary should provide following information.
         // mzTab-version, mzTab-mode and mzTab-type have default values in create metadata. Not check here.
@@ -747,6 +766,30 @@ public class MTDLineParser extends MZTabLineParser {
         }
     }
     
+    private void addDatabase(Metadata metadata, MetadataProperty property, Integer id,
+        String defineLabel, String valueLabel) {
+        switch (property != null ? property : null) {
+            case DATABASE_LABEL:
+//                context.addSampleSpecies(metadata,id, checkParameter(defineLabel, valueLabel));
+                break;
+            case SAMPLE_TISSUE:
+//                context.addSampleTissue(metadata,id, checkParameter(defineLabel, valueLabel));
+                break;
+            case SAMPLE_CELL_TYPE:
+//                context.addSampleCellType(metadata,id, checkParameter(defineLabel, valueLabel));
+                break;
+            case SAMPLE_DISEASE:
+//                context.addSampleDisease(metadata,id, checkParameter(defineLabel, valueLabel));
+                break;
+            case SAMPLE_DESCRIPTION:
+                context.addSampleDescription(metadata,id, valueLabel);
+                break;
+            case SAMPLE_CUSTOM:
+                context.addSampleCustom(metadata,id, checkParameter(defineLabel, valueLabel));
+                break;
+        }
+    }
+    
     private void addSample(Metadata metadata, MetadataProperty property, Integer id,
         String defineLabel, String valueLabel) {
         switch (property != null ? property : null) {
@@ -774,40 +817,46 @@ public class MTDLineParser extends MZTabLineParser {
     private void addAssay(Metadata metadata, MetadataProperty property, String defineLabel,
         String valueLabel, Integer id) throws MZTabException {
         IndexedElement indexedElement;
-        switch (property != null ? property : null) {
-//                            case ASSAY_QUANTIFICATION_REAGENT:
-//                                metadata.addAssayQuantificationReagent(id, checkParameter(defineLabel, valueLabel));
-//                                break;
-            case ASSAY_SAMPLE_REF:
-                indexedElement = checkIndexedElement(defineLabel, valueLabel, MetadataElement.SAMPLE);
-                if (indexedElement != null) {
-                    Sample sample = context.getSampleMap().get(indexedElement.getId());
-                    if (sample == null) {
-                        throw new MZTabException(new MZTabError(LogicalErrorType.NotDefineInMetadata, lineNumber, valueLabel,
-                            valueLabel));
+        if(property==null) {
+            context.addAssay(metadata, new Assay().id(id).name(valueLabel));
+        } else {
+            switch (property) {
+    //                            case ASSAY_QUANTIFICATION_REAGENT:
+    //                                metadata.addAssayQuantificationReagent(id, checkParameter(defineLabel, valueLabel));
+    //                                break;
+                case ASSAY_SAMPLE_REF:
+                    indexedElement = checkIndexedElement(defineLabel, valueLabel, MetadataElement.SAMPLE);
+                    if (indexedElement != null) {
+                        Sample sample = context.getSampleMap().get(indexedElement.getId());
+                        if (sample == null) {
+                            throw new MZTabException(new MZTabError(LogicalErrorType.NotDefineInMetadata, lineNumber, valueLabel,
+                                valueLabel));
+                        }
+                        context.addAssaySample(metadata, id, sample);
                     }
-                    context.addAssaySample(metadata, id, sample);
-                }
-                break;
-            case ASSAY_MS_RUN_REF:
-                indexedElement = checkIndexedElement(defineLabel, valueLabel, MetadataElement.MS_RUN);
-                if (indexedElement != null) {
-                    MsRun msRun = context.getMsRunMap().get(indexedElement.getId());
-                    if (msRun == null) {
-                        throw new MZTabException(new MZTabError(
-                            LogicalErrorType.NotDefineInMetadata, lineNumber,
-                            valueLabel));
+                    break;
+                case ASSAY_MS_RUN_REF:
+                    indexedElement = checkIndexedElement(defineLabel, valueLabel, MetadataElement.MS_RUN);
+                    if (indexedElement != null) {
+                        MsRun msRun = context.getMsRunMap().get(indexedElement.getId());
+                        if (msRun == null) {
+                            throw new MZTabException(new MZTabError(
+                                LogicalErrorType.NotDefineInMetadata, lineNumber,
+                                valueLabel));
+                        }
+                        context.addAssayMsRun(metadata, id, msRun);
                     }
-                    context.addAssayMsRun(metadata, id, msRun);
-                }
-                break;
+                    break;
+            }
         }
     }
 
     private void addStudyVariable(Metadata metadata, MetadataProperty property, String defineLabel,
         String valueLabel, Integer id) throws MZTabErrorOverflowException, MZTabException {
         List<IndexedElement> indexedElementList;
-        if(property!=null) {
+        if(property==null) {
+            context.addStudyVariable(metadata, new StudyVariable().id(id).name(valueLabel));
+        } else {
             switch (property) {
                 case STUDY_VARIABLE_ASSAY_REFS:
                     indexedElementList = checkIndexedElementList(defineLabel, valueLabel, MetadataElement.ASSAY);
@@ -849,9 +898,10 @@ public class MTDLineParser extends MZTabLineParser {
                 case STUDY_VARIABLE_DESCRIPTION:
                     context.addStudyVariableDescription(metadata, id, valueLabel);
                     break;
+                case STUDY_VARIABLE_QUANTIFICATION_FUNCTION:
+                    context.addStudyVariableQuantificationFunction(metadata, id, checkParameter(defineLabel, valueLabel));
+                    break;
             }
-        } else {
-            context.addStudyVariable(metadata, new StudyVariable().id(id).name(valueLabel));
         }
     }
 

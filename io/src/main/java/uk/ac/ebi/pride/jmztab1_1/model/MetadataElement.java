@@ -33,7 +33,12 @@ public enum MetadataElement {
     ASSAY                             ("assay"),
     STUDY_VARIABLE                    ("study_variable"),
     CV                                ("cv"),
-    COLUNIT                           ("colunit");
+    COLUNIT                           ("colunit"),
+    COLUNIT_SMALL_MOLECULE            ("colunit-small_molecule"),
+    COLUNIT_SMALL_MOLECULE_FEATURE    ("colunit-small_molecule_feature"),
+    COLUNIT_SMALL_MOLECULE_EVIDENCE   ("colunit-small_molecule_evidence"),
+    ID_CONFIDENCE_MEASURE             ("id_confidence_measure"),
+    DATABASE                          ("database");
 
     private String name;
 

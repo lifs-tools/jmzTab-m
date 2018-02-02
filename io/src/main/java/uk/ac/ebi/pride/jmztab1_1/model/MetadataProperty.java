@@ -59,6 +59,7 @@ public enum MetadataProperty {
     STUDY_VARIABLE_ASSAY_REFS             (MetadataElement.STUDY_VARIABLE,                      "assay_refs"),
     STUDY_VARIABLE_SAMPLE_REFS            (MetadataElement.STUDY_VARIABLE,                      "sample_refs"),
     STUDY_VARIABLE_DESCRIPTION            (MetadataElement.STUDY_VARIABLE,                      "description"),
+    STUDY_VARIABLE_QUANTIFICATION_FUNCTION(MetadataElement.STUDY_VARIABLE,                      "quantification_value_function"),
 
     CV_LABEL                              (MetadataElement.CV,                                  "label"),
     CV_FULL_NAME                          (MetadataElement.CV,                                  "full_name"),
@@ -68,7 +69,10 @@ public enum MetadataProperty {
 //    COLUNIT_PROTEIN                       (MetadataElement.COLUNIT,                             "protein"),
 //    COLUNIT_PEPTIDE                       (MetadataElement.COLUNIT,                             "peptide"),
 //    COLUNIT_PSM                           (MetadataElement.COLUNIT,                             "psm"),
-    COLUNIT_SMALL_MOLECULE                (MetadataElement.COLUNIT,                             "small_molecule");
+    COLUNIT_SMALL_MOLECULE                (MetadataElement.COLUNIT,                             "small_molecule"),
+    
+    DATABASE_LABEL                        (MetadataElement.DATABASE,                             "label"),
+    DATABASE_NAME                         (MetadataElement.DATABASE,                             "name"),;
 
     private String name;
     private MetadataElement element;

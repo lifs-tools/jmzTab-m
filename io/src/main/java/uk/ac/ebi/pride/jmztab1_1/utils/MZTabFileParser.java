@@ -26,10 +26,11 @@ import de.isas.mztab1_1.model.SmallMoleculeFeature;
 import de.isas.mztab1_1.model.SmallMoleculeSummary;
 
 import java.io.*;
+import java.net.URI;
+import java.net.URL;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.zip.GZIPInputStream;
-import uk.ac.ebi.pride.jmztab1_1.model.MZTabColumnFactory;
 import static uk.ac.ebi.pride.jmztab1_1.model.MZTabConstants.NEW_LINE;
 import static uk.ac.ebi.pride.jmztab1_1.model.MZTabConstants.TAB;
 import uk.ac.ebi.pride.jmztab1_1.model.MZTabUtils;
@@ -47,14 +48,14 @@ import static uk.ac.ebi.pride.jmztab1_1.utils.MZTabProperties.*;
 public class MZTabFileParser {
 
     private MzTab mzTabFile;
-    private File tabFile;
+    private URI tabFile;
 
     private MZTabErrorList errorList;
     private MZTabParserContext context;
 
-    private void init(File tabFile) {
-        if (tabFile == null || !tabFile.exists()) {
-            throw new IllegalArgumentException("MZTab File not exists!");
+    private void init(URI tabFile) {
+        if (tabFile == null || !new File(tabFile).exists()) {
+            throw new IllegalArgumentException("MZTab File does not exist!");
         }
 
         this.tabFile = tabFile;
@@ -71,6 +72,18 @@ public class MZTabFileParser {
     public MZTabFileParser(File tabFile, OutputStream out) throws IOException {
         this(tabFile, out, LEVEL);
     }
+    
+    /**
+     * Create a new {@code MZTabFileParser} for the given URI. Parsing output
+     * and errors are written to the provided {@link java.io.OutputStream}.
+     *
+     * @param tabFileUri the MZTab file URI. The file SHOULD not be null and MUST exist
+     * @param out the output stream for parsing messages
+     * @throws java.io.IOException
+     */
+    public MZTabFileParser(URI tabFileUri, OutputStream out) throws IOException {
+        this(tabFileUri, out, LEVEL);
+    }
 
     /**
      * Create a new {@code MZTabFileParser} for the given file. Parsing output
@@ -84,6 +97,20 @@ public class MZTabFileParser {
     public MZTabFileParser(File tabFile, OutputStream out,
         MZTabErrorType.Level level) throws IOException {
         this(tabFile, out, level, MAX_ERROR_COUNT);
+    }
+    
+    /**
+     * Create a new {@code MZTabFileParser} for the given URI. Parsing output
+     * and errors are written to the provided {@link java.io.OutputStream}.
+     *
+     * @param tabFileUri the MZTab file URI. The file SHOULD not be null and MUST exist
+     * @param out the output stream for parsing messages
+     * @param level the minimum error level to report errors for
+     * @throws java.io.IOException
+     */
+    public MZTabFileParser(URI tabFileUri, OutputStream out,
+        MZTabErrorType.Level level) throws IOException {
+        this(tabFileUri, out, level, MAX_ERROR_COUNT);
     }
 
     /**
@@ -99,7 +126,41 @@ public class MZTabFileParser {
      */
     public MZTabFileParser(File tabFile, OutputStream out,
         MZTabErrorType.Level level, int maxErrorCount) throws IOException {
-        init(tabFile);
+        init(tabFile.toURI());
+
+        try {
+            context = new MZTabParserContext();
+            errorList = new MZTabErrorList(level, maxErrorCount);
+            check();
+            refine();
+        } catch (MZTabException e) {
+            out.write(MZTabExceptionMessage.getBytes());
+            errorList.add(e.getError());
+        } catch (MZTabErrorOverflowException e) {
+            out.write(MZTabErrorOverflowExceptionMessage.getBytes());
+        } 
+
+        errorList.print(out);
+        if (errorList.isEmpty()) {
+            out.write(("No errors in " + tabFile + " file!" + NEW_LINE).
+                getBytes());
+        }
+    }
+    
+    /**
+     * Create a new {@code MZTabFileParser} for the given file URI. Parsing output
+     * and errors are written to the provided {@link java.io.OutputStream}.
+     *
+     * @param tabFileUri the MZTab file URI. The file SHOULD not be null and MUST exist
+     * @param out the output stream for parsing messages
+     * @param level the minimum error level to report errors for
+     * @param maxErrorCount the maximum number of errors to report in the
+     * {@link MZTabErrorList} return by {@link MZTabFileParser#getErrorList()}
+     * @throws java.io.IOException
+     */
+    public MZTabFileParser(URI tabFileUri, OutputStream out,
+        MZTabErrorType.Level level, int maxErrorCount) throws IOException {
+        init(tabFileUri);
 
         try {
             context = new MZTabParserContext();
@@ -130,16 +191,23 @@ public class MZTabFileParser {
         return Section.findSection(section);
     }
 
-    private BufferedReader readFile(File tabFile) throws IOException {
+    private BufferedReader readFile(URI tabFile) throws IOException {
         BufferedReader reader;
 
-        if (tabFile.getName().
-            endsWith(".gz")) {
+        InputStream is = null;
+        File mzTabFile = new File(tabFile);
+        if(mzTabFile.isFile()) {
+            is = new FileInputStream(mzTabFile);
+        } else {
+            URL tabFileUrl = tabFile.toURL();
+            is = tabFileUrl.openStream();
+        }
+        if (tabFile.getPath().endsWith(".gz")) {
             reader = new BufferedReader(new InputStreamReader(
-                new GZIPInputStream(new FileInputStream(tabFile)), ENCODE));
+                new GZIPInputStream(is), ENCODE));
         } else {
             reader = new BufferedReader(new InputStreamReader(
-                new FileInputStream(tabFile), ENCODE));
+                is, ENCODE));
         }
 
         return reader;

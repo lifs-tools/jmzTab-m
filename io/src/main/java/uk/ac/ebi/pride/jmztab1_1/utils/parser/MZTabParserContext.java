@@ -8,6 +8,7 @@ import de.isas.mztab1_1.model.CV;
 import de.isas.mztab1_1.model.ColumnParameterMapping;
 import de.isas.mztab1_1.model.ColumnParameterMapping;
 import de.isas.mztab1_1.model.Contact;
+import de.isas.mztab1_1.model.Database;
 import de.isas.mztab1_1.model.Instrument;
 import de.isas.mztab1_1.model.Metadata;
 import de.isas.mztab1_1.model.MsRun;
@@ -64,6 +65,7 @@ public class MZTabParserContext {
     private SortedMap<Integer, Sample> sampleMap = new TreeMap<Integer, Sample>();
     private SortedMap<Integer, StudyVariable> studyVariableMap = new TreeMap<Integer, StudyVariable>();
     private SortedMap<Integer, CV> cvMap = new TreeMap<Integer, CV>();
+    private SortedMap<Integer, Database> databaseMap = new TreeMap<Integer, Database>();
 //    private List<ColUnit> proteinColUnitList = new ArrayList<ColUnit>();
 //    private List<ColUnit> peptideColUnitList = new ArrayList<ColUnit>();
 //    private List<ColUnit> psmColUnitList = new ArrayList<ColUnit>();
@@ -1414,7 +1416,7 @@ public class MZTabParserContext {
      */
     public StudyVariable addStudyVariableAssay(Metadata metadata, Integer id, Assay assay) {
         if (id <= 0) {
-            throw new IllegalArgumentException("study variable id should be great than 0!");
+            throw new IllegalArgumentException("study variable id should be greater than 0!");
         }
         if (assay == null) {
             throw new NullPointerException("study_variable[n]-assay_ref should not set null.");
@@ -1444,7 +1446,7 @@ public class MZTabParserContext {
      */
     public StudyVariable addStudyVariableSample(Metadata metadata, Integer id, Sample sample) {
         if (id <= 0) {
-            throw new IllegalArgumentException("study variable id should be great than 0!");
+            throw new IllegalArgumentException("study variable id should be greater than 0!");
         }
         if (sample == null) {
             throw new NullPointerException("study_variable[n]-sample_ref should not set null.");
@@ -1474,7 +1476,7 @@ public class MZTabParserContext {
      */
     public StudyVariable addStudyVariableDescription(Metadata metadata, Integer id, String description) {
         if (id <= 0) {
-            throw new IllegalArgumentException("study variable id should be great than 0!");
+            throw new IllegalArgumentException("study variable id should be greater than 0!");
         }
         StudyVariable studyVariable = studyVariableMap.get(id);
         if (isEmpty(description)) {
@@ -1488,7 +1490,37 @@ public class MZTabParserContext {
         }
 
         studyVariable.setDescription(description);
-        return studyVariableMap.put(id, studyVariable);
+        studyVariableMap.put(id, studyVariable);
+        return studyVariable;
+    }
+    
+    /**
+     * Add a study_variable[id]-quantification_value_function. This is a Parameter detailing how the 
+     * reported study variable abundances have been calculated.
+     * 
+     * @param metadata
+     * @param id SHOULD be positive integer.
+     * @param checkParameter the parameter.
+     */
+    public StudyVariable addStudyVariableQuantificationFunction(Metadata metadata, Integer id,
+        Parameter checkParameter) {
+        if (id <= 0) {
+            throw new IllegalArgumentException("study variable id should be greater than 0!");
+        }
+        StudyVariable studyVariable = studyVariableMap.get(id);
+        if (checkParameter == null) {
+            return studyVariable;
+        }
+        if (studyVariable == null) {
+            studyVariable = new StudyVariable();
+            studyVariable.id(id);
+            studyVariable.addQuantificationValueFunctionItem(checkParameter);
+            studyVariableMap.put(id, studyVariable);
+            metadata.addStudyVariableItem(studyVariable);
+        } else {
+            studyVariable.addQuantificationValueFunctionItem(checkParameter);
+        }
+        return studyVariable;
     }
 
     /**
@@ -1689,4 +1721,5 @@ public class MZTabParserContext {
     public Map<String, String> getColUnitMap() {
         return colUnitMap;
     }
+
 }

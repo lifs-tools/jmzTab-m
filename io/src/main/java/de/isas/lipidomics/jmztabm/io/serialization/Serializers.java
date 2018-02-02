@@ -15,8 +15,11 @@
  */
 package de.isas.lipidomics.jmztabm.io.serialization;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
+import de.isas.lipidomics.jmztabm.io.MzTabWriter;
 import de.isas.mztab1_1.model.Assay;
 import de.isas.mztab1_1.model.IndexedElement;
 import de.isas.mztab1_1.model.Metadata;
@@ -25,12 +28,15 @@ import de.isas.mztab1_1.model.StudyVariable;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import uk.ac.ebi.pride.jmztab1_1.model.MZTabConstants;
 import static uk.ac.ebi.pride.jmztab1_1.model.MZTabConstants.COMMA;
 import uk.ac.ebi.pride.jmztab1_1.model.MZTabUtils;
 import uk.ac.ebi.pride.jmztab1_1.model.MetadataProperty;
@@ -224,10 +230,11 @@ public class Serializers {
         if (assay.getSampleRef() != null) {
             printPrefix(sb, section).
                 append(getReference(assay, assay.getId())).
-                    append(MINUS).
-                    append(MetadataProperty.ASSAY_SAMPLE_REF);
+                append(MINUS).
+                append(MetadataProperty.ASSAY_SAMPLE_REF);
             sb.append(TAB).
-                append(getReference(assay.getSampleRef(), assay.getSampleRef().getId())).
+                append(getReference(assay.getSampleRef(), assay.getSampleRef().
+                    getId())).
                 append(NEW_LINE);
         }
 
@@ -237,7 +244,8 @@ public class Serializers {
                 append(MINUS).
                 append(MetadataProperty.ASSAY_MS_RUN_REF);
             sb.append(TAB).
-                append(getReference(assay.getMsRunRef(), assay.getMsRunRef().getId())).
+                append(getReference(assay.getMsRunRef(), assay.getMsRunRef().
+                    getId())).
                 append(NEW_LINE);
         }
 
@@ -250,8 +258,9 @@ public class Serializers {
         }
 
         if (assay.getExternalUri() != null) {
-            printProperty(assay, assay.getId(), MetadataProperty.ASSAY_EXTERNAL_URI, assay.
-                getExternalUri());
+            printProperty(assay, assay.getId(),
+                MetadataProperty.ASSAY_EXTERNAL_URI, assay.
+                    getExternalUri());
         }
 
         return sb.toString();
@@ -270,7 +279,8 @@ public class Serializers {
         StringBuilder sb = new StringBuilder();
 
         if (studyVariable.getDescription() != null) {
-            sb.append(printProperty(studyVariable, studyVariable.getId(), STUDY_VARIABLE_DESCRIPTION,
+            sb.append(printProperty(studyVariable, studyVariable.getId(),
+                STUDY_VARIABLE_DESCRIPTION,
                 studyVariable.getDescription())).
                 append(NEW_LINE);
         }
@@ -355,18 +365,15 @@ public class Serializers {
      * MS:1001251, Trypsin, ]
      */
     public static void serializeListOfParameterLists(JsonGenerator jg,
-        String prefix, Object element, List<List<Parameter>> listOfParameterLists,
+        String prefix, Object element,
+        List<List<Parameter>> listOfParameterLists,
         String item,
         StringBuilder sb, Section section) {
 
         IntStream.range(1, listOfParameterLists.size() + 1).
             forEach((idx) ->
             {
-                addIndexedLine(jg, prefix, getElementName(element).
-                    orElseThrow(() ->
-                    {
-                        return new ElementNameMappingException(element);
-                    }), idx, listOfParameterLists.get(
+                addIndexedLine(jg, prefix, element, listOfParameterLists.get(
                     idx - 1));
             });
     }
@@ -474,29 +481,45 @@ public class Serializers {
     }
 
     public static String toSampleRef(StudyVariable studyVariable) {
-         return studyVariable.getSampleRefs().stream().map((sample) ->
-        {
-            return getReference(sample, sample.getId());
-        }).
-        collect(Collectors.joining(""+COMMA, "", " "));
+        return studyVariable.getSampleRefs().
+            stream().
+            map((sample) ->
+            {
+                return getReference(sample, sample.getId());
+            }).
+            collect(Collectors.joining("" + COMMA, "", " "));
     }
 
     public static String toAssayRef(StudyVariable studyVariable) {
-        return studyVariable.getAssayRefs().stream().map((assay) ->
-        {
-            return getReference(assay, assay.getId());
-        }).
-        collect(Collectors.joining(""+COMMA, "", " "));
+        return studyVariable.getAssayRefs().
+            stream().
+            map((assay) ->
+            {
+                return getReference(assay, assay.getId());
+            }).
+            collect(Collectors.joining("" + COMMA, "", " "));
     }
-    
-    public static void addIndexedLine(JsonGenerator jg, String prefix,
-        Object element, Integer idx, Parameter parameter) {
-        addIndexedLine(jg, prefix, element, idx, Arrays.asList(parameter));
+
+    public static void addIndexedObject(JsonGenerator jg, String prefix,
+        Object element, Integer idx) {
+
     }
-    
+
     public static void addIndexedLine(JsonGenerator jg, String prefix,
-        Object element, Integer idx,
+        Object element, Parameter parameter) {
+        addIndexedLine(jg, prefix, element, Arrays.asList(parameter));
+    }
+
+    public static void addIndexedLine(JsonGenerator jg, String prefix,
+        Object element,
         List<Parameter> parameterList) {
+        if (parameterList == null || parameterList.isEmpty()) {
+            Logger.getLogger(MetadataSerializer.class.getName()).
+                info(
+                    "Skipping null or empty parameter list values for " + getElementName(
+                        element));
+            return;
+        }
         try {
             jg.writeStartArray();
             //prefix
@@ -507,9 +530,6 @@ public class Serializers {
                 {
                     return new ElementNameMappingException(element);
                 })).
-                append("[").
-                append(idx).
-                append("]").
                 toString());
             //value
             jg.writeString(parameterList.stream().
@@ -525,18 +545,89 @@ public class Serializers {
         }
     }
 
-    public static void addLine(JsonGenerator jg, String prefix, Object element,
-        String... value) {
+    public static void addLineWithParameters(JsonGenerator jg, String prefix,
+        Object element,
+        List<Parameter> parameterList) {
+        if (parameterList == null || parameterList.isEmpty()) {
+            Logger.getLogger(MetadataSerializer.class.getName()).
+                info(
+                    "Skipping null or empty parameter list values for " + getElementName(
+                        element));
+            return;
+        }
         try {
             jg.writeStartArray();
             //prefix
             jg.writeString(prefix);
             //key
-            jg.writeString(getElementName(element).
+            jg.writeString(new StringBuilder().append(getElementName(element).
                 orElseThrow(() ->
                 {
                     return new ElementNameMappingException(element);
-                }));
+                })).
+                toString());
+            //value
+            jg.writeString(parameterList.stream().
+                map((parameter) ->
+                {
+                    return ParameterSerializer.toString(parameter);
+                }).
+                collect(Collectors.joining("|")));
+            jg.writeEndArray();
+        } catch (IOException ex) {
+            Logger.getLogger(MetadataSerializer.class.getName()).
+                log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public static void addLineWithPropertyParameters(JsonGenerator jg,
+        String prefix,
+        String propertyName, Object element,
+        List<Parameter> value) {
+        if (value == null || value.isEmpty()) {
+            Logger.getLogger(MetadataSerializer.class.getName()).
+                info("Skipping null or empty values for " + getElementName(
+                    element));
+            return;
+        }
+        addLineWithProperty(jg, prefix, propertyName, element, value.stream().
+            map((parameter) ->
+            {
+                return ParameterSerializer.toString(parameter);
+            }).
+            collect(Collectors.joining("|")));
+    }
+
+    public static void addLineWithProperty(JsonGenerator jg, String prefix,
+        String propertyName, Object element,
+        String... value) {
+        if (value == null || value.length == 0) {
+            Logger.getLogger(MetadataSerializer.class.getName()).
+                info("Skipping null or empty values for " + getElementName(
+                    element));
+            return;
+        }
+        if (value.length == 1 && (value[0] == null || value[0].isEmpty())) {
+            Logger.getLogger(MetadataSerializer.class.getName()).
+                info("Skipping empty value for " + getElementName(
+                    element));
+            return;
+        }
+        try {
+            jg.writeStartArray();
+            //prefix
+            jg.writeString(prefix);
+            //key
+            String key = getElementName(element).
+                orElseThrow(() ->
+                {
+                    return new ElementNameMappingException(element);
+                });
+            if (propertyName == null) {
+                jg.writeString(key);
+            } else {
+                jg.writeString(key + "-" + propertyName);
+            }
             //value
             for (String s : value) {
                 jg.writeString(s);
@@ -548,23 +639,184 @@ public class Serializers {
         }
     }
 
+    public static void addLine(JsonGenerator jg, String prefix, Object element,
+        String... value) {
+        addLineWithProperty(jg, prefix, null, element, value);
+    }
+
     public static Optional<String> getElementName(Object element) {
-//        @JacksonXmlRootElement(localName = "Assay")
-        if(element instanceof MetadataElement) {
-            return Optional.ofNullable(((MetadataElement)element).getName());
+        if (element instanceof String) {
+            return Optional.of((String) element);
+        }
+        if (element instanceof MetadataElement) {
+            return Optional.ofNullable(((MetadataElement) element).getName());
         }
         JacksonXmlRootElement rootElement = element.getClass().
             getAnnotation(JacksonXmlRootElement.class);
         if (rootElement != null) {
-            return Optional.ofNullable(camelCaseToUnderscoreLowerCase(
-                rootElement.localName()));
+            String underscoreName = camelCaseToUnderscoreLowerCase(
+                rootElement.localName());
+            if (element instanceof IndexedElement) {
+                return Optional.of(
+                    underscoreName + "[" + ((IndexedElement) element).getId() + "]");
+            }
+            return Optional.ofNullable(underscoreName);
         }
         return Optional.empty();
     }
 
+    public static List<String> getPropertyNames(Object element) {
+        return Arrays.asList(element.getClass().
+            getAnnotationsByType(JsonProperty.class)).
+            stream().
+            map((jsonProperty) ->
+            {
+                return jsonProperty.value();
+            }).
+            collect(Collectors.toList());
+    }
+
+    public static Map<String, Object> asMap(Object element) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        return objectMapper.convertValue(element, Map.class);
+    }
+
     public static String camelCaseToUnderscoreLowerCase(String camelCase) {
-        return camelCase.replaceAll("(.)(\\p{Upper}+)", "$1_$2").
-            toLowerCase();
+        Matcher m = Pattern.compile("(?<=[a-z])[A-Z]").
+            matcher(camelCase);
+
+        StringBuffer sb = new StringBuffer();
+        while (m.find()) {
+            m.appendReplacement(sb, "_" + m.group().
+                toLowerCase());
+        }
+        m.appendTail(sb);
+        return sb.toString().toLowerCase();
+    }
+
+    public static void addSubElementStrings(JsonGenerator jg, String prefix,
+        Object element, String subElementName, List<String> subElements,
+        boolean oneLine) {
+        if (checkForNull(element, subElements, subElementName)) {
+            return;
+        };
+        String elementName = Serializers.getElementName(element).
+            get();
+        if (oneLine) {
+            addLine(jg, prefix,
+                elementName + "-" + subElementName,
+                subElements.stream().
+                    collect(Collectors.joining("" + MZTabConstants.BAR)));
+        } else {
+            IntStream.range(0, subElements.
+                size()).
+                forEachOrdered(i ->
+                {
+                    addLine(jg, prefix,
+                        elementName + "-" + subElementName + "[" + (i + 1) + "]",
+                        subElements.
+                            get(i));
+                });
+        }
+    }
+
+    public static void addSubElementParameter(JsonGenerator jg, String prefix,
+        Object element, String subElementName, Parameter subElement) {
+        if (subElement == null) {
+            String elementName = Serializers.getElementName(element).
+                get();
+            System.err.println(
+                "'" + elementName + "-" + subElementName + "' is null or empty!");
+            return;
+        }
+        addSubElementStrings(jg, prefix, element, subElementName, Arrays.asList(
+            ParameterSerializer.toString(subElement)), true);
+    }
+
+    public static void addSubElementParameters(JsonGenerator jg, String prefix,
+        Object element, String subElementName, List<Parameter> subElements,
+        boolean oneLine) {
+        if (checkForNull(element, subElements, subElementName)) {
+            return;
+        };
+        addSubElementStrings(jg, prefix, element, subElementName,
+            subElements.stream().
+                map((parameter) ->
+                {
+                    try {
+                        return ParameterSerializer.toString(parameter);
+                    } catch (IllegalArgumentException npe) {
+                        System.err.println(
+                            "parameter is null for " + subElementName);
+                        return "null";
+                    }
+                }).
+                collect(Collectors.toList()), oneLine);
+    }
+
+    public static boolean checkForNull(Object element, List<?> subElements,
+        String subElementName) {
+        String elementName = Serializers.getElementName(element).
+            get();
+        if (subElements == null || subElements.isEmpty()) {
+            System.err.println(
+                "'" + elementName + "-" + subElementName + "' is null or empty!");
+            return true;
+        }
+        return false;
+    }
+    
+    public static void writeAsNumberArray(JsonGenerator jg,
+        List<? extends Number> elements) {
+        try {
+            jg.writeStartArray();
+            elements.forEach((element) ->
+            {
+                try {
+                    jg.writeNumber(element.doubleValue());
+                } catch (IOException ex) {
+                    Logger.getLogger(SmallMoleculeSummarySerializer.class.
+                        getName()).
+                        log(Level.SEVERE, null, ex);
+                }
+            });
+        } catch (IOException ex) {
+            Logger.getLogger(SmallMoleculeSummarySerializer.class.getName()).
+                log(Level.SEVERE, null, ex);
+        } finally {
+            try {
+                jg.writeEndArray();
+            } catch (IOException ex) {
+                Logger.getLogger(SmallMoleculeSummarySerializer.class.getName()).
+                    log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+
+    public static void writeAsStringArray(JsonGenerator jg, List<String> elements) {
+        try {
+            jg.writeStartArray();
+            elements.forEach((element) ->
+            {
+                try {
+                    jg.writeString(element);
+                } catch (IOException ex) {
+                    Logger.getLogger(SmallMoleculeSummarySerializer.class.
+                        getName()).
+                        log(Level.SEVERE, null, ex);
+                }
+            });
+        } catch (IOException ex) {
+            Logger.getLogger(SmallMoleculeSummarySerializer.class.getName()).
+                log(Level.SEVERE, null, ex);
+        } finally {
+            try {
+                jg.writeEndArray();
+            } catch (IOException ex) {
+                Logger.getLogger(SmallMoleculeSummarySerializer.class.getName()).
+                    log(Level.SEVERE, null, ex);
+            }
+        }
     }
 
 }
