@@ -33,7 +33,7 @@ public class SFHLineParser extends MZTabHeaderLineParser {
 
 
     public SFHLineParser(MZTabParserContext context, Metadata metadata) {
-        super(context, MZTabColumnFactory.getInstance(Section.Small_Molecule_Header), metadata);
+        super(context, MZTabColumnFactory.getInstance(Section.Small_Molecule_Feature_Header), metadata);
     }
 
     @Override
@@ -119,7 +119,7 @@ public class SFHLineParser extends MZTabHeaderLineParser {
 
         //mandatory columns
         List<String> mandatoryColumnHeaders = new ArrayList<String>();
-        for(ISmallMoleculeColumn column: SmallMoleculeFeatureColumn.Stable.values()) {
+        for(ISmallMoleculeFeatureColumn column: SmallMoleculeFeatureColumn.Stable.values()) {
             mandatoryColumnHeaders.add(column.getName());
         }
 

@@ -23,7 +23,7 @@ import uk.ac.ebi.pride.jmztab1_1.utils.MZTabFileParser;
  */
 public class MzTabRawParserTest {
 
-    @Ignore("Temporary disabled due to stack overflow error.")
+//    @Ignore("Temporary disabled due to stack overflow error.")
     @Test
     public void testLipidomicsExample() {
         try {

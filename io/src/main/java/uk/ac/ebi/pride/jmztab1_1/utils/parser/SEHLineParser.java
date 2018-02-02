@@ -32,7 +32,7 @@ public class SEHLineParser extends MZTabHeaderLineParser {
 
 
     public SEHLineParser(MZTabParserContext context, Metadata metadata) {
-        super(context, MZTabColumnFactory.getInstance(Section.Small_Molecule_Header), metadata);
+        super(context, MZTabColumnFactory.getInstance(Section.Small_Molecule_Evidence_Header), metadata);
     }
 
     @Override

@@ -496,12 +496,12 @@ public class MTDLineParser extends MZTabLineParser {
                 case CUSTOM:
                     metadata.addCustomItem(checkParameter(defineLabel, valueLabel));
                     break;
-                case SAMPLE:
-                    id = checkIndex(defineLabel, matcher.group(3));
-                    property = checkProperty(element, matcher.group(5));
-
-                    addSample(metadata, property, id, defineLabel, valueLabel);
-                    break;
+//                case SAMPLE:
+//                    id = checkIndex(defineLabel, matcher.group(3));
+//                    property = checkProperty(element, matcher.group(5));
+//
+//                    addSample(metadata, property, id, defineLabel, valueLabel);
+//                    break;
                 case ASSAY:
                     if (isEmpty(matcher.group(6))) {
                         // no quantification modification. For example: assay[1-n]-quantification_reagent
