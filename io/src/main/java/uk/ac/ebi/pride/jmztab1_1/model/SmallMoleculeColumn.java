@@ -19,18 +19,13 @@ public class SmallMoleculeColumn implements ISmallMoleculeColumn {
     private final IMZTabColumn column;
 
     SmallMoleculeColumn(String name, Class dataType, boolean optional,
-            String order) {
+        String order) {
         this.column = new MZTabColumn(name, dataType, optional, order);
     }
 
     SmallMoleculeColumn(String name, Class dataType, boolean optional,
-            String order, Integer id) {
+        String order, Integer id) {
         this.column = new MZTabColumn(name, dataType, optional, order, id);
-    }
-
-    @Override
-    public void setElement(IndexedElement element) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     public static enum Stable implements ISmallMoleculeColumn {
@@ -38,43 +33,43 @@ public class SmallMoleculeColumn implements ISmallMoleculeColumn {
         SMF_ID_REFS("SMF_ID_REFS", SplitList.class, false, "02"),
         DATABASE_IDENTIFIER("database_identifier", SplitList.class, false, "03"),
         CHEMICAL_FORMULA(
-                "chemical_formula", String.class, false, "04"),
+            "chemical_formula", String.class, false, "04"),
         SMILES("smiles",
-                SplitList.class, false, "05"),
+            SplitList.class, false, "05"),
         INCHI("inchi",
-                SplitList.class, false, "06"),
+            SplitList.class, false, "06"),
         //    INCHI_KEY("inchi_key", SplitList.class, false, "04");
         CHEMICAL_NAME(
-                "chemical_name", SplitList.class, false, "07"),
+            "chemical_name", SplitList.class, false, "07"),
         URI("uri",
-                java.net.URI.class, false, "08"),
+            java.net.URI.class, false, "08"),
         THEOR_NEUTRAL_MASS(
-                "theoretical_neutral_mass", Double.class, false, "09"),
+            "theoretical_neutral_mass", Double.class, false, "09"),
         EXP_MASS_TO_CHARGE(
-                "exp_mass_to_charge", Double.class, false, "10"),
+            "exp_mass_to_charge", Double.class, false, "10"),
         RETENTION_TIME(
-                "retention_time", Double.class, false, "11"),
+            "retention_time", Double.class, false, "11"),
         ADDUCT_IONS(
-                "adduct_ions", SplitList.class, false, "12"),
+            "adduct_ions", SplitList.class, false, "12"),
         RELIABILITY(
-                "reliability", String.class, false, "13"),
+            "reliability", String.class, false, "13"),
         BEST_ID_CONFIDENCE_MEASURE(
-                "best_id_confidence_measure", Parameter.class, false, "14"),
+            "best_id_confidence_measure", Parameter.class, false, "14"),
         BEST_ID_CONFIDENCE_VALUE(
-                "best_id_confidence_value", Double.class, false, "15");
+            "best_id_confidence_value", Double.class, false, "15");
 
         private final ISmallMoleculeColumn column;
 
         private Stable(String name, Class columnType, boolean optional,
-                String order) {
+            String order) {
             this.column = new SmallMoleculeColumn(name, columnType, optional,
-                    order);
+                order);
         }
 
         private Stable(String name, Class columnType, boolean optional,
-                String order, Integer id) {
+            String order, Integer id) {
             this.column = new SmallMoleculeColumn(name, columnType, optional,
-                    order, id);
+                order, id);
         }
 
         public ISmallMoleculeColumn getColumn() {
@@ -133,13 +128,13 @@ public class SmallMoleculeColumn implements ISmallMoleculeColumn {
 
         public static Stable forName(String name) {
             return Arrays.stream(Stable.values()).
-                    filter((v) ->
-                            v.getColumn().
-                                    getName().
-                                    equals(name)).
-                    findFirst().
-                    orElseThrow(() ->
-                            new IllegalArgumentException("Unknown key:" + name));
+                filter((v) ->
+                    v.getColumn().
+                        getName().
+                        equals(name)).
+                findFirst().
+                orElseThrow(() ->
+                    new IllegalArgumentException("Unknown key:" + name));
         }
 
         @Override
@@ -149,16 +144,18 @@ public class SmallMoleculeColumn implements ISmallMoleculeColumn {
 
     };
 
+    private static Map<String, ISmallMoleculeColumn> columns = new LinkedHashMap<>();
+
     private static Map<String, ISmallMoleculeColumn> optionalColumns = new LinkedHashMap<>();
 
     public static ISmallMoleculeColumn optional(String name, Class columnType,
-            boolean optional,
-            String order, Integer id) {
+        boolean optional,
+        String order, Integer id) {
         if (optionalColumns.containsKey(name)) {
             return optionalColumns.get(name);
         }
         ISmallMoleculeColumn c = new SmallMoleculeColumn(name, columnType,
-                optional, order, id);
+            optional, order, id);
         optionalColumns.put(name, c);
         return c;
     }
@@ -200,17 +197,21 @@ public class SmallMoleculeColumn implements ISmallMoleculeColumn {
 
     @Override
     public void setHeader(String header) {
-        this.setHeader(header);
+        this.column.setHeader(header);
     }
 
     @Override
     public void setLogicPosition(String logicPosition) {
-        setLogicPosition(logicPosition);
+        this.column.setLogicPosition(logicPosition);
     }
 
     @Override
     public void setOrder(String order) {
-        setOrder(order);
+        this.column.setOrder(order);
     }
 
+    @Override
+    public void setElement(IndexedElement element) {
+        this.column.setElement(element);
+    }
 }

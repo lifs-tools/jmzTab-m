@@ -39,25 +39,13 @@ public class AbundanceColumn extends MZTabColumn {
     }
 
     /**
-     * This is a temporary method, which face small molecule abundance column:
-     * translate small_molecule --> smallmolecule
-     */
-    public static String translate(String oldName) {
-        if (oldName.equals("small_molecule")) {
-            return "smallmolecule";
-        } else {
-            return oldName;
-        }
-    }
-
-    /**
      * Generate a abundance column:
      * The column header is: {Section}_{Field#name()}_{IndexedElement[id]}
      * The column data type: {Field#columnType()}
      * The column position: always most right side, calculated by offset.
      */
     private AbundanceColumn(Section section, Field field, IndexedElement element, int offset) {
-        super(translate(section.getName()) + "_" + field.name, field.columnType, true, offset + field.position + "");
+        super(field.name, field.columnType, true, offset + field.position + "");
         setElement(element);
     }
 

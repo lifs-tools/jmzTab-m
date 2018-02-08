@@ -613,7 +613,6 @@ public class MZTabColumnFactory {
         return addOptionColumn(column, order);
     }
 
-
     /**
      * Add {@link AbundanceColumn} into {@link AbundanceColumn}, {@link #optionalColumnMapping} and {@link #columnMapping}.
      * The header like: {Section}_abundance_assay[1]
@@ -652,6 +651,25 @@ public class MZTabColumnFactory {
     public String addAbundanceOptionalColumn(StudyVariable studyVariable, String order) {
         SortedMap<String, MZTabColumn> columns = AbundanceColumn.createOptionalColumns(section, studyVariable, order);
         abundanceColumnMapping.putAll(columns);
+        optionalColumnMapping.putAll(columns);
+        columnMapping.putAll(columns);
+        return columns.lastKey();
+    }
+    
+    public String addIdConfidenceMeasureColumn(Parameter parameter,
+        Integer index, Class columnType) {
+        if (section!=Section.Small_Molecule_Evidence_Header && section!=Section.Small_Molecule_Evidence) {
+            throw new IllegalArgumentException("Section should be SmallMoleculeEvidence, but is "+section.getName());
+        }
+        if (parameter == null) {
+            throw new NullPointerException("Parameter should not be null!");
+        }
+
+        SortedMap<String, MZTabColumn> columns = new TreeMap<String, MZTabColumn>();
+
+        MZTabColumn column = new MZTabColumn("id_confidence_measure", columnType, false, new Integer(getColumnOrder(columnMapping.lastKey()))+"", index);
+        
+        columns.put(column.getLogicPosition(), column);
         optionalColumnMapping.putAll(columns);
         columnMapping.putAll(columns);
         return columns.lastKey();

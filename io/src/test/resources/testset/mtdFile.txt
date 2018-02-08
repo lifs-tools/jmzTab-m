@@ -52,6 +52,7 @@ MTD	sample[2]-description	Healthy control samples.
 MTD	assay[1]-sample_ref	sample[1]
 MTD	assay[1]-ms_run_ref	ms_run[1]
 MTD	assay[2]-sample_ref	sample[2]
+MTD	assay[2]-ms_run_ref	ms_run[2]
 MTD	study_variable[1]-description	description Group B (spike-in 0.74 fmol/uL)
 MTD	study_variable[1]-assay_refs	assay[1], assay[2]
 MTD	study_variable[1]-sample_refs	sample[1]

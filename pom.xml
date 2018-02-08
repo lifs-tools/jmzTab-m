@@ -45,7 +45,7 @@
             <failBuildOnCVSS>4</failBuildOnCVSS>
             <skipProvidedScope>true</skipProvidedScope>
             <skipRuntimeScope>true</skipRuntimeScope>
-            <suppressionFile>suppressions.xml</suppressionFile>
+            <suppressionFile>${project.parent.basedir}/suppressions.xml</suppressionFile>
           </configuration>
           <executions>
             <execution>

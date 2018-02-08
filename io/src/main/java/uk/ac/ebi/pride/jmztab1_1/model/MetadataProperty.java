@@ -32,6 +32,8 @@ public enum MetadataProperty {
 //    PROTEIN_QUANTIFICATION_UNIT           (MetadataElement.PROTEIN,                             "quantification_unit"),
 //    PEPTIDE_QUANTIFICATION_UNIT           (MetadataElement.PEPTIDE,                             "quantification_unit"),
     SMALL_MOLECULE_QUANTIFICATION_UNIT    (MetadataElement.SMALL_MOLECULE,                      "quantification_unit"),
+    SMALL_MOLECULE_IDENTIFICATION_RELIABILITY(MetadataElement.SMALL_MOLECULE,                   "identification_reliability"),
+    SMALL_MOLECULE_FEATURE_QUANTIFICATION_UNIT(MetadataElement.SMALL_MOLECULE_FEATURE,          "quantification_unit"),
 
     MS_RUN_FORMAT                         (MetadataElement.MS_RUN,                              "format"),
     MS_RUN_LOCATION                       (MetadataElement.MS_RUN,                              "location"),
@@ -72,7 +74,7 @@ public enum MetadataProperty {
     COLUNIT_SMALL_MOLECULE                (MetadataElement.COLUNIT,                             "small_molecule"),
     
     DATABASE_LABEL                        (MetadataElement.DATABASE,                             "label"),
-    DATABASE_NAME                         (MetadataElement.DATABASE,                             "name"),;
+    DATABASE_NAME                         (MetadataElement.DATABASE,                             "name");
 
     private String name;
     private MetadataElement element;

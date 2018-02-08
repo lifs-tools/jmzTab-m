@@ -275,20 +275,20 @@ public abstract class MZTabHeaderLineParser extends MZTabLineParser {
     private String checkAbundanceSection(String abundanceHeader) throws MZTabException {
         abundanceHeader = abundanceHeader.trim().toLowerCase();
 
-        Pattern pattern = Pattern.compile("(protein|peptide|smallmolecule)_abundance_(.+)");
+        Pattern pattern = Pattern.compile("abundance_(.+)");
         Matcher matcher = pattern.matcher(abundanceHeader);
 
         if (matcher.find()) {
-            String sectionName = translate(matcher.group(1));
-            if (sectionName != null &&
-                    !(sectionName.equals(Section.Protein.getName()) && section != Section.Protein_Header) &&
-                    !(sectionName.equals(Section.Peptide.getName()) && section != Section.Peptide_Header) &&
-                    !(sectionName.equals(Section.Small_Molecule.getName()) && section != Section.Small_Molecule_Header)) {
-                return matcher.group(2);
-            }
+//            String sectionName = matcher.group(1);
+//            if (sectionName != null &&
+//                    !(sectionName.equals(Section.Protein.getName()) && section != Section.Protein_Header) &&
+//                    !(sectionName.equals(Section.Peptide.getName()) && section != Section.Peptide_Header) &&
+//                    !(sectionName.equals(Section.Small_Molecule.getName()) && section != Section.Small_Molecule_Header)) {
+                return matcher.group(1);
+//            }
 
-            MZTabError error = new MZTabError(FormatErrorType.AbundanceColumn, lineNumber, abundanceHeader);
-            throw new MZTabException(error);
+//            MZTabError error = new MZTabError(FormatErrorType.AbundanceColumn, lineNumber, abundanceHeader);
+//            throw new MZTabException(error);
         } else {
             MZTabError error = new MZTabError(FormatErrorType.AbundanceColumn, lineNumber, abundanceHeader);
             throw new MZTabException(error);
@@ -317,41 +317,41 @@ public abstract class MZTabHeaderLineParser extends MZTabLineParser {
 
 
     private void checkAbundanceStudyVariableColumns(String abundanceHeader,
-                                                    String abundanceStdevHeader,
+                                                    String abundanceCoeffvarHeader,
                                                     String abundanceStdErrorHeader,
                                                     String order) throws MZTabException {
         abundanceHeader = abundanceHeader.trim().toLowerCase();
-        abundanceStdevHeader = abundanceStdevHeader.trim().toLowerCase();
+        abundanceCoeffvarHeader = abundanceCoeffvarHeader.trim().toLowerCase();
         abundanceStdErrorHeader = abundanceStdErrorHeader.trim().toLowerCase();
 
-        if (!abundanceHeader.contains("_abundance_study_variable")) {
-            String missHeader = Section.toDataSection(section).getName() + "_abundance_study_variable";
+        if (!abundanceHeader.contains("abundance_study_variable")) {
+            String missHeader = "abundance_study_variable";
 
             MZTabError error = new MZTabError(LogicalErrorType.AbundanceColumnTogether, lineNumber, missHeader);
             throw new MZTabException(error);
         }
 
-        if (!abundanceStdevHeader.contains("_abundance_stdev_study_variable")) {
-            String missHeader = Section.toDataSection(section).getName() + "_abundance_stdev_study_variable";
+        if (!abundanceCoeffvarHeader.contains("abundance_coeffvar_study_variable")) {
+            String missHeader = "abundance_coeffvar_study_variable";
 
             MZTabError error = new MZTabError(LogicalErrorType.AbundanceColumnTogether, lineNumber, missHeader);
             throw new MZTabException(error);
         }
 
-        if (!abundanceStdErrorHeader.contains("_abundance_std_error_study_variable")) {
-            String missHeader = Section.toDataSection(section).getName() + "_abundance_std_error_study_variable";
-
-            MZTabError error = new MZTabError(LogicalErrorType.AbundanceColumnTogether, lineNumber, missHeader);
-            throw new MZTabException(error);
-        }
+//        if (!abundanceStdErrorHeader.contains("abundance_std_error_study_variable")) {
+//            String missHeader = "abundance_std_error_study_variable";
+//
+//            MZTabError error = new MZTabError(LogicalErrorType.AbundanceColumnTogether, lineNumber, missHeader);
+//            throw new MZTabException(error);
+//        }
 
         StudyVariable abundanceStudyVariable = checkAbundanceStudyVariableColumn(abundanceHeader);
-        StudyVariable abundanceStdevStudyVariable = checkAbundanceStudyVariableColumn(abundanceStdevHeader);
-        StudyVariable abundanceStdErrorStudyVariable = checkAbundanceStudyVariableColumn(abundanceStdErrorHeader);
+        StudyVariable abundanceCoeffvarStudyVariable = checkAbundanceStudyVariableColumn(abundanceCoeffvarHeader);
+//        StudyVariable abundanceStdErrorStudyVariable = checkAbundanceStudyVariableColumn(abundanceStdErrorHeader);
 
         //It need to be the same studyVariable
-        if (abundanceStudyVariable != abundanceStdevStudyVariable || abundanceStudyVariable != abundanceStdErrorStudyVariable) {
-            MZTabError error = new MZTabError(LogicalErrorType.AbundanceColumnSameId, lineNumber, abundanceHeader, abundanceStdevHeader, abundanceStdErrorHeader);
+        if (abundanceStudyVariable != abundanceCoeffvarStudyVariable) {
+            MZTabError error = new MZTabError(LogicalErrorType.AbundanceColumnSameId, lineNumber, abundanceHeader, abundanceCoeffvarHeader);
             throw new MZTabException(error);
         }
 
@@ -426,19 +426,6 @@ public abstract class MZTabHeaderLineParser extends MZTabLineParser {
                 }
             }
         }
-    }
-
-    /**
-     * This is a temporary method which face smallmolecule in SmallMolecule header line.
-     * translate smallmolecule --> small_molecule.
-     *
-     * @see AbundanceColumn#translate(String)
-     */
-    private String translate(String oldName) {
-        if (oldName.equals("smallmolecule")) {
-            return "small_molecule";
-        }
-        return oldName;
     }
 
     /**

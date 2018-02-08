@@ -27,6 +27,7 @@ public enum MetadataElement {
 //    PROTEIN                           ("protein"),
 //    PEPTIDE                           ("peptide"),
     SMALL_MOLECULE                    ("small_molecule"),
+    SMALL_MOLECULE_FEATURE            ("small_molecule_feature"),
     MS_RUN                            ("ms_run"),
     CUSTOM                            ("custom"),
     SAMPLE                            ("sample"),

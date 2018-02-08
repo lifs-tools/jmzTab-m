@@ -31,17 +31,16 @@ public class SmallMoleculeFeatureColumn implements ISmallMoleculeFeatureColumn {
     public static enum Stable implements ISmallMoleculeFeatureColumn {
         SMF_ID("SMF_ID", Integer.class, false, "01"),
         SME_ID_REFS("SME_ID_REFS", StringList.class, true, "02"),
-        SME_ID_REF_AMBIGUITY_CODE("SME_ID_REF_Ambiguity_Code", Integer.class, true, "03"),
+        SME_ID_REF_AMBIGUITY_CODE("SME_ID_REF_Ambiguity_code", Integer.class, true, "03"),
         ADDUCT_ION(
                 "adduct_ion", String.class, true, "04"),
-        ISOTOPOMER("isotopmer", String.class, true, "05"),
+        ISOTOPOMER("isotopomer", String.class, true, "05"),
         EXP_MASS_TO_CHARGE(
                 "exp_mass_to_charge", Double.class, false, "06"),
         CHARGE("charge", Integer.class, false, "07"),
         RETENTION_TIME("retention_time", Double.class, true, "08"),
         RETENTION_TIME_START("retention_time_start", Double.class, true, "09"),
         RETENTION_TIME_END("retention_time_end", Double.class, true, "10");
-        // FIXME abundance_assay[1-n] is not yet handled -> optional column???
 
         private final ISmallMoleculeFeatureColumn column;
 
@@ -179,17 +178,17 @@ public class SmallMoleculeFeatureColumn implements ISmallMoleculeFeatureColumn {
 
     @Override
     public void setHeader(String header) {
-        this.setHeader(header);
+        this.column.setHeader(header);
     }
 
     @Override
     public void setLogicPosition(String logicPosition) {
-        setLogicPosition(logicPosition);
+        this.column.setLogicPosition(logicPosition);
     }
 
     @Override
     public void setOrder(String order) {
-        setOrder(order);
+        this.column.setOrder(order);
     }
 
     @Override

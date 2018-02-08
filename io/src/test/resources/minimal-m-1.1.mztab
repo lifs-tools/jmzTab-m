@@ -3,7 +3,7 @@ MTD	mzTab-version	1.1.0
 COM	mandatory
 MTD	mzTab-ID	MINIMAL_1
 COM	the next line could be proposed to simplify parsing
-MTD	mzTab-dialect metabolomics
+COM	MTD	mzTab-dialect metabolomics
 MTD	title
 MTD	description	A minimal example for mzTab for metabolomics.
 MTD	ms_run[1]-location	D:\Data Sets\Metabolomics\MTBLS263\3injections_inj1_POS.mzML

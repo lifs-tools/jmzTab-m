@@ -11,16 +11,8 @@ import uk.ac.ebi.pride.jmztab1_1.model.AbundanceColumn;
 import de.isas.mztab1_1.model.Metadata;
 import de.isas.mztab1_1.model.OptColumnMapping;
 import de.isas.mztab1_1.model.SmallMoleculeSummary;
-import uk.ac.ebi.pride.jmztab1_1.utils.errors.FormatErrorType;
-import uk.ac.ebi.pride.jmztab1_1.utils.errors.LogicalErrorType;
-import uk.ac.ebi.pride.jmztab1_1.utils.errors.MZTabError;
 import uk.ac.ebi.pride.jmztab1_1.utils.errors.MZTabErrorList;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import static uk.ac.ebi.pride.jmztab1_1.model.MZTabUtils.parseString;
-import static uk.ac.ebi.pride.jmztab1_1.model.SmallMoleculeColumn.*;
 
 /**
  * @author qingwei
@@ -59,7 +51,7 @@ public class SMLLineParser extends MZTabDataLineParser<SmallMoleculeSummary> {
                             smallMoleculeSummary.adductIons(checkStringList(column, target, MZTabConstants.BAR));
                             break;
                         case BEST_ID_CONFIDENCE_MEASURE:
-                            smallMoleculeSummary.bestIdConfidenceMeasure(checkParameter(column, target));
+                            smallMoleculeSummary.bestIdConfidenceMeasure(checkParameter(column, target, true));
                             break;
                         case BEST_ID_CONFIDENCE_VALUE:
                             smallMoleculeSummary.bestIdConfidenceValue(checkDouble(column, target));

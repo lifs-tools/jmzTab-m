@@ -13,9 +13,10 @@ import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import uk.ac.ebi.pride.jmztab1_1.utils.MZTabFileParser;
+import uk.ac.ebi.pride.jmztab1_1.utils.errors.MZTabErrorOverflowException;
+import uk.ac.ebi.pride.jmztab1_1.utils.errors.MZTabException;
 
 /**
  *
@@ -23,7 +24,6 @@ import uk.ac.ebi.pride.jmztab1_1.utils.MZTabFileParser;
  */
 public class MzTabRawParserTest {
 
-//    @Ignore("Temporary disabled due to stack overflow error.")
     @Test
     public void testLipidomicsExample() {
         try {
@@ -40,16 +40,29 @@ public class MzTabRawParserTest {
             Logger.getLogger(MzTabRawParserTest.class.getName()).
                 log(Level.SEVERE, null, ex);
             Assert.fail(ex.getMessage());
+        } catch (MZTabException e) {
+            Logger.getLogger(MzTabRawParserTest.class.getName()).
+                log(Level.SEVERE, null, e);
+            Assert.fail(e.getMessage());
+        } catch (MZTabErrorOverflowException e) {
+            Logger.getLogger(MzTabRawParserTest.class.getName()).
+                log(Level.SEVERE, null, e);
+            Assert.fail(e.getMessage());
         }
     }
 
-    public static MzTab parseResource(String resource) throws URISyntaxException, IOException {
-        URL url = MzTabRawParserTest.class.getClassLoader().getResource(resource);
+    public static MzTab parseResource(String resource) throws URISyntaxException, IOException, MZTabException, MZTabErrorOverflowException {
+        URL url = MzTabRawParserTest.class.getClassLoader().
+            getResource(resource);
         Assert.assertNotNull(url);
         MZTabFileParser parser = new MZTabFileParser(
-            new File(MzTabRawParserTest.class.getClassLoader().getResource(resource).getFile()), System.err);
-        if(parser.getErrorList().size()>0) {
-            Assert.fail(parser.getErrorList().toString());
+            new File(MzTabRawParserTest.class.getClassLoader().
+                getResource(resource).
+                getFile()), System.err);
+        if (parser.getErrorList().
+            size() > 0) {
+            Assert.fail(parser.getErrorList().
+                toString());
         }
         return parser.getMZTabFile();
     }

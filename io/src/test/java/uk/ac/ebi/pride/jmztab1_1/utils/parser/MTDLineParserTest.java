@@ -185,7 +185,6 @@ public class MTDLineParserTest {
         assertTrue(msRun2.getHashMethod().getName().equals("SHA-1"));
     }
 
-    @Ignore("Temporary disabled due to unresolved parsing issues.")
     @Test
     public void testMsRunLocationNull() throws Exception {
         parser.parse(1, "MTD\tms_run[1]-location\tnull\n", errorList);
@@ -196,7 +195,6 @@ public class MTDLineParserTest {
         assertTrue(context.getMsRunMap().size() == 3);
         MsRun msRun1 = context.getMsRunMap().get(1);
         assertNull(msRun1.getLocation());
-        assertEquals("MTD\tms_run[1]-location\tnull", Serializers.printProperty(msRun1, msRun1.getId(), MetadataProperty.MS_RUN_LOCATION, msRun1.getLocation()));
 
 
         MsRun msRun2 = context.getMsRunMap().get(2);
@@ -209,7 +207,6 @@ public class MTDLineParserTest {
         assertTrue(msRun2.getHashMethod().getName().equals("SHA-1"));
     }
 
-    @Ignore("Currently ignored until sample parsing has been fixed.")
     @Test
     public void testSample() throws Exception {
         parser.parse(1, " MTD\tsample[1]-species[1]\t[NEWT, 9606, Homo sapien (Human), ]", errorList);
@@ -329,7 +326,6 @@ public class MTDLineParserTest {
         return parser.getMetadata();
     }
 
-    @Ignore("Temporary disabled due to index out of bounds error.")
     @Test
     public void testCreateMetadata() throws Exception {
         String fileName = "testset/mtdFile.txt";

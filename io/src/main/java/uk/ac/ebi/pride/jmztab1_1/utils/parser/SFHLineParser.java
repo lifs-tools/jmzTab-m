@@ -123,6 +123,10 @@ public class SFHLineParser extends MZTabHeaderLineParser {
             mandatoryColumnHeaders.add(column.getName());
         }
 
+        if (metadata.getSmallMoleculeFeatureQuantificationUnit() == null) {
+            throw new MZTabException(new MZTabError(LogicalErrorType.NoSmallMoleculeFeatureQuantificationUnit, lineNumber));
+        }
+
         for (String columnHeader : mandatoryColumnHeaders) {
             if (factory.findColumnByHeader(columnHeader) == null) {
                 throw new MZTabException(new MZTabError(FormatErrorType.StableColumn, lineNumber, columnHeader));

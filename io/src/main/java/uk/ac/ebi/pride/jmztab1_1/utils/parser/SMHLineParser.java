@@ -59,7 +59,7 @@ public class SMHLineParser extends MZTabHeaderLineParser {
             } else if (header.contains("abundance_study_variable")) {
                 checkAbundanceColumns(physicalPosition, physPositionToOrder.get(physicalPosition));
                 // stdev_study_variable and std_error_will be process inside
-            } else if (header.contains("abundance_stdev") || header.contains("abundance_std_error")) {
+            } else if (header.contains("abundance_coeffvar")) {
                 // ignore then, they have been process....
             } else if (header.startsWith("opt_")) {
                 checkOptColumnName(header);
@@ -199,14 +199,11 @@ public class SMHLineParser extends MZTabHeaderLineParser {
 
 //        if (type == MZTabDescription.Type.Quantification) {
             if (metadata.getSmallMoleculeQuantificationUnit() == null) {
-                throw new MZTabException(new MZTabError(LogicalErrorType.NotDefineInMetadata, lineNumber, "smallmolecule-quantification_unit"));
+                throw new MZTabException(new MZTabError(LogicalErrorType.NoSmallMoleculeQuantificationUnit, lineNumber));
             }
-            //FIXME only necessay, if SMF records are being reported
-            if (metadata.getSmallMoleculeFeatureQuantificationUnit() == null) {
-                throw new MZTabException(new MZTabError(LogicalErrorType.NotDefineInMetadata, lineNumber, "smallmolecule_feature_quantification_unit"));
-            }
+
             if (metadata.getSmallMoleculeIdentificationReliability() == null) {
-                throw new MZTabException(new MZTabError(LogicalErrorType.NotDefineInMetadata, lineNumber, "smallmolecule_identification_reliability"));
+                throw new MZTabException(new MZTabError(LogicalErrorType.NoSmallMoleculeIdentificationReliability, lineNumber));
             }
             for (StudyVariable studyVariable : metadata.getStudyVariable()) {
                 String svLabel = "_study_variable[" + studyVariable.getId() + "]";

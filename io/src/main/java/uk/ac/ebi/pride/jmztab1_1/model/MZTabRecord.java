@@ -270,8 +270,8 @@ public abstract class MZTabRecord {
             throw new NullPointerException("Element should be provide!");
         }
 
-        Section dataSection = Section.toDataSection(factory.getSection());
-        String header = (dataSection == Section.Small_Molecule ? AbundanceColumn.translate(dataSection.getName()) : dataSection.getName()) + tag + Serializers.getReference(element, element.getId());
+//        Section dataSection = Section.toDataSection(factory.getSection());
+        String header = tag + Serializers.getReference(element, element.getId());
 
         return factory.findColumnByHeader(header);
     }
@@ -281,7 +281,7 @@ public abstract class MZTabRecord {
      * @param assay SHOULD NOT be null.
      */
     public Double getAbundanceColumnValue(Assay assay) {
-        IMZTabColumn column = getAbundanceColumn("_abundance_", assay);
+        IMZTabColumn column = getAbundanceColumn("abundance_", assay);
         if (column == null) {
             return null;
         } else {
@@ -298,7 +298,7 @@ public abstract class MZTabRecord {
             return;
         }
 
-        IMZTabColumn column = getAbundanceColumn("_abundance_", assay);
+        IMZTabColumn column = getAbundanceColumn("abundance_", assay);
         if (column != null) {
             setValue(column.getLogicPosition(), value);
         }
@@ -317,7 +317,7 @@ public abstract class MZTabRecord {
      * @param studyVariable SHOULD NOT be null.
      */
     public Double getAbundanceColumnValue(StudyVariable studyVariable) {
-        IMZTabColumn column = getAbundanceColumn("_abundance_", studyVariable);
+        IMZTabColumn column = getAbundanceColumn("abundance_", studyVariable);
         if (column == null) {
             return null;
         } else {
@@ -330,7 +330,7 @@ public abstract class MZTabRecord {
      * @param studyVariable SHOULD NOT be null.
      */
     public void setAbundanceColumnValue(StudyVariable studyVariable, Double value) {
-        IMZTabColumn column = getAbundanceColumn("_abundance_", studyVariable);
+        IMZTabColumn column = getAbundanceColumn("abundance_", studyVariable);
         if (column != null) {
             setValue(column.getLogicPosition(), value);
         }
@@ -349,7 +349,7 @@ public abstract class MZTabRecord {
      * @param studyVariable SHOULD NOT be null.
      */
     public Double getAbundanceStdevColumnValue(StudyVariable studyVariable) {
-        IMZTabColumn column = getAbundanceColumn("_abundance_stdev_", studyVariable);
+        IMZTabColumn column = getAbundanceColumn("abundance_stdev_", studyVariable);
         if (column == null) {
             return null;
         } else {
@@ -362,7 +362,7 @@ public abstract class MZTabRecord {
      * @param studyVariable SHOULD NOT be null.
      */
     public void setAbundanceStdevColumnValue(StudyVariable studyVariable, Double value) {
-        IMZTabColumn column = getAbundanceColumn("_abundance_stdev_", studyVariable);
+        IMZTabColumn column = getAbundanceColumn("abundance_stdev_", studyVariable);
         if (column != null) {
             setValue(column.getLogicPosition(), value);
         }
@@ -381,7 +381,7 @@ public abstract class MZTabRecord {
      * @param studyVariable SHOULD NOT be null.
      */
     public Double getAbundanceStdErrorColumnValue(StudyVariable studyVariable) {
-        IMZTabColumn column = getAbundanceColumn("_abundance_std_error_", studyVariable);
+        IMZTabColumn column = getAbundanceColumn("abundance_std_error_", studyVariable);
         if (column == null) {
             return null;
         } else {
@@ -394,7 +394,7 @@ public abstract class MZTabRecord {
      * @param studyVariable SHOULD NOT be null.
      */
     public void setAbundanceStdErrorColumnValue(StudyVariable studyVariable, Double value) {
-        IMZTabColumn column = getAbundanceColumn("_abundance_std_error_", studyVariable);
+        IMZTabColumn column = getAbundanceColumn("abundance_std_error_", studyVariable);
         if (column != null) {
             setValue(column.getLogicPosition(), value);
         }

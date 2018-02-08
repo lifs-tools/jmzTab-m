@@ -38,8 +38,8 @@ public class MZTabProperties {
         return properties.getProperty(key);
     }
 
-    public final static String MZTabExceptionMessage = "There exists errors in the metadata section or " +
-            "protein/peptide/small_molecule header section! Validation will stop, and ignore data table check!" + NEW_LINE;
+    public final static String MZTabExceptionMessage = "There exist errors in the metadata section or " +
+            "protein/peptide/small_molecule/small_molecule_feature/small_molecule_evidence header section! Validation will stop, and ignore data table check!" + NEW_LINE;
     public final static String MZTabErrorOverflowExceptionMessage = "System error queue overflow!" + NEW_LINE;
 
     public final static String ENCODE = getProperty("mztab.encode");

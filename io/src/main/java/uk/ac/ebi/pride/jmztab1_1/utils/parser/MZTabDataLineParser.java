@@ -270,9 +270,9 @@ public abstract class MZTabDataLineParser<T> extends MZTabLineParser {
         return paramList;
     }
     
-    protected Parameter checkParameter(IMZTabColumn column, String target) {
+    protected Parameter checkParameter(IMZTabColumn column, String target, boolean allowNull) {
         String result = checkData(column, target, true);
-        if(result == null || result.equalsIgnoreCase(NULL)) {
+        if(result == null || (result.equalsIgnoreCase(NULL) && !allowNull)) {
             this.errorList.add(new MZTabError(FormatErrorType.Param, lineNumber, "Column " + column.getHeader(), target));
         }
         return MZTabUtils.parseParam(target);

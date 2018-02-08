@@ -1,5 +1,8 @@
 package uk.ac.ebi.pride.jmztab1_1.utils.parser;
 
+import de.isas.lipidomics.jmztabm.io.serialization.ParameterSerializer;
+import static de.isas.lipidomics.jmztabm.io.serialization.Serializers.addLine;
+import de.isas.mztab1_1.model.Assay;
 import uk.ac.ebi.pride.jmztab1_1.model.MZTabColumnFactory;
 import uk.ac.ebi.pride.jmztab1_1.model.ISmallMoleculeColumn;
 import uk.ac.ebi.pride.jmztab1_1.model.IMZTabColumn;
@@ -10,12 +13,14 @@ import uk.ac.ebi.pride.jmztab1_1.utils.errors.MZTabException;
 import uk.ac.ebi.pride.jmztab1_1.utils.errors.FormatErrorType;
 import uk.ac.ebi.pride.jmztab1_1.utils.errors.LogicalErrorType;
 import de.isas.mztab1_1.model.Metadata;
+import de.isas.mztab1_1.model.Parameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.IntStream;
 
 import static uk.ac.ebi.pride.jmztab1_1.model.SmallMoleculeEvidenceColumn.Stable.*;
 
@@ -47,14 +52,15 @@ public class SEHLineParser extends MZTabHeaderLineParser {
 
         physPositionToOrder = generateHeaderPhysPositionToOrderMap(items);
 
-        //Iterates through the tokens in the protein header
+        //Iterates through the tokens in the small molecule evidence header
         //It will identify the type of column and the position accordingly
         for (physicalPosition = 1; physicalPosition < items.length; physicalPosition++) {
 
             column = null;
             header = items[physicalPosition];
-
-            if (header.startsWith("opt_")) {
+            if (header.startsWith("id_confidence_measure")) {
+                checkIdConfidenceMeasure(header);
+            } else if (header.startsWith("opt_")) {
                 checkOptColumnName(header);
             } else {
                 try {
@@ -79,6 +85,21 @@ public class SEHLineParser extends MZTabHeaderLineParser {
             }
         }
         return physicalPosition;
+    }
+
+    private void checkIdConfidenceMeasure(String header) throws MZTabException {
+        String valueLabel = header;
+        
+        Pattern pattern = Pattern.compile("id_confidence_measure\\[(\\d+)\\]");
+        Matcher matcher = pattern.matcher(valueLabel);
+        if (!matcher.find()) {
+            MZTabError error = new MZTabError(FormatErrorType.StableColumn, lineNumber, header);
+            throw new MZTabException(error);
+        }
+        
+        int id = parseIndex(header, matcher.group(1));
+        Parameter p = metadata.getIdConfidenceMeasure().get(id-1);
+        factory.addIdConfidenceMeasureColumn(p, id, Double.class);
     }
 
     private Map<Integer, String> generateHeaderPhysPositionToOrderMap(String[] items) {
@@ -179,6 +200,12 @@ public class SEHLineParser extends MZTabHeaderLineParser {
         for(ISmallMoleculeColumn col:SmallMoleculeEvidenceColumn.Stable.values()) {
             mandatoryColumnHeaders.add(col.getName());
         }
+
+        IntStream.range(0, metadata.getIdConfidenceMeasure().size()).
+        forEachOrdered(i ->
+        {
+            mandatoryColumnHeaders.add("id_confidence_measure["+(i+1)+"]");
+        });
 
         for (String columnHeader : mandatoryColumnHeaders) {
             if (factory.findColumnByHeader(columnHeader) == null) {

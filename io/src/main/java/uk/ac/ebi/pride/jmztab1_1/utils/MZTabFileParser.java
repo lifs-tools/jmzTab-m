@@ -68,8 +68,10 @@ public class MZTabFileParser {
      * @param tabFile the MZTab file. The file SHOULD not be null and MUST exist
      * @param out the output stream for parsing messages
      * @throws java.io.IOException
+     * @throws MZTabException
+     * @throws MZTabErrorOverflowException
      */
-    public MZTabFileParser(File tabFile, OutputStream out) throws IOException {
+    public MZTabFileParser(File tabFile, OutputStream out) throws IOException, MZTabException, MZTabErrorOverflowException {
         this(tabFile, out, LEVEL);
     }
     
@@ -80,8 +82,10 @@ public class MZTabFileParser {
      * @param tabFileUri the MZTab file URI. The file SHOULD not be null and MUST exist
      * @param out the output stream for parsing messages
      * @throws java.io.IOException
+     * @throws MZTabException
+     * @throws MZTabErrorOverflowException
      */
-    public MZTabFileParser(URI tabFileUri, OutputStream out) throws IOException {
+    public MZTabFileParser(URI tabFileUri, OutputStream out) throws IOException, MZTabException, MZTabErrorOverflowException {
         this(tabFileUri, out, LEVEL);
     }
 
@@ -93,9 +97,11 @@ public class MZTabFileParser {
      * @param out the output stream for parsing messages
      * @param level the minimum error level to report errors for
      * @throws java.io.IOException
+     * @throws MZTabException
+     * @throws MZTabErrorOverflowException
      */
     public MZTabFileParser(File tabFile, OutputStream out,
-        MZTabErrorType.Level level) throws IOException {
+        MZTabErrorType.Level level) throws IOException, MZTabException, MZTabErrorOverflowException {
         this(tabFile, out, level, MAX_ERROR_COUNT);
     }
     
@@ -107,9 +113,11 @@ public class MZTabFileParser {
      * @param out the output stream for parsing messages
      * @param level the minimum error level to report errors for
      * @throws java.io.IOException
+     * @throws MZTabException
+     * @throws MZTabErrorOverflowException
      */
     public MZTabFileParser(URI tabFileUri, OutputStream out,
-        MZTabErrorType.Level level) throws IOException {
+        MZTabErrorType.Level level) throws IOException, MZTabException, MZTabErrorOverflowException {
         this(tabFileUri, out, level, MAX_ERROR_COUNT);
     }
 
@@ -123,28 +131,12 @@ public class MZTabFileParser {
      * @param maxErrorCount the maximum number of errors to report in the
      * {@link MZTabErrorList} return by {@link MZTabFileParser#getErrorList()}
      * @throws java.io.IOException
+     * @throws MZTabException
+     * @throws MZTabErrorOverflowException
      */
     public MZTabFileParser(File tabFile, OutputStream out,
-        MZTabErrorType.Level level, int maxErrorCount) throws IOException {
-        init(tabFile.toURI());
-
-        try {
-            context = new MZTabParserContext();
-            errorList = new MZTabErrorList(level, maxErrorCount);
-            check();
-            refine();
-        } catch (MZTabException e) {
-            out.write(MZTabExceptionMessage.getBytes());
-            errorList.add(e.getError());
-        } catch (MZTabErrorOverflowException e) {
-            out.write(MZTabErrorOverflowExceptionMessage.getBytes());
-        } 
-
-        errorList.print(out);
-        if (errorList.isEmpty()) {
-            out.write(("No errors in " + tabFile + " file!" + NEW_LINE).
-                getBytes());
-        }
+        MZTabErrorType.Level level, int maxErrorCount) throws IOException, MZTabException, MZTabErrorOverflowException {
+        this(tabFile.toURI(), out, level, maxErrorCount);
     }
     
     /**
@@ -157,11 +149,14 @@ public class MZTabFileParser {
      * @param maxErrorCount the maximum number of errors to report in the
      * {@link MZTabErrorList} return by {@link MZTabFileParser#getErrorList()}
      * @throws java.io.IOException
+     * @throws MZTabException
+     * @throws MZTabErrorOverflowException
      */
     public MZTabFileParser(URI tabFileUri, OutputStream out,
-        MZTabErrorType.Level level, int maxErrorCount) throws IOException {
+        MZTabErrorType.Level level, int maxErrorCount) throws IOException, MZTabException, MZTabErrorOverflowException {
         init(tabFileUri);
 
+        MZTabException ex = null;
         try {
             context = new MZTabParserContext();
             errorList = new MZTabErrorList(level, maxErrorCount);
@@ -170,14 +165,19 @@ public class MZTabFileParser {
         } catch (MZTabException e) {
             out.write(MZTabExceptionMessage.getBytes());
             errorList.add(e.getError());
+            ex = e;
         } catch (MZTabErrorOverflowException e) {
             out.write(MZTabErrorOverflowExceptionMessage.getBytes());
+            throw e;
         } 
 
         errorList.print(out);
         if (errorList.isEmpty()) {
             out.write(("No errors in " + tabFile + " file!" + NEW_LINE).
                 getBytes());
+        }
+        if (ex!=null) {
+           throw ex; 
         }
     }
 

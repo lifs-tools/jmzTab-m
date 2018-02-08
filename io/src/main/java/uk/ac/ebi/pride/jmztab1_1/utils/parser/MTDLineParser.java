@@ -484,6 +484,23 @@ public class MTDLineParser extends MZTabLineParser {
                             }
                             metadata.setSmallMoleculeQuantificationUnit(checkParameter(defineLabel, valueLabel));
                             break;
+                        case SMALL_MOLECULE_IDENTIFICATION_RELIABILITY:
+                            if (metadata.getSmallMoleculeIdentificationReliability() != null) {
+                                throw new MZTabException(new MZTabError(LogicalErrorType.DuplicationDefine, lineNumber, defineLabel));
+                            }
+                            metadata.setSmallMoleculeIdentificationReliability(checkParameter(defineLabel, valueLabel));
+                            break;
+                    }
+                    break;
+                case SMALL_MOLECULE_FEATURE:
+                    property = checkProperty(element, matcher.group(5));
+                    switch (property != null ? property : null) {
+                        case SMALL_MOLECULE_FEATURE_QUANTIFICATION_UNIT:
+                            if (metadata.getSmallMoleculeFeatureQuantificationUnit() != null) {
+                                throw new MZTabException(new MZTabError(LogicalErrorType.DuplicationDefine, lineNumber, defineLabel));
+                            }
+                            metadata.setSmallMoleculeFeatureQuantificationUnit(checkParameter(defineLabel, valueLabel));
+                            break;
                     }
                     break;
                 case MS_RUN:
@@ -494,14 +511,15 @@ public class MTDLineParser extends MZTabLineParser {
 
                     break;
                 case CUSTOM:
+                    id = checkIndex(defineLabel, matcher.group(3));
+                    context.addCustomItem(metadata, id, checkParameter(defineLabel, valueLabel));
                     metadata.addCustomItem(checkParameter(defineLabel, valueLabel));
                     break;
-//                case SAMPLE:
-//                    id = checkIndex(defineLabel, matcher.group(3));
-//                    property = checkProperty(element, matcher.group(5));
-//
-//                    addSample(metadata, property, id, defineLabel, valueLabel);
-//                    break;
+                case SAMPLE:
+                    id = checkIndex(defineLabel, matcher.group(3));
+                    property = checkProperty(element, matcher.group(5));
+                    addSample(metadata, property, id, defineLabel, valueLabel);
+                    break;
                 case ASSAY:
                     if (isEmpty(matcher.group(6))) {
                         // no quantification modification. For example: assay[1-n]-quantification_reagent
@@ -556,11 +574,15 @@ public class MTDLineParser extends MZTabLineParser {
                     if (! defineLabel.equals("colunit-protein") &&
                             ! defineLabel.equals("colunit-peptide") &&
                             ! defineLabel.equals("colunit-psm") &&
-                            ! defineLabel.equals("colunit-small_molecule")) {
+                            ! defineLabel.startsWith("colunit-small_molecule")) {
                         errorList.add(new MZTabError(FormatErrorType.MTDDefineLabel, lineNumber, defineLabel));
                     } else {
                         context.getColUnitMap().put(defineLabel, valueLabel);
                     }
+                    break;
+                case ID_CONFIDENCE_MEASURE:
+                    id = checkIndex(defineLabel, matcher.group(3));
+                    context.addIdConfidenceMeasure(metadata, id, checkParameter(defineLabel, valueLabel));
                     break;
             }
 

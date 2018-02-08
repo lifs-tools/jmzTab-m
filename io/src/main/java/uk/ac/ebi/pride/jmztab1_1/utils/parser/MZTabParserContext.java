@@ -6,13 +6,11 @@ package uk.ac.ebi.pride.jmztab1_1.utils.parser;
 import de.isas.mztab1_1.model.Assay;
 import de.isas.mztab1_1.model.CV;
 import de.isas.mztab1_1.model.ColumnParameterMapping;
-import de.isas.mztab1_1.model.ColumnParameterMapping;
 import de.isas.mztab1_1.model.Contact;
 import de.isas.mztab1_1.model.Database;
 import de.isas.mztab1_1.model.Instrument;
 import de.isas.mztab1_1.model.Metadata;
 import de.isas.mztab1_1.model.MsRun;
-import de.isas.mztab1_1.model.Parameter;
 import de.isas.mztab1_1.model.Parameter;
 import de.isas.mztab1_1.model.Publication;
 import de.isas.mztab1_1.model.PublicationItem;
@@ -31,10 +29,7 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 import lombok.Data;
 import uk.ac.ebi.pride.jmztab1_1.model.MZTabColumn;
-import uk.ac.ebi.pride.jmztab1_1.model.MZTabConstants;
-import static uk.ac.ebi.pride.jmztab1_1.model.MZTabConstants.BAR;
 import static uk.ac.ebi.pride.jmztab1_1.model.MZTabUtils.isEmpty;
-import uk.ac.ebi.pride.jmztab1_1.model.SplitList;
 
 /**
  *
@@ -61,7 +56,9 @@ public class MZTabParserContext {
     private SortedMap<Integer, Assay> assayMap = new TreeMap<Integer, Assay>(); //1.1
     private Parameter smallMoleculeQuantificationUnit;
     private SortedMap<Integer, MsRun> msRunMap = new TreeMap<Integer, MsRun>();
-    private List<Parameter> customList = new ArrayList<Parameter>();
+    private SortedMap<Integer, Parameter> customItemMap = new TreeMap<Integer, Parameter>(); //1.1
+    private SortedMap<Integer, Parameter> idConfidenceMeasureMap = new TreeMap<Integer, Parameter>(); //1.1
+    
     private SortedMap<Integer, Sample> sampleMap = new TreeMap<Integer, Sample>();
     private SortedMap<Integer, StudyVariable> studyVariableMap = new TreeMap<Integer, StudyVariable>();
     private SortedMap<Integer, CV> cvMap = new TreeMap<Integer, CV>();
@@ -1156,20 +1153,20 @@ public class MZTabParserContext {
         return msRun;
     }
 
-    /**
-     * Add a custom parameter into metadata. Any additional parameters describing the analysis reported.
-     *
-     * @param custom if null ignore operation.
-     */
-    public Parameter addCustom(Metadata metadata, Parameter custom) {
-        if (custom == null) {
-            return null;
-        }
-
-        this.customList.add(custom);
-        metadata.addCustomItem(custom);
-        return custom;
-    }
+//    /**
+//     * Add a custom parameter into metadata. Any additional parameters describing the analysis reported.
+//     *
+//     * @param custom if null ignore operation.
+//     */
+//    public Parameter addCustom(Metadata metadata, Parameter custom) {
+//        if (custom == null) {
+//            return null;
+//        }
+//
+//        this.customList.add(custom);
+//        metadata.addCustomItem(custom);
+//        return custom;
+//    }
 
     /**
      * Add a assay into metadata. The application of a measurement about the sample (in this case through MS) -
@@ -1720,6 +1717,38 @@ public class MZTabParserContext {
      */
     public Map<String, String> getColUnitMap() {
         return colUnitMap;
+    }
+
+    /**
+     * Add a confidence measure id parameter.
+     * @param id SHOULD NOT set null
+     * @param parameter SHOULD NOT set null
+     */
+    void addIdConfidenceMeasure(Metadata metadata, Integer id, Parameter parameter) {
+        if(parameter.getId()==null) {
+            parameter.setId(id);
+        }
+        this.idConfidenceMeasureMap.put(id, parameter);
+        metadata.addIdConfidenceMeasureItem(parameter);
+    }
+
+    /**
+     * Add a custom item parameter.
+     * @param metadata
+     * @param id
+     * @param custom 
+     * @return
+     */
+    Parameter addCustomItem(Metadata metadata, Integer id, Parameter custom) {
+        if (custom == null) {
+            return null;
+        }
+        if(custom.getId()==null) {
+            custom.setId(id);
+        }
+        this.customItemMap.put(id, custom);
+        metadata.addCustomItem(custom);
+        return custom;
     }
 
 }

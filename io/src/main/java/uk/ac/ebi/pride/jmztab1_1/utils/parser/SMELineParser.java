@@ -4,6 +4,7 @@ import uk.ac.ebi.pride.jmztab1_1.model.MZTabColumnFactory;
 import uk.ac.ebi.pride.jmztab1_1.model.MZBoolean;
 import uk.ac.ebi.pride.jmztab1_1.model.IMZTabColumn;
 import uk.ac.ebi.pride.jmztab1_1.model.SmallMoleculeEvidenceColumn;
+import uk.ac.ebi.pride.jmztab1_1.model.SmallMoleculeEvidenceColumn.Stable;
 import uk.ac.ebi.pride.jmztab1_1.model.OptionColumn;
 import uk.ac.ebi.pride.jmztab1_1.model.ISmallMoleculeEvidenceColumn;
 import de.isas.mztab1_1.model.Metadata;
@@ -16,6 +17,7 @@ import uk.ac.ebi.pride.jmztab1_1.utils.errors.MZTabErrorList;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import uk.ac.ebi.pride.jmztab1_1.model.ISmallMoleculeColumn;
 
 import static uk.ac.ebi.pride.jmztab1_1.model.MZTabUtils.parseString;
 import static uk.ac.ebi.pride.jmztab1_1.model.SmallMoleculeColumn.*;
@@ -51,7 +53,7 @@ public class SMELineParser extends MZTabDataLineParser<SmallMoleculeEvidence> {
                 columnName = column.getName();
                 target = items[physicalPosition];
                 if (column instanceof ISmallMoleculeEvidenceColumn) {
-                    SmallMoleculeEvidenceColumn.Stable stableColumn = SmallMoleculeEvidenceColumn.Stable.forName(columnName);
+                    Stable stableColumn = SmallMoleculeEvidenceColumn.Stable.forName(columnName);
                     switch(stableColumn) {
                         case ADDUCT_ION:
                             smallMoleculeEvidence.adductIon(checkString(column,
@@ -72,7 +74,7 @@ public class SMELineParser extends MZTabDataLineParser<SmallMoleculeEvidence> {
                             smallMoleculeEvidence.databaseIdentifier(checkString(column, target));
                             break;
                         case DERIVATIZED_FORM:
-                            smallMoleculeEvidence.derivatizedForm(checkParameter(column, target));
+                            smallMoleculeEvidence.derivatizedForm(checkParameter(column, target, true));
                             break;
                         case EVIDENCE_UNIQUE_ID:
                             smallMoleculeEvidence.databaseIdentifier(checkString(column, target));
@@ -81,13 +83,13 @@ public class SMELineParser extends MZTabDataLineParser<SmallMoleculeEvidence> {
                             smallMoleculeEvidence.expMassToCharge(checkDouble(column, target));
                             break;
                         case IDENTIFICATION_METHOD:
-                            smallMoleculeEvidence.identificationMethod(checkParameter(column, target));
+                            smallMoleculeEvidence.identificationMethod(checkParameter(column, target, false));
                             break;
                         case INCHI:
                             smallMoleculeEvidence.inchi(checkString(column, target));
                             break;
                         case MS_LEVEL:
-                            smallMoleculeEvidence.msLevel(checkParameter(column, target));
+                            smallMoleculeEvidence.msLevel(checkParameter(column, target, false));
                             break;
                         case RANK:
                             smallMoleculeEvidence.rank(checkInteger(column, target));
@@ -124,6 +126,8 @@ public class SMELineParser extends MZTabDataLineParser<SmallMoleculeEvidence> {
                         }
                         smallMoleculeEvidence.addOptItem(optColMapping);
                    }
+                } else if (column.getName().equals("id_confidence_measure")) {
+                    smallMoleculeEvidence.addIdConfidenceMeasureItem(checkDouble(column, target));
                 }
             }
         }

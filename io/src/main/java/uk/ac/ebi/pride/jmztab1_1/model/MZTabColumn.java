@@ -249,7 +249,13 @@ public class MZTabColumn implements IMZTabColumn {
 
         this.logicPosition = generateLogicalPosition();
         StringBuilder sb = new StringBuilder();
-        sb.append(this.header).append("_").append(Serializers.getReference(element, element.getId()));
+        if(this instanceof AbundanceColumn) {
+            sb.append(this.header).append("[").
+            append(element.getId()).
+            append("]");
+        } else {
+            sb.append(this.header).append("_").append(Serializers.getReference(element, element.getId()));
+        }
         this.header = sb.toString();
     }
 

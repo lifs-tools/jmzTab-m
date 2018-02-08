@@ -60,5 +60,9 @@ public class LogicalErrorType extends MZTabErrorType {
     public static MZTabErrorType NoSmallMoleculeEvidenceSection = createInfo(Category.Logical, "NoSmallMoleculeEvidenceSection");
     public static MZTabErrorType NoSmallMoleculeFeatureSection = createInfo(Category.Logical, "NoSmallMoleculeFeatureSection");
     public static MZTabErrorType NoSmallMoleculeSummarySection = createWarn(Category.Logical, "NoSmallMoleculeSummarySection");
+    
+    public static MZTabErrorType NoSmallMoleculeQuantificationUnit = createError(Category.Logical, "NoSmallMoleculeQuantificationUnit");
+    public static MZTabErrorType NoSmallMoleculeFeatureQuantificationUnit = createError(Category.Logical, "NoSmallMoleculeFeatureQuantificationUnit");
+    public static MZTabErrorType NoSmallMoleculeIdentificationReliability = createWarn(Category.Logical, "NoSmallMoleculeIdentificationReliability");    
 
 }
