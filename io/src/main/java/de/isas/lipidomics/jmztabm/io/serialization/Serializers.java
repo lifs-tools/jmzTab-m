@@ -19,12 +19,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
-import de.isas.lipidomics.jmztabm.io.MzTabWriter;
-import de.isas.mztab1_1.model.Assay;
 import de.isas.mztab1_1.model.IndexedElement;
-import de.isas.mztab1_1.model.Metadata;
+import de.isas.mztab1_1.model.OptColumnMapping;
 import de.isas.mztab1_1.model.Parameter;
-import de.isas.mztab1_1.model.StudyVariable;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
@@ -37,19 +34,8 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import uk.ac.ebi.pride.jmztab1_1.model.MZTabConstants;
-import static uk.ac.ebi.pride.jmztab1_1.model.MZTabConstants.COMMA;
-import uk.ac.ebi.pride.jmztab1_1.model.MZTabUtils;
-import uk.ac.ebi.pride.jmztab1_1.model.MetadataProperty;
 import uk.ac.ebi.pride.jmztab1_1.model.Section;
-import static uk.ac.ebi.pride.jmztab1_1.model.MZTabConstants.MINUS;
-import static uk.ac.ebi.pride.jmztab1_1.model.MZTabConstants.NEW_LINE;
-import static uk.ac.ebi.pride.jmztab1_1.model.MZTabConstants.NULL;
-import static uk.ac.ebi.pride.jmztab1_1.model.MZTabConstants.TAB;
 import uk.ac.ebi.pride.jmztab1_1.model.MetadataElement;
-import static uk.ac.ebi.pride.jmztab1_1.model.MetadataElement.MZTAB;
-import static uk.ac.ebi.pride.jmztab1_1.model.MetadataProperty.MZTAB_ID;
-import static uk.ac.ebi.pride.jmztab1_1.model.MetadataProperty.MZTAB_VERSION;
-import static uk.ac.ebi.pride.jmztab1_1.model.MetadataProperty.STUDY_VARIABLE_DESCRIPTION;
 
 /**
  *
@@ -57,258 +43,6 @@ import static uk.ac.ebi.pride.jmztab1_1.model.MetadataProperty.STUDY_VARIABLE_DE
  * @since 11/30/17
  */
 public class Serializers {
-
-    public static String serialize(Section section, Metadata metadata) {
-        StringBuilder sb = new StringBuilder();
-        printPrefix(sb, Section.Metadata).
-            append(MZTAB).
-            append(MINUS).
-            append(MZTAB_VERSION).
-            append(TAB).
-            append(metadata.getMzTabVersion()).
-            append(NEW_LINE);
-
-        if (!MZTabUtils.isEmpty(metadata.getMzTabID())) {
-            printPrefix(sb, Section.Metadata).
-                append(MZTAB).
-                append(MINUS).
-                append(MZTAB_ID).
-                append(TAB).
-                append(metadata.getMzTabID()).
-                append(NEW_LINE);
-        }
-        return sb.toString();
-    }
-
-//    public static String serialize(Section section, Metadata metadata) {
-//        StringBuilder sb = new StringBuilder();
-//
-//        sb.append(metadata.getTabDescription().
-//            toString());
-//
-//        if (metadata.getTitle() != null) {
-//            printPrefix(sb, section).
-//                append(TITLE).
-//                append(TAB).
-//                append(metadata.getTitle()).
-//                append(NEW_LINE);
-//        }
-//
-//        if (metadata.getDescription() != null) {
-//            printPrefix(sb, section).
-//                append(DESCRIPTION).
-//                append(TAB).
-//                append(metadata.getDescription()).
-//                append(NEW_LINE);
-//        }
-//
-//        sb = printMap(metadata.getSampleProcessingMap(), SAMPLE_PROCESSING.
-//            toString(), sb, section);
-//        sb = printMap(metadata.getInstrumentMap(), INSTRUMENT.toString(), sb,
-//            section);
-//        sb = printMap(metadata.getSoftwareMap(), SOFTWARE.toString(), sb,
-//            section);
-//        sb = printMap(metadata.getProteinSearchEngineScoreMap(),
-//            PROTEIN_SEARCH_ENGINE_SCORE.toString(), sb, section);
-//        sb = printMap(metadata.getPeptideSearchEngineScoreMap(),
-//            PEPTIDE_SEARCH_ENGINE_SCORE.toString(), sb, section);
-//        sb = printMap(metadata.getPsmSearchEngineScoreMap(),
-//            PSM_SEARCH_ENGINE_SCORE.toString(), sb, section);
-//        sb = printMap(metadata.getSmallMoleculeSearchEngineScoreMap(),
-//            SMALLMOLECULE_SEARCH_ENGINE_SCORE.toString(), sb, section);
-//
-//        if (!metadata.getFalseDiscoveryRate().
-//            isEmpty()) {
-//            printPrefix(sb, section).
-//                append(FALSE_DISCOVERY_RATE).
-//                append(TAB).
-//                append(metadata.getFalseDiscoveryRate()).
-//                append(NEW_LINE);
-//        }
-//
-//        sb = printMap(metadata.getPublicationMap(), PUBLICATION.toString(), sb,
-//            section);
-//        sb = printMap(metadata.getContactMap(), CONTACT.toString(), sb, section);
-//
-//        printList(metadata.getUriList(), URI.toString(), sb, section);
-//
-//        sb = printMap(metadata.getFixedModMap(), FIXED_MOD.toString(), sb,
-//            section);
-//        sb = printMap(metadata.getVariableModMap(), VARIABLE_MOD.toString(), sb,
-//            section);
-//
-//        if (metadata.getQuantificationMethod() != null) {
-//            printPrefix(sb, section).
-//                append(QUANTIFICATION_METHOD).
-//                append(TAB).
-//                append(metadata.getQuantificationMethod()).
-//                append(NEW_LINE);
-//        }
-//        if (metadata.getProteinQuantificationUnit() != null) {
-//            printPrefix(sb, section).
-//                append(PROTEIN).
-//                append(MINUS).
-//                append(PROTEIN_QUANTIFICATION_UNIT).
-//                append(TAB).
-//                append(metadata.getProteinQuantificationUnit()).
-//                append(NEW_LINE);
-//        }
-//        if (metadata.getPeptideQuantificationUnit() != null) {
-//            printPrefix(sb, section).
-//                append(PEPTIDE).
-//                append(MINUS).
-//                append(PEPTIDE_QUANTIFICATION_UNIT).
-//                append(TAB).
-//                append(metadata.getPeptideQuantificationUnit()).
-//                append(NEW_LINE);
-//        }
-//        if (metadata.getSmallMoleculeQuantificationUnit() != null) {
-//            printPrefix(sb, section).
-//                append(SMALL_MOLECULE).
-//                append(MINUS).
-//                append(SMALL_MOLECULE_QUANTIFICATION_UNIT).
-//                append(TAB).
-//                append(metadata.getSmallMoleculeQuantificationUnit()).
-//                append(NEW_LINE);
-//        }
-//
-//        sb = printMap(metadata.getMsRunMap(), MS_RUN.toString(), sb, section);
-//        sb = printMap(metadata.getSampleMap(), SAMPLE.toString(), sb, section);
-//        sb = printMap(metadata.getAssayMap(), ASSAY.toString(), sb, section);
-//        sb = printMap(metadata.getStudyVariableMap(), STUDY_VARIABLE.toString(),
-//            sb, section);
-//        sb = printMap(metadata.getCvMap(), CV.toString(), sb, section);
-//
-//        for (ColUnit colUnit : metadata.getProteinColUnitList()) {
-//            printPrefix(sb, section).
-//                append(COLUNIT).
-//                append(MINUS).
-//                append(COLUNIT_PROTEIN);
-//            sb.append(TAB).
-//                append(colUnit).
-//                append(NEW_LINE);
-//        }
-//        for (ColUnit colUnit : metadata.getPeptideColUnitList()) {
-//            printPrefix(sb, section).
-//                append(COLUNIT).
-//                append(MINUS).
-//                append(COLUNIT_PEPTIDE);
-//            sb.append(TAB).
-//                append(colUnit).
-//                append(NEW_LINE);
-//        }
-//        for (ColUnit colUnit : metadata.getPsmColUnitList()) {
-//            printPrefix(sb, section).
-//                append(COLUNIT).
-//                append(MINUS).
-//                append(COLUNIT_PSM);
-//            sb.append(TAB).
-//                append(colUnit).
-//                append(NEW_LINE);
-//        }
-//        for (ColUnit colUnit : metadata.getSmallMoleculeColUnitList()) {
-//            printPrefix(sb, section).
-//                append(COLUNIT).
-//                append(MINUS).
-//                append(COLUNIT_SMALL_MOLECULE);
-//            sb.append(TAB).
-//                append(colUnit).
-//                append(NEW_LINE);
-//        }
-//
-//        printList(metadata.getCustomList(), CUSTOM.toString(), sb, section);
-//
-//        return sb.toString();
-//    }
-    public static String serialize(Section section, Assay assay) {
-        StringBuilder sb = new StringBuilder();
-
-//        if (quantificationReagent != null) {
-//            printPrefix(sb).append(getReference()).append(MINUS).append(MetadataProperty.ASSAY_QUANTIFICATION_REAGENT);
-//            sb.append(TAB).append(quantificationReagent).append(NEW_LINE);
-//        }
-        if (assay.getSampleRef() != null) {
-            printPrefix(sb, section).
-                append(getReference(assay, assay.getId())).
-                append(MINUS).
-                append(MetadataProperty.ASSAY_SAMPLE_REF);
-            sb.append(TAB).
-                append(getReference(assay.getSampleRef(), assay.getSampleRef().
-                    getId())).
-                append(NEW_LINE);
-        }
-
-        if (assay.getMsRunRef() != null) {
-            printPrefix(sb, section).
-                append(assay.getName()).
-                append(MINUS).
-                append(MetadataProperty.ASSAY_MS_RUN_REF);
-            sb.append(TAB).
-                append(getReference(assay.getMsRunRef(), assay.getMsRunRef().
-                    getId())).
-                append(NEW_LINE);
-        }
-
-//        for (AssayQuantificationMod mod : quantificationModMap.values()) {
-//            sb.append(mod);
-//        }
-        if (assay.getCustom() != null) {
-            printList(assay, assay.getCustom(), MetadataProperty.ASSAY_CUSTOM,
-                sb);
-        }
-
-        if (assay.getExternalUri() != null) {
-            printProperty(assay, assay.getId(),
-                MetadataProperty.ASSAY_EXTERNAL_URI, assay.
-                    getExternalUri());
-        }
-
-        return sb.toString();
-    }
-
-    /**
-     * Print study_variable[1-n] object to a string. The structure like:
-     * <ul>
-     * <li>MTD	study_variable[1]-description	description Group B (spike-in 0.74
-     * fmol/uL)</li>
-     * <li>MTD	study_variable[1]-assay_refs	assay[1], assay[2]</li>
-     * <li>MTD	study_variable[1]-sample_refs	sample[1]</li>
-     * </ul>
-     */
-    public static String serialize(Section section, StudyVariable studyVariable) {
-        StringBuilder sb = new StringBuilder();
-
-        if (studyVariable.getDescription() != null) {
-            sb.append(printProperty(studyVariable, studyVariable.getId(),
-                STUDY_VARIABLE_DESCRIPTION,
-                studyVariable.getDescription())).
-                append(NEW_LINE);
-        }
-
-        String assayRef = toAssayRef(studyVariable);
-        if (assayRef.length() != 0) {
-            printPrefix(sb, section).
-                append(getReference(studyVariable, studyVariable.getId())).
-                append(MINUS).
-                append(MetadataProperty.STUDY_VARIABLE_ASSAY_REFS);
-            sb.append(TAB).
-                append(assayRef).
-                append(NEW_LINE);
-        }
-
-        String sampleRef = toSampleRef(studyVariable);
-        if (sampleRef.length() != 0) {
-            printPrefix(sb, section).
-                append(getReference(studyVariable, studyVariable.getId())).
-                append(MINUS).
-                append(MetadataProperty.STUDY_VARIABLE_SAMPLE_REFS);
-            sb.append(TAB).
-                append(sampleRef).
-                append(NEW_LINE);
-        }
-
-        return sb.toString();
-    }
 
     public static String getReference(Object element, Integer idx) {
         StringBuilder sb = new StringBuilder();
@@ -328,181 +62,21 @@ public class Serializers {
         return sb.toString();
     }
 
-    public static StringBuilder printPrefix(StringBuilder sb, Section section) {
-        return sb.append(section.getPrefix()).
-            append(TAB);
-    }
-
-    /**
-     * Internal method used to output the list object, e.g.
-     * {@link #uriList}, {@link #proteinColUnitList} and so on. The output line
-     * structure like: MTD item[list.id + 1] list.value For example: MTD	uri[1]
-     * http://www.ebi.ac.uk/pride/url/to/experiment MTD	uri[2]
-     * http://proteomecentral.proteomexchange.org/cgi/GetDataset
-     */
-    public static StringBuilder printList(List<?> list, String item,
-        StringBuilder sb, Section section) {
-        for (int i = 0; i < list.size(); i++) {
-            printPrefix(sb, section).
-                append(item).
-                append("[").
-                append(i + 1).
-                append("]").
-                append(TAB).
-                append(list.get(i)).
-                append(NEW_LINE);
-        }
-
-        return sb;
-    }
-
-    /**
-     * Internal method used to output the indexed element map, e.g.
-     * {@link #sampleProcessingMap}, {@link #instrumentMap} and so on. The
-     * output line structure like: MTD item[map.key] map.value For example: MTD
-     * sample_processing[1]	[SEP, SEP:00173, SDS PAGE, ] MTD
-     * sample_processing[2]	[SEP, SEP:00142, enzyme digestion, ]|[MS,
-     * MS:1001251, Trypsin, ]
-     */
-    public static void serializeListOfParameterLists(JsonGenerator jg,
-        String prefix, Object element,
-        List<List<Parameter>> listOfParameterLists,
-        String item,
-        StringBuilder sb, Section section) {
-
-        IntStream.range(1, listOfParameterLists.size() + 1).
-            forEach((idx) ->
-            {
-                addIndexedLine(jg, prefix, element, listOfParameterLists.get(
-                    idx - 1));
-            });
-    }
-
-    /**
-     * Print indexed element with value to a String, structure like: MTD
-     * {element}[id] {value.toString}
-     */
-    public static String printElement(Object element, Integer idx, Object value) {
+    public static String printOptColumnMapping(OptColumnMapping ocm) {
         StringBuilder sb = new StringBuilder();
-
-        printPrefix(sb, Section.Metadata).
-            append(getElementName(element).
-                orElseThrow(() ->
-                {
-                    return new ElementNameMappingException(element);
-                })).
-            append("[").
-            append(idx).
-            append("]");
-
-        if (value != null) {
-            sb.append(TAB).
-                append(value);
+        sb.append("opt_").
+            append(ocm.getIdentifier());
+        if (ocm.getParam() != null) {
+            sb.append("_cv_").
+                append(ocm.getParam().
+                    getCvAccession()).
+                append(ocm.getParam().
+                    getName().
+                    replaceAll(" ", "_"));
         }
-
+        //valid characters: ‘A’-‘Z’, ‘a’-‘z’, ‘0’-‘9’, ‘’, ‘-’, ‘[’, ‘]’, and ‘:’.
+        //[A-Za-z0-9\[\]-:]+
         return sb.toString();
-    }
-
-    /**
-     * Print indexed element with property and value to a String, structure
-     * like:
-     *
-     * MTD {element}[id]-{property} {value.toString}
-     */
-    public static String printProperty(Object element, Integer idx,
-        MetadataProperty property, Object value) {
-        StringBuilder sb = new StringBuilder();
-
-        printPrefix(sb, Section.Metadata).
-            append(getElementName(element).
-                orElseThrow(() ->
-                {
-                    return new ElementNameMappingException(element);
-                })).
-            append("[").
-            append(idx).
-            append("]").
-            append(MINUS).
-            append(property);
-
-        if (value != null) {
-            sb.append(TAB).
-                append(value);
-        } else {
-            sb.append(TAB).
-                append(NULL);
-        }
-
-        return sb.toString();
-    }
-
-    /**
-     * Print indexed element with property and value to a String, the property
-     * has sub index, the structure like:
-     *
-     * MTD {element}[id]-{property}[sub-id] {value.toString}
-     */
-    public static String printProperty(IndexedElement element,
-        MetadataProperty property, int subId, Object value) {
-        StringBuilder sb = new StringBuilder();
-
-        printPrefix(sb, Section.Metadata).
-            append(getReference(element, element.getId())).
-            append(MINUS).
-            append(property).
-            append("[").
-            append(subId).
-            append("]");
-
-        if (value != null) {
-            sb.append(TAB).
-                append(value).
-                append(NEW_LINE);
-        }
-
-        return sb.toString();
-    }
-
-    /**
-     * Print a list of metadata line. The sub index start from 1. MTD
-     * {element}[id]-{property}[1] {value.toString} MTD
-     * {element}[id]-{property}[2] {value.toString} MTD
-     * {element}[id]-{property}[3] {value.toString} ....
-     */
-    public static StringBuilder printList(IndexedElement element, List<?> list,
-        MetadataProperty property, StringBuilder sb) {
-        Object param;
-        for (int i = 0; i < list.size(); i++) {
-            param = list.get(i);
-            sb.append(printProperty(element, property, i + 1, param));
-        }
-
-        return sb;
-    }
-
-    public static String toSampleRef(StudyVariable studyVariable) {
-        return studyVariable.getSampleRefs().
-            stream().
-            map((sample) ->
-            {
-                return getReference(sample, sample.getId());
-            }).
-            collect(Collectors.joining("" + COMMA, "", " "));
-    }
-
-    public static String toAssayRef(StudyVariable studyVariable) {
-        return studyVariable.getAssayRefs().
-            stream().
-            map((assay) ->
-            {
-                return getReference(assay, assay.getId());
-            }).
-            collect(Collectors.joining("" + COMMA, "", " "));
-    }
-
-    public static void addIndexedObject(JsonGenerator jg, String prefix,
-        Object element, Integer idx) {
-
     }
 
     public static void addIndexedLine(JsonGenerator jg, String prefix,
@@ -691,7 +265,8 @@ public class Serializers {
                 toLowerCase());
         }
         m.appendTail(sb);
-        return sb.toString().toLowerCase();
+        return sb.toString().
+            toLowerCase();
     }
 
     public static void addSubElementStrings(JsonGenerator jg, String prefix,
@@ -765,7 +340,7 @@ public class Serializers {
         }
         return false;
     }
-    
+
     public static void writeAsNumberArray(JsonGenerator jg,
         List<? extends Number> elements) {
         try {
@@ -793,7 +368,8 @@ public class Serializers {
         }
     }
 
-    public static void writeAsStringArray(JsonGenerator jg, List<String> elements) {
+    public static void writeAsStringArray(JsonGenerator jg,
+        List<String> elements) {
         try {
             jg.writeStartArray();
             elements.forEach((element) ->

@@ -1,5 +1,17 @@
 /*
- * 
+ * Copyright 2017 Leibniz Institut für Analytische Wissenschaften - ISAS e.V..
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package de.isas.lipidomics.jmztabm.io;
 
@@ -24,6 +36,7 @@ import de.isas.lipidomics.jmztabm.io.formats.SmallMoleculeFeatureFormat;
 import de.isas.lipidomics.jmztabm.io.formats.SmallMoleculeSummaryFormat;
 import de.isas.lipidomics.jmztabm.io.formats.SoftwareFormat;
 import de.isas.lipidomics.jmztabm.io.formats.StudyVariableFormat;
+import de.isas.lipidomics.jmztabm.io.serialization.Serializers;
 import de.isas.mztab1_1.model.Assay;
 import de.isas.mztab1_1.model.CV;
 import de.isas.mztab1_1.model.Contact;
@@ -33,6 +46,7 @@ import de.isas.mztab1_1.model.Instrument;
 import de.isas.mztab1_1.model.MzTab;
 import de.isas.mztab1_1.model.Metadata;
 import de.isas.mztab1_1.model.MsRun;
+import de.isas.mztab1_1.model.OptColumnMapping;
 import de.isas.mztab1_1.model.Parameter;
 import de.isas.mztab1_1.model.Publication;
 import de.isas.mztab1_1.model.Sample;
@@ -49,7 +63,8 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import uk.ac.ebi.pride.jmztab1_1.model.SmallMoleculeColumn;
@@ -131,7 +146,6 @@ public class MzTabWriter {
         CsvMapper mapper = new CsvMapper();
         mapper.addMixIn(SmallMoleculeSummary.class,
             SmallMoleculeSummaryFormat.class);
-        List<SmallMoleculeSummary> sm = mztabfile.getSmallMoleculeSummary();
         Builder builder = mapper.schema().
             builder();
         builder.addColumn("SMH", CsvSchema.ColumnType.STRING).
@@ -172,9 +186,17 @@ public class MzTabWriter {
                     "abundance_coeffvar_study_variable[" + studyVariable.getId() + "]",
                     CsvSchema.ColumnType.NUMBER);
             });
-        //TODO add optional columns
+        Map<String, OptColumnMapping> optColumns = new LinkedHashMap<>();
+        for(SmallMoleculeSummary sms: mztabfile.getSmallMoleculeSummary()) {
+            for(OptColumnMapping ocm:sms.getOpt()) {
+                optColumns.putIfAbsent(Serializers.printOptColumnMapping(ocm), ocm);
+            }
+        }
+        for(String key: optColumns.keySet()) {
+            builder.addColumn(key, CsvSchema.ColumnType.NUMBER_OR_STRING);
+        }
         CsvSchema schema = defaultSchemaForBuilder(builder);
-
+        
         try {
             return mapper.writer(schema).
                 writeValueAsString(mztabfile.getSmallMoleculeSummary());
@@ -224,7 +246,15 @@ public class MzTabWriter {
                     CsvSchema.ColumnType.NUMBER);
             });
 
-        //TODO add optional columns
+        Map<String, OptColumnMapping> optColumns = new LinkedHashMap<>();
+        for(SmallMoleculeFeature smf: mztabfile.getSmallMoleculeFeature()) {
+            for(OptColumnMapping ocm:smf.getOpt()) {
+                optColumns.putIfAbsent(Serializers.printOptColumnMapping(ocm), ocm);
+            }
+        }
+        for(String key: optColumns.keySet()) {
+            builder.addColumn(key, CsvSchema.ColumnType.NUMBER_OR_STRING);
+        }
         CsvSchema schema = defaultSchemaForBuilder(builder);
         try {
             return mapper.writer(schema).
@@ -268,7 +298,15 @@ public class MzTabWriter {
                         CsvSchema.ColumnType.NUMBER);
             });
         builder.addColumn(SmallMoleculeEvidenceColumn.Stable.RANK.getHeader(), CsvSchema.ColumnType.NUMBER);
-        //TODO add optional columns
+        Map<String, OptColumnMapping> optColumns = new LinkedHashMap<>();
+        for(SmallMoleculeEvidence sme: mztabfile.getSmallMoleculeEvidence()) {
+            for(OptColumnMapping ocm:sme.getOpt()) {
+                optColumns.putIfAbsent(Serializers.printOptColumnMapping(ocm), ocm);
+            }
+        }
+        for(String key: optColumns.keySet()) {
+            builder.addColumn(key, CsvSchema.ColumnType.NUMBER_OR_STRING);
+        }
         CsvSchema schema = defaultSchemaForBuilder(builder);
         try {
             return mapper.writer(schema).

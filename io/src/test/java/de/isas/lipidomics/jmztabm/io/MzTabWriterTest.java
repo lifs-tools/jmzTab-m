@@ -376,7 +376,9 @@ public class MzTabWriterTest {
 //                "UO:0000031", "minute", null));
 //
 //        System.out.println(mtd);
-        return new MzTab().metadata(mtd);
+        MzTab mzTab = new MzTab();
+        mzTab.metadata(mtd);
+        return mzTab;
     }
 
     @Test
