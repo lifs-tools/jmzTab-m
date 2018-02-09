@@ -73,8 +73,11 @@ public enum MetadataProperty {
 //    COLUNIT_PSM                           (MetadataElement.COLUNIT,                             "psm"),
     COLUNIT_SMALL_MOLECULE                (MetadataElement.COLUNIT,                             "small_molecule"),
     
-    DATABASE_LABEL                        (MetadataElement.DATABASE,                             "label"),
-    DATABASE_NAME                         (MetadataElement.DATABASE,                             "name");
+    DATABASE_PREFIX                       (MetadataElement.DATABASE,                             "prefix"),
+    DATABASE_VERSION                      (MetadataElement.DATABASE,                             "version"),
+    DATABASE_URL                          (MetadataElement.DATABASE,                             "url");
+//    DATABASE_LABEL                        (MetadataElement.DATABASE,                             "label"),
+//    DATABASE_NAME                         (MetadataElement.DATABASE,                             "name");
 
     private String name;
     private MetadataElement element;

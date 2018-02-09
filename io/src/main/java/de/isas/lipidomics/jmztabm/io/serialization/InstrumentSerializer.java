@@ -50,16 +50,18 @@ public class InstrumentSerializer extends StdSerializer<Instrument> {
                 "instrument[" + instrument.getId() + "]-source",
                 ParameterSerializer.toString(instrument.
                     getInstrumentSource()));
-            IntStream.range(0, instrument.getInstrumentAnalyzer().
-                size()).
-                forEachOrdered(i ->
-                {
-                    addLine(jg, Section.Metadata.getPrefix(),
-                        "instrument[" + instrument.getId() + "]-analyzer[" + (i + 1) + "]",
-                        ParameterSerializer.toString(instrument.
-                            getInstrumentAnalyzer().
-                            get(i)));
-                });
+            if(instrument.getInstrumentAnalyzer()!=null) {
+                IntStream.range(0, instrument.getInstrumentAnalyzer().
+                    size()).
+                    forEachOrdered(i ->
+                    {
+                        addLine(jg, Section.Metadata.getPrefix(),
+                            "instrument[" + instrument.getId() + "]-analyzer[" + (i + 1) + "]",
+                            ParameterSerializer.toString(instrument.
+                                getInstrumentAnalyzer().
+                                get(i)));
+                    });
+            }
             addLine(jg, Section.Metadata.getPrefix(),
                 "instrument[" + instrument.getId() + "]-detector",
                 ParameterSerializer.toString(instrument.

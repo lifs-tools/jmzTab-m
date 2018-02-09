@@ -20,10 +20,13 @@ import org.apache.commons.cli.*;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import uk.ac.ebi.pride.jmztab1_1.utils.MZTabFileParser;
+import uk.ac.ebi.pride.jmztab1_1.utils.errors.MZTabErrorOverflowException;
 import uk.ac.ebi.pride.jmztab1_1.utils.errors.MZTabErrorType;
 import uk.ac.ebi.pride.jmztab1_1.utils.errors.MZTabErrorTypeMap;
+import uk.ac.ebi.pride.jmztab1_1.utils.errors.MZTabException;
 
 /**
  * @author qingwei
@@ -75,7 +78,7 @@ public class MZTabCommandLine {
         CommandLine line = parser.parse(options, args);
         if (line.getOptions().length == 0 || line.hasOption(helpOpt)) {
             HelpFormatter formatter = new HelpFormatter();
-            formatter.printHelp("mzTabCLI", options);
+            formatter.printHelp("jmztab-cli", options);
         } else if (line.hasOption(msgOpt)) {
             String[] values = line.getOptionValues(msgOpt);
             Integer code = new Integer(values[1]);
@@ -110,7 +113,16 @@ public class MZTabCommandLine {
                 File inFile = new File(values[1].trim());
                 System.out.println("Begin check mztab file: " + inFile.
                     getAbsolutePath());
-                new MZTabFileParser(inFile, out, level);
+                try {
+                    new MZTabFileParser(inFile, out, level);
+                } catch (IOException e) {
+                    System.out.println(
+                        "Caught an IO Exception: " + e.getMessage());
+                } catch (MZTabErrorOverflowException | MZTabException e) {
+                    //these are reported to std.err already.
+                    System.out.println(
+                        "There were errors while processing your file, please check the output for details!");
+                }
             }
 
             System.out.println("Finish!");

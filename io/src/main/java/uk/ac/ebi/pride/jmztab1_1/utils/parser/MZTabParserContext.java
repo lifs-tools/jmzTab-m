@@ -1751,4 +1751,67 @@ public class MZTabParserContext {
         return custom;
     }
 
+    public Database addDatabase(Metadata metadata, Database database) {
+        if (database == null) {
+            throw new IllegalArgumentException("Database should not be null");
+        }
+        databaseMap.put(database.getId(), database);
+        metadata.addDatabaseItem(database);
+        return database;
+    }
+
+    public Database addDatabasePrefix(Metadata metadata, Integer id, String valueLabel) {
+        if (id <= 0) {
+            throw new IllegalArgumentException("database id should be great than 0!");
+        }
+
+        Database database = databaseMap.get(id);
+        if (database == null) {
+            database = new Database();
+            database.id(id);
+            database.setPrefix(valueLabel);
+            databaseMap.put(id, database);
+            metadata.addDatabaseItem(database);
+        } else {
+            database.setPrefix(valueLabel);
+        }
+        return database;
+    }
+
+    public Database addDatabaseVersion(Metadata metadata, Integer id, String version) {
+        if (id <= 0) {
+            throw new IllegalArgumentException("database id should be great than 0!");
+        }
+
+        Database database = databaseMap.get(id);
+        if (database == null) {
+            database = new Database();
+            database.id(id);
+            database.setVersion(version);
+            databaseMap.put(id, database);
+            metadata.addDatabaseItem(database);
+        } else {
+            database.setVersion(version);
+        }
+        return database;
+    }
+
+    public Database addDatabaseUrl(Metadata metadata, Integer id, URL checkURL) {
+        if (id <= 0) {
+            throw new IllegalArgumentException("database id should be great than 0!");
+        }
+
+        Database database = databaseMap.get(id);
+        if (database == null) {
+            database = new Database();
+            database.id(id);
+            database.setUrl(checkURL.toString());
+            databaseMap.put(id, database);
+            metadata.addDatabaseItem(database);
+        } else {
+            database.setUrl(checkURL.toString());
+        }
+        return database;
+    }
+
 }

@@ -21,6 +21,8 @@ import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import de.isas.mztab1_1.model.OptColumnMapping;
 import de.isas.mztab1_1.model.SmallMoleculeEvidence;
 import java.io.IOException;
+import java.util.Collections;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -42,7 +44,7 @@ public class SmallMoleculeEvidenceSerializer extends StdSerializer<SmallMolecule
         JsonGenerator jg,
         SerializerProvider sp) throws IOException {
         if (smallMoleculeEvidence != null) {
-            jg.writeString("SME");
+            jg.writeString(SmallMoleculeEvidence.PrefixEnum.SME.getValue());
             jg.writeNumber(smallMoleculeEvidence.getSmeId());
             jg.writeNumber(smallMoleculeEvidence.getEvidenceUniqueId());
             jg.writeString(smallMoleculeEvidence.getDatabaseIdentifier());
@@ -54,9 +56,11 @@ public class SmallMoleculeEvidenceSerializer extends StdSerializer<SmallMolecule
             jg.writeString(ParameterSerializer.toString(smallMoleculeEvidence.
                 getDerivatizedForm()));
             jg.writeString(smallMoleculeEvidence.getAdductIon());
-            jg.writeNumber(smallMoleculeEvidence.getExpMassToCharge());
-            jg.writeNumber(smallMoleculeEvidence.getCharge());
-            jg.writeNumber(smallMoleculeEvidence.getTheoreticalMassToCharge());
+            Serializers.writeNumber(jg, smallMoleculeEvidence.
+                getExpMassToCharge());
+            Serializers.writeNumber(jg, smallMoleculeEvidence.getCharge());
+            Serializers.writeNumber(jg, smallMoleculeEvidence.
+                getTheoreticalMassToCharge());
             Serializers.writeAsStringArray(jg, smallMoleculeEvidence.
                 getSpectraRef().
                 stream().
@@ -72,13 +76,14 @@ public class SmallMoleculeEvidenceSerializer extends StdSerializer<SmallMolecule
                 getMsLevel()));
             Serializers.writeAsNumberArray(jg, smallMoleculeEvidence.
                 getIdConfidenceMeasure());
-            jg.writeNumber(smallMoleculeEvidence.getRank());
-            //TODO opt columns
-            for(OptColumnMapping ocm:smallMoleculeEvidence.getOpt()) {
+            Serializers.writeNumber(jg, smallMoleculeEvidence.getRank());
+            for (OptColumnMapping ocm : Optional.ofNullable(
+                smallMoleculeEvidence.getOpt()).
+                orElse(Collections.emptyList())) {
                 jg.writeString(ocm.getValue());
             }
         } else {
-            System.err.println("StudyVariable is null!");
+            System.err.println("SmallMoleculeEvidence is null!");
         }
     }
 }

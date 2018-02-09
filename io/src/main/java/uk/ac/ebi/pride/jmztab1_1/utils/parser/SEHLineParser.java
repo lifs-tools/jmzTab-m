@@ -68,7 +68,7 @@ public class SEHLineParser extends MZTabHeaderLineParser {
                 } catch(IllegalArgumentException ex) {
                     throw new MZTabException(new MZTabError(LogicalErrorType.ColumnNotValid,lineNumber,header,section.getName()));    
                 }
-                
+
             }
 
             if (column != null) {

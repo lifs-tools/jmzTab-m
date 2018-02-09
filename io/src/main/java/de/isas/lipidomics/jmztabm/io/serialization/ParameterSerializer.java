@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import static uk.ac.ebi.pride.jmztab1_1.model.MZTabConstants.NULL;
 
 /**
  *
@@ -108,6 +109,9 @@ public class ParameterSerializer extends StdSerializer<Parameter> {
      * For example: [MOD, MOD:00648, "N,O-diacetylated L-serine",]
      */
     public static String toString(Parameter param) {
+        if(param==null) {
+            return NULL;
+        }
         StringBuilder sb = new StringBuilder();
 
         sb.append("[");

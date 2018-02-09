@@ -25,7 +25,9 @@ import de.isas.mztab1_1.model.Assay;
 import de.isas.mztab1_1.model.Sample;
 import de.isas.mztab1_1.model.StudyVariable;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Comparator;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import uk.ac.ebi.pride.jmztab1_1.model.Section;
 
@@ -60,7 +62,7 @@ public class StudyVariableSerializer extends StdSerializer<StudyVariable> {
                 "quantification_value_function", studyVariable.
                     getQuantificationValueFunction(), true);
             addSubElementStrings(jg, Section.Metadata.getPrefix(), studyVariable,
-                "assay_refs", studyVariable.getAssayRefs().
+                "assay_refs", Optional.ofNullable(studyVariable.getAssayRefs()).orElse(Collections.emptyList()).
                     stream().
                     sorted(Comparator.comparing(Assay::getId,
                         Comparator.nullsFirst(Comparator.
@@ -76,7 +78,7 @@ public class StudyVariableSerializer extends StdSerializer<StudyVariable> {
                     }).
                     collect(Collectors.toList()), true);
             addSubElementStrings(jg, Section.Metadata.getPrefix(), studyVariable,
-                "sample_refs", studyVariable.getSampleRefs().
+                "sample_refs", Optional.ofNullable(studyVariable.getSampleRefs()).orElse(Collections.emptyList()).
                     stream().
                     sorted(Comparator.comparing(Sample::getId,
                         Comparator.nullsFirst(Comparator.

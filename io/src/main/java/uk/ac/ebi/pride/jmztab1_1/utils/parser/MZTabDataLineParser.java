@@ -17,9 +17,12 @@ import de.isas.mztab1_1.model.MsRun;
 import de.isas.mztab1_1.model.Parameter;
 import de.isas.mztab1_1.model.SpectraRef;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import java.util.SortedMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -99,6 +102,7 @@ public abstract class MZTabDataLineParser<T> extends MZTabLineParser {
 
         int offset = checkData();
         if (offset != items.length) {
+            Logger.getLogger(MZTabDataLineParser.class.getName()).log(Level.SEVERE, "Items given: "+Arrays.toString(items)+" expected: "+Arrays.toString(line.split("\\t")));
             this.errorList.add(new MZTabError(FormatErrorType.CountMatch, lineNumber, "" + offset, "" + items.length));
         }
     }
@@ -115,6 +119,7 @@ public abstract class MZTabDataLineParser<T> extends MZTabLineParser {
         int dataCount = items.length - 1;
 
         if (headerCount != dataCount) {
+            Logger.getLogger(MZTabDataLineParser.class.getName()).log(Level.SEVERE, "Items given: "+Arrays.toString(items)+" expected: "+Arrays.toString(line.split("\\t")));
             this.errorList.add(new MZTabError(FormatErrorType.CountMatch, lineNumber, "" + dataCount, "" + headerCount));
         }
     }
@@ -167,6 +172,9 @@ public abstract class MZTabDataLineParser<T> extends MZTabLineParser {
      * @param target SHOULD NOT be empty.
      */
     protected String checkData(IMZTabColumn column, String target, boolean allowNull) {
+        if (target == null && allowNull) {
+           return null; 
+        }
         if (target == null) {
             this.errorList.add(new MZTabError(LogicalErrorType.NULL, lineNumber, column.getHeader()));
             return null;
@@ -538,7 +546,7 @@ public abstract class MZTabDataLineParser<T> extends MZTabLineParser {
 //        return modificationList;
 //    }
 
-    protected java.net.URI checkURI(IMZTabColumn column, String uri) {
+    protected String checkURI(IMZTabColumn column, String uri) {
         String result_uri = checkData(column, uri, true);
 
         if (result_uri == null || result_uri.equalsIgnoreCase(NULL)) {
@@ -550,7 +558,7 @@ public abstract class MZTabDataLineParser<T> extends MZTabLineParser {
             this.errorList.add(new MZTabError(FormatErrorType.URI, lineNumber, "Column " + column.getHeader(), result_uri));
         }
 
-        return result;
+        return result.toASCIIString();
     }
 
     /**

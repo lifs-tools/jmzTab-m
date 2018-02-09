@@ -98,8 +98,8 @@ public class AbundanceColumn extends MZTabColumn {
         Section dataSection = Section.toDataSection(section);
 
         AbundanceColumn column;
-        column = new AbundanceColumn(dataSection, Field.ABUNDANCE_ASSAY, studyVariable, offset);
-        columns.put(column.getLogicPosition(), column);
+//        column = new AbundanceColumn(dataSection, Field.ABUNDANCE_ASSAY, studyVariable, offset);
+//        columns.put(column.getLogicPosition(), column);
         column = new AbundanceColumn(dataSection, Field.ABUNDANCE_STUDY_VARIABLE, studyVariable, offset);
         columns.put(column.getLogicPosition(), column);
         column = new AbundanceColumn(dataSection, Field.ABUNDANCE_COEFFVAR_STUDY_VARIABLE, studyVariable, offset);
@@ -122,8 +122,8 @@ public class AbundanceColumn extends MZTabColumn {
         Section dataSection = Section.toDataSection(section);
 
         AbundanceColumn column;
-        column = new AbundanceColumn(dataSection, Field.ABUNDANCE_ASSAY, studyVariable, lastOrder);
-        columns.put(column.getLogicPosition(), column);
+//        column = new AbundanceColumn(dataSection, Field.ABUNDANCE_ASSAY, studyVariable, lastOrder);
+//        columns.put(column.getLogicPosition(), column);
         column = new AbundanceColumn(dataSection, Field.ABUNDANCE_STUDY_VARIABLE, studyVariable, lastOrder);
         columns.put(column.getLogicPosition(), column);
         column = new AbundanceColumn(dataSection, Field.ABUNDANCE_COEFFVAR_STUDY_VARIABLE, studyVariable, lastOrder);

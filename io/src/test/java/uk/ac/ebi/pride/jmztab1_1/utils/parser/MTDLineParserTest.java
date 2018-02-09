@@ -155,7 +155,7 @@ public class MTDLineParserTest {
 //        assertTrue(metadata.getPeptideQuantificationUnit() != null);
         assertTrue(metadata.getSmallMoleculeQuantificationUnit() != null);
 
-        parser.parse(1, "MTD\tcustom\t[, , MS operator, Florian]", errorList);
+        parser.parse(1, "MTD\tcustom[1]\t[, , MS operator, Florian]", errorList);
         assertTrue(metadata.getCustom().size() == 1);
 
         parser.parse(1, "MTD\tcv[1]-label\tMS", errorList);

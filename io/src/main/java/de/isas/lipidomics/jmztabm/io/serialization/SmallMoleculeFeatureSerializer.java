@@ -21,6 +21,8 @@ import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import de.isas.mztab1_1.model.OptColumnMapping;
 import de.isas.mztab1_1.model.SmallMoleculeFeature;
 import java.io.IOException;
+import java.util.Collections;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -43,37 +45,45 @@ public class SmallMoleculeFeatureSerializer extends StdSerializer<SmallMoleculeF
         JsonGenerator jg,
         SerializerProvider sp) throws IOException {
         if (smallMoleculeFeature != null) {
-            jg.writeString("SMF");
+            jg.writeString(SmallMoleculeFeature.PrefixEnum.SMF.getValue());
             jg.writeNumber(smallMoleculeFeature.getSmfId());
             Serializers.writeAsStringArray(jg, smallMoleculeFeature.
                 getSmeIdRefs());
-            jg.writeNumber(smallMoleculeFeature.getSmeIdRefAmbiguityCode());
+            Serializers.writeNumber(jg, smallMoleculeFeature.
+                getSmeIdRefAmbiguityCode());
             jg.writeString(smallMoleculeFeature.getAdductIon());
-            jg.writeString(ParameterSerializer.toString(smallMoleculeFeature.
-                getIsotopomer()));
-            jg.writeNumber(smallMoleculeFeature.getExpMassToCharge());
-            jg.writeNumber(smallMoleculeFeature.getCharge());
-            jg.writeNumber(smallMoleculeFeature.getRetentionTime());
-            jg.writeNumber(smallMoleculeFeature.getRetentionTimeStart());
-            jg.writeNumber(smallMoleculeFeature.getRetentionTimeEnd());
+            jg.writeString(ParameterSerializer.toString(
+                smallMoleculeFeature.
+                    getIsotopomer()));
+            Serializers.writeNumber(jg, smallMoleculeFeature.
+                getExpMassToCharge());
+            Serializers.writeNumber(jg, smallMoleculeFeature.getCharge());
+            Serializers.writeNumber(jg, smallMoleculeFeature.
+                getRetentionTime());
+            Serializers.writeNumber(jg, smallMoleculeFeature.
+                getRetentionTimeStart());
+            Serializers.writeNumber(jg, smallMoleculeFeature.
+                getRetentionTimeEnd());
 
             smallMoleculeFeature.getAbundanceAssay().
                 forEach((abundance_assay) ->
                 {
                     try {
-                        jg.writeNumber(abundance_assay);
+                        Serializers.writeNumber(jg, abundance_assay);
                     } catch (IOException ex) {
-                        Logger.getLogger(SmallMoleculeFeatureSerializer.class.
-                            getName()).
+                        Logger.getLogger(
+                            SmallMoleculeFeatureSerializer.class.
+                                getName()).
                             log(Level.SEVERE, null, ex);
                     }
                 });
-            //TODO opt columns
-            for(OptColumnMapping ocm:smallMoleculeFeature.getOpt()) {
+            for (OptColumnMapping ocm : Optional.ofNullable(
+                smallMoleculeFeature.getOpt()).
+                orElse(Collections.emptyList())) {
                 jg.writeString(ocm.getValue());
             }
         } else {
-            System.err.println("StudyVariable is null!");
+            System.err.println("SmallMoleculeFeature is null!");
         }
     }
 }

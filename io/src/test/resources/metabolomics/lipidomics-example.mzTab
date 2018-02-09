@@ -32,6 +32,7 @@ MTD	software[1]-setting[1]	ScheduledSRMWindow: 2 min
 MTD	software[1]-setting[2]	CycleTime: 2 s																			
 MTD	software[2]	[MS, MS:1000922, Skyline, 3.5.0.9319]																			
 MTD	software[2]-setting[1]	MSMSmassrange: (50.0, 1800.0)																			
+MTD	sample[1]	QEx-1273-prm-sp1																			
 MTD	sample[1]-description	Sphingolipids with concentration reported as picomolar per mg of protein, abundances are reported after calibration correction.																			
 MTD	ms_run[1]-location	file://c:/data/QEx-1273-prm-sp1.mzML																			
 MTD	ms_run[1]-format	[MS, MS:1000584, mzML file, ]																			
@@ -45,19 +46,19 @@ COM	MTD	study_variable[1]-quantification_value_function	[MS, MS:XXXXX, Arithmeti
 MTD	small_molecule-quantification_unit	[UO, UO:0000072, picomolal, ]																			
 MTD	small_molecule_feature-quantification_unit	[UO, UO:0000072, picomolal, ]																			
 MTD	small_molecule-identification_reliability	[MS, MS:XXXXX, MSI-2007-numeric, ]																			
+MTD	database[1]	[,, Pubchem, ]																			
 MTD	database[1]-prefix	PUBCHEM-CPD																			
-MTD	database[1]-name	[,, Pubchem, ]																			
 MTD	database[1]-version	02.12.2017																			
 MTD	database[1]-url	https://www.ncbi.nlm.nih.gov/pccompound																			
+MTD	database[2]	[,, LipidMaps, ]																			
 MTD	database[2]-prefix	LM																			
-MTD	database[2]-name	LipidMaps																			
 MTD	database[2]-version	2017-12																			
 MTD	database[2]-url	http://www.lipidmaps.org/																			
 MTD	colunit-small_molecule	retention_time=[UO, UO:0000010, second, ]																			
-MTD	colunit-small_molecule_feature	opt_global_mass_error=[UO, UO:0000169, parts per million, ]																			
-MTD	id_confidence_measure[1]	[,,characteristic qualifier ions, ]																			
-COM	MTD	study_file[1]-location	file://c:/data/prm.sky.zip																			
-COM	MTD	study_file[1]-format	[,, Skyline project zip archive, ]																			
+MTD	colunit-small_molecule_evidence	opt_global_mass_error=[UO, UO:0000169, parts per million, ]																			
+MTD	id_confidence_measure[1]	[,,characteristic qualifier ions, ]																					
+COM	MTD	study_file[1]-location	file://c:/data/prm.sky.zip																		
+COM	MTD	study_file[1]-format	[,, Skyline project zip archive, ]	
 																					
 COM	"MzTab 1.1.0 ""proposed"" specification"																				
 COM	Summary rows. 																				

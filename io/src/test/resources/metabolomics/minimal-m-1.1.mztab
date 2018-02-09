@@ -1,0 +1,32 @@
+COM	mandatory
+MTD	mzTab-version	1.1.0
+COM	mandatory
+MTD	mzTab-ID	MINIMAL_1
+COM	the next line could be proposed to simplify parsing
+COM	MTD	mzTab-dialect metabolomics
+MTD	title	MinimalSample
+MTD	description	A minimal example for mzTab for metabolomics.
+MTD	ms_run[1]-location	file:///D/Data%20/Metabolomics/MTBLS263/3injections_inj1_POS.mzML
+MTD	assay[1]-ms_run_ref	ms_run[1]
+MTD	ms_run[2]-location	file:///D/Data%20/Metabolomics/MTBLS263/3injections_inj2_POS.mzML
+MTD	assay[2]-ms_run_ref	ms_run[2]
+MTD	ms_run[3]-location	file:///D/Data%20/Metabolomics/MTBLS263/3injections_inj3_POS.mzML
+MTD	assay[3]-ms_run_ref	ms_run[3]
+MTD	ms_run[4]-location	file:///D/Data%20/Metabolomics/MTBLS263/3samples_sampl1_POS.mzML
+MTD	assay[4]-ms_run_ref	ms_run[4]
+MTD	ms_run[5]-location	file:///D/Data%20/Metabolomics/MTBLS263/3samples_sampl2_POS.mzML
+MTD	assay[5]-ms_run_ref	ms_run[5]
+MTD	ms_run[6]-location	file:///D/Data%20/Metabolomics/MTBLS263/3samples_sampl3_POS.mzML
+MTD	assay[6]-ms_run_ref	ms_run[6]
+COM
+MTD	study_variable[1]-assay_refs	assay[1] | assay[2] | assay[3]
+MTD	study_variable[1]-description	Replicates
+MTD	study_variable[2]-assay_refs	assay[4] | assay[5] | assay[6]
+MTD	study_variable[2]-description	Samples
+MTD	database[1]	[,,Unknown,]
+MTD	database[1]-prefix	Unk
+MTD	database[2]-prefix	hmdb
+MTD	database[2]	[,,D:\Databases\HMDB\hmdb+analgesic.sdf,]
+MTD	id_confidence_measure[1]	[,,Progenesis MetaScope,]
+MTD	id_confidence_measure[2]	[,,Fragmentation Score,]
+MTD	id_confidence_measure[3]	[,,Isotopic fit Score,]

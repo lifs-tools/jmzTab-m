@@ -63,8 +63,10 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import uk.ac.ebi.pride.jmztab1_1.model.SmallMoleculeColumn;
@@ -84,12 +86,33 @@ public class MzTabWriter {
         if (!os.getEncoding().
             equals("UTF8")) {
             throw new IllegalArgumentException(
-                "OutputStreamWriter encoding must be UTF8 but is "+os.getEncoding());
+                "OutputStreamWriter encoding must be UTF8 but is " + os.
+                    getEncoding());
         }
-        os.write(writeMetadataWithJackson(mzTab));
-        os.write(writeSmallMoleculeSummaryWithJackson(mzTab));
-        os.write(writeSmallMoleculeFeaturesWithJackson(mzTab));
-        os.write(writeSmallMoleculeEvidenceWithJackson(mzTab));
+        try {
+            os.write(writeMetadataWithJackson(mzTab));
+        } catch (NullPointerException npe) {
+            Logger.getLogger(MzTabWriter.class.getName()).
+                log(Level.SEVERE, null, npe);
+        }
+        try {
+            os.write(writeSmallMoleculeSummaryWithJackson(mzTab));
+        } catch (NullPointerException npe) {
+            Logger.getLogger(MzTabWriter.class.getName()).
+                log(Level.SEVERE, null, npe);
+        }
+        try {
+            os.write(writeSmallMoleculeFeaturesWithJackson(mzTab));
+        } catch (NullPointerException npe) {
+            Logger.getLogger(MzTabWriter.class.getName()).
+                log(Level.SEVERE, null, npe);
+        }
+        try {
+            os.write(writeSmallMoleculeEvidenceWithJackson(mzTab));
+        } catch (NullPointerException npe) {
+            Logger.getLogger(MzTabWriter.class.getName()).
+                log(Level.SEVERE, null, npe);
+        }
     }
 
     public void write(Path path, MzTab mzTab) throws IOException {
@@ -149,34 +172,49 @@ public class MzTabWriter {
         Builder builder = mapper.schema().
             builder();
         builder.addColumn("SMH", CsvSchema.ColumnType.STRING).
-            addColumn(SmallMoleculeColumn.Stable.SML_ID.getHeader(), CsvSchema.ColumnType.STRING).
-            addColumn(SmallMoleculeColumn.Stable.SMF_ID_REFS.getHeader(), CsvSchema.ColumnType.ARRAY).
-            addColumn(SmallMoleculeColumn.Stable.DATABASE_IDENTIFIER.getHeader(), CsvSchema.ColumnType.ARRAY).
-            addColumn(SmallMoleculeColumn.Stable.CHEMICAL_FORMULA.getHeader(), CsvSchema.ColumnType.ARRAY).
-            addColumn(SmallMoleculeColumn.Stable.SMILES.getHeader(), CsvSchema.ColumnType.ARRAY).
-            addColumn(SmallMoleculeColumn.Stable.INCHI.getHeader(), CsvSchema.ColumnType.ARRAY).
-            addColumn(SmallMoleculeColumn.Stable.CHEMICAL_NAME.getHeader(), CsvSchema.ColumnType.ARRAY).
-            addColumn(SmallMoleculeColumn.Stable.URI.getHeader(), CsvSchema.ColumnType.ARRAY).
-            addColumn(SmallMoleculeColumn.Stable.THEOR_NEUTRAL_MASS.getHeader(), CsvSchema.ColumnType.ARRAY).
-            addColumn(SmallMoleculeColumn.Stable.EXP_MASS_TO_CHARGE.getHeader(), CsvSchema.ColumnType.NUMBER).
-            addColumn(SmallMoleculeColumn.Stable.RETENTION_TIME.getHeader(), CsvSchema.ColumnType.NUMBER).
-            addColumn(SmallMoleculeColumn.Stable.ADDUCT_IONS.getHeader(), CsvSchema.ColumnType.ARRAY).
-            addColumn(SmallMoleculeColumn.Stable.RELIABILITY.getHeader(), CsvSchema.ColumnType.STRING).
-            addColumn(SmallMoleculeColumn.Stable.BEST_ID_CONFIDENCE_MEASURE.getHeader(), CsvSchema.ColumnType.STRING).
-            addColumn(SmallMoleculeColumn.Stable.BEST_ID_CONFIDENCE_VALUE.getHeader(), CsvSchema.ColumnType.NUMBER);
+            addColumn(SmallMoleculeColumn.Stable.SML_ID.getHeader(),
+                CsvSchema.ColumnType.STRING).
+            addColumn(SmallMoleculeColumn.Stable.SMF_ID_REFS.getHeader(),
+                CsvSchema.ColumnType.ARRAY).
+            addColumn(SmallMoleculeColumn.Stable.DATABASE_IDENTIFIER.getHeader(),
+                CsvSchema.ColumnType.ARRAY).
+            addColumn(SmallMoleculeColumn.Stable.CHEMICAL_FORMULA.getHeader(),
+                CsvSchema.ColumnType.ARRAY).
+            addColumn(SmallMoleculeColumn.Stable.SMILES.getHeader(),
+                CsvSchema.ColumnType.ARRAY).
+            addColumn(SmallMoleculeColumn.Stable.INCHI.getHeader(),
+                CsvSchema.ColumnType.ARRAY).
+            addColumn(SmallMoleculeColumn.Stable.CHEMICAL_NAME.getHeader(),
+                CsvSchema.ColumnType.ARRAY).
+            addColumn(SmallMoleculeColumn.Stable.URI.getHeader(),
+                CsvSchema.ColumnType.ARRAY).
+            addColumn(SmallMoleculeColumn.Stable.THEOR_NEUTRAL_MASS.getHeader(),
+                CsvSchema.ColumnType.ARRAY).
+            addColumn(SmallMoleculeColumn.Stable.EXP_MASS_TO_CHARGE.getHeader(),
+                CsvSchema.ColumnType.NUMBER_OR_STRING).
+            addColumn(SmallMoleculeColumn.Stable.RETENTION_TIME.getHeader(),
+                CsvSchema.ColumnType.NUMBER_OR_STRING).
+            addColumn(SmallMoleculeColumn.Stable.ADDUCT_IONS.getHeader(),
+                CsvSchema.ColumnType.ARRAY).
+            addColumn(SmallMoleculeColumn.Stable.RELIABILITY.getHeader(),
+                CsvSchema.ColumnType.STRING).
+            addColumn(SmallMoleculeColumn.Stable.BEST_ID_CONFIDENCE_MEASURE.
+                getHeader(), CsvSchema.ColumnType.STRING).
+            addColumn(SmallMoleculeColumn.Stable.BEST_ID_CONFIDENCE_VALUE.
+                getHeader(), CsvSchema.ColumnType.NUMBER_OR_STRING);
         mztabfile.getMetadata().
             getAssay().
             forEach((assay) ->
             {
                 builder.addColumn("abundance_assay[" + assay.getId() + "]",
-                    CsvSchema.ColumnType.NUMBER);
+                    CsvSchema.ColumnType.NUMBER_OR_STRING);
             });
         mztabfile.getMetadata().
             getStudyVariable().
             forEach((studyVariable) ->
             {
                 builder.addColumn("abundance_study_variable[" + studyVariable.
-                    getId() + "]", CsvSchema.ColumnType.NUMBER);
+                    getId() + "]", CsvSchema.ColumnType.NUMBER_OR_STRING);
             });
         mztabfile.getMetadata().
             getStudyVariable().
@@ -184,19 +222,20 @@ public class MzTabWriter {
             {
                 builder.addColumn(
                     "abundance_coeffvar_study_variable[" + studyVariable.getId() + "]",
-                    CsvSchema.ColumnType.NUMBER);
+                    CsvSchema.ColumnType.NUMBER_OR_STRING);
             });
         Map<String, OptColumnMapping> optColumns = new LinkedHashMap<>();
-        for(SmallMoleculeSummary sms: mztabfile.getSmallMoleculeSummary()) {
-            for(OptColumnMapping ocm:sms.getOpt()) {
-                optColumns.putIfAbsent(Serializers.printOptColumnMapping(ocm), ocm);
+        for (SmallMoleculeSummary sms : mztabfile.getSmallMoleculeSummary()) {
+            for (OptColumnMapping ocm : Optional.ofNullable(sms.getOpt()).orElse(Collections.emptyList())) {
+                optColumns.putIfAbsent(Serializers.printOptColumnMapping(ocm),
+                    ocm);
             }
         }
-        for(String key: optColumns.keySet()) {
+        for (String key : optColumns.keySet()) {
             builder.addColumn(key, CsvSchema.ColumnType.NUMBER_OR_STRING);
         }
         CsvSchema schema = defaultSchemaForBuilder(builder);
-        
+
         try {
             return mapper.writer(schema).
                 writeValueAsString(mztabfile.getSmallMoleculeSummary());
@@ -227,32 +266,44 @@ public class MzTabWriter {
         Builder builder = mapper.schema().
             builder();
         builder.addColumn("SFH", CsvSchema.ColumnType.STRING).
-            addColumn(SmallMoleculeFeatureColumn.Stable.SMF_ID.getHeader(), CsvSchema.ColumnType.STRING).
-            addColumn(SmallMoleculeFeatureColumn.Stable.SME_ID_REFS.getHeader(), CsvSchema.ColumnType.ARRAY).
-            addColumn(SmallMoleculeFeatureColumn.Stable.SME_ID_REF_AMBIGUITY_CODE.getHeader(), CsvSchema.ColumnType.NUMBER).
-            addColumn(SmallMoleculeFeatureColumn.Stable.ADDUCT_ION.getHeader(), CsvSchema.ColumnType.STRING).
-            addColumn(SmallMoleculeFeatureColumn.Stable.ISOTOPOMER.getHeader(), CsvSchema.ColumnType.STRING).
-            addColumn(SmallMoleculeFeatureColumn.Stable.EXP_MASS_TO_CHARGE.getHeader(), CsvSchema.ColumnType.NUMBER).
-            addColumn(SmallMoleculeFeatureColumn.Stable.CHARGE.getHeader(), CsvSchema.ColumnType.NUMBER).
-            addColumn(SmallMoleculeFeatureColumn.Stable.RETENTION_TIME.getHeader(), CsvSchema.ColumnType.NUMBER).
-            addColumn(SmallMoleculeFeatureColumn.Stable.RETENTION_TIME_START.getHeader(), CsvSchema.ColumnType.NUMBER).
-            addColumn(SmallMoleculeFeatureColumn.Stable.RETENTION_TIME_END.getHeader(), CsvSchema.ColumnType.NUMBER);
+            addColumn(SmallMoleculeFeatureColumn.Stable.SMF_ID.getHeader(),
+                CsvSchema.ColumnType.STRING).
+            addColumn(SmallMoleculeFeatureColumn.Stable.SME_ID_REFS.getHeader(),
+                CsvSchema.ColumnType.ARRAY).
+            addColumn(
+                SmallMoleculeFeatureColumn.Stable.SME_ID_REF_AMBIGUITY_CODE.
+                    getHeader(), CsvSchema.ColumnType.NUMBER_OR_STRING).
+            addColumn(SmallMoleculeFeatureColumn.Stable.ADDUCT_ION.getHeader(),
+                CsvSchema.ColumnType.STRING).
+            addColumn(SmallMoleculeFeatureColumn.Stable.ISOTOPOMER.getHeader(),
+                CsvSchema.ColumnType.STRING).
+            addColumn(SmallMoleculeFeatureColumn.Stable.EXP_MASS_TO_CHARGE.
+                getHeader(), CsvSchema.ColumnType.NUMBER_OR_STRING).
+            addColumn(SmallMoleculeFeatureColumn.Stable.CHARGE.getHeader(),
+                CsvSchema.ColumnType.NUMBER_OR_STRING).
+            addColumn(SmallMoleculeFeatureColumn.Stable.RETENTION_TIME.
+                getHeader(), CsvSchema.ColumnType.NUMBER_OR_STRING).
+            addColumn(SmallMoleculeFeatureColumn.Stable.RETENTION_TIME_START.
+                getHeader(), CsvSchema.ColumnType.NUMBER_OR_STRING).
+            addColumn(SmallMoleculeFeatureColumn.Stable.RETENTION_TIME_END.
+                getHeader(), CsvSchema.ColumnType.NUMBER_OR_STRING);
 
         mztabfile.getMetadata().
             getAssay().
             forEach((assay) ->
             {
                 builder.addColumn("abundance_assay[" + assay.getId() + "]",
-                    CsvSchema.ColumnType.NUMBER);
+                    CsvSchema.ColumnType.NUMBER_OR_STRING);
             });
 
         Map<String, OptColumnMapping> optColumns = new LinkedHashMap<>();
-        for(SmallMoleculeFeature smf: mztabfile.getSmallMoleculeFeature()) {
-            for(OptColumnMapping ocm:smf.getOpt()) {
-                optColumns.putIfAbsent(Serializers.printOptColumnMapping(ocm), ocm);
+        for (SmallMoleculeFeature smf : mztabfile.getSmallMoleculeFeature()) {
+            for (OptColumnMapping ocm : Optional.ofNullable(smf.getOpt()).orElse(Collections.emptyList())) {
+                optColumns.putIfAbsent(Serializers.printOptColumnMapping(ocm),
+                    ocm);
             }
         }
-        for(String key: optColumns.keySet()) {
+        for (String key : optColumns.keySet()) {
             builder.addColumn(key, CsvSchema.ColumnType.NUMBER_OR_STRING);
         }
         CsvSchema schema = defaultSchemaForBuilder(builder);
@@ -273,44 +324,63 @@ public class MzTabWriter {
         Builder builder = mapper.schema().
             builder();
         builder.addColumn("SEH", CsvSchema.ColumnType.STRING).
-            addColumn(SmallMoleculeEvidenceColumn.Stable.SME_ID.getHeader(), CsvSchema.ColumnType.STRING).
-            addColumn(SmallMoleculeEvidenceColumn.Stable.EVIDENCE_UNIQUE_ID.getHeader(), CsvSchema.ColumnType.NUMBER).
-            addColumn(SmallMoleculeEvidenceColumn.Stable.DATABASE_IDENTIFIER.getHeader(), CsvSchema.ColumnType.STRING).
-            addColumn(SmallMoleculeEvidenceColumn.Stable.CHEMICAL_FORMULA.getHeader(), CsvSchema.ColumnType.STRING).
-            addColumn(SmallMoleculeEvidenceColumn.Stable.SMILES.getHeader(), CsvSchema.ColumnType.STRING).
-            addColumn(SmallMoleculeEvidenceColumn.Stable.INCHI.getHeader(), CsvSchema.ColumnType.STRING).
-            addColumn(SmallMoleculeEvidenceColumn.Stable.CHEMICAL_NAME.getHeader(), CsvSchema.ColumnType.STRING).
-            addColumn(SmallMoleculeEvidenceColumn.Stable.URI.getHeader(), CsvSchema.ColumnType.STRING).
-            addColumn(SmallMoleculeEvidenceColumn.Stable.DERIVATIZED_FORM.getHeader(), CsvSchema.ColumnType.STRING).
-            addColumn(SmallMoleculeEvidenceColumn.Stable.ADDUCT_ION.getHeader(), CsvSchema.ColumnType.STRING).
-            addColumn(SmallMoleculeEvidenceColumn.Stable.EXP_MASS_TO_CHARGE.getHeader(), CsvSchema.ColumnType.NUMBER).
-            addColumn(SmallMoleculeEvidenceColumn.Stable.CHARGE.getHeader(), CsvSchema.ColumnType.NUMBER).
-            addColumn(SmallMoleculeEvidenceColumn.Stable.THEORETICAL_MASS_TO_CHARGE.getHeader(), CsvSchema.ColumnType.NUMBER).
-            addColumn(SmallMoleculeEvidenceColumn.Stable.SPECTRA_REF.getHeader(), CsvSchema.ColumnType.STRING).
-            addColumn(SmallMoleculeEvidenceColumn.Stable.IDENTIFICATION_METHOD.getHeader(), CsvSchema.ColumnType.STRING).
-            addColumn(SmallMoleculeEvidenceColumn.Stable.MS_LEVEL.getHeader(), CsvSchema.ColumnType.STRING);
+            addColumn(SmallMoleculeEvidenceColumn.Stable.SME_ID.getHeader(),
+                CsvSchema.ColumnType.STRING).
+            addColumn(SmallMoleculeEvidenceColumn.Stable.EVIDENCE_UNIQUE_ID.
+                getHeader(), CsvSchema.ColumnType.NUMBER_OR_STRING).
+            addColumn(SmallMoleculeEvidenceColumn.Stable.DATABASE_IDENTIFIER.
+                getHeader(), CsvSchema.ColumnType.STRING).
+            addColumn(SmallMoleculeEvidenceColumn.Stable.CHEMICAL_FORMULA.
+                getHeader(), CsvSchema.ColumnType.STRING).
+            addColumn(SmallMoleculeEvidenceColumn.Stable.SMILES.getHeader(),
+                CsvSchema.ColumnType.STRING).
+            addColumn(SmallMoleculeEvidenceColumn.Stable.INCHI.getHeader(),
+                CsvSchema.ColumnType.STRING).
+            addColumn(SmallMoleculeEvidenceColumn.Stable.CHEMICAL_NAME.
+                getHeader(), CsvSchema.ColumnType.STRING).
+            addColumn(SmallMoleculeEvidenceColumn.Stable.URI.getHeader(),
+                CsvSchema.ColumnType.STRING).
+            addColumn(SmallMoleculeEvidenceColumn.Stable.DERIVATIZED_FORM.
+                getHeader(), CsvSchema.ColumnType.STRING).
+            addColumn(SmallMoleculeEvidenceColumn.Stable.ADDUCT_ION.getHeader(),
+                CsvSchema.ColumnType.STRING).
+            addColumn(SmallMoleculeEvidenceColumn.Stable.EXP_MASS_TO_CHARGE.
+                getHeader(), CsvSchema.ColumnType.NUMBER_OR_STRING).
+            addColumn(SmallMoleculeEvidenceColumn.Stable.CHARGE.getHeader(),
+                CsvSchema.ColumnType.NUMBER_OR_STRING).
+            addColumn(
+                SmallMoleculeEvidenceColumn.Stable.THEORETICAL_MASS_TO_CHARGE.
+                    getHeader(), CsvSchema.ColumnType.NUMBER_OR_STRING).
+            addColumn(SmallMoleculeEvidenceColumn.Stable.SPECTRA_REF.getHeader(),
+                CsvSchema.ColumnType.STRING).
+            addColumn(SmallMoleculeEvidenceColumn.Stable.IDENTIFICATION_METHOD.
+                getHeader(), CsvSchema.ColumnType.STRING).
+            addColumn(SmallMoleculeEvidenceColumn.Stable.MS_LEVEL.getHeader(),
+                CsvSchema.ColumnType.STRING);
         mztabfile.getMetadata().
             getIdConfidenceMeasure().
             forEach((param) ->
             {
                 builder.
                     addColumn("id_confidence_measure[" + param.getId() + "]",
-                        CsvSchema.ColumnType.NUMBER);
+                        CsvSchema.ColumnType.NUMBER_OR_STRING);
             });
-        builder.addColumn(SmallMoleculeEvidenceColumn.Stable.RANK.getHeader(), CsvSchema.ColumnType.NUMBER);
+        builder.addColumn(SmallMoleculeEvidenceColumn.Stable.RANK.getHeader(),
+            CsvSchema.ColumnType.NUMBER_OR_STRING);
         Map<String, OptColumnMapping> optColumns = new LinkedHashMap<>();
-        for(SmallMoleculeEvidence sme: mztabfile.getSmallMoleculeEvidence()) {
-            for(OptColumnMapping ocm:sme.getOpt()) {
-                optColumns.putIfAbsent(Serializers.printOptColumnMapping(ocm), ocm);
+        for (SmallMoleculeEvidence sme : mztabfile.getSmallMoleculeEvidence()) {
+            for (OptColumnMapping ocm : Optional.ofNullable(sme.getOpt()).orElse(Collections.emptyList())) {
+                optColumns.putIfAbsent(Serializers.printOptColumnMapping(ocm),
+                    ocm);
             }
         }
-        for(String key: optColumns.keySet()) {
+        for (String key : optColumns.keySet()) {
             builder.addColumn(key, CsvSchema.ColumnType.NUMBER_OR_STRING);
         }
         CsvSchema schema = defaultSchemaForBuilder(builder);
         try {
             return mapper.writer(schema).
-                writeValueAsString(mztabfile.getSmallMoleculeFeature());
+                writeValueAsString(mztabfile.getSmallMoleculeEvidence());
         } catch (JsonProcessingException ex) {
             Logger.getLogger(MzTabWriter.class.getName()).
                 log(Level.SEVERE, null, ex);

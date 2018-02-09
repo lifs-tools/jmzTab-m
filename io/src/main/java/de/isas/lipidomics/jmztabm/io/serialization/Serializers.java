@@ -348,7 +348,7 @@ public class Serializers {
             elements.forEach((element) ->
             {
                 try {
-                    jg.writeNumber(element.doubleValue());
+                    Serializers.writeNumber(jg, element.doubleValue());
                 } catch (IOException ex) {
                     Logger.getLogger(SmallMoleculeSummarySerializer.class.
                         getName()).
@@ -392,6 +392,22 @@ public class Serializers {
                 Logger.getLogger(SmallMoleculeSummarySerializer.class.getName()).
                     log(Level.SEVERE, null, ex);
             }
+        }
+    }
+    
+    public static void writeNumber(JsonGenerator jg, Integer value) throws IOException {
+        if(value==null) {
+            jg.writeNull();
+        } else {
+            jg.writeNumber(value);
+        }
+    }
+    
+    public static void writeNumber(JsonGenerator jg, Double value) throws IOException {
+        if(value==null) {
+            jg.writeNull();
+        } else {
+            jg.writeNumber(value);
         }
     }
 

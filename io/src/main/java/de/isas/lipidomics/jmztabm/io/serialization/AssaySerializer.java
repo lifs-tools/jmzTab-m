@@ -27,6 +27,7 @@ import de.isas.mztab1_1.model.Sample;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import uk.ac.ebi.pride.jmztab1_1.model.Section;
 
@@ -57,38 +58,44 @@ public class AssaySerializer extends StdSerializer<Assay> {
                 "custom",
                 assay, assay.getCustom());
 
-            addSubElementStrings(jg, Section.Metadata.getPrefix(), assay,
-                "ms_run_ref", Arrays.asList(assay.getMsRunRef()).
-                    stream().
-                    sorted(Comparator.comparing(MsRun::getId,
-                        Comparator.nullsFirst(Comparator.
-                            naturalOrder())
-                    )).
-                    map((msRunRef) ->
-                    {
-                        return new StringBuilder().append("ms_run").
-                            append("[").
-                            append(msRunRef.getId()).
-                            append("]").
-                            toString();
-                    }).
-                    collect(Collectors.toList()), true);
-            addSubElementStrings(jg, Section.Metadata.getPrefix(), assay,
-                "sample_ref", Arrays.asList(assay.getSampleRef()).
-                    stream().
-                    sorted(Comparator.comparing(Sample::getId,
-                        Comparator.nullsFirst(Comparator.
-                            naturalOrder())
-                    )).
-                    map((assayRef) ->
-                    {
-                        return new StringBuilder().append("sample").
-                            append("[").
-                            append(assayRef.getId()).
-                            append("]").
-                            toString();
-                    }).
-                    collect(Collectors.toList()), true);
+            MsRun msRunRef = assay.getMsRunRef();
+            if(msRunRef!=null) {
+                addSubElementStrings(jg, Section.Metadata.getPrefix(), assay,
+                    "ms_run_ref", Arrays.asList(assay.getMsRunRef()).
+                        stream().
+                        sorted(Comparator.comparing(MsRun::getId,
+                            Comparator.nullsFirst(Comparator.
+                                naturalOrder())
+                        )).
+                        map((mref) ->
+                        {
+                            return new StringBuilder().append("ms_run").
+                                append("[").
+                                append(mref.getId()).
+                                append("]").
+                                toString();
+                        }).
+                        collect(Collectors.toList()), true);
+            }
+            Sample sampleRef = assay.getSampleRef();
+            if(sampleRef!=null) {
+                addSubElementStrings(jg, Section.Metadata.getPrefix(), assay,
+                    "sample_ref", Arrays.asList(assay.getSampleRef()).
+                        stream().
+                        sorted(Comparator.comparing(Sample::getId,
+                            Comparator.nullsFirst(Comparator.
+                                naturalOrder())
+                        )).
+                        map((sref) ->
+                        {
+                            return new StringBuilder().append("sample").
+                                append("[").
+                                append(sref.getId()).
+                                append("]").
+                                toString();
+                        }).
+                        collect(Collectors.toList()), true);
+            }
 
         } else {
             System.err.println("Assay is null!");

@@ -107,7 +107,7 @@ public class SMELineParser extends MZTabDataLineParser<SmallMoleculeEvidence> {
                             smallMoleculeEvidence.theoreticalMassToCharge(checkDouble(column, target));
                             break;
                         case URI:
-                            smallMoleculeEvidence.uri(checkURI(column, target).toASCIIString());
+                            smallMoleculeEvidence.uri(checkURI(column, target));
                             break;
                     }
 

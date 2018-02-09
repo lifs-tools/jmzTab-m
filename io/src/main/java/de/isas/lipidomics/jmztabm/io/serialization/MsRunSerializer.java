@@ -21,7 +21,6 @@ import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import static de.isas.lipidomics.jmztabm.io.serialization.Serializers.addLineWithProperty;
 import static de.isas.lipidomics.jmztabm.io.serialization.Serializers.addSubElementParameter;
 import static de.isas.lipidomics.jmztabm.io.serialization.Serializers.addSubElementParameters;
-import static de.isas.lipidomics.jmztabm.io.serialization.Serializers.addSubElementStrings;
 import de.isas.mztab1_1.model.MsRun;
 import java.io.IOException;
 import uk.ac.ebi.pride.jmztab1_1.model.Section;

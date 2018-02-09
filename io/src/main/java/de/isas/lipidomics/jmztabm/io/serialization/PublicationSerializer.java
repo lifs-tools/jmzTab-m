@@ -21,6 +21,8 @@ import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import static de.isas.lipidomics.jmztabm.io.serialization.Serializers.addLine;
 import de.isas.mztab1_1.model.Publication;
 import java.io.IOException;
+import java.util.Collections;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import uk.ac.ebi.pride.jmztab1_1.model.Section;
 
@@ -43,8 +45,9 @@ public class PublicationSerializer extends StdSerializer<Publication> {
         SerializerProvider sp) throws IOException {
         if (publication != null) {
             addLine(jg, Section.Metadata.getPrefix(),
-                "publication[" + publication.getId() + "]", publication.
-                getPublicationItems().
+                "publication[" + publication.getId() + "]", Optional.ofNullable(
+                publication.
+                getPublicationItems()).orElse(Collections.emptyList()).
                 stream().
                 map(pitem ->
                     pitem.getType().

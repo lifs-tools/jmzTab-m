@@ -6,19 +6,19 @@
 
     <includeBaseDirectory>false</includeBaseDirectory>
 
-    <dependencySets>
+<!--    <dependencySets>
         <dependencySet>
             <outputDirectory>${assembly.dir}/lib</outputDirectory>
             <unpack>false</unpack>
             <scope>runtime</scope>
         </dependencySet>
-    </dependencySets>
+    </dependencySets>-->
 
     <fileSets>
         <fileSet>
             <directory>${project.basedir}/target</directory>
             <includes>
-                <include>*.jar</include>
+                <include>jmztabm-cli-*.jar</include>
             </includes>
             <outputDirectory>${assembly.dir}</outputDirectory>
         </fileSet>

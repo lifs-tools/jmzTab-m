@@ -513,7 +513,7 @@ public class MZTabFileParser {
                         // small molecule header section
                         sehParser = new SEHLineParser(context, mtdParser.getMetadata());
                         sehParser.parse(lineNumber, line, errorList);
-                        smePositionMapping = new PositionMapping(sfhParser.
+                        smePositionMapping = new PositionMapping(sehParser.
                             getFactory(), line);
 
                         // tell system to continue check small molecule data line.

@@ -12,6 +12,7 @@ import uk.ac.ebi.pride.jmztab1_1.utils.errors.LogicalErrorType;
 import uk.ac.ebi.pride.jmztab1_1.utils.errors.MZTabErrorOverflowException;
 import de.isas.mztab1_1.model.Assay;
 import de.isas.mztab1_1.model.Contact;
+import de.isas.mztab1_1.model.Database;
 import de.isas.mztab1_1.model.IndexedElement;
 import de.isas.mztab1_1.model.Instrument;
 import de.isas.mztab1_1.model.Metadata;
@@ -513,7 +514,6 @@ public class MTDLineParser extends MZTabLineParser {
                 case CUSTOM:
                     id = checkIndex(defineLabel, matcher.group(3));
                     context.addCustomItem(metadata, id, checkParameter(defineLabel, valueLabel));
-                    metadata.addCustomItem(checkParameter(defineLabel, valueLabel));
                     break;
                 case SAMPLE:
                     id = checkIndex(defineLabel, matcher.group(3));
@@ -562,12 +562,11 @@ public class MTDLineParser extends MZTabLineParser {
                     property = checkProperty(element, matcher.group(5));
                     addCv(metadata, property, id, valueLabel);
                     break;
-//                case DATABASE:
-////                    id = checkIndex(defineLabel, matcher.group(3));
-////                    property = checkProperty(element, matcher.group(5));
-////                    addDatabase(metadata, property, id, valueLabel);
-//                    //TODO currently not handled
-//                    break;
+                case DATABASE:
+                    id = checkIndex(defineLabel, matcher.group(3));
+                    property = checkProperty(element, matcher.group(5));
+                    addDatabase(metadata, property, id, defineLabel, valueLabel);
+                    break;
                 case COLUNIT:
                     // In this stage, just store them into colUnitMap<defineLabel, valueLabel>.
                     // after the section columns is created we will add the col unit.
@@ -757,7 +756,7 @@ public class MTDLineParser extends MZTabLineParser {
     }
 
     private void addMsRun(Metadata metadata, MetadataProperty property, Integer id,
-        String defineLabel, String valueLabel) throws MZTabException{
+        String defineLabel, String valueLabel) throws MZTabException {
         MsRun msRun = null;
         if(property==null) {
             msRun = context.addMsRun(metadata, new MsRun().id(id).name(valueLabel));
@@ -789,50 +788,54 @@ public class MTDLineParser extends MZTabLineParser {
     }
     
     private void addDatabase(Metadata metadata, MetadataProperty property, Integer id,
-        String defineLabel, String valueLabel) {
-        switch (property != null ? property : null) {
-            case DATABASE_LABEL:
-//                context.addSampleSpecies(metadata,id, checkParameter(defineLabel, valueLabel));
-                break;
-            case SAMPLE_TISSUE:
-//                context.addSampleTissue(metadata,id, checkParameter(defineLabel, valueLabel));
-                break;
-            case SAMPLE_CELL_TYPE:
-//                context.addSampleCellType(metadata,id, checkParameter(defineLabel, valueLabel));
-                break;
-            case SAMPLE_DISEASE:
-//                context.addSampleDisease(metadata,id, checkParameter(defineLabel, valueLabel));
-                break;
-            case SAMPLE_DESCRIPTION:
-                context.addSampleDescription(metadata,id, valueLabel);
-                break;
-            case SAMPLE_CUSTOM:
-                context.addSampleCustom(metadata,id, checkParameter(defineLabel, valueLabel));
-                break;
+        String defineLabel, String valueLabel) throws MZTabException {
+        Database database = null;
+        if(property==null) {
+            database = context.addDatabase(metadata, new Database().id(id).param(checkParameter(defineLabel, valueLabel)));
+        } else {
+            switch (property != null ? property : null) {
+                case DATABASE_PREFIX:
+                    database = context.addDatabasePrefix(metadata, id, valueLabel);
+                    break;
+                case DATABASE_VERSION:
+                    database = context.addDatabaseVersion(metadata, id, valueLabel);
+                    break;
+                case DATABASE_URL:
+                    database = context.addDatabaseUrl(metadata, id, checkURL(defineLabel,
+                        valueLabel));
+                    break;
+            }
+        }
+        if(database == null) {
+            throw new MZTabException(new MZTabError(LogicalErrorType.NULL, lineNumber, "database["+id+"]"));
         }
     }
     
     private void addSample(Metadata metadata, MetadataProperty property, Integer id,
         String defineLabel, String valueLabel) {
-        switch (property != null ? property : null) {
-            case SAMPLE_SPECIES:
-                context.addSampleSpecies(metadata,id, checkParameter(defineLabel, valueLabel));
-                break;
-            case SAMPLE_TISSUE:
-                context.addSampleTissue(metadata,id, checkParameter(defineLabel, valueLabel));
-                break;
-            case SAMPLE_CELL_TYPE:
-                context.addSampleCellType(metadata,id, checkParameter(defineLabel, valueLabel));
-                break;
-            case SAMPLE_DISEASE:
-                context.addSampleDisease(metadata,id, checkParameter(defineLabel, valueLabel));
-                break;
-            case SAMPLE_DESCRIPTION:
-                context.addSampleDescription(metadata,id, valueLabel);
-                break;
-            case SAMPLE_CUSTOM:
-                context.addSampleCustom(metadata,id, checkParameter(defineLabel, valueLabel));
-                break;
+        if(property==null) {
+            context.addSample(metadata, new Sample().id(id).name(valueLabel));
+        } else {
+            switch (property != null ? property : null) {
+                case SAMPLE_SPECIES:
+                    context.addSampleSpecies(metadata,id, checkParameter(defineLabel, valueLabel));
+                    break;
+                case SAMPLE_TISSUE:
+                    context.addSampleTissue(metadata,id, checkParameter(defineLabel, valueLabel));
+                    break;
+                case SAMPLE_CELL_TYPE:
+                    context.addSampleCellType(metadata,id, checkParameter(defineLabel, valueLabel));
+                    break;
+                case SAMPLE_DISEASE:
+                    context.addSampleDisease(metadata,id, checkParameter(defineLabel, valueLabel));
+                    break;
+                case SAMPLE_DESCRIPTION:
+                    context.addSampleDescription(metadata,id, valueLabel);
+                    break;
+                case SAMPLE_CUSTOM:
+                    context.addSampleCustom(metadata,id, checkParameter(defineLabel, valueLabel));
+                    break;
+            }
         }
     }
 

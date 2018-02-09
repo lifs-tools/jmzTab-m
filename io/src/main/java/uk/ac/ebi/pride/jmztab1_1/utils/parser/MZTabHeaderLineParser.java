@@ -391,7 +391,8 @@ public abstract class MZTabHeaderLineParser extends MZTabLineParser {
     public void checkColUnit() throws MZTabException {
         String valueLabel;
         for (String defineLabel : context.getColUnitMap().keySet()) {
-            if (defineLabel.equalsIgnoreCase("colunit-" + Section.toDataSection(factory.getSection()).getName())) {
+            String sectionName = Section.toDataSection(factory.getSection()).getName();
+            if (defineLabel.equalsIgnoreCase("colunit-" + sectionName)) {
                 valueLabel = context.getColUnitMap().get(defineLabel);
 
                 String[] items = valueLabel.split("=");
@@ -401,7 +402,7 @@ public abstract class MZTabHeaderLineParser extends MZTabLineParser {
                 IMZTabColumn column = factory.findColumnByHeader(columnName);
                 if (column == null) {
                     // column_name not exists in the factory.
-                    errorList.add(new MZTabError(FormatErrorType.ColUnit, lineNumber, valueLabel, columnName));
+                    errorList.add(new MZTabError(FormatErrorType.ColUnit, lineNumber, valueLabel, columnName, sectionName));
                 } else {
                     Parameter param = parseParam(value);
                     if (param == null) {

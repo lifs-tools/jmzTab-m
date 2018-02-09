@@ -62,33 +62,8 @@ To validate a particular file with a given level (one of: Info, Warn, Error), ru
   java -jar mzTabCLI.jar -check inFile=/path/to/your/file.mztab -level Warn
 
 == Running the Web Application for Validation
-The web-application is based on https://projects.spring.io/spring-boot/[Spring-Boot], http://www.thymeleaf.org/[Thymeleaf], https://jquery.com/[jQuery], https://datatables.net/[jQuery Datatables] and https://getbootstrap.com/[Bootstrap 4].
-The `web` sub-project builds and bundles all necessary dependencies and resources into a stand-alone, executable JAR file that can be run as follows (please replace <VERSION> with the correct one)
 
-  ./mztabvalidation-<VERSION>.jar
-
-This will start the application with a default configuration, running on http port 8083. 
-The application can then be accessed from your web browser at
-
-  http://localhost:8083
-
-== Building the Web Application Docker Image
-If you want to run the web application as a docker container, you can build it as follows:
-
-  ./mvnw -Pdocker install
-
-This will build a Docker container for the webapplication and will make it locally available to be run by docker.
-
-  docker image ls
-  REPOSITORY                    TAG                 IMAGE ID            CREATED             SIZE
-  isas/mztab-validator-webapp   1.0.0-SNAPSHOT      b87d4683db50        About an hour ago   472MB
-
-Please note that the base image we use is quite large (for details, see `web/Dockerfile`), but also includes monitoring utilities and automatic scaling and limiting of the 
-internal JVMs memory based on the amount of memory allocated for the container by Docker.
-
-To run the web application as a Docker container, type in the following (replacing <VERSION> with the current project version, i.e. the TAG version displayed by `docker image ls`):
-
-  docker run -it --rm --name mztabvalidator -p 8080:8083 -m 150M isas/mztab-validator-webapp:<VERSION>
+The validator web application has been moved into a separate project: https://github.com/nilshoffmann/jmzTab-m-webapp
 
 == References
 

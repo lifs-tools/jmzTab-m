@@ -6,7 +6,7 @@
     <artifactId>jmztabm</artifactId>
     <version>1.0.0-SNAPSHOT</version>
   </parent>
-  <artifactId>io</artifactId>
+  <artifactId>jmztabm-io</artifactId>
   <packaging>jar</packaging>
   <dependencies>
     <dependency>
@@ -43,12 +43,5 @@
       <version>${slf4j.version}</version>
       <type>jar</type>
     </dependency>
-    <!--    <dependency>
-      <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter-params</artifactId>
-      <version>${junit.jupiter.version}</version>
-      <scope>test</scope>
-      <type>jar</type>
-    </dependency>-->
   </dependencies>
 </project>
