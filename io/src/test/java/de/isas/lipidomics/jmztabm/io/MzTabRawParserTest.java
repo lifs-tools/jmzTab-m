@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.junit.Assert;
@@ -68,7 +69,7 @@ public class MzTabRawParserTest {
             System.out.println("JACKSON serialized: " + resource);
             try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
                 try (OutputStreamWriter osw = new OutputStreamWriter(
-                    baos)) {
+                    baos, Charset.forName("UTF8"))) {
                     writer.write(osw, mzTab);
                     osw.flush();
                     Logger.getLogger(MzTabRawParserTest.class.getName()).
