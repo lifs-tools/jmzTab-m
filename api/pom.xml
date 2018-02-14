@@ -161,7 +161,7 @@
                 <descriptor>src/assembly/asciidoc-zip.xml</descriptor> <!-- path to the descriptor -->
               </descriptors>
               <finalName>mztab-api-adoc-${project.version}</finalName>
-              <appendAssemblyId>false</appendAssemblyId>
+              <appendAssemblyId>true</appendAssemblyId>
             </configuration>
           </execution>
           <execution>
@@ -175,7 +175,7 @@
                 <descriptor>src/assembly/python-zip.xml</descriptor> <!-- path to the descriptor -->
               </descriptors>
               <finalName>mztab-api-python-${project.version}</finalName>
-              <appendAssemblyId>false</appendAssemblyId>
+              <appendAssemblyId>true</appendAssemblyId>
             </configuration>
           </execution>
           <execution>
@@ -189,7 +189,7 @@
                 <descriptor>src/assembly/r-zip.xml</descriptor> <!-- path to the descriptor -->
               </descriptors>
               <finalName>mztab-api-r-${project.version}</finalName>
-              <appendAssemblyId>false</appendAssemblyId>
+              <appendAssemblyId>true</appendAssemblyId>
             </configuration>
           </execution>
         </executions>
