@@ -10,8 +10,8 @@
   <includeBaseDirectory>true</includeBaseDirectory>
   <fileSets>
     <fileSet>
-      <directory>${project.build.directory}/generated-sources/mztab-adoc/</directory>
-      <outputDirectory>/</outputDirectory>
+      <directory>${project.build.directory}${file.separator}generated-sources${file.separator}mztab-adoc${file.separator}</directory>
+      <outputDirectory>${file.separator}</outputDirectory>
       <excludes>
         <exclude>**.sh</exclude>
       </excludes>

@@ -10,19 +10,19 @@
   <includeBaseDirectory>true</includeBaseDirectory>
   <fileSets>
     <fileSet>
-      <directory>${project.build.directory}/generated-sources/mztab-r/</directory>
-      <outputDirectory>/</outputDirectory>
+      <directory>${project.build.directory}${file.separator}generated-sources${file.separator}mztab-r${file.separator}</directory>
+      <outputDirectory>${file.separator}</outputDirectory>
       <excludes>
         <exclude>**.sh</exclude>
       </excludes>
     </fileSet>
     <fileSet>
-      <directory>${project.basedir}/src/main/r/</directory>
-      <outputDirectory>/</outputDirectory>
+      <directory>${project.basedir}${file.separator}src${file.separator}main${file.separator}r${file.separator}</directory>
+      <outputDirectory>${file.separator}</outputDirectory>
     </fileSet>
     <fileSet>
-      <directory>${project.basedir}/src/test/resources</directory>
-      <outputDirectory>/inst/testdata</outputDirectory>
+      <directory>${project.basedir}${file.separator}src${file.separator}test${file.separator}resources</directory>
+      <outputDirectory>${file.separator}inst${file.separator}testdata</outputDirectory>
     </fileSet>
   </fileSets>
 </assembly>
