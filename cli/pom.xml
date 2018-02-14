@@ -96,28 +96,6 @@
           </execution>
         </executions>
       </plugin>
-      <!--      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jar-plugin</artifactId>
-        <configuration>
-          <classifier>cli</classifier>
-          <archive>
-            <manifest>
-              provide a CLI for jmztab
-              <mainClass>de.isas.mztab.cli.MZTabCommandLine</mainClass>
-              <addClasspath>true</addClasspath>
-              <classpathPrefix>lib</classpathPrefix>
-            </manifest>
-          </archive>
-        </configuration>
-        <executions>
-          <execution>
-            <goals>
-              <goal>jar</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>-->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-assembly-plugin</artifactId>

@@ -22,11 +22,12 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.time.Instant;
+import java.util.Properties;
 import uk.ac.ebi.pride.jmztab1_1.utils.MZTabFileParser;
-import uk.ac.ebi.pride.jmztab1_1.utils.errors.MZTabErrorOverflowException;
+import uk.ac.ebi.pride.jmztab1_1.utils.errors.MZTabErrorList;
 import uk.ac.ebi.pride.jmztab1_1.utils.errors.MZTabErrorType;
 import uk.ac.ebi.pride.jmztab1_1.utils.errors.MZTabErrorTypeMap;
-import uk.ac.ebi.pride.jmztab1_1.utils.errors.MZTabException;
 
 /**
  * @author qingwei
@@ -34,6 +35,45 @@ import uk.ac.ebi.pride.jmztab1_1.utils.errors.MZTabException;
  * @since 17/09/13
  */
 public class MZTabCommandLine {
+
+    private static String getAppInfo() throws IOException {
+        Properties p = new Properties();
+        p.load(MZTabCommandLine.class.getResourceAsStream(
+            "/application.properties"));
+        StringBuilder sb = new StringBuilder();
+        String buildDate = p.getProperty("app.build.date", "no build date");
+        if (!"no build date".equals(buildDate)) {
+            Instant instant = Instant.ofEpochMilli(Long.parseLong(buildDate));
+            buildDate = instant.toString();
+        }
+        /*
+         *Property keys are in src/main/resources/application.properties
+         */
+        sb.append("Running ").
+            append(p.getProperty("app.name", "undefined app")).
+            append("\n\r").
+            append(" version: '").
+            append(p.getProperty("app.version", "unknown version")).
+            append("'").
+            append("\n\r").
+            append(" build-date: '").
+            append(buildDate).
+            append("'").
+            append("\n\r").
+            append(" scm-location: '").
+            append(p.getProperty("scm.location", "no scm location")).
+            append("'").
+            append("\n\r").
+            append(" commit: '").
+            append(p.getProperty("scm.commit.id", "no commit id")).
+            append("'").
+            append("\n\r").
+            append(" branch: '").
+            append(p.getProperty("scm.branch", "no branch")).
+            append("'").
+            append("\n\r");
+        return sb.toString();
+    }
 
     @SuppressWarnings("static-access")
     public static void main(String[] args) throws Exception {
@@ -44,7 +84,10 @@ public class MZTabCommandLine {
         Options options = new Options();
 
         String helpOpt = "help";
-        options.addOption("h", helpOpt, false, "Print help message");
+        options.addOption("h", helpOpt, false, "Print help message.");
+
+        String versionOpt = "version";
+        options.addOption("v", versionOpt, false, "Print version information.");
 
         String msgOpt = "message";
         String codeOpt = "code";
@@ -90,19 +133,18 @@ public class MZTabCommandLine {
             } else {
                 System.out.println(type);
             }
+        } else if (line.hasOption(versionOpt)) {
+            System.out.println(getAppInfo());
         } else {
-
             File outFile = null;
             if (line.hasOption(outOpt)) {
                 outFile = new File(line.getOptionValue(outOpt));
             }
 
-            OutputStream out = outFile == null ? System.out : new BufferedOutputStream(
-                new FileOutputStream(outFile));
-
             MZTabErrorType.Level level = MZTabErrorType.Level.Error;
             if (line.hasOption(levelOpt)) {
                 level = MZTabErrorType.findLevel(line.getOptionValue(levelOpt));
+                System.out.println("Valdiator set to level '" + level + "'");
             }
 
             if (line.hasOption(checkOpt)) {
@@ -111,23 +153,26 @@ public class MZTabCommandLine {
                     throw new IllegalArgumentException("Not setting input file!");
                 }
                 File inFile = new File(values[1].trim());
-                System.out.println("Begin check mztab file: " + inFile.
-                    getAbsolutePath());
-                try {
-                    new MZTabFileParser(inFile, out, level);
+                System.out.println(
+                    "Beginning validation of mztab file: " + inFile.
+                        getAbsolutePath());
+                try (OutputStream out = outFile == null ? System.out : new BufferedOutputStream(
+                    new FileOutputStream(outFile))) {
+                    MZTabFileParser mzTabParser = new MZTabFileParser(inFile);
+                    MZTabErrorList errorList = mzTabParser.parse(out, level);
+                    if (!errorList.isEmpty()) {
+                        //these are reported to std.err already.
+                        System.out.println(
+                            "There were errors while processing your file, please check the output for details!");
+                    }
                 } catch (IOException e) {
                     System.out.println(
                         "Caught an IO Exception: " + e.getMessage());
-                } catch (MZTabErrorOverflowException | MZTabException e) {
-                    //these are reported to std.err already.
-                    System.out.println(
-                        "There were errors while processing your file, please check the output for details!");
                 }
             }
 
-            System.out.println("Finish!");
+            System.out.println("Finished validation!");
             System.out.println();
-            out.close();
         }
     }
 
