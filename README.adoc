@@ -1,8 +1,15 @@
-= mzTab Swagger API
+= mzTab 1.1 for Metabolomics Reader, Writer and Validator
 Nils Hoffmann <nils.hoffmann@isas.de>
 
 Build status: image:https://travis-ci.org/nilshoffmann/jmzTab-m.svg?branch=master["Build Status", link="https://travis-ci.org/nilshoffmann/jmzTab-m"]
 
+This project is the reference reader, writer and validator implementation for mzTab 1.1+, based on the https://github.com/PRIDE-Utilities/jmztab[jmztab project].
+
+The latest draft version of the mzTab spec is available https://github.com/HUPO-PSI/mzTab/blob/master/specification_document/1_1_draft_specs/mzTab_format_specification_1_1-M_draft.adoc[here].
+
+The web-based validator application is available https://github.com/nilshoffmann/jmzTab-m-webapp[here].
+
+== Editing the Swagger Spec
 This project defines the structure of an mzTab document based on JSON-Schema
 and Swagger https://swagger.io/.
 
@@ -57,7 +64,7 @@ In order to run the validator, unzip that file, change into the unzipped `cli` f
 
 to see the available options.
 
-To validate a particular file with a given level (one of: Info, Warn, Error), run
+To validate a particular file with a given level (one of: Info, Warn, Error, where Info includes Warn and Error), run
 
   java -jar mzTabCLI.jar -check inFile=/path/to/your/file.mztab -level Warn
 
