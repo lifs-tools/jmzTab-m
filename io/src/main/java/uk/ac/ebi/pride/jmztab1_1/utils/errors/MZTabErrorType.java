@@ -19,7 +19,8 @@ public class MZTabErrorType {
      * the notational conventions of the specification. All diagnosis rules, which use "MUST", "MUST NOT",
      * "REQUIRED" keywords, are defined for Error level; use "SHALL", "SHALL NOT", "SHOULD",
      * "SHOULD NOT" keywords are defined for Warn Level; and others keywords, such as "RECOMMENDED",
-     * "MAY" and "OPTIONAL", are defined for Info Level.
+     * "MAY" and "OPTIONAL", are defined for Info Level. 
+     * 
      */
     public enum Level {
         Info,

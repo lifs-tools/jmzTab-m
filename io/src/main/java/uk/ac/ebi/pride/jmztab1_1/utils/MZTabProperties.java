@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.Properties;
 
 import static uk.ac.ebi.pride.jmztab1_1.model.MZTabConstants.NEW_LINE;
+import uk.ac.ebi.pride.jmztab1_1.utils.errors.MZTabErrorType;
 
 /**
  * This Class will load the properties used by the mzTab library
@@ -44,7 +45,7 @@ public class MZTabProperties {
 
     public final static String ENCODE = getProperty("mztab.encode");
     public final static int MAX_ERROR_COUNT = Integer.parseInt(getProperty("mztab.max_error_count"));
-    public final static LogicalErrorType.Level LEVEL = LogicalErrorType.findLevel(getProperty("mztab.level"));
+    public final static LogicalErrorType.Level LEVEL = MZTabErrorType.findLevel(getProperty("mztab.level"));
     public final static boolean CVPARAM_CHECK = Boolean.parseBoolean(getProperty("mztab.cvparam_webservice"));
 
 }

@@ -77,7 +77,7 @@ public class MZTabErrorList {
             throw new NullPointerException("Can not add a null error into list.");
         }
 
-        if (error.getType().getLevel().compareTo(level) < 0) {
+        if (error.getType().getLevel().ordinal() < level.ordinal()) {
             return false;
         }
 

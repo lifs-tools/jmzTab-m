@@ -327,7 +327,7 @@ public class MTDLineParser extends MZTabLineParser {
                         case MZTAB_VERSION:
                             metadata.mzTabVersion(valueLabel);
                             if(metadata.getMzTabVersion().matches("1\\.0")) {
-                                throw new MZTabException(new MZTabError(FormatErrorType.MZTabVersion, lineNumber, defineLabel));
+                                throw new MZTabException(new MZTabError(FormatErrorType.MZTabVersion, lineNumber, defineLabel, valueLabel));
                             }
                             break;
 //                        case MZTAB_MODE:

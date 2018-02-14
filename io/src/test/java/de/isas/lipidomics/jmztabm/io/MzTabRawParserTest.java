@@ -10,7 +10,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.io.StringWriter;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.logging.Level;
@@ -29,25 +28,42 @@ import uk.ac.ebi.pride.jmztab1_1.utils.errors.MZTabException;
 public class MzTabRawParserTest {
 
     @Test
-    public void testLipidomicsExample() {
+    public void testLipidomicsExample() throws MZTabException {
         testExample("metabolomics/lipidomics-example.mzTab",
-            MZTabErrorType.Level.Error);
+            MZTabErrorType.Level.Error, 0);
     }
 
     @Test
-    public void testMtbls263Example() {
-        testExample("metabolomics/MTBLS263.mztab", MZTabErrorType.Level.Error);
+    public void testMtbls263Example() throws MZTabException {
+        testExample("metabolomics/MTBLS263.mztab", MZTabErrorType.Level.Error, 0);
     }
-    
+
     @Test
-    public void testMetadataOnlyExample() {
+    public void testMetadataOnlyExampleError() throws MZTabException {
+        //setting the level to Error includes Error only, missing section is a warning,
+        //so we do not expect an exception to be raised here.
         testExample("metabolomics/minimal-m-1.1.mztab",
-            MZTabErrorType.Level.Error);
+            MZTabErrorType.Level.Error, 0);
     }
 
-    void testExample(String resource, MZTabErrorType.Level level) {
+    @Test
+    public void testMetadataOnlyExampleWarn() throws MZTabException {
+        //setting the level to Warn includes Warn and Error
+        testExample("metabolomics/minimal-m-1.1.mztab",
+            MZTabErrorType.Level.Warn, 1);
+    }
+
+    @Test
+    public void testMetadataOnlyExampleInfo() throws MZTabException {
+        //setting the level to Info includes Warn and Error
+        testExample("metabolomics/minimal-m-1.1.mztab",
+            MZTabErrorType.Level.Info, 1);
+    }
+
+    void testExample(String resource, MZTabErrorType.Level level,
+        Integer expectedErrors) throws MZTabException {
         try {
-            MzTab mzTab = parseResource(resource, level);
+            MzTab mzTab = parseResource(resource, level, expectedErrors);
             MzTabWriter writer = new MzTabWriter();
             System.out.println("JACKSON serialized: " + resource);
             try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
@@ -74,25 +90,23 @@ public class MzTabRawParserTest {
         } catch (MZTabException e) {
             Logger.getLogger(MzTabRawParserTest.class.getName()).
                 log(Level.SEVERE, null, e);
-            Assert.fail(e.getMessage());
+            throw e;
         } catch (MZTabErrorOverflowException e) {
             Logger.getLogger(MzTabRawParserTest.class.getName()).
                 log(Level.SEVERE, null, e);
-            Assert.fail(e.getMessage());
+            throw e;
         }
     }
 
     public static MzTab parseResource(String resource,
-        MZTabErrorType.Level level) throws URISyntaxException, IOException, MZTabException, MZTabErrorOverflowException {
+        MZTabErrorType.Level level, Integer expectedErrors) throws URISyntaxException, IOException, MZTabException, MZTabErrorOverflowException {
         URL url = MzTabRawParserTest.class.getClassLoader().
             getResource(resource);
         Assert.assertNotNull(url);
-        MZTabFileParser parser = new MZTabFileParser(
-            new File(MzTabRawParserTest.class.getClassLoader().
-                getResource(resource).
-                getFile()), System.err, level);
+        MZTabFileParser parser = new MZTabFileParser(url.toURI());
+        parser.parse(System.err, level, 500);
         if (parser.getErrorList().
-            size() > 0) {
+            size() != expectedErrors) {
             Assert.fail(parser.getErrorList().
                 toString());
         }
