@@ -34,7 +34,6 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import uk.ac.ebi.pride.jmztab1_1.model.MZTabConstants;
-import uk.ac.ebi.pride.jmztab1_1.model.Section;
 import uk.ac.ebi.pride.jmztab1_1.model.MetadataElement;
 
 /**

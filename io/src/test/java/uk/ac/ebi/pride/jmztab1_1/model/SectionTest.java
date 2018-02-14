@@ -39,21 +39,13 @@ import static uk.ac.ebi.pride.jmztab1_1.model.Section.Small_Molecule_Header;
  */
 public class SectionTest {
 
-    public SectionTest() {
-    }
 
     /**
      * Test of values method, of class Section.
      */
     @Test
     public void testValues() {
-    }
-
-    /**
-     * Test of valueOf method, of class Section.
-     */
-    @Test
-    public void testValueOf() {
+        assertEquals(14, Section.values().length);
     }
 
     /**
@@ -61,13 +53,26 @@ public class SectionTest {
      */
     @Test
     public void testGetPrefix() {
-    }
+        assertEquals("COM", Section.Comment.getPrefix());
+        assertEquals("MTD", Section.Metadata.getPrefix());
 
-    /**
-     * Test of getName method, of class Section.
-     */
-    @Test
-    public void testGetName() {
+        assertEquals("PRH", Section.Protein_Header.getPrefix());
+        assertEquals("PRT", Section.Protein.getPrefix());
+        
+        assertEquals("PEH", Section.Peptide_Header.getPrefix());
+        assertEquals("PEP", Section.Peptide.getPrefix());
+        
+        assertEquals("PSH", Section.PSM_Header.getPrefix());
+        assertEquals("PSM", Section.PSM.getPrefix());
+        
+        assertEquals("SMH", Section.Small_Molecule_Header.getPrefix());
+        assertEquals("SML", Section.Small_Molecule.getPrefix());
+        
+        assertEquals("SFH", Section.Small_Molecule_Feature_Header.getPrefix());
+        assertEquals("SMF", Section.Small_Molecule_Feature.getPrefix());
+        
+        assertEquals("SEH", Section.Small_Molecule_Evidence_Header.getPrefix());
+        assertEquals("SME", Section.Small_Molecule_Evidence.getPrefix());
     }
 
     /**
@@ -75,6 +80,26 @@ public class SectionTest {
      */
     @Test
     public void testGetLevel() {
+        assertEquals(0, Section.Comment.getLevel());
+        assertEquals(1, Section.Metadata.getLevel());
+
+        assertEquals(2, Section.Protein_Header.getLevel());
+        assertEquals(3, Section.Protein.getLevel());
+        
+        assertEquals(4, Section.Peptide_Header.getLevel());
+        assertEquals(5, Section.Peptide.getLevel());
+        
+        assertEquals(6, Section.PSM_Header.getLevel());
+        assertEquals(7, Section.PSM.getLevel());
+        
+        assertEquals(8, Section.Small_Molecule_Header.getLevel());
+        assertEquals(9, Section.Small_Molecule.getLevel());
+        
+        assertEquals(10, Section.Small_Molecule_Feature_Header.getLevel());
+        assertEquals(11, Section.Small_Molecule_Feature.getLevel());
+        
+        assertEquals(12, Section.Small_Molecule_Evidence_Header.getLevel());
+        assertEquals(13, Section.Small_Molecule_Evidence.getLevel());
     }
 
     /**
@@ -303,13 +328,6 @@ public class SectionTest {
             findSection("small_molecule_evidence_header"));
         Assert.assertEquals(Section.Small_Molecule_Evidence_Header, Section.
             findSection("SEH"));
-    }
-
-    /**
-     * Test of findSection method, of class Section.
-     */
-    @Test
-    public void testFindSection_Object() {
     }
 
 }
