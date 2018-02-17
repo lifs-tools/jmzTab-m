@@ -116,13 +116,16 @@ public class MzTabWriter {
     }
 
     public void write(Path path, MzTab mzTab) throws IOException {
-        BufferedWriter writer = Files.newBufferedWriter(path, Charset.forName(
-            "UTF-8"), StandardOpenOption.CREATE_NEW,
-            StandardOpenOption.WRITE);
-        writer.write(writeMetadataWithJackson(mzTab));
-        writer.write(writeSmallMoleculeSummaryWithJackson(mzTab));
-        writer.write(writeSmallMoleculeFeaturesWithJackson(mzTab));
-        writer.write(writeSmallMoleculeEvidenceWithJackson(mzTab));
+        try (BufferedWriter writer = Files.newBufferedWriter(path, Charset.forName(
+            "UTF-8"), StandardOpenOption.CREATE,
+            StandardOpenOption.WRITE)) {
+            writer.write(writeMetadataWithJackson(mzTab));
+            writer.write(writeSmallMoleculeSummaryWithJackson(mzTab));
+            writer.write(writeSmallMoleculeFeaturesWithJackson(mzTab));
+            writer.write(writeSmallMoleculeEvidenceWithJackson(mzTab));
+            writer.flush();
+            writer.close();
+        }
     }
 
     String writeMetadataWithJackson(MzTab mztabfile) {
@@ -175,27 +178,27 @@ public class MzTabWriter {
             addColumn(SmallMoleculeColumn.Stable.SML_ID.getHeader(),
                 CsvSchema.ColumnType.STRING).
             addColumn(SmallMoleculeColumn.Stable.SMF_ID_REFS.getHeader(),
-                CsvSchema.ColumnType.ARRAY).
+                CsvSchema.ColumnType.STRING).
             addColumn(SmallMoleculeColumn.Stable.DATABASE_IDENTIFIER.getHeader(),
-                CsvSchema.ColumnType.ARRAY).
+                CsvSchema.ColumnType.STRING).
             addColumn(SmallMoleculeColumn.Stable.CHEMICAL_FORMULA.getHeader(),
-                CsvSchema.ColumnType.ARRAY).
+                CsvSchema.ColumnType.STRING).
             addColumn(SmallMoleculeColumn.Stable.SMILES.getHeader(),
-                CsvSchema.ColumnType.ARRAY).
+                CsvSchema.ColumnType.STRING).
             addColumn(SmallMoleculeColumn.Stable.INCHI.getHeader(),
-                CsvSchema.ColumnType.ARRAY).
+                CsvSchema.ColumnType.STRING).
             addColumn(SmallMoleculeColumn.Stable.CHEMICAL_NAME.getHeader(),
-                CsvSchema.ColumnType.ARRAY).
+                CsvSchema.ColumnType.STRING).
             addColumn(SmallMoleculeColumn.Stable.URI.getHeader(),
-                CsvSchema.ColumnType.ARRAY).
+                CsvSchema.ColumnType.STRING).
             addColumn(SmallMoleculeColumn.Stable.THEOR_NEUTRAL_MASS.getHeader(),
-                CsvSchema.ColumnType.ARRAY).
+                CsvSchema.ColumnType.STRING).
             addColumn(SmallMoleculeColumn.Stable.EXP_MASS_TO_CHARGE.getHeader(),
                 CsvSchema.ColumnType.NUMBER_OR_STRING).
             addColumn(SmallMoleculeColumn.Stable.RETENTION_TIME.getHeader(),
                 CsvSchema.ColumnType.NUMBER_OR_STRING).
             addColumn(SmallMoleculeColumn.Stable.ADDUCT_IONS.getHeader(),
-                CsvSchema.ColumnType.ARRAY).
+                CsvSchema.ColumnType.STRING).
             addColumn(SmallMoleculeColumn.Stable.RELIABILITY.getHeader(),
                 CsvSchema.ColumnType.STRING).
             addColumn(SmallMoleculeColumn.Stable.BEST_ID_CONFIDENCE_MEASURE.
@@ -269,7 +272,7 @@ public class MzTabWriter {
             addColumn(SmallMoleculeFeatureColumn.Stable.SMF_ID.getHeader(),
                 CsvSchema.ColumnType.STRING).
             addColumn(SmallMoleculeFeatureColumn.Stable.SME_ID_REFS.getHeader(),
-                CsvSchema.ColumnType.ARRAY).
+                CsvSchema.ColumnType.STRING).
             addColumn(
                 SmallMoleculeFeatureColumn.Stable.SME_ID_REF_AMBIGUITY_CODE.
                     getHeader(), CsvSchema.ColumnType.NUMBER_OR_STRING).

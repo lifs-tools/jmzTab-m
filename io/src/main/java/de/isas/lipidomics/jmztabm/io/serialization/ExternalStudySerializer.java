@@ -18,9 +18,12 @@ package de.isas.lipidomics.jmztabm.io.serialization;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+import de.isas.lipidomics.jmztabm.io.MzTabWriter;
 import static de.isas.lipidomics.jmztabm.io.serialization.Serializers.addLine;
 import de.isas.mztab1_1.model.ExternalStudy;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import uk.ac.ebi.pride.jmztab1_1.model.Section;
 
 /**
@@ -57,7 +60,8 @@ public class ExternalStudySerializer extends StdSerializer<ExternalStudy> {
                     getFormat()));
 
         } else {
-            System.err.println("ExternalStudy is null!");
+            Logger.getLogger(ExternalStudySerializer.class.getName()).
+                log(Level.FINE, "ExternalStudy is null!");
         }
     }
 }

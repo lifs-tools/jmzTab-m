@@ -23,6 +23,8 @@ import static de.isas.lipidomics.jmztabm.io.serialization.Serializers.addSubElem
 import static de.isas.lipidomics.jmztabm.io.serialization.Serializers.addSubElementParameters;
 import de.isas.mztab1_1.model.MsRun;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import uk.ac.ebi.pride.jmztab1_1.model.Section;
 
 /**
@@ -61,7 +63,8 @@ public class MsRunSerializer extends StdSerializer<MsRun> {
                 "id_format",
                 msRun.getIdFormat());
         } else {
-            System.err.println("MsRun is null!");
+            Logger.getLogger(MsRunSerializer.class.getName()).
+                    log(Level.FINE, "MsRun is null!");
         }
     }
 }

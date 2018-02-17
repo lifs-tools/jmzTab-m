@@ -21,6 +21,8 @@ import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import static de.isas.lipidomics.jmztabm.io.serialization.Serializers.addSubElementStrings;
 import de.isas.mztab1_1.model.Software;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import uk.ac.ebi.pride.jmztab1_1.model.Section;
 
 /**
@@ -48,7 +50,8 @@ public class SoftwareSerializer extends StdSerializer<Software> {
                 "setting",
                 software.getSetting(), false);
         } else {
-            System.err.println("Software is null!");
+            Logger.getLogger(SoftwareSerializer.class.getName()).
+                log(Level.FINE, "Software is null!");
         }
     }
 }

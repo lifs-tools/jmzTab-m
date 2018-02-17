@@ -23,6 +23,8 @@ import de.isas.mztab1_1.model.Publication;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import uk.ac.ebi.pride.jmztab1_1.model.Section;
 
@@ -47,7 +49,8 @@ public class PublicationSerializer extends StdSerializer<Publication> {
             addLine(jg, Section.Metadata.getPrefix(),
                 "publication[" + publication.getId() + "]", Optional.ofNullable(
                 publication.
-                getPublicationItems()).orElse(Collections.emptyList()).
+                    getPublicationItems()).
+                orElse(Collections.emptyList()).
                 stream().
                 map(pitem ->
                     pitem.getType().
@@ -55,7 +58,8 @@ public class PublicationSerializer extends StdSerializer<Publication> {
                 collect(Collectors.joining(
                     "|", "", "")));
         } else {
-            System.err.println("Publication is null!");
+            Logger.getLogger(PublicationSerializer.class.getName()).
+                log(Level.FINE, "Publication is null!");
         }
     }
 }

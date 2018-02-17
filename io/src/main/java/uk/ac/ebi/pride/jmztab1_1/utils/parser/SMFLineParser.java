@@ -11,16 +11,8 @@ import uk.ac.ebi.pride.jmztab1_1.model.AbundanceColumn;
 import de.isas.mztab1_1.model.Metadata;
 import de.isas.mztab1_1.model.OptColumnMapping;
 import de.isas.mztab1_1.model.SmallMoleculeFeature;
-import uk.ac.ebi.pride.jmztab1_1.utils.errors.FormatErrorType;
-import uk.ac.ebi.pride.jmztab1_1.utils.errors.LogicalErrorType;
-import uk.ac.ebi.pride.jmztab1_1.utils.errors.MZTabError;
 import uk.ac.ebi.pride.jmztab1_1.utils.errors.MZTabErrorList;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import static uk.ac.ebi.pride.jmztab1_1.model.MZTabUtils.parseString;
-import static uk.ac.ebi.pride.jmztab1_1.model.SmallMoleculeColumn.*;
 
 /**
  * @author nils.hoffmann
@@ -76,11 +68,11 @@ public class SMFLineParser extends MZTabDataLineParser<SmallMoleculeFeature> {
                                 column, target));
                             break;
                         case RETENTION_TIME_END:
-                            smallMoleculeFeature.retentionTime(checkDouble(
+                            smallMoleculeFeature.retentionTimeEnd(checkDouble(
                                 column, target));
                             break;
                         case RETENTION_TIME_START:
-                            smallMoleculeFeature.retentionTime(checkDouble(
+                            smallMoleculeFeature.retentionTimeStart(checkDouble(
                                 column, target));
                             break;
                         case SME_ID_REFS:

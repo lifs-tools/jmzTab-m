@@ -422,6 +422,14 @@ public abstract class MZTabHeaderLineParser extends MZTabLineParser {
                                 metadata.addColunitSmallMoleculeItem(new ColumnParameterMapping().columnName(
                                         column.getName()).param(param));
                                 break;
+                            case Small_Molecule_Evidence_Header:
+                                metadata.addColunitSmallMoleculeEvidenceItem(new ColumnParameterMapping().columnName(
+                                        column.getName()).param(param));
+                                break;
+                            case Small_Molecule_Feature_Header:
+                                metadata.addColunitSmallMoleculeFeatureItem(new ColumnParameterMapping().columnName(
+                                        column.getName()).param(param));
+                                break;
                         }
                     }
                 }

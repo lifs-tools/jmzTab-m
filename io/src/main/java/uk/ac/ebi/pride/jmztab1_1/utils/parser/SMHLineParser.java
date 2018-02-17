@@ -11,13 +11,13 @@ import uk.ac.ebi.pride.jmztab1_1.utils.errors.FormatErrorType;
 import uk.ac.ebi.pride.jmztab1_1.utils.errors.LogicalErrorType;
 import de.isas.mztab1_1.model.Assay;
 import de.isas.mztab1_1.model.Metadata;
-import de.isas.mztab1_1.model.MsRun;
 import de.isas.mztab1_1.model.StudyVariable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import uk.ac.ebi.pride.jmztab1_1.model.SmallMoleculeColumn.Stable;
+import uk.ac.ebi.pride.jmztab1_1.utils.errors.MZTabErrorList;
 
 /**
  * Parse and validate Small Molecule header line into a {@link MZTabColumnFactory}.

@@ -75,7 +75,21 @@ public enum MetadataProperty {
     
     DATABASE_PREFIX                       (MetadataElement.DATABASE,                             "prefix"),
     DATABASE_VERSION                      (MetadataElement.DATABASE,                             "version"),
-    DATABASE_URL                          (MetadataElement.DATABASE,                             "url");
+    DATABASE_URL                          (MetadataElement.DATABASE,                             "url"),
+    /*
+    MTD study-url https://www.ebi.ac.uk/metabolights/MTBLS517
+MTD study-id MTBLS517
+MTD study-id-format [,EMBL-EBI Metabolights,https://fairsharing.org/biodbcore-000168, ]
+MTD study-title MaHPIC Experiment 04: Metabolomics from Macaca mulatta infected with Plasmodium cynomolgi B strain to produce and integrate clinical, hematological, parasitological, and omics measures of acute primary infection and relapses
+MTD study-version 1.0
+    */
+    EXTERNAL_STUDY_URL                     (MetadataElement.EXTERNAL_STUDY,                       "url"),
+    EXTERNAL_STUDY_ID                      (MetadataElement.EXTERNAL_STUDY,                       "id"),
+    EXTERNAL_STUDY_ID_FORMAT               (MetadataElement.EXTERNAL_STUDY,                       "id_format"),
+    EXTERNAL_STUDY_FORMAT               (MetadataElement.EXTERNAL_STUDY,                       "format"),
+    EXTERNAL_STUDY_TITLE                   (MetadataElement.EXTERNAL_STUDY,                       "title"),
+    EXTERNAL_STUDY_VERSION                   (MetadataElement.EXTERNAL_STUDY,                       "version")
+    ;
 //    DATABASE_LABEL                        (MetadataElement.DATABASE,                             "label"),
 //    DATABASE_NAME                         (MetadataElement.DATABASE,                             "name");
 

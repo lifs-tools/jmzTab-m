@@ -20,6 +20,8 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import de.isas.mztab1_1.model.SampleProcessing;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import uk.ac.ebi.pride.jmztab1_1.model.Section;
 
 /**
@@ -40,10 +42,12 @@ public class SampleProcessingSerializer extends StdSerializer<SampleProcessing> 
     public void serialize(SampleProcessing sampleProcessing, JsonGenerator jg,
         SerializerProvider sp) throws IOException {
         if (sampleProcessing != null) {
-             Serializers.addIndexedLine(jg, Section.Metadata.getPrefix(), sampleProcessing,
-                            sampleProcessing.getSampleProcessing());
+            Serializers.addIndexedLine(jg, Section.Metadata.getPrefix(),
+                sampleProcessing,
+                sampleProcessing.getSampleProcessing());
         } else {
-            System.err.println("SampleProcessing is null!");
+            Logger.getLogger(SampleProcessingSerializer.class.getName()).
+                log(Level.FINE, "SampleProcessing is null!");
         }
     }
 }

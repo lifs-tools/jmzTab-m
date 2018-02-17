@@ -1,8 +1,5 @@
 package uk.ac.ebi.pride.jmztab1_1.utils.parser;
 
-import de.isas.lipidomics.jmztabm.io.serialization.ParameterSerializer;
-import static de.isas.lipidomics.jmztabm.io.serialization.Serializers.addLine;
-import de.isas.mztab1_1.model.Assay;
 import uk.ac.ebi.pride.jmztab1_1.model.MZTabColumnFactory;
 import uk.ac.ebi.pride.jmztab1_1.model.ISmallMoleculeColumn;
 import uk.ac.ebi.pride.jmztab1_1.model.IMZTabColumn;
@@ -22,7 +19,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.IntStream;
 
-import static uk.ac.ebi.pride.jmztab1_1.model.SmallMoleculeEvidenceColumn.Stable.*;
+import uk.ac.ebi.pride.jmztab1_1.utils.errors.MZTabErrorList;
 
 /**
  * Parse and validate Small Molecule Evidence header line into a {@link MZTabColumnFactory}.

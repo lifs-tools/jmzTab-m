@@ -63,6 +63,9 @@ public class LogicalErrorType extends MZTabErrorType {
     
     public static MZTabErrorType NoSmallMoleculeQuantificationUnit = createError(Category.Logical, "NoSmallMoleculeQuantificationUnit");
     public static MZTabErrorType NoSmallMoleculeFeatureQuantificationUnit = createError(Category.Logical, "NoSmallMoleculeFeatureQuantificationUnit");
-    public static MZTabErrorType NoSmallMoleculeIdentificationReliability = createInfo(Category.Logical, "NoSmallMoleculeIdentificationReliability");    
+    public static MZTabErrorType NoSmallMoleculeIdentificationReliability = createInfo(Category.Logical, "NoSmallMoleculeIdentificationReliability");
+
+    public static MZTabErrorType ExternalStudyIdFormatNotDefined = createError(Category.Logical, "ExternalStudyIdFormatNotDefined");
+    public static MZTabErrorType ExternalStudyFormatNotDefined = createError(Category.Logical, "ExternalStudyFormatNotDefined");
 
 }

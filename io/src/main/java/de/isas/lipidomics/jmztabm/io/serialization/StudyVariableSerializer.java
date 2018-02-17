@@ -28,6 +28,8 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import uk.ac.ebi.pride.jmztab1_1.model.Section;
 
@@ -49,7 +51,7 @@ public class StudyVariableSerializer extends StdSerializer<StudyVariable> {
     public void serialize(StudyVariable studyVariable, JsonGenerator jg,
         SerializerProvider sp) throws IOException {
         if (studyVariable != null) {
-            addLineWithProperty(jg, Section.Metadata.getPrefix(), "name",
+            addLineWithProperty(jg, Section.Metadata.getPrefix(), null,
                 studyVariable,
                 studyVariable.getName());
             addLineWithProperty(jg, Section.Metadata.getPrefix(), "description",
@@ -62,7 +64,8 @@ public class StudyVariableSerializer extends StdSerializer<StudyVariable> {
                 "quantification_value_function", studyVariable.
                     getQuantificationValueFunction(), true);
             addSubElementStrings(jg, Section.Metadata.getPrefix(), studyVariable,
-                "assay_refs", Optional.ofNullable(studyVariable.getAssayRefs()).orElse(Collections.emptyList()).
+                "assay_refs", Optional.ofNullable(studyVariable.getAssayRefs()).
+                    orElse(Collections.emptyList()).
                     stream().
                     sorted(Comparator.comparing(Assay::getId,
                         Comparator.nullsFirst(Comparator.
@@ -78,7 +81,9 @@ public class StudyVariableSerializer extends StdSerializer<StudyVariable> {
                     }).
                     collect(Collectors.toList()), true);
             addSubElementStrings(jg, Section.Metadata.getPrefix(), studyVariable,
-                "sample_refs", Optional.ofNullable(studyVariable.getSampleRefs()).orElse(Collections.emptyList()).
+                "sample_refs", Optional.
+                    ofNullable(studyVariable.getSampleRefs()).
+                    orElse(Collections.emptyList()).
                     stream().
                     sorted(Comparator.comparing(Sample::getId,
                         Comparator.nullsFirst(Comparator.
@@ -94,7 +99,8 @@ public class StudyVariableSerializer extends StdSerializer<StudyVariable> {
                     }).
                     collect(Collectors.toList()), true);
         } else {
-            System.err.println("StudyVariable is null!");
+            Logger.getLogger(StudyVariableSerializer.class.getName()).
+                log(Level.FINE, "StudyVariable is null!");
         }
     }
 }

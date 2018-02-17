@@ -1,7 +1,6 @@
 package uk.ac.ebi.pride.jmztab1_1.utils.parser;
 
 import uk.ac.ebi.pride.jmztab1_1.model.MZTabColumnFactory;
-import uk.ac.ebi.pride.jmztab1_1.model.ISmallMoleculeColumn;
 import uk.ac.ebi.pride.jmztab1_1.model.ISmallMoleculeFeatureColumn;
 import uk.ac.ebi.pride.jmztab1_1.model.IMZTabColumn;
 import uk.ac.ebi.pride.jmztab1_1.model.SmallMoleculeFeatureColumn;
@@ -15,10 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import static uk.ac.ebi.pride.jmztab1_1.model.SmallMoleculeFeatureColumn.*;
+import uk.ac.ebi.pride.jmztab1_1.utils.errors.MZTabErrorList;
 
 /**
  * Parse and validate Small Molecule Feature header line into a {@link MZTabColumnFactory}.

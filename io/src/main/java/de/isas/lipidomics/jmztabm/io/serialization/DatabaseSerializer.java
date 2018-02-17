@@ -19,9 +19,11 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import static de.isas.lipidomics.jmztabm.io.serialization.Serializers.addLineWithProperty;
-import static de.isas.lipidomics.jmztabm.io.serialization.Serializers.addSubElementParameter;
 import de.isas.mztab1_1.model.Database;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import uk.ac.ebi.pride.jmztab1_1.model.Section;
 
 /**
@@ -42,6 +44,8 @@ public class DatabaseSerializer extends StdSerializer<Database> {
     public void serialize(Database database, JsonGenerator jg,
         SerializerProvider sp) throws IOException {
         if (database != null) {
+            Serializers.addLineWithPropertyParameters(jg, Section.Metadata.getPrefix(),
+                null, database, Arrays.asList(database.getParam()));
             addLineWithProperty(jg, Section.Metadata.getPrefix(),
                 "prefix", database,
                 database.
@@ -52,11 +56,9 @@ public class DatabaseSerializer extends StdSerializer<Database> {
             addLineWithProperty(jg, Section.Metadata.getPrefix(),
                 "version", database,
                 database.getVersion());
-            addSubElementParameter(jg, Section.Metadata.getPrefix(),
-                database, "parameter", database.getParam());
-
         } else {
-            System.err.println("Database is null!");
+            Logger.getLogger(DatabaseSerializer.class.getName()).
+                log(Level.FINE, "Database is null!");
         }
     }
 

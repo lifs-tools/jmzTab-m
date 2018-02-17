@@ -20,98 +20,90 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import static de.isas.lipidomics.jmztabm.io.serialization.Serializers.writeAsNumberArray;
 import static de.isas.lipidomics.jmztabm.io.serialization.Serializers.writeAsStringArray;
-import de.isas.mztab1_1.model.OptColumnMapping;
+import static de.isas.lipidomics.jmztabm.io.serialization.Serializers.writeNumber;
+import static de.isas.lipidomics.jmztabm.io.serialization.Serializers.writeOptColumnMappings;
+import static de.isas.lipidomics.jmztabm.io.serialization.Serializers.writeString;
 import de.isas.mztab1_1.model.SmallMoleculeSummary;
 import java.io.IOException;
-import java.util.Collections;
-import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import uk.ac.ebi.pride.jmztab1_1.model.AbundanceColumn;
+import uk.ac.ebi.pride.jmztab1_1.model.SmallMoleculeColumn;
+import static de.isas.lipidomics.jmztabm.io.serialization.Serializers.writeIndexedValues;
 
 /**
  *
  * @author Nils Hoffmann <nils.hoffmann@isas.de>
  */
 public class SmallMoleculeSummarySerializer extends StdSerializer<SmallMoleculeSummary> {
-    
+
     public SmallMoleculeSummarySerializer() {
         this(null);
     }
-    
+
     public SmallMoleculeSummarySerializer(Class<SmallMoleculeSummary> t) {
         super(t);
     }
-    
+
     @Override
     public void serialize(SmallMoleculeSummary smallMoleculeSummary,
         JsonGenerator jg,
         SerializerProvider sp) throws IOException {
         if (smallMoleculeSummary != null) {
-            
-            jg.writeString(SmallMoleculeSummary.PrefixEnum.SML.getValue());
-            jg.writeString(smallMoleculeSummary.getSmlId());
-            jg.writeStartArray();
-            writeAsStringArray(jg, smallMoleculeSummary.getSmfIdRefs());
-            writeAsStringArray(jg, smallMoleculeSummary.getDatabaseIdentifier());
-            writeAsStringArray(jg, smallMoleculeSummary.getChemicalFormula());
-            writeAsStringArray(jg, smallMoleculeSummary.getSmiles());
-            writeAsStringArray(jg, smallMoleculeSummary.getInchi());
-            writeAsStringArray(jg, smallMoleculeSummary.getChemicalName());
-            writeAsStringArray(jg, smallMoleculeSummary.getUri());
-            writeAsNumberArray(jg, smallMoleculeSummary.
-                getTheoreticalNeutralMass());
-            Serializers.writeNumber(jg, smallMoleculeSummary.
-                getExpMassToCharge());
-            Serializers.writeNumber(jg, smallMoleculeSummary.getRetentionTime());
-            writeAsStringArray(jg, smallMoleculeSummary.getAdductIons());
-            jg.writeString(smallMoleculeSummary.getReliability());
-            jg.writeString(ParameterSerializer.toString(smallMoleculeSummary.
-                getBestIdConfidenceMeasure()));
-            Serializers.writeNumber(jg, smallMoleculeSummary.
-                getBestIdConfidenceValue());
-            smallMoleculeSummary.getAbundanceAssay().
-                forEach((abundance_assay) ->
-                {
-                    try {
-                        Serializers.writeNumber(jg, abundance_assay);
-                    } catch (IOException ex) {
-                        Logger.getLogger(SmallMoleculeSummarySerializer.class.
-                            getName()).
-                            log(Level.SEVERE, null, ex);
-                    }
-                });
-            
-            smallMoleculeSummary.getAbundanceStudyVariable().
-                forEach((abundance_sv) ->
-                {
-                    try {
-                        Serializers.writeNumber(jg, abundance_sv);
-                    } catch (IOException ex) {
-                        Logger.getLogger(SmallMoleculeSummarySerializer.class.
-                            getName()).
-                            log(Level.SEVERE, null, ex);
-                    }
-                });
-            
-            smallMoleculeSummary.getAbundanceCoeffvarStudyVariable().
-                forEach((abundance_coeffvar_sv) ->
-                {
-                    try {
-                        Serializers.writeNumber(jg, abundance_coeffvar_sv);
-                    } catch (IOException ex) {
-                        Logger.getLogger(SmallMoleculeSummarySerializer.class.
-                            getName()).
-                            log(Level.SEVERE, null, ex);
-                    }
-                });
-            //TODO opt columns
-            for (OptColumnMapping ocm : Optional.ofNullable(
-                smallMoleculeSummary.getOpt()).
-                orElse(Collections.emptyList())) {
-                jg.writeString(ocm.getValue());
-            }
+            jg.writeStartObject();
+            writeString("SMH", jg, SmallMoleculeSummary.PrefixEnum.SML.
+                getValue());
+            writeString(SmallMoleculeColumn.Stable.SML_ID, jg,
+                smallMoleculeSummary.getSmlId());
+            writeAsStringArray(SmallMoleculeColumn.Stable.SMF_ID_REFS, jg,
+                smallMoleculeSummary.getSmfIdRefs());
+            writeAsStringArray(SmallMoleculeColumn.Stable.DATABASE_IDENTIFIER,
+                jg, smallMoleculeSummary.getDatabaseIdentifier());
+            writeAsStringArray(SmallMoleculeColumn.Stable.CHEMICAL_FORMULA, jg,
+                smallMoleculeSummary.getChemicalFormula());
+            writeAsStringArray(SmallMoleculeColumn.Stable.SMILES, jg,
+                smallMoleculeSummary.getSmiles());
+            writeAsStringArray(SmallMoleculeColumn.Stable.INCHI, jg,
+                smallMoleculeSummary.getInchi());
+            writeAsStringArray(SmallMoleculeColumn.Stable.CHEMICAL_NAME, jg,
+                smallMoleculeSummary.getChemicalName());
+            writeAsStringArray(SmallMoleculeColumn.Stable.URI, jg,
+                smallMoleculeSummary.getUri());
+            writeAsNumberArray(SmallMoleculeColumn.Stable.THEOR_NEUTRAL_MASS, jg,
+                smallMoleculeSummary.
+                    getTheoreticalNeutralMass());
+            writeNumber(
+                SmallMoleculeColumn.Stable.EXP_MASS_TO_CHARGE, jg,
+                smallMoleculeSummary.
+                    getExpMassToCharge());
+            writeNumber(SmallMoleculeColumn.Stable.RETENTION_TIME,
+                jg, smallMoleculeSummary.getRetentionTime());
+            writeAsStringArray(SmallMoleculeColumn.Stable.ADDUCT_IONS, jg,
+                smallMoleculeSummary.getAdductIons());
+            writeString(SmallMoleculeColumn.Stable.RELIABILITY, jg,
+                smallMoleculeSummary.getReliability());
+            writeString(
+                SmallMoleculeColumn.Stable.BEST_ID_CONFIDENCE_MEASURE, jg,
+                ParameterSerializer.toString(
+                    smallMoleculeSummary.
+                        getBestIdConfidenceMeasure()));
+            writeNumber(
+                SmallMoleculeColumn.Stable.BEST_ID_CONFIDENCE_VALUE, jg,
+                smallMoleculeSummary.
+                    getBestIdConfidenceValue());
+            writeIndexedValues(AbundanceColumn.Field.ABUNDANCE_ASSAY.toString(), jg, smallMoleculeSummary.
+                getAbundanceAssay());
+            writeIndexedValues(AbundanceColumn.Field.ABUNDANCE_STUDY_VARIABLE.toString(), jg, smallMoleculeSummary.
+                getAbundanceStudyVariable());
+            writeIndexedValues(AbundanceColumn.Field.ABUNDANCE_COEFFVAR_STUDY_VARIABLE.toString(), jg, 
+                smallMoleculeSummary.getAbundanceCoeffvarStudyVariable());
+
+            writeOptColumnMappings(smallMoleculeSummary.getOpt(), jg);
+            jg.writeEndObject();
         } else {
-            System.err.println("SmallMoleculeSummary is null!");
+            Logger.getLogger(SmallMoleculeSummarySerializer.class.getName()).
+                log(Level.FINE, "SmallMoleculeSummary is null!");
         }
     }
+
 }

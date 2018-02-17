@@ -22,6 +22,8 @@ import static de.isas.lipidomics.jmztabm.io.serialization.Serializers.addLineWit
 import static de.isas.lipidomics.jmztabm.io.serialization.Serializers.addSubElementParameters;
 import de.isas.mztab1_1.model.Sample;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import uk.ac.ebi.pride.jmztab1_1.model.Section;
 
 /**
@@ -42,7 +44,7 @@ public class SampleSerializer extends StdSerializer<Sample> {
     public void serialize(Sample sample, JsonGenerator jg,
         SerializerProvider sp) throws IOException {
         if (sample != null) {
-            addLineWithProperty(jg, Section.Metadata.getPrefix(), "name", sample,
+            addLineWithProperty(jg, Section.Metadata.getPrefix(), null, sample,
                 sample.
                     getName());
             addLineWithProperty(jg, Section.Metadata.getPrefix(), "description",
@@ -67,7 +69,8 @@ public class SampleSerializer extends StdSerializer<Sample> {
                 "custom",
                 sample.getCustom(), false);
         } else {
-            System.err.println("Sample is null!");
+            Logger.getLogger(SampleSerializer.class.getName()).
+                log(Level.FINE, "SampleSerializer is null!");
         }
     }
 }

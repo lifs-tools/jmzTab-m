@@ -18,12 +18,15 @@ package de.isas.lipidomics.jmztabm.io.serialization;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
-import de.isas.mztab1_1.model.OptColumnMapping;
+import static de.isas.lipidomics.jmztabm.io.serialization.Serializers.writeAsStringArray;
+import static de.isas.lipidomics.jmztabm.io.serialization.Serializers.writeNumber;
+import static de.isas.lipidomics.jmztabm.io.serialization.Serializers.writeString;
 import de.isas.mztab1_1.model.SmallMoleculeEvidence;
 import java.io.IOException;
-import java.util.Collections;
-import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import uk.ac.ebi.pride.jmztab1_1.model.SmallMoleculeEvidenceColumn;
 
 /**
  *
@@ -44,46 +47,66 @@ public class SmallMoleculeEvidenceSerializer extends StdSerializer<SmallMolecule
         JsonGenerator jg,
         SerializerProvider sp) throws IOException {
         if (smallMoleculeEvidence != null) {
-            jg.writeString(SmallMoleculeEvidence.PrefixEnum.SME.getValue());
-            jg.writeNumber(smallMoleculeEvidence.getSmeId());
-            jg.writeNumber(smallMoleculeEvidence.getEvidenceUniqueId());
-            jg.writeString(smallMoleculeEvidence.getDatabaseIdentifier());
-            jg.writeString(smallMoleculeEvidence.getChemicalFormula());
-            jg.writeString(smallMoleculeEvidence.getSmiles());
-            jg.writeString(smallMoleculeEvidence.getInchi());
-            jg.writeString(smallMoleculeEvidence.getChemicalName());
-            jg.writeString(smallMoleculeEvidence.getUri());
-            jg.writeString(ParameterSerializer.toString(smallMoleculeEvidence.
-                getDerivatizedForm()));
-            jg.writeString(smallMoleculeEvidence.getAdductIon());
-            Serializers.writeNumber(jg, smallMoleculeEvidence.
-                getExpMassToCharge());
-            Serializers.writeNumber(jg, smallMoleculeEvidence.getCharge());
-            Serializers.writeNumber(jg, smallMoleculeEvidence.
-                getTheoreticalMassToCharge());
-            Serializers.writeAsStringArray(jg, smallMoleculeEvidence.
-                getSpectraRef().
-                stream().
-                map((spectraRef) ->
-                {
-                    return "ms_run[" + spectraRef.getMsRun().
-                        getId() + "]" + spectraRef.getReference();
-                }).
-                collect(Collectors.toList()));
-            jg.writeString(ParameterSerializer.toString(smallMoleculeEvidence.
-                getIdentificationMethod()));
-            jg.writeString(ParameterSerializer.toString(smallMoleculeEvidence.
-                getMsLevel()));
-            Serializers.writeAsNumberArray(jg, smallMoleculeEvidence.
-                getIdConfidenceMeasure());
-            Serializers.writeNumber(jg, smallMoleculeEvidence.getRank());
-            for (OptColumnMapping ocm : Optional.ofNullable(
-                smallMoleculeEvidence.getOpt()).
-                orElse(Collections.emptyList())) {
-                jg.writeString(ocm.getValue());
-            }
+            jg.writeStartObject();
+            writeString("SEH", jg, SmallMoleculeEvidence.PrefixEnum.SME.
+                getValue());
+            writeString(SmallMoleculeEvidenceColumn.Stable.SME_ID, jg,
+                smallMoleculeEvidence.getSmeId());
+            writeString(SmallMoleculeEvidenceColumn.Stable.EVIDENCE_UNIQUE_ID,
+                jg, smallMoleculeEvidence.getEvidenceUniqueId());
+            writeString(SmallMoleculeEvidenceColumn.Stable.DATABASE_IDENTIFIER,
+                jg, smallMoleculeEvidence.getDatabaseIdentifier());
+            writeString(SmallMoleculeEvidenceColumn.Stable.CHEMICAL_FORMULA, jg,
+                smallMoleculeEvidence.getChemicalFormula());
+            writeString(SmallMoleculeEvidenceColumn.Stable.SMILES, jg,
+                smallMoleculeEvidence.getSmiles());
+            writeString(SmallMoleculeEvidenceColumn.Stable.INCHI, jg,
+                smallMoleculeEvidence.getInchi());
+            writeString(SmallMoleculeEvidenceColumn.Stable.CHEMICAL_NAME, jg,
+                smallMoleculeEvidence.getChemicalName());
+            writeString(SmallMoleculeEvidenceColumn.Stable.URI, jg,
+                smallMoleculeEvidence.getUri());
+            writeString(SmallMoleculeEvidenceColumn.Stable.DERIVATIZED_FORM, jg,
+                ParameterSerializer.toString(smallMoleculeEvidence.
+                    getDerivatizedForm()));
+            writeString(SmallMoleculeEvidenceColumn.Stable.ADDUCT_ION, jg,
+                smallMoleculeEvidence.getAdductIon());
+            writeNumber(SmallMoleculeEvidenceColumn.Stable.EXP_MASS_TO_CHARGE,
+                jg, smallMoleculeEvidence.
+                    getExpMassToCharge());
+            writeNumber(SmallMoleculeEvidenceColumn.Stable.CHARGE, jg,
+                smallMoleculeEvidence.getCharge());
+            writeNumber(
+                SmallMoleculeEvidenceColumn.Stable.THEORETICAL_MASS_TO_CHARGE,
+                jg, smallMoleculeEvidence.
+                    getTheoreticalMassToCharge());
+            writeAsStringArray(SmallMoleculeEvidenceColumn.Stable.SPECTRA_REF,
+                jg, smallMoleculeEvidence.
+                    getSpectraRef().
+                    stream().
+                    map((spectraRef) ->
+                    {
+                        return "ms_run[" + spectraRef.getMsRun().
+                            getId() + "]:" + spectraRef.getReference();
+                    }).
+                    collect(Collectors.toList()));
+            writeString(SmallMoleculeEvidenceColumn.Stable.IDENTIFICATION_METHOD,
+                jg, ParameterSerializer.toString(smallMoleculeEvidence.
+                    getIdentificationMethod()));
+            writeString(SmallMoleculeEvidenceColumn.Stable.MS_LEVEL, jg,
+                ParameterSerializer.toString(smallMoleculeEvidence.
+                    getMsLevel()));
+            Serializers.writeIndexedValues("id_confidence_measure", jg,
+                smallMoleculeEvidence.
+                    getIdConfidenceMeasure());
+            writeNumber(SmallMoleculeEvidenceColumn.Stable.RANK, jg,
+                smallMoleculeEvidence.getRank());
+            Serializers.writeOptColumnMappings(smallMoleculeEvidence.getOpt(),
+                jg);
+            jg.writeEndObject();
         } else {
-            System.err.println("SmallMoleculeEvidence is null!");
+            Logger.getLogger(SmallMoleculeEvidenceSerializer.class.getName()).
+                log(Level.FINE, "SmallMoleculeEvidence is null!");
         }
     }
 }

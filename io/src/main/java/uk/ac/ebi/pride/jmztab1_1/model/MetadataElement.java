@@ -39,7 +39,11 @@ public enum MetadataElement {
     COLUNIT_SMALL_MOLECULE_FEATURE    ("colunit-small_molecule_feature"),
     COLUNIT_SMALL_MOLECULE_EVIDENCE   ("colunit-small_molecule_evidence"),
     ID_CONFIDENCE_MEASURE             ("id_confidence_measure"),
-    DATABASE                          ("database");
+    DATABASE                          ("database"),
+    SMALLMOLECULE_QUANTIFICATION_UNIT ("small_molecule-quantification_unit"),
+    SMALLMOLECULE_FEATURE_QUANTIFICATION_UNIT ("small_molecule_feature-quantification_unit"),
+    SMALLMOLECULE_IDENTIFICATION_RELIABILITY ("small_molecule-identification_reliability"),
+    EXTERNAL_STUDY                    ("study");
 
     private String name;
 

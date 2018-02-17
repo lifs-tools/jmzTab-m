@@ -18,6 +18,7 @@ package de.isas.lipidomics.jmztabm.io.serialization;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+import de.isas.lipidomics.jmztabm.io.MzTabWriter;
 import static de.isas.lipidomics.jmztabm.io.serialization.Serializers.addLineWithProperty;
 import static de.isas.lipidomics.jmztabm.io.serialization.Serializers.addSubElementStrings;
 import static de.isas.lipidomics.jmztabm.io.serialization.Serializers.addLineWithPropertyParameters;
@@ -28,6 +29,8 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import uk.ac.ebi.pride.jmztab1_1.model.Section;
 
@@ -48,7 +51,7 @@ public class AssaySerializer extends StdSerializer<Assay> {
     @Override
     public void serialize(Assay assay, JsonGenerator jg, SerializerProvider sp) throws IOException {
         if (assay != null) {
-            addLineWithProperty(jg, Section.Metadata.getPrefix(), "name", assay,
+            addLineWithProperty(jg, Section.Metadata.getPrefix(), null, assay,
                 assay.
                     getName());
             addLineWithProperty(jg, Section.Metadata.getPrefix(), "external_uri",
@@ -59,7 +62,7 @@ public class AssaySerializer extends StdSerializer<Assay> {
                 assay, assay.getCustom());
 
             MsRun msRunRef = assay.getMsRunRef();
-            if(msRunRef!=null) {
+            if (msRunRef != null) {
                 addSubElementStrings(jg, Section.Metadata.getPrefix(), assay,
                     "ms_run_ref", Arrays.asList(assay.getMsRunRef()).
                         stream().
@@ -78,7 +81,7 @@ public class AssaySerializer extends StdSerializer<Assay> {
                         collect(Collectors.toList()), true);
             }
             Sample sampleRef = assay.getSampleRef();
-            if(sampleRef!=null) {
+            if (sampleRef != null) {
                 addSubElementStrings(jg, Section.Metadata.getPrefix(), assay,
                     "sample_ref", Arrays.asList(assay.getSampleRef()).
                         stream().
@@ -98,7 +101,8 @@ public class AssaySerializer extends StdSerializer<Assay> {
             }
 
         } else {
-            System.err.println("Assay is null!");
+            Logger.getLogger(AssaySerializer.class.getName()).
+                log(Level.FINE, "Assay is null!");
         }
     }
 }

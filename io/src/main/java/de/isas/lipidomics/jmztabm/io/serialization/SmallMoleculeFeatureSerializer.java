@@ -18,13 +18,16 @@ package de.isas.lipidomics.jmztabm.io.serialization;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
-import de.isas.mztab1_1.model.OptColumnMapping;
+import static de.isas.lipidomics.jmztabm.io.serialization.Serializers.writeAsStringArray;
+import static de.isas.lipidomics.jmztabm.io.serialization.Serializers.writeNumber;
+import static de.isas.lipidomics.jmztabm.io.serialization.Serializers.writeString;
 import de.isas.mztab1_1.model.SmallMoleculeFeature;
 import java.io.IOException;
-import java.util.Collections;
-import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import uk.ac.ebi.pride.jmztab1_1.model.AbundanceColumn;
+import uk.ac.ebi.pride.jmztab1_1.model.SmallMoleculeFeatureColumn;
+
 
 /**
  *
@@ -45,45 +48,32 @@ public class SmallMoleculeFeatureSerializer extends StdSerializer<SmallMoleculeF
         JsonGenerator jg,
         SerializerProvider sp) throws IOException {
         if (smallMoleculeFeature != null) {
-            jg.writeString(SmallMoleculeFeature.PrefixEnum.SMF.getValue());
-            jg.writeNumber(smallMoleculeFeature.getSmfId());
-            Serializers.writeAsStringArray(jg, smallMoleculeFeature.
+            jg.writeStartObject();
+            writeString("SFH", jg, SmallMoleculeFeature.PrefixEnum.SMF.getValue());
+            writeString(SmallMoleculeFeatureColumn.Stable.SMF_ID, jg, smallMoleculeFeature.getSmfId());
+            writeAsStringArray(SmallMoleculeFeatureColumn.Stable.SME_ID_REFS, jg, smallMoleculeFeature.
                 getSmeIdRefs());
-            Serializers.writeNumber(jg, smallMoleculeFeature.
+            writeNumber(SmallMoleculeFeatureColumn.Stable.SME_ID_REF_AMBIGUITY_CODE, jg, smallMoleculeFeature.
                 getSmeIdRefAmbiguityCode());
-            jg.writeString(smallMoleculeFeature.getAdductIon());
-            jg.writeString(ParameterSerializer.toString(
+            writeString(SmallMoleculeFeatureColumn.Stable.ADDUCT_ION, jg, smallMoleculeFeature.getAdductIon());
+            writeString(SmallMoleculeFeatureColumn.Stable.ISOTOPOMER, jg, ParameterSerializer.toString(
                 smallMoleculeFeature.
                     getIsotopomer()));
-            Serializers.writeNumber(jg, smallMoleculeFeature.
+            writeNumber(SmallMoleculeFeatureColumn.Stable.EXP_MASS_TO_CHARGE, jg, smallMoleculeFeature.
                 getExpMassToCharge());
-            Serializers.writeNumber(jg, smallMoleculeFeature.getCharge());
-            Serializers.writeNumber(jg, smallMoleculeFeature.
+            writeNumber(SmallMoleculeFeatureColumn.Stable.CHARGE, jg, smallMoleculeFeature.getCharge());
+            writeNumber(SmallMoleculeFeatureColumn.Stable.RETENTION_TIME, jg, smallMoleculeFeature.
                 getRetentionTime());
-            Serializers.writeNumber(jg, smallMoleculeFeature.
+            writeNumber(SmallMoleculeFeatureColumn.Stable.RETENTION_TIME_START, jg, smallMoleculeFeature.
                 getRetentionTimeStart());
-            Serializers.writeNumber(jg, smallMoleculeFeature.
+            writeNumber(SmallMoleculeFeatureColumn.Stable.RETENTION_TIME_END, jg, smallMoleculeFeature.
                 getRetentionTimeEnd());
-
-            smallMoleculeFeature.getAbundanceAssay().
-                forEach((abundance_assay) ->
-                {
-                    try {
-                        Serializers.writeNumber(jg, abundance_assay);
-                    } catch (IOException ex) {
-                        Logger.getLogger(
-                            SmallMoleculeFeatureSerializer.class.
-                                getName()).
-                            log(Level.SEVERE, null, ex);
-                    }
-                });
-            for (OptColumnMapping ocm : Optional.ofNullable(
-                smallMoleculeFeature.getOpt()).
-                orElse(Collections.emptyList())) {
-                jg.writeString(ocm.getValue());
-            }
+            Serializers.writeIndexedValues(AbundanceColumn.Field.ABUNDANCE_ASSAY.toString(), jg, smallMoleculeFeature.getAbundanceAssay());
+            Serializers.writeOptColumnMappings(smallMoleculeFeature.getOpt(), jg);
+            jg.writeEndObject();
         } else {
-            System.err.println("SmallMoleculeFeature is null!");
+            Logger.getLogger(SmallMoleculeFeatureSerializer.class.getName()).
+                log(Level.FINE, "SmallMoleculeFeature is null!");
         }
     }
 }

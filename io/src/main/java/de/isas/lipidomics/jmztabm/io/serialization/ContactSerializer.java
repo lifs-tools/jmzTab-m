@@ -18,9 +18,12 @@ package de.isas.lipidomics.jmztabm.io.serialization;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+import de.isas.lipidomics.jmztabm.io.MzTabWriter;
 import static de.isas.lipidomics.jmztabm.io.serialization.Serializers.addLineWithProperty;
 import de.isas.mztab1_1.model.Contact;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import uk.ac.ebi.pride.jmztab1_1.model.Section;
 
 /**
@@ -54,7 +57,8 @@ public class ContactSerializer extends StdSerializer<Contact> {
                 contact.getAffiliation());
 
         } else {
-            System.err.println("Contact is null!");
+            Logger.getLogger(ContactSerializer.class.getName()).
+                log(Level.FINE, "Contact is null!");
         }
     }
 }

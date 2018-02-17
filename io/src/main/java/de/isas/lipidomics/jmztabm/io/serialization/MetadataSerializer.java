@@ -18,8 +18,10 @@ package de.isas.lipidomics.jmztabm.io.serialization;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+import de.isas.lipidomics.jmztabm.io.MzTabWriter;
 import static de.isas.lipidomics.jmztabm.io.serialization.Serializers.addIndexedLine;
 import static de.isas.lipidomics.jmztabm.io.serialization.Serializers.addLine;
+import static de.isas.lipidomics.jmztabm.io.serialization.Serializers.addLineWithMetadataProperty;
 import static de.isas.lipidomics.jmztabm.io.serialization.Serializers.addLineWithParameters;
 import de.isas.mztab1_1.model.Assay;
 import de.isas.mztab1_1.model.CV;
@@ -40,6 +42,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import uk.ac.ebi.pride.jmztab1_1.model.MetadataElement;
+import uk.ac.ebi.pride.jmztab1_1.model.MetadataProperty;
 import uk.ac.ebi.pride.jmztab1_1.model.Section;
 
 /**
@@ -82,10 +85,11 @@ public class MetadataSerializer extends StdSerializer<Metadata> {
     public static void serializeObject(Object object, JsonGenerator jg,
         SerializerProvider sp) {
         try {
-            System.err.println(
-                "Serializing element " + Serializers.
-                    getElementName(object).
-                    get());
+            Logger.getLogger(MetadataSerializer.class.getName()).
+                log(Level.FINE,
+                    "Serializing element " + Serializers.
+                        getElementName(object).
+                        get());
             sp.findValueSerializer(object.getClass()).
                 serialize(object, jg, sp);
         } catch (IOException ex) {
@@ -114,7 +118,8 @@ public class MetadataSerializer extends StdSerializer<Metadata> {
                     Comparator.nullsFirst(Comparator.naturalOrder())
                 ));
             } else {
-                System.err.println("Contacts are null!");
+                Logger.getLogger(MetadataSerializer.class.getName()).
+                    log(Level.FINE, "Contacts are null!");
             }
             //publications
             if (t.getPublications() != null) {
@@ -123,13 +128,15 @@ public class MetadataSerializer extends StdSerializer<Metadata> {
                     Comparator.nullsFirst(Comparator.naturalOrder())
                 ));
             } else {
-                System.err.println("Publications are null!");
+                Logger.getLogger(MetadataSerializer.class.getName()).
+                    log(Level.FINE, "Publications are null!");
             }
             //external study
             if (t.getStudy() != null) {
                 serializeObject(t.getStudy(), jg, sp);
             } else {
-                System.err.println("External Study is null!");
+                Logger.getLogger(MetadataSerializer.class.getName()).
+                    log(Level.FINE, "External Study is null!");
             }
             //instruments
             if (t.getInstruments() != null) {
@@ -139,14 +146,16 @@ public class MetadataSerializer extends StdSerializer<Metadata> {
                     Comparator.nullsFirst(Comparator.naturalOrder())
                 ));
             } else {
-                System.err.println("Instruments is null!");
+                Logger.getLogger(MetadataSerializer.class.getName()).
+                    log(Level.FINE, "Instruments are null!");
             }
             //quantification method
             if (t.getQuantificationMethod() != null) {
                 addLineWithParameters(jg, prefix, "quantification_method",
                     t.getQuantificationMethod());
             } else {
-                System.err.println("Quantification method is null!");
+                Logger.getLogger(MetadataSerializer.class.getName()).
+                    log(Level.FINE, "Quantification method is null!");
             }
             //sample
             if (t.getSample() != null) {
@@ -155,7 +164,8 @@ public class MetadataSerializer extends StdSerializer<Metadata> {
                     Comparator.nullsFirst(Comparator.naturalOrder())
                 ));
             } else {
-                System.err.println("Samples are null!");
+                Logger.getLogger(MetadataSerializer.class.getName()).
+                    log(Level.FINE, "Samples are null!");
             }
             //sample processing
             if (t.getSampleProcessing() != null) {
@@ -165,7 +175,8 @@ public class MetadataSerializer extends StdSerializer<Metadata> {
                     Comparator.nullsFirst(Comparator.naturalOrder())
                 ));
             } else {
-                System.err.println("Sample processing is null!");
+                Logger.getLogger(MetadataSerializer.class.getName()).
+                    log(Level.FINE, "Sample processing is null!");
             }
             //software
             if (t.getSoftware() != null) {
@@ -175,7 +186,36 @@ public class MetadataSerializer extends StdSerializer<Metadata> {
                     Comparator.nullsFirst(Comparator.naturalOrder())
                 ));
             } else {
-                System.err.println("Software is null!");
+                Logger.getLogger(MetadataSerializer.class.getName()).
+                    log(Level.FINE, "Software is null!");
+            }
+            //chemical modification
+            if (t.getChemicalModification() != null) {
+                throw new RuntimeException(
+                    "Handling of chemical_modification has not yet been implemented!");
+            } else {
+                Logger.getLogger(MetadataSerializer.class.getName()).
+                    log(Level.FINE, "Chemical modification is null!");
+            }
+            //ms run
+            if (t.getMsrun() != null) {
+                serializeList(t.getMsrun(), jg, sp, Comparator.comparing(
+                    MsRun::getId,
+                    Comparator.nullsFirst(Comparator.naturalOrder())
+                ));
+            } else {
+                Logger.getLogger(MetadataSerializer.class.getName()).
+                    log(Level.FINE, "MS runs are null!");
+            }
+            //assay
+            if (t.getAssay() != null) {
+                serializeList(t.getAssay(), jg, sp, Comparator.comparing(
+                    Assay::getId,
+                    Comparator.nullsFirst(Comparator.naturalOrder())
+                ));
+            } else {
+                Logger.getLogger(MetadataSerializer.class.getName()).
+                    log(Level.FINE, "Assays are null!");
             }
             //study variable
             if (t.getStudyVariable() != null) {
@@ -185,32 +225,8 @@ public class MetadataSerializer extends StdSerializer<Metadata> {
                     Comparator.nullsFirst(Comparator.naturalOrder())
                 ));
             } else {
-                System.err.println("Study Variable is null!");
-            }
-            //chemical modification
-            if (t.getChemicalModification() != null) {
-                throw new RuntimeException(
-                    "Handling of chemical_modification has not yet been implemented!");
-            } else {
-                System.err.println("Chemical modification is null!");
-            }
-            //ms run
-            if (t.getMsrun() != null) {
-                serializeList(t.getMsrun(), jg, sp, Comparator.comparing(
-                    MsRun::getId,
-                    Comparator.nullsFirst(Comparator.naturalOrder())
-                ));
-            } else {
-                System.err.println("MS runs are null!");
-            }
-            //assay
-            if (t.getAssay() != null) {
-                serializeList(t.getAssay(), jg, sp, Comparator.comparing(
-                    Assay::getId,
-                    Comparator.nullsFirst(Comparator.naturalOrder())
-                ));
-            } else {
-                System.err.println("Assays are null!");
+                Logger.getLogger(MetadataSerializer.class.getName()).
+                    log(Level.FINE, "Study Variable is null!");
             }
             //custom
             if (t.getCustom() != null) {
@@ -219,23 +235,61 @@ public class MetadataSerializer extends StdSerializer<Metadata> {
                         Parameter::getId, Comparator.nullsFirst(Comparator.
                             naturalOrder())));
             } else {
-                System.err.println("Customs are null!");
+                Logger.getLogger(MetadataSerializer.class.getName()).
+                    log(Level.FINE, "Custom is null!");
             }
+            //cv
             if (t.getCv() != null) {
                 serializeList(t.getCv(), jg, sp, Comparator.comparing(
                     CV::getId,
                     Comparator.nullsFirst(Comparator.naturalOrder())
                 ));
             } else {
-                System.err.println("CVs are null!");
+                Logger.getLogger(MetadataSerializer.class.getName()).
+                    log(Level.FINE, "CVs are null!");
             }
+            //small molecule quantification unit
+            if (t.getSmallMoleculeQuantificationUnit() != null) {
+                addLineWithMetadataProperty(jg, prefix,
+                    MetadataProperty.SMALL_MOLECULE_QUANTIFICATION_UNIT,
+                    MetadataElement.SMALL_MOLECULE, ParameterSerializer.
+                        toString(t.getSmallMoleculeQuantificationUnit()));
+            } else {
+                Logger.getLogger(MetadataSerializer.class.getName()).
+                    log(Level.FINE,
+                        "Small molecule quantification unit is null!");
+            }
+            //small molecule feature quantification unit
+            if (t.getSmallMoleculeFeatureQuantificationUnit() != null) {
+                addLineWithMetadataProperty(jg, prefix,
+                    MetadataProperty.SMALL_MOLECULE_FEATURE_QUANTIFICATION_UNIT,
+                    MetadataElement.SMALL_MOLECULE_FEATURE, ParameterSerializer.
+                        toString(t.getSmallMoleculeFeatureQuantificationUnit()));
+            } else {
+                Logger.getLogger(MetadataSerializer.class.getName()).
+                    log(Level.FINE,
+                        "Small molecule feature quantification unit is null!");
+            }
+            //small molecule identification reliability
+            if (t.getSmallMoleculeIdentificationReliability() != null) {
+                addLineWithMetadataProperty(jg, prefix,
+                    MetadataProperty.SMALL_MOLECULE_IDENTIFICATION_RELIABILITY,
+                    MetadataElement.SMALL_MOLECULE, ParameterSerializer.
+                        toString(t.getSmallMoleculeIdentificationReliability()));
+            } else {
+                Logger.getLogger(MetadataSerializer.class.getName()).
+                    log(Level.FINE,
+                        "Small molecule identification reliability is null!");
+            }
+            //database
             if (t.getDatabase() != null) {
                 serializeList(t.getDatabase(), jg, sp, Comparator.comparing(
                     Database::getId,
                     Comparator.nullsFirst(Comparator.naturalOrder())
                 ));
             } else {
-                System.err.println("Databases are null!");
+                Logger.getLogger(MetadataSerializer.class.getName()).
+                    log(Level.FINE, "Databases are null!");
             }
             if (t.getIdConfidenceMeasure() != null) {
                 serializeListWithMetadataElement(t.getIdConfidenceMeasure(),
@@ -244,7 +298,8 @@ public class MetadataSerializer extends StdSerializer<Metadata> {
                             Parameter::getId, Comparator.nullsFirst(Comparator.
                                 naturalOrder())));
             } else {
-                System.err.println("Id confidence measure is null!");
+                Logger.getLogger(MetadataSerializer.class.getName()).
+                    log(Level.FINE, "Id confidence measure is null!");
             }
             if (t.getColunitSmallMolecule() != null) {
                 t.getColunitSmallMolecule().
@@ -256,7 +311,8 @@ public class MetadataSerializer extends StdSerializer<Metadata> {
                                 toString(colUnit.getParam()));
                     });
             } else {
-                System.err.println("Colunit small molecule is null!");
+                Logger.getLogger(MetadataSerializer.class.getName()).
+                    log(Level.FINE, "Colunit small molecule is null!");
             }
             if (t.getColunitSmallMoleculeFeature() != null) {
                 t.getColunitSmallMoleculeFeature().
@@ -269,7 +325,8 @@ public class MetadataSerializer extends StdSerializer<Metadata> {
                                 toString(colUnit.getParam()));
                     });
             } else {
-                System.err.println("Colunit small molecule feature is null!");
+                Logger.getLogger(MetadataSerializer.class.getName()).
+                    log(Level.FINE, "Colunit small molecule feature is null!");
             }
             if (t.getColunitSmallMoleculeEvidence() != null) {
                 t.getColunitSmallMoleculeEvidence().
@@ -282,7 +339,8 @@ public class MetadataSerializer extends StdSerializer<Metadata> {
                                 toString(colUnit.getParam()));
                     });
             } else {
-                System.err.println("Colunit small molecule evidence is null!");
+                Logger.getLogger(MetadataSerializer.class.getName()).
+                    log(Level.FINE, "Colunit small molecule evidence is null!");
             }
         }
     }

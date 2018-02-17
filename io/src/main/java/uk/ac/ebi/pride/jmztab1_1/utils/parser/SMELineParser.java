@@ -77,7 +77,7 @@ public class SMELineParser extends MZTabDataLineParser<SmallMoleculeEvidence> {
                             smallMoleculeEvidence.derivatizedForm(checkParameter(column, target, true));
                             break;
                         case EVIDENCE_UNIQUE_ID:
-                            smallMoleculeEvidence.databaseIdentifier(checkString(column, target));
+                            smallMoleculeEvidence.evidenceUniqueId(checkString(column, target));
                             break;
                         case EXP_MASS_TO_CHARGE:
                             smallMoleculeEvidence.expMassToCharge(checkDouble(column, target));
@@ -143,41 +143,4 @@ public class SMELineParser extends MZTabDataLineParser<SmallMoleculeEvidence> {
         }
         return smallMoleculeEvidence;
     }
-
-    /**
-     * As these two ontologies are not applicable to small molecules, so-called CHEMMODs can also be defined.
-     * CHEMMODs MUST NOT be used if the modification can be reported using a PSI-MOD or UNIMOD accession.
-     * Mass deltas MUST NOT be used for CHEMMODs if the delta can be expressed through a known chemical formula .
-     */
-//    protected SplitList<Modification> checkModifications(MZTabColumn column, String target) {
-//        SplitList<Modification> modificationList = super.checkModifications(section, column, target);
-//
-//        for (Modification mod : modificationList) {
-//            if (mod.getType() == Modification.Type.CHEMMOD) {
-//                if (target.contains("-MOD:") || target.contains("-UNIMOD:")) {
-//                    errorList.add(new MZTabError(LogicalErrorType.CHEMMODS, lineNumber, column.getHeader(), mod.toString()));
-//                }
-//
-//                if (parseChemmodAccession(mod.getAccession()) == null) {
-//                    errorList.add(new MZTabError(FormatErrorType.CHEMMODSAccession, lineNumber, column.getHeader(), mod.toString()));
-//                    return null;
-//                }
-//            }
-//        }
-//
-//        return modificationList;
-//    }
-
-//    private String parseChemmodAccession(String accession) {
-//        accession = parseString(accession);
-//
-//        Pattern pattern = Pattern.compile("[+-](\\d+(.\\d+)?)?|(([A-Z][a-z]*)(\\d*))?");
-//        Matcher matcher = pattern.matcher(accession);
-//
-//        if (matcher.find()) {
-//            return accession;
-//        } else {
-//            return null;
-//        }
-//    }
 }

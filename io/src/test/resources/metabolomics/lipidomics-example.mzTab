@@ -1,7 +1,7 @@
 COM	Meta data section																				
 MTD	mzTab-version	1.1.0																			
 MTD	description	Minimal proposed sample file for identification and quantification of lipids																			
-MTD	publication[1]	pubmed:29039908 | doi:10.1021/acs.analchem.7b03576]																			
+MTD	publication[1]	pubmed:29039908 | doi:10.1021/acs.analchem.7b03576																			
 MTD	cv[1]-label	MS																			
 MTD	cv[1]-full_name	PSI-MS controlled vocabulary																			
 MTD	cv[1]-version	4.0.18																			
