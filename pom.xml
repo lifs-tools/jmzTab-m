@@ -155,6 +155,7 @@
             <redirectTestOutputToFile>true</redirectTestOutputToFile>
             <parallel>classes</parallel>
             <threadCount>2</threadCount>
+            <trimStackTrace>false</trimStackTrace>
           </configuration>
         </plugin>
         <plugin>
