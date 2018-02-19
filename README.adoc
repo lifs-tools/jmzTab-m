@@ -87,7 +87,7 @@ and
 for the io module, where `jmztab.version` is the version of jmztabm you wish to use, e.g. for a SNAPSHOT version:
 
   <properties>
-    <jmztabm.version>0.0.9-SNAPSHOT</jmztabm.version>
+    <jmztabm.version>0.9.0-SNAPSHOT</jmztabm.version>
   </properties>
 
 as defined in the properties section of your pom file.
