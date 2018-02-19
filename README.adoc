@@ -9,29 +9,6 @@ The latest draft version of the mzTab spec is available https://github.com/HUPO-
 
 The web-based validator application is available https://github.com/nilshoffmann/jmzTab-m-webapp[here].
 
-== Editing the Swagger Spec
-This project defines the structure of an mzTab document based on JSON-Schema
-and Swagger https://swagger.io/.
-
-Swagger provides many templates to generate client / server implementations
-based on a Swagger yaml or json definition.
-
-This mechanism can be used to generate the domain-specific model classes in
-any of the supported languages, omitting the web-specific parts.
-
-The https://editor.swagger.io/[Swagger editor] can be used to import the file,
-edit it with assistance and preview, and export it after editing. It additionally 
-supports the generation of server and client code to represent the mzTab object structure.
-
-To launch the editor via https://www.docker.com/[Docker] on Unix, use the script
-`run-swagger-editor.sh` in this directory.
-
-The swagger API definition is in the following file: `api/src/main/resources/mzTab_m_swagger.yml`.
-
-You can open it in the Swagger Editor via File -> Import File. If you are done editing, go to File -> Download YAML and save the file at the location of the mzTab_m_swagger.yml file, thereby replacing the original file.
-
-You can create server and client code in a multitude of languages from the Generate Server and Generate Client menu items.
-
 == Building the project and generating client code from the command-line
 
 In order to build the client code and run the unit tests, execute the following command from a terminal:
@@ -71,6 +48,74 @@ To validate a particular file with a given level (one of: Info, Warn, Error, whe
 == Running the Web Application for Validation
 
 The validator web application has been moved into a separate project: https://github.com/nilshoffmann/jmzTab-m-webapp
+
+== Using the project code via Maven Central
+
+The library artifacts are available as SNAPSHOT (development versions) from Sonatype's OSSRH repository. 
+If you want to use them, add the following to your own Maven pom file:
+
+  <repositories>
+    <repository>
+      <name>Sonatype Snapshot Repository</name>
+      <id>oss-sonatype-snapshots</id>
+      <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+   ...
+  </repositories>
+
+The project coordinates for the api module are 
+
+    <dependency>
+      <groupId>de.isas.mztab</groupId>
+      <artifactId>jmztabm-api</artifactId>
+      <version>${jmztabm.version}</version>
+      <type>jar</type>
+    </dependency>
+
+and
+
+    <dependency>
+      <groupId>de.isas.mztab</groupId>
+      <artifactId>jmztabm-io</artifactId>
+      <version>${jmztabm.version}</version>
+      <type>jar</type>
+    </dependency>
+
+for the io module, where `jmztab.version` is the version of jmztabm you wish to use, e.g. for a SNAPSHOT version:
+
+  <properties>
+    <jmztabm.version>0.0.9-SNAPSHOT</jmztabm.version>
+  </properties>
+
+as defined in the properties section of your pom file.
+
+The SNAPSHOTS are also available from https://oss.sonatype.org/content/repositories/snapshots/de/isas/mztab/.
+
+== Editing the Swagger Spec
+This project defines the structure of an mzTab document based on JSON-Schema
+and Swagger https://swagger.io/.
+
+Swagger provides many templates to generate client / server implementations
+based on a Swagger yaml or json definition.
+
+This mechanism can be used to generate the domain-specific model classes in
+any of the supported languages, omitting the web-specific parts.
+
+The https://editor.swagger.io/[Swagger editor] can be used to import the file,
+edit it with assistance and preview, and export it after editing. It additionally 
+supports the generation of server and client code to represent the mzTab object structure.
+
+To launch the editor via https://www.docker.com/[Docker] on Unix, use the script
+`run-swagger-editor.sh` in this directory.
+
+The swagger API definition is in the following file: `api/src/main/resources/mzTab_m_swagger.yml`.
+
+You can open it in the Swagger Editor via File -> Import File. If you are done editing, go to File -> Download YAML and save the file at the location of the mzTab_m_swagger.yml file, thereby replacing the original file.
+
+You can create server and client code in a multitude of languages from the Generate Server and Generate Client menu items.
 
 == References
 
