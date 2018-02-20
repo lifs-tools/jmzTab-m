@@ -16,7 +16,9 @@
 package de.isas.lipidomics.jmztabm.io.serialization;
 
 import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.utils.LogMethodName;
 
 /**
  *
@@ -24,6 +26,9 @@ import org.junit.Test;
  */
 public class SerializersTest {
 
+    @Rule
+    public LogMethodName methodNameLogger = new LogMethodName();
+    
     @Test
     public void testMixedCamelCaseToUnderscore() {
         String camelCase1 = "camelCase";

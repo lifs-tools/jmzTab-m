@@ -398,23 +398,6 @@ public class Serializers {
         writeAsNumberArray(column.getHeader(), jg, elements);
     }
 
-    public static void writeAsNumberArray(JsonGenerator jg,
-        List<? extends Number> elements) {
-        String arrayElements = elements.stream().
-            map((number) ->
-            {
-                return "" + number.doubleValue();
-            }).
-            collect(Collectors.joining("" + MZTabConstants.BAR));
-        try {
-            jg.writeString(arrayElements);
-        } catch (IOException ex) {
-            Logger.getLogger(Serializers.class.
-                getName()).
-                log(Level.SEVERE, null, ex);
-        }
-    }
-
     public static void writeAsNumberArray(String columnName, JsonGenerator jg,
         List<? extends Number> elements) {
         String arrayElements = elements.stream().
@@ -424,7 +407,11 @@ public class Serializers {
             }).
             collect(Collectors.joining("" + MZTabConstants.BAR));
         try {
-            jg.writeStringField(columnName, arrayElements);
+            if (arrayElements.isEmpty()) {
+                jg.writeNullField(columnName);
+            } else {
+                jg.writeStringField(columnName, arrayElements);
+            }
         } catch (IOException ex) {
             Logger.getLogger(Serializers.class.
                 getName()).
@@ -442,7 +429,11 @@ public class Serializers {
         String arrayElements = elements.stream().
             collect(Collectors.joining("" + MZTabConstants.BAR));
         try {
-            jg.writeString(arrayElements);
+            if (arrayElements.isEmpty()) {
+                jg.writeNull();
+            } else {
+                jg.writeString(arrayElements);
+            }
         } catch (IOException ex) {
             Logger.getLogger(Serializers.class.
                 getName()).
@@ -455,7 +446,11 @@ public class Serializers {
         String arrayElements = elements.stream().
             collect(Collectors.joining("" + MZTabConstants.BAR));
         try {
-            jg.writeStringField(columnName, arrayElements);
+            if (arrayElements.isEmpty()) {
+                jg.writeNullField(columnName);
+            } else {
+                jg.writeStringField(columnName, arrayElements);
+            }
         } catch (IOException ex) {
             Logger.getLogger(Serializers.class.
                 getName()).

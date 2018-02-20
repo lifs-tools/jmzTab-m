@@ -78,7 +78,7 @@ public abstract class MZTabDataLineParser<T> extends MZTabLineParser {
                                   Metadata metadata, MZTabErrorList errorList) {
         this(context);
         if (factory == null) {
-            throw new NullPointerException("Column header factory should be create first.");
+            throw new NullPointerException("Column header factory should be created first.");
         }
         this.factory = factory;
 
@@ -87,7 +87,7 @@ public abstract class MZTabDataLineParser<T> extends MZTabLineParser {
         this.mapping = factory.getOffsetColumnsMap();
 
         if (metadata == null) {
-            throw new NullPointerException("Metadata should be parser first.");
+            throw new NullPointerException("Metadata should be parsed first.");
         }
         this.metadata = metadata;
         this.errorList = errorList == null ? new MZTabErrorList() : errorList;
@@ -102,6 +102,8 @@ public abstract class MZTabDataLineParser<T> extends MZTabLineParser {
 
         int offset = checkData();
         if (offset != items.length) {
+            Logger.getLogger(MZTabDataLineParser.class.getName()).log(Level.SEVERE, "Number of expected items after parsing header is: "+offset+" but data line has: "+items.length+" items!");
+            Logger.getLogger(MZTabDataLineParser.class.getName()).log(Level.SEVERE, "Current mapping is: "+mapping);
             Logger.getLogger(MZTabDataLineParser.class.getName()).log(Level.SEVERE, "Items given: "+Arrays.toString(items)+" expected: "+Arrays.toString(line.split("\\t")));
             this.errorList.add(new MZTabError(FormatErrorType.CountMatch, lineNumber, "" + offset, "" + items.length));
         }
@@ -119,6 +121,8 @@ public abstract class MZTabDataLineParser<T> extends MZTabLineParser {
         int dataCount = items.length - 1;
 
         if (headerCount != dataCount) {
+            Logger.getLogger(MZTabDataLineParser.class.getName()).log(Level.SEVERE, "Number of expected items after parsing header is: "+headerCount+" but data line has: "+dataCount+" items!");
+            Logger.getLogger(MZTabDataLineParser.class.getName()).log(Level.SEVERE, "Current mapping is: "+mapping);
             Logger.getLogger(MZTabDataLineParser.class.getName()).log(Level.SEVERE, "Items given: "+Arrays.toString(items)+" expected: "+Arrays.toString(line.split("\\t")));
             this.errorList.add(new MZTabError(FormatErrorType.CountMatch, lineNumber, "" + dataCount, "" + headerCount));
         }

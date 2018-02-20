@@ -16,8 +16,9 @@ import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
-import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.utils.LogMethodName;
 
 /**
  * Test class for MzTabWriter.
@@ -26,27 +27,32 @@ import org.junit.Test;
  */
 public class MzTabValidatorTest {
 
+    @Rule
+    public LogMethodName methodNameLogger = new LogMethodName();
+
     static MzTab createTestFile() {
         Contact contact1 = new Contact().
-                        name("Nils Hoffmann").
-                        email("nils.hoffmann_at_isas.de").
-                        affiliation(
-                            "ISAS e.V. Dortmund, Germany");
+            name("Nils Hoffmann").
+            email("nils.hoffmann_at_isas.de").
+            affiliation(
+                "ISAS e.V. Dortmund, Germany");
         contact1.id(1);
         MsRun msRun1 = new MsRun().
-                        location("file:///path/to/file1.mzML").
-                        format(
-                            new Parameter().
-                                cvLabel("MS").
-                                cvAccession("MS:1000584").
-                                name("mzML file").value("")
-                        ).
-                        idFormat(
-                            new Parameter().
-                                cvLabel("MS").
-                                cvAccession("MS:1001530").
-                                name("mzML unique identifier").value("")
-                        );
+            location("file:///path/to/file1.mzML").
+            format(
+                new Parameter().
+                    cvLabel("MS").
+                    cvAccession("MS:1000584").
+                    name("mzML file").
+                    value("")
+            ).
+            idFormat(
+                new Parameter().
+                    cvLabel("MS").
+                    cvAccession("MS:1001530").
+                    name("mzML unique identifier").
+                    value("")
+            );
         msRun1.id(1);
         final MzTab mztabfile = new MzTab().metadata(
             new de.isas.mztab1_1.model.Metadata().mzTabVersion(
@@ -58,7 +64,7 @@ public class MzTabValidatorTest {
                     contact1
                 ).
                 addMsrunItem(
-                  msRun1  
+                    msRun1
                 )
         );
         PublicationItem item1_1 = new PublicationItem().type(
@@ -85,9 +91,9 @@ public class MzTabValidatorTest {
             addPublicationsItem(publication1).
             addPublicationsItem(publication2);
         CV cv1 = new CV().label("MS").
-                fullName("PSI-MS").
-                version("4.0.18").
-                url("https://github.com/HUPO-PSI/psi-ms-CV/blob/master/psi-ms.obo");
+            fullName("PSI-MS").
+            version("4.0.18").
+            url("https://github.com/HUPO-PSI/psi-ms-CV/blob/master/psi-ms.obo");
         cv1.id(1);
         mztabfile.getMetadata().
             addCvItem(cv1);
@@ -106,7 +112,7 @@ public class MzTabValidatorTest {
                 toString() + ": " + violation.getMessage());
         }
     }
-    
+
     @Test
     public void testCustomBeanValidation() {
         MzTabValidator validator = new MzTabValidator();

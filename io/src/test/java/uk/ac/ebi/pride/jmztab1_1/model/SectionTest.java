@@ -18,18 +18,14 @@ package uk.ac.ebi.pride.jmztab1_1.model;
 import org.junit.Assert;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import org.junit.Rule;
+import org.junit.utils.LogMethodName;
 import static uk.ac.ebi.pride.jmztab1_1.model.Section.Comment;
 import static uk.ac.ebi.pride.jmztab1_1.model.Section.Metadata;
-import static uk.ac.ebi.pride.jmztab1_1.model.Section.PSM;
 import static uk.ac.ebi.pride.jmztab1_1.model.Section.PSM_Header;
-import static uk.ac.ebi.pride.jmztab1_1.model.Section.Peptide;
 import static uk.ac.ebi.pride.jmztab1_1.model.Section.Peptide_Header;
-import static uk.ac.ebi.pride.jmztab1_1.model.Section.Protein;
 import static uk.ac.ebi.pride.jmztab1_1.model.Section.Protein_Header;
-import static uk.ac.ebi.pride.jmztab1_1.model.Section.Small_Molecule;
-import static uk.ac.ebi.pride.jmztab1_1.model.Section.Small_Molecule_Evidence;
 import static uk.ac.ebi.pride.jmztab1_1.model.Section.Small_Molecule_Evidence_Header;
-import static uk.ac.ebi.pride.jmztab1_1.model.Section.Small_Molecule_Feature;
 import static uk.ac.ebi.pride.jmztab1_1.model.Section.Small_Molecule_Feature_Header;
 import static uk.ac.ebi.pride.jmztab1_1.model.Section.Small_Molecule_Header;
 
@@ -39,6 +35,8 @@ import static uk.ac.ebi.pride.jmztab1_1.model.Section.Small_Molecule_Header;
  */
 public class SectionTest {
 
+    @Rule
+    public LogMethodName methodNameLogger = new LogMethodName();
 
     /**
      * Test of values method, of class Section.
@@ -58,19 +56,19 @@ public class SectionTest {
 
         assertEquals("PRH", Section.Protein_Header.getPrefix());
         assertEquals("PRT", Section.Protein.getPrefix());
-        
+
         assertEquals("PEH", Section.Peptide_Header.getPrefix());
         assertEquals("PEP", Section.Peptide.getPrefix());
-        
+
         assertEquals("PSH", Section.PSM_Header.getPrefix());
         assertEquals("PSM", Section.PSM.getPrefix());
-        
+
         assertEquals("SMH", Section.Small_Molecule_Header.getPrefix());
         assertEquals("SML", Section.Small_Molecule.getPrefix());
-        
+
         assertEquals("SFH", Section.Small_Molecule_Feature_Header.getPrefix());
         assertEquals("SMF", Section.Small_Molecule_Feature.getPrefix());
-        
+
         assertEquals("SEH", Section.Small_Molecule_Evidence_Header.getPrefix());
         assertEquals("SME", Section.Small_Molecule_Evidence.getPrefix());
     }
@@ -85,19 +83,19 @@ public class SectionTest {
 
         assertEquals(2, Section.Protein_Header.getLevel());
         assertEquals(3, Section.Protein.getLevel());
-        
+
         assertEquals(4, Section.Peptide_Header.getLevel());
         assertEquals(5, Section.Peptide.getLevel());
-        
+
         assertEquals(6, Section.PSM_Header.getLevel());
         assertEquals(7, Section.PSM.getLevel());
-        
+
         assertEquals(8, Section.Small_Molecule_Header.getLevel());
         assertEquals(9, Section.Small_Molecule.getLevel());
-        
+
         assertEquals(10, Section.Small_Molecule_Feature_Header.getLevel());
         assertEquals(11, Section.Small_Molecule_Feature.getLevel());
-        
+
         assertEquals(12, Section.Small_Molecule_Evidence_Header.getLevel());
         assertEquals(13, Section.Small_Molecule_Evidence.getLevel());
     }
@@ -107,7 +105,7 @@ public class SectionTest {
      */
     @Test
     public void testFindSection_int() {
-        for(Section s:Section.values()) {
+        for (Section s : Section.values()) {
             Assert.assertEquals(s, Section.findSection(s.getLevel()));
         }
     }
@@ -117,8 +115,8 @@ public class SectionTest {
      */
     @Test
     public void testIsComment() {
-        for(Section s:Section.values()) {
-            switch(s) {
+        for (Section s : Section.values()) {
+            switch (s) {
                 case Comment:
                     Assert.assertTrue(s.isComment());
                     break;
@@ -133,8 +131,8 @@ public class SectionTest {
      */
     @Test
     public void testIsMetadata() {
-        for(Section s:Section.values()) {
-            switch(s) {
+        for (Section s : Section.values()) {
+            switch (s) {
                 case Metadata:
                     Assert.assertTrue(s.isMetadata());
                     break;
@@ -149,8 +147,8 @@ public class SectionTest {
      */
     @Test
     public void testIsHeader() {
-        for(Section s:Section.values()) {
-            switch(s) {
+        for (Section s : Section.values()) {
+            switch (s) {
                 case PSM_Header:
                 case Peptide_Header:
                 case Protein_Header:
@@ -170,8 +168,8 @@ public class SectionTest {
      */
     @Test
     public void testIsData() {
-                for(Section s:Section.values()) {
-            switch(s) {
+        for (Section s : Section.values()) {
+            switch (s) {
                 case PSM_Header:
                 case Peptide_Header:
                 case Protein_Header:
@@ -208,10 +206,12 @@ public class SectionTest {
         Assert.assertEquals(Section.PSM_Header, Section.toHeaderSection(
             Section.PSM_Header));
 
-        Assert.assertEquals(Section.Small_Molecule_Header, Section.toHeaderSection(
-            Section.Small_Molecule));
-        Assert.assertEquals(Section.Small_Molecule_Header, Section.toHeaderSection(
-            Section.Small_Molecule_Header));
+        Assert.assertEquals(Section.Small_Molecule_Header, Section.
+            toHeaderSection(
+                Section.Small_Molecule));
+        Assert.assertEquals(Section.Small_Molecule_Header, Section.
+            toHeaderSection(
+                Section.Small_Molecule_Header));
 
         Assert.assertEquals(Section.Small_Molecule_Evidence_Header, Section.
             toHeaderSection(
@@ -226,7 +226,7 @@ public class SectionTest {
         Assert.assertEquals(Section.Small_Molecule_Feature_Header, Section.
             toHeaderSection(
                 Section.Small_Molecule_Feature_Header));
-        
+
         Assert.assertNull(Section.toHeaderSection(Section.Comment));
     }
 
@@ -268,7 +268,7 @@ public class SectionTest {
         Assert.assertEquals(Section.Small_Molecule_Feature, Section.
             toDataSection(
                 Section.Small_Molecule_Feature_Header));
-        
+
         Assert.assertNull(Section.toDataSection(Section.Comment));
     }
 

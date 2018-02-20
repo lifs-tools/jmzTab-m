@@ -18,6 +18,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import org.junit.Rule;
+import org.junit.utils.LogMethodName;
 import uk.ac.ebi.pride.jmztab1_1.model.MZTabUtils;
 import uk.ac.ebi.pride.jmztab1_1.utils.errors.MZTabErrorList;
 import uk.ac.ebi.pride.jmztab1_1.utils.errors.MZTabErrorType;
@@ -29,6 +31,9 @@ import uk.ac.ebi.pride.jmztab1_1.utils.errors.MZTabException;
  * @since 11/02/13
  */
 public class MTDLineParserTest {
+
+    @Rule
+    public LogMethodName methodNameLogger = new LogMethodName();
 
     private MTDLineParser parser;
     private Metadata metadata;

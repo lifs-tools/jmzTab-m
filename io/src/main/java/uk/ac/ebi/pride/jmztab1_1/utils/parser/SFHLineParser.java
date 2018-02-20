@@ -51,11 +51,8 @@ public class SFHLineParser extends MZTabHeaderLineParser {
             column = null;
             header = items[physicalPosition];
 
-            if (header.contains("abundance_assay")) {
+            if (header.contains("abundance_")) {
                 checkAbundanceColumns(physicalPosition, physPositionToOrder.get(physicalPosition));
-            } else if (header.contains("abundance_study_variable")) {
-                checkAbundanceColumns(physicalPosition, physPositionToOrder.get(physicalPosition));
-                // stdev_study_variable and std_error_will be process inside
             } else if (header.contains("abundance_stdev") || header.contains("abundance_std_error")) {
                 // ignore then, they have been process....
             } else if (header.startsWith("opt_")) {

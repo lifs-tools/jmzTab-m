@@ -54,14 +54,15 @@ public class SMHLineParser extends MZTabHeaderLineParser {
 
             column = null;
             header = items[physicalPosition];
-            if (header.contains("abundance_assay")) {
+            if (header.startsWith("abundance_")) {
                 checkAbundanceColumns(physicalPosition, physPositionToOrder.get(physicalPosition));
-            } else if (header.contains("abundance_study_variable")) {
-                checkAbundanceColumns(physicalPosition, physPositionToOrder.get(physicalPosition));
-                // stdev_study_variable and std_error_will be process inside
-            } else if (header.contains("abundance_coeffvar")) {
+//            } else if (header.contains("abundance_study_variable")) {
 //                checkAbundanceColumns(physicalPosition, physPositionToOrder.get(physicalPosition));
-                // ignore then, they have been process....
+//                // stdev_study_variable and std_error_will be process inside
+//            } else if (header.contains("abundance_coeffvar")) {
+////                checkAbundanceColumns(physicalPosition, physPositionToOrder.get(physicalPosition));
+//                checkAbundanceColumns(physicalPosition, physPositionToOrder.get(physicalPosition));
+//                // ignore then, they have been process....
             } else if (header.startsWith("opt_")) {
                 checkOptColumnName(header);
             } else {

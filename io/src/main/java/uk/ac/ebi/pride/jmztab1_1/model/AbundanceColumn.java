@@ -83,7 +83,7 @@ public class AbundanceColumn extends MZTabColumn {
      * @param order position in header for the new columns {@link MZTabColumnFactory#getColumnMapping()}
      * @return an abundance optional column as measured in the given study variable.
      */
-    public static SortedMap<String, MZTabColumn> createOptionalColumns(Section section, StudyVariable studyVariable, String order) {
+    public static SortedMap<String, MZTabColumn> createOptionalColumns(Section section, StudyVariable studyVariable, String columnHeader, String order) {
         if (section.isComment() || section.isMetadata()) {
             throw new IllegalArgumentException("Section should be Protein, Peptide, PSM, SmallMolecule, SmallMoleculeFeature or SmallMoleculeEvidence.");
         }
@@ -98,12 +98,15 @@ public class AbundanceColumn extends MZTabColumn {
         Section dataSection = Section.toDataSection(section);
 
         AbundanceColumn column;
-//        column = new AbundanceColumn(dataSection, Field.ABUNDANCE_ASSAY, studyVariable, offset);
-//        columns.put(column.getLogicPosition(), column);
-        column = new AbundanceColumn(dataSection, Field.ABUNDANCE_STUDY_VARIABLE, studyVariable, offset);
-        columns.put(column.getLogicPosition(), column);
-        column = new AbundanceColumn(dataSection, Field.ABUNDANCE_COEFFVAR_STUDY_VARIABLE, studyVariable, offset);
-        columns.put(column.getLogicPosition(), column);
+        if(columnHeader.startsWith("study_variable")) {
+            column = new AbundanceColumn(dataSection, Field.ABUNDANCE_STUDY_VARIABLE, studyVariable, offset);
+            columns.put(column.getLogicPosition(), column);
+        } else if (columnHeader.startsWith("coeffvar_study_variable")) {
+            column = new AbundanceColumn(dataSection, Field.ABUNDANCE_COEFFVAR_STUDY_VARIABLE, studyVariable, offset);
+            columns.put(column.getLogicPosition(), column);
+        } else {
+            throw new IllegalArgumentException("column header "+columnHeader+" is not allowed for abundance definition!");
+        }
 
         return columns;
     }

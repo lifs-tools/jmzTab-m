@@ -7,7 +7,6 @@ package de.isas.lipidomics.jmztabm.io;
 
 import de.isas.mztab1_1.model.MzTab;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.URISyntaxException;
@@ -16,7 +15,9 @@ import java.nio.charset.Charset;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.utils.LogMethodName;
 import uk.ac.ebi.pride.jmztab1_1.utils.MZTabFileParser;
 import uk.ac.ebi.pride.jmztab1_1.utils.errors.MZTabErrorOverflowException;
 import uk.ac.ebi.pride.jmztab1_1.utils.errors.MZTabErrorType;
@@ -27,6 +28,9 @@ import uk.ac.ebi.pride.jmztab1_1.utils.errors.MZTabException;
  * @author Nils Hoffmann <nils.hoffmann@isas.de>
  */
 public class MzTabRawParserTest {
+
+    @Rule
+    public LogMethodName methodNameLogger = new LogMethodName();
 
     @Test
     public void testLipidomicsExample() throws MZTabException {

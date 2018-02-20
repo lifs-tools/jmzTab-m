@@ -640,16 +640,16 @@ public class MZTabColumnFactory {
      * @param studyVariable SHOULD NOT empty.
      * @see AbundanceColumn#createOptionalColumns(Section, StudyVariable, String)
      */
-    public String addAbundanceOptionalColumn(StudyVariable studyVariable) {
-        SortedMap<String, MZTabColumn> columns = AbundanceColumn.createOptionalColumns(section, studyVariable, new Integer(getColumnOrder(columnMapping.lastKey())));
-        abundanceColumnMapping.putAll(columns);
-        optionalColumnMapping.putAll(columns);
-        columnMapping.putAll(columns);
-        return columns.lastKey();
-    }
+//    public String addAbundanceOptionalColumn(StudyVariable studyVariable) {
+//        SortedMap<String, MZTabColumn> columns = AbundanceColumn.createOptionalColumns(section, studyVariable, new Integer(getColumnOrder(columnMapping.lastKey())));
+//        abundanceColumnMapping.putAll(columns);
+//        optionalColumnMapping.putAll(columns);
+//        columnMapping.putAll(columns);
+//        return columns.lastKey();
+//    }
 
-    public String addAbundanceOptionalColumn(StudyVariable studyVariable, String order) {
-        SortedMap<String, MZTabColumn> columns = AbundanceColumn.createOptionalColumns(section, studyVariable, order);
+    public String addAbundanceOptionalColumn(StudyVariable studyVariable, String columnHeader, String order) {
+        SortedMap<String, MZTabColumn> columns = AbundanceColumn.createOptionalColumns(section, studyVariable, columnHeader, order);
         abundanceColumnMapping.putAll(columns);
         optionalColumnMapping.putAll(columns);
         columnMapping.putAll(columns);

@@ -15,6 +15,7 @@ import de.isas.mztab1_1.model.Metadata;
 import de.isas.mztab1_1.model.MsRun;
 import de.isas.mztab1_1.model.Parameter;
 import de.isas.mztab1_1.model.StudyVariable;
+import java.util.Arrays;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -245,26 +246,45 @@ public abstract class MZTabHeaderLineParser extends MZTabLineParser {
     }
 
     protected int checkAbundanceColumns(int offset, String order) throws MZTabException {
-        if (items[offset].contains("abundance_assay")) {
-            checkAbundanceAssayColumn(items[offset], order);
+        String headerString = items[offset];
+        if (headerString.contains("abundance_assay")) {
+            checkAbundanceAssayColumn(headerString, order);
+            return offset;
+        } else if (headerString.contains("abundance_study_variable") || headerString.contains("abundance_coeffvar_study_variable")) {
+//            String abundanceHeader = "";
+//            String abundanceCoeffvarHeader = "";
+//            String abundanceStdErrorHeader = "";
+
+//            try {
+//                abundanceHeader = headerString;//items[offset++];
+//                StudyVariable sv = checkAbundanceStudyVariableColumn(headerString);
+//                abundanceCoeffvarHeader = null;
+//                for(int i = offset+1; i<items.length; i++ ) {
+//                    if(items[i].contains("abundance_coeffvar_study_variable")) {
+//                        //check whether these refer to the same index / study variable
+//                        StudyVariable sv2 = checkAbundanceStudyVariableColumn(items[i]);
+//                        if(sv2.getId().equals(sv.getId())) {
+//                            abundanceCoeffvarHeader = items[i];
+//                            break;
+//                        }
+//                    }
+//                }
+//                if(abundanceCoeffvarHeader==null) {
+//                    String missHeader = "abundance_coeffvar_study_variable";
+//                    MZTabError error = new MZTabError(LogicalErrorType.AbundanceColumnTogether, lineNumber, missHeader);
+//                    throw new MZTabException(error);
+//                }
+//                abundanceStdErrorHeader = items[offset];
+//            } catch (ArrayIndexOutOfBoundsException e) {
+//                // do nothing.
+//            }
+
+            checkAbundanceStudyVariableColumns(headerString, order);
 
             return offset;
         } else {
-            String abundanceHeader = "";
-            String abundanceStdevHeader = "";
-            String abundanceStdErrorHeader = "";
-
-            try {
-                abundanceHeader = items[offset++];
-                abundanceStdevHeader = items[offset++];
-                abundanceStdErrorHeader = items[offset];
-            } catch (ArrayIndexOutOfBoundsException e) {
-                // do nothing.
-            }
-
-            checkAbundanceStudyVariableColumns(abundanceHeader, abundanceStdevHeader, abundanceStdErrorHeader, order);
-
-            return offset;
+            MZTabError error = new MZTabError(FormatErrorType.AbundanceColumn, lineNumber, headerString);
+            throw new MZTabException(error);
         }
     }
 
@@ -316,28 +336,22 @@ public abstract class MZTabHeaderLineParser extends MZTabLineParser {
     }
 
 
-    private void checkAbundanceStudyVariableColumns(String abundanceHeader,
-                                                    String abundanceCoeffvarHeader,
-                                                    String abundanceStdErrorHeader,
+    private void checkAbundanceStudyVariableColumns(String header,
                                                     String order) throws MZTabException {
-        abundanceHeader = abundanceHeader.trim().toLowerCase();
-        abundanceCoeffvarHeader = abundanceCoeffvarHeader.trim().toLowerCase();
-        abundanceStdErrorHeader = abundanceStdErrorHeader.trim().toLowerCase();
+        header = header.trim().toLowerCase();
 
-        if (!abundanceHeader.contains("abundance_study_variable")) {
-            String missHeader = "abundance_study_variable";
-
-            MZTabError error = new MZTabError(LogicalErrorType.AbundanceColumnTogether, lineNumber, missHeader);
+        if (!header.contains("abundance_study_variable") && !header.contains("abundance_coeffvar_study_variable")) {
+//            MZTabError error = new MZTabError(LogicalErrorType.AbundanceColumnTogether, lineNumber, header);
+//            throw new MZTabException(error);
+            MZTabError error = new MZTabError(FormatErrorType.AbundanceColumn, lineNumber, header);
             throw new MZTabException(error);
+        } else {
+            StudyVariable abundanceStudyVariable = checkAbundanceStudyVariableColumn(header);
+
+            //adds both abundance_study_variable and abundance_coeffvar_study_variable columns
+            factory.addAbundanceOptionalColumn(abundanceStudyVariable, checkAbundanceSection(header), order);
+
         }
-
-        if (!abundanceCoeffvarHeader.contains("abundance_coeffvar_study_variable")) {
-            String missHeader = "abundance_coeffvar_study_variable";
-
-            MZTabError error = new MZTabError(LogicalErrorType.AbundanceColumnTogether, lineNumber, missHeader);
-            throw new MZTabException(error);
-        }
-
 //        if (!abundanceStdErrorHeader.contains("abundance_std_error_study_variable")) {
 //            String missHeader = "abundance_std_error_study_variable";
 //
@@ -345,17 +359,6 @@ public abstract class MZTabHeaderLineParser extends MZTabLineParser {
 //            throw new MZTabException(error);
 //        }
 
-        StudyVariable abundanceStudyVariable = checkAbundanceStudyVariableColumn(abundanceHeader);
-        StudyVariable abundanceCoeffvarStudyVariable = checkAbundanceStudyVariableColumn(abundanceCoeffvarHeader);
-//        StudyVariable abundanceStdErrorStudyVariable = checkAbundanceStudyVariableColumn(abundanceStdErrorHeader);
-
-        //It need to be the same studyVariable
-        if (abundanceStudyVariable != abundanceCoeffvarStudyVariable) {
-            MZTabError error = new MZTabError(LogicalErrorType.AbundanceColumnSameId, lineNumber, abundanceHeader, abundanceCoeffvarHeader);
-            throw new MZTabException(error);
-        }
-
-        factory.addAbundanceOptionalColumn(abundanceStudyVariable, order);
     }
 
     /**

@@ -6,8 +6,8 @@ import de.isas.mztab1_1.model.Assay;
 import de.isas.mztab1_1.model.CV;
 import de.isas.mztab1_1.model.ColumnParameterMapping;
 import de.isas.mztab1_1.model.Contact;
-import de.isas.mztab1_1.model.ExternalStudy;
 import de.isas.mztab1_1.model.Instrument;
+import de.isas.mztab1_1.model.Metadata;
 import de.isas.mztab1_1.model.MsRun;
 import de.isas.mztab1_1.model.MzTab;
 import de.isas.mztab1_1.model.OptColumnMapping;
@@ -577,5 +577,29 @@ public class MzTabWriterTest {
         Assert.assertTrue(errors.isEmpty());
         //TODO we can not use equals, since comments are not preserved during writing
         //Assert.assertEquals(mzTabFile, parser.getMZTabFile());
+        compareMzTabModels(mzTabFile, parser.getMZTabFile());
+    }
+
+    @Test
+    public void testReadWriteRoundtripWithJacksonMTBLS263() throws IOException, URISyntaxException, MZTabException {
+        MzTab mzTabFile = MzTabRawParserTest.parseResource(
+            "metabolomics/MTBLS263.mztab", MZTabErrorType.Level.Info,
+            0);
+        File tempFile = File.createTempFile("testReadWriteRoundtripWithJacksonMTBLS263",
+            ".mztab");
+        MzTabWriter writer = new MzTabWriter();
+        writer.write(tempFile.toPath(), mzTabFile);
+        MZTabFileParser parser = new MZTabFileParser(tempFile);
+        MZTabErrorList errors = parser.parse(System.out,
+            MZTabErrorType.Level.Info, 500);
+        Assert.assertTrue(errors.isEmpty());
+        compareMzTabModels(mzTabFile, parser.getMZTabFile());
+    }
+    
+    void compareMzTabModels(MzTab model1, MzTab model2) {
+        Assert.assertEquals(model1.getMetadata(), model2.getMetadata());
+        Assert.assertEquals(model1.getSmallMoleculeSummary(), model2.getSmallMoleculeSummary());
+        Assert.assertEquals(model1.getSmallMoleculeFeature(), model2.getSmallMoleculeFeature());
+        Assert.assertEquals(model1.getSmallMoleculeEvidence(), model2.getSmallMoleculeEvidence());
     }
 }
