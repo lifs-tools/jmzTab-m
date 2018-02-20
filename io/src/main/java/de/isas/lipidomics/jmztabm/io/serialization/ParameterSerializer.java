@@ -27,19 +27,30 @@ import java.util.logging.Logger;
 import static uk.ac.ebi.pride.jmztab1_1.model.MZTabConstants.NULL;
 
 /**
+ * <p>ParameterSerializer class.</p>
  *
- * @author Nils Hoffmann &lt;nils.hoffmann@isas.de&gt;
+ * @author nilshoffmann
+ * 
  */
 public class ParameterSerializer extends StdSerializer<Parameter> {
 
+    /**
+     * <p>Constructor for ParameterSerializer.</p>
+     */
     public ParameterSerializer() {
         this(null);
     }
 
+    /**
+     * <p>Constructor for ParameterSerializer.</p>
+     *
+     * @param t a {@link java.lang.Class} object.
+     */
     public ParameterSerializer(Class<Parameter> t) {
         super(t);
     }
     
+    /** {@inheritDoc} */
     @Override
     public void serialize(Parameter p, JsonGenerator jg, SerializerProvider sp) throws IOException {
         if (p != null) {
@@ -47,6 +58,12 @@ public class ParameterSerializer extends StdSerializer<Parameter> {
         }
     }
 
+    /**
+     * <p>addLine.</p>
+     *
+     * @param p a {@link de.isas.mztab1_1.model.Parameter} object.
+     * @param jg a {@link com.fasterxml.jackson.core.JsonGenerator} object.
+     */
     public void addLine(Parameter p, JsonGenerator jg) {
         try {
             //value
@@ -107,6 +124,9 @@ public class ParameterSerializer extends StdSerializer<Parameter> {
      * [label, accession, "first part of the param name , second part of the name", value].
      *
      * For example: [MOD, MOD:00648, "N,O-diacetylated L-serine",]
+     *
+     * @param param a {@link de.isas.mztab1_1.model.Parameter} object.
+     * @return a {@link java.lang.String} object.
      */
     public static String toString(Parameter param) {
         if(param==null) {

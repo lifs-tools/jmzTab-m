@@ -11,8 +11,9 @@ import java.util.Map;
 /**
  * Define the stable columns and optional columns which have stable order in small molecule feature header line.
  *
- * @author nils.hoffmann
+ * @author nilshoffmann
  * @since 11/09/17
+ * 
  */
 public class SmallMoleculeFeatureColumn implements ISmallMoleculeFeatureColumn {
 
@@ -129,6 +130,16 @@ public class SmallMoleculeFeatureColumn implements ISmallMoleculeFeatureColumn {
 
     private static Map<String, ISmallMoleculeFeatureColumn> optionalColumns = new LinkedHashMap<>();
 
+    /**
+     * <p>optional.</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     * @param columnType a {@link java.lang.Class} object.
+     * @param optional a boolean.
+     * @param order a {@link java.lang.String} object.
+     * @param id a {@link java.lang.Integer} object.
+     * @return a {@link uk.ac.ebi.pride.jmztab1_1.model.ISmallMoleculeFeatureColumn} object.
+     */
     public static ISmallMoleculeFeatureColumn optional(String name, Class columnType,
             boolean optional,
             String order, Integer id) {
@@ -141,56 +152,67 @@ public class SmallMoleculeFeatureColumn implements ISmallMoleculeFeatureColumn {
         return c;
     }
 
+    /** {@inheritDoc} */
     @Override
     public Class<?> getDataType() {
         return this.column.getDataType();
     }
 
+    /** {@inheritDoc} */
     @Override
     public IndexedElement getElement() {
         return this.column.getElement();
     }
 
+    /** {@inheritDoc} */
     @Override
     public String getHeader() {
         return this.column.getHeader();
     }
 
+    /** {@inheritDoc} */
     @Override
     public String getLogicPosition() {
         return this.column.getLogicPosition();
     }
 
+    /** {@inheritDoc} */
     @Override
     public String getName() {
         return this.column.getName();
     }
 
+    /** {@inheritDoc} */
     @Override
     public String getOrder() {
         return this.column.getOrder();
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean isOptional() {
         return this.column.isOptional();
     }
 
+    /** {@inheritDoc} */
     @Override
     public void setHeader(String header) {
         this.column.setHeader(header);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void setLogicPosition(String logicPosition) {
         this.column.setLogicPosition(logicPosition);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void setOrder(String order) {
         this.column.setOrder(order);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void setElement(IndexedElement element) {
         this.column.setElement(element);

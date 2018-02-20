@@ -4,8 +4,11 @@ import uk.ac.ebi.pride.jmztab1_1.model.MZTabUtils;
 import uk.ac.ebi.pride.jmztab1_1.utils.MZTabProperties;
 
 /**
+ * <p>MZTabErrorType class.</p>
+ *
  * @author qingwei
  * @since 28/01/13
+ * 
  */
 public class MZTabErrorType {
     protected enum Category {
@@ -34,6 +37,9 @@ public class MZTabErrorType {
     private String original;
     private String cause;
 
+    /**
+     * <p>Constructor for MZTabErrorType.</p>
+     */
     protected MZTabErrorType() {}
 
     /**
@@ -60,21 +66,33 @@ public class MZTabErrorType {
     }
 
     /**
-     * Generate a {@link MZTabErrorType.Level#Error} by parse keyword.
+     * Generate a {@link uk.ac.ebi.pride.jmztab1_1.utils.errors.MZTabErrorType.Level#Error} by parse keyword.
+     *
+     * @param category a {@link uk.ac.ebi.pride.jmztab1_1.utils.errors.MZTabErrorType.Category} object.
+     * @param keyword a {@link java.lang.String} object.
+     * @return a {@link uk.ac.ebi.pride.jmztab1_1.utils.errors.MZTabErrorType} object.
      */
     protected static MZTabErrorType createError(MZTabErrorType.Category category, String keyword) {
         return MZTabErrorType.createMZTabError(category, Level.Error, keyword);
     }
 
     /**
-     * Generate a {@link MZTabErrorType.Level#Warn} by parse keyword.
+     * Generate a {@link uk.ac.ebi.pride.jmztab1_1.utils.errors.MZTabErrorType.Level#Warn} by parse keyword.
+     *
+     * @param category a {@link uk.ac.ebi.pride.jmztab1_1.utils.errors.MZTabErrorType.Category} object.
+     * @param keyword a {@link java.lang.String} object.
+     * @return a {@link uk.ac.ebi.pride.jmztab1_1.utils.errors.MZTabErrorType} object.
      */
     protected static MZTabErrorType createWarn(MZTabErrorType.Category category, String keyword) {
         return MZTabErrorType.createMZTabError(category, Level.Warn, keyword);
     }
 
     /**
-     * Generate a {@link MZTabErrorType.Level#Info} by parse keyword.
+     * Generate a {@link uk.ac.ebi.pride.jmztab1_1.utils.errors.MZTabErrorType.Level#Info} by parse keyword.
+     *
+     * @param category a {@link uk.ac.ebi.pride.jmztab1_1.utils.errors.MZTabErrorType.Category} object.
+     * @param keyword a {@link java.lang.String} object.
+     * @return a {@link uk.ac.ebi.pride.jmztab1_1.utils.errors.MZTabErrorType} object.
      */
     protected static MZTabErrorType createInfo(MZTabErrorType.Category category, String keyword) {
         return MZTabErrorType.createMZTabError(category, Level.Info, keyword);
@@ -109,22 +127,47 @@ public class MZTabErrorType {
         return new MZTabErrorType(code, category, level, original, cause);
     }
 
+    /**
+     * <p>Getter for the field <code>code</code>.</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
     public Integer getCode() {
         return code;
     }
 
+    /**
+     * <p>Getter for the field <code>category</code>.</p>
+     *
+     * @return a {@link uk.ac.ebi.pride.jmztab1_1.utils.errors.MZTabErrorType.Category} object.
+     */
     public Category getCategory() {
         return category;
     }
 
+    /**
+     * <p>Getter for the field <code>level</code>.</p>
+     *
+     * @return a {@link uk.ac.ebi.pride.jmztab1_1.utils.errors.MZTabErrorType.Level} object.
+     */
     public Level getLevel() {
         return level;
     }
 
+    /**
+     * <p>Getter for the field <code>original</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getOriginal() {
         return original;
     }
 
+    /**
+     * <p>Getter for the field <code>cause</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getCause() {
         return cause;
     }
@@ -134,6 +177,8 @@ public class MZTabErrorType {
      * Category: Currently, there are three types of messages: Format, Logical
      * Original: Message expression pattern. "{?}" is a couple of parameters which can be filled during validate processing.
      * Cause: A readable text to describe the reason why raise this error/warn. Currently, these cause message coming from mztab specification mainly.
+     *
+     * @return a {@link java.lang.String} object.
      */
     public String toString() {
         return  "    Code:\t" + code + "\r\n" +
@@ -143,7 +188,10 @@ public class MZTabErrorType {
     }
 
     /**
-     * @return the {@link MZTabErrorType.Level}
+     * <p>findLevel.</p>
+     *
+     * @return the {@link uk.ac.ebi.pride.jmztab1_1.utils.errors.MZTabErrorType.Level}
+     * @param target a {@link java.lang.String} object.
      */
     public static Level findLevel(String target) {
         if (MZTabUtils.isEmpty(target)) {

@@ -34,19 +34,30 @@ import java.util.stream.Collectors;
 import uk.ac.ebi.pride.jmztab1_1.model.Section;
 
 /**
+ * <p>StudyVariableSerializer class.</p>
  *
- * @author Nils Hoffmann &lt;nils.hoffmann@isas.de&gt;
+ * @author nilshoffmann
+ * 
  */
 public class StudyVariableSerializer extends StdSerializer<StudyVariable> {
 
+    /**
+     * <p>Constructor for StudyVariableSerializer.</p>
+     */
     public StudyVariableSerializer() {
         this(null);
     }
 
+    /**
+     * <p>Constructor for StudyVariableSerializer.</p>
+     *
+     * @param t a {@link java.lang.Class} object.
+     */
     public StudyVariableSerializer(Class<StudyVariable> t) {
         super(t);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void serialize(StudyVariable studyVariable, JsonGenerator jg,
         SerializerProvider sp) throws IOException {

@@ -28,19 +28,30 @@ import java.util.logging.Logger;
 import uk.ac.ebi.pride.jmztab1_1.model.Section;
 
 /**
+ * <p>MsRunSerializer class.</p>
  *
- * @author Nils Hoffmann &lt;nils.hoffmann@isas.de&gt;
+ * @author nilshoffmann
+ * 
  */
 public class MsRunSerializer extends StdSerializer<MsRun> {
 
+    /**
+     * <p>Constructor for MsRunSerializer.</p>
+     */
     public MsRunSerializer() {
         this(null);
     }
 
+    /**
+     * <p>Constructor for MsRunSerializer.</p>
+     *
+     * @param t a {@link java.lang.Class} object.
+     */
     public MsRunSerializer(Class<MsRun> t) {
         super(t);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void serialize(MsRun msRun, JsonGenerator jg,
         SerializerProvider sp) throws IOException {

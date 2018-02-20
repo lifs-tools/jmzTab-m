@@ -27,19 +27,30 @@ import java.util.logging.Logger;
 import uk.ac.ebi.pride.jmztab1_1.model.Section;
 
 /**
+ * <p>ExternalStudySerializer class.</p>
  *
- * @author Nils Hoffmann &lt;nils.hoffmann@isas.de&gt;
+ * @author nilshoffmann
+ * 
  */
 public class ExternalStudySerializer extends StdSerializer<ExternalStudy> {
 
+    /**
+     * <p>Constructor for ExternalStudySerializer.</p>
+     */
     public ExternalStudySerializer() {
         this(null);
     }
 
+    /**
+     * <p>Constructor for ExternalStudySerializer.</p>
+     *
+     * @param t a {@link java.lang.Class} object.
+     */
     public ExternalStudySerializer(Class<ExternalStudy> t) {
         super(t);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void serialize(ExternalStudy study, JsonGenerator jg,
         SerializerProvider sp) throws IOException {

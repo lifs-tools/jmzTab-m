@@ -38,14 +38,14 @@ import uk.ac.ebi.pride.jmztab1_1.utils.errors.MZTabErrorType;
 /**
  * Parse a metadata line into a element. Metadata Element start with MTD, its
  * structure like: MTD
- * {@link MetadataElement}([id])(-{@link MetadataSubElement}[pid])(-{@link MetadataProperty})    {Element Value}
+ * {@link uk.ac.ebi.pride.jmztab1_1.model.MetadataElement}([id])(-{@link uk.ac.ebi.pride.jmztab1_1.model.MetadataSubElement}[pid])(-{@link uk.ac.ebi.pride.jmztab1_1.model.MetadataProperty})    {Element Value}
  *
  * @see MetadataElement
  * @see MetadataSubElement
  * @see MetadataProperty
- *
  * @author qingwei
  * @since 08/02/13
+ * 
  */
 public class MTDLineParser extends MZTabLineParser {
 
@@ -53,11 +53,18 @@ public class MTDLineParser extends MZTabLineParser {
 
     private Metadata metadata = new Metadata();
 
+    /**
+     * <p>Constructor for MTDLineParser.</p>
+     *
+     * @param context a {@link uk.ac.ebi.pride.jmztab1_1.utils.parser.MZTabParserContext} object.
+     */
     public MTDLineParser(MZTabParserContext context) {
         super(context);
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Most of time, we use {@link #parseNormalMetadata(String, String)} to
      * parse defineLabel into Metadata Element.
      */
@@ -669,6 +676,8 @@ public class MTDLineParser extends MZTabLineParser {
      * Refine the metadata, and check whether missing some important
      * information. fixed_mode, variable_mode must provide in the Complete file.
      * Detail information see specification 5.5
+     *
+     * @throws uk.ac.ebi.pride.jmztab1_1.utils.errors.MZTabException if any.
      */
     public void refineNormalMetadata() throws MZTabException {
 //        MZTabDescription.Mode mode = metadata.getMZTabMode();
@@ -761,6 +770,11 @@ public class MTDLineParser extends MZTabLineParser {
 //        }
     }
 
+    /**
+     * <p>Getter for the field <code>metadata</code>.</p>
+     *
+     * @return a {@link de.isas.mztab1_1.model.Metadata} object.
+     */
     public Metadata getMetadata() {
         return metadata;
     }
@@ -836,6 +850,16 @@ MTD study-version 1.0
         }
     }
 
+    /**
+     * <p>handleParam.</p>
+     *
+     * @param defineLabel a {@link java.lang.String} object.
+     * @param valueLabel a {@link java.lang.String} object.
+     * @param errorType a {@link uk.ac.ebi.pride.jmztab1_1.utils.errors.MZTabErrorType} object.
+     * @param lineNumber a int.
+     * @param consumer a {@link java.util.function.Consumer} object.
+     * @throws uk.ac.ebi.pride.jmztab1_1.utils.errors.MZTabErrorOverflowException if any.
+     */
     public void handleParam(String defineLabel, String valueLabel,
         MZTabErrorType errorType, int lineNumber,
         Consumer<Parameter> consumer) throws MZTabErrorOverflowException {

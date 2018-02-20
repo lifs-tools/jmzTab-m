@@ -29,6 +29,7 @@ import uk.ac.ebi.pride.jmztab1_1.utils.parser.MZTabParserContext;
  *
  * @author qingwei
  * @since 30/01/13
+ * 
  */
 public class MZTabUtils {
 
@@ -36,6 +37,9 @@ public class MZTabUtils {
 
     /**
      * Check the string is null or blank.
+     *
+     * @param s a {@link java.lang.String} object.
+     * @return a boolean.
      */
     public static boolean isEmpty(String s) {
         return s == null || s.trim().length() == 0;
@@ -43,6 +47,9 @@ public class MZTabUtils {
 
     /**
      * Translate the string to the first char is upper case, others are lower case.
+     *
+     * @param s a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
      */
     public static String toCapital(String s) {
         if (isEmpty(s)) {
@@ -61,6 +68,9 @@ public class MZTabUtils {
     /**
      * Pre-process the String object. If object is null, return null; otherwise
      * remove heading and tailing white space.
+     *
+     * @param target a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
      */
     public static String parseString(String target) {
         if (target == null || target.isEmpty() || target.trim().equalsIgnoreCase(NULL)) {
@@ -76,6 +86,8 @@ public class MZTabUtils {
      * as "not a number" ("NaN").
      *
      * @see #parseDouble(String)
+     * @param value a {@link java.lang.Double} object.
+     * @return a {@link java.lang.String} object.
      */
     public static String printDouble(Double value) {
         if (value == null) {
@@ -91,6 +103,9 @@ public class MZTabUtils {
 
     /**
      * Parse the target string, and check is obey the email format or not. If not, return null.
+     *
+     * @param target a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
      */
     public static String parseEmail(String target) {
         target = parseString(target);
@@ -113,6 +128,9 @@ public class MZTabUtils {
      * If the name or value of param contains comma, quotes MUST be added to avoid problems. Nested double quotes are not supported.
      *
      * Notice: name cell never set null.
+     *
+     * @param target a {@link java.lang.String} object.
+     * @return a {@link de.isas.mztab1_1.model.Parameter} object.
      */
     public static Parameter parseParam(String target) {
         target = parseString(target);
@@ -162,6 +180,10 @@ public class MZTabUtils {
 
     /**
      * Multiple identifiers MUST be separated by splitChar.
+     *
+     * @param splitChar a char.
+     * @param target a {@link java.lang.String} object.
+     * @return a {@link java.util.List} object.
      */
     public static List<String> parseStringList(char splitChar, String target) {
         List<String> list = new ArrayList<String>(splitChar);
@@ -201,7 +223,11 @@ public class MZTabUtils {
     }
 
     /**
-     * parse the target into a {@link Parameter} object.
+     * parse the target into a {@link de.isas.mztab1_1.model.Parameter} object.
+     *
+     * @param target a {@link java.lang.String} object.
+     * @param element a {@link uk.ac.ebi.pride.jmztab1_1.model.MetadataElement} object.
+     * @return a {@link de.isas.mztab1_1.model.IndexedElement} object.
      */
     public static IndexedElement parseParameter(String target, MetadataElement element) {
         target = parseString(target);
@@ -222,7 +248,11 @@ public class MZTabUtils {
     }
 
     /**
-     * Parse the target into a {@link Parameter} list.
+     * Parse the target into a {@link de.isas.mztab1_1.model.Parameter} list.
+     *
+     * @param target a {@link java.lang.String} object.
+     * @param element a {@link uk.ac.ebi.pride.jmztab1_1.model.MetadataElement} object.
+     * @return a {@link java.util.List} object.
      */
     public static List<IndexedElement> parseRefList(String target, MetadataElement element) {
         List<String> list = parseStringList(MZTabConstants.COMMA, target);
@@ -242,6 +272,9 @@ public class MZTabUtils {
 
     /**
      * A list of '|' separated parameters
+     *
+     * @param target a {@link java.lang.String} object.
+     * @return a {@link java.util.List} object.
      */
     public static List<Parameter> parseParamList(String target) {
         List<String> list = parseStringList(BAR, target);
@@ -263,6 +296,9 @@ public class MZTabUtils {
 
     /**
      * A '|' delimited list of GO accessions
+     *
+     * @param target a {@link java.lang.String} object.
+     * @return a {@link java.util.List} object.
      */
     public static List<String> parseGOTermList(String target) {
         List<String> list = parseStringList(COMMA, target);
@@ -281,6 +317,12 @@ public class MZTabUtils {
         return goList;
     }
 
+    /**
+     * <p>parseInteger.</p>
+     *
+     * @param target a {@link java.lang.String} object.
+     * @return a {@link java.lang.Integer} object.
+     */
     public static Integer parseInteger(String target) {
         target = parseString(target);
         if (target == null) {
@@ -301,6 +343,9 @@ public class MZTabUtils {
     /**
      * NOTICE: If ratios are included and the denominator is zero, the "INF" value MUST be used. If the result leads
      * to calculation errors (for example 0/0), this MUST be reported as "not a number" ("NaN").
+     *
+     * @param target a {@link java.lang.String} object.
+     * @return a {@link java.lang.Double} object.
      */
     public static Double parseDouble(String target) {
         target = parseString(target);
@@ -328,6 +373,12 @@ public class MZTabUtils {
         return value;
     }
     
+    /**
+     * <p>parseLong.</p>
+     *
+     * @param target a {@link java.lang.String} object.
+     * @return a {@link java.lang.Long} object.
+     */
     public static Long parseLong(String target) {
         target = parseString(target);
         if (target == null) {
@@ -341,6 +392,12 @@ public class MZTabUtils {
         }
     }
 
+    /**
+     * <p>parseDoubleList.</p>
+     *
+     * @param target a {@link java.lang.String} object.
+     * @return a {@link java.util.List} object.
+     */
     public static List<Double> parseDoubleList(String target) {
         List<String> list = parseStringList(BAR, target);
 
@@ -359,6 +416,12 @@ public class MZTabUtils {
         return valueList;
     }
 
+    /**
+     * <p>parseURL.</p>
+     *
+     * @param target a {@link java.lang.String} object.
+     * @return a {@link java.net.URL} object.
+     */
     public static URL parseURL(String target) {
         target = parseString(target);
         if (target == null) {
@@ -376,6 +439,12 @@ public class MZTabUtils {
         return url;
     }
 
+    /**
+     * <p>parseURI.</p>
+     *
+     * @param target a {@link java.lang.String} object.
+     * @return a {@link java.net.URI} object.
+     */
     public static URI parseURI(String target) {
         target = parseString(target);
         if (target == null) {
@@ -396,6 +465,10 @@ public class MZTabUtils {
     /**
      * A publication on this unit. PubMed ids must be prefixed by "pubmed:",
      * DOIs by "doi:". Multiple identifiers MUST be separated by "|".
+     *
+     * @param publication a {@link de.isas.mztab1_1.model.Publication} object.
+     * @param target a {@link java.lang.String} object.
+     * @return a {@link de.isas.mztab1_1.model.Publication} object.
      */
     public static Publication parsePublicationItems(Publication publication, String target) {
         List<String> list = parseStringList(BAR, target);
@@ -434,7 +507,12 @@ public class MZTabUtils {
     }
 
     /**
-     * Parse a {@link SpectraRef} list.
+     * Parse a {@link de.isas.mztab1_1.model.SpectraRef} list.
+     *
+     * @param context a {@link uk.ac.ebi.pride.jmztab1_1.utils.parser.MZTabParserContext} object.
+     * @param metadata a {@link de.isas.mztab1_1.model.Metadata} object.
+     * @param target a {@link java.lang.String} object.
+     * @return a {@link java.util.List} object.
      */
     public static List<SpectraRef> parseSpectraRefList(MZTabParserContext context, Metadata metadata, String target) {
         List<String> list = parseStringList(BAR, target);
@@ -491,6 +569,9 @@ public class MZTabUtils {
     /**
      *  Solve the conflict about minus char between modification position and CHEMMOD charge.
      *  For example: 13-CHEMMOD:-159
+     *
+     * @param target a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
      */
     public static String translateMinusToUnicode(String target) {
         Pattern pattern = Pattern.compile("(CHEMMOD:.*)(-)(.*)");
@@ -507,6 +588,12 @@ public class MZTabUtils {
         return sb.toString();
     }
 
+    /**
+     * <p>translateMinusInCVtoUnicode.</p>
+     *
+     * @param target a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
     public static String translateMinusInCVtoUnicode(String target){
         Pattern pattern = Pattern.compile("\\[([^\\[\\]]+)\\]");
         Matcher matcher = pattern.matcher(target);
@@ -526,6 +613,12 @@ public class MZTabUtils {
         return sb.toString();
     }
 
+    /**
+     * <p>translateUnicodeCVTermMinus.</p>
+     *
+     * @param target a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
     public static String translateUnicodeCVTermMinus(String target){
         return target.replaceAll("&minus;", "-");
     }
@@ -534,6 +627,9 @@ public class MZTabUtils {
     /**
      *  Solve the conflict about minus char between modification position and CHEMMOD charge.
      *  For example: 13-CHEMMOD:-159
+     *
+     * @param target a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
      */
     public static String translateUnicodeToMinus(String target) {
         Pattern pattern = Pattern.compile("(.*CHEMMOD:.*)(&minus;)(.*)");
@@ -624,6 +720,9 @@ public class MZTabUtils {
 
     /**
      * locate param label [label, accession, name, value], translate ',' to '\t'
+     *
+     * @param target a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
      */
     public static String translateCommaToTab(String target) {
         Pattern pattern = Pattern.compile("\\[([^\\[\\]]+)\\]");
@@ -646,6 +745,9 @@ public class MZTabUtils {
 
     /**
      * solve the conflict about comma char which used in split modification and split cv param components.
+     *
+     * @param target a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
      */
     public static String translateTabToComma(String target) {
         Pattern pattern = Pattern.compile("\\[([^\\[\\]]+)\\]");
@@ -668,6 +770,12 @@ public class MZTabUtils {
 
     //Solve the problem for Neutral losses in CvTerm format
 
+    /**
+     * <p>translateMinusToTab.</p>
+     *
+     * @param target a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
     public static String translateMinusToTab(String target){
         Pattern pattern = Pattern.compile("\\[([^\\[\\]]+)\\]");
         Matcher matcher = pattern.matcher(target);
@@ -700,6 +808,12 @@ public class MZTabUtils {
     }
 
 
+    /**
+     * <p>translateLastToTab.</p>
+     *
+     * @param target a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
     public static String translateLastToTab(String target){
         Pattern pattern = Pattern.compile("\\[([^\\[\\]]+)\\]");
         Matcher matcher = pattern.matcher(target);
@@ -722,6 +836,9 @@ public class MZTabUtils {
 
     /**
      * solve the conflict about comma char which used in split modification and split cv param components.
+     *
+     * @param target a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
      */
     public static String translateTabToMinus(String target) {
         Pattern pattern = Pattern.compile("\\[([^\\[\\]]+)\\]");
@@ -778,7 +895,10 @@ public class MZTabUtils {
     /**
      * If there exists reserved characters in value, like comma, the string need to be escape. However the escaping char
      * is not store because it will be write back in the writer. Nested double quotes are not supported.
-     * */
+     *
+     * @param value a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
     public static String removeDoubleQuotes(String value) {
 
         if (value != null) {

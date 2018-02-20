@@ -5,6 +5,9 @@ import de.isas.mztab1_1.model.Assay;
 import de.isas.mztab1_1.model.IndexedElement;
 import de.isas.mztab1_1.model.MsRun;
 import de.isas.mztab1_1.model.Parameter;
+import de.isas.mztab1_1.model.SmallMoleculeSummary;
+import de.isas.mztab1_1.model.SmallMoleculeFeature;
+import de.isas.mztab1_1.model.SmallMoleculeEvidence;
 import de.isas.mztab1_1.model.StudyVariable;
 import java.net.URI;
 import java.util.Iterator;
@@ -18,15 +21,14 @@ import static uk.ac.ebi.pride.jmztab1_1.model.MZTabUtils.parseDouble;
 
 /**
  * MZTabRecord used to store a row record of the table. The record SHOULD keep the same structure with
- * the {@link MZTabColumnFactory}, which defined in the construct method.
+ * the {@link uk.ac.ebi.pride.jmztab1_1.model.MZTabColumnFactory}, which defined in the construct method.
  *
- * @see Protein
- * @see Peptide
- * @see PSM
- * @see SmallMolecule
- *
+ * @see SmallMoleculeSummary
+ * @see SmallMoleculeFeature
+ * @see SmallMoleculeEvidence
  * @author qingwei
  * @since 23/05/13
+ * 
  */
 public abstract class MZTabRecord {
     protected MZTabColumnFactory factory;
@@ -34,7 +36,7 @@ public abstract class MZTabRecord {
     private TreeMap<String, Object> record = new TreeMap<String, Object>();
 
     /**
-     * Create a record based on {@link MZTabColumnFactory} structure. The default cell value is null.
+     * Create a record based on {@link uk.ac.ebi.pride.jmztab1_1.model.MZTabColumnFactory} structure. The default cell value is null.
      *
      * @param factory SHOULD NOT be null.
      */
@@ -69,8 +71,9 @@ public abstract class MZTabRecord {
      * validate by calling {@link #isMatch(String, Class)}. If not match, system not do set operation
      * and return false value.
      *
-     * @param logicalPosition locate the column data type definition in {@link MZTabColumnFactory}
+     * @param logicalPosition locate the column data type definition in {@link uk.ac.ebi.pride.jmztab1_1.model.MZTabColumnFactory}
      * @param value SHOULD NOT set null.
+     * @return a boolean.
      */
     public boolean setValue(String logicalPosition, Object value) {
         if (value == null) {
@@ -88,6 +91,9 @@ public abstract class MZTabRecord {
 
     /**
      * Get the value of a special logical position cell.
+     *
+     * @param logicalPosition a {@link java.lang.String} object.
+     * @return a {@link java.lang.Object} object.
      */
     public Object getValue(String logicalPosition) {
         return record.get(logicalPosition);
@@ -128,6 +134,8 @@ public abstract class MZTabRecord {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Print record to a tab split string.
      * value1   value2  value3  ...
      */
@@ -151,6 +159,9 @@ public abstract class MZTabRecord {
 
     /**
      * Get cell value and convert it to String. If can not convert, return null.
+     *
+     * @param logicalPosition a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
      */
     protected String getString(String logicalPosition) {
         if (! isMatch(logicalPosition, String.class)) {
@@ -170,6 +181,9 @@ public abstract class MZTabRecord {
 
     /**
      * Get cell value and convert it to Integer. If can not convert, return null.
+     *
+     * @param logicalPosition a {@link java.lang.String} object.
+     * @return a {@link java.lang.Integer} object.
      */
     protected Integer getInteger(String logicalPosition) {
         if (! isMatch(logicalPosition, Integer.class)) {
@@ -181,6 +195,9 @@ public abstract class MZTabRecord {
 
     /**
      * Get cell value and convert it to Double. If can not convert, return null.
+     *
+     * @param logicalPosition a {@link java.lang.String} object.
+     * @return a {@link java.lang.Double} object.
      */
     protected Double getDouble(String logicalPosition) {
         if (! isMatch(logicalPosition, Double.class)) {
@@ -191,7 +208,10 @@ public abstract class MZTabRecord {
     }
 
     /**
-     * Get cell value and convert it to {@link SplitList} object. If can not convert, return null.
+     * Get cell value and convert it to {@link uk.ac.ebi.pride.jmztab1_1.model.SplitList} object. If can not convert, return null.
+     *
+     * @param logicalPosition a {@link java.lang.String} object.
+     * @return a {@link uk.ac.ebi.pride.jmztab1_1.model.SplitList} object.
      */
     protected SplitList getSplitList(String logicalPosition) {
         if (! isMatch(logicalPosition, SplitList.class)) {
@@ -202,7 +222,10 @@ public abstract class MZTabRecord {
     }
 
     /**
-     * Get cell value and convert it to {@link URI}. If can not convert, return null.
+     * Get cell value and convert it to {@link java.net.URI}. If can not convert, return null.
+     *
+     * @param logicalPosition a {@link java.lang.String} object.
+     * @return a {@link java.net.URI} object.
      */
     protected URI getURI(String logicalPosition) {
         if (! isMatch(logicalPosition, URI.class)) {
@@ -224,7 +247,10 @@ public abstract class MZTabRecord {
 //    }
 
     /**
-     * Get cell value and convert it to {@link MZBoolean}. If can not convert, return null.
+     * Get cell value and convert it to {@link uk.ac.ebi.pride.jmztab1_1.model.MZBoolean}. If can not convert, return null.
+     *
+     * @param logicalPosition a {@link java.lang.String} object.
+     * @return a {@link uk.ac.ebi.pride.jmztab1_1.model.MZBoolean} object.
      */
     protected MZBoolean getMZBoolean(String logicalPosition) {
         if (! isMatch(logicalPosition, MZBoolean.class)) {
@@ -238,6 +264,11 @@ public abstract class MZTabRecord {
      * Get logical position based on column's order and element id.
      *
      * order + id + element.id
+     *
+     * @param column a {@link uk.ac.ebi.pride.jmztab1_1.model.IMZTabColumn} object.
+     * @param id a {@link java.lang.Integer} object.
+     * @param element a {@link de.isas.mztab1_1.model.IndexedElement} object.
+     * @return a {@link java.lang.String} object.
      */
     protected String getLogicalPosition(IMZTabColumn column, Integer id, IndexedElement element) {
         StringBuilder sb = new StringBuilder();
@@ -278,7 +309,9 @@ public abstract class MZTabRecord {
 
     /**
      * Get value from {section name}_abundance_assay[1-n] column cell.
+     *
      * @param assay SHOULD NOT be null.
+     * @return a {@link java.lang.Double} object.
      */
     public Double getAbundanceColumnValue(Assay assay) {
         IMZTabColumn column = getAbundanceColumn("abundance_", assay);
@@ -291,7 +324,9 @@ public abstract class MZTabRecord {
 
     /**
      * Set value from {section name}_abundance_assay[1-n] column cell.
+     *
      * @param assay SHOULD NOT be null.
+     * @param value a {@link java.lang.Double} object.
      */
     public void setAbundanceColumnValue(Assay assay, Double value) {
         if (assay == null) {
@@ -306,7 +341,9 @@ public abstract class MZTabRecord {
 
     /**
      * Set value from {section name}_abundance_assay[1-n] column cell.
+     *
      * @param assay SHOULD NOT be null.
+     * @param valueLabel a {@link java.lang.String} object.
      */
     public void setAbundanceColumnValue(Assay assay, String valueLabel) {
         setAbundanceColumnValue(assay, parseDouble(valueLabel));
@@ -314,7 +351,9 @@ public abstract class MZTabRecord {
 
     /**
      * Get value from {section name}_abundance_study_variable[1-n] column cell.
+     *
      * @param studyVariable SHOULD NOT be null.
+     * @return a {@link java.lang.Double} object.
      */
     public Double getAbundanceColumnValue(StudyVariable studyVariable) {
         IMZTabColumn column = getAbundanceColumn("abundance_", studyVariable);
@@ -327,7 +366,9 @@ public abstract class MZTabRecord {
 
     /**
      * Set value from {section name}_abundance_study_variable[1-n] column cell.
+     *
      * @param studyVariable SHOULD NOT be null.
+     * @param value a {@link java.lang.Double} object.
      */
     public void setAbundanceColumnValue(StudyVariable studyVariable, Double value) {
         IMZTabColumn column = getAbundanceColumn("abundance_", studyVariable);
@@ -338,7 +379,9 @@ public abstract class MZTabRecord {
 
     /**
      * Set value from {section name}_abundance_study_variable[1-n] column cell.
+     *
      * @param studyVariable SHOULD NOT be null.
+     * @param valueLabel a {@link java.lang.String} object.
      */
     public void setAbundanceColumnValue(StudyVariable studyVariable, String valueLabel) {
         setAbundanceColumnValue(studyVariable, parseDouble(valueLabel));
@@ -346,7 +389,9 @@ public abstract class MZTabRecord {
 
     /**
      * Get value from {section name}_abundance_stdev_study_variable[1-n] column cell.
+     *
      * @param studyVariable SHOULD NOT be null.
+     * @return a {@link java.lang.Double} object.
      */
     public Double getAbundanceStdevColumnValue(StudyVariable studyVariable) {
         IMZTabColumn column = getAbundanceColumn("abundance_stdev_", studyVariable);
@@ -359,7 +404,9 @@ public abstract class MZTabRecord {
 
     /**
      * Set value from {section name}_abundance_stdev_study_variable[1-n] column cell.
+     *
      * @param studyVariable SHOULD NOT be null.
+     * @param value a {@link java.lang.Double} object.
      */
     public void setAbundanceStdevColumnValue(StudyVariable studyVariable, Double value) {
         IMZTabColumn column = getAbundanceColumn("abundance_stdev_", studyVariable);
@@ -370,7 +417,9 @@ public abstract class MZTabRecord {
 
     /**
      * Set value from {section name}_abundance_stdev_study_variable[1-n] column cell.
+     *
      * @param studyVariable SHOULD NOT be null.
+     * @param valueLabel a {@link java.lang.String} object.
      */
     public void setAbundanceStdevColumnValue(StudyVariable studyVariable, String valueLabel) {
         setAbundanceStdevColumnValue(studyVariable, parseDouble(valueLabel));
@@ -378,7 +427,9 @@ public abstract class MZTabRecord {
 
     /**
      * Get value from {section name}_abundance_std_error_study_variable[1-n] column cell.
+     *
      * @param studyVariable SHOULD NOT be null.
+     * @return a {@link java.lang.Double} object.
      */
     public Double getAbundanceStdErrorColumnValue(StudyVariable studyVariable) {
         IMZTabColumn column = getAbundanceColumn("abundance_std_error_", studyVariable);
@@ -391,7 +442,9 @@ public abstract class MZTabRecord {
 
     /**
      * Set value from {section name}_abundance_std_error_study_variable[1-n] column cell.
+     *
      * @param studyVariable SHOULD NOT be null.
+     * @param value a {@link java.lang.Double} object.
      */
     public void setAbundanceStdErrorColumnValue(StudyVariable studyVariable, Double value) {
         IMZTabColumn column = getAbundanceColumn("abundance_std_error_", studyVariable);
@@ -402,7 +455,9 @@ public abstract class MZTabRecord {
 
     /**
      * Set value from {section name}_abundance_std_error_study_variable[1-n] column cell.
+     *
      * @param studyVariable SHOULD NOT be null.
+     * @param valueLabel a {@link java.lang.String} object.
      */
     public void setAbundanceStdErrorColumnValue(StudyVariable studyVariable, String valueLabel) {
         setAbundanceStdErrorColumnValue(studyVariable, parseDouble(valueLabel));
@@ -410,7 +465,10 @@ public abstract class MZTabRecord {
 
     /**
      * Get value from opt_assay[1-n]_name column cell.
+     *
      * @param assay SHOULD NOT be null.
+     * @param name a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
      */
     public String getOptionColumnValue(Assay assay, String name) {
         String header = OptionColumn.getHeader(assay, name);
@@ -420,7 +478,10 @@ public abstract class MZTabRecord {
 
     /**
      * Set value for opt_assay[1-n]_name column cell.
+     *
      * @param assay SHOULD NOT be null.
+     * @param name a {@link java.lang.String} object.
+     * @param value a {@link java.lang.String} object.
      */
     public void setOptionColumnValue(Assay assay, String name, String value) {
         String header = OptionColumn.getHeader(assay, name);
@@ -432,7 +493,10 @@ public abstract class MZTabRecord {
 
     /**
      * Get value from opt_assay[1-n]_cv_{accession} column cell.
+     *
      * @param assay SHOULD NOT be null.
+     * @param param a {@link de.isas.mztab1_1.model.Parameter} object.
+     * @return a {@link java.lang.String} object.
      */
     public String getOptionColumnValue(Assay assay, Parameter param) {
         String header = ParameterOptionColumn.getHeader(assay, param);
@@ -442,7 +506,10 @@ public abstract class MZTabRecord {
 
     /**
      * Set value for opt_assay[1-n]_cv_{accession} column cell.
+     *
      * @param assay SHOULD NOT be null.
+     * @param param a {@link de.isas.mztab1_1.model.Parameter} object.
+     * @param value a {@link java.lang.String} object.
      */
     public void setOptionColumnValue(Assay assay, Parameter param, String value) {
         String header = ParameterOptionColumn.getHeader(assay, param);
@@ -454,7 +521,10 @@ public abstract class MZTabRecord {
 
     /**
      * Get value from opt_study_variable[1-n]_name column cell.
+     *
      * @param studyVariable SHOULD NOT be null.
+     * @param name a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
      */
     public String getOptionColumnValue(StudyVariable studyVariable, String name) {
         String header = OptionColumn.getHeader(studyVariable, name);
@@ -464,7 +534,10 @@ public abstract class MZTabRecord {
 
     /**
      * Set value for opt_study_variable[1-n]_name column cell.
+     *
      * @param studyVariable SHOULD NOT be null.
+     * @param name a {@link java.lang.String} object.
+     * @param value a {@link java.lang.String} object.
      */
     public void setOptionColumnValue(StudyVariable studyVariable, String name, String value) {
         String header = OptionColumn.getHeader(studyVariable, name);
@@ -476,7 +549,10 @@ public abstract class MZTabRecord {
 
     /**
      * Get value from opt_study_variable[1-n]_cv_{accession} column cell.
+     *
      * @param studyVariable SHOULD NOT be null.
+     * @param param a {@link de.isas.mztab1_1.model.Parameter} object.
+     * @return a {@link java.lang.String} object.
      */
     public String getOptionColumnValue(StudyVariable studyVariable, Parameter param) {
         String header = ParameterOptionColumn.getHeader(studyVariable, param);
@@ -486,7 +562,10 @@ public abstract class MZTabRecord {
 
     /**
      * Set value from opt_study_variable[1-n]_cv_{accession} column cell.
+     *
      * @param studyVariable SHOULD NOT be null.
+     * @param param a {@link de.isas.mztab1_1.model.Parameter} object.
+     * @param value a {@link java.lang.String} object.
      */
     public void setOptionColumnValue(StudyVariable studyVariable, Parameter param, String value) {
         String header = ParameterOptionColumn.getHeader(studyVariable, param);
@@ -498,7 +577,10 @@ public abstract class MZTabRecord {
 
     /**
      * Get value from opt_ms_run[1-n]_name column cell.
+     *
      * @param msRun SHOULD NOT be null.
+     * @param name a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
      */
     public String getOptionColumnValue(MsRun msRun, String name) {
         String header = OptionColumn.getHeader(msRun, name);
@@ -508,7 +590,10 @@ public abstract class MZTabRecord {
 
     /**
      * Set value for opt_ms_run[1-n]_name column cell.
+     *
      * @param msRun SHOULD NOT be null.
+     * @param name a {@link java.lang.String} object.
+     * @param value a {@link java.lang.String} object.
      */
     public void setOptionColumnValue(MsRun msRun, String name, String value) {
         String header = OptionColumn.getHeader(msRun, name);
@@ -520,7 +605,10 @@ public abstract class MZTabRecord {
 
     /**
      * Get value from opt_ms_run[1-n]_name column cell.
+     *
      * @param msRun SHOULD NOT be null.
+     * @param param a {@link de.isas.mztab1_1.model.Parameter} object.
+     * @return a {@link java.lang.String} object.
      */
     public String getOptionColumnValue(MsRun msRun, Parameter param) {
         String header = ParameterOptionColumn.getHeader(msRun, param);
@@ -530,7 +618,10 @@ public abstract class MZTabRecord {
 
     /**
      * Set value for opt_ms_run[1-n]_cv_{accession} column cell.
+     *
      * @param msRun SHOULD NOT be null.
+     * @param param a {@link de.isas.mztab1_1.model.Parameter} object.
+     * @param value a {@link java.lang.String} object.
      */
     public void setOptionColumnValue(MsRun msRun, Parameter param, String value) {
         String header = ParameterOptionColumn.getHeader(msRun, param);
@@ -544,6 +635,9 @@ public abstract class MZTabRecord {
      * Get value from opt_global_name column cell. The current method only
      * retrieve the values that are String. The others values like Boolean or SplitList are
      * not retrieve.
+     *
+     * @param name a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
      */
     public String getOptionColumnValue(String name) {
         String header = OptionColumn.getHeader(null, name);
@@ -554,6 +648,7 @@ public abstract class MZTabRecord {
     /**
      * Get any type of OptionColumn as String representation. It retrieve Any option
      * Column as String. For example for MzBoolean 1, 0 it returns the the String representation.
+     *
      * @param name of the optional Column
      * @return value in String representation.
      */
@@ -566,6 +661,9 @@ public abstract class MZTabRecord {
 
     /**
      * Set value for opt_global_name column cell.
+     *
+     * @param name a {@link java.lang.String} object.
+     * @param value a {@link java.lang.Object} object.
      */
     public void setOptionColumnValue(String name, Object value) {
         String header = OptionColumn.getHeader(null, name);
@@ -577,6 +675,9 @@ public abstract class MZTabRecord {
 
     /**
      * Get value from opt_global_cv_{accession} column cell.
+     *
+     * @param param a {@link de.isas.mztab1_1.model.Parameter} object.
+     * @return a {@link java.lang.String} object.
      */
     public String getOptionColumnValue(Parameter param) {
         String header = ParameterOptionColumn.getHeader(null, param);
@@ -586,6 +687,9 @@ public abstract class MZTabRecord {
 
     /**
      * Set value for opt_global_cv_{accession} column cell.
+     *
+     * @param param a {@link de.isas.mztab1_1.model.Parameter} object.
+     * @param value a {@link java.lang.Object} object.
      */
     public void setOptionColumnValue(Parameter param, Object value) {
         String header = ParameterOptionColumn.getHeader(null, param);

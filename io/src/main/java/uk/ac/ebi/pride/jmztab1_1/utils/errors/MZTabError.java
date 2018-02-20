@@ -26,6 +26,7 @@ import static uk.ac.ebi.pride.jmztab1_1.model.MZTabConstants.NEW_LINE;
  *
  * @author qingwei
  * @since 06/02/13
+ * 
  */
 public class MZTabError {
 
@@ -83,8 +84,9 @@ public class MZTabError {
     }
 
     /**
-     * @return {@link MZTabErrorType}
+     * <p>Getter for the field <code>type</code>.</p>
      *
+     * @return {@link uk.ac.ebi.pride.jmztab1_1.utils.errors.MZTabErrorType}
      * @see FormatErrorType
      * @see LogicalErrorType
      */
@@ -93,6 +95,8 @@ public class MZTabError {
     }
 
     /**
+     * <p>Getter for the field <code>message</code>.</p>
+     *
      * @return a concrete error/warn message.
      */
     public String getMessage() {
@@ -100,6 +104,7 @@ public class MZTabError {
     }
 
     /**
+     * <p>Getter for the field <code>lineNumber</code>.</p>
      *
      * @return the line number.
      */
@@ -108,6 +113,8 @@ public class MZTabError {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Code: Unique number for error/warn Category: Currently, there are three
      * types of messages: Format, Logical Original: Message expression pattern.
      * "{?}" is a couple of parameters which can be filled during validate

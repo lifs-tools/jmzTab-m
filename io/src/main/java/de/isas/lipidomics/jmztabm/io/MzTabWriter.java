@@ -74,14 +74,25 @@ import uk.ac.ebi.pride.jmztab1_1.model.SmallMoleculeEvidenceColumn;
 import uk.ac.ebi.pride.jmztab1_1.model.SmallMoleculeFeatureColumn;
 
 /**
+ * <p>MzTabWriter class.</p>
  *
- * @author Nils Hoffmann &lt;nils.hoffmann@isas.de&gt;
+ * @author nilshoffmann
+ * 
  */
 public class MzTabWriter {
 
+    /** Constant <code>EOL="\n\r"</code> */
     public final static String EOL = "\n\r";
+    /** Constant <code>SEP="\t"</code> */
     public final static String SEP = "\t";
 
+    /**
+     * <p>write.</p>
+     *
+     * @param os a {@link java.io.OutputStreamWriter} object.
+     * @param mzTab a {@link de.isas.mztab1_1.model.MzTab} object.
+     * @throws java.io.IOException if any.
+     */
     public void write(OutputStreamWriter os, MzTab mzTab) throws IOException {
         if (!os.getEncoding().
             equals("UTF8")) {
@@ -115,6 +126,13 @@ public class MzTabWriter {
         }
     }
 
+    /**
+     * <p>write.</p>
+     *
+     * @param path a {@link java.nio.file.Path} object.
+     * @param mzTab a {@link de.isas.mztab1_1.model.MzTab} object.
+     * @throws java.io.IOException if any.
+     */
     public void write(Path path, MzTab mzTab) throws IOException {
         try (BufferedWriter writer = Files.newBufferedWriter(path, Charset.forName(
             "UTF-8"), StandardOpenOption.CREATE,

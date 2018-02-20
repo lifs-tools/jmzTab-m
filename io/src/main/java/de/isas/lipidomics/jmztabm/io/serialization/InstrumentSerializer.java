@@ -28,19 +28,30 @@ import java.util.stream.IntStream;
 import uk.ac.ebi.pride.jmztab1_1.model.Section;
 
 /**
+ * <p>InstrumentSerializer class.</p>
  *
- * @author Nils Hoffmann &lt;nils.hoffmann@isas.de&gt;
+ * @author nilshoffmann
+ * 
  */
 public class InstrumentSerializer extends StdSerializer<Instrument> {
 
+    /**
+     * <p>Constructor for InstrumentSerializer.</p>
+     */
     public InstrumentSerializer() {
         this(null);
     }
 
+    /**
+     * <p>Constructor for InstrumentSerializer.</p>
+     *
+     * @param t a {@link java.lang.Class} object.
+     */
     public InstrumentSerializer(Class<Instrument> t) {
         super(t);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void serialize(Instrument instrument, JsonGenerator jg,
         SerializerProvider sp) throws IOException {

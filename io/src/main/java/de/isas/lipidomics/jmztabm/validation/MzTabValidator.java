@@ -25,11 +25,14 @@ import javax.validation.Validation;
 import javax.validation.ValidatorFactory;
 
 /**
+ * <p>MzTabValidator class.</p>
  *
- * @author Nils Hoffmann &lt;nils.hoffmann@isas.de&gt;
+ * @author nilshoffmann
+ * 
  */
 public class MzTabValidator implements Validator {
 
+    /** {@inheritDoc} */
     @Override
     public List<ValidationMessage> validate(MzTab mzTab) {
         List<ValidationMessage> list = new LinkedList<>();
@@ -45,6 +48,12 @@ public class MzTabValidator implements Validator {
         return list;
     }
     
+    /**
+     * <p>getPathLocatorString.</p>
+     *
+     * @param cv a {@link javax.validation.ConstraintViolation} object.
+     * @return a {@link java.lang.String} object.
+     */
     protected String getPathLocatorString(ConstraintViolation<?> cv) {
         return cv.getPropertyPath().toString();
     }

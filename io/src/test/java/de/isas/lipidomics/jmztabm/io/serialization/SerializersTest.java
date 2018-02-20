@@ -22,7 +22,7 @@ import org.junit.utils.LogMethodName;
 
 /**
  *
- * @author Nils Hoffmann &lt;nils.hoffmann@isas.de&gt;
+ * @author nilshoffmann
  */
 public class SerializersTest {
 

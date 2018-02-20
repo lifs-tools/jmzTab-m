@@ -16,11 +16,18 @@
 package de.isas.lipidomics.jmztabm.io.serialization;
 
 /**
+ * <p>ElementNameMappingException class.</p>
  *
- * @author Nils Hoffmann &lt;nils.hoffmann@isas.de&gt;
+ * @author nilshoffmann
+ * 
  */
 public final class ElementNameMappingException extends RuntimeException {
 
+    /**
+     * <p>Constructor for ElementNameMappingException.</p>
+     *
+     * @param element a {@link java.lang.Object} object.
+     */
     public ElementNameMappingException(Object element) {
         super("No mzTab element name mapping available for " + element.
             getClass().

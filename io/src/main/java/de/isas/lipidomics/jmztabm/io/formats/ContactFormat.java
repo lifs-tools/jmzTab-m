@@ -19,8 +19,10 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import de.isas.lipidomics.jmztabm.io.serialization.ContactSerializer;
 
 /**
+ * <p>Abstract ContactFormat class.</p>
  *
- * @author Nils Hoffmann &lt;nils.hoffmann@isas.de&gt;
+ * @author nilshoffmann
+ * 
  */
 @JsonSerialize(using = ContactSerializer.class)
 public abstract class ContactFormat {

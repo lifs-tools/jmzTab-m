@@ -1,23 +1,28 @@
 package uk.ac.ebi.pride.jmztab1_1.model;
 
 import de.isas.lipidomics.jmztabm.io.serialization.Serializers;
+import de.isas.mztab1_1.model.Assay;
 import de.isas.mztab1_1.model.IndexedElement;
+import de.isas.mztab1_1.model.MsRun;
 import de.isas.mztab1_1.model.Parameter;
+import de.isas.mztab1_1.model.StudyVariable;
 
 /**
- * An kind of {@link OptionColumn} which use CV parameter accessions in following the format:
+ * An kind of {@link uk.ac.ebi.pride.jmztab1_1.model.OptionColumn} which use CV parameter accessions in following the format:
  * opt_{OBJECT_ID}_cv_{accession}_{parameter name}. Spaces within the parameter' s name MUST be replaced by '_'.
  *
  * @author qingwei
  * @since 30/05/13
+ * 
  */
 public class ParameterOptionColumn extends OptionColumn {
+    /** Constant <code>CV="cv_"</code> */
     public static final String CV = "cv_";
 
     private Parameter param;
 
     /**
-     * Define a {@link OptionColumn} which use CV parameter accessions in following the format:
+     * Define a {@link uk.ac.ebi.pride.jmztab1_1.model.OptionColumn} which use CV parameter accessions in following the format:
      * opt_{OBJECT_ID}_cv_{accession}_{parameter name}. Spaces within the parameter' s name MUST be replaced by '_'.
      *
      * @param element SHOULD not be null.
@@ -36,6 +41,7 @@ public class ParameterOptionColumn extends OptionColumn {
      *
      * @param element {@link Assay}, {@link StudyVariable}, {@link MsRun} or "global" (if the value relates to all replicates).
      * @param param SHOULD NOT be null.
+     * @return the string representation of this column's header.
      */
     public static String getHeader(IndexedElement element, Parameter param) {
         StringBuilder sb = new StringBuilder();

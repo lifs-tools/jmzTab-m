@@ -19,8 +19,10 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import de.isas.lipidomics.jmztabm.io.serialization.MetadataSerializer;
 
 /**
+ * <p>Abstract MetadataFormat class.</p>
  *
- * @author Nils Hoffmann &lt;nils.hoffmann@isas.de&gt;
+ * @author nilshoffmann
+ * 
  */
 @JsonSerialize(using = MetadataSerializer.class)
 public abstract class MetadataFormat {

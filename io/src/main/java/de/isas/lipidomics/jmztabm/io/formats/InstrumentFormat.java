@@ -19,8 +19,10 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import de.isas.lipidomics.jmztabm.io.serialization.InstrumentSerializer;
 
 /**
+ * <p>Abstract InstrumentFormat class.</p>
  *
- * @author Nils Hoffmann &lt;nils.hoffmann@isas.de&gt;
+ * @author nilshoffmann
+ * 
  */
 @JsonSerialize(using = InstrumentSerializer.class)
 public abstract class InstrumentFormat {

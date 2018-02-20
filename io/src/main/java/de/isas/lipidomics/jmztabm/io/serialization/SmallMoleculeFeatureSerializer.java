@@ -30,19 +30,30 @@ import uk.ac.ebi.pride.jmztab1_1.model.SmallMoleculeFeatureColumn;
 
 
 /**
+ * <p>SmallMoleculeFeatureSerializer class.</p>
  *
- * @author Nils Hoffmann &lt;nils.hoffmann@isas.de&gt;
+ * @author nilshoffmann
+ * 
  */
 public class SmallMoleculeFeatureSerializer extends StdSerializer<SmallMoleculeFeature> {
 
+    /**
+     * <p>Constructor for SmallMoleculeFeatureSerializer.</p>
+     */
     public SmallMoleculeFeatureSerializer() {
         this(null);
     }
 
+    /**
+     * <p>Constructor for SmallMoleculeFeatureSerializer.</p>
+     *
+     * @param t a {@link java.lang.Class} object.
+     */
     public SmallMoleculeFeatureSerializer(Class<SmallMoleculeFeature> t) {
         super(t);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void serialize(SmallMoleculeFeature smallMoleculeFeature,
         JsonGenerator jg,

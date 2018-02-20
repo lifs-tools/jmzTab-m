@@ -20,7 +20,7 @@ import org.junit.runner.Description;
 
 /**
  *
- * @author Nils Hoffmann &lt;nils.hoffmann@isas.de&gt;
+ * @author nilshoffmann
  */
 public class LogMethodName extends TestWatcher {
 

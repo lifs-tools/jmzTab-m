@@ -32,8 +32,10 @@ import uk.ac.ebi.pride.jmztab1_1.model.MZTabColumn;
 import static uk.ac.ebi.pride.jmztab1_1.model.MZTabUtils.isEmpty;
 
 /**
+ * <p>MZTabParserContext is used to keep track of indexed elements and interrelations during parsing.</p>
  *
- * @author Nils Hoffmann &lt;nils.hoffmann@isas.de&gt;
+ * @author nilshoffmann
+ * 
  */
 @Data
 public class MZTabParserContext {
@@ -71,11 +73,13 @@ public class MZTabParserContext {
     private List<ColumnParameterMapping> smallMoleculeEvidenceColUnitList = new ArrayList<ColumnParameterMapping>();
     private Map<String, String> colUnitMap = new HashMap<String, String>();
     
-        /**
+    /**
      * Add a sample to metadata. Samples are NOT MANDATORY in mzTab, since many software packages cannot determine what
      * type of sample was analysed (e.g. whether biological or technical replication was performed).
      *
      * @param sample SHOULD NOT set null.
+     * @param metadata a {@link de.isas.mztab1_1.model.Metadata} object.
+     * @return a {@link de.isas.mztab1_1.model.Sample} object.
      */
     public Sample addSample(Metadata metadata, Sample sample) {
         if (sample == null) {
@@ -92,6 +96,8 @@ public class MZTabParserContext {
      *
      * @param id SHOULD be positive integer.
      * @param species if null ignore operation.
+     * @param metadata a {@link de.isas.mztab1_1.model.Metadata} object.
+     * @return a {@link de.isas.mztab1_1.model.Sample} object.
      */
     public Sample addSampleSpecies(Metadata metadata, Integer id, Parameter species) {
         if (id <= 0) {
@@ -119,6 +125,8 @@ public class MZTabParserContext {
      *
      * @param id SHOULD be positive integer.
      * @param tissue if null ignore operation.
+     * @param metadata a {@link de.isas.mztab1_1.model.Metadata} object.
+     * @return a {@link de.isas.mztab1_1.model.Sample} object.
      */
     public Sample addSampleTissue(Metadata metadata, Integer id, Parameter tissue) {
         if (id <= 0) {
@@ -146,6 +154,8 @@ public class MZTabParserContext {
      *
      * @param id SHOULD be positive integer.
      * @param cellType if null ignore operation.
+     * @param metadata a {@link de.isas.mztab1_1.model.Metadata} object.
+     * @return a {@link de.isas.mztab1_1.model.Sample} object.
      */
     public Sample addSampleCellType(Metadata metadata, Integer id, Parameter cellType) {
         if (id <= 0) {
@@ -173,6 +183,8 @@ public class MZTabParserContext {
      *
      * @param id SHOULD be positive integer.
      * @param disease if null ignore operation.
+     * @param metadata a {@link de.isas.mztab1_1.model.Metadata} object.
+     * @return a {@link de.isas.mztab1_1.model.Sample} object.
      */
     public Sample addSampleDisease(Metadata metadata, Integer id, Parameter disease) {
         if (id <= 0) {
@@ -200,6 +212,8 @@ public class MZTabParserContext {
      *
      * @param id SHOULD be positive integer.
      * @param description if empty ignore operation.
+     * @param metadata a {@link de.isas.mztab1_1.model.Metadata} object.
+     * @return a {@link de.isas.mztab1_1.model.Sample} object.
      */
     public Sample addSampleDescription(Metadata metadata, Integer id, String description) {
         if (id <= 0) {
@@ -228,6 +242,8 @@ public class MZTabParserContext {
      *
      * @param id SHOULD be positive integer.
      * @param custom if null ignore operation.
+     * @param metadata a {@link de.isas.mztab1_1.model.Metadata} object.
+     * @return a {@link de.isas.mztab1_1.model.Sample} object.
      */
     public Sample addSampleCustom(Metadata metadata, Integer id, Parameter custom) {
         if (id <= 0) {
@@ -257,6 +273,8 @@ public class MZTabParserContext {
      *
      * @param id SHOULD be positive integer.
      * @param sampleProcessing if null ignore operation.
+     * @param metadata a {@link de.isas.mztab1_1.model.Metadata} object.
+     * @return a {@link de.isas.mztab1_1.model.SampleProcessing} object.
      */
     public SampleProcessing addSampleProcessing(Metadata metadata, Integer id, List<Parameter> sampleProcessing) {
         if (id <= 0) {
@@ -280,6 +298,8 @@ public class MZTabParserContext {
      *
      * @param id SHOULD be positive integer.
      * @param param if null ignore operation.
+     * @param metadata a {@link de.isas.mztab1_1.model.Metadata} object.
+     * @return a {@link de.isas.mztab1_1.model.SampleProcessing} object.
      */
     public SampleProcessing addSampleProcessingParameter(Metadata metadata, Integer id, Parameter param) {
         if (id <= 0) {
@@ -306,6 +326,8 @@ public class MZTabParserContext {
      * Add a instrument[id] to metadata.
      *
      * @param instrument SHOULD NOT set null.
+     * @param metadata a {@link de.isas.mztab1_1.model.Metadata} object.
+     * @return a {@link de.isas.mztab1_1.model.Instrument} object.
      */
     public Instrument addInstrument(Metadata metadata, Instrument instrument) {
         if (instrument == null) {
@@ -321,6 +343,8 @@ public class MZTabParserContext {
      *
      * @param id SHOULD be positive integer.
      * @param name if null ignore operation.
+     * @param metadata a {@link de.isas.mztab1_1.model.Metadata} object.
+     * @return a {@link de.isas.mztab1_1.model.Instrument} object.
      */
     public Instrument addInstrumentName(Metadata metadata, Integer id, Parameter name) {
         if (id <= 0) {
@@ -348,6 +372,8 @@ public class MZTabParserContext {
      *
      * @param id SHOULD be positive integer.
      * @param source if null ignore operation.
+     * @param metadata a {@link de.isas.mztab1_1.model.Metadata} object.
+     * @return a {@link de.isas.mztab1_1.model.Instrument} object.
      */
     public Instrument addInstrumentSource(Metadata metadata, Integer id, Parameter source) {
         if (id <= 0) {
@@ -375,6 +401,8 @@ public class MZTabParserContext {
      *
      * @param id SHOULD be positive integer.
      * @param analyzer if null ignore operation.
+     * @param metadata a {@link de.isas.mztab1_1.model.Metadata} object.
+     * @return a {@link de.isas.mztab1_1.model.Instrument} object.
      */
     public Instrument addInstrumentAnalyzer(Metadata metadata, Integer id, Parameter analyzer) {
         if (id <= 0) {
@@ -402,6 +430,8 @@ public class MZTabParserContext {
      *
      * @param id SHOULD be positive integer.
      * @param detector if null ignore operation.
+     * @param metadata a {@link de.isas.mztab1_1.model.Metadata} object.
+     * @return a {@link de.isas.mztab1_1.model.Instrument} object.
      */
     public Instrument addInstrumentDetector(Metadata metadata, Integer id, Parameter detector) {
         if (id <= 0) {
@@ -429,6 +459,8 @@ public class MZTabParserContext {
      * Add a software to metadata, which used to analyze the data and obtain the reported results.
      *
      * @param software SHOULD NOT set null
+     * @param metadata a {@link de.isas.mztab1_1.model.Metadata} object.
+     * @return a {@link de.isas.mztab1_1.model.Software} object.
      */
     public Software addSoftware(Metadata metadata, Software software) {
         if (software == null) {
@@ -446,6 +478,8 @@ public class MZTabParserContext {
      *
      * @param id SHOULD be positive integer.
      * @param param if null ignore operation.
+     * @param metadata a {@link de.isas.mztab1_1.model.Metadata} object.
+     * @return a {@link de.isas.mztab1_1.model.Software} object.
      */
     public Software addSoftwareParameter(Metadata metadata, Integer id, Parameter param) {
         if (id <= 0) {
@@ -475,6 +509,8 @@ public class MZTabParserContext {
      *
      * @param id SHOULD be positive integer.
      * @param setting if empty ignore operation.
+     * @param metadata a {@link de.isas.mztab1_1.model.Metadata} object.
+     * @return a {@link de.isas.mztab1_1.model.Software} object.
      */
     public Software addSoftwareSetting(Metadata metadata, Integer id, String setting) {
         if (id <= 0) {
@@ -622,6 +658,8 @@ public class MZTabParserContext {
      * DOIs by "doi:". Multiple identifiers MUST be separated by "|".
      *
      * @param publication SHOULD NOT set null.
+     * @param metadata a {@link de.isas.mztab1_1.model.Metadata} object.
+     * @return a {@link de.isas.mztab1_1.model.Publication} object.
      */
     public Publication addPublication(Metadata metadata, Publication publication) {
         if (publication == null) {
@@ -639,6 +677,8 @@ public class MZTabParserContext {
      * @param id SHOULD be positive integer.
      * @param type SHOULD NOT set null.
      * @param accession SHOULD NOT set empty.
+     * @param metadata a {@link de.isas.mztab1_1.model.Metadata} object.
+     * @return a {@link de.isas.mztab1_1.model.Publication} object.
      */
     public Publication addPublicationItem(Metadata metadata, Integer id, PublicationItem.TypeEnum type, String accession) {
         if (id <= 0) {
@@ -671,6 +711,8 @@ public class MZTabParserContext {
      *
      * @param id SHOULD be positive integer.
      * @param items SHOULD NOT set null.
+     * @param metadata a {@link de.isas.mztab1_1.model.Metadata} object.
+     * @return a {@link de.isas.mztab1_1.model.Publication} object.
      */
     public Publication addPublicationItems(Metadata metadata, Integer id, Collection<PublicationItem> items) {
         if (id <= 0) {
@@ -697,6 +739,8 @@ public class MZTabParserContext {
      * Add a contact into metadata.
      *
      * @param contact SHOULD NOT set null.
+     * @param metadata a {@link de.isas.mztab1_1.model.Metadata} object.
+     * @return a {@link de.isas.mztab1_1.model.Contact} object.
      */
     public Contact addContact(Metadata metadata, Contact contact) {
         if (contact == null) {
@@ -714,6 +758,8 @@ public class MZTabParserContext {
      *
      * @param id SHOULD be positive integer.
      * @param name SHOULD NOT set empty.
+     * @param metadata a {@link de.isas.mztab1_1.model.Metadata} object.
+     * @return a {@link de.isas.mztab1_1.model.Contact} object.
      */
     public Contact addContactName(Metadata metadata, Integer id, String name) {
         if (id <= 0) {
@@ -741,6 +787,8 @@ public class MZTabParserContext {
      *
      * @param id SHOULD be positive integer.
      * @param affiliation SHOULD NOT set empty.
+     * @param metadata a {@link de.isas.mztab1_1.model.Metadata} object.
+     * @return a {@link de.isas.mztab1_1.model.Contact} object.
      */
     public Contact addContactAffiliation(Metadata metadata, Integer id, String affiliation) {
         if (id <= 0) {
@@ -768,6 +816,8 @@ public class MZTabParserContext {
      *
      * @param id SHOULD be positive integer.
      * @param email SHOULD NOT set empty.
+     * @param metadata a {@link de.isas.mztab1_1.model.Metadata} object.
+     * @return a {@link de.isas.mztab1_1.model.Contact} object.
      */
     public Contact addContactEmail(Metadata metadata, Integer id, String email) {
         if (id <= 0) {
@@ -792,7 +842,10 @@ public class MZTabParserContext {
 
     /**
      * Add uri into metadata. The URI pointing to the file's source data (e.g., a PRIDE experiment or a PeptideAtlas build).
+     *
      * @param uri if null ignore operation.
+     * @param metadata a {@link de.isas.mztab1_1.model.Metadata} object.
+     * @return a {@link java.net.URI} object.
      */
     public URI addUri(Metadata metadata, URI uri) {
         if (uri == null) {
@@ -989,6 +1042,8 @@ public class MZTabParserContext {
      * on an MS instrument, and is referenced from assay in different contexts.
      *
      * @param msRun SHOULD NOT set null.
+     * @param metadata a {@link de.isas.mztab1_1.model.Metadata} object.
+     * @return a {@link de.isas.mztab1_1.model.MsRun} object.
      */
     public MsRun addMsRun(Metadata metadata, MsRun msRun) {
         if (msRun == null) {
@@ -1005,6 +1060,8 @@ public class MZTabParserContext {
      *
      * @param id SHOULD be positive integer.
      * @param format if null ignore operation.
+     * @param metadata a {@link de.isas.mztab1_1.model.Metadata} object.
+     * @return a {@link de.isas.mztab1_1.model.MsRun} object.
      */
     public MsRun addMsRunFormat(Metadata metadata, Integer id, Parameter format) {
         if (id <= 0) {
@@ -1033,6 +1090,8 @@ public class MZTabParserContext {
      *
      * @param id SHOULD be positive integer.
      * @param location if null ignore operation.
+     * @param metadata a {@link de.isas.mztab1_1.model.Metadata} object.
+     * @return a {@link de.isas.mztab1_1.model.MsRun} object.
      */
     public MsRun addMsRunLocation(Metadata metadata, Integer id, URL location) {
         if (id <= 0) {
@@ -1061,6 +1120,9 @@ public class MZTabParserContext {
      *
      * @param id SHOULD be positive integer.
      * @param idFormat if null ignore operation.
+     * @param idFormat if null ignore operation.
+     * @param metadata a {@link de.isas.mztab1_1.model.Metadata} object.
+     * @return a {@link de.isas.mztab1_1.model.MsRun} object.
      */
     public MsRun addMsRunIdFormat(Metadata metadata, Integer id, Parameter idFormat) {
         if (id <= 0) {
@@ -1089,6 +1151,8 @@ public class MZTabParserContext {
      *
      * @param id SHOULD be positive integer.
      * @param fragmentationMethod if null ignore operation.
+     * @param metadata a {@link de.isas.mztab1_1.model.Metadata} object.
+     * @return a {@link de.isas.mztab1_1.model.MsRun} object.
      */
     public MsRun addMsRunFragmentationMethod(Metadata metadata, Integer id, Parameter fragmentationMethod) {
         if (id <= 0) {
@@ -1111,6 +1175,14 @@ public class MZTabParserContext {
         return msRun;
     }
 
+    /**
+     * <p>addMsRunHash.</p>
+     *
+     * @param metadata a {@link de.isas.mztab1_1.model.Metadata} object.
+     * @param id a {@link java.lang.Integer} object.
+     * @param hash a {@link java.lang.String} object.
+     * @return a {@link de.isas.mztab1_1.model.MsRun} object.
+     */
     public MsRun addMsRunHash(Metadata metadata, Integer id, String hash) {
         if (id <= 0) {
             throw new IllegalArgumentException("ms_run id should be great than 0!");
@@ -1132,6 +1204,14 @@ public class MZTabParserContext {
         return msRun;
     }
 
+    /**
+     * <p>addMsRunHashMethod.</p>
+     *
+     * @param metadata a {@link de.isas.mztab1_1.model.Metadata} object.
+     * @param id a {@link java.lang.Integer} object.
+     * @param hashMethod a {@link de.isas.mztab1_1.model.Parameter} object.
+     * @return a {@link de.isas.mztab1_1.model.MsRun} object.
+     */
     public MsRun addMsRunHashMethod(Metadata metadata, Integer id, Parameter hashMethod) {
         if (id <= 0) {
             throw new IllegalArgumentException("ms_run id should be great than 0!");
@@ -1175,6 +1255,8 @@ public class MZTabParserContext {
      * along with a description of the label or tag applied.
      *
      * @param assay SHOULD NOT set null.
+     * @param metadata a {@link de.isas.mztab1_1.model.Metadata} object.
+     * @return a {@link de.isas.mztab1_1.model.Assay} object.
      */
     public Assay addAssay(Metadata metadata, Assay assay) {
         if (assay == null) {
@@ -1217,7 +1299,10 @@ public class MZTabParserContext {
      * Add assay[id]-sample_ref into metadata. An association from a given assay to the sample analysed.
      *
      * @param id SHOULD be positive integer.
+     * @param id SHOULD be positive integer.
      * @param sample SHOULD NOT set null, and SHOULD be defined in metadata first.
+     * @param metadata a {@link de.isas.mztab1_1.model.Metadata} object.
+     * @return a {@link de.isas.mztab1_1.model.Assay} object.
      */
     public Assay addAssaySample(Metadata metadata, Integer id, Sample sample) {
         if (id <= 0) {
@@ -1248,6 +1333,8 @@ public class MZTabParserContext {
      *
      * @param id SHOULD be positive integer.
      * @param msRun SHOULD NOT set null, and SHOULD be defined in metadata first.
+     * @param metadata a {@link de.isas.mztab1_1.model.Metadata} object.
+     * @return a {@link de.isas.mztab1_1.model.Assay} object.
      */
     public Assay addAssayMsRun(Metadata metadata, Integer id, MsRun msRun) {
         if (id <= 0) {
@@ -1395,6 +1482,8 @@ public class MZTabParserContext {
      * are reported, study variables have references to assays. The same concept has been defined by others as "experimental factor".
      *
      * @param studyVariable SHOULD NOT set null.
+     * @param metadata a {@link de.isas.mztab1_1.model.Metadata} object.
+     * @return a {@link de.isas.mztab1_1.model.StudyVariable} object.
      */
     public StudyVariable addStudyVariable(Metadata metadata, StudyVariable studyVariable) {
         if (studyVariable == null) {
@@ -1410,6 +1499,8 @@ public class MZTabParserContext {
      *
      * @param id SHOULD be positive integer.
      * @param assay SHOULD NOT set null, and should be defined in metadata first.
+     * @param metadata a {@link de.isas.mztab1_1.model.Metadata} object.
+     * @return a {@link de.isas.mztab1_1.model.StudyVariable} object.
      */
     public StudyVariable addStudyVariableAssay(Metadata metadata, Integer id, Assay assay) {
         if (id <= 0) {
@@ -1440,6 +1531,8 @@ public class MZTabParserContext {
      *
      * @param id SHOULD be positive integer.
      * @param sample SHOULD NOT set null, and should be defined in metadata first.
+     * @param metadata a {@link de.isas.mztab1_1.model.Metadata} object.
+     * @return a {@link de.isas.mztab1_1.model.StudyVariable} object.
      */
     public StudyVariable addStudyVariableSample(Metadata metadata, Integer id, Sample sample) {
         if (id <= 0) {
@@ -1470,6 +1563,8 @@ public class MZTabParserContext {
      *
      * @param id SHOULD be positive integer.
      * @param description if empty ignore operation.
+     * @param metadata a {@link de.isas.mztab1_1.model.Metadata} object.
+     * @return a {@link de.isas.mztab1_1.model.StudyVariable} object.
      */
     public StudyVariable addStudyVariableDescription(Metadata metadata, Integer id, String description) {
         if (id <= 0) {
@@ -1492,12 +1587,13 @@ public class MZTabParserContext {
     }
     
     /**
-     * Add a study_variable[id]-quantification_value_function. This is a Parameter detailing how the 
+     * Add a study_variable[id]-quantification_value_function. This is a Parameter detailing how the
      * reported study variable abundances have been calculated.
-     * 
-     * @param metadata
+     *
+     * @param metadata a {@link de.isas.mztab1_1.model.Metadata} object.
      * @param id SHOULD be positive integer.
      * @param checkParameter the parameter.
+     * @return a {@link de.isas.mztab1_1.model.StudyVariable} object.
      */
     public StudyVariable addStudyVariableQuantificationFunction(Metadata metadata, Integer id,
         Parameter checkParameter) {
@@ -1525,6 +1621,8 @@ public class MZTabParserContext {
      * used in the mzTab file.
      *
      * @param cv SHOULD NOT set null.
+     * @param metadata a {@link de.isas.mztab1_1.model.Metadata} object.
+     * @return a {@link de.isas.mztab1_1.model.CV} object.
      */
     public CV addCV(Metadata metadata, CV cv) {
         if (cv == null) {
@@ -1540,6 +1638,9 @@ public class MZTabParserContext {
      * Add a cv[id]-label. A string describing the labels of the controlled vocabularies/ontologies used in the mzTab file
      *
      * @param id SHOULD be positive integer.
+     * @param metadata a {@link de.isas.mztab1_1.model.Metadata} object.
+     * @param label a {@link java.lang.String} object.
+     * @return a {@link de.isas.mztab1_1.model.CV} object.
      */
     public CV addCVLabel(Metadata metadata, Integer id, String label) {
         if (id <= 0) {
@@ -1562,6 +1663,9 @@ public class MZTabParserContext {
      * the mzTab file
      *
      * @param id SHOULD be positive integer.
+     * @param metadata a {@link de.isas.mztab1_1.model.Metadata} object.
+     * @param fullName a {@link java.lang.String} object.
+     * @return a {@link de.isas.mztab1_1.model.CV} object.
      */
     public CV addCVFullName(Metadata metadata, Integer id, String fullName) {
         if (id <= 0) {
@@ -1584,6 +1688,9 @@ public class MZTabParserContext {
      * the mzTab file
      *
      * @param id SHOULD be positive integer.
+     * @param metadata a {@link de.isas.mztab1_1.model.Metadata} object.
+     * @param version a {@link java.lang.String} object.
+     * @return a {@link de.isas.mztab1_1.model.CV} object.
      */
     public CV addCVVersion(Metadata metadata, Integer id, String version) {
         if (id <= 0) {
@@ -1606,6 +1713,9 @@ public class MZTabParserContext {
      * mzTab file
      *
      * @param id SHOULD be positive integer.
+     * @param metadata a {@link de.isas.mztab1_1.model.Metadata} object.
+     * @param url a {@link java.lang.String} object.
+     * @return a {@link de.isas.mztab1_1.model.CV} object.
      */
     public CV addCVURL(Metadata metadata, Integer id, String url) {
         if (id <= 0) {
@@ -1672,6 +1782,13 @@ public class MZTabParserContext {
      *
      * @param column SHOULD NOT set null
      * @param param SHOULD NOT set null
+     * @param column SHOULD NOT set null
+     * @param param SHOULD NOT set null
+     * @param column SHOULD NOT set null
+     * @param param SHOULD NOT set null
+     * @param column SHOULD NOT set null
+     * @param param SHOULD NOT set null
+     * @param metadata a {@link de.isas.mztab1_1.model.Metadata} object.
      */
     public void addSmallMoleculeColUnit(Metadata metadata, MZTabColumn column, Parameter param) {
         ColumnParameterMapping cpm = new ColumnParameterMapping();
@@ -1688,6 +1805,7 @@ public class MZTabParserContext {
      *
      * @param column SHOULD NOT set null
      * @param param SHOULD NOT set null
+     * @param metadata a {@link de.isas.mztab1_1.model.Metadata} object.
      */
     public void addSmallMoleculeFeatureColUnit(Metadata metadata, MZTabColumn column, Parameter param) {
         ColumnParameterMapping cpm = new ColumnParameterMapping();
@@ -1704,6 +1822,7 @@ public class MZTabParserContext {
      *
      * @param column SHOULD NOT set null
      * @param param SHOULD NOT set null
+     * @param metadata a {@link de.isas.mztab1_1.model.Metadata} object.
      */
     public void addSmallMoleculeEvidenceColUnit(Metadata metadata, MZTabColumn column, Parameter param) {
         ColumnParameterMapping cpm = new ColumnParameterMapping();
@@ -1713,7 +1832,9 @@ public class MZTabParserContext {
     }
 
     /**
-     *  Defines a method to access the colUnit to help in the transformation from columnName String -> to columnName MZTabColumn
+     *  Defines a method to access the colUnit to help in the transformation from columnName String -&gt; to columnName MZTabColumn
+     *
+     * @return a {@link java.util.Map} object.
      */
     public Map<String, String> getColUnitMap() {
         return colUnitMap;
@@ -1751,6 +1872,13 @@ public class MZTabParserContext {
         return custom;
     }
 
+    /**
+     * <p>addDatabase.</p>
+     *
+     * @param metadata a {@link de.isas.mztab1_1.model.Metadata} object.
+     * @param database a {@link de.isas.mztab1_1.model.Database} object.
+     * @return a {@link de.isas.mztab1_1.model.Database} object.
+     */
     public Database addDatabase(Metadata metadata, Database database) {
         if (database == null) {
             throw new IllegalArgumentException("Database should not be null");
@@ -1760,6 +1888,14 @@ public class MZTabParserContext {
         return database;
     }
 
+    /**
+     * <p>addDatabasePrefix.</p>
+     *
+     * @param metadata a {@link de.isas.mztab1_1.model.Metadata} object.
+     * @param id a {@link java.lang.Integer} object.
+     * @param valueLabel a {@link java.lang.String} object.
+     * @return a {@link de.isas.mztab1_1.model.Database} object.
+     */
     public Database addDatabasePrefix(Metadata metadata, Integer id, String valueLabel) {
         if (id <= 0) {
             throw new IllegalArgumentException("database id should be great than 0!");
@@ -1778,6 +1914,14 @@ public class MZTabParserContext {
         return database;
     }
 
+    /**
+     * <p>addDatabaseVersion.</p>
+     *
+     * @param metadata a {@link de.isas.mztab1_1.model.Metadata} object.
+     * @param id a {@link java.lang.Integer} object.
+     * @param version a {@link java.lang.String} object.
+     * @return a {@link de.isas.mztab1_1.model.Database} object.
+     */
     public Database addDatabaseVersion(Metadata metadata, Integer id, String version) {
         if (id <= 0) {
             throw new IllegalArgumentException("database id should be great than 0!");
@@ -1796,6 +1940,14 @@ public class MZTabParserContext {
         return database;
     }
 
+    /**
+     * <p>addDatabaseUrl.</p>
+     *
+     * @param metadata a {@link de.isas.mztab1_1.model.Metadata} object.
+     * @param id a {@link java.lang.Integer} object.
+     * @param checkURL a {@link java.net.URL} object.
+     * @return a {@link de.isas.mztab1_1.model.Database} object.
+     */
     public Database addDatabaseUrl(Metadata metadata, Integer id, URL checkURL) {
         if (id <= 0) {
             throw new IllegalArgumentException("database id should be great than 0!");

@@ -19,10 +19,22 @@ import de.isas.mztab1_1.model.MzTab;
 import java.util.List;
 
 /**
+ * <p>MzTabParseResult interface.</p>
  *
- * @author Nils Hoffmann &lt;nils.hoffmann@isas.de&gt;
+ * @author nilshoffmann
+ * 
  */
 public interface MzTabParseResult {
+    /**
+     * <p>getFile.</p>
+     *
+     * @return a {@link de.isas.mztab1_1.model.MzTab} object.
+     */
     MzTab getFile();
+    /**
+     * <p>getParsingResults.</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     List<ParsingResult> getParsingResults();
 }

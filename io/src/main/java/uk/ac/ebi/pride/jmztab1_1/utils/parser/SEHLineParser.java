@@ -22,10 +22,11 @@ import java.util.stream.IntStream;
 import uk.ac.ebi.pride.jmztab1_1.utils.errors.MZTabErrorList;
 
 /**
- * Parse and validate Small Molecule Evidence header line into a {@link MZTabColumnFactory}.
+ * Parse and validate Small Molecule Evidence header line into a {@link uk.ac.ebi.pride.jmztab1_1.model.MZTabColumnFactory}.
  *
- * @author nils.hoffmann
+ * @author nilshoffmann
  * @since 11/09/17
+ * 
  */
 public class SEHLineParser extends MZTabHeaderLineParser {
 
@@ -33,10 +34,17 @@ public class SEHLineParser extends MZTabHeaderLineParser {
     private Map<Integer, String> physPositionToOrder;
 
 
+    /**
+     * <p>Constructor for SEHLineParser.</p>
+     *
+     * @param context a {@link uk.ac.ebi.pride.jmztab1_1.utils.parser.MZTabParserContext} object.
+     * @param metadata a {@link de.isas.mztab1_1.model.Metadata} object.
+     */
     public SEHLineParser(MZTabParserContext context, Metadata metadata) {
         super(context, MZTabColumnFactory.getInstance(Section.Small_Molecule_Evidence_Header), metadata);
     }
 
+    /** {@inheritDoc} */
     @Override
     protected int parseColumns() throws MZTabException {
         String header;
@@ -174,18 +182,12 @@ public class SEHLineParser extends MZTabHeaderLineParser {
 //    }
 
     /**
-     * In "Quantification" file, following optional columns are mandatory:
-     * 1. smallmolecule_abundance_study_variable[1-n]
-     * 2. smallmolecule_abundance_stdev_study_variable[1-n]
-     * 3. smallmolecule_abundance_std_error_study_variable[1-n]
-     * <p/>
-     * Beside above, in "Complete" and "Quantification" file, following optional columns also mandatory:
-     * 1. search_engine_score_ms_run[1-n]
-     * <p/>
-     * NOTICE: this hock method will be called at end of parse() function.
+     * {@inheritDoc}
      *
+     * NOTICE: this method will be called at end of parse() function.
      * @see MZTabHeaderLineParser#parse(int, String, MZTabErrorList)
-     * @see #refineOptionalColumn(MZTabDescription.Mode, MZTabDescription.Type, String)
+     * @see MZTabHeaderLineParser#parse(int, String, MZTabErrorList)
+     * @see #refineOptionalColumn(java.lang.String)
      */
     @Override
     protected void refine() throws MZTabException {

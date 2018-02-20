@@ -1,16 +1,16 @@
 package uk.ac.ebi.pride.jmztab1_1.model;
 
 /**
- * A special element which depend on a {@link MetadataElement}, the structure like:
+ * A special element which depend on a {@link uk.ac.ebi.pride.jmztab1_1.model.MetadataElement}, the structure like:
  *
  * {element name}[id]-{subElement subName}
  *
  * @author qingwei
  * @since 14/10/13
+ * 
  */
 public enum MetadataSubElement {
     ASSAY_QUANTIFICATION_MOD                           (MetadataElement.ASSAY,           "quantification_mod");
-
     private MetadataElement element;
     private String subName;
 
@@ -34,11 +34,10 @@ public enum MetadataSubElement {
     }
 
     /**
-     * Used to get a unique name, which used to unique identifier the {@link MetadataProperty}
+     * Used to get a unique name, which used to unique identifier the {@link uk.ac.ebi.pride.jmztab1_1.model.MetadataProperty}
      * Notice: we use '_' the concatenate element and sub element name.
      *
      * @see MetadataProperty#findProperty(MetadataSubElement, String)
-     *
      * @return {element name}_{subElement subName}
      */
     public String getName() {
@@ -46,22 +45,24 @@ public enum MetadataSubElement {
     }
 
     /**
+     * <p>Getter for the field <code>subName</code>.</p>
+     *
      * @return sub element name.
      */
     public String getSubName() {
         return subName;
     }
 
-    /**
-     * @return sub element name.
-     */
+    /** {@inheritDoc} */
     @Override
     public String toString() {
         return getSubName();
     }
 
     /**
-     * @return dependent {@link MetadataElement}.
+     * <p>Getter for the field <code>element</code>.</p>
+     *
+     * @return dependent {@link uk.ac.ebi.pride.jmztab1_1.model.MetadataElement}.
      */
     public MetadataElement getElement() {
         return element;
@@ -72,6 +73,9 @@ public enum MetadataSubElement {
      * Notice: we use '_' the concatenate character, for example, assay_quantification_mod.
      *
      * @see #getName()
+     * @param element a {@link uk.ac.ebi.pride.jmztab1_1.model.MetadataElement} object.
+     * @param subElementName a {@link java.lang.String} object.
+     * @return a {@link uk.ac.ebi.pride.jmztab1_1.model.MetadataSubElement} object.
      */
     public static MetadataSubElement findSubElement(MetadataElement element, String subElementName) {
         if (element == null || subElementName == null) {

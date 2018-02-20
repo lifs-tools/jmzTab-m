@@ -7,22 +7,39 @@ import java.util.ArrayList;
  *
  * @author qingwei
  * @since 31/01/13
+ * 
  */
 public class SplitList<E> extends ArrayList<E> {
     private char splitChar;
 
+    /**
+     * <p>Constructor for SplitList.</p>
+     *
+     * @param splitChar a char.
+     */
     public SplitList(char splitChar) {
         this.splitChar = splitChar;
     }
 
+    /**
+     * <p>Getter for the field <code>splitChar</code>.</p>
+     *
+     * @return a char.
+     */
     public char getSplitChar() {
         return splitChar;
     }
 
+    /**
+     * <p>Setter for the field <code>splitChar</code>.</p>
+     *
+     * @param splitChar a char.
+     */
     public void setSplitChar(char splitChar) {
         this.splitChar = splitChar;
     }
 
+    /** {@inheritDoc} */
     @Override
     public String toString() {
         if (isEmpty()) {

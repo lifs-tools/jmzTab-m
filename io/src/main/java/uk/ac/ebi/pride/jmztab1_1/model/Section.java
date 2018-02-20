@@ -18,8 +18,9 @@ import de.isas.mztab1_1.model.Assay;
  *
  * @author qingwei
  * @author jgriss
- * @author nils.hoffmann
+ * @author nilshoffmann
  * @since 31/01/13
+ * 
  */
 public enum Section {
     Comment                         ("COM", "comment",                  0),
@@ -48,18 +49,39 @@ public enum Section {
         this.level = level;
     }
 
+    /**
+     * <p>Getter for the field <code>prefix</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getPrefix() {
         return prefix;
     }
 
+    /**
+     * <p>Getter for the field <code>name</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * <p>Getter for the field <code>level</code>.</p>
+     *
+     * @return a int.
+     */
     public int getLevel() {
         return level;
     }
 
+    /**
+     * <p>findSection.</p>
+     *
+     * @param level a int.
+     * @return a {@link uk.ac.ebi.pride.jmztab1_1.model.Section} object.
+     */
     public static Section findSection(int level) {
         Section section;
         switch (level) {
@@ -114,6 +136,8 @@ public enum Section {
 
     /**
      * Judge the section is comment section or not.
+     *
+     * @return a boolean.
      */
     public boolean isComment() {
         return this == Comment;
@@ -121,6 +145,8 @@ public enum Section {
 
     /**
      * Judge the section is metadata section or not.
+     *
+     * @return a boolean.
      */
     public boolean isMetadata() {
         return this == Metadata;
@@ -128,6 +154,8 @@ public enum Section {
 
     /**
      * Judge the section is protein_header, peptide_header, psm_header, small_molecule_header, small_molecule_feature_header or small_molecule_evidence_header section.
+     *
+     * @return a boolean.
      */
     public boolean isHeader() {
         return this == Protein_Header || this == Peptide_Header || this == PSM_Header || this == Small_Molecule_Header || this == Small_Molecule_Feature_Header || this == Small_Molecule_Evidence_Header;
@@ -135,6 +163,8 @@ public enum Section {
 
     /**
      * Judge the section is protein, peptide, psm, small_molecule, small_molecule_feature or small_molecule_evidence section.
+     *
+     * @return a boolean.
      */
     public boolean isData() {
         return this == Protein || this == Peptide || this == PSM || this == Small_Molecule || this == Small_Molecule_Feature || this == Small_Molecule_Evidence;
@@ -142,15 +172,17 @@ public enum Section {
 
     /**
      * Translate the section to corresponding header section. If can not mapping, return null.
-     * Metadata, Comment --> null
-     * Protein, Protein_Header --> ProteinHeader
-     * Peptide, Peptide_Header --> PeptideHeader
-     * PSM, PSM_Header --> PSMHeader
-     * SmallMolecule, SmallMolecule_Header --> SmallMoleculeHeader
-     * SmallMoleculeFeature, SmallMoleculeFeature_Header --> SmallMoleculeFeatureHeader
-     * SmallMoleculeEvidence, SmallMoleculeEvidence_Header --> SmallMoleculeEvidenceHeader
+     * Metadata, Comment --&gt; null
+     * Protein, Protein_Header --&gt; ProteinHeader
+     * Peptide, Peptide_Header --&gt; PeptideHeader
+     * PSM, PSM_Header --&gt; PSMHeader
+     * SmallMolecule, SmallMolecule_Header --&gt; SmallMoleculeHeader
+     * SmallMoleculeFeature, SmallMoleculeFeature_Header --&gt; SmallMoleculeFeatureHeader
+     * SmallMoleculeEvidence, SmallMoleculeEvidence_Header --&gt; SmallMoleculeEvidenceHeader
      *
      * @see #toDataSection(Section)
+     * @param section a {@link uk.ac.ebi.pride.jmztab1_1.model.Section} object.
+     * @return a {@link uk.ac.ebi.pride.jmztab1_1.model.Section} object.
      */
     public static Section toHeaderSection(Section section) {
         Section header;
@@ -188,15 +220,17 @@ public enum Section {
 
     /**
      * Translate the section to corresponding data section. If can not mapping, return null.
-     * Metadata, Comment --> null
-     * Protein, Protein_Header --> Protein
-     * Peptide, Peptide_Header --> Peptide
-     * PSM, PSM_Header --> PSMHeader
-     * SmallMolecule, SmallMolecule_Header --> SmallMolecule
-     * SmallMoleculeFeature, SmallMoleculeFeature_Header --> SmallMoleculeFeature
-     * SmallMoleculeEvidence, SmallMoleculeEvidence_Header --> SmallMoleculeEvidence
+     * Metadata, Comment --&gt; null
+     * Protein, Protein_Header --&gt; Protein
+     * Peptide, Peptide_Header --&gt; Peptide
+     * PSM, PSM_Header --&gt; PSMHeader
+     * SmallMolecule, SmallMolecule_Header --&gt; SmallMolecule
+     * SmallMoleculeFeature, SmallMoleculeFeature_Header --&gt; SmallMoleculeFeature
+     * SmallMoleculeEvidence, SmallMoleculeEvidence_Header --&gt; SmallMoleculeEvidence
      *
      * @see #toHeaderSection(Section)
+     * @param section a {@link uk.ac.ebi.pride.jmztab1_1.model.Section} object.
+     * @return a {@link uk.ac.ebi.pride.jmztab1_1.model.Section} object.
      */
     public static Section toDataSection(Section section) {
         Section data;
@@ -235,9 +269,10 @@ public enum Section {
     /**
      * Query section based on its name or prefix with case-insensitive. For example:
      * findSection("protein") == findSection("PRT");
-     * Both of them to locate the {@link Section#Protein}
+     * Both of them to locate the {@link uk.ac.ebi.pride.jmztab1_1.model.Section#Protein}
      *
      * @param key if empty, return null.
+     * @return a {@link uk.ac.ebi.pride.jmztab1_1.model.Section} object.
      */
     public static Section findSection(String key) {
         if (MZTabUtils.isEmpty(key)) {

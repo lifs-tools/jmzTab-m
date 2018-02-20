@@ -30,9 +30,12 @@ import uk.ac.ebi.pride.jmztab1_1.utils.errors.MZTabErrorType;
 import uk.ac.ebi.pride.jmztab1_1.utils.errors.MZTabErrorTypeMap;
 
 /**
+ * <p>MZTabCommandLine class.</p>
+ *
  * @author qingwei
- * @author Nils Hoffmann
+ * @author nilshoffmann
  * @since 17/09/13
+ * 
  */
 public class MZTabCommandLine {
 
@@ -75,6 +78,12 @@ public class MZTabCommandLine {
         return sb.toString();
     }
 
+    /**
+     * <p>Runs the command line parser for mzTab, including validation.</p>
+     *
+     * @param args an array of {@link java.lang.String} objects.
+     * @throws java.lang.Exception if any.
+     */
     @SuppressWarnings("static-access")
     public static void main(String[] args) throws Exception {
         MZTabErrorTypeMap typeMap = new MZTabErrorTypeMap();

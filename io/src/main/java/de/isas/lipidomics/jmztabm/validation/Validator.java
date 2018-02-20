@@ -20,9 +20,17 @@ import de.isas.mztab1_1.model.ValidationMessage;
 import java.util.List;
 
 /**
+ * <p>Validator interface.</p>
  *
- * @author Nils Hoffmann &lt;nils.hoffmann@isas.de&gt;
+ * @author nilshoffmann
+ * 
  */
 public interface Validator {
+    /**
+     * <p>validate.</p>
+     *
+     * @param mzTab a {@link de.isas.mztab1_1.model.MzTab} object.
+     * @return a {@link java.util.List} object.
+     */
     public List<ValidationMessage> validate(MzTab mzTab);
 }

@@ -27,19 +27,30 @@ import java.util.logging.Logger;
 import uk.ac.ebi.pride.jmztab1_1.model.Section;
 
 /**
+ * <p>ContactSerializer class.</p>
  *
- * @author Nils Hoffmann &lt;nils.hoffmann@isas.de&gt;
+ * @author nilshoffmann
+ * 
  */
 public class ContactSerializer extends StdSerializer<Contact> {
 
+    /**
+     * <p>Constructor for ContactSerializer.</p>
+     */
     public ContactSerializer() {
         this(null);
     }
 
+    /**
+     * <p>Constructor for ContactSerializer.</p>
+     *
+     * @param t a {@link java.lang.Class} object.
+     */
     public ContactSerializer(Class<Contact> t) {
         super(t);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void serialize(Contact contact, JsonGenerator jg,
         SerializerProvider sp) throws IOException {

@@ -9,9 +9,12 @@ import de.isas.mztab1_1.model.IndexedElement;
  *
  * @author qingwei
  * @since 28/05/13
+ * 
  */
 public class OptionColumn extends MZTabColumn {
+    /** Constant <code>OPT="opt"</code> */
     public static final String OPT = "opt";
+    /** Constant <code>GLOBAL="global"</code> */
     public static final String GLOBAL = "global";
 
     /**
@@ -21,6 +24,7 @@ public class OptionColumn extends MZTabColumn {
      * @param element if the value relates to all replicates, we use "global" in header. Here, if user set element is null for
      *                define for all replicates.
      * @param value SHOULD NOT be empty.
+     * @return a {@link java.lang.String} object.
      */
     public static String getHeader(IndexedElement element, String value) {
         if (MZTabUtils.isEmpty(value)) {
@@ -35,7 +39,6 @@ public class OptionColumn extends MZTabColumn {
      * Create a optional column. Which header start with the prefix "opt_", logical position always stay the end of table.
      *
      * @see #getHeader() generate optional column header.
-     *
      * @param element if the value relates to all replicates, we use "global" in header. Here, if user set element is null for
      *                define for all replicates.
      * @param value SHOULD NOT be empty.

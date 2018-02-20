@@ -18,9 +18,16 @@ package de.isas.lipidomics.jmztabm.io;
 import de.isas.mztab1_1.model.ValidationMessage;
 
 /**
+ * <p>ParsingResult interface.</p>
  *
- * @author Nils Hoffmann &lt;nils.hoffmann@isas.de&gt;
+ * @author nilshoffmann
+ * 
  */
 public interface ParsingResult {
+    /**
+     * <p>getValidationMessage.</p>
+     *
+     * @return a {@link de.isas.mztab1_1.model.ValidationMessage} object.
+     */
     ValidationMessage getValidationMessage();
 }

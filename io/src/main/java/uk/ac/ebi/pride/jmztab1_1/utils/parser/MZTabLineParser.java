@@ -10,15 +10,15 @@ import static uk.ac.ebi.pride.jmztab1_1.model.MZTabConstants.TAB;
 
 /**
  * Common tab split line parser. If there exists format or logical errors during the parse process,
- * system will add them into {@link MZTabErrorList}, or break validate and throw {@link MZTabException}
+ * system will add them into {@link uk.ac.ebi.pride.jmztab1_1.utils.errors.MZTabErrorList}, or break validate and throw {@link uk.ac.ebi.pride.jmztab1_1.utils.errors.MZTabException}
  * directly.
  *
  * @see MZTabHeaderLineParser
  * @see MZTabDataLineParser
  * @see MTDLineParser
- *
  * @author qingwei
  * @since 10/02/13
+ * 
  */
 public class MZTabLineParser {
 
@@ -34,6 +34,11 @@ public class MZTabLineParser {
     protected final MZTabParserContext context;
     protected MZTabErrorList errorList;
     
+    /**
+     * <p>Constructor for MZTabLineParser.</p>
+     *
+     * @param context a {@link uk.ac.ebi.pride.jmztab1_1.utils.parser.MZTabParserContext} object.
+     */
     protected MZTabLineParser(MZTabParserContext context) {
         if (context == null) {
             throw new NullPointerException("Parser context should be created first!");
@@ -44,6 +49,11 @@ public class MZTabLineParser {
     /**
      * We assume that user before call this method, have parse the raw line
      * is not empty line and start with section prefix.
+     *
+     * @param lineNumber a int.
+     * @param line a {@link java.lang.String} object.
+     * @param errorList a {@link uk.ac.ebi.pride.jmztab1_1.utils.errors.MZTabErrorList} object.
+     * @throws uk.ac.ebi.pride.jmztab1_1.utils.errors.MZTabException if any.
      */
     protected void parse(int lineNumber, String line, MZTabErrorList errorList) throws MZTabException {
         this.lineNumber = lineNumber;

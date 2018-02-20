@@ -31,7 +31,7 @@ import static uk.ac.ebi.pride.jmztab1_1.model.Section.Small_Molecule_Header;
 
 /**
  *
- * @author Nils Hoffmann &lt;nils.hoffmann@isas.de&gt;
+ * @author nilshoffmann
  */
 public class SectionTest {
 

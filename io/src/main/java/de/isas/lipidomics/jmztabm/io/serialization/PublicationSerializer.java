@@ -29,19 +29,30 @@ import java.util.stream.Collectors;
 import uk.ac.ebi.pride.jmztab1_1.model.Section;
 
 /**
+ * <p>PublicationSerializer class.</p>
  *
- * @author Nils Hoffmann &lt;nils.hoffmann@isas.de&gt;
+ * @author nilshoffmann
+ * 
  */
 public class PublicationSerializer extends StdSerializer<Publication> {
 
+    /**
+     * <p>Constructor for PublicationSerializer.</p>
+     */
     public PublicationSerializer() {
         this(null);
     }
 
+    /**
+     * <p>Constructor for PublicationSerializer.</p>
+     *
+     * @param t a {@link java.lang.Class} object.
+     */
     public PublicationSerializer(Class<Publication> t) {
         super(t);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void serialize(Publication publication, JsonGenerator jg,
         SerializerProvider sp) throws IOException {

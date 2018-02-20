@@ -32,19 +32,30 @@ import uk.ac.ebi.pride.jmztab1_1.model.SmallMoleculeColumn;
 import static de.isas.lipidomics.jmztabm.io.serialization.Serializers.writeIndexedValues;
 
 /**
+ * <p>SmallMoleculeSummarySerializer class.</p>
  *
- * @author Nils Hoffmann &lt;nils.hoffmann@isas.de&gt;
+ * @author nilshoffmann
+ * 
  */
 public class SmallMoleculeSummarySerializer extends StdSerializer<SmallMoleculeSummary> {
 
+    /**
+     * <p>Constructor for SmallMoleculeSummarySerializer.</p>
+     */
     public SmallMoleculeSummarySerializer() {
         this(null);
     }
 
+    /**
+     * <p>Constructor for SmallMoleculeSummarySerializer.</p>
+     *
+     * @param t a {@link java.lang.Class} object.
+     */
     public SmallMoleculeSummarySerializer(Class<SmallMoleculeSummary> t) {
         super(t);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void serialize(SmallMoleculeSummary smallMoleculeSummary,
         JsonGenerator jg,

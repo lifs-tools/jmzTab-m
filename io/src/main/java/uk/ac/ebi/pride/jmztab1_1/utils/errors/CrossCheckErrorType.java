@@ -8,8 +8,10 @@ package uk.ac.ebi.pride.jmztab1_1.utils.errors;
  *
  * @author qingwei
  * @since 29/01/13
+ * 
  */
 public class CrossCheckErrorType extends MZTabErrorType {
+    /** Constant <code>Species</code> */
     public static MZTabErrorType Species = createWarn(Category.CrossCheck, "Species");
 
 

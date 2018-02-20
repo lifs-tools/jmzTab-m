@@ -28,19 +28,30 @@ import uk.ac.ebi.pride.jmztab1_1.model.MetadataElement;
 import uk.ac.ebi.pride.jmztab1_1.model.Section;
 
 /**
+ * <p>CustomSerializer class.</p>
  *
- * @author Nils Hoffmann &lt;nils.hoffmann@isas.de&gt;
+ * @author nilshoffmann
+ * 
  */
 public class CustomSerializer extends StdSerializer<Parameter> {
 
+    /**
+     * <p>Constructor for CustomSerializer.</p>
+     */
     public CustomSerializer() {
         this(null);
     }
 
+    /**
+     * <p>Constructor for CustomSerializer.</p>
+     *
+     * @param t a {@link java.lang.Class} object.
+     */
     public CustomSerializer(Class<Parameter> t) {
         super(t);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void serialize(Parameter customParameter, JsonGenerator jg,
         SerializerProvider sp) throws IOException {

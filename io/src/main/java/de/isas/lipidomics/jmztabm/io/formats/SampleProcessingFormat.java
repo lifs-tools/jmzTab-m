@@ -19,8 +19,10 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import de.isas.lipidomics.jmztabm.io.serialization.SampleProcessingSerializer;
 
 /**
+ * <p>Abstract SampleProcessingFormat class.</p>
  *
- * @author Nils Hoffmann &lt;nils.hoffmann@isas.de&gt;
+ * @author nilshoffmann
+ * 
  */
 @JsonSerialize(using = SampleProcessingSerializer.class)
 public abstract class SampleProcessingFormat {

@@ -13,6 +13,7 @@ import java.util.Map;
  * @author qingwei
  * @author Nils Hoffmann
  * @since 23/05/13
+ * 
  */
 public class SmallMoleculeColumn implements ISmallMoleculeColumn {
 
@@ -148,6 +149,16 @@ public class SmallMoleculeColumn implements ISmallMoleculeColumn {
 
     private static Map<String, ISmallMoleculeColumn> optionalColumns = new LinkedHashMap<>();
 
+    /**
+     * <p>optional.</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     * @param columnType a {@link java.lang.Class} object.
+     * @param optional a boolean.
+     * @param order a {@link java.lang.String} object.
+     * @param id a {@link java.lang.Integer} object.
+     * @return a {@link uk.ac.ebi.pride.jmztab1_1.model.ISmallMoleculeColumn} object.
+     */
     public static ISmallMoleculeColumn optional(String name, Class columnType,
         boolean optional,
         String order, Integer id) {
@@ -160,56 +171,67 @@ public class SmallMoleculeColumn implements ISmallMoleculeColumn {
         return c;
     }
 
+    /** {@inheritDoc} */
     @Override
     public Class<?> getDataType() {
         return this.column.getDataType();
     }
 
+    /** {@inheritDoc} */
     @Override
     public IndexedElement getElement() {
         return this.column.getElement();
     }
 
+    /** {@inheritDoc} */
     @Override
     public String getHeader() {
         return this.column.getHeader();
     }
 
+    /** {@inheritDoc} */
     @Override
     public String getLogicPosition() {
         return this.column.getLogicPosition();
     }
 
+    /** {@inheritDoc} */
     @Override
     public String getName() {
         return this.column.getName();
     }
 
+    /** {@inheritDoc} */
     @Override
     public String getOrder() {
         return this.column.getOrder();
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean isOptional() {
         return this.column.isOptional();
     }
 
+    /** {@inheritDoc} */
     @Override
     public void setHeader(String header) {
         this.column.setHeader(header);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void setLogicPosition(String logicPosition) {
         this.column.setLogicPosition(logicPosition);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void setOrder(String order) {
         this.column.setOrder(order);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void setElement(IndexedElement element) {
         this.column.setElement(element);

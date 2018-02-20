@@ -5,6 +5,7 @@ package uk.ac.ebi.pride.jmztab1_1.model;
  *
  * @author qingwei
  * @since 23/05/13
+ * 
  */
 public enum MetadataElement {
     MZTAB                             ("mzTab"),
@@ -52,15 +53,15 @@ public enum MetadataElement {
     }
 
     /**
+     * <p>Getter for the field <code>name</code>.</p>
+     *
      * @return element name.
      */
     public String getName() {
         return name;
     }
 
-    /**
-     * @return element name.
-     */
+    /** {@inheritDoc} */
     @Override
     public String toString() {
         return name;
@@ -68,6 +69,9 @@ public enum MetadataElement {
 
     /**
      * Find element by name with case-insensitive match. If not find, return null.
+     *
+     * @param name a {@link java.lang.String} object.
+     * @return a {@link uk.ac.ebi.pride.jmztab1_1.model.MetadataElement} object.
      */
     public static MetadataElement findElement(String name) {
         if (name == null) {

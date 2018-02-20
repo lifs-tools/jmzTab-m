@@ -19,24 +19,25 @@ import java.util.Arrays;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import uk.ac.ebi.pride.jmztab1_1.model.MZTabColumn;
 
 import static uk.ac.ebi.pride.jmztab1_1.model.MZTabUtils.parseParam;
 
 /**
- * A couple of common method used to parse a header line into {@link MZTabColumnFactory} structure.
- * <p/>
- * NOTICE: {@link MZTabColumnFactory} maintain a couple of {@link MZTabColumn} which have internal logical
+ * A couple of common method used to parse a header line into {@link uk.ac.ebi.pride.jmztab1_1.model.MZTabColumnFactory} structure.
+ * 
+ * NOTICE: {@link uk.ac.ebi.pride.jmztab1_1.model.MZTabColumnFactory} maintain a couple of {@link MZTabColumn} which have internal logical
  * position and order. In physical mzTab file, we allow user not obey this logical position organized way,
  * and provide their date with own order. In order to distinguish them, we use physical position (a positive
- * integer) to record the column location in mzTab file. And use {@link PositionMapping} structure the maintain
+ * integer) to record the column location in mzTab file. And use {@link uk.ac.ebi.pride.jmztab1_1.utils.parser.PositionMapping} structure the maintain
  * the mapping between them.
  *
  * @author qingwei
- * @see PRHLineParser
- * @see PEHLineParser
- * @see PSHLineParser
  * @see SMHLineParser
+ * @see SMFLineParser
+ * @see SMELineParser
  * @since 11/02/13
+ * 
  */
 public abstract class MZTabHeaderLineParser extends MZTabLineParser {
 
@@ -44,7 +45,7 @@ public abstract class MZTabHeaderLineParser extends MZTabLineParser {
     protected Metadata metadata;
 
     /**
-     * Parse a header line into {@link MZTabColumnFactory} structure.
+     * Parse a header line into {@link uk.ac.ebi.pride.jmztab1_1.model.MZTabColumnFactory} structure.
      *
      * @param context the parser context, keeping dynamic state and lookup associations.
      * @param factory  SHOULD NOT set null
@@ -64,6 +65,8 @@ public abstract class MZTabHeaderLineParser extends MZTabLineParser {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Parse a header line into {@link MZTabColumnFactory} structure. There are several steps in this method:
      * Step 1: {@link #parseColumns()} focus on validate and parse all columns. Step 2: {@link #checkColUnit()} and
      * Step 3: {@link #refine()}
@@ -82,25 +85,31 @@ public abstract class MZTabHeaderLineParser extends MZTabLineParser {
     }
 
     /**
-     * This methods delegates to the subclasses the parsing of the columns. All of the columns are defined in the {@link uk.ac.ebi.pride.jmztab.model.ProteinColumn}, {@link uk.ac.ebi.pride.jmztab.model.PeptideColumn}, {@link uk.ac.ebi.pride.jmztab.model.PSMColumn}
-     * or {@link uk.ac.ebi.pride.jmztab1_1.model.SmallMoleculeColumn}.
+     * This methods delegates to the subclasses the parsing of the columns. All of the columns are defined in 
+     * {@link uk.ac.ebi.pride.jmztab1_1.model.SmallMoleculeColumn}, {@link uk.ac.ebi.pride.jmztab1_1.model.SmallMoleculeFeatureColumn}, or {@link uk.ac.ebi.pride.jmztab1_1.model.SmallMoleculeEvidenceColumn}.
+     *
      * @return the next physical index of column available after the parsing.
-     * @throws MZTabException
+     * @throws uk.ac.ebi.pride.jmztab1_1.utils.errors.MZTabException if any structural or logical errors are encountered that prohibit further processing.
      */
     protected abstract int parseColumns() throws MZTabException;
 
 
     /**
-     * Some validate operation need to be done after the whole {@link MZTabColumnFactory} created.
+     * Some validate operation need to be done after the whole {@link uk.ac.ebi.pride.jmztab1_1.model.MZTabColumnFactory} created.
      * Thus, user can add them, and called at the end of the
      * {@link #parse(int, String, MZTabErrorList)} method.
+     *
+     * @throws uk.ac.ebi.pride.jmztab1_1.utils.errors.MZTabException if any structural or logical errors are encountered that prohibit further processing.
      */
     protected abstract void refine() throws MZTabException;
 
 
     /**
-     * Refine optional columns based one {@link MZTabDescription#mode} and {@link MZTabDescription#type}
+     * Refine optional columns and check, whether they were properly defined.
      * These re-validate operation will called in {@link #refine()} method.
+     *
+     * @param columnHeader a {@link java.lang.String} object.
+     * @throws uk.ac.ebi.pride.jmztab1_1.utils.errors.MZTabException if any structural or logical errors are encountered that prohibit further processing.
      */
     protected void refineOptionalColumn(String columnHeader) throws MZTabException {
         if (factory.findColumnByHeader(columnHeader) == null) {
@@ -108,6 +117,12 @@ public abstract class MZTabHeaderLineParser extends MZTabLineParser {
         }
     }
 
+    /**
+     * <p>fromIndexToOrder.</p>
+     *
+     * @param index a {@link java.lang.Integer} object.
+     * @return a {@link java.lang.String} object.
+     */
     protected String fromIndexToOrder(Integer index) {
         return String.format("%02d", index);
     }
@@ -115,8 +130,12 @@ public abstract class MZTabHeaderLineParser extends MZTabLineParser {
     /**
      * Additional columns can be added to the end of the protein table. These column headers MUST start with the prefix "opt_".
      * Column names MUST only contain the following characters: 'A'-'Z', 'a'-'z', '0'-'9', '_', '-', '[', ']', and ':'.
-     * <p/>
+     * 
      * the format: opt_{IndexedElement[id]}_{value}. Spaces within the parameter's name MUST be replaced by '_'.
+     *
+     * @param nameLabel a {@link java.lang.String} object.
+     * @return a boolean.
+     * @throws uk.ac.ebi.pride.jmztab1_1.utils.errors.MZTabException if any structural or logical errors are encountered that prohibit further processing.
      */
     protected boolean checkOptColumnName(String nameLabel) throws MZTabException {
         nameLabel = nameLabel.trim();
@@ -245,42 +264,21 @@ public abstract class MZTabHeaderLineParser extends MZTabLineParser {
         return dataType;
     }
 
+    /**
+     * <p>checkAbundanceColumns.</p>
+     *
+     * @param offset a int.
+     * @param order a {@link java.lang.String} object.
+     * @return a int.
+     * @throws uk.ac.ebi.pride.jmztab1_1.utils.errors.MZTabException if any structural or logical errors are encountered that prohibit further processing.
+     */
     protected int checkAbundanceColumns(int offset, String order) throws MZTabException {
         String headerString = items[offset];
         if (headerString.contains("abundance_assay")) {
             checkAbundanceAssayColumn(headerString, order);
             return offset;
         } else if (headerString.contains("abundance_study_variable") || headerString.contains("abundance_coeffvar_study_variable")) {
-//            String abundanceHeader = "";
-//            String abundanceCoeffvarHeader = "";
-//            String abundanceStdErrorHeader = "";
-
-//            try {
-//                abundanceHeader = headerString;//items[offset++];
-//                StudyVariable sv = checkAbundanceStudyVariableColumn(headerString);
-//                abundanceCoeffvarHeader = null;
-//                for(int i = offset+1; i<items.length; i++ ) {
-//                    if(items[i].contains("abundance_coeffvar_study_variable")) {
-//                        //check whether these refer to the same index / study variable
-//                        StudyVariable sv2 = checkAbundanceStudyVariableColumn(items[i]);
-//                        if(sv2.getId().equals(sv.getId())) {
-//                            abundanceCoeffvarHeader = items[i];
-//                            break;
-//                        }
-//                    }
-//                }
-//                if(abundanceCoeffvarHeader==null) {
-//                    String missHeader = "abundance_coeffvar_study_variable";
-//                    MZTabError error = new MZTabError(LogicalErrorType.AbundanceColumnTogether, lineNumber, missHeader);
-//                    throw new MZTabException(error);
-//                }
-//                abundanceStdErrorHeader = items[offset];
-//            } catch (ArrayIndexOutOfBoundsException e) {
-//                // do nothing.
-//            }
-
             checkAbundanceStudyVariableColumns(headerString, order);
-
             return offset;
         } else {
             MZTabError error = new MZTabError(FormatErrorType.AbundanceColumn, lineNumber, headerString);
@@ -341,8 +339,6 @@ public abstract class MZTabHeaderLineParser extends MZTabLineParser {
         header = header.trim().toLowerCase();
 
         if (!header.contains("abundance_study_variable") && !header.contains("abundance_coeffvar_study_variable")) {
-//            MZTabError error = new MZTabError(LogicalErrorType.AbundanceColumnTogether, lineNumber, header);
-//            throw new MZTabException(error);
             MZTabError error = new MZTabError(FormatErrorType.AbundanceColumn, lineNumber, header);
             throw new MZTabException(error);
         } else {
@@ -352,13 +348,6 @@ public abstract class MZTabHeaderLineParser extends MZTabLineParser {
             factory.addAbundanceOptionalColumn(abundanceStudyVariable, checkAbundanceSection(header), order);
 
         }
-//        if (!abundanceStdErrorHeader.contains("abundance_std_error_study_variable")) {
-//            String missHeader = "abundance_std_error_study_variable";
-//
-//            MZTabError error = new MZTabError(LogicalErrorType.AbundanceColumnTogether, lineNumber, missHeader);
-//            throw new MZTabException(error);
-//        }
-
     }
 
     /**
@@ -389,6 +378,8 @@ public abstract class MZTabHeaderLineParser extends MZTabLineParser {
      * Facing colunit definition line, for example:
      * MTD  colunit-protein retention_time=[UO, UO:000031, minute, ]
      * which depends on the header line definitions.
+     *
+     * @throws uk.ac.ebi.pride.jmztab1_1.utils.errors.MZTabException if any structural or logical errors are encountered that prohibit further processing.
      */
     //TODO Migrate to specific class
     public void checkColUnit() throws MZTabException {
@@ -442,7 +433,12 @@ public abstract class MZTabHeaderLineParser extends MZTabLineParser {
 
     /**
      * Parse header to a index id number.
-     * If exists parse error, stop validate and throw {@link MZTabException} directly.
+     * If exists parse error, stop validate and throw {@link uk.ac.ebi.pride.jmztab1_1.utils.errors.MZTabException} directly.
+     *
+     * @param header a {@link java.lang.String} object.
+     * @param id a {@link java.lang.String} object.
+     * @return a int.
+     * @throws uk.ac.ebi.pride.jmztab1_1.utils.errors.MZTabException if any structural or logical errors are encountered that prohibit further processing.
      */
     protected int parseIndex(String header, String id) throws MZTabException {
         try {
@@ -458,6 +454,11 @@ public abstract class MZTabHeaderLineParser extends MZTabLineParser {
         }
     }
 
+    /**
+     * <p>Getter for the field <code>factory</code>.</p>
+     *
+     * @return a {@link uk.ac.ebi.pride.jmztab1_1.model.MZTabColumnFactory} object.
+     */
     public MZTabColumnFactory getFactory() {
         return factory;
     }

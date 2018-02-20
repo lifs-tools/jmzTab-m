@@ -5,27 +5,31 @@ package uk.ac.ebi.pride.jmztab1_1.model;
  *
  * @author qingwei
  * @since 06/02/13
+ * 
  */
 public enum MZBoolean {
     True("1"), False("0");
-
     private String value;
 
     /**
      * "0" for false, "1" for true.
+     * @param value
      */
     MZBoolean(String value) {
         this.value = value;
     }
 
-    /**
-     * @return "0" for false, "1" for true.
-     */
+    /** {@inheritDoc} */
     @Override
     public String toString() {
         return value;
     }
     
+    /**
+     * <p>Convert to a native Boolean.</p>
+     *
+     * @return a {@link java.lang.Boolean} object.
+     */
     public Boolean toBoolean() {
         if(this == MZBoolean.True) {
             return Boolean.TRUE;
@@ -34,8 +38,9 @@ public enum MZBoolean {
     }
 
     /**
-     * @param booleanLabel "0" or "1" which used to define a boolean used in mzTab.
+     * <p>Find the MZBoolean for the given string representation.</p>
      *
+     * @param booleanLabel "0" or "1" which used to define a boolean used in mzTab.
      * @return null if can not recognize the boolean label.
      */
     public static MZBoolean findBoolean(String booleanLabel) {

@@ -25,7 +25,7 @@ import uk.ac.ebi.pride.jmztab1_1.utils.errors.MZTabException;
 
 /**
  *
- * @author Nils Hoffmann &lt;nils.hoffmann@isas.de&gt;
+ * @author nilshoffmann
  */
 public class MzTabRawParserTest {
 

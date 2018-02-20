@@ -35,19 +35,30 @@ import java.util.stream.Collectors;
 import uk.ac.ebi.pride.jmztab1_1.model.Section;
 
 /**
+ * <p>AssaySerializer class.</p>
  *
- * @author Nils Hoffmann &lt;nils.hoffmann@isas.de&gt;
+ * @author nilshoffmann
+ * 
  */
 public class AssaySerializer extends StdSerializer<Assay> {
 
+    /**
+     * <p>Constructor for AssaySerializer.</p>
+     */
     public AssaySerializer() {
         this(null);
     }
 
+    /**
+     * <p>Constructor for AssaySerializer.</p>
+     *
+     * @param t a {@link java.lang.Class} object.
+     */
     public AssaySerializer(Class<Assay> t) {
         super(t);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void serialize(Assay assay, JsonGenerator jg, SerializerProvider sp) throws IOException {
         if (assay != null) {

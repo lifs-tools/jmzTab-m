@@ -9,6 +9,7 @@ import java.util.TreeMap;
  *
  * @author qingwei
  * @since 27/02/13
+ * 
  */
 public class MZTabErrorTypeMap {
     private Map<Integer, MZTabErrorType> typeMap = new TreeMap<Integer, MZTabErrorType>();
@@ -17,6 +18,9 @@ public class MZTabErrorTypeMap {
         typeMap.put(type.getCode(), type);
     }
 
+    /**
+     * <p>Constructor for MZTabErrorTypeMap.</p>
+     */
     public MZTabErrorTypeMap() {
         add(FormatErrorType.LinePrefix);
         add(FormatErrorType.CountMatch);
@@ -85,10 +89,21 @@ public class MZTabErrorTypeMap {
         add(LogicalErrorType.NoSmallMoleculeEvidenceSection);
     }
 
+    /**
+     * <p>getType.</p>
+     *
+     * @param code a int.
+     * @return a {@link uk.ac.ebi.pride.jmztab1_1.utils.errors.MZTabErrorType} object.
+     */
     public MZTabErrorType getType(int code) {
         return typeMap.get(code);
     }
 
+    /**
+     * <p>Getter for the field <code>typeMap</code>.</p>
+     *
+     * @return a {@link java.util.Map} object.
+     */
     public Map<Integer, MZTabErrorType> getTypeMap() {
         return typeMap;
     }

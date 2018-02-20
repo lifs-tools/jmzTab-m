@@ -1,10 +1,11 @@
 package uk.ac.ebi.pride.jmztab1_1.model;
 
 /**
- * Define a property in metadata, which depend on the {@link MetadataElement} or {@link MetadataSubElement}
+ * Define a property in metadata, which depend on the {@link uk.ac.ebi.pride.jmztab1_1.model.MetadataElement} or {@link uk.ac.ebi.pride.jmztab1_1.model.MetadataSubElement}
  *
  * @author qingwei
  * @since 23/05/13
+ * 
  */
 public enum MetadataProperty {
     MZTAB_VERSION                         (MetadataElement.MZTAB,                               "version"),
@@ -76,13 +77,7 @@ public enum MetadataProperty {
     DATABASE_PREFIX                       (MetadataElement.DATABASE,                             "prefix"),
     DATABASE_VERSION                      (MetadataElement.DATABASE,                             "version"),
     DATABASE_URL                          (MetadataElement.DATABASE,                             "url"),
-    /*
-    MTD study-url https://www.ebi.ac.uk/metabolights/MTBLS517
-MTD study-id MTBLS517
-MTD study-id-format [,EMBL-EBI Metabolights,https://fairsharing.org/biodbcore-000168, ]
-MTD study-title MaHPIC Experiment 04: Metabolomics from Macaca mulatta infected with Plasmodium cynomolgi B strain to produce and integrate clinical, hematological, parasitological, and omics measures of acute primary infection and relapses
-MTD study-version 1.0
-    */
+
     EXTERNAL_STUDY_URL                     (MetadataElement.EXTERNAL_STUDY,                       "url"),
     EXTERNAL_STUDY_ID                      (MetadataElement.EXTERNAL_STUDY,                       "id"),
     EXTERNAL_STUDY_ID_FORMAT               (MetadataElement.EXTERNAL_STUDY,                       "id_format"),
@@ -92,7 +87,7 @@ MTD study-version 1.0
     ;
 //    DATABASE_LABEL                        (MetadataElement.DATABASE,                             "label"),
 //    DATABASE_NAME                         (MetadataElement.DATABASE,                             "name");
-
+    
     private String name;
     private MetadataElement element;
     private MetadataSubElement subElement;
@@ -120,38 +115,44 @@ MTD study-version 1.0
     }
 
     /**
-     * @return dependent {@link MetadataElement}
+     * <p>Getter for the field <code>element</code>.</p>
+     *
+     * @return dependent {@link uk.ac.ebi.pride.jmztab1_1.model.MetadataElement}
      */
     public MetadataElement getElement() {
         return element;
     }
 
     /**
-     * @return dependent {@link MetadataSubElement}
+     * <p>Getter for the field <code>subElement</code>.</p>
+     *
+     * @return dependent {@link uk.ac.ebi.pride.jmztab1_1.model.MetadataSubElement}
      */
     public MetadataSubElement getSubElement() {
         return subElement;
     }
 
     /**
+     * <p>Getter for the field <code>name</code>.</p>
+     *
      * @return property name
      */
     public String getName() {
         return name;
     }
 
-    /**
-     * @return property name
-     *
-     * @see #getName()
-     */
+    /** {@inheritDoc} */
     @Override
     public String toString() {
         return name;
     }
 
     /**
-     * Find property by {@link MetadataElement} and property name with case-insensitive. If not find, return null.
+     * Find property by {@link uk.ac.ebi.pride.jmztab1_1.model.MetadataElement} and property name with case-insensitive. If not find, return null.
+     *
+     * @param element a {@link uk.ac.ebi.pride.jmztab1_1.model.MetadataElement} object.
+     * @param propertyName a {@link java.lang.String} object.
+     * @return a {@link uk.ac.ebi.pride.jmztab1_1.model.MetadataProperty} object.
      */
     public static MetadataProperty findProperty(MetadataElement element, String propertyName) {
         if (element == null || propertyName == null) {
@@ -169,8 +170,12 @@ MTD study-version 1.0
     }
 
     /**
-     * Find property by {@link MetadataElement}_{@link MetadataSubElement} and property name with case-insensitive.
+     * Find property by {@link uk.ac.ebi.pride.jmztab1_1.model.MetadataElement}_{@link uk.ac.ebi.pride.jmztab1_1.model.MetadataSubElement} and property name with case-insensitive.
      * If not find, return null.
+     *
+     * @param subElement a {@link uk.ac.ebi.pride.jmztab1_1.model.MetadataSubElement} object.
+     * @param propertyName a {@link java.lang.String} object.
+     * @return a {@link uk.ac.ebi.pride.jmztab1_1.model.MetadataProperty} object.
      */
     public static MetadataProperty findProperty(MetadataSubElement subElement, String propertyName) {
         if (subElement == null || propertyName == null) {

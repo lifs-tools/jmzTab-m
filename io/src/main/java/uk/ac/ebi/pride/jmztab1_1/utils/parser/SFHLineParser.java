@@ -1,5 +1,6 @@
 package uk.ac.ebi.pride.jmztab1_1.utils.parser;
 
+import de.isas.mztab1_1.model.Assay;
 import uk.ac.ebi.pride.jmztab1_1.model.MZTabColumnFactory;
 import uk.ac.ebi.pride.jmztab1_1.model.ISmallMoleculeFeatureColumn;
 import uk.ac.ebi.pride.jmztab1_1.model.IMZTabColumn;
@@ -17,10 +18,11 @@ import java.util.*;
 import uk.ac.ebi.pride.jmztab1_1.utils.errors.MZTabErrorList;
 
 /**
- * Parse and validate Small Molecule Feature header line into a {@link MZTabColumnFactory}.
+ * Parse and validate Small Molecule Feature header line into a {@link uk.ac.ebi.pride.jmztab1_1.model.MZTabColumnFactory}.
  *
- * @author nils.hoffmann
+ * @author nilshoffmann
  * @since 11/09/17
+ * 
  */
 public class SFHLineParser extends MZTabHeaderLineParser {
 
@@ -28,10 +30,17 @@ public class SFHLineParser extends MZTabHeaderLineParser {
     private Map<Integer, String> physPositionToOrder;
 
 
+    /**
+     * <p>Constructor for SFHLineParser.</p>
+     *
+     * @param context a {@link uk.ac.ebi.pride.jmztab1_1.utils.parser.MZTabParserContext} object.
+     * @param metadata a {@link de.isas.mztab1_1.model.Metadata} object.
+     */
     public SFHLineParser(MZTabParserContext context, Metadata metadata) {
         super(context, MZTabColumnFactory.getInstance(Section.Small_Molecule_Feature_Header), metadata);
     }
 
+    /** {@inheritDoc} */
     @Override
     protected int parseColumns() throws MZTabException {
         String header;
@@ -84,7 +93,7 @@ public class SFHLineParser extends MZTabHeaderLineParser {
 
     private Map<Integer, String> generateHeaderPhysPositionToOrderMap(String[] items) {
         Integer physicalPosition;
-        Map<Integer, String> physicalPositionToOrder = new LinkedHashMap<Integer, String>();
+        Map<Integer, String> physicalPositionToOrder = new LinkedHashMap<>();
         int order = 0;
 
         for (physicalPosition = 1; physicalPosition < items.length; physicalPosition++) {
@@ -94,18 +103,15 @@ public class SFHLineParser extends MZTabHeaderLineParser {
     }
 
     /**
-     * In "Quantification" file, following optional columns are mandatory:
-     * 1. smallmolecule_abundance_study_variable[1-n]
-     * 2. smallmolecule_abundance_stdev_study_variable[1-n]
-     * 3. smallmolecule_abundance_std_error_study_variable[1-n]
-     * <p/>
-     * Beside above, in "Complete" and "Quantification" file, following optional columns also mandatory:
-     * 1. search_engine_score_ms_run[1-n]
-     * <p/>
-     * NOTICE: this hock method will be called at end of parse() function.
+     * {@inheritDoc}
      *
+     * The following optional columns are mandatory:
+     * 1. abundance_assay[1-n]
+     *
+     * NOTICE: this method will be called at end of parse() function.
      * @see MZTabHeaderLineParser#parse(int, String, MZTabErrorList)
-     * @see #refineOptionalColumn(MZTabDescription.Mode, MZTabDescription.Type, String)
+     * @see MZTabHeaderLineParser#parse(int, String, MZTabErrorList)
+     * @see #refineOptionalColumn(java.lang.String)
      */
     @Override
     protected void refine() throws MZTabException {
@@ -124,6 +130,11 @@ public class SFHLineParser extends MZTabHeaderLineParser {
             if (factory.findColumnByHeader(columnHeader) == null) {
                 throw new MZTabException(new MZTabError(FormatErrorType.StableColumn, lineNumber, columnHeader));
             }
+        }
+
+        for (Assay assay : metadata.getAssay()) {
+            String assayLabel = "_assay[" + assay.getId() + "]";
+            refineOptionalColumn("abundance" + assayLabel);
         }
     }
 }

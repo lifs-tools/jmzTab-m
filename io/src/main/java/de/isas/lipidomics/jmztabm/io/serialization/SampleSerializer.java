@@ -27,19 +27,30 @@ import java.util.logging.Logger;
 import uk.ac.ebi.pride.jmztab1_1.model.Section;
 
 /**
+ * <p>SampleSerializer class.</p>
  *
- * @author Nils Hoffmann &lt;nils.hoffmann@isas.de&gt;
+ * @author nilshoffmann
+ * 
  */
 public class SampleSerializer extends StdSerializer<Sample> {
 
+    /**
+     * <p>Constructor for SampleSerializer.</p>
+     */
     public SampleSerializer() {
         this(null);
     }
 
+    /**
+     * <p>Constructor for SampleSerializer.</p>
+     *
+     * @param t a {@link java.lang.Class} object.
+     */
     public SampleSerializer(Class<Sample> t) {
         super(t);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void serialize(Sample sample, JsonGenerator jg,
         SerializerProvider sp) throws IOException {

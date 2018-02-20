@@ -19,8 +19,10 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import de.isas.lipidomics.jmztabm.io.serialization.SmallMoleculeEvidenceSerializer;
 
 /**
+ * <p>Abstract SmallMoleculeEvidenceFormat class.</p>
  *
- * @author Nils Hoffmann &lt;nils.hoffmann@isas.de&gt;
+ * @author nilshoffmann
+ * 
  */
 @JsonSerialize(using = SmallMoleculeEvidenceSerializer.class)
 public abstract class SmallMoleculeEvidenceFormat {

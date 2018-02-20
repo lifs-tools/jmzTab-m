@@ -29,19 +29,30 @@ import java.util.stream.Collectors;
 import uk.ac.ebi.pride.jmztab1_1.model.SmallMoleculeEvidenceColumn;
 
 /**
+ * <p>SmallMoleculeEvidenceSerializer class.</p>
  *
- * @author Nils Hoffmann &lt;nils.hoffmann@isas.de&gt;
+ * @author nilshoffmann
+ * 
  */
 public class SmallMoleculeEvidenceSerializer extends StdSerializer<SmallMoleculeEvidence> {
 
+    /**
+     * <p>Constructor for SmallMoleculeEvidenceSerializer.</p>
+     */
     public SmallMoleculeEvidenceSerializer() {
         this(null);
     }
 
+    /**
+     * <p>Constructor for SmallMoleculeEvidenceSerializer.</p>
+     *
+     * @param t a {@link java.lang.Class} object.
+     */
     public SmallMoleculeEvidenceSerializer(Class<SmallMoleculeEvidence> t) {
         super(t);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void serialize(SmallMoleculeEvidence smallMoleculeEvidence,
         JsonGenerator jg,

@@ -46,19 +46,39 @@ import uk.ac.ebi.pride.jmztab1_1.model.MetadataProperty;
 import uk.ac.ebi.pride.jmztab1_1.model.Section;
 
 /**
+ * <p>MetadataSerializer class.</p>
  *
- * @author Nils Hoffmann &lt;nils.hoffmann@isas.de&gt;
+ * @author nilshoffmann
+ * 
  */
 public class MetadataSerializer extends StdSerializer<Metadata> {
 
+    /**
+     * <p>Constructor for MetadataSerializer.</p>
+     */
     public MetadataSerializer() {
         this(null);
     }
 
+    /**
+     * <p>Constructor for MetadataSerializer.</p>
+     *
+     * @param t a {@link java.lang.Class} object.
+     */
     public MetadataSerializer(Class<Metadata> t) {
         super(t);
     }
 
+    /**
+     * <p>serializeListWithMetadataElement.</p>
+     *
+     * @param list a {@link java.util.List} object.
+     * @param mtdElement a {@link uk.ac.ebi.pride.jmztab1_1.model.MetadataElement} object.
+     * @param jg a {@link com.fasterxml.jackson.core.JsonGenerator} object.
+     * @param sp a {@link com.fasterxml.jackson.databind.SerializerProvider} object.
+     * @param comparator a {@link java.util.Comparator} object.
+     * @param <T> a T object.
+     */
     public static <T extends Parameter> void serializeListWithMetadataElement(
         List<T> list, MetadataElement mtdElement, JsonGenerator jg,
         SerializerProvider sp, Comparator<? super T> comparator) {
@@ -72,6 +92,15 @@ public class MetadataSerializer extends StdSerializer<Metadata> {
             });
     }
 
+    /**
+     * <p>serializeList.</p>
+     *
+     * @param list a {@link java.util.List} object.
+     * @param jg a {@link com.fasterxml.jackson.core.JsonGenerator} object.
+     * @param sp a {@link com.fasterxml.jackson.databind.SerializerProvider} object.
+     * @param comparator a {@link java.util.Comparator} object.
+     * @param <T> a T object.
+     */
     public static <T> void serializeList(List<T> list, JsonGenerator jg,
         SerializerProvider sp, Comparator<? super T> comparator) {
         list.stream().
@@ -82,6 +111,13 @@ public class MetadataSerializer extends StdSerializer<Metadata> {
             });
     }
 
+    /**
+     * <p>serializeObject.</p>
+     *
+     * @param object a {@link java.lang.Object} object.
+     * @param jg a {@link com.fasterxml.jackson.core.JsonGenerator} object.
+     * @param sp a {@link com.fasterxml.jackson.databind.SerializerProvider} object.
+     */
     public static void serializeObject(Object object, JsonGenerator jg,
         SerializerProvider sp) {
         try {
@@ -98,6 +134,7 @@ public class MetadataSerializer extends StdSerializer<Metadata> {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public void serialize(Metadata t, JsonGenerator jg, SerializerProvider sp) throws IOException {
         if (t != null) {

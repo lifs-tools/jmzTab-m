@@ -15,18 +15,31 @@ import uk.ac.ebi.pride.jmztab1_1.utils.errors.MZTabErrorList;
 
 
 /**
+ * <p>SMLLineParser class.</p>
+ *
  * @author qingwei
  * @since 10/02/13
+ * 
  */
 public class SMLLineParser extends MZTabDataLineParser<SmallMoleculeSummary> {
 
     private SmallMoleculeSummary smallMoleculeSummary;
 
+    /**
+     * <p>Constructor for SMLLineParser.</p>
+     *
+     * @param context a {@link uk.ac.ebi.pride.jmztab1_1.utils.parser.MZTabParserContext} object.
+     * @param factory a {@link uk.ac.ebi.pride.jmztab1_1.model.MZTabColumnFactory} object.
+     * @param positionMapping a {@link uk.ac.ebi.pride.jmztab1_1.utils.parser.PositionMapping} object.
+     * @param metadata a {@link de.isas.mztab1_1.model.Metadata} object.
+     * @param errorList a {@link uk.ac.ebi.pride.jmztab1_1.utils.errors.MZTabErrorList} object.
+     */
     public SMLLineParser(MZTabParserContext context, MZTabColumnFactory factory, PositionMapping positionMapping,
                          Metadata metadata, MZTabErrorList errorList) {
         super(context, factory, positionMapping, metadata, errorList);
     }
 
+    /** {@inheritDoc} */
     @Override
     protected int checkData() {
 
@@ -128,6 +141,11 @@ public class SMLLineParser extends MZTabDataLineParser<SmallMoleculeSummary> {
         return physicalPosition;
     }
 
+    /**
+     * <p>getRecord.</p>
+     *
+     * @return a {@link de.isas.mztab1_1.model.SmallMoleculeSummary} object.
+     */
     public SmallMoleculeSummary getRecord() {
 
         if(smallMoleculeSummary == null){

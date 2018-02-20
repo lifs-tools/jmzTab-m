@@ -16,9 +16,11 @@
 package uk.ac.ebi.pride.jmztab1_1.model;
 
 /**
+ * <p>ISmallMoleculeEvidenceColumn interface.</p>
  *
- * @author Nils Hoffmann &lt;nils.hoffmann@isas.de&gt;
+ * @author nilshoffmann
  * @since 1.1
+ * 
  */
 public interface ISmallMoleculeEvidenceColumn extends ISmallMoleculeColumn {
     

@@ -45,7 +45,7 @@ import uk.ac.ebi.pride.jmztab1_1.utils.errors.MZTabException;
 /**
  * Test class for MzTabWriter.
  *
- * @author Nils Hoffmann &lt;nils.hoffmann@isas.de&gt;
+ * @author nilshoffmann
  */
 public class MzTabWriterTest {
 

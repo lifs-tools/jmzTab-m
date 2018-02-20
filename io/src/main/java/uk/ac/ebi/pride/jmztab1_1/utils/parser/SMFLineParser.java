@@ -15,18 +15,31 @@ import uk.ac.ebi.pride.jmztab1_1.utils.errors.MZTabErrorList;
 
 
 /**
- * @author nils.hoffmann
+ * <p>SMFLineParser class.</p>
+ *
+ * @author nilshoffmann
  * @since 11/09/17
+ * 
  */
 public class SMFLineParser extends MZTabDataLineParser<SmallMoleculeFeature> {
 
     private SmallMoleculeFeature smallMoleculeFeature;
 
+    /**
+     * <p>Constructor for SMFLineParser.</p>
+     *
+     * @param context a {@link uk.ac.ebi.pride.jmztab1_1.utils.parser.MZTabParserContext} object.
+     * @param factory a {@link uk.ac.ebi.pride.jmztab1_1.model.MZTabColumnFactory} object.
+     * @param positionMapping a {@link uk.ac.ebi.pride.jmztab1_1.utils.parser.PositionMapping} object.
+     * @param metadata a {@link de.isas.mztab1_1.model.Metadata} object.
+     * @param errorList a {@link uk.ac.ebi.pride.jmztab1_1.utils.errors.MZTabErrorList} object.
+     */
     public SMFLineParser(MZTabParserContext context, MZTabColumnFactory factory, PositionMapping positionMapping,
                          Metadata metadata, MZTabErrorList errorList) {
         super(context, factory, positionMapping, metadata, errorList);
     }
 
+    /** {@inheritDoc} */
     @Override
     protected int checkData() {
 
@@ -117,6 +130,7 @@ public class SMFLineParser extends MZTabDataLineParser<SmallMoleculeFeature> {
         return physicalPosition;
     }
 
+    /** {@inheritDoc} */
     @Override
     public SmallMoleculeFeature getRecord() {
 

@@ -19,8 +19,10 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import de.isas.lipidomics.jmztabm.io.serialization.SmallMoleculeSummarySerializer;
 
 /**
+ * <p>Abstract SmallMoleculeSummaryFormat class.</p>
  *
- * @author Nils Hoffmann &lt;nils.hoffmann@isas.de&gt;
+ * @author nilshoffmann
+ * 
  */
 @JsonSerialize(using = SmallMoleculeSummarySerializer.class)
 public abstract class SmallMoleculeSummaryFormat {

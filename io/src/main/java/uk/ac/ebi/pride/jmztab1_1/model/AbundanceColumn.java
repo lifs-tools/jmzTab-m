@@ -16,6 +16,7 @@ import java.util.TreeMap;
  *
  * @author qingwei
  * @since 23/05/13
+ * 
  */
 public class AbundanceColumn extends MZTabColumn {
     public enum Field {
@@ -54,10 +55,10 @@ public class AbundanceColumn extends MZTabColumn {
      * protein_abundance_assay[1-n], the position always stay the most right of the tabled section,
      * and the data type is Double.
      *
-     * @param section SHOULD be {@link Section#Protein}, {@link Section#Peptide}, {@link Section#PSM},
-     *                or {@link Section#Small_Molecule}.
+     * @param section SHOULD be {@link uk.ac.ebi.pride.jmztab1_1.model.Section#Protein}, {@link uk.ac.ebi.pride.jmztab1_1.model.Section#Peptide}, {@link uk.ac.ebi.pride.jmztab1_1.model.Section#PSM},
+     *                or {@link uk.ac.ebi.pride.jmztab1_1.model.Section#Small_Molecule}.
      * @param assay SHOULD not be null.
-     * @param offset Normally the last column's position in header, {@link MZTabColumnFactory#getColumnMapping()},
+     * @param offset Normally the last column's position in header, {@link uk.ac.ebi.pride.jmztab1_1.model.MZTabColumnFactory#getColumnMapping()},
      * @return an abundance optional column as measured in the given assay.
      */
     public static MZTabColumn createOptionalColumn(Section section, Assay assay, int offset) {
@@ -72,16 +73,17 @@ public class AbundanceColumn extends MZTabColumn {
     }
 
     /**
-     * Generate three abundance optional columns as measured in the given study variable.
-     * The columns header like protein_abundance_study_variable[1-n], protein_abundance_stdev_study_variable[1-n]
-     * and protein_abundance_std_error_study_variable[1-n].
+     * Generate an abundance optional column as measured in the given study variable.
+     * The header can be one of abundance_study_variable[1], abundance_coeffvar_study_variable[1].
      * The position always stay the most right of the tabled section, and the data type is Double.
      *
-     * @param section SHOULD be {@link Section#Protein}, {@link Section#Peptide}, {@link Section#PSM},
-     *                or {@link Section#Small_Molecule}.
+     * @param section SHOULD be {@link uk.ac.ebi.pride.jmztab1_1.model.Section#Protein}, {@link uk.ac.ebi.pride.jmztab1_1.model.Section#Peptide}, {@link uk.ac.ebi.pride.jmztab1_1.model.Section#PSM},
+     *                or {@link uk.ac.ebi.pride.jmztab1_1.model.Section#Small_Molecule}.
      * @param studyVariable SHOULD not be null.
-     * @param order position in header for the new columns {@link MZTabColumnFactory#getColumnMapping()}
+     * @param order position in header for the new columns {@link uk.ac.ebi.pride.jmztab1_1.model.MZTabColumnFactory#getColumnMapping()}
      * @return an abundance optional column as measured in the given study variable.
+     * @param columnHeader a processed column header with abundance_ removed.
+     * 
      */
     public static SortedMap<String, MZTabColumn> createOptionalColumns(Section section, StudyVariable studyVariable, String columnHeader, String order) {
         if (section.isComment() || section.isMetadata()) {
@@ -111,6 +113,14 @@ public class AbundanceColumn extends MZTabColumn {
         return columns;
     }
 
+    /**
+     * <p>createOptionalColumns.</p>
+     *
+     * @param section a {@link uk.ac.ebi.pride.jmztab1_1.model.Section} object.
+     * @param studyVariable a {@link de.isas.mztab1_1.model.StudyVariable} object.
+     * @param lastOrder a {@link java.lang.Integer} object.
+     * @return a {@link java.util.SortedMap} object.
+     */
     public static SortedMap<String, MZTabColumn> createOptionalColumns(Section section, StudyVariable studyVariable, Integer lastOrder) {
         if (section.isComment() || section.isMetadata()) {
             throw new IllegalArgumentException("Section should be Protein, Peptide, PSM or SmallMolecule.");
