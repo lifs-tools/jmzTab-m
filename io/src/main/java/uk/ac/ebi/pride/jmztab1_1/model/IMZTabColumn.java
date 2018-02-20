@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Nils Hoffmann <nils.hoffmann@isas.de>.
+ * Copyright 2017 Nils Hoffmann &lt;nils.hoffmann@isas.de&gt;.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ import de.isas.mztab1_1.model.IndexedElement;
 
 /**
  *
- * @author Nils Hoffmann <nils.hoffmann@isas.de>
+ * @author Nils Hoffmann &lt;nils.hoffmann@isas.de&gt;
  * @since 1.1
  */
 public interface IMZTabColumn {

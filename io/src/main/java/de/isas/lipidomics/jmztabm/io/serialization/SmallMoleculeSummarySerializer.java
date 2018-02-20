@@ -33,7 +33,7 @@ import static de.isas.lipidomics.jmztabm.io.serialization.Serializers.writeIndex
 
 /**
  *
- * @author Nils Hoffmann <nils.hoffmann@isas.de>
+ * @author Nils Hoffmann &lt;nils.hoffmann@isas.de&gt;
  */
 public class SmallMoleculeSummarySerializer extends StdSerializer<SmallMoleculeSummary> {
 

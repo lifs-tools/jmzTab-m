@@ -47,7 +47,7 @@ import uk.ac.ebi.pride.jmztab1_1.model.Section;
 
 /**
  *
- * @author Nils Hoffmann <nils.hoffmann@isas.de>
+ * @author Nils Hoffmann &lt;nils.hoffmann@isas.de&gt;
  */
 public class MetadataSerializer extends StdSerializer<Metadata> {
 

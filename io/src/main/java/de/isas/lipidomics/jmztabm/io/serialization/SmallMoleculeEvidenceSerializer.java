@@ -30,7 +30,7 @@ import uk.ac.ebi.pride.jmztab1_1.model.SmallMoleculeEvidenceColumn;
 
 /**
  *
- * @author Nils Hoffmann <nils.hoffmann@isas.de>
+ * @author Nils Hoffmann &lt;nils.hoffmann@isas.de&gt;
  */
 public class SmallMoleculeEvidenceSerializer extends StdSerializer<SmallMoleculeEvidence> {
 

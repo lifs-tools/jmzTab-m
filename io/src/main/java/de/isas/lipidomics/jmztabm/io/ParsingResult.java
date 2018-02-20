@@ -19,7 +19,7 @@ import de.isas.mztab1_1.model.ValidationMessage;
 
 /**
  *
- * @author Nils Hoffmann <nils.hoffmann@isas.de>
+ * @author Nils Hoffmann &lt;nils.hoffmann@isas.de&gt;
  */
 public interface ParsingResult {
     ValidationMessage getValidationMessage();

@@ -20,7 +20,7 @@ import de.isas.lipidomics.jmztabm.io.serialization.MsRunSerializer;
 
 /**
  *
- * @author Nils Hoffmann <nils.hoffmann@isas.de>
+ * @author Nils Hoffmann &lt;nils.hoffmann@isas.de&gt;
  */
 @JsonSerialize(using = MsRunSerializer.class)
 public abstract class MsRunFormat {

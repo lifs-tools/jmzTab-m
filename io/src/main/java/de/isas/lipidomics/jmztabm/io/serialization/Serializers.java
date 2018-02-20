@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Nils Hoffmann <nils.hoffmann@isas.de>.
+ * Copyright 2017 Nils Hoffmann &lt;nils.hoffmann@isas.de&gt;.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,7 +45,7 @@ import uk.ac.ebi.pride.jmztab1_1.model.SmallMoleculeColumn;
 
 /**
  *
- * @author Nils Hoffmann <nils.hoffmann@isas.de>
+ * @author Nils Hoffmann &lt;nils.hoffmann@isas.de&gt;
  * @since 11/30/17
  */
 public class Serializers {

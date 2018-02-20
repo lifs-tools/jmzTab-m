@@ -17,7 +17,7 @@ package de.isas.lipidomics.jmztabm.io.serialization;
 
 /**
  *
- * @author Nils Hoffmann <nils.hoffmann@isas.de>
+ * @author Nils Hoffmann &lt;nils.hoffmann@isas.de&gt;
  */
 public final class ElementNameMappingException extends RuntimeException {
 

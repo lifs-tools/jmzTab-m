@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Nils Hoffmann <nils.hoffmann@isas.de>.
+ * Copyright 2018 Nils Hoffmann &lt;nils.hoffmann@isas.de&gt;.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ import static uk.ac.ebi.pride.jmztab1_1.model.Section.Small_Molecule_Header;
 
 /**
  *
- * @author Nils Hoffmann <nils.hoffmann@isas.de>
+ * @author Nils Hoffmann &lt;nils.hoffmann@isas.de&gt;
  */
 public class SectionTest {
 

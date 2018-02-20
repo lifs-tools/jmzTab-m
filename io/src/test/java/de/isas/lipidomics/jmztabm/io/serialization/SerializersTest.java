@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Nils Hoffmann <nils.hoffmann@isas.de>.
+ * Copyright 2018 Nils Hoffmann &lt;nils.hoffmann@isas.de&gt;.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import org.junit.utils.LogMethodName;
 
 /**
  *
- * @author Nils Hoffmann <nils.hoffmann@isas.de>
+ * @author Nils Hoffmann &lt;nils.hoffmann@isas.de&gt;
  */
 public class SerializersTest {
 

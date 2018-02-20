@@ -33,7 +33,7 @@ import static uk.ac.ebi.pride.jmztab1_1.model.MZTabUtils.isEmpty;
 
 /**
  *
- * @author Nils Hoffmann <nils.hoffmann@isas.de>
+ * @author Nils Hoffmann &lt;nils.hoffmann@isas.de&gt;
  */
 @Data
 public class MZTabParserContext {

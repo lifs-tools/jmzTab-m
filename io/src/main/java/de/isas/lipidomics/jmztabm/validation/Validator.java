@@ -21,7 +21,7 @@ import java.util.List;
 
 /**
  *
- * @author Nils Hoffmann <nils.hoffmann@isas.de>
+ * @author Nils Hoffmann &lt;nils.hoffmann@isas.de&gt;
  */
 public interface Validator {
     public List<ValidationMessage> validate(MzTab mzTab);

@@ -23,7 +23,7 @@ import org.junit.utils.LogMethodName;
 /**
  * Test class for MzTabWriter.
  *
- * @author Nils Hoffmann <nils.hoffmann@isas.de>
+ * @author Nils Hoffmann &lt;nils.hoffmann@isas.de&gt;
  */
 public class MzTabValidatorTest {
 
