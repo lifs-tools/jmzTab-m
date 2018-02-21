@@ -74,20 +74,26 @@ import uk.ac.ebi.pride.jmztab1_1.model.SmallMoleculeEvidenceColumn;
 import uk.ac.ebi.pride.jmztab1_1.model.SmallMoleculeFeatureColumn;
 
 /**
- * <p>MzTabWriter class.</p>
+ * <p>
+ * MzTabWriter class.</p>
  *
  * @author nilshoffmann
- * 
+ *
  */
 public class MzTabWriter {
 
-    /** Constant <code>EOL="\n\r"</code> */
+    /**
+     * Constant <code>EOL="\n\r"</code>
+     */
     public final static String EOL = "\n\r";
-    /** Constant <code>SEP="\t"</code> */
+    /**
+     * Constant <code>SEP="\t"</code>
+     */
     public final static String SEP = "\t";
 
     /**
-     * <p>write.</p>
+     * <p>
+     * write.</p>
      *
      * @param os a {@link java.io.OutputStreamWriter} object.
      * @param mzTab a {@link de.isas.mztab1_1.model.MzTab} object.
@@ -100,49 +106,29 @@ public class MzTabWriter {
                 "OutputStreamWriter encoding must be UTF8 but is " + os.
                     getEncoding());
         }
-        try {
-            os.write(writeMetadataWithJackson(mzTab));
-        } catch (NullPointerException npe) {
-            Logger.getLogger(MzTabWriter.class.getName()).
-                log(Level.SEVERE, null, npe);
-        }
-        try {
-            os.write(writeSmallMoleculeSummaryWithJackson(mzTab));
-        } catch (NullPointerException npe) {
-            Logger.getLogger(MzTabWriter.class.getName()).
-                log(Level.SEVERE, null, npe);
-        }
-        try {
-            os.write(writeSmallMoleculeFeaturesWithJackson(mzTab));
-        } catch (NullPointerException npe) {
-            Logger.getLogger(MzTabWriter.class.getName()).
-                log(Level.SEVERE, null, npe);
-        }
-        try {
-            os.write(writeSmallMoleculeEvidenceWithJackson(mzTab));
-        } catch (NullPointerException npe) {
-            Logger.getLogger(MzTabWriter.class.getName()).
-                log(Level.SEVERE, null, npe);
-        }
+        os.write(writeMetadataWithJackson(mzTab));
+        os.write(writeSmallMoleculeSummaryWithJackson(mzTab));
+        os.write(writeSmallMoleculeFeaturesWithJackson(mzTab));
+        os.write(writeSmallMoleculeEvidenceWithJackson(mzTab));
     }
 
     /**
-     * <p>write.</p>
+     * <p>
+     * write.</p>
      *
      * @param path a {@link java.nio.file.Path} object.
      * @param mzTab a {@link de.isas.mztab1_1.model.MzTab} object.
      * @throws java.io.IOException if any.
      */
     public void write(Path path, MzTab mzTab) throws IOException {
-        try (BufferedWriter writer = Files.newBufferedWriter(path, Charset.forName(
-            "UTF-8"), StandardOpenOption.CREATE,
+        try (BufferedWriter writer = Files.newBufferedWriter(path, Charset.
+            forName(
+                "UTF-8"), StandardOpenOption.CREATE,
             StandardOpenOption.WRITE)) {
             writer.write(writeMetadataWithJackson(mzTab));
             writer.write(writeSmallMoleculeSummaryWithJackson(mzTab));
             writer.write(writeSmallMoleculeFeaturesWithJackson(mzTab));
             writer.write(writeSmallMoleculeEvidenceWithJackson(mzTab));
-            writer.flush();
-            writer.close();
         }
     }
 
@@ -246,15 +232,19 @@ public class MzTabWriter {
                     CsvSchema.ColumnType.NUMBER_OR_STRING);
             });
         Map<String, OptColumnMapping> optColumns = new LinkedHashMap<>();
-        for (SmallMoleculeSummary sms : mztabfile.getSmallMoleculeSummary()) {
-            for (OptColumnMapping ocm : Optional.ofNullable(sms.getOpt()).orElse(Collections.emptyList())) {
-                optColumns.putIfAbsent(Serializers.printOptColumnMapping(ocm),
-                    ocm);
-            }
-        }
-        for (String key : optColumns.keySet()) {
-            builder.addColumn(key, CsvSchema.ColumnType.NUMBER_OR_STRING);
-        }
+        mztabfile.getSmallMoleculeSummary().
+            forEach((SmallMoleculeSummary sms) -> {
+                Optional.ofNullable(sms.getOpt()).
+                    orElse(Collections.emptyList()).
+                    forEach((ocm) -> {
+                        optColumns.putIfAbsent(Serializers.printOptColumnMapping(ocm),
+                            ocm);
+                    });
+        });
+        optColumns.keySet().
+            forEach((key) -> {
+                builder.addColumn(key, CsvSchema.ColumnType.NUMBER_OR_STRING);
+        });
         CsvSchema schema = defaultSchemaForBuilder(builder);
 
         try {
@@ -318,15 +308,23 @@ public class MzTabWriter {
             });
 
         Map<String, OptColumnMapping> optColumns = new LinkedHashMap<>();
-        for (SmallMoleculeFeature smf : mztabfile.getSmallMoleculeFeature()) {
-            for (OptColumnMapping ocm : Optional.ofNullable(smf.getOpt()).orElse(Collections.emptyList())) {
-                optColumns.putIfAbsent(Serializers.printOptColumnMapping(ocm),
-                    ocm);
-            }
-        }
-        for (String key : optColumns.keySet()) {
-            builder.addColumn(key, CsvSchema.ColumnType.NUMBER_OR_STRING);
-        }
+        mztabfile.getSmallMoleculeFeature().
+            forEach((SmallMoleculeFeature smf) ->
+            {
+                Optional.ofNullable(smf.getOpt()).
+                    orElse(Collections.emptyList()).
+                    forEach((ocm) ->
+                    {
+                        optColumns.putIfAbsent(Serializers.
+                            printOptColumnMapping(ocm),
+                            ocm);
+                    });
+            });
+        optColumns.keySet().
+            forEach((key) ->
+            {
+                builder.addColumn(key, CsvSchema.ColumnType.NUMBER_OR_STRING);
+            });
         CsvSchema schema = defaultSchemaForBuilder(builder);
         try {
             return mapper.writer(schema).
@@ -389,15 +387,23 @@ public class MzTabWriter {
         builder.addColumn(SmallMoleculeEvidenceColumn.Stable.RANK.getHeader(),
             CsvSchema.ColumnType.NUMBER_OR_STRING);
         Map<String, OptColumnMapping> optColumns = new LinkedHashMap<>();
-        for (SmallMoleculeEvidence sme : mztabfile.getSmallMoleculeEvidence()) {
-            for (OptColumnMapping ocm : Optional.ofNullable(sme.getOpt()).orElse(Collections.emptyList())) {
-                optColumns.putIfAbsent(Serializers.printOptColumnMapping(ocm),
-                    ocm);
-            }
-        }
-        for (String key : optColumns.keySet()) {
-            builder.addColumn(key, CsvSchema.ColumnType.NUMBER_OR_STRING);
-        }
+        mztabfile.getSmallMoleculeEvidence().
+            forEach((SmallMoleculeEvidence sme) ->
+            {
+                Optional.ofNullable(sme.getOpt()).
+                    orElse(Collections.emptyList()).
+                    forEach((ocm) ->
+                    {
+                        optColumns.putIfAbsent(Serializers.
+                            printOptColumnMapping(ocm),
+                            ocm);
+                    });
+            });
+        optColumns.keySet().
+            forEach((key) ->
+            {
+                builder.addColumn(key, CsvSchema.ColumnType.NUMBER_OR_STRING);
+            });
         CsvSchema schema = defaultSchemaForBuilder(builder);
         try {
             return mapper.writer(schema).

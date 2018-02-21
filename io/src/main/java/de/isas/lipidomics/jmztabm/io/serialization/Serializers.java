@@ -44,16 +44,18 @@ import uk.ac.ebi.pride.jmztab1_1.model.MetadataProperty;
 import uk.ac.ebi.pride.jmztab1_1.model.SmallMoleculeColumn;
 
 /**
- * <p>Serializers class.</p>
+ * <p>
+ * Serializers class.</p>
  *
  * @author nilshoffmann
  * @since 11/30/17
- * 
+ *
  */
 public class Serializers {
 
     /**
-     * <p>getReference.</p>
+     * <p>
+     * getReference.</p>
      *
      * @param element a {@link java.lang.Object} object.
      * @param idx a {@link java.lang.Integer} object.
@@ -78,7 +80,8 @@ public class Serializers {
     }
 
     /**
-     * <p>printAbundanceAssay.</p>
+     * <p>
+     * printAbundanceAssay.</p>
      *
      * @param a a {@link de.isas.mztab1_1.model.Assay} object.
      * @return a {@link java.lang.String} object.
@@ -92,7 +95,8 @@ public class Serializers {
     }
 
     /**
-     * <p>printAbundanceStudyVar.</p>
+     * <p>
+     * printAbundanceStudyVar.</p>
      *
      * @param sv a {@link de.isas.mztab1_1.model.StudyVariable} object.
      * @return a {@link java.lang.String} object.
@@ -106,7 +110,8 @@ public class Serializers {
     }
 
     /**
-     * <p>printAbundanceCoeffVarStudyVar.</p>
+     * <p>
+     * printAbundanceCoeffVarStudyVar.</p>
      *
      * @param sv a {@link de.isas.mztab1_1.model.StudyVariable} object.
      * @return a {@link java.lang.String} object.
@@ -120,7 +125,8 @@ public class Serializers {
     }
 
     /**
-     * <p>printOptColumnMapping.</p>
+     * <p>
+     * printOptColumnMapping.</p>
      *
      * @param ocm a {@link de.isas.mztab1_1.model.OptColumnMapping} object.
      * @return a {@link java.lang.String} object.
@@ -145,7 +151,8 @@ public class Serializers {
     }
 
     /**
-     * <p>addIndexedLine.</p>
+     * <p>
+     * addIndexedLine.</p>
      *
      * @param jg a {@link com.fasterxml.jackson.core.JsonGenerator} object.
      * @param prefix a {@link java.lang.String} object.
@@ -158,7 +165,8 @@ public class Serializers {
     }
 
     /**
-     * <p>addIndexedLine.</p>
+     * <p>
+     * addIndexedLine.</p>
      *
      * @param jg a {@link com.fasterxml.jackson.core.JsonGenerator} object.
      * @param prefix a {@link java.lang.String} object.
@@ -201,7 +209,8 @@ public class Serializers {
     }
 
     /**
-     * <p>addLineWithParameters.</p>
+     * <p>
+     * addLineWithParameters.</p>
      *
      * @param jg a {@link com.fasterxml.jackson.core.JsonGenerator} object.
      * @param prefix a {@link java.lang.String} object.
@@ -244,7 +253,8 @@ public class Serializers {
     }
 
     /**
-     * <p>addLineWithPropertyParameters.</p>
+     * <p>
+     * addLineWithPropertyParameters.</p>
      *
      * @param jg a {@link com.fasterxml.jackson.core.JsonGenerator} object.
      * @param prefix a {@link java.lang.String} object.
@@ -271,11 +281,13 @@ public class Serializers {
     }
 
     /**
-     * <p>addLineWithMetadataProperty.</p>
+     * <p>
+     * addLineWithMetadataProperty.</p>
      *
      * @param jg a {@link com.fasterxml.jackson.core.JsonGenerator} object.
      * @param prefix a {@link java.lang.String} object.
-     * @param property a {@link uk.ac.ebi.pride.jmztab1_1.model.MetadataProperty} object.
+     * @param property a
+     * {@link uk.ac.ebi.pride.jmztab1_1.model.MetadataProperty} object.
      * @param element a {@link java.lang.Object} object.
      * @param value a {@link java.lang.String} object.
      */
@@ -286,7 +298,8 @@ public class Serializers {
     }
 
     /**
-     * <p>addLineWithProperty.</p>
+     * <p>
+     * addLineWithProperty.</p>
      *
      * @param jg a {@link com.fasterxml.jackson.core.JsonGenerator} object.
      * @param prefix a {@link java.lang.String} object.
@@ -336,7 +349,8 @@ public class Serializers {
     }
 
     /**
-     * <p>addLine.</p>
+     * <p>
+     * addLine.</p>
      *
      * @param jg a {@link com.fasterxml.jackson.core.JsonGenerator} object.
      * @param prefix a {@link java.lang.String} object.
@@ -349,7 +363,8 @@ public class Serializers {
     }
 
     /**
-     * <p>getElementName.</p>
+     * <p>
+     * getElementName.</p>
      *
      * @param element a {@link java.lang.Object} object.
      * @return a {@link java.util.Optional} object.
@@ -376,7 +391,8 @@ public class Serializers {
     }
 
     /**
-     * <p>getPropertyNames.</p>
+     * <p>
+     * getPropertyNames.</p>
      *
      * @param element a {@link java.lang.Object} object.
      * @return a {@link java.util.List} object.
@@ -393,7 +409,8 @@ public class Serializers {
     }
 
     /**
-     * <p>asMap.</p>
+     * <p>
+     * asMap.</p>
      *
      * @param element a {@link java.lang.Object} object.
      * @return a {@link java.util.Map} object.
@@ -404,7 +421,8 @@ public class Serializers {
     }
 
     /**
-     * <p>camelCaseToUnderscoreLowerCase.</p>
+     * <p>
+     * camelCaseToUnderscoreLowerCase.</p>
      *
      * @param camelCase a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
@@ -424,7 +442,8 @@ public class Serializers {
     }
 
     /**
-     * <p>addSubElementStrings.</p>
+     * <p>
+     * addSubElementStrings.</p>
      *
      * @param jg a {@link com.fasterxml.jackson.core.JsonGenerator} object.
      * @param prefix a {@link java.lang.String} object.
@@ -460,7 +479,8 @@ public class Serializers {
     }
 
     /**
-     * <p>addSubElementParameter.</p>
+     * <p>
+     * addSubElementParameter.</p>
      *
      * @param jg a {@link com.fasterxml.jackson.core.JsonGenerator} object.
      * @param prefix a {@link java.lang.String} object.
@@ -483,7 +503,8 @@ public class Serializers {
     }
 
     /**
-     * <p>addSubElementParameters.</p>
+     * <p>
+     * addSubElementParameters.</p>
      *
      * @param jg a {@link com.fasterxml.jackson.core.JsonGenerator} object.
      * @param prefix a {@link java.lang.String} object.
@@ -516,7 +537,8 @@ public class Serializers {
     }
 
     /**
-     * <p>checkForNull.</p>
+     * <p>
+     * checkForNull.</p>
      *
      * @param element a {@link java.lang.Object} object.
      * @param subElements a {@link java.util.List} object.
@@ -537,7 +559,8 @@ public class Serializers {
     }
 
     /**
-     * <p>writeString.</p>
+     * <p>
+     * writeString.</p>
      *
      * @param columnName a {@link java.lang.String} object.
      * @param jg a {@link com.fasterxml.jackson.core.JsonGenerator} object.
@@ -550,9 +573,11 @@ public class Serializers {
     }
 
     /**
-     * <p>writeString.</p>
+     * <p>
+     * writeString.</p>
      *
-     * @param column a {@link uk.ac.ebi.pride.jmztab1_1.model.IMZTabColumn} object.
+     * @param column a {@link uk.ac.ebi.pride.jmztab1_1.model.IMZTabColumn}
+     * object.
      * @param jg a {@link com.fasterxml.jackson.core.JsonGenerator} object.
      * @param value a {@link java.lang.String} object.
      * @throws java.io.IOException if any.
@@ -563,9 +588,11 @@ public class Serializers {
     }
 
     /**
-     * <p>writeAsNumberArray.</p>
+     * <p>
+     * writeAsNumberArray.</p>
      *
-     * @param column a {@link uk.ac.ebi.pride.jmztab1_1.model.IMZTabColumn} object.
+     * @param column a {@link uk.ac.ebi.pride.jmztab1_1.model.IMZTabColumn}
+     * object.
      * @param jg a {@link com.fasterxml.jackson.core.JsonGenerator} object.
      * @param elements a {@link java.util.List} object.
      */
@@ -575,7 +602,8 @@ public class Serializers {
     }
 
     /**
-     * <p>writeAsNumberArray.</p>
+     * <p>
+     * writeAsNumberArray.</p>
      *
      * @param columnName a {@link java.lang.String} object.
      * @param jg a {@link com.fasterxml.jackson.core.JsonGenerator} object.
@@ -583,17 +611,21 @@ public class Serializers {
      */
     public static void writeAsNumberArray(String columnName, JsonGenerator jg,
         List<? extends Number> elements) {
-        String arrayElements = elements.stream().
-            map((number) ->
-            {
-                return "" + number.doubleValue();
-            }).
-            collect(Collectors.joining("" + MZTabConstants.BAR));
         try {
-            if (arrayElements.isEmpty()) {
-                jg.writeNullField(columnName);
+            if (elements == null) {
+                jg.writeNull();
             } else {
-                jg.writeStringField(columnName, arrayElements);
+                String arrayElements = elements.stream().
+                    map((number) ->
+                    {
+                        return "" + number.doubleValue();
+                    }).
+                    collect(Collectors.joining("" + MZTabConstants.BAR));
+                if (arrayElements.isEmpty()) {
+                    jg.writeNullField(columnName);
+                } else {
+                    jg.writeStringField(columnName, arrayElements);
+                }
             }
         } catch (IOException ex) {
             Logger.getLogger(Serializers.class.
@@ -603,9 +635,11 @@ public class Serializers {
     }
 
     /**
-     * <p>writeAsStringArray.</p>
+     * <p>
+     * writeAsStringArray.</p>
      *
-     * @param column a {@link uk.ac.ebi.pride.jmztab1_1.model.IMZTabColumn} object.
+     * @param column a {@link uk.ac.ebi.pride.jmztab1_1.model.IMZTabColumn}
+     * object.
      * @param jg a {@link com.fasterxml.jackson.core.JsonGenerator} object.
      * @param elements a {@link java.util.List} object.
      */
@@ -615,20 +649,25 @@ public class Serializers {
     }
 
     /**
-     * <p>writeAsStringArray.</p>
+     * <p>
+     * writeAsStringArray.</p>
      *
      * @param jg a {@link com.fasterxml.jackson.core.JsonGenerator} object.
      * @param elements a {@link java.util.List} object.
      */
     public static void writeAsStringArray(JsonGenerator jg,
         List<String> elements) {
-        String arrayElements = elements.stream().
-            collect(Collectors.joining("" + MZTabConstants.BAR));
         try {
-            if (arrayElements.isEmpty()) {
+            if (elements == null) {
                 jg.writeNull();
             } else {
-                jg.writeString(arrayElements);
+                String arrayElements = elements.stream().
+                    collect(Collectors.joining("" + MZTabConstants.BAR));
+                if (arrayElements.isEmpty()) {
+                    jg.writeNull();
+                } else {
+                    jg.writeString(arrayElements);
+                }
             }
         } catch (IOException ex) {
             Logger.getLogger(Serializers.class.
@@ -638,7 +677,8 @@ public class Serializers {
     }
 
     /**
-     * <p>writeAsStringArray.</p>
+     * <p>
+     * writeAsStringArray.</p>
      *
      * @param columnName a {@link java.lang.String} object.
      * @param jg a {@link com.fasterxml.jackson.core.JsonGenerator} object.
@@ -646,13 +686,17 @@ public class Serializers {
      */
     public static void writeAsStringArray(String columnName, JsonGenerator jg,
         List<String> elements) {
-        String arrayElements = elements.stream().
-            collect(Collectors.joining("" + MZTabConstants.BAR));
         try {
-            if (arrayElements.isEmpty()) {
+            if (elements == null) {
                 jg.writeNullField(columnName);
             } else {
-                jg.writeStringField(columnName, arrayElements);
+                String arrayElements = elements.stream().
+                    collect(Collectors.joining("" + MZTabConstants.BAR));
+                if (arrayElements.isEmpty()) {
+                    jg.writeNullField(columnName);
+                } else {
+                    jg.writeStringField(columnName, arrayElements);
+                }
             }
         } catch (IOException ex) {
             Logger.getLogger(Serializers.class.
@@ -662,7 +706,8 @@ public class Serializers {
     }
 
     /**
-     * <p>writeNumber.</p>
+     * <p>
+     * writeNumber.</p>
      *
      * @param columnName a {@link java.lang.String} object.
      * @param jg a {@link com.fasterxml.jackson.core.JsonGenerator} object.
@@ -680,9 +725,11 @@ public class Serializers {
     }
 
     /**
-     * <p>writeNumber.</p>
+     * <p>
+     * writeNumber.</p>
      *
-     * @param column a {@link uk.ac.ebi.pride.jmztab1_1.model.IMZTabColumn} object.
+     * @param column a {@link uk.ac.ebi.pride.jmztab1_1.model.IMZTabColumn}
+     * object.
      * @param jg a {@link com.fasterxml.jackson.core.JsonGenerator} object.
      * @param value a {@link java.lang.Integer} object.
      * @throws java.io.IOException if any.
@@ -693,7 +740,8 @@ public class Serializers {
     }
 
     /**
-     * <p>writeNumber.</p>
+     * <p>
+     * writeNumber.</p>
      *
      * @param columnName a {@link java.lang.String} object.
      * @param jg a {@link com.fasterxml.jackson.core.JsonGenerator} object.
@@ -711,9 +759,11 @@ public class Serializers {
     }
 
     /**
-     * <p>writeNumber.</p>
+     * <p>
+     * writeNumber.</p>
      *
-     * @param column a {@link uk.ac.ebi.pride.jmztab1_1.model.IMZTabColumn} object.
+     * @param column a {@link uk.ac.ebi.pride.jmztab1_1.model.IMZTabColumn}
+     * object.
      * @param jg a {@link com.fasterxml.jackson.core.JsonGenerator} object.
      * @param value a {@link java.lang.Double} object.
      * @throws java.io.IOException if any.
@@ -724,7 +774,8 @@ public class Serializers {
     }
 
     /**
-     * <p>writeNumber.</p>
+     * <p>
+     * writeNumber.</p>
      *
      * @param jg a {@link com.fasterxml.jackson.core.JsonGenerator} object.
      * @param value a {@link java.lang.Integer} object.
@@ -739,7 +790,8 @@ public class Serializers {
     }
 
     /**
-     * <p>writeNumber.</p>
+     * <p>
+     * writeNumber.</p>
      *
      * @param jg a {@link com.fasterxml.jackson.core.JsonGenerator} object.
      * @param value a {@link java.lang.Double} object.
@@ -754,7 +806,8 @@ public class Serializers {
     }
 
     /**
-     * <p>writeOptColumnMappings.</p>
+     * <p>
+     * writeOptColumnMappings.</p>
      *
      * @param optColumnMappings a {@link java.util.List} object.
      * @param jg a {@link com.fasterxml.jackson.core.JsonGenerator} object.
@@ -777,7 +830,8 @@ public class Serializers {
     }
 
     /**
-     * <p>writeIndexedValues.</p>
+     * <p>
+     * writeIndexedValues.</p>
      *
      * @param prefix a {@link java.lang.String} object.
      * @param jg a {@link com.fasterxml.jackson.core.JsonGenerator} object.
