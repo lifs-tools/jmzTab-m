@@ -7,7 +7,6 @@ import de.isas.mztab1_1.model.CV;
 import de.isas.mztab1_1.model.ColumnParameterMapping;
 import de.isas.mztab1_1.model.Contact;
 import de.isas.mztab1_1.model.Instrument;
-import de.isas.mztab1_1.model.Metadata;
 import de.isas.mztab1_1.model.MsRun;
 import de.isas.mztab1_1.model.MzTab;
 import de.isas.mztab1_1.model.OptColumnMapping;
