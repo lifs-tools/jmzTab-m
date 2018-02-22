@@ -69,6 +69,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import uk.ac.ebi.pride.jmztab1_1.model.MZTabConstants;
 import uk.ac.ebi.pride.jmztab1_1.model.SmallMoleculeColumn;
 import uk.ac.ebi.pride.jmztab1_1.model.SmallMoleculeEvidenceColumn;
 import uk.ac.ebi.pride.jmztab1_1.model.SmallMoleculeFeatureColumn;
@@ -83,17 +84,9 @@ import uk.ac.ebi.pride.jmztab1_1.model.SmallMoleculeFeatureColumn;
 public class MzTabWriter {
 
     /**
-     * Constant <code>EOL="\n\r"</code>
-     */
-    public final static String EOL = "\n\r";
-    /**
-     * Constant <code>SEP="\t"</code>
-     */
-    public final static String SEP = "\t";
-
-    /**
-     * <p>
-     * write.</p>
+     * <p>Write the mzTab object to the provided output stream writer.</p>
+     * 
+     * This method does not close the output stream!
      *
      * @param os a {@link java.io.OutputStreamWriter} object.
      * @param mzTab a {@link de.isas.mztab1_1.model.MzTab} object.
@@ -113,8 +106,8 @@ public class MzTabWriter {
     }
 
     /**
-     * <p>
-     * write.</p>
+     * <p>Write the mzTab object to the provided path / file.</p>
+     * 
      *
      * @param path a {@link java.nio.file.Path} object.
      * @param mzTab a {@link de.isas.mztab1_1.model.MzTab} object.
@@ -153,15 +146,16 @@ public class MzTabWriter {
             builder().
             addColumn("PREFIX", CsvSchema.ColumnType.STRING).
             addColumn("KEY", CsvSchema.ColumnType.STRING).
-            addArrayColumn("VALUES", "|").
+            addArrayColumn("VALUES", MZTabConstants.BAR_S).
             build().
             withAllowComments(true).
-            withArrayElementSeparator("|").
-            withNullValue("null").
+            withArrayElementSeparator(MZTabConstants.BAR_S).
+            withNullValue(MZTabConstants.NULL).
             withUseHeader(false).
             withoutQuoteChar().
             withoutEscapeChar().
-            withColumnSeparator('\t');
+            withLineSeparator(MZTabConstants.NEW_LINE).
+            withColumnSeparator(MZTabConstants.TAB);
         try {
             return mapper.writer(schema).
                 writeValueAsString(mztabfile.getMetadata());
@@ -261,12 +255,13 @@ public class MzTabWriter {
         return builder.
             build().
             withAllowComments(true).
-            withArrayElementSeparator("|").
-            withNullValue("null").
+            withArrayElementSeparator(MZTabConstants.BAR_S).
+            withNullValue(MZTabConstants.NULL).
             withUseHeader(true).
             withoutQuoteChar().
             withoutEscapeChar().
-            withColumnSeparator('\t');
+            withLineSeparator(MZTabConstants.NEW_LINE).
+            withColumnSeparator(MZTabConstants.TAB);
     }
 
     String writeSmallMoleculeFeaturesWithJackson(MzTab mztabfile) {

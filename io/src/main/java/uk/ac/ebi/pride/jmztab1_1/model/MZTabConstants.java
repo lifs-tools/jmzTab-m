@@ -9,7 +9,7 @@ package uk.ac.ebi.pride.jmztab1_1.model;
  */
 public class MZTabConstants {
     /** Constant <code>NEW_LINE="System.getProperty(line.separator)"</code> */
-    public final static String NEW_LINE = System.getProperty("line.separator");
+    public final static String NEW_LINE = "\r\n";//System.getProperty("line.separator");
     /** Constant <code>NULL="null"</code> */
     public final static String NULL = "null";
     /** Constant <code>INFINITY="INF"</code> */
@@ -23,6 +23,8 @@ public class MZTabConstants {
     public final static char MINUS = '-';
     /** Constant <code>BAR='\u007c'</code> */
     public final static char BAR = '\u007c';
+    /** Constant <code>BAR='\u007c'</code> */
+    public final static String BAR_S = ""+BAR;
     /** Constant <code>COLON=':'</code> */
     public final static char COLON = ':';
     /** Constant <code>COMMA=','</code> */
