@@ -15,7 +15,9 @@
  */
 package de.isas.lipidomics.jmztabm.io;
 
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.dataformat.csv.CsvFactory;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema.Builder;
@@ -43,9 +45,9 @@ import de.isas.mztab1_1.model.Contact;
 import de.isas.mztab1_1.model.Database;
 import de.isas.mztab1_1.model.ExternalStudy;
 import de.isas.mztab1_1.model.Instrument;
-import de.isas.mztab1_1.model.MzTab;
 import de.isas.mztab1_1.model.Metadata;
 import de.isas.mztab1_1.model.MsRun;
+import de.isas.mztab1_1.model.MzTab;
 import de.isas.mztab1_1.model.OptColumnMapping;
 import de.isas.mztab1_1.model.Parameter;
 import de.isas.mztab1_1.model.Publication;
@@ -59,6 +61,7 @@ import de.isas.mztab1_1.model.StudyVariable;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -86,23 +89,24 @@ public class MzTabWriter {
     /**
      * <p>Write the mzTab object to the provided output stream writer.</p>
      * 
-     * This method does not close the output stream!
+     * This method does not close the output stream but will issue a <code>flush</code> on the provided output stream writer!
      *
-     * @param os a {@link java.io.OutputStreamWriter} object.
+     * @param writer a {@link java.io.OutputStreamWriter} object.
      * @param mzTab a {@link de.isas.mztab1_1.model.MzTab} object.
      * @throws java.io.IOException if any.
      */
-    public void write(OutputStreamWriter os, MzTab mzTab) throws IOException {
-        if (!os.getEncoding().
+    public void write(OutputStreamWriter writer, MzTab mzTab) throws IOException {
+        if (!writer.getEncoding().
             equals("UTF8")) {
             throw new IllegalArgumentException(
-                "OutputStreamWriter encoding must be UTF8 but is " + os.
+                "OutputStreamWriter encoding must be UTF8 but is " + writer.
                     getEncoding());
         }
-        os.write(writeMetadataWithJackson(mzTab));
-        os.write(writeSmallMoleculeSummaryWithJackson(mzTab));
-        os.write(writeSmallMoleculeFeaturesWithJackson(mzTab));
-        os.write(writeSmallMoleculeEvidenceWithJackson(mzTab));
+        writeMetadataWithJackson(mzTab, writer);
+        writeSmallMoleculeSummaryWithJackson(mzTab, writer);
+        writeSmallMoleculeFeaturesWithJackson(mzTab, writer);
+        writeSmallMoleculeEvidenceWithJackson(mzTab, writer);
+        writer.flush();
     }
 
     /**
@@ -118,15 +122,16 @@ public class MzTabWriter {
             forName(
                 "UTF-8"), StandardOpenOption.CREATE,
             StandardOpenOption.WRITE)) {
-            writer.write(writeMetadataWithJackson(mzTab));
-            writer.write(writeSmallMoleculeSummaryWithJackson(mzTab));
-            writer.write(writeSmallMoleculeFeaturesWithJackson(mzTab));
-            writer.write(writeSmallMoleculeEvidenceWithJackson(mzTab));
+            writeMetadataWithJackson(mzTab, writer);
+            writeSmallMoleculeSummaryWithJackson(mzTab, writer);
+            writeSmallMoleculeFeaturesWithJackson(mzTab, writer);
+            writeSmallMoleculeEvidenceWithJackson(mzTab, writer);
+            writer.flush();
         }
     }
 
-    String writeMetadataWithJackson(MzTab mztabfile) {
-        CsvMapper mapper = new CsvMapper();
+    void writeMetadataWithJackson(MzTab mztabfile, Writer writer) throws IOException {
+        CsvMapper mapper = defaultMapper();
         mapper.addMixIn(Metadata.class, MetadataFormat.class);
         mapper.addMixIn(Assay.class, AssayFormat.class);
         mapper.addMixIn(Contact.class, ContactFormat.class);
@@ -157,17 +162,22 @@ public class MzTabWriter {
             withLineSeparator(MZTabConstants.NEW_LINE).
             withColumnSeparator(MZTabConstants.TAB);
         try {
-            return mapper.writer(schema).
-                writeValueAsString(mztabfile.getMetadata());
+            mapper.writer(schema).writeValue(writer, mztabfile.getMetadata());
         } catch (JsonProcessingException ex) {
             Logger.getLogger(MzTabWriter.class.getName()).
                 log(Level.SEVERE, null, ex);
         }
-        return "";
     }
 
-    String writeSmallMoleculeSummaryWithJackson(MzTab mztabfile) {
-        CsvMapper mapper = new CsvMapper();
+    CsvMapper defaultMapper() {
+        CsvFactory factory = new CsvFactory();
+        factory.disable(JsonGenerator.Feature.AUTO_CLOSE_TARGET);
+        CsvMapper mapper = new CsvMapper(factory);
+        return mapper;
+    }
+
+    void writeSmallMoleculeSummaryWithJackson(MzTab mztabfile, Writer writer) throws IOException {
+        CsvMapper mapper = defaultMapper();
         mapper.addMixIn(SmallMoleculeSummary.class,
             SmallMoleculeSummaryFormat.class);
         Builder builder = mapper.schema().
@@ -242,16 +252,14 @@ public class MzTabWriter {
         CsvSchema schema = defaultSchemaForBuilder(builder);
 
         try {
-            return mapper.writer(schema).
-                writeValueAsString(mztabfile.getSmallMoleculeSummary());
+            mapper.writer(schema).writeValue(writer, mztabfile.getSmallMoleculeSummary());
         } catch (JsonProcessingException ex) {
             Logger.getLogger(MzTabWriter.class.getName()).
                 log(Level.SEVERE, null, ex);
         }
-        return "";
     }
 
-    static CsvSchema defaultSchemaForBuilder(Builder builder) {
+    CsvSchema defaultSchemaForBuilder(Builder builder) {
         return builder.
             build().
             withAllowComments(true).
@@ -264,8 +272,8 @@ public class MzTabWriter {
             withColumnSeparator(MZTabConstants.TAB);
     }
 
-    String writeSmallMoleculeFeaturesWithJackson(MzTab mztabfile) {
-        CsvMapper mapper = new CsvMapper();
+    void writeSmallMoleculeFeaturesWithJackson(MzTab mztabfile, Writer writer) throws IOException {
+        CsvMapper mapper = defaultMapper();
         mapper.addMixIn(SmallMoleculeFeature.class,
             SmallMoleculeFeatureFormat.class);
 
@@ -322,17 +330,15 @@ public class MzTabWriter {
             });
         CsvSchema schema = defaultSchemaForBuilder(builder);
         try {
-            return mapper.writer(schema).
-                writeValueAsString(mztabfile.getSmallMoleculeFeature());
+            mapper.writer(schema).writeValue(writer, mztabfile.getSmallMoleculeFeature());
         } catch (JsonProcessingException ex) {
             Logger.getLogger(MzTabWriter.class.getName()).
                 log(Level.SEVERE, null, ex);
         }
-        return "";
     }
 
-    String writeSmallMoleculeEvidenceWithJackson(MzTab mztabfile) {
-        CsvMapper mapper = new CsvMapper();
+    void writeSmallMoleculeEvidenceWithJackson(MzTab mztabfile, Writer writer) throws IOException {
+        CsvMapper mapper = defaultMapper();
         mapper.addMixIn(SmallMoleculeEvidence.class,
             SmallMoleculeEvidenceFormat.class);
         Builder builder = mapper.schema().
@@ -401,13 +407,11 @@ public class MzTabWriter {
             });
         CsvSchema schema = defaultSchemaForBuilder(builder);
         try {
-            return mapper.writer(schema).
-                writeValueAsString(mztabfile.getSmallMoleculeEvidence());
+            mapper.writer(schema).writeValue(writer, mztabfile.getSmallMoleculeEvidence());
         } catch (JsonProcessingException ex) {
             Logger.getLogger(MzTabWriter.class.getName()).
                 log(Level.SEVERE, null, ex);
         }
-        return "";
     }
 
 }
