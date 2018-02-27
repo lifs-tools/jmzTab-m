@@ -87,9 +87,11 @@ import uk.ac.ebi.pride.jmztab1_1.model.SmallMoleculeFeatureColumn;
 public class MzTabWriter {
 
     /**
-     * <p>Write the mzTab object to the provided output stream writer.</p>
-     * 
-     * This method does not close the output stream but will issue a <code>flush</code> on the provided output stream writer!
+     * <p>
+     * Write the mzTab object to the provided output stream writer.</p>
+     *
+     * This method does not close the output stream but will issue a
+     * <code>flush</code> on the provided output stream writer!
      *
      * @param writer a {@link java.io.OutputStreamWriter} object.
      * @param mzTab a {@link de.isas.mztab1_1.model.MzTab} object.
@@ -110,8 +112,9 @@ public class MzTabWriter {
     }
 
     /**
-     * <p>Write the mzTab object to the provided path / file.</p>
-     * 
+     * <p>
+     * Write the mzTab object to the provided path / file.</p>
+     *
      *
      * @param path a {@link java.nio.file.Path} object.
      * @param mzTab a {@link de.isas.mztab1_1.model.MzTab} object.
@@ -162,7 +165,8 @@ public class MzTabWriter {
             withLineSeparator(MZTabConstants.NEW_LINE).
             withColumnSeparator(MZTabConstants.TAB);
         try {
-            mapper.writer(schema).writeValue(writer, mztabfile.getMetadata());
+            mapper.writer(schema).
+                writeValue(writer, mztabfile.getMetadata());
         } catch (JsonProcessingException ex) {
             Logger.getLogger(MzTabWriter.class.getName()).
                 log(Level.SEVERE, null, ex);
@@ -237,22 +241,27 @@ public class MzTabWriter {
             });
         Map<String, OptColumnMapping> optColumns = new LinkedHashMap<>();
         mztabfile.getSmallMoleculeSummary().
-            forEach((SmallMoleculeSummary sms) -> {
+            forEach((SmallMoleculeSummary sms) ->
+            {
                 Optional.ofNullable(sms.getOpt()).
                     orElse(Collections.emptyList()).
-                    forEach((ocm) -> {
-                        optColumns.putIfAbsent(Serializers.printOptColumnMapping(ocm),
+                    forEach((ocm) ->
+                    {
+                        optColumns.putIfAbsent(Serializers.
+                            printOptColumnMapping(ocm),
                             ocm);
                     });
-        });
+            });
         optColumns.keySet().
-            forEach((key) -> {
+            forEach((key) ->
+            {
                 builder.addColumn(key, CsvSchema.ColumnType.NUMBER_OR_STRING);
-        });
+            });
         CsvSchema schema = defaultSchemaForBuilder(builder);
 
         try {
-            mapper.writer(schema).writeValue(writer, mztabfile.getSmallMoleculeSummary());
+            mapper.writer(schema).
+                writeValue(writer, mztabfile.getSmallMoleculeSummary());
         } catch (JsonProcessingException ex) {
             Logger.getLogger(MzTabWriter.class.getName()).
                 log(Level.SEVERE, null, ex);
@@ -302,13 +311,15 @@ public class MzTabWriter {
             addColumn(SmallMoleculeFeatureColumn.Stable.RETENTION_TIME_END.
                 getHeader(), CsvSchema.ColumnType.NUMBER_OR_STRING);
 
-        mztabfile.getMetadata().
-            getAssay().
-            forEach((assay) ->
-            {
-                builder.addColumn("abundance_assay[" + assay.getId() + "]",
-                    CsvSchema.ColumnType.NUMBER_OR_STRING);
-            });
+        Optional.ofNullable(mztabfile.getMetadata().
+            getAssay()).
+            ifPresent((assayList) ->
+                assayList.forEach((assay) ->
+                {
+                    builder.addColumn("abundance_assay[" + assay.getId() + "]",
+                        CsvSchema.ColumnType.NUMBER_OR_STRING);
+                })
+            );
 
         Map<String, OptColumnMapping> optColumns = new LinkedHashMap<>();
         mztabfile.getSmallMoleculeFeature().
@@ -330,7 +341,8 @@ public class MzTabWriter {
             });
         CsvSchema schema = defaultSchemaForBuilder(builder);
         try {
-            mapper.writer(schema).writeValue(writer, mztabfile.getSmallMoleculeFeature());
+            mapper.writer(schema).
+                writeValue(writer, mztabfile.getSmallMoleculeFeature());
         } catch (JsonProcessingException ex) {
             Logger.getLogger(MzTabWriter.class.getName()).
                 log(Level.SEVERE, null, ex);
@@ -377,13 +389,16 @@ public class MzTabWriter {
                 getHeader(), CsvSchema.ColumnType.STRING).
             addColumn(SmallMoleculeEvidenceColumn.Stable.MS_LEVEL.getHeader(),
                 CsvSchema.ColumnType.STRING);
-        mztabfile.getMetadata().
-            getIdConfidenceMeasure().
-            forEach((param) ->
+        Optional.ofNullable(mztabfile.getMetadata().
+            getIdConfidenceMeasure()).
+            ifPresent((parameterList) ->
             {
-                builder.
-                    addColumn("id_confidence_measure[" + param.getId() + "]",
-                        CsvSchema.ColumnType.NUMBER_OR_STRING);
+                parameterList.forEach((param) ->
+                {
+                    builder.
+                        addColumn("id_confidence_measure[" + param.getId() + "]",
+                            CsvSchema.ColumnType.NUMBER_OR_STRING);
+                });
             });
         builder.addColumn(SmallMoleculeEvidenceColumn.Stable.RANK.getHeader(),
             CsvSchema.ColumnType.NUMBER_OR_STRING);
@@ -407,7 +422,8 @@ public class MzTabWriter {
             });
         CsvSchema schema = defaultSchemaForBuilder(builder);
         try {
-            mapper.writer(schema).writeValue(writer, mztabfile.getSmallMoleculeEvidence());
+            mapper.writer(schema).
+                writeValue(writer, mztabfile.getSmallMoleculeEvidence());
         } catch (JsonProcessingException ex) {
             Logger.getLogger(MzTabWriter.class.getName()).
                 log(Level.SEVERE, null, ex);

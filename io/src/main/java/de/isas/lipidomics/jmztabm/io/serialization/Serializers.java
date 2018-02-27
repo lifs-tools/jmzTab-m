@@ -569,7 +569,11 @@ public class Serializers {
      */
     public static void writeString(String columnName, JsonGenerator jg,
         String value) throws IOException {
-        jg.writeStringField(columnName, value);
+        if(value==null) {
+            jg.writeNullField(columnName);
+        } else {
+            jg.writeStringField(columnName, value);
+        }
     }
 
     /**
@@ -613,7 +617,7 @@ public class Serializers {
         List<? extends Number> elements) {
         try {
             if (elements == null) {
-                jg.writeNull();
+                jg.writeNullField(columnName);
             } else {
                 String arrayElements = elements.stream().
                     map((number) ->
@@ -716,11 +720,10 @@ public class Serializers {
      */
     public static void writeNumber(String columnName, JsonGenerator jg,
         Integer value) throws IOException {
-        jg.writeFieldName(columnName);
         if (value == null) {
-            jg.writeNull();
+            jg.writeNullField(columnName);
         } else {
-            jg.writeNumber(value);
+            jg.writeNumberField(columnName, value);
         }
     }
 
@@ -750,11 +753,10 @@ public class Serializers {
      */
     public static void writeNumber(String columnName, JsonGenerator jg,
         Double value) throws IOException {
-        jg.writeFieldName(columnName);
         if (value == null) {
-            jg.writeNull();
+            jg.writeNullField(columnName);
         } else {
-            jg.writeNumber(value);
+            jg.writeNumberField(columnName, value);
         }
     }
 
