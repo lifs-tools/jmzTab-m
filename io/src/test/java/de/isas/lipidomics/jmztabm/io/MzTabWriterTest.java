@@ -797,6 +797,7 @@ public class MzTabWriterTest {
         long lines = Files.lines(tempFile.toPath()).
             count();
         Assert.assertEquals(
+            3 + // additional empty lines
             53
             +//metadata lines
             1 + 17
@@ -900,9 +901,10 @@ public class MzTabWriterTest {
         long lines = Files.lines(tempFile.toPath()).
             count();
         Assert.assertEquals(
+            3 + //additional empty lines 
             59
             +//metadata lines
-            2//Small molecule summary header + content
+            2 //Small molecule summary header + content
             + 1 // Small molecule feature header
             + 1 // Small molecule evidence header
             ,

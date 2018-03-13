@@ -39,8 +39,10 @@ import de.isas.mztab1_1.model.StudyVariable;
 import java.io.IOException;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import uk.ac.ebi.pride.jmztab1_1.model.MZTabConstants;
 import uk.ac.ebi.pride.jmztab1_1.model.MetadataElement;
 import uk.ac.ebi.pride.jmztab1_1.model.MetadataProperty;
 import uk.ac.ebi.pride.jmztab1_1.model.Section;
@@ -140,8 +142,8 @@ public class MetadataSerializer extends StdSerializer<Metadata> {
         if (t != null) {
             String prefix = t.getPrefix().
                 name();
-            addLine(jg, prefix, "mzTab-version", t.
-                getMzTabVersion());
+            addLine(jg, prefix, "mzTab-version", Optional.ofNullable(t.
+                getMzTabVersion()).orElse(MZTabConstants.VERSION));
             addLine(jg, prefix, "mzTab-ID", t.
                 getMzTabID());
             addLine(jg, prefix, "title", t.

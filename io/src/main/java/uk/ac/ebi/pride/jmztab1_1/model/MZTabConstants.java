@@ -29,4 +29,6 @@ public class MZTabConstants {
     public final static char COLON = ':';
     /** Constant <code>COMMA=','</code> */
     public final static char COMMA = ',';
+    /** Constant <code>VERSION="1.1"</code> */
+    public final static String VERSION = "1.1";
 }

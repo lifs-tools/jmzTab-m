@@ -39,6 +39,7 @@ import de.isas.lipidomics.jmztabm.io.formats.SmallMoleculeSummaryFormat;
 import de.isas.lipidomics.jmztabm.io.formats.SoftwareFormat;
 import de.isas.lipidomics.jmztabm.io.formats.StudyVariableFormat;
 import de.isas.lipidomics.jmztabm.io.serialization.Serializers;
+import de.isas.lipidomics.jmztabm.validation.MzTabValidator;
 import de.isas.mztab1_1.model.Assay;
 import de.isas.mztab1_1.model.CV;
 import de.isas.mztab1_1.model.Contact;
@@ -58,6 +59,7 @@ import de.isas.mztab1_1.model.SmallMoleculeFeature;
 import de.isas.mztab1_1.model.SmallMoleculeSummary;
 import de.isas.mztab1_1.model.Software;
 import de.isas.mztab1_1.model.StudyVariable;
+import de.isas.mztab1_1.model.ValidationMessage;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -68,10 +70,12 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.validation.ValidationException;
 import uk.ac.ebi.pride.jmztab1_1.model.MZTabConstants;
 import uk.ac.ebi.pride.jmztab1_1.model.SmallMoleculeColumn;
 import uk.ac.ebi.pride.jmztab1_1.model.SmallMoleculeEvidenceColumn;
@@ -85,6 +89,24 @@ import uk.ac.ebi.pride.jmztab1_1.model.SmallMoleculeFeatureColumn;
  *
  */
 public class MzTabWriter {
+
+    private final boolean validateBeforeWrite;
+
+    /**
+     * Creates a new instance of MzTabWriter.
+     * Does not validate with bean validation before writing.
+     */    
+    public MzTabWriter() {
+        this.validateBeforeWrite = false;
+    }
+
+    /**
+     * Creates a new instance of MzTabWriter.
+     * @param validateBeforeWrite if true, validates with bean validation before writing, otherwise not.
+     */
+    public MzTabWriter(boolean validateBeforeWrite) {
+        this.validateBeforeWrite = validateBeforeWrite;
+    }
 
     /**
      * <p>
@@ -104,11 +126,7 @@ public class MzTabWriter {
                 "OutputStreamWriter encoding must be UTF8 but is " + writer.
                     getEncoding());
         }
-        writeMetadataWithJackson(mzTab, writer);
-        writeSmallMoleculeSummaryWithJackson(mzTab, writer);
-        writeSmallMoleculeFeaturesWithJackson(mzTab, writer);
-        writeSmallMoleculeEvidenceWithJackson(mzTab, writer);
-        writer.flush();
+        writeMzTab(mzTab, writer);
     }
 
     /**
@@ -125,12 +143,31 @@ public class MzTabWriter {
             forName(
                 "UTF-8"), StandardOpenOption.CREATE,
             StandardOpenOption.WRITE)) {
-            writeMetadataWithJackson(mzTab, writer);
-            writeSmallMoleculeSummaryWithJackson(mzTab, writer);
-            writeSmallMoleculeFeaturesWithJackson(mzTab, writer);
-            writeSmallMoleculeEvidenceWithJackson(mzTab, writer);
-            writer.flush();
+            writeMzTab(mzTab, writer);
         }
+    }
+
+    public List<ValidationMessage> validate(MzTab mzTab) {
+        MzTabValidator validator = new MzTabValidator();
+        return validator.validate(mzTab);
+    }
+
+    void writeMzTab(MzTab mzTab, final Writer writer) throws IOException, ValidationException {
+        if(validateBeforeWrite) {
+            List<ValidationMessage> validationMessages = validate(mzTab);
+            if (!validationMessages.isEmpty()) {
+                 throw new ValidationException("Validation failed for mzTab with messages: \n" + validationMessages);
+            }
+        }
+
+        writeMetadataWithJackson(mzTab, writer);
+        writer.write("\n");
+        writeSmallMoleculeSummaryWithJackson(mzTab, writer);
+        writer.write("\n");
+        writeSmallMoleculeFeaturesWithJackson(mzTab, writer);
+        writer.write("\n");
+        writeSmallMoleculeEvidenceWithJackson(mzTab, writer);
+        writer.flush();
     }
 
     void writeMetadataWithJackson(MzTab mztabfile, Writer writer) throws IOException {
