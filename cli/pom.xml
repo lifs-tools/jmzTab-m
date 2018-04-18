@@ -120,13 +120,14 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
       </plugin>
+      <!--
       <plugin>
         <groupId>org.owasp</groupId>
         <artifactId>dependency-check-maven</artifactId>
         <configuration>
           <suppressionFile>${project.parent.basedir}/suppressions.xml</suppressionFile>
         </configuration>
-      </plugin>
+      </plugin>-->
     </plugins>
   </build>
 </project>
