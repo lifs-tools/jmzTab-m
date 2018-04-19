@@ -244,7 +244,7 @@ public class MzTabWriter {
                 CsvSchema.ColumnType.STRING).
             addColumn(SmallMoleculeColumn.Stable.EXP_MASS_TO_CHARGE.getHeader(),
                 CsvSchema.ColumnType.NUMBER_OR_STRING).
-            addColumn(SmallMoleculeColumn.Stable.RETENTION_TIME.getHeader(),
+            addColumn(SmallMoleculeColumn.Stable.RETENTION_TIME_IN_SECONDS.getHeader(),
                 CsvSchema.ColumnType.NUMBER_OR_STRING).
             addColumn(SmallMoleculeColumn.Stable.ADDUCT_IONS.getHeader(),
                 CsvSchema.ColumnType.STRING).
@@ -341,11 +341,11 @@ public class MzTabWriter {
                 getHeader(), CsvSchema.ColumnType.NUMBER_OR_STRING).
             addColumn(SmallMoleculeFeatureColumn.Stable.CHARGE.getHeader(),
                 CsvSchema.ColumnType.NUMBER_OR_STRING).
-            addColumn(SmallMoleculeFeatureColumn.Stable.RETENTION_TIME.
+            addColumn(SmallMoleculeFeatureColumn.Stable.RETENTION_TIME_IN_SECONDS.
                 getHeader(), CsvSchema.ColumnType.NUMBER_OR_STRING).
-            addColumn(SmallMoleculeFeatureColumn.Stable.RETENTION_TIME_START.
+            addColumn(SmallMoleculeFeatureColumn.Stable.RETENTION_TIME_IN_SECONDS_START.
                 getHeader(), CsvSchema.ColumnType.NUMBER_OR_STRING).
-            addColumn(SmallMoleculeFeatureColumn.Stable.RETENTION_TIME_END.
+            addColumn(SmallMoleculeFeatureColumn.Stable.RETENTION_TIME_IN_SECONDS_END.
                 getHeader(), CsvSchema.ColumnType.NUMBER_OR_STRING);
 
         Optional.ofNullable(mztabfile.getMetadata().

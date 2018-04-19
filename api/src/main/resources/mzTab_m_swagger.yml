@@ -366,7 +366,7 @@ definitions:
       exp_mass_to_charge:
         type: number
         format: double
-      retention_time:
+      retention_time_in_seconds:
         type: number
         format: double
       adduct_ions:
@@ -450,13 +450,13 @@ definitions:
       charge:
         type: integer
         format: int32
-      retention_time:
+      retention_time_in_seconds:
         type: number
         format: double
-      retention_time_start:
+      retention_time_in_seconds_start:
         type: number
         format: double
-      retention_time_end:
+      retention_time_in_seconds_end:
         type: number
         format: double
       abundance_assay:

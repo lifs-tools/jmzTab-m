@@ -73,12 +73,12 @@ public class SmallMoleculeFeatureSerializer extends StdSerializer<SmallMoleculeF
             writeNumber(SmallMoleculeFeatureColumn.Stable.EXP_MASS_TO_CHARGE, jg, smallMoleculeFeature.
                 getExpMassToCharge());
             writeNumber(SmallMoleculeFeatureColumn.Stable.CHARGE, jg, smallMoleculeFeature.getCharge());
-            writeNumber(SmallMoleculeFeatureColumn.Stable.RETENTION_TIME, jg, smallMoleculeFeature.
-                getRetentionTime());
-            writeNumber(SmallMoleculeFeatureColumn.Stable.RETENTION_TIME_START, jg, smallMoleculeFeature.
-                getRetentionTimeStart());
-            writeNumber(SmallMoleculeFeatureColumn.Stable.RETENTION_TIME_END, jg, smallMoleculeFeature.
-                getRetentionTimeEnd());
+            writeNumber(SmallMoleculeFeatureColumn.Stable.RETENTION_TIME_IN_SECONDS, jg, smallMoleculeFeature.
+                getRetentionTimeInSeconds());
+            writeNumber(SmallMoleculeFeatureColumn.Stable.RETENTION_TIME_IN_SECONDS_START, jg, smallMoleculeFeature.
+                getRetentionTimeInSecondsStart());
+            writeNumber(SmallMoleculeFeatureColumn.Stable.RETENTION_TIME_IN_SECONDS_END, jg, smallMoleculeFeature.
+                getRetentionTimeInSecondsEnd());
             Serializers.writeIndexedValues(AbundanceColumn.Field.ABUNDANCE_ASSAY.toString(), jg, smallMoleculeFeature.getAbundanceAssay());
             Serializers.writeOptColumnMappings(smallMoleculeFeature.getOpt(), jg);
             jg.writeEndObject();

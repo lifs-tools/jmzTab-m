@@ -48,8 +48,8 @@ public class SmallMoleculeColumn implements ISmallMoleculeColumn {
             "theoretical_neutral_mass", Double.class, false, "09"),
         EXP_MASS_TO_CHARGE(
             "exp_mass_to_charge", Double.class, false, "10"),
-        RETENTION_TIME(
-            "retention_time", Double.class, false, "11"),
+        RETENTION_TIME_IN_SECONDS(
+            "retention_time_in_seconds", Double.class, false, "11"),
         ADDUCT_IONS(
             "adduct_ions", SplitList.class, false, "12"),
         RELIABILITY(

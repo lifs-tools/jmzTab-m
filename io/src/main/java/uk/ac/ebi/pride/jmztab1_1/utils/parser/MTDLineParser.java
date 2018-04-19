@@ -65,7 +65,7 @@ public class MTDLineParser extends MZTabLineParser {
     /**
      * {@inheritDoc}
      *
-     * Most of time, we use {@link #parseNormalMetadata(String, String)} to
+     * Most of e, we use {@link #parseNormalMetadata(String, String)} to
      * parse defineLabel into Metadata Element.
      */
     public void parse(int lineNumber, String mtdLine, MZTabErrorList errorList) throws MZTabException {

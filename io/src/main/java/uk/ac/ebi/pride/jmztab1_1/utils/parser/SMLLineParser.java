@@ -87,8 +87,8 @@ public class SMLLineParser extends MZTabDataLineParser<SmallMoleculeSummary> {
                         case RELIABILITY:
                             smallMoleculeSummary.reliability(checkString(column, target));
                             break;
-                        case RETENTION_TIME:
-                            smallMoleculeSummary.retentionTime(checkDouble(column, target));
+                        case RETENTION_TIME_IN_SECONDS:
+                            smallMoleculeSummary.retentionTimeInSeconds(checkDouble(column, target));
                             break;
                         case SMF_ID_REFS:
                             smallMoleculeSummary.smfIdRefs(checkStringList(column, target, MZTabConstants.BAR));

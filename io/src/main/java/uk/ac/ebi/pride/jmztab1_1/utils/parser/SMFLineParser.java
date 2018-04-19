@@ -76,16 +76,16 @@ public class SMFLineParser extends MZTabDataLineParser<SmallMoleculeFeature> {
                             smallMoleculeFeature.isotopomer(checkParameter(
                                 column, target, true));
                             break;
-                        case RETENTION_TIME:
-                            smallMoleculeFeature.retentionTime(checkDouble(
+                        case RETENTION_TIME_IN_SECONDS:
+                            smallMoleculeFeature.retentionTimeInSeconds(checkDouble(
                                 column, target));
                             break;
-                        case RETENTION_TIME_END:
-                            smallMoleculeFeature.retentionTimeEnd(checkDouble(
+                        case RETENTION_TIME_IN_SECONDS_END:
+                            smallMoleculeFeature.retentionTimeInSecondsEnd(checkDouble(
                                 column, target));
                             break;
-                        case RETENTION_TIME_START:
-                            smallMoleculeFeature.retentionTimeStart(checkDouble(
+                        case RETENTION_TIME_IN_SECONDS_START:
+                            smallMoleculeFeature.retentionTimeInSecondsStart(checkDouble(
                                 column, target));
                             break;
                         case SME_ID_REFS:

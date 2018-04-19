@@ -39,9 +39,9 @@ public class SmallMoleculeFeatureColumn implements ISmallMoleculeFeatureColumn {
         EXP_MASS_TO_CHARGE(
                 "exp_mass_to_charge", Double.class, false, "06"),
         CHARGE("charge", Integer.class, false, "07"),
-        RETENTION_TIME("retention_time", Double.class, true, "08"),
-        RETENTION_TIME_START("retention_time_start", Double.class, true, "09"),
-        RETENTION_TIME_END("retention_time_end", Double.class, true, "10");
+        RETENTION_TIME_IN_SECONDS("retention_time_in_seconds", Double.class, true, "08"),
+        RETENTION_TIME_IN_SECONDS_START("retention_time_in_seconds_start", Double.class, true, "09"),
+        RETENTION_TIME_IN_SECONDS_END("retention_time_in_seconds_end", Double.class, true, "10");
 
         private final ISmallMoleculeFeatureColumn column;
 

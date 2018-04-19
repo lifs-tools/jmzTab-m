@@ -367,7 +367,7 @@ public class MzTabWriterTest {
                 name("minute")));
         //or via the respective enum member's getName() method, for fixed columns
         mtd.addColunitSmallMoleculeFeatureItem(new ColumnParameterMapping().
-            columnName(SmallMoleculeFeatureColumn.Stable.RETENTION_TIME.
+            columnName(SmallMoleculeFeatureColumn.Stable.RETENTION_TIME_IN_SECONDS.
                 getName()).
             param(new Parameter().id(1).
                 cvLabel("UO").
@@ -502,7 +502,7 @@ public class MzTabWriterTest {
                 "http://www.lipidmaps.org/data/LMSDRecord.php?LM_ID=LMSP02010012").
             addTheoreticalNeutralMassItem(649.6373).
             expMassToCharge(650.6432).
-            retentionTime(821.2341).
+            retentionTimeInSeconds(821.2341).
             addAdductIonsItem("[M+H]1+").
             reliability("1").
             bestIdConfidenceMeasure(new Parameter().name(
@@ -565,7 +565,7 @@ public class MzTabWriterTest {
                 "http://www.lipidmaps.org/data/LMSDRecord.php?LM_ID=LMSP02010012").
             addTheoreticalNeutralMassItem(649.6373).
             //            expMassToCharge(650.6432).
-            retentionTime(821.2341).
+            retentionTimeInSeconds(821.2341).
             addAdductIonsItem("[M+H]1+").
             reliability("1").
             bestIdConfidenceMeasure(new Parameter().name(
@@ -674,7 +674,7 @@ public class MzTabWriterTest {
         MZTabFileParser parser = new MZTabFileParser(tempFile);
         MZTabErrorList errors = parser.parse(System.out,
             MZTabErrorType.Level.Info, 500);
-        Assert.assertNotNull(parser.getMZTabFile().
+        Assert.assertNull(parser.getMZTabFile().
             getMetadata().
             getColunitSmallMolecule());
         Assert.assertNotNull(parser.getMZTabFile().
@@ -867,7 +867,7 @@ public class MzTabWriterTest {
         summary.setChemicalName(new ArrayList<String>());
         summary.setUri(new ArrayList<String>());
         summary.setExpMassToCharge(null);
-        summary.setRetentionTime(123.414d);
+        summary.setRetentionTimeInSeconds(123.414d);
         List<String> adducts = new ArrayList<String>();
         adducts.add("[M+H]1+");
         summary.setAdductIons(adducts);
