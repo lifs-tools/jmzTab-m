@@ -6,3 +6,9 @@
 .Rproj.user
 /cli/target/
 /target/
+/cvmapping/target/
+/cvmapping/nbproject/
+/validation/target/
+/validation/nbproject/
+/jmztabm-test-utils/target/
+/test-utils/target/

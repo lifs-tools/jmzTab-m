@@ -17,7 +17,7 @@ import java.util.logging.Logger;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.utils.LogMethodName;
+import de.isas.mztab.jmztabm.test.utils.LogMethodName;
 import uk.ac.ebi.pride.jmztab1_1.utils.MZTabFileParser;
 import uk.ac.ebi.pride.jmztab1_1.utils.errors.MZTabErrorOverflowException;
 import uk.ac.ebi.pride.jmztab1_1.utils.errors.MZTabErrorType;

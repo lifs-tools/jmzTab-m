@@ -40,6 +40,7 @@ import de.isas.lipidomics.jmztabm.io.formats.SoftwareFormat;
 import de.isas.lipidomics.jmztabm.io.formats.StudyVariableFormat;
 import de.isas.lipidomics.jmztabm.io.serialization.Serializers;
 import de.isas.lipidomics.jmztabm.validation.MzTabValidator;
+//import de.isas.lipidomics.jmztabm.validation.MzTabValidator;
 import de.isas.mztab1_1.model.Assay;
 import de.isas.mztab1_1.model.CV;
 import de.isas.mztab1_1.model.Contact;

@@ -1,6 +1,7 @@
 package de.isas.lipidomics.jmztabm.validator;
 
 import de.isas.lipidomics.jmztabm.validation.MzTabValidator;
+import de.isas.mztab.jmztabm.test.utils.LogMethodName;
 import de.isas.mztab1_1.model.CV;
 import de.isas.mztab1_1.model.Contact;
 import de.isas.mztab1_1.model.MsRun;
@@ -18,7 +19,6 @@ import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.utils.LogMethodName;
 
 /**
  * Test class for MzTabWriter.

@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Nils Hoffmann &lt;nils.hoffmann@isas.de&gt;.
+ * Copyright 2017 Leibniz Institut für Analytische Wissenschaften - ISAS e.V..
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,32 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.junit.utils;
+package de.isas.lipidomics.jmztabm.validation;
 
-import org.junit.rules.TestWatcher;
-import org.junit.runner.Description;
+import de.isas.mztab1_1.model.ValidationMessage;
+import java.util.List;
 
 /**
+ * <p>
+ * Validator interface.</p>
  *
  * @author nilshoffmann
+ *
  */
-public class LogMethodName extends TestWatcher {
+public interface Validator<T> {
 
     /**
+     * <p>
+     * validate.</p>
      *
-     * @param method
+     * @param t the object to validate.
+     * @return a {@link java.util.List} object.
      */
-    @Override
-    public void starting(Description method) {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < 80; i++) {
-            sb.append("#");
-        }
-        sb.append("\n").append("# ").append(method.getMethodName()).append("\n");
-        for (int i = 0; i < 80; i++) {
-            sb.append("#");
-        }
-        System.out.println(sb.toString());
-    }
-
+    public List<ValidationMessage> validate(T t);
 }

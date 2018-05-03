@@ -19,7 +19,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.Rule;
-import org.junit.utils.LogMethodName;
+import de.isas.mztab.jmztabm.test.utils.LogMethodName;
 import static uk.ac.ebi.pride.jmztab1_1.model.Section.Comment;
 import static uk.ac.ebi.pride.jmztab1_1.model.Section.Metadata;
 import static uk.ac.ebi.pride.jmztab1_1.model.Section.PSM_Header;

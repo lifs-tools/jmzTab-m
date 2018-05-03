@@ -293,6 +293,8 @@
     <module>api</module>
     <module>io</module>
     <module>cli</module>
+    <module>validation</module>
+    <module>test-utils</module>
   </modules>
     
   <repositories>

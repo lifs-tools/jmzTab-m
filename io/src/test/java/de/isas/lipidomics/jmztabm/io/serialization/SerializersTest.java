@@ -18,7 +18,7 @@ package de.isas.lipidomics.jmztabm.io.serialization;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.utils.LogMethodName;
+import de.isas.mztab.jmztabm.test.utils.LogMethodName;
 
 /**
  *

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jxb:bindings xmlns:xs="http://www.w3.org/2001/XMLSchema"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
+              version="2.1">
+
+  <jxb:bindings schemaLocation="CvMapping.xsd">
+    <jxb:bindings node="//xs:attribute[@name='cvTermsCombinationLogic']/xs:simpleType">
+      <jxb:typesafeEnumClass name="CvTermsCombinationLogic" />
+    </jxb:bindings>
+    <jxb:bindings node="//xs:attribute[@name='requirementLevel']/xs:simpleType">
+      <jxb:typesafeEnumClass name="RequirementLevel" />
+    </jxb:bindings>
+    <jxb:bindings node="//xs:attribute[@name='cvIdentifierRef']">
+        <jxb:property>
+          <jxb:baseType name="info.psidev.cvmapping.CvReference"/>
+<!--          <jxb:baseType>
+            <jxb:javaType name="java.lang.String"></jxb:javaType>
+          </jxb:baseType>-->
+        </jxb:property>
+    </jxb:bindings>
+  </jxb:bindings>
+
+</jxb:bindings>
