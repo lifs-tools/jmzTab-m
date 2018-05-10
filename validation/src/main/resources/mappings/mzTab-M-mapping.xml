@@ -20,7 +20,7 @@
     <CvMappingRuleList>
 
         <!-- run -->
-        <CvMappingRule id="run_may" cvElementPath="/mzTab/metadata/cvParam/@accession" requirementLevel="MAY"  scopePath="/mzML/run" cvTermsCombinationLogic="OR">
+        <CvMappingRule id="run_may" cvElementPath="/mzTab/metadata/sample_processing/sampleProcessing/parameter/@accession: child of MS:1000831 ! sample preparation/@accession" requirementLevel="MAY"  scopePath="/mzML/run" cvTermsCombinationLogic="OR">
           <CvTerm termAccession="MS:1000857" useTerm="false" termName="run attribute" isRepeatable="false" allowChildren="true" cvIdentifierRef="MS"></CvTerm>
         </CvMappingRule> 
 

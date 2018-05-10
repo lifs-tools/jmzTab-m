@@ -26,6 +26,10 @@ import java.util.List;
  */
 public class ParameterValidator implements Validator<Parameter> {
 
+    public ParameterValidator()  {
+        
+    }
+    
     @Override
     public List<ValidationMessage> validate(Parameter t) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.

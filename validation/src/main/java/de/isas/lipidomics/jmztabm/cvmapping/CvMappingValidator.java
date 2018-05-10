@@ -67,6 +67,7 @@ public class CvMappingValidator implements Validator<MzTab> {
 
     private Collection<ValidationMessage> handleAnd(CvMappingRule rule,
         Iterator iterator) {
+        // and logic means that ALL of the defined terms or their children MUST appear
         final List<ValidationMessage> messages = new LinkedList<>();
         final Set<String> specifiedRules = new LinkedHashSet<>();
         rule.getCvTerm().
@@ -121,11 +122,13 @@ public class CvMappingValidator implements Validator<MzTab> {
 
     private Collection<ValidationMessage> handleOr(CvMappingRule rule,
         Iterator iterator) {
+        // or logic means, any of the defined terms may be present, or none
         return Collections.emptyList();
     }
 
     private Collection<ValidationMessage> handleXor(CvMappingRule rule,
         Iterator iterator) {
+        // xor logic means, if one of the defined terms is set, none of the others is allowed
         return Collections.emptyList();
     }
 
