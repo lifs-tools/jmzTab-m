@@ -36,7 +36,7 @@
               <additionalProperties>true</additionalProperties>
               <generateSupportingFiles>false</generateSupportingFiles>
               <generateApiDocumentation>false</generateApiDocumentation>
-              <verbose>true</verbose>
+              <verbose>false</verbose>
               <configOptions>
                 <!--<sourceFolder>swagger</sourceFolder>-->
                 <!--<dateLibrary>joda</dateLibrary>-->
