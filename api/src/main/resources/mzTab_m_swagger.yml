@@ -171,6 +171,16 @@ definitions:
       - mzTab-ID
       - title
       - description
+      - quantification_method
+      - software
+      - ms_run
+      - assay
+      - study_variable
+      - cv
+      - database
+      - small_molecule_quantification_unit
+      - small_molecule_feature-quantification_unit
+      - id_confidence_measure
     properties:
       prefix:
         type: string
@@ -193,8 +203,6 @@ definitions:
         type: string
         example: >-
           MTD description An experiment investigating the effects of Il-6.
-      study:
-        $ref: '#/definitions/ExternalStudy'
       sample_processing:
         type: array
         default: []
@@ -228,11 +236,14 @@ definitions:
         items:
           type: string
           format: uri
-      quantification_method:
+      external_study_uri:
         type: array
         default: []
         items:
-          $ref: '#/definitions/Parameter'
+          type: string
+          format: uri
+      quantification_method:
+        $ref: '#/definitions/Parameter'
       study_variable:
         type: array
         default: []
@@ -268,7 +279,7 @@ definitions:
         default: []
         items:
           $ref: '#/definitions/Database'
-      chemical_modification:
+      derivatization_agent:
         type: array
         default: []
         items:
@@ -617,39 +628,6 @@ definitions:
     example: >-
       MTD sample_processing[1] [SEP, SEP:00173, SDS PAGE,] \
       MTD sample_processing[2] [SEP, SEP:00142, enzyme digestion,]|[MS, … MS:1001251, Trypsin, ]
-  ExternalStudy:
-    description: >-
-      An external study, holding e.g. detailed information about the study data and metadata. A link to an ISA-Tab file deposited at 
-      MetaboLights is a good example for such a use case.
-    example:
-      - >-
-        MTD study-url	https://www.ebi.ac.uk/metabolights/MTBLS517
-        MTD study-id	MTBLS517
-        MTD study-id-format	[,EMBL-EBI Metabolights,https://fairsharing.org/biodbcore-000168, ]
-        MTD study-title	MaHPIC Experiment 04: Metabolomics from Macaca mulatta infected with Plasmodium cynomolgi B strain to produce and integrate clinical, hematological, parasitological, and omics measures of acute primary infection and relapses
-        MTD study-version	1.0
-        MTD study-format [, , ISA-Tab file,]
-    required:
-      - id
-      - title
-      - url
-      - id-format
-      - version
-      - format
-    properties:
-      url:
-        type: string
-        format: uri
-      id:
-        type: string
-      id-format:
-        $ref: '#/definitions/Parameter'
-      title:
-        type: string
-      version:
-        type: string
-      format:
-        $ref: '#/definitions/Parameter'
   Software:
     allOf:
     - $ref: '#/definitions/IndexedElement'
@@ -822,6 +800,11 @@ definitions:
           default: []
           items:
             $ref: '#/definitions/Parameter'
+        scan_polarity:
+          type: array
+          default: []
+          items:
+            $ref: '#/definitions/Parameter'
         hash:
           type: string
         hash_method:
@@ -850,11 +833,10 @@ definitions:
           default: []
           items:
             $ref: '#/definitions/Sample'
-        quantification_value_function:
-          type: array
-          default: []
-          items:
-            $ref: '#/definitions/Parameter'
+        average_function:
+          $ref: '#/definitions/Parameter'
+        variation_function:
+          $ref: '#/definitions/Parameter'
         description:
           type: string
         factors:

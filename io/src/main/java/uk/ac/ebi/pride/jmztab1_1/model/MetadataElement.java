@@ -17,13 +17,15 @@ public enum MetadataElement {
 //    PROTEIN_SEARCH_ENGINE_SCORE       ("protein_search_engine_score"),
 //    PEPTIDE_SEARCH_ENGINE_SCORE       ("peptide_search_engine_score"),
 //    PSM_SEARCH_ENGINE_SCORE           ("psm_search_engine_score"),
-    SMALLMOLECULE_SEARCH_ENGINE_SCORE ("smallmolecule_search_engine_score"),
+//    SMALLMOLECULE_SEARCH_ENGINE_SCORE ("smallmolecule_search_engine_score"),
 //    FALSE_DISCOVERY_RATE              ("false_discovery_rate"),
     PUBLICATION                       ("publication"),
     CONTACT                           ("contact"),
     URI                               ("uri"),
+    EXTERNAL_STUDY_URI                ("external_study_uri"),
 //    FIXED_MOD                         ("fixed_mod"),
 //    VARIABLE_MOD                      ("variable_mod"),
+    DERIVATIZATION_AGENT              ("derivatization_agent"),
     QUANTIFICATION_METHOD             ("quantification_method"),
 //    PROTEIN                           ("protein"),
 //    PEPTIDE                           ("peptide"),
@@ -35,7 +37,7 @@ public enum MetadataElement {
     ASSAY                             ("assay"),
     STUDY_VARIABLE                    ("study_variable"),
     CV                                ("cv"),
-    COLUNIT                           ("colunit"),
+//    COLUNIT                           ("colunit"),
     COLUNIT_SMALL_MOLECULE            ("colunit-small_molecule"),
     COLUNIT_SMALL_MOLECULE_FEATURE    ("colunit-small_molecule_feature"),
     COLUNIT_SMALL_MOLECULE_EVIDENCE   ("colunit-small_molecule_evidence"),
@@ -43,8 +45,7 @@ public enum MetadataElement {
     DATABASE                          ("database"),
     SMALLMOLECULE_QUANTIFICATION_UNIT ("small_molecule-quantification_unit"),
     SMALLMOLECULE_FEATURE_QUANTIFICATION_UNIT ("small_molecule_feature-quantification_unit"),
-    SMALLMOLECULE_IDENTIFICATION_RELIABILITY ("small_molecule-identification_reliability"),
-    EXTERNAL_STUDY                    ("study");
+    SMALLMOLECULE_IDENTIFICATION_RELIABILITY ("small_molecule-identification_reliability");
 
     private String name;
 

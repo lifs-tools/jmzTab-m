@@ -62,7 +62,8 @@ public enum MetadataProperty {
     STUDY_VARIABLE_ASSAY_REFS             (MetadataElement.STUDY_VARIABLE,                      "assay_refs"),
     STUDY_VARIABLE_SAMPLE_REFS            (MetadataElement.STUDY_VARIABLE,                      "sample_refs"),
     STUDY_VARIABLE_DESCRIPTION            (MetadataElement.STUDY_VARIABLE,                      "description"),
-    STUDY_VARIABLE_QUANTIFICATION_FUNCTION(MetadataElement.STUDY_VARIABLE,                      "quantification_value_function"),
+    STUDY_VARIABLE_AVERAGE_FUNCTION       (MetadataElement.STUDY_VARIABLE,                      "average_function"),
+    STUDY_VARIABLE_VARIATION_FUNCTION       (MetadataElement.STUDY_VARIABLE,                    "variation_function"),
 
     CV_LABEL                              (MetadataElement.CV,                                  "label"),
     CV_FULL_NAME                          (MetadataElement.CV,                                  "full_name"),

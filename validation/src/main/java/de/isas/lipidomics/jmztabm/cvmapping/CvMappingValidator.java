@@ -24,7 +24,6 @@ import info.psidev.cvmapping.CvMappingRule;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import static java.util.Collections.list;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -60,12 +59,13 @@ public class CvMappingValidator implements Validator<MzTab> {
 //                Parameter p = (Parameter)context.getValue(path, Parameter.class);
                 CvMappingRule.CvTermsCombinationLogic combinationLogic = rule.
                     getCvTermsCombinationLogic();
-
+                CvMappingRule.RequirementLevel level = rule.getRequirementLevel();
+                
             });
         return messages;
     }
 
-    private Collection<ValidationMessage> handleAnd(CvMappingRule rule,
+    private Collection<ValidationMessage> handleRule(CvMappingRule rule,
         Iterator iterator) {
         // and logic means that ALL of the defined terms or their children MUST appear
         final List<ValidationMessage> messages = new LinkedList<>();

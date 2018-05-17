@@ -1587,7 +1587,7 @@ public class MZTabParserContext {
     }
     
     /**
-     * Add a study_variable[id]-quantification_value_function. This is a Parameter detailing how the
+     * Add a study_variable[id]-variation_function. This is a Parameter detailing how the
      * reported study variable abundances have been calculated.
      *
      * @param metadata a {@link de.isas.mztab1_1.model.Metadata} object.
@@ -1595,7 +1595,7 @@ public class MZTabParserContext {
      * @param checkParameter the parameter.
      * @return a {@link de.isas.mztab1_1.model.StudyVariable} object.
      */
-    public StudyVariable addStudyVariableQuantificationFunction(Metadata metadata, Integer id,
+    public StudyVariable addStudyVariableVariationFunction(Metadata metadata, Integer id,
         Parameter checkParameter) {
         if (id <= 0) {
             throw new IllegalArgumentException("study variable id should be greater than 0!");
@@ -1607,11 +1607,41 @@ public class MZTabParserContext {
         if (studyVariable == null) {
             studyVariable = new StudyVariable();
             studyVariable.id(id);
-            studyVariable.addQuantificationValueFunctionItem(checkParameter);
+            studyVariable.setVariationFunction(checkParameter);
             studyVariableMap.put(id, studyVariable);
             metadata.addStudyVariableItem(studyVariable);
         } else {
-            studyVariable.addQuantificationValueFunctionItem(checkParameter);
+            studyVariable.setVariationFunction(checkParameter);
+        }
+        return studyVariable;
+    }
+    
+    /**
+     * Add a study_variable[id]-average_function. This is a Parameter detailing how the
+     * reported study variable abundances have been calculated.
+     *
+     * @param metadata a {@link de.isas.mztab1_1.model.Metadata} object.
+     * @param id SHOULD be positive integer.
+     * @param checkParameter the parameter.
+     * @return a {@link de.isas.mztab1_1.model.StudyVariable} object.
+     */
+    public StudyVariable addStudyVariableAverageFunction(Metadata metadata, Integer id,
+        Parameter checkParameter) {
+        if (id <= 0) {
+            throw new IllegalArgumentException("study variable id should be greater than 0!");
+        }
+        StudyVariable studyVariable = studyVariableMap.get(id);
+        if (checkParameter == null) {
+            return studyVariable;
+        }
+        if (studyVariable == null) {
+            studyVariable = new StudyVariable();
+            studyVariable.id(id);
+            studyVariable.setAverageFunction(checkParameter);
+            studyVariableMap.put(id, studyVariable);
+            metadata.addStudyVariableItem(studyVariable);
+        } else {
+            studyVariable.setAverageFunction(checkParameter);
         }
         return studyVariable;
     }

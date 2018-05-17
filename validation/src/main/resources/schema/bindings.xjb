@@ -14,9 +14,6 @@
     <jxb:bindings node="//xs:attribute[@name='cvIdentifierRef']">
         <jxb:property>
           <jxb:baseType name="info.psidev.cvmapping.CvReference"/>
-<!--          <jxb:baseType>
-            <jxb:javaType name="java.lang.String"></jxb:javaType>
-          </jxb:baseType>-->
         </jxb:property>
     </jxb:bindings>
   </jxb:bindings>

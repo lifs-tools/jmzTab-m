@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
 import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
@@ -144,11 +143,11 @@ public class MzTabValidatorTest {
         MzTab mzTab = createTestFile();
         JXPathContext context = JXPathContext.newContext(mzTab);
 
-        List<?> msRuns = (List<?>) context.getValue("//metadata/msrun",
+        List<?> msRuns = (List<?>) context.getValue("/metadata/msrun",
             List.class);
         assertFalse(msRuns.isEmpty());
         assertEquals("file:///path/to/file1.mzML", toStream(context.
-            getPointer("//metadata/msrun/@location"), String.class).
+            getPointer("/metadata/msrun/@location"), String.class).
             findFirst().
             map((t) ->
             {
@@ -159,21 +158,29 @@ public class MzTabValidatorTest {
             get().
             getValue());
         Stream<? extends String> stream = toStream(context.iterate(
-            "//metadata/msrun/@location"), String.class);
+            "/metadata/msrun/@location"), String.class);
         assertEquals("file:///path/to/file1.mzML", stream.findFirst().
             get());
 
-        //scopePath //metadata/msrun
+        //scopePath /metadata/msrun
         Stream<Pair<Pointer, ? extends Parameter>> pointerFormatParameters = toStream(
             context.getPointer(
-                "//metadata/msrun/@format"), Parameter.class);
-        assertEquals("MS:1000584", pointerFormatParameters.findFirst().
-            get().
+                "/metadata/msrun/@format"), Parameter.class);
+        Pair<Pointer, ? extends Parameter> pair = pointerFormatParameters.
+            findFirst().
+            get();
+        assertEquals("/metadata/msrun[1]/@format", pair.getKey().
+            asPath());
+        assertEquals("MS:1000584", pair.
             getValue().
             getCvAccession());
 
         Stream<? extends Parameter> formatParameters = toStream(context.iterate(
-            "//metadata/msrun/@format"), Parameter.class);
+            "/metadata/msrun/@format"), Parameter.class);
+        assertEquals("MS:1000584", formatParameters.findFirst().
+            get().
+            getCvAccession());
+
     }
 
     @Test
@@ -223,12 +230,14 @@ public class MzTabValidatorTest {
                                         equals(selection.getRight().
                                             getCvAccession())) {
                                     //positive, we have a match
-                                    System.out.println("Rule "+rule+" matched on: "+term + " for selection: "+ selection);
+                                    System.out.println(
+                                        "Rule " + rule + " matched on: " + term + " for selection: " + selection);
                                 } else {
                                     System.err.println(
                                         "Mismatch of rule " + rule + " at " + selection.
                                             getLeft());
-                                    throw new RuntimeException("Rule was not successfully applied!");
+                                    throw new RuntimeException(
+                                        "Rule was not successfully applied!");
                                     //we do not have a match, if we are in OR mode, if we are in AND mode, this should issue a violation
                                 }
                             }
@@ -236,6 +245,16 @@ public class MzTabValidatorTest {
 
                 });
             });
+    }
+
+    @Test
+    public void testCvExpansion() {
+        //OLS call should retrieve children for CvTerms, where allowChildren=true
+
+        //otherwise, we will start off with exactly the terms as defined
+        // based on the expanded reference list, we need to apply the combination logic:
+        // or, means, any match of the term under validation against the expanded comparison set 
+        // should yield a positive match, no match -> level logic applies: optional (MAY) -> INFO, recommended (SHOULD) -> WARNING, or mandatory (MUST) -> ERROR
     }
 
 }

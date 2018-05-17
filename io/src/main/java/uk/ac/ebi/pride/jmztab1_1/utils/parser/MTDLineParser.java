@@ -464,6 +464,10 @@ public class MTDLineParser extends MZTabLineParser {
                     metadata.addUriItem(checkURI(defineLabel, valueLabel).
                         toASCIIString());
                     break;
+                case EXTERNAL_STUDY_URI:
+                    metadata.addExUriItem(checkURI(defineLabel, valueLabel).
+                        toASCIIString());
+                    break;
 //                case FIXED_MOD:
 //                    id = checkIndex(defineLabel, matcher.group(3));
 //                    property = checkProperty(element, matcher.group(5));
@@ -510,7 +514,7 @@ public class MTDLineParser extends MZTabLineParser {
                             LogicalErrorType.DuplicationDefine, lineNumber,
                             defineLabel));
                     }
-                    metadata.setQuantificationMethod(checkParameterList(
+                    metadata.setQuantificationMethod(checkParameter(
                         defineLabel, valueLabel));
                     break;
 //                case PROTEIN:
@@ -1177,8 +1181,12 @@ MTD study-version 1.0
                     context.
                         addStudyVariableDescription(metadata, id, valueLabel);
                     break;
-                case STUDY_VARIABLE_QUANTIFICATION_FUNCTION:
-                    context.addStudyVariableQuantificationFunction(metadata, id,
+                case STUDY_VARIABLE_AVERAGE_FUNCTION:
+                    context.addStudyVariableAverageFunction(metadata, id,
+                        checkParameter(defineLabel, valueLabel));
+                    break;
+                case STUDY_VARIABLE_VARIATION_FUNCTION:
+                    context.addStudyVariableVariationFunction(metadata, id,
                         checkParameter(defineLabel, valueLabel));
                     break;
             }

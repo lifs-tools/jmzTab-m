@@ -18,7 +18,6 @@ package de.isas.lipidomics.jmztabm.io.serialization;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
-import de.isas.lipidomics.jmztabm.io.MzTabWriter;
 import static de.isas.lipidomics.jmztabm.io.serialization.Serializers.addIndexedLine;
 import static de.isas.lipidomics.jmztabm.io.serialization.Serializers.addLine;
 import static de.isas.lipidomics.jmztabm.io.serialization.Serializers.addLineWithMetadataProperty;
@@ -37,6 +36,7 @@ import de.isas.mztab1_1.model.SampleProcessing;
 import de.isas.mztab1_1.model.Software;
 import de.isas.mztab1_1.model.StudyVariable;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -170,8 +170,16 @@ public class MetadataSerializer extends StdSerializer<Metadata> {
                 Logger.getLogger(MetadataSerializer.class.getName()).
                     log(Level.FINE, "Publications are null!");
             }
-            //external study
-            if (t.getStudy() != null) {
+            //file uri
+            if (t.getUri() != null) {
+                serializeListWithMetadataElement(t.getUri(),
+                    MetadataElement.URI, jg, sp, Comparator.naturalOrder())));
+            } else {
+                Logger.getLogger(MetadataSerializer.class.getName()).
+                    log(Level.FINE, "External Study is null!");
+            }
+            //external study uri
+            if (t.getExternalStudyUri() != null) {
                 serializeObject(t.getStudy(), jg, sp);
             } else {
                 Logger.getLogger(MetadataSerializer.class.getName()).
@@ -191,7 +199,7 @@ public class MetadataSerializer extends StdSerializer<Metadata> {
             //quantification method
             if (t.getQuantificationMethod() != null) {
                 addLineWithParameters(jg, prefix, "quantification_method",
-                    t.getQuantificationMethod());
+                    Arrays.asList(t.getQuantificationMethod()));
             } else {
                 Logger.getLogger(MetadataSerializer.class.getName()).
                     log(Level.FINE, "Quantification method is null!");
@@ -228,13 +236,15 @@ public class MetadataSerializer extends StdSerializer<Metadata> {
                 Logger.getLogger(MetadataSerializer.class.getName()).
                     log(Level.FINE, "Software is null!");
             }
-            //chemical modification
-            if (t.getChemicalModification() != null) {
-                throw new RuntimeException(
-                    "Handling of chemical_modification has not yet been implemented!");
+            //derivatization agent
+            if (t.getDerivatizationAgent()!= null) {
+                serializeListWithMetadataElement(t.getDerivatizationAgent(), MetadataElement.DERIVATIZATION_AGENT, jg, sp, Comparator.comparing(
+                    Parameter::getId,
+                    Comparator.nullsFirst(Comparator.naturalOrder())
+                ));
             } else {
                 Logger.getLogger(MetadataSerializer.class.getName()).
-                    log(Level.FINE, "Chemical modification is null!");
+                    log(Level.FINE, "Derivatization agent is null!");
             }
             //ms run
             if (t.getMsrun() != null) {
