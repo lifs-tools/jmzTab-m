@@ -68,8 +68,8 @@ public abstract class MZTabHeaderLineParser extends MZTabLineParser {
      * {@inheritDoc}
      *
      * Parse a header line into {@link MZTabColumnFactory} structure. There are several steps in this method:
-     * Step 1: {@link #parseColumns()} focus on validate and parse all columns. Step 2: {@link #checkColUnit()} and
-     * Step 3: {@link #refine()}
+     * Step 1: {@link #parseColumns()} focus on validate and parse all columns. 
+     * Step 2: {@link #refine()}
      */
     public void parse(int lineNumber, String line, MZTabErrorList errorList) throws MZTabException {
         super.parse(lineNumber, line, errorList);
@@ -79,7 +79,6 @@ public abstract class MZTabHeaderLineParser extends MZTabLineParser {
             this.errorList.add(new MZTabError(LogicalErrorType.HeaderLine, lineNumber, section.getName(), "" + offset, "" + items.length));
         }
 
-        checkColUnit();
         refine();
 
     }
@@ -372,63 +371,6 @@ public abstract class MZTabHeaderLineParser extends MZTabLineParser {
         }
 
         return studyVariable;
-    }
-
-    /**
-     * Facing colunit definition line, for example:
-     * MTD  colunit-protein retention_time=[UO, UO:000031, minute, ]
-     * which depends on the header line definitions.
-     *
-     * @throws uk.ac.ebi.pride.jmztab1_1.utils.errors.MZTabException if any structural or logical errors are encountered that prohibit further processing.
-     */
-    //TODO Migrate to specific class
-    public void checkColUnit() throws MZTabException {
-        String valueLabel;
-        for (String defineLabel : context.getColUnitMap().keySet()) {
-            String sectionName = Section.toDataSection(factory.getSection()).getName();
-            if (defineLabel.equalsIgnoreCase("colunit-" + sectionName)) {
-                valueLabel = context.getColUnitMap().get(defineLabel);
-
-                String[] items = valueLabel.split("=");
-                String columnName = items[0].trim();
-                String value = items[1].trim();
-
-                IMZTabColumn column = factory.findColumnByHeader(columnName);
-                if (column == null) {
-                    // column_name not exists in the factory.
-                    errorList.add(new MZTabError(FormatErrorType.ColUnit, lineNumber, valueLabel, columnName, sectionName));
-                } else {
-                    Parameter param = parseParam(value);
-                    if (param == null) {
-                        errorList.add(new MZTabError(FormatErrorType.Param, lineNumber, valueLabel, value));
-                    } else {
-                        switch (factory.getSection()) {
-//                            case Protein_Header:
-//                                metadata.addProteinColUnit(column, param);
-//                                break;
-//                            case Peptide_Header:
-//                                metadata.addPeptideColUnit(column, param);
-//                                break;
-//                            case PSM_Header:
-//                                metadata.addPSMColUnit(column, param);
-//                                break;
-                            case Small_Molecule_Header:
-                                metadata.addColunitSmallMoleculeItem(new ColumnParameterMapping().columnName(
-                                        column.getName()).param(param));
-                                break;
-                            case Small_Molecule_Evidence_Header:
-                                metadata.addColunitSmallMoleculeEvidenceItem(new ColumnParameterMapping().columnName(
-                                        column.getName()).param(param));
-                                break;
-                            case Small_Molecule_Feature_Header:
-                                metadata.addColunitSmallMoleculeFeatureItem(new ColumnParameterMapping().columnName(
-                                        column.getName()).param(param));
-                                break;
-                        }
-                    }
-                }
-            }
-        }
     }
 
     /**

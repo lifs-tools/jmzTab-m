@@ -73,18 +73,12 @@ public enum MetadataProperty {
 //    COLUNIT_PROTEIN                       (MetadataElement.COLUNIT,                             "protein"),
 //    COLUNIT_PEPTIDE                       (MetadataElement.COLUNIT,                             "peptide"),
 //    COLUNIT_PSM                           (MetadataElement.COLUNIT,                             "psm"),
-    COLUNIT_SMALL_MOLECULE                (MetadataElement.COLUNIT,                             "small_molecule"),
+//    COLUNIT_SMALL_MOLECULE                (MetadataElement.COLUNIT,                             "small_molecule"),
     
     DATABASE_PREFIX                       (MetadataElement.DATABASE,                             "prefix"),
     DATABASE_VERSION                      (MetadataElement.DATABASE,                             "version"),
     DATABASE_URL                          (MetadataElement.DATABASE,                             "url"),
 
-    EXTERNAL_STUDY_URL                     (MetadataElement.EXTERNAL_STUDY,                       "url"),
-    EXTERNAL_STUDY_ID                      (MetadataElement.EXTERNAL_STUDY,                       "id"),
-    EXTERNAL_STUDY_ID_FORMAT               (MetadataElement.EXTERNAL_STUDY,                       "id_format"),
-    EXTERNAL_STUDY_FORMAT               (MetadataElement.EXTERNAL_STUDY,                       "format"),
-    EXTERNAL_STUDY_TITLE                   (MetadataElement.EXTERNAL_STUDY,                       "title"),
-    EXTERNAL_STUDY_VERSION                   (MetadataElement.EXTERNAL_STUDY,                       "version")
     ;
 //    DATABASE_LABEL                        (MetadataElement.DATABASE,                             "label"),
 //    DATABASE_NAME                         (MetadataElement.DATABASE,                             "name");

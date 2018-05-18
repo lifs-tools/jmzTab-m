@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Leibniz Institut für Analytische Wissenschaften - ISAS e.V..
+ * Copyright 2018 nilshoffmann.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +16,13 @@
 package de.isas.lipidomics.jmztabm.io.formats;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import de.isas.lipidomics.jmztabm.io.serialization.ParameterConverter;
+import de.isas.lipidomics.jmztabm.io.serialization.UriConverter;
 
 /**
- * <p>Abstract ParameterFormat class.</p>
  *
  * @author nilshoffmann
- * 
  */
-@JsonSerialize(converter = ParameterConverter.class)
-public abstract class ParameterFormat {
-
+@JsonSerialize(converter = UriConverter.class)
+public abstract class UriFormat {
+    
 }

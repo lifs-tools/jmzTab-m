@@ -54,7 +54,7 @@ public class SoftwareSerializer extends StdSerializer<Software> {
     public void serialize(Software software, JsonGenerator jg,
         SerializerProvider sp) throws IOException {
         if (software != null) {
-            Serializers.addIndexedLine(jg, Section.Metadata.getPrefix(),
+            Serializers.addIndexedLine(jg, sp, Section.Metadata.getPrefix(),
                 software,
                 software.getParameter());
             addSubElementStrings(jg, Section.Metadata.getPrefix(), software,

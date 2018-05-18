@@ -18,6 +18,7 @@ package de.isas.lipidomics.jmztabm.validation;
 import de.isas.mztab1_1.model.MzTab;
 import de.isas.mztab1_1.model.ValidationMessage;
 import java.lang.annotation.Annotation;
+import java.net.URI;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -35,7 +36,7 @@ import org.hibernate.validator.cfg.ConstraintMapping;
  * @author nilshoffmann
  *
  */
-public class MzTabValidator implements Validator<MzTab> {
+public class MzTabBeanValidator implements Validator<MzTab> {
 
     private final HibernateValidatorConfiguration configuration;
     private final ConstraintMapping constraintMapping;
@@ -43,7 +44,7 @@ public class MzTabValidator implements Validator<MzTab> {
     /**
      * Default constructor. Fail fast validation is disabled.
      */
-    public MzTabValidator() {
+    public MzTabBeanValidator() {
         this(false);
     }
 
@@ -55,7 +56,7 @@ public class MzTabValidator implements Validator<MzTab> {
      * further validation. If false, validation will continue and report all
      * validation errors.
      */
-    public MzTabValidator(boolean failFast) {
+    public MzTabBeanValidator(boolean failFast) {
         this.configuration = Validation
             .byProvider(HibernateValidator.class).
             configure();

@@ -18,12 +18,14 @@ package de.isas.lipidomics.jmztabm.io.serialization;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import de.isas.mztab1_1.model.Assay;
 import de.isas.mztab1_1.model.IndexedElement;
 import de.isas.mztab1_1.model.OptColumnMapping;
 import de.isas.mztab1_1.model.Parameter;
 import de.isas.mztab1_1.model.StudyVariable;
+import de.isas.mztab1_1.model.Uri;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
@@ -41,7 +43,6 @@ import uk.ac.ebi.pride.jmztab1_1.model.MZTabConstants;
 import static uk.ac.ebi.pride.jmztab1_1.model.MZTabConstants.NULL;
 import uk.ac.ebi.pride.jmztab1_1.model.MetadataElement;
 import uk.ac.ebi.pride.jmztab1_1.model.MetadataProperty;
-import uk.ac.ebi.pride.jmztab1_1.model.SmallMoleculeColumn;
 
 /**
  * <p>
@@ -154,32 +155,41 @@ public class Serializers {
      * <p>
      * addIndexedLine.</p>
      *
+     * @param <T>
      * @param jg a {@link com.fasterxml.jackson.core.JsonGenerator} object.
+     * @param sp a {@link com.fasterxml.jackson.databind.SerializerProvider}
+     * object.
      * @param prefix a {@link java.lang.String} object.
      * @param element a {@link java.lang.Object} object.
-     * @param parameter a {@link de.isas.mztab1_1.model.Parameter} object.
+     * @param indexedElement a {@link de.isas.mztab1_1.model.Parameter} object.
      */
-    public static void addIndexedLine(JsonGenerator jg, String prefix,
-        Object element, Parameter parameter) {
-        addIndexedLine(jg, prefix, element, Arrays.asList(parameter));
+    public static <T extends IndexedElement> void addIndexedLine(
+        JsonGenerator jg, SerializerProvider sp, String prefix,
+        Object element, T indexedElement) {
+        addIndexedLine(jg, sp, prefix, element, Arrays.asList(indexedElement));
     }
 
     /**
      * <p>
      * addIndexedLine.</p>
      *
+     * @param <T>
      * @param jg a {@link com.fasterxml.jackson.core.JsonGenerator} object.
+     * @param sp a {@link com.fasterxml.jackson.databind.SerializerProvider}
+     * object.
      * @param prefix a {@link java.lang.String} object.
      * @param element a {@link java.lang.Object} object.
-     * @param parameterList a {@link java.util.List} object.
+     * @param indexedElementList a {@link java.util.List} object.
      */
-    public static void addIndexedLine(JsonGenerator jg, String prefix,
+    public static <T extends IndexedElement> void addIndexedLine(
+        JsonGenerator jg, SerializerProvider sp, String prefix,
         Object element,
-        List<Parameter> parameterList) {
-        if (parameterList == null || parameterList.isEmpty()) {
+        List<T> indexedElementList) {
+        if (indexedElementList == null || indexedElementList.isEmpty()) {
             Logger.getLogger(Serializers.class.getName()).
-                fine(
-                    "Skipping null or empty parameter list values for " + getElementName(
+                log(Level.FINE,
+                    "Skipping null or empty indexed element list values for {0}",
+                    getElementName(
                         element));
             return;
         }
@@ -195,10 +205,17 @@ public class Serializers {
                 })).
                 toString());
             //value
-            jg.writeString(parameterList.stream().
-                map((parameter) ->
+            jg.writeString(indexedElementList.stream().
+                map((indexedElement) ->
                 {
-                    return ParameterSerializer.toString(parameter);
+                    if (indexedElement instanceof Parameter) {
+                        return new ParameterConverter().convert(
+                            (Parameter) indexedElement);
+                    } else if(indexedElement instanceof Uri) {
+                        return new UriConverter().convert((Uri) indexedElement);
+                    } else {
+                        throw new IllegalArgumentException("Serialization of type "+indexedElement.getClass() + " currently not supported!");
+                    }
                 }).
                 collect(Collectors.joining("|")));
             jg.writeEndArray();
@@ -242,7 +259,7 @@ public class Serializers {
             jg.writeString(parameterList.stream().
                 map((parameter) ->
                 {
-                    return ParameterSerializer.toString(parameter);
+                    return new ParameterConverter().convert(parameter);
                 }).
                 collect(Collectors.joining("|")));
             jg.writeEndArray();
@@ -275,7 +292,7 @@ public class Serializers {
         addLineWithProperty(jg, prefix, propertyName, element, value.stream().
             map((parameter) ->
             {
-                return ParameterSerializer.toString(parameter);
+                return new ParameterConverter().convert(parameter);
             }).
             collect(Collectors.joining("|")));
     }
@@ -289,11 +306,11 @@ public class Serializers {
      * @param property a
      * {@link uk.ac.ebi.pride.jmztab1_1.model.MetadataProperty} object.
      * @param element a {@link java.lang.Object} object.
-     * @param value a {@link java.lang.String} object.
+     * @param value a {@link java.lang.Object} object.
      */
     public static void addLineWithMetadataProperty(JsonGenerator jg,
         String prefix, MetadataProperty property, Object element,
-        String... value) {
+        Object... value) {
         addLineWithProperty(jg, prefix, property.getName(), element, value);
     }
 
@@ -305,18 +322,18 @@ public class Serializers {
      * @param prefix a {@link java.lang.String} object.
      * @param propertyName a {@link java.lang.String} object.
      * @param element a {@link java.lang.Object} object.
-     * @param value a {@link java.lang.String} object.
+     * @param value a {@link java.lang.Object} object.
      */
     public static void addLineWithProperty(JsonGenerator jg, String prefix,
         String propertyName, Object element,
-        String... value) {
+        Object... value) {
         if (value == null || value.length == 0) {
             Logger.getLogger(Serializers.class.getName()).
                 fine("Skipping null or empty values for " + getElementName(
                     element));
             return;
         }
-        if (value.length == 1 && (value[0] == null || value[0].isEmpty())) {
+        if (value.length == 1 && (value[0] == null)) {
             Logger.getLogger(Serializers.class.getName()).
                 fine("Skipping empty value for " + getElementName(
                     element));
@@ -338,8 +355,8 @@ public class Serializers {
                 jg.writeString(key + "-" + propertyName);
             }
             //value
-            for (String s : value) {
-                jg.writeString(s);
+            for (Object o : value) {
+                jg.writeObject(o);
             }
             jg.writeEndArray();
         } catch (IOException ex) {
@@ -355,10 +372,10 @@ public class Serializers {
      * @param jg a {@link com.fasterxml.jackson.core.JsonGenerator} object.
      * @param prefix a {@link java.lang.String} object.
      * @param element a {@link java.lang.Object} object.
-     * @param value a {@link java.lang.String} object.
+     * @param value a {@link java.lang.Object} object.
      */
     public static void addLine(JsonGenerator jg, String prefix, Object element,
-        String... value) {
+        Object... value) {
         addLineWithProperty(jg, prefix, null, element, value);
     }
 
@@ -453,7 +470,7 @@ public class Serializers {
      * @param oneLine a boolean.
      */
     public static void addSubElementStrings(JsonGenerator jg, String prefix,
-        Object element, String subElementName, List<String> subElements,
+        Object element, String subElementName, List<?> subElements,
         boolean oneLine) {
         if (checkForNull(element, subElements, subElementName)) {
             return;
@@ -464,6 +481,10 @@ public class Serializers {
             addLine(jg, prefix,
                 elementName + "-" + subElementName,
                 subElements.stream().
+                    map((t) ->
+                    {
+                        return t.toString();
+                    }).
                     collect(Collectors.joining("" + MZTabConstants.BAR)));
         } else {
             IntStream.range(0, subElements.
@@ -499,7 +520,7 @@ public class Serializers {
             return;
         }
         addSubElementStrings(jg, prefix, element, subElementName, Arrays.asList(
-            ParameterSerializer.toString(subElement)), true);
+            new ParameterConverter().convert(subElement)), true);
     }
 
     /**
@@ -524,7 +545,7 @@ public class Serializers {
                 map((parameter) ->
                 {
                     try {
-                        return ParameterSerializer.toString(parameter);
+                        return new ParameterConverter().convert(parameter);
                     } catch (IllegalArgumentException npe) {
                         Logger.getLogger(Serializers.class.getName()).
                             log(Level.FINE,
@@ -569,7 +590,7 @@ public class Serializers {
      */
     public static void writeString(String columnName, JsonGenerator jg,
         String value) throws IOException {
-        if(value==null) {
+        if (value == null) {
             jg.writeNullField(columnName);
         } else {
             jg.writeStringField(columnName, value);
@@ -589,6 +610,52 @@ public class Serializers {
     public static void writeString(IMZTabColumn column, JsonGenerator jg,
         String value) throws IOException {
         writeString(column.getHeader(), jg, value);
+    }
+
+    /**
+     * <p>
+     * writeObject.</p>
+     *
+     * @param columnName a {@link java.lang.String} object.
+     * @param jg a {@link com.fasterxml.jackson.core.JsonGenerator} object.
+     * @param sp a {@link com.fasterxml.jackson.databind.SerializerProvider} object.
+     * @param value a {@link java.lang.Object} object.
+     * @throws java.io.IOException if any.
+     */
+    public static void writeObject(String columnName, JsonGenerator jg,
+        SerializerProvider sp,
+        Object value) throws IOException {
+        if (value == null) {
+            jg.writeNullField(columnName);
+        } else {
+            if (value instanceof Parameter) {
+                jg.writeStringField(columnName, new ParameterConverter().
+                    convert((Parameter) value));
+            } else if (value instanceof String) {
+                jg.writeStringField(columnName, (String) value);
+            } else {
+                throw new IllegalArgumentException(
+                    "Serialization of objects of type " + value.getClass()
+                    + " currently not supported!");
+            }
+
+        }
+    }
+
+    /**
+     * <p>
+     * writeObject.</p>
+     *
+     * @param column a {@link uk.ac.ebi.pride.jmztab1_1.model.IMZTabColumn}
+     * object.
+     * @param jg a {@link com.fasterxml.jackson.core.JsonGenerator} object.
+     * @param sp a {@link com.fasterxml.jackson.databind.SerializerProvider} object.
+     * @param value a {@link java.lang.Object} object.
+     * @throws java.io.IOException if any.
+     */
+    public static void writeObject(IMZTabColumn column, JsonGenerator jg,
+        SerializerProvider sp, Object value) throws IOException {
+        writeObject(column.getHeader(), jg, sp, value);
     }
 
     /**
@@ -813,21 +880,22 @@ public class Serializers {
      *
      * @param optColumnMappings a {@link java.util.List} object.
      * @param jg a {@link com.fasterxml.jackson.core.JsonGenerator} object.
+     * @param sp
      * @throws java.io.IOException if any.
      */
     public static void writeOptColumnMappings(
         List<OptColumnMapping> optColumnMappings,
-        JsonGenerator jg) throws IOException {
+        JsonGenerator jg, SerializerProvider sp) throws IOException {
         for (OptColumnMapping ocm : Optional.ofNullable(
             optColumnMappings).
             orElse(Collections.emptyList())) {
-            String value = NULL;
             if (ocm.getParam() != null) {
-                value = ParameterSerializer.toString(ocm.getParam());
+                writeObject(Serializers.printOptColumnMapping(ocm), jg, sp, ocm.
+                    getParam() == null ? NULL : ocm.getParam());
             } else {
-                value = ocm.getValue() == null ? NULL : ocm.getValue();
+                writeObject(Serializers.printOptColumnMapping(ocm), jg, sp, ocm.
+                    getValue() == null ? NULL : ocm.getValue());
             }
-            writeString(Serializers.printOptColumnMapping(ocm), jg, value);
         }
     }
 
@@ -839,7 +907,7 @@ public class Serializers {
      * @param jg a {@link com.fasterxml.jackson.core.JsonGenerator} object.
      * @param values a {@link java.util.List} object.
      */
-    public static void writeIndexedValues(String prefix,
+    public static void writeIndexedDoubles(String prefix,
         JsonGenerator jg, List<Double> values) {
         IntStream.range(0, values.
             size()).

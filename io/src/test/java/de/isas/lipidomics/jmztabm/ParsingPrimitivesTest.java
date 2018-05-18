@@ -15,6 +15,8 @@
  */
 package de.isas.lipidomics.jmztabm;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -30,5 +32,18 @@ public class ParsingPrimitivesTest {
         Assert.assertEquals(1, Integer.parseInt(positiveInteger));
         String negativeInteger = "-1";
         Assert.assertEquals(-1, Integer.parseInt(negativeInteger));
+    }
+    
+    @Test
+    public void testRegexps() {
+        Pattern adductPattern = Pattern.compile("^\\[\\d*M([+-][\\w]*)\\]\\d*[+-]$");
+        Assert.assertTrue(adductPattern.matcher("[M+H]1+").matches());
+        Pattern versionPattern = Pattern.compile("(?<major>\\d{1})\\.(?<minor>\\d{1})\\.(?<micro>\\d{1})-(?<profile>[A-Z]+)");
+        Matcher m = versionPattern.matcher("2.0.1-M");
+        Assert.assertTrue(m.matches());
+        Assert.assertEquals("2", m.group("major"));
+        Assert.assertEquals("0", m.group("minor"));
+        Assert.assertEquals("1", m.group("micro"));
+        Assert.assertEquals("M", m.group("profile"));
     }
 }

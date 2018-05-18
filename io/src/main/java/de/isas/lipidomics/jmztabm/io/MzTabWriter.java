@@ -25,7 +25,6 @@ import de.isas.lipidomics.jmztabm.io.formats.AssayFormat;
 import de.isas.lipidomics.jmztabm.io.formats.ContactFormat;
 import de.isas.lipidomics.jmztabm.io.formats.CvFormat;
 import de.isas.lipidomics.jmztabm.io.formats.DatabaseFormat;
-import de.isas.lipidomics.jmztabm.io.formats.ExternalStudyFormat;
 import de.isas.lipidomics.jmztabm.io.formats.InstrumentFormat;
 import de.isas.lipidomics.jmztabm.io.formats.MetadataFormat;
 import de.isas.lipidomics.jmztabm.io.formats.MsRunFormat;
@@ -38,14 +37,13 @@ import de.isas.lipidomics.jmztabm.io.formats.SmallMoleculeFeatureFormat;
 import de.isas.lipidomics.jmztabm.io.formats.SmallMoleculeSummaryFormat;
 import de.isas.lipidomics.jmztabm.io.formats.SoftwareFormat;
 import de.isas.lipidomics.jmztabm.io.formats.StudyVariableFormat;
+import de.isas.lipidomics.jmztabm.io.formats.UriFormat;
 import de.isas.lipidomics.jmztabm.io.serialization.Serializers;
-import de.isas.lipidomics.jmztabm.validation.MzTabValidator;
-//import de.isas.lipidomics.jmztabm.validation.MzTabValidator;
+import de.isas.lipidomics.jmztabm.validation.MzTabBeanValidator;
 import de.isas.mztab1_1.model.Assay;
 import de.isas.mztab1_1.model.CV;
 import de.isas.mztab1_1.model.Contact;
 import de.isas.mztab1_1.model.Database;
-import de.isas.mztab1_1.model.ExternalStudy;
 import de.isas.mztab1_1.model.Instrument;
 import de.isas.mztab1_1.model.Metadata;
 import de.isas.mztab1_1.model.MsRun;
@@ -60,6 +58,7 @@ import de.isas.mztab1_1.model.SmallMoleculeFeature;
 import de.isas.mztab1_1.model.SmallMoleculeSummary;
 import de.isas.mztab1_1.model.Software;
 import de.isas.mztab1_1.model.StudyVariable;
+import de.isas.mztab1_1.model.Uri;
 import de.isas.mztab1_1.model.ValidationMessage;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -149,7 +148,7 @@ public class MzTabWriter {
     }
 
     public List<ValidationMessage> validate(MzTab mzTab) {
-        MzTabValidator validator = new MzTabValidator();
+        MzTabBeanValidator validator = new MzTabBeanValidator();
         return validator.validate(mzTab);
     }
 
@@ -177,7 +176,6 @@ public class MzTabWriter {
         mapper.addMixIn(Assay.class, AssayFormat.class);
         mapper.addMixIn(Contact.class, ContactFormat.class);
         mapper.addMixIn(Publication.class, PublicationFormat.class);
-        mapper.addMixIn(ExternalStudy.class, ExternalStudyFormat.class);
         mapper.addMixIn(Instrument.class, InstrumentFormat.class);
         mapper.addMixIn(Sample.class, SampleFormat.class);
         mapper.addMixIn(SampleProcessing.class, SampleProcessingFormat.class);
@@ -187,6 +185,7 @@ public class MzTabWriter {
         mapper.addMixIn(Database.class, DatabaseFormat.class);
         mapper.addMixIn(Parameter.class, ParameterFormat.class);
         mapper.addMixIn(CV.class, CvFormat.class);
+        mapper.addMixIn(Uri.class, UriFormat.class);
 
         CsvSchema schema = mapper.schema().
             builder().

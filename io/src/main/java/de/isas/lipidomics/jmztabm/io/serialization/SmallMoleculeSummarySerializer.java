@@ -29,25 +29,29 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import uk.ac.ebi.pride.jmztab1_1.model.AbundanceColumn;
 import uk.ac.ebi.pride.jmztab1_1.model.SmallMoleculeColumn;
-import static de.isas.lipidomics.jmztabm.io.serialization.Serializers.writeIndexedValues;
+import static de.isas.lipidomics.jmztabm.io.serialization.Serializers.writeIndexedDoubles;
+import static de.isas.lipidomics.jmztabm.io.serialization.Serializers.writeObject;
 
 /**
- * <p>SmallMoleculeSummarySerializer class.</p>
+ * <p>
+ * SmallMoleculeSummarySerializer class.</p>
  *
  * @author nilshoffmann
- * 
+ *
  */
 public class SmallMoleculeSummarySerializer extends StdSerializer<SmallMoleculeSummary> {
 
     /**
-     * <p>Constructor for SmallMoleculeSummarySerializer.</p>
+     * <p>
+     * Constructor for SmallMoleculeSummarySerializer.</p>
      */
     public SmallMoleculeSummarySerializer() {
         this(null);
     }
 
     /**
-     * <p>Constructor for SmallMoleculeSummarySerializer.</p>
+     * <p>
+     * Constructor for SmallMoleculeSummarySerializer.</p>
      *
      * @param t a {@link java.lang.Class} object.
      */
@@ -55,7 +59,9 @@ public class SmallMoleculeSummarySerializer extends StdSerializer<SmallMoleculeS
         super(t);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void serialize(SmallMoleculeSummary smallMoleculeSummary,
         JsonGenerator jg,
@@ -93,23 +99,26 @@ public class SmallMoleculeSummarySerializer extends StdSerializer<SmallMoleculeS
                 smallMoleculeSummary.getAdductIons());
             writeString(SmallMoleculeColumn.Stable.RELIABILITY, jg,
                 smallMoleculeSummary.getReliability());
-            writeString(
-                SmallMoleculeColumn.Stable.BEST_ID_CONFIDENCE_MEASURE, jg,
-                ParameterSerializer.toString(
-                    smallMoleculeSummary.
-                        getBestIdConfidenceMeasure()));
+            writeObject(
+                SmallMoleculeColumn.Stable.BEST_ID_CONFIDENCE_MEASURE, jg, sp,
+                smallMoleculeSummary.
+                    getBestIdConfidenceMeasure());
             writeNumber(
                 SmallMoleculeColumn.Stable.BEST_ID_CONFIDENCE_VALUE, jg,
                 smallMoleculeSummary.
                     getBestIdConfidenceValue());
-            writeIndexedValues(AbundanceColumn.Field.ABUNDANCE_ASSAY.toString(), jg, smallMoleculeSummary.
-                getAbundanceAssay());
-            writeIndexedValues(AbundanceColumn.Field.ABUNDANCE_STUDY_VARIABLE.toString(), jg, smallMoleculeSummary.
-                getAbundanceStudyVariable());
-            writeIndexedValues(AbundanceColumn.Field.ABUNDANCE_COEFFVAR_STUDY_VARIABLE.toString(), jg, 
+            writeIndexedDoubles(AbundanceColumn.Field.ABUNDANCE_ASSAY.toString(),
+                jg, smallMoleculeSummary.
+                    getAbundanceAssay());
+            writeIndexedDoubles(AbundanceColumn.Field.ABUNDANCE_STUDY_VARIABLE.
+                toString(), jg, smallMoleculeSummary.
+                    getAbundanceStudyVariable());
+            writeIndexedDoubles(
+                AbundanceColumn.Field.ABUNDANCE_COEFFVAR_STUDY_VARIABLE.
+                    toString(), jg,
                 smallMoleculeSummary.getAbundanceCoeffvarStudyVariable());
 
-            writeOptColumnMappings(smallMoleculeSummary.getOpt(), jg);
+            writeOptColumnMappings(smallMoleculeSummary.getOpt(), jg, sp);
             jg.writeEndObject();
         } else {
             Logger.getLogger(SmallMoleculeSummarySerializer.class.getName()).

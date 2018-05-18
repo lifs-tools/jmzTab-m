@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Leibniz Institut für Analytische Wissenschaften - ISAS e.V..
+ * Copyright 2018 nilshoffmann.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,67 +15,27 @@
  */
 package de.isas.lipidomics.jmztabm.io.serialization;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+import com.fasterxml.jackson.databind.util.StdConverter;
 import de.isas.mztab1_1.model.Parameter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import static uk.ac.ebi.pride.jmztab1_1.model.MZTabConstants.NULL;
 
 /**
- * <p>ParameterSerializer class.</p>
  *
  * @author nilshoffmann
- * 
  */
-public class ParameterSerializer extends StdSerializer<Parameter> {
+public class ParameterConverter extends StdConverter<Parameter, String> {
 
-    /**
-     * <p>Constructor for ParameterSerializer.</p>
-     */
-    public ParameterSerializer() {
-        this(null);
-    }
-
-    /**
-     * <p>Constructor for ParameterSerializer.</p>
-     *
-     * @param t a {@link java.lang.Class} object.
-     */
-    public ParameterSerializer(Class<Parameter> t) {
-        super(t);
-    }
-    
-    /** {@inheritDoc} */
     @Override
-    public void serialize(Parameter p, JsonGenerator jg, SerializerProvider sp) throws IOException {
-        if (p != null) {
-            addLine(p, jg);
-        }
+    public String convert(Parameter in) {
+        return toString(in);
     }
 
     /**
-     * <p>addLine.</p>
-     *
-     * @param p a {@link de.isas.mztab1_1.model.Parameter} object.
-     * @param jg a {@link com.fasterxml.jackson.core.JsonGenerator} object.
-     */
-    public void addLine(Parameter p, JsonGenerator jg) {
-        try {
-            //value
-            jg.writeString(toString(p));
-        } catch (IOException ex) {
-            Logger.getLogger(MetadataSerializer.class.getName()).
-                log(Level.SEVERE, null, ex);
-        }
-    }
-        /**
-     * In case, the name of the param contains commas, quotes MUST be added to avoid problems with the parsing:
-     * [label, accession, "first part of the param name , second part of the name", value].
+     * In case, the name of the param contains commas, quotes MUST be added to
+     * avoid problems with the parsing: [label, accession, "first part of the
+     * param name , second part of the name", value].
      *
      * For example: [MOD, MOD:00648, "N,O-diacetylated L-serine",]
      */
@@ -93,7 +53,9 @@ public class ParameterSerializer extends StdSerializer<Parameter> {
         }
 
         if (containReserveChar) {
-            sb.append("\"").append(name).append("\"");
+            sb.append("\"").
+                append(name).
+                append("\"");
         } else {
             sb.append(name);
         }
@@ -107,7 +69,7 @@ public class ParameterSerializer extends StdSerializer<Parameter> {
             value = value.trim();
 
             // define a reserved character list.
-            List<String> reserveCharList = new ArrayList<String>();
+            List<String> reserveCharList = new ArrayList<>();
 
             reserveCharList.add(",");
 
@@ -120,16 +82,17 @@ public class ParameterSerializer extends StdSerializer<Parameter> {
     }
 
     /**
-     * In case, the name of the param contains commas, quotes MUST be added to avoid problems with the parsing:
-     * [label, accession, "first part of the param name , second part of the name", value].
+     * In case, the name of the param contains commas, quotes MUST be added to
+     * avoid problems with the parsing: [label, accession, "first part of the
+     * param name , second part of the name", value].
      *
      * For example: [MOD, MOD:00648, "N,O-diacetylated L-serine",]
      *
      * @param param a {@link de.isas.mztab1_1.model.Parameter} object.
      * @return a {@link java.lang.String} object.
      */
-    public static String toString(Parameter param) {
-        if(param==null) {
+    private String toString(Parameter param) {
+        if (param == null) {
             return NULL;
         }
         StringBuilder sb = new StringBuilder();

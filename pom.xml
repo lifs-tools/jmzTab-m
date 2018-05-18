@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>de.isas.mztab</groupId>
   <artifactId>jmztabm</artifactId>
-  <version>0.9.1-SNAPSHOT</version>
+  <version>0.9.2-SNAPSHOT</version>
   <packaging>pom</packaging>
   <description>A reader, writer and validator reference implementation for the mzTab format from version 1.1 onwards.</description>
   <name>MzTab 1.1 reference implementation.</name>	

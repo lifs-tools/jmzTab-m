@@ -211,24 +211,6 @@ public class MZTabFileParser {
                         toString()));
             }
         }
-
-        // If mzTab-type is "Quantification", then at least one section with {protein|peptide|small_molecule}_abundance* columns MUST be present
-        // FIXME commented during migration to mzTab 1.1
-//        boolean hasAbundance = false;
-//        if (metadata.getMZTabType() == MZTabDescription.Type.Quantification) {
-//            if (proteinFactory != null && ! proteinFactory.getAbundanceColumnMapping().isEmpty()) {
-//                hasAbundance = true;
-//            }
-//            if (peptideFactory != null && ! peptideFactory.getAbundanceColumnMapping().isEmpty()) {
-//                hasAbundance = true;
-//            }
-//            if (smlFactory != null && ! smlFactory.getAbundanceColumnMapping().isEmpty()) {
-//                hasAbundance = true;
-//            }
-//            if (! hasAbundance) {
-//                throw new MZTabException(new MZTabError(LogicalErrorType.QuantificationAbundance, -1));
-//            }
-//        }
     }
 
     /**
@@ -244,12 +226,6 @@ public class MZTabFileParser {
 
         COMLineParser comParser = new COMLineParser(context);
         MTDLineParser mtdParser = new MTDLineParser(context);
-//        PRHLineParser prhParser = null;
-//        PRTLineParser prtParser = null;
-//        PEHLineParser pehParser = null;
-//        PEPLineParser pepParser = null;
-//        PSHLineParser pshParser = null;
-//        PSMLineParser psmParser = null;
         SMHLineParser smhParser = null;
         SMLLineParser smlParser = null;
         SFHLineParser sfhParser = null;
@@ -258,16 +234,10 @@ public class MZTabFileParser {
         SMELineParser smeParser = null;
 
         SortedMap<Integer, Comment> commentMap = new TreeMap<Integer, Comment>();
-//        SortedMap<Integer, Protein> proteinMap = new TreeMap<Integer, Protein>();
-//        SortedMap<Integer, Peptide> peptideMap = new TreeMap<Integer, Peptide>();
-//        SortedMap<Integer, PSM> psmMap = new TreeMap<Integer, PSM>();
         SortedMap<Integer, SmallMoleculeSummary> smallMoleculeSummaryMap = new TreeMap<>();
         SortedMap<Integer, SmallMoleculeFeature> smallMoleculeFeatureMap = new TreeMap<>();
         SortedMap<Integer, SmallMoleculeEvidence> smallMoleculeEvidenceMap = new TreeMap<>();
 
-//        PositionMapping prtPositionMapping = null;
-//        PositionMapping pepPositionMapping = null;
-//        PositionMapping psmPositionMapping = null;
         PositionMapping smlPositionMapping = null;
         PositionMapping smfPositionMapping = null;
         PositionMapping smePositionMapping = null;
@@ -539,29 +509,6 @@ public class MZTabFileParser {
                 mzTabFile.addCommentItem(commentMap.get(id));
             }
 
-//            if (prhParser != null) {
-//                MZTabColumnFactory proteinColumnFactory = prhParser.getFactory();
-//                mzTabFile.setProteinColumnFactory(proteinColumnFactory);
-//                for (Integer id : proteinMap.keySet()) {
-//                    mzTabFile.addProtein(id, proteinMap.get(id));
-//                }
-//            }
-//
-//            if (pehParser != null) {
-//                MZTabColumnFactory peptideColumnFactory = pehParser.getFactory();
-//                mzTabFile.setPeptideColumnFactory(peptideColumnFactory);
-//                for (Integer id : peptideMap.keySet()) {
-//                    mzTabFile.addPeptide(id, peptideMap.get(id));
-//                }
-//            }
-//
-//            if (pshParser != null) {
-//                MZTabColumnFactory psmColumnFactory = pshParser.getFactory();
-//                mzTabFile.setPSMColumnFactory(psmColumnFactory);
-//                for (Integer id : psmMap.keySet()) {
-//                    mzTabFile.addPSM(id, psmMap.get(id));
-//                }
-//            }
             if (smallMoleculeSummaryMap.isEmpty()) {
                 errorList.add(new MZTabError(
                     LogicalErrorType.NoSmallMoleculeSummarySection, -1,

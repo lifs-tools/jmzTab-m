@@ -66,11 +66,24 @@ public class {{classname}} {{#parent}}extends {{{parent}}} {{/parent}}{{#parcela
   private {{{datatypeWithEnum}}} {{name}} = {{{defaultValue}}};
   {{/isContainer}}
   {{/vars}}
+  {{#parentModel}}
+  {{#allVars}}
+  {{^isReadOnly}}
+  
+  @Override
+  public {{model.classname}} {{name}}({{{datatypeWithEnum}}} {{name}}) {
+   super.set{{nameInCamelCase}}({{name}});
+   return this;
+  }
+  {{/isReadOnly}}
+  {{/allVars}}
+  {{/parentModel}}
   {{#vars}}
   {{^isReadOnly}}
+
   public {{classname}} {{name}}({{{datatypeWithEnum}}} {{name}}) {
-    this.{{name}} = {{name}};
-    return this;
+   this.{{name}} = {{name}};
+   return this;
   }
   {{#isListContainer}}
 

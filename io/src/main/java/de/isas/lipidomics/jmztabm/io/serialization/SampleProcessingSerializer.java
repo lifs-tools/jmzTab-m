@@ -53,7 +53,7 @@ public class SampleProcessingSerializer extends StdSerializer<SampleProcessing> 
     public void serialize(SampleProcessing sampleProcessing, JsonGenerator jg,
         SerializerProvider sp) throws IOException {
         if (sampleProcessing != null) {
-            Serializers.addIndexedLine(jg, Section.Metadata.getPrefix(),
+            Serializers.addIndexedLine(jg, sp, Section.Metadata.getPrefix(),
                 sampleProcessing,
                 sampleProcessing.getSampleProcessing());
         } else {

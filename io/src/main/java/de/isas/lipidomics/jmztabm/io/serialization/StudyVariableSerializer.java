@@ -70,12 +70,10 @@ public class StudyVariableSerializer extends StdSerializer<StudyVariable> {
             addSubElementParameters(jg, Section.Metadata.getPrefix(),
                 studyVariable,
                 "factors", studyVariable.getFactors(), true);
-            addLineWithProperty(jg, Section.Metadata.getPrefix(), "average_function", studyVariable, ParameterSerializer.
-                        toString(studyVariable.
-                    getAverageFunction()));
-            addLineWithProperty(jg, Section.Metadata.getPrefix(), "variation_function", studyVariable, ParameterSerializer.
-                        toString(studyVariable.
-                    getVariationFunction()));
+            addLineWithProperty(jg, Section.Metadata.getPrefix(), "average_function", studyVariable, studyVariable.
+                    getAverageFunction());
+            addLineWithProperty(jg, Section.Metadata.getPrefix(), "variation_function", studyVariable, studyVariable.
+                    getVariationFunction());
             addSubElementStrings(jg, Section.Metadata.getPrefix(), studyVariable,
                 "assay_refs", Optional.ofNullable(studyVariable.getAssayRefs()).
                     orElse(Collections.emptyList()).

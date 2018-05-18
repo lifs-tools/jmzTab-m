@@ -1,7 +1,7 @@
 package de.isas.lipidomics.jmztabm.validator;
 
 import static de.isas.lipidomics.jmztabm.cvmapping.JxPathElement.toStream;
-import de.isas.lipidomics.jmztabm.validation.MzTabValidator;
+import de.isas.lipidomics.jmztabm.validation.MzTabBeanValidator;
 import de.isas.mztab.jmztabm.test.utils.LogMethodName;
 import de.isas.mztab1_1.model.CV;
 import de.isas.mztab1_1.model.Contact;
@@ -12,6 +12,9 @@ import de.isas.mztab1_1.model.Publication;
 import de.isas.mztab1_1.model.PublicationItem;
 import de.isas.mztab1_1.model.ValidationMessage;
 import info.psidev.cvmapping.CvMapping;
+import info.psidev.cvmapping.CvMappingRule;
+import static info.psidev.cvmapping.CvMappingRule.RequirementLevel.MUST;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -28,6 +31,7 @@ import org.apache.commons.jxpath.Pointer;
 import org.apache.commons.lang3.tuple.Pair;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import uk.ac.ebi.pride.utilities.ols.web.service.client.OLSClient;
@@ -52,23 +56,28 @@ public class MzTabValidatorTest {
             affiliation(
                 "ISAS e.V. Dortmund, Germany");
         contact1.id(1);
-        MsRun msRun1 = new MsRun().
+        MsRun msRun1 = new MsRun().id(1).
             location("file:///path/to/file1.mzML").
             format(
-                new Parameter().
+                new Parameter().id(1).
                     cvLabel("MS").
                     cvAccession("MS:1000584").
                     name("mzML file").
                     value("")
             ).
             idFormat(
-                new Parameter().
+                new Parameter().id(1).
                     cvLabel("MS").
                     cvAccession("MS:1001530").
                     name("mzML unique identifier").
                     value("")
+            ).
+            addScanPolarityItem(
+                new Parameter().id(1).
+                    cvLabel("MS").
+                    cvAccession("MS:1000129").
+                    name("negative scan")
             );
-        msRun1.id(1);
         final MzTab mztabfile = new MzTab().metadata(
             new de.isas.mztab1_1.model.Metadata().mzTabVersion(
                 "1.1.0").
@@ -130,7 +139,7 @@ public class MzTabValidatorTest {
 
     @Test
     public void testCustomBeanValidation() {
-        MzTabValidator validator = new MzTabValidator();
+        MzTabBeanValidator validator = new MzTabBeanValidator();
         List<ValidationMessage> violations = validator.validate(
             createTestFile());
         for (ValidationMessage violation : violations) {
@@ -183,6 +192,32 @@ public class MzTabValidatorTest {
 
     }
 
+    private String ruleToString(CvMappingRule rule) {
+        StringBuilder sb = new StringBuilder();
+        return sb.append("Rule{").
+            append("id='").
+            append(rule.getId()).
+            append("', ").
+            append("name='").
+            append(rule.getName()).
+            append("', ").
+            append("cvElementPath='").
+            append(rule.getCvElementPath()).
+            append("', ").
+            append("scopePath='").
+            append(rule.getScopePath()).
+            append("', ").
+            append("cvTermsCombinationLogic='").
+            append(rule.getCvTermsCombinationLogic()).
+            append("', ").
+            append("requirementLevel='").
+            append(rule.getRequirementLevel()).
+            append("', ").
+            append("}").
+            toString();
+    }
+
+    @Ignore
     @Test
     public void testJaxbCvMapping() throws JAXBException {
         OLSWsConfig config = new OLSWsConfig();
@@ -198,52 +233,100 @@ public class MzTabValidatorTest {
             forEach((rule) ->
             {
                 String path = rule.getCvElementPath(); // this selects all nodes for that rule
-                Stream<Pair<Pointer, ? extends Parameter>> pointerFormatParameters = toStream(
-                    context.getPointer(
-                        path), Parameter.class);
-                System.out.println("Applying rule: " + rule);
-                pointerFormatParameters.forEach((selection) ->
-                {
-                    System.out.println("Applying to selection: " + selection);
-                    // TODO: implement combination logic (OR, AND, XOR)
-                    rule.getCvTerm().
-                        forEach((term) ->
-                        {
-                            List<Term> comparisonList;
-                            if (term.isAllowChildren()) {
-                                Identifier ident = new Identifier(term.
-                                    getTermAccession(),
-                                    Identifier.IdentifierType.OBO);
-                                comparisonList = client.getTermChildren(ident,
-                                    term.getCvIdentifierRef().
-                                        getCvIdentifier(), 1);
-                                boolean match = false;
-//                                comparisonList.stream().filter((comparisonTerm) ->
-//                                    {
-////                                       return comparisonTerm.get 
-//                                    });
-                            } else {
-                                if (term.getCvIdentifierRef().
-                                    getCvIdentifier().
-                                    equals(selection.getRight().
-                                        getCvLabel()) && term.getTermAccession().
-                                        equals(selection.getRight().
-                                            getCvAccession())) {
-                                    //positive, we have a match
-                                    System.out.println(
-                                        "Rule " + rule + " matched on: " + term + " for selection: " + selection);
-                                } else {
-                                    System.err.println(
-                                        "Mismatch of rule " + rule + " at " + selection.
-                                            getLeft());
-                                    throw new RuntimeException(
-                                        "Rule was not successfully applied!");
-                                    //we do not have a match, if we are in OR mode, if we are in AND mode, this should issue a violation
+                try {
+                    Stream<Pair<Pointer, ? extends Parameter>> pointerFormatParameters = toStream(
+                        context.getPointer(
+                            path), Parameter.class);
+                    System.out.println("Applying rule: " + ruleToString(rule));
+                    pointerFormatParameters.forEach((selection) ->
+                    {
+                        System.out.
+                            println("Applying to selection: " + selection);
+                        boolean skip = false;
+                        switch (rule.getRequirementLevel()) {
+                            case MAY:
+                                //info level
+                                if (selection.getValue() == null) {
+                                    System.out.
+                                        println(
+                                            "Skipping validation of null parameter for selection: " + selection);
+                                    skip = true;
                                 }
-                            }
-                        });
-
-                });
+                                break;
+                            case SHOULD:
+                                //warning level
+                                if (selection.getValue() == null) {
+                                    System.out.
+                                        println(
+                                            "Skipping validation of null parameter for selection: " + selection);
+                                    skip = true;
+                                }
+                                break;
+                            case MUST:
+                                if (selection.getValue() == null) {
+                                    //error level
+                                    System.err.println(
+                                        "Rule requirement level MUST requires defined CvTerms to be non-null for rule: " + ruleToString(
+                                            rule) + " for context: " + selection);
+                                    skip = true;
+                                }
+                                break;
+                            default:
+                                throw new IllegalStateException(
+                                    "Unhandled requirement level: " + rule.
+                                        getRequirementLevel());
+                        }
+                        if (!skip) {
+                            // TODO: implement combination logic (OR, AND, XOR)
+                            rule.getCvTerm().
+                                forEach((term) ->
+                                {
+                                    List<Term> comparisonList;
+                                    List<RuleEvalutionResult> ruleEvalResults = new ArrayList<>();
+                                    if (term.isAllowChildren()) {
+                                        Identifier ident = new Identifier(term.
+                                            getTermAccession(),
+                                            Identifier.IdentifierType.OBO);
+                                        comparisonList = client.getTermChildren(
+                                            ident,
+                                            term.getCvIdentifierRef().
+                                                getCvIdentifier(), 1);
+                                        boolean match = false;
+                                        //                                comparisonList.stream().filter((comparisonTerm) ->
+                                        //                                    {
+                                        ////                                       return comparisonTerm.get 
+                                        //                                    });
+                                    } else {
+                                        Term t = new Term();
+                                        t.setOntologyPrefix(term.getCvIdentifierRef().getCvIdentifier());
+                                        t.setOboId(term.getTermAccession());
+                                        t.setLabel(term.getTermName());
+                                        comparisonList = Arrays.asList(t);
+                                        if (term.getCvIdentifierRef().
+                                            getCvIdentifier().
+                                            equals(selection.getRight().
+                                                getCvLabel()) && term.
+                                                getTermAccession().
+                                                equals(selection.getRight().
+                                                    getCvAccession())) {
+                                            //positive, we have a match
+                                            System.out.println(
+                                                "Rule " + ruleToString(rule) + " matched on: " + term + " for selection: " + selection);
+                                        } else {
+                                            String errMessage = "Mismatch of rule " + ruleToString(
+                                                    rule) + " at " + selection.
+                                                    getLeft();
+                                            System.err.println(errMessage);
+                                            throw new RuntimeException(errMessage);
+                                            //we do not have a match, if we are in OR mode, if we are in AND mode, this should issue a violation
+                                        }
+                                    }
+                                });
+                        }
+                    });
+                } catch (org.apache.commons.jxpath.JXPathNotFoundException ex) {
+                    System.err.println(ex.getLocalizedMessage());
+                }
             });
     }
 

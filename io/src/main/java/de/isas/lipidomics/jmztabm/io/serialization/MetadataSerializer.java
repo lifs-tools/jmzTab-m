@@ -26,6 +26,7 @@ import de.isas.mztab1_1.model.Assay;
 import de.isas.mztab1_1.model.CV;
 import de.isas.mztab1_1.model.Contact;
 import de.isas.mztab1_1.model.Database;
+import de.isas.mztab1_1.model.IndexedElement;
 import de.isas.mztab1_1.model.Instrument;
 import de.isas.mztab1_1.model.Metadata;
 import de.isas.mztab1_1.model.MsRun;
@@ -35,6 +36,7 @@ import de.isas.mztab1_1.model.Sample;
 import de.isas.mztab1_1.model.SampleProcessing;
 import de.isas.mztab1_1.model.Software;
 import de.isas.mztab1_1.model.StudyVariable;
+import de.isas.mztab1_1.model.Uri;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -48,22 +50,25 @@ import uk.ac.ebi.pride.jmztab1_1.model.MetadataProperty;
 import uk.ac.ebi.pride.jmztab1_1.model.Section;
 
 /**
- * <p>MetadataSerializer class.</p>
+ * <p>
+ * MetadataSerializer class.</p>
  *
  * @author nilshoffmann
- * 
+ *
  */
 public class MetadataSerializer extends StdSerializer<Metadata> {
 
     /**
-     * <p>Constructor for MetadataSerializer.</p>
+     * <p>
+     * Constructor for MetadataSerializer.</p>
      */
     public MetadataSerializer() {
         this(null);
     }
 
     /**
-     * <p>Constructor for MetadataSerializer.</p>
+     * <p>
+     * Constructor for MetadataSerializer.</p>
      *
      * @param t a {@link java.lang.Class} object.
      */
@@ -72,34 +77,45 @@ public class MetadataSerializer extends StdSerializer<Metadata> {
     }
 
     /**
-     * <p>serializeListWithMetadataElement.</p>
+     * <p>
+     * Serialize a list of Parameters for the provided metadata element.</p>
      *
      * @param list a {@link java.util.List} object.
-     * @param mtdElement a {@link uk.ac.ebi.pride.jmztab1_1.model.MetadataElement} object.
+     * @param mtdElement a
+     * {@link uk.ac.ebi.pride.jmztab1_1.model.MetadataElement} object.
      * @param jg a {@link com.fasterxml.jackson.core.JsonGenerator} object.
-     * @param sp a {@link com.fasterxml.jackson.databind.SerializerProvider} object.
+     * @param sp a {@link com.fasterxml.jackson.databind.SerializerProvider}
+     * object.
      * @param comparator a {@link java.util.Comparator} object.
      * @param <T> a T object.
      */
-    public static <T extends Parameter> void serializeListWithMetadataElement(
+    public static <T extends IndexedElement> void serializeListWithMetadataElement(
         List<T> list, MetadataElement mtdElement, JsonGenerator jg,
         SerializerProvider sp, Comparator<? super T> comparator) {
         list.stream().
             sorted(comparator).
             forEach((object) ->
             {
-                addIndexedLine(jg, Section.Metadata.getPrefix(),
-                    mtdElement.getName() + "[" + object.getId() + "]",
-                    object);
+                if (object != null) {
+                    addIndexedLine(jg, sp, Section.Metadata.getPrefix(),
+                        mtdElement.getName() + "[" + object.getId() + "]",
+                        object);
+                } else {
+                    throw new NullPointerException(
+                        "Object in list for metadata element " + mtdElement.
+                            getName() + " must not be null!");
+                }
             });
     }
 
     /**
-     * <p>serializeList.</p>
+     * <p>
+     * serializeList.</p>
      *
      * @param list a {@link java.util.List} object.
      * @param jg a {@link com.fasterxml.jackson.core.JsonGenerator} object.
-     * @param sp a {@link com.fasterxml.jackson.databind.SerializerProvider} object.
+     * @param sp a {@link com.fasterxml.jackson.databind.SerializerProvider}
+     * object.
      * @param comparator a {@link java.util.Comparator} object.
      * @param <T> a T object.
      */
@@ -114,11 +130,13 @@ public class MetadataSerializer extends StdSerializer<Metadata> {
     }
 
     /**
-     * <p>serializeObject.</p>
+     * <p>
+     * serializeObject.</p>
      *
      * @param object a {@link java.lang.Object} object.
      * @param jg a {@link com.fasterxml.jackson.core.JsonGenerator} object.
-     * @param sp a {@link com.fasterxml.jackson.databind.SerializerProvider} object.
+     * @param sp a {@link com.fasterxml.jackson.databind.SerializerProvider}
+     * object.
      */
     public static void serializeObject(Object object, JsonGenerator jg,
         SerializerProvider sp) {
@@ -136,14 +154,17 @@ public class MetadataSerializer extends StdSerializer<Metadata> {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void serialize(Metadata t, JsonGenerator jg, SerializerProvider sp) throws IOException {
         if (t != null) {
             String prefix = t.getPrefix().
                 name();
             addLine(jg, prefix, "mzTab-version", Optional.ofNullable(t.
-                getMzTabVersion()).orElse(MZTabConstants.VERSION));
+                getMzTabVersion()).
+                orElse(MZTabConstants.VERSION));
             addLine(jg, prefix, "mzTab-ID", t.
                 getMzTabID());
             addLine(jg, prefix, "title", t.
@@ -173,14 +194,20 @@ public class MetadataSerializer extends StdSerializer<Metadata> {
             //file uri
             if (t.getUri() != null) {
                 serializeListWithMetadataElement(t.getUri(),
-                    MetadataElement.URI, jg, sp, Comparator.naturalOrder())));
+                    MetadataElement.URI, jg, sp, Comparator.comparing(
+                        Uri::getId,
+                        Comparator.nullsFirst(Comparator.naturalOrder())));
             } else {
                 Logger.getLogger(MetadataSerializer.class.getName()).
                     log(Level.FINE, "External Study is null!");
             }
             //external study uri
             if (t.getExternalStudyUri() != null) {
-                serializeObject(t.getStudy(), jg, sp);
+                serializeListWithMetadataElement(t.getExternalStudyUri(),
+                    MetadataElement.EXTERNAL_STUDY_URI, jg, sp, Comparator.
+                        comparing(
+                            Uri::getId,
+                            Comparator.nullsFirst(Comparator.naturalOrder())));
             } else {
                 Logger.getLogger(MetadataSerializer.class.getName()).
                     log(Level.FINE, "External Study is null!");
@@ -237,11 +264,13 @@ public class MetadataSerializer extends StdSerializer<Metadata> {
                     log(Level.FINE, "Software is null!");
             }
             //derivatization agent
-            if (t.getDerivatizationAgent()!= null) {
-                serializeListWithMetadataElement(t.getDerivatizationAgent(), MetadataElement.DERIVATIZATION_AGENT, jg, sp, Comparator.comparing(
-                    Parameter::getId,
-                    Comparator.nullsFirst(Comparator.naturalOrder())
-                ));
+            if (t.getDerivatizationAgent() != null) {
+                serializeListWithMetadataElement(t.getDerivatizationAgent(),
+                    MetadataElement.DERIVATIZATION_AGENT, jg, sp, Comparator.
+                        comparing(
+                            Parameter::getId,
+                            Comparator.nullsFirst(Comparator.naturalOrder())
+                        ));
             } else {
                 Logger.getLogger(MetadataSerializer.class.getName()).
                     log(Level.FINE, "Derivatization agent is null!");
@@ -301,8 +330,8 @@ public class MetadataSerializer extends StdSerializer<Metadata> {
             if (t.getSmallMoleculeQuantificationUnit() != null) {
                 addLineWithMetadataProperty(jg, prefix,
                     MetadataProperty.SMALL_MOLECULE_QUANTIFICATION_UNIT,
-                    MetadataElement.SMALL_MOLECULE, ParameterSerializer.
-                        toString(t.getSmallMoleculeQuantificationUnit()));
+                    MetadataElement.SMALL_MOLECULE, t.
+                        getSmallMoleculeQuantificationUnit());
             } else {
                 Logger.getLogger(MetadataSerializer.class.getName()).
                     log(Level.FINE,
@@ -312,8 +341,8 @@ public class MetadataSerializer extends StdSerializer<Metadata> {
             if (t.getSmallMoleculeFeatureQuantificationUnit() != null) {
                 addLineWithMetadataProperty(jg, prefix,
                     MetadataProperty.SMALL_MOLECULE_FEATURE_QUANTIFICATION_UNIT,
-                    MetadataElement.SMALL_MOLECULE_FEATURE, ParameterSerializer.
-                        toString(t.getSmallMoleculeFeatureQuantificationUnit()));
+                    MetadataElement.SMALL_MOLECULE_FEATURE, t.
+                        getSmallMoleculeFeatureQuantificationUnit());
             } else {
                 Logger.getLogger(MetadataSerializer.class.getName()).
                     log(Level.FINE,
@@ -323,8 +352,8 @@ public class MetadataSerializer extends StdSerializer<Metadata> {
             if (t.getSmallMoleculeIdentificationReliability() != null) {
                 addLineWithMetadataProperty(jg, prefix,
                     MetadataProperty.SMALL_MOLECULE_IDENTIFICATION_RELIABILITY,
-                    MetadataElement.SMALL_MOLECULE, ParameterSerializer.
-                        toString(t.getSmallMoleculeIdentificationReliability()));
+                    MetadataElement.SMALL_MOLECULE, t.
+                        getSmallMoleculeIdentificationReliability());
             } else {
                 Logger.getLogger(MetadataSerializer.class.getName()).
                     log(Level.FINE,
@@ -356,8 +385,8 @@ public class MetadataSerializer extends StdSerializer<Metadata> {
                     {
                         addLine(jg, prefix,
                             MetadataElement.COLUNIT_SMALL_MOLECULE, colUnit.
-                                getColumnName() + "=" + ParameterSerializer.
-                                toString(colUnit.getParam()));
+                                getColumnName() + "=" + new ParameterConverter().
+                                convert(colUnit.getParam()));
                     });
             } else {
                 Logger.getLogger(MetadataSerializer.class.getName()).
@@ -370,8 +399,8 @@ public class MetadataSerializer extends StdSerializer<Metadata> {
                         addLine(jg, prefix,
                             MetadataElement.COLUNIT_SMALL_MOLECULE_FEATURE,
                             colUnit.
-                                getColumnName() + "=" + ParameterSerializer.
-                                toString(colUnit.getParam()));
+                                getColumnName() + "=" + new ParameterConverter().
+                                convert(colUnit.getParam()));
                     });
             } else {
                 Logger.getLogger(MetadataSerializer.class.getName()).
@@ -384,8 +413,8 @@ public class MetadataSerializer extends StdSerializer<Metadata> {
                         addLine(jg, prefix,
                             MetadataElement.COLUNIT_SMALL_MOLECULE_EVIDENCE,
                             colUnit.
-                                getColumnName() + "=" + ParameterSerializer.
-                                toString(colUnit.getParam()));
+                                getColumnName() + "=" + new ParameterConverter().
+                                convert(colUnit.getParam()));
                     });
             } else {
                 Logger.getLogger(MetadataSerializer.class.getName()).

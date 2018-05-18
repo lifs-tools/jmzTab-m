@@ -42,7 +42,8 @@ MTD	assay[1]-sample_ref	sample[1]
 MTD	assay[1]-ms_run_ref	ms_run[1]																			
 MTD	study_variable[1]-assay_refs	assay[1]																			
 MTD	study_variable[1]-description	sphingolipid srm quantitation																			
-COM	MTD	study_variable[1]-quantification_value_function	[MS, MS:XXXXX, Arithmetic Mean, ]																		
+MTD	study_variable[1]-average_function	[MS, MS:XXXXX, Arithmetic Mean, ]																		
+MTD	study_variable[1]-variation_function	[MS, MS:XXXXX, Std Error, ]																		
 MTD	small_molecule-quantification_unit	[UO, UO:0000072, picomolal, ]																			
 MTD	small_molecule_feature-quantification_unit	[UO, UO:0000072, picomolal, ]																			
 MTD	small_molecule-identification_reliability	[MS, MS:XXXXX, MSI-2007-numeric, ]																			
@@ -57,8 +58,7 @@ MTD	database[2]-url	http://www.lipidmaps.org/
 COM	MTD	colunit-small_molecule	retention_time=[UO, UO:0000010, second, ]																			
 MTD	colunit-small_molecule_evidence	opt_global_mass_error=[UO, UO:0000169, parts per million, ]																			
 MTD	id_confidence_measure[1]	[,,characteristic qualifier ions, ]																					
-COM	MTD	study_file[1]-location	file://c:/data/prm.sky.zip																		
-COM	MTD	study_file[1]-format	[,, Skyline project zip archive, ]	
+MTD	external_study_uri[1]	file://c:/data/prm.sky.zip																		
 																					
 COM	"MzTab 1.1.0 ""proposed"" specification"																				
 COM	Summary rows. 																				

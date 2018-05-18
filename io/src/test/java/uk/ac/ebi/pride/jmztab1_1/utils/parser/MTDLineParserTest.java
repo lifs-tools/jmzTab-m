@@ -67,10 +67,10 @@ public class MTDLineParserTest {
     @Test
     public void testUri() throws MZTabException {
         parser.
-            parse(1, "MTD\turi\thttp://www.ebi.ac.uk/pride/url/to/experiment",
+            parse(1, "MTD\turi[1]\thttp://www.ebi.ac.uk/pride/url/to/experiment",
                 errorList);
         parser.parse(1,
-            "MTD\turi\thttp://proteomecentral.proteomexchange.org/cgi/GetDataset",
+            "MTD\turi[2]\thttp://proteomecentral.proteomexchange.org/cgi/GetDataset",
             errorList);
         assertTrue(metadata.getUri().
             size() == 2);

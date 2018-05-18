@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Leibniz Institut für Analytische Wissenschaften - ISAS e.V..
+ * Copyright 2018 nilshoffmann.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,18 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.isas.lipidomics.jmztabm.io.formats;
+package de.isas.lipidomics.jmztabm.io.serialization;
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import de.isas.lipidomics.jmztabm.io.serialization.ExternalStudySerializer;
+import com.fasterxml.jackson.databind.util.StdConverter;
+import de.isas.mztab1_1.model.Uri;
+import java.util.Optional;
 
 /**
- * <p>Abstract ExternalStudyFormat class.</p>
  *
  * @author nilshoffmann
- * 
  */
-@JsonSerialize(using = ExternalStudySerializer.class)
-public abstract class ExternalStudyFormat {
+public class UriConverter extends StdConverter<Uri, String> {
 
+    /** {@inheritDoc} */
+    @Override
+    public String convert(Uri uri) {
+        return Optional.of(uri.getValue()).orElse("null");
+    }
+    
 }

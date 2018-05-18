@@ -15,6 +15,9 @@
  */
 package de.isas.mztab.cli;
 
+import de.isas.lipidomics.jmztabm.cvmapping.CvMappingValidator;
+import de.isas.lipidomics.jmztabm.validation.MzTabBeanValidator;
+import de.isas.mztab1_1.model.ValidationMessage;
 import org.apache.commons.cli.*;
 
 import java.io.BufferedOutputStream;
@@ -22,7 +25,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.URI;
 import java.time.Instant;
+import java.util.List;
 import java.util.Properties;
 import uk.ac.ebi.pride.jmztab1_1.utils.MZTabFileParser;
 import uk.ac.ebi.pride.jmztab1_1.utils.errors.MZTabErrorList;
@@ -30,12 +35,13 @@ import uk.ac.ebi.pride.jmztab1_1.utils.errors.MZTabErrorType;
 import uk.ac.ebi.pride.jmztab1_1.utils.errors.MZTabErrorTypeMap;
 
 /**
- * <p>MZTabCommandLine class.</p>
+ * <p>
+ * MZTabCommandLine class.</p>
  *
  * @author qingwei
  * @author nilshoffmann
  * @since 17/09/13
- * 
+ *
  */
 public class MZTabCommandLine {
 
@@ -79,7 +85,8 @@ public class MZTabCommandLine {
     }
 
     /**
-     * <p>Runs the command line parser for mzTab, including validation.</p>
+     * <p>
+     * Runs the command line parser for mzTab, including validation.</p>
      *
      * @param args an array of {@link java.lang.String} objects.
      * @throws java.lang.Exception if any.
@@ -125,6 +132,16 @@ public class MZTabCommandLine {
         String levelOpt = "level";
         options.addOption(levelOpt, true,
             "Choose validate level(Info, Warn, Error), default level is Error!");
+
+        String checkSemanticOpt = "checkSemantic";
+        String mappingFileOpt = "mappingFile";
+        Option mappingFileOption = OptionBuilder.withArgName(mappingFileOpt).
+            hasArgs(2).
+            withValueSeparator('=').
+            withDescription(
+                "Example: -checkSemantic mappingFile=/path/to/mappingFile.xml. Use the provided mapping file for semantic validation. This parameter may be null.").
+            create(checkSemanticOpt);
+        options.addOption(mappingFileOption);
 
         // Parse command line
         CommandLine line = parser.parse(options, args);
@@ -173,6 +190,31 @@ public class MZTabCommandLine {
                         //these are reported to std.err already.
                         System.out.println(
                             "There were errors while processing your file, please check the output for details!");
+                    }
+                    if (line.hasOption(checkSemanticOpt)) {
+                        String[] semValues = line.getOptionValues(
+                            checkSemanticOpt);
+                        URI mappingFile;
+                        if (values.length == 2) {
+                            // read file from path
+                            mappingFile = new File(values[1].trim()).getAbsoluteFile().toURI();
+                        } else {
+                            // read default file
+                            mappingFile = MzTabBeanValidator.class.getResource("/mappings/mzTab-M-mapping.xml").toURI();
+                        }
+                        System.out.println(
+                            "Beginning semantic validation of mztab file: " + inFile.
+                                getAbsolutePath() + " with mapping file: " +mappingFile.toASCIIString());
+                        CvMappingValidator cvMappingValidator = CvMappingValidator.of(mappingFile.toURL());
+                        List<ValidationMessage> validationMessages = cvMappingValidator.
+                            validate(mzTabParser.getMZTabFile());
+                        for(ValidationMessage message:validationMessages) {
+                            System.err.println(message);
+                        }
+                        if (!validationMessages.isEmpty()) {
+                            System.out.println(
+                                "There were errors during semantic validation of your file, please check the output for details!");
+                        }
                     }
                 } catch (IOException e) {
                     System.out.println(

@@ -49,7 +49,7 @@ public class MZTabParserContext {
     private SortedMap<Integer, Publication> publicationMap = new TreeMap<Integer, Publication>(); //1.1
 //    private SplitList<Parameter> falseDiscoveryRate = new SplitList<Parameter>(BAR);
     private SortedMap<Integer, Contact> contactMap = new TreeMap<Integer, Contact>(); //1.1
-    private List<URI> uriList = new ArrayList<URI>(); //1.1
+//    private List<URI> uriList = new ArrayList<URI>(); //1.1
 //    private SortedMap<Integer, FixedMod> fixedModMap = new TreeMap<Integer, FixedMod>();
 //    private SortedMap<Integer, VariableMod> variableModMap = new TreeMap<Integer, VariableMod>();
     private Parameter quantificationMethod; //1.1
@@ -65,9 +65,6 @@ public class MZTabParserContext {
     private SortedMap<Integer, StudyVariable> studyVariableMap = new TreeMap<Integer, StudyVariable>();
     private SortedMap<Integer, CV> cvMap = new TreeMap<Integer, CV>();
     private SortedMap<Integer, Database> databaseMap = new TreeMap<Integer, Database>();
-//    private List<ColUnit> proteinColUnitList = new ArrayList<ColUnit>();
-//    private List<ColUnit> peptideColUnitList = new ArrayList<ColUnit>();
-//    private List<ColUnit> psmColUnitList = new ArrayList<ColUnit>();
     private List<ColumnParameterMapping> smallMoleculeColUnitList = new ArrayList<ColumnParameterMapping>();
     private List<ColumnParameterMapping> smallMoleculeFeatureColUnitList = new ArrayList<ColumnParameterMapping>();
     private List<ColumnParameterMapping> smallMoleculeEvidenceColUnitList = new ArrayList<ColumnParameterMapping>();
@@ -839,23 +836,23 @@ public class MZTabParserContext {
         }
         return contact;
     }
-
-    /**
-     * Add uri into metadata. The URI pointing to the file's source data (e.g., a PRIDE experiment or a PeptideAtlas build).
-     *
-     * @param uri if null ignore operation.
-     * @param metadata a {@link de.isas.mztab1_1.model.Metadata} object.
-     * @return a {@link java.net.URI} object.
-     */
-    public URI addUri(Metadata metadata, URI uri) {
-        if (uri == null) {
-            return null;
-        }
-
-        this.uriList.add(uri);
-        metadata.addUriItem(uri.toASCIIString());
-        return uri;
-    }
+//
+//    /**
+//     * Add uri into metadata. The URI pointing to the file's source data (e.g., a PRIDE experiment or a PeptideAtlas build).
+//     *
+//     * @param uri if null ignore operation.
+//     * @param metadata a {@link de.isas.mztab1_1.model.Metadata} object.
+//     * @return a {@link java.net.URI} object.
+//     */
+//    public URI addUri(Metadata metadata, URI uri) {
+//        if (uri == null) {
+//            return null;
+//        }
+//
+//        this.uriList.add(uri);
+//        metadata.addUriItem(uri.toASCIIString());
+//        return uri;
+//    }
 
     /**
      * Add fixed_mod[id] into metadata. A parameter describing a fixed modifications searched for. Multiple
@@ -1810,15 +1807,9 @@ public class MZTabParserContext {
      * This field MUST NOT be used to define a unit for quantification columns. The unit used for small molecule quantification
      * values MUST be set in small_molecule-quantification_unit.
      *
-     * @param column SHOULD NOT set null
-     * @param param SHOULD NOT set null
-     * @param column SHOULD NOT set null
-     * @param param SHOULD NOT set null
-     * @param column SHOULD NOT set null
-     * @param param SHOULD NOT set null
-     * @param column SHOULD NOT set null
-     * @param param SHOULD NOT set null
      * @param metadata a {@link de.isas.mztab1_1.model.Metadata} object.
+     * @param column SHOULD NOT set null
+     * @param param SHOULD NOT set null
      */
     public void addSmallMoleculeColUnit(Metadata metadata, MZTabColumn column, Parameter param) {
         ColumnParameterMapping cpm = new ColumnParameterMapping();
@@ -1833,9 +1824,9 @@ public class MZTabParserContext {
      * This field MUST NOT be used to define a unit for quantification columns. The unit used for small molecule quantification
      * values MUST be set in small_molecule-quantification_unit.
      *
+     * @param metadata a {@link de.isas.mztab1_1.model.Metadata} object.
      * @param column SHOULD NOT set null
      * @param param SHOULD NOT set null
-     * @param metadata a {@link de.isas.mztab1_1.model.Metadata} object.
      */
     public void addSmallMoleculeFeatureColUnit(Metadata metadata, MZTabColumn column, Parameter param) {
         ColumnParameterMapping cpm = new ColumnParameterMapping();
@@ -1850,9 +1841,9 @@ public class MZTabParserContext {
      * This field MUST NOT be used to define a unit for quantification columns. The unit used for small molecule quantification
      * values MUST be set in small_molecule-quantification_unit.
      *
+     * @param metadata a {@link de.isas.mztab1_1.model.Metadata} object.
      * @param column SHOULD NOT set null
      * @param param SHOULD NOT set null
-     * @param metadata a {@link de.isas.mztab1_1.model.Metadata} object.
      */
     public void addSmallMoleculeEvidenceColUnit(Metadata metadata, MZTabColumn column, Parameter param) {
         ColumnParameterMapping cpm = new ColumnParameterMapping();

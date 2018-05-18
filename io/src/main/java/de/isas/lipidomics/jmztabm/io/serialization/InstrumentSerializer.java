@@ -28,22 +28,25 @@ import java.util.stream.IntStream;
 import uk.ac.ebi.pride.jmztab1_1.model.Section;
 
 /**
- * <p>InstrumentSerializer class.</p>
+ * <p>
+ * InstrumentSerializer class.</p>
  *
  * @author nilshoffmann
- * 
+ *
  */
 public class InstrumentSerializer extends StdSerializer<Instrument> {
 
     /**
-     * <p>Constructor for InstrumentSerializer.</p>
+     * <p>
+     * Constructor for InstrumentSerializer.</p>
      */
     public InstrumentSerializer() {
         this(null);
     }
 
     /**
-     * <p>Constructor for InstrumentSerializer.</p>
+     * <p>
+     * Constructor for InstrumentSerializer.</p>
      *
      * @param t a {@link java.lang.Class} object.
      */
@@ -51,19 +54,21 @@ public class InstrumentSerializer extends StdSerializer<Instrument> {
         super(t);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void serialize(Instrument instrument, JsonGenerator jg,
         SerializerProvider sp) throws IOException {
         if (instrument != null) {
             addLine(jg, Section.Metadata.getPrefix(),
                 "instrument[" + instrument.getId() + "]-name",
-                ParameterSerializer.toString(instrument.
-                    getInstrumentName()));
+                instrument.
+                    getInstrumentName());
             addLine(jg, Section.Metadata.getPrefix(),
                 "instrument[" + instrument.getId() + "]-source",
-                ParameterSerializer.toString(instrument.
-                    getInstrumentSource()));
+                instrument.
+                    getInstrumentSource());
             if (instrument.getInstrumentAnalyzer() != null) {
                 IntStream.range(0, instrument.getInstrumentAnalyzer().
                     size()).
@@ -71,16 +76,16 @@ public class InstrumentSerializer extends StdSerializer<Instrument> {
                     {
                         addLine(jg, Section.Metadata.getPrefix(),
                             "instrument[" + instrument.getId() + "]-analyzer[" + (i + 1) + "]",
-                            ParameterSerializer.toString(instrument.
+                            instrument.
                                 getInstrumentAnalyzer().
-                                get(i)));
+                                get(i));
                     });
             }
-            if (instrument.getInstrumentDetector()!= null) {
+            if (instrument.getInstrumentDetector() != null) {
                 addLine(jg, Section.Metadata.getPrefix(),
                     "instrument[" + instrument.getId() + "]-detector",
-                    ParameterSerializer.toString(instrument.
-                        getInstrumentDetector()));
+                    instrument.
+                        getInstrumentDetector());
             }
         } else {
             Logger.getLogger(InstrumentSerializer.class.getName()).

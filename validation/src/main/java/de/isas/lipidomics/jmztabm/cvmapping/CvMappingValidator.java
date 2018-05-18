@@ -21,6 +21,8 @@ import de.isas.mztab1_1.model.Parameter;
 import de.isas.mztab1_1.model.ValidationMessage;
 import info.psidev.cvmapping.CvMapping;
 import info.psidev.cvmapping.CvMappingRule;
+import java.io.File;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -29,7 +31,12 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
 import org.apache.commons.jxpath.JXPathContext;
+import uk.ac.ebi.pride.utilities.ols.web.service.client.OLSClient;
+import uk.ac.ebi.pride.utilities.ols.web.service.config.OLSWsConfig;
 
 /**
  *
@@ -37,16 +44,43 @@ import org.apache.commons.jxpath.JXPathContext;
  */
 public class CvMappingValidator implements Validator<MzTab> {
 
-    private CvMapping mapping;
+    private final CvMapping mapping;
+    private final OLSClient client;
 
-    public CvMappingValidator(CvMapping mapping) {
+    public static CvMappingValidator of(File mappingFile) throws JAXBException {
+        OLSWsConfig config = new OLSWsConfig();
+        OLSClient client = new OLSClient(config);
+        return of(mappingFile, client);
+    }
+
+    public static CvMappingValidator of(File mappingFile, OLSClient client) throws JAXBException {
+
+        JAXBContext jaxbContext = JAXBContext.newInstance(CvMapping.class);
+        Unmarshaller u = jaxbContext.createUnmarshaller();
+        CvMapping mapping = (CvMapping) u.unmarshal(mappingFile);
+        return new CvMappingValidator(mapping, client);
+    }
+    
+    public static CvMappingValidator of(URL mappingFile) throws JAXBException {
+        OLSWsConfig config = new OLSWsConfig();
+        OLSClient client = new OLSClient(config);
+        return of(mappingFile, client);
+    }
+
+    public static CvMappingValidator of(URL mappingFile, OLSClient client) throws JAXBException {
+        JAXBContext jaxbContext = JAXBContext.newInstance(CvMapping.class);
+        Unmarshaller u = jaxbContext.createUnmarshaller();
+        CvMapping mapping = (CvMapping) u.unmarshal(mappingFile);
+        return new CvMappingValidator(mapping, client);
+    }
+
+    public CvMappingValidator(CvMapping mapping, OLSClient client) {
         this.mapping = mapping;
+        this.client = client;
     }
 
     @Override
     public List<ValidationMessage> validate(MzTab mzTab) {
-//        ObjectMapper mapper = new ObjectMapper();
-//        JsonNode node = mapper.valueToTree(mzTab);
         final List<ValidationMessage> messages = new LinkedList<>();
         JXPathContext context = JXPathContext.newContext(mzTab);
         mapping.getCvMappingRuleList().
@@ -55,12 +89,11 @@ public class CvMappingValidator implements Validator<MzTab> {
             {
                 String path = rule.getCvElementPath();
                 Iterator iterator = context.iterate(path);
-
-//                Parameter p = (Parameter)context.getValue(path, Parameter.class);
                 CvMappingRule.CvTermsCombinationLogic combinationLogic = rule.
                     getCvTermsCombinationLogic();
-                CvMappingRule.RequirementLevel level = rule.getRequirementLevel();
-                
+                CvMappingRule.RequirementLevel level = rule.
+                    getRequirementLevel();
+                messages.addAll(handleRule(rule, iterator));
             });
         return messages;
     }
@@ -90,7 +123,8 @@ public class CvMappingValidator implements Validator<MzTab> {
         });
         switch (rule.getCvTermsCombinationLogic()) {
             case AND: // all defined terms or children thereof need to appear
-                if (specifiedRules.containsAll(foundParameters) && foundParameters.containsAll(specifiedRules)) {
+                if (specifiedRules.containsAll(foundParameters) && foundParameters.
+                    containsAll(specifiedRules)) {
                     messages.add(new ValidationMessage().code("XXXXXX").
                         messageType(ValidationMessage.MessageTypeEnum.WARN).
                         message(

@@ -3,7 +3,7 @@ package de.isas.lipidomics.jmztabm.io;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectMapper.DefaultTyping;
-import de.isas.lipidomics.jmztabm.io.serialization.ParameterSerializer;
+import de.isas.lipidomics.jmztabm.io.serialization.ParameterConverter;
 import de.isas.mztab1_1.model.Assay;
 import de.isas.mztab1_1.model.CV;
 import de.isas.mztab1_1.model.ColumnParameterMapping;
@@ -29,7 +29,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.StringWriter;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -44,6 +43,7 @@ import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import de.isas.mztab.jmztabm.test.utils.LogMethodName;
+import de.isas.mztab1_1.model.Uri;
 import uk.ac.ebi.pride.jmztab1_1.model.SmallMoleculeEvidenceColumn;
 import uk.ac.ebi.pride.jmztab1_1.model.SmallMoleculeFeatureColumn;
 import uk.ac.ebi.pride.jmztab1_1.utils.MZTabFileParser;
@@ -209,24 +209,15 @@ public class MzTabWriterTest {
             name("Francis Crick").
             affiliation("Cambridge University, UK").
             email("crick@cam.ac.uk"));
-//TODO renable when external study has been approved
-//        ExternalStudy es = new ExternalStudy().id("MTBLS400").
-//            idFormat(new Parameter().name("METABOLIGHTS")).
-//            title("Some external metabolights study.").
-//            version("1.0").
-//            url("https://www.ebi.ac.uk/metabolights/MTBLS400").
-//            format(new Parameter().name("ISATAB"));
-//        mtd.setStudy(es);
-        try {
-            mtd.addUriItem(new URI(
-                "http://www.ebi.ac.uk/pride/url/to/experiment").toASCIIString());
-            mtd.addUriItem(new URI(
-                "http://proteomecentral.proteomexchange.org/cgi/GetDataset").
-                toASCIIString());
-        } catch (URISyntaxException ex) {
-            Logger.getLogger(MzTabWriterTest.class.getName()).
-                log(Level.SEVERE, null, ex);
-        }
+        mtd.addUriItem(new Uri().id(1).
+            value(
+                "http://www.ebi.ac.uk/pride/url/to/experiment"));
+        mtd.addUriItem(new Uri().id(2).
+            value(
+                "http://proteomecentral.proteomexchange.org/cgi/GetDataset"));
+        mtd.addExternalStudyUriItem(new Uri().id(1).
+            value(
+                "https://www.ebi.ac.uk/metabolights/MTBLS400"));
         MsRun msRun1 = new MsRun().id(1).
             location("file://ftp.ebi.ac.uk/path/to/file").
             idFormat(new Parameter().cvLabel("MS").
@@ -348,53 +339,16 @@ public class MzTabWriterTest {
             version("3.54.0").
             url("https://raw.githubusercontent.com/HUPO-PSI/psi-ms-CV/master/psi-ms.obo"));
 //
-        mtd.addQuantificationMethodItem(new Parameter().cvLabel("MS").
-            cvAccession("MS:1001837").
-            name("iTRAQ quantitation analysis"));
-        mtd.addQuantificationMethodItem(new Parameter().cvLabel("MS").
-            cvAccession("MS:1001838").
-            name("SRM quantitation analysis"));
+//        mtd.addQuantificationMethodItem(new Parameter().cvLabel("MS").
+//            cvAccession("MS:1001837").
+//            name("iTRAQ quantitation analysis"));
+//        mtd.addQuantificationMethodItem(new Parameter().cvLabel("MS").
+//            cvAccession("MS:1001838").
+//            name("SRM quantitation analysis"));
 
         mtd.addIdConfidenceMeasureItem(new Parameter().id(1).
             name("some confidence measure term"));
 
-        //column names can be defined as strings
-        mtd.addColunitSmallMoleculeItem(new ColumnParameterMapping().columnName(
-            "retention_time").
-            param(new Parameter().id(1).
-                cvLabel("UO").
-                cvAccession("UO:0000031").
-                name("minute")));
-        //or via the respective enum member's getName() method, for fixed columns
-        mtd.addColunitSmallMoleculeFeatureItem(new ColumnParameterMapping().
-            columnName(SmallMoleculeFeatureColumn.Stable.RETENTION_TIME_IN_SECONDS.
-                getName()).
-            param(new Parameter().id(1).
-                cvLabel("UO").
-                cvAccession("UO:0000031").
-                name("minute")));
-
-        mtd.addColunitSmallMoleculeEvidenceItem(new ColumnParameterMapping().
-            columnName(SmallMoleculeEvidenceColumn.Stable.RANK.
-                getName()).
-            param(new Parameter().id(1).
-                name("semi-stable sorted ascending order")));
-//        mtd.addProteinColUnit(ProteinColumn.RELIABILITY, new Parameter("MS",
-//                "MS:00001231", "PeptideProphet:Score", null));
-//
-//        MZTabColumnFactory peptideFactory = MZTabColumnFactory.getInstance(
-//                Section.Peptide);
-//        peptideFactory.addDefaultStableColumns();
-//
-//        PeptideColumn peptideColumn = (PeptideColumn) peptideFactory.
-//                findColumnByHeader("retention_time");
-//        mtd.addPeptideColUnit(peptideColumn, new Parameter("UO", "UO:0000031",
-//                "minute", null));
-//
-//        mtd.addPSMColUnit(PSMColumn.RETENTION_TIME, new Parameter("UO",
-//                "UO:0000031", "minute", null));
-//
-//        System.out.println(mtd);
         MzTab mzTab = new MzTab();
         mzTab.metadata(mtd);
         return mzTab;
@@ -432,12 +386,12 @@ public class MzTabWriterTest {
             cvAccession("MS:100179").
             name("made up for testing").
             value(null);
-        String s = ParameterSerializer.toString(p);
+        String s = new ParameterConverter().convert(p);
         System.out.println(s);
         String expected = "[MS, MS:100179, made up for testing, ]";
         Assert.assertEquals(expected, s);
         p.value("some value");
-        s = ParameterSerializer.toString(p);
+        s = new ParameterConverter().convert(p);
         System.out.println(s);
         expected = "[MS, MS:100179, made up for testing, some value]";
         Assert.assertEquals(expected, s);
@@ -447,7 +401,7 @@ public class MzTabWriterTest {
     public void testUserParameterToString() {
         Parameter p = new Parameter().name("made up for testing").
             value("some arbitrary value");
-        String s = ParameterSerializer.toString(p);
+        String s = new ParameterConverter().convert(p);
         System.out.println(s);
         String expected = "[, , made up for testing, some arbitrary value]";
         Assert.assertEquals(expected, s);
@@ -674,16 +628,6 @@ public class MzTabWriterTest {
         MZTabFileParser parser = new MZTabFileParser(tempFile);
         MZTabErrorList errors = parser.parse(System.out,
             MZTabErrorType.Level.Info, 500);
-        Assert.assertNull(parser.getMZTabFile().
-            getMetadata().
-            getColunitSmallMolecule());
-        Assert.assertNotNull(parser.getMZTabFile().
-            getMetadata().
-            getColunitSmallMoleculeEvidence());
-        Assert.assertEquals(1, parser.getMZTabFile().
-            getMetadata().
-            getColunitSmallMoleculeEvidence().
-            size());
         Assert.assertTrue(errors.isEmpty());
         //TODO we can not use equals, since comments are not preserved during writing
         //Assert.assertEquals(mzTabFile, parser.getMZTabFile());
@@ -797,7 +741,8 @@ public class MzTabWriterTest {
         long lines = Files.lines(tempFile.toPath()).
             count();
         Assert.assertEquals(
-            3 + // additional empty lines
+            3
+            + // additional empty lines
             53
             +//metadata lines
             1 + 17
@@ -829,35 +774,82 @@ public class MzTabWriterTest {
         Metadata mtd = new Metadata();
         mtd.mzTabVersion("1.1");
         mtd.mzTabID("1");
-        for(int i = 1; i<=10; i++) {
-            Contact c = new Contact().id(i).name("C"+i).email("c"+i+"@email.com").affiliation("A"+i);
+        for (int i = 1; i <= 10; i++) {
+            Contact c = new Contact().id(i).
+                name("C" + i).
+                email("c" + i + "@email.com").
+                affiliation("A" + i);
             mtd.addContactsItem(c);
         }
-        mtd.addQuantificationMethodItem(new Parameter().id(1).cvLabel("MS").cvAccession("MS:1002038").name("unlabeled sample"));
-        mtd.addSoftwareItem(new Software().id(1).parameter(new Parameter().id(1).name("LipidDataAnalyzer").value("2.6.3_nightly")));
-        MsRun msrun1 = new MsRun().id(1).location("file://D:/Experiment1/Orbitrap_CID/negative/50/014_Ex1_Orbitrap_CID_neg_50.chrom");
-        MsRun msrun2 = new MsRun().id(2).location("file://D:/Experiment1/Orbitrap_CID/negative/50/015_Ex1_Orbitrap_CID_neg_50.chrom");
-        MsRun msrun3 = new MsRun().id(3).location("file://D:/Experiment1/Orbitrap_CID/negative/50/016_Ex1_Orbitrap_CID_neg_50.chrom");
-        MsRun msrun4 = new MsRun().id(4).location("file://D:/Experiment1/Orbitrap_CID/negative/50/017_Ex1_Orbitrap_CID_neg_50.chrom");
-        MsRun msrun5 = new MsRun().id(5).location("file://D:/Experiment1/Orbitrap_CID/negative/50/018_Ex1_Orbitrap_CID_neg_50.chrom");
-        mtd.addMsrunItem(msrun1).addMsrunItem(msrun2).addMsrunItem(msrun3).addMsrunItem(msrun4).addMsrunItem(msrun5);
-        Assay a1 = new Assay().id(1).msRunRef(msrun1);
-        Assay a2 = new Assay().id(2).msRunRef(msrun2);
-        Assay a3 = new Assay().id(3).msRunRef(msrun3);
-        Assay a4 = new Assay().id(4).msRunRef(msrun4);
-        Assay a5 = new Assay().id(5).msRunRef(msrun5);
-        mtd.addAssayItem(a1).addAssayItem(a2).addAssayItem(a3).addAssayItem(a4).addAssayItem(a5);
-        StudyVariable sv1 = new StudyVariable().id(1).name("Group 1").description("Group 1");
-        sv1.addAssayRefsItem(a1).addAssayRefsItem(a2).addAssayRefsItem(a3);
-        StudyVariable sv2 = new StudyVariable().id(2).name("Group 2").description("Group 2");
-        sv2.addAssayRefsItem(a4).addAssayRefsItem(a5);
-        mtd.addStudyVariableItem(sv1).addStudyVariableItem(sv2);
-        mtd.addCvItem(new CV().id(1).label("MS").url("https://raw.githubusercontent.com/HUPO-PSI/psi-ms-CV/master/psi-ms.obo").version("4.0.9").fullName("PSI-MS controlled vocabulary"));
-        mtd.addDatabaseItem(new Database().id(1).prefix("nd").url("none").version("none").param(new Parameter().name("no database").value(null)));
-        mtd.addColunitSmallMoleculeItem(new ColumnParameterMapping().columnName(
-            "retention_time").param(new Parameter().cvLabel("UO").cvAccession("UO:0000031").name("minute")));
+//        mtd.addQuantificationMethodItem(new Parameter().id(1).
+//            cvLabel("MS").
+//            cvAccession("MS:1002038").
+//            name("unlabeled sample"));
+        mtd.addSoftwareItem(new Software().id(1).
+            parameter(new Parameter().id(1).
+                name("LipidDataAnalyzer").
+                value("2.6.3_nightly")));
+        MsRun msrun1 = new MsRun().id(1).
+            location(
+                "file://D:/Experiment1/Orbitrap_CID/negative/50/014_Ex1_Orbitrap_CID_neg_50.chrom");
+        MsRun msrun2 = new MsRun().id(2).
+            location(
+                "file://D:/Experiment1/Orbitrap_CID/negative/50/015_Ex1_Orbitrap_CID_neg_50.chrom");
+        MsRun msrun3 = new MsRun().id(3).
+            location(
+                "file://D:/Experiment1/Orbitrap_CID/negative/50/016_Ex1_Orbitrap_CID_neg_50.chrom");
+        MsRun msrun4 = new MsRun().id(4).
+            location(
+                "file://D:/Experiment1/Orbitrap_CID/negative/50/017_Ex1_Orbitrap_CID_neg_50.chrom");
+        MsRun msrun5 = new MsRun().id(5).
+            location(
+                "file://D:/Experiment1/Orbitrap_CID/negative/50/018_Ex1_Orbitrap_CID_neg_50.chrom");
+        mtd.addMsrunItem(msrun1).
+            addMsrunItem(msrun2).
+            addMsrunItem(msrun3).
+            addMsrunItem(msrun4).
+            addMsrunItem(msrun5);
+        Assay a1 = new Assay().id(1).
+            msRunRef(msrun1);
+        Assay a2 = new Assay().id(2).
+            msRunRef(msrun2);
+        Assay a3 = new Assay().id(3).
+            msRunRef(msrun3);
+        Assay a4 = new Assay().id(4).
+            msRunRef(msrun4);
+        Assay a5 = new Assay().id(5).
+            msRunRef(msrun5);
+        mtd.addAssayItem(a1).
+            addAssayItem(a2).
+            addAssayItem(a3).
+            addAssayItem(a4).
+            addAssayItem(a5);
+        StudyVariable sv1 = new StudyVariable().id(1).
+            name("Group 1").
+            description("Group 1");
+        sv1.addAssayRefsItem(a1).
+            addAssayRefsItem(a2).
+            addAssayRefsItem(a3);
+        StudyVariable sv2 = new StudyVariable().id(2).
+            name("Group 2").
+            description("Group 2");
+        sv2.addAssayRefsItem(a4).
+            addAssayRefsItem(a5);
+        mtd.addStudyVariableItem(sv1).
+            addStudyVariableItem(sv2);
+        mtd.addCvItem(new CV().id(1).
+            label("MS").
+            url("https://raw.githubusercontent.com/HUPO-PSI/psi-ms-CV/master/psi-ms.obo").
+            version("4.0.9").
+            fullName("PSI-MS controlled vocabulary"));
+        mtd.addDatabaseItem(new Database().id(1).
+            prefix("nd").
+            url("none").
+            version("none").
+            param(new Parameter().name("no database").
+                value(null)));
         mztab.metadata(mtd);
-        
+
         SmallMoleculeSummary summary = new SmallMoleculeSummary();
         summary.setSmlId(null);
         summary.setSmfIdRefs(new ArrayList<String>());
@@ -878,21 +870,23 @@ public class MzTabWriterTest {
         summary.setBestIdConfidenceValue(0.02d);
         List<Double> abundanceAssay = new ArrayList<Double>();
         for (Assay assay : mtd.getAssay()) {
-            abundanceAssay.add(assay.getId().doubleValue()+0.1d);
+            abundanceAssay.add(assay.getId().
+                doubleValue() + 0.1d);
         }
         summary.setAbundanceAssay(abundanceAssay);
         List<Double> abundanceStudyVariable = new ArrayList<Double>();
         List<Double> abundanceCoeffvarStudyVariable = new ArrayList<Double>();
         for (StudyVariable sv : mtd.getStudyVariable()) {
-            abundanceStudyVariable.add(sv.getId().doubleValue()+0.2d);
-            abundanceCoeffvarStudyVariable.add(sv.getId().doubleValue()+0.1d);
+            abundanceStudyVariable.add(sv.getId().
+                doubleValue() + 0.2d);
+            abundanceCoeffvarStudyVariable.add(sv.getId().
+                doubleValue() + 0.1d);
         }
         summary.setAbundanceStudyVariable(abundanceStudyVariable);
         summary.
             setAbundanceCoeffvarStudyVariable(abundanceCoeffvarStudyVariable);
         mztab.addSmallMoleculeSummaryItem(summary);
-        
-        
+
         File tempFile = File.createTempFile(
             "testSmlNullEmptyHandling",
             ".mztab");
@@ -901,8 +895,9 @@ public class MzTabWriterTest {
         long lines = Files.lines(tempFile.toPath()).
             count();
         Assert.assertEquals(
-            3 + //additional empty lines 
-            59
+            3
+            + //additional empty lines 
+            57
             +//metadata lines
             2 //Small molecule summary header + content
             + 1 // Small molecule feature header

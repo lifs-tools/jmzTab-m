@@ -4,10 +4,10 @@
   <parent>
     <artifactId>jmztabm</artifactId>
     <groupId>de.isas.mztab</groupId>
-    <version>0.9.1-SNAPSHOT</version>
+    <version>0.9.2-SNAPSHOT</version>
   </parent>
   <artifactId>jmztabm-api</artifactId>
-  <version>0.9.1-SNAPSHOT</version>
+  <version>0.9.2-SNAPSHOT</version>
   <packaging>jar</packaging>
   <build>
     <plugins>
@@ -196,7 +196,7 @@
           </execution>
         </executions>
       </plugin>
-<!--      <plugin>
+      <!--      <plugin>
         <groupId>org.owasp</groupId>
         <artifactId>dependency-check-maven</artifactId>
         <configuration>
@@ -204,11 +204,11 @@
         </configuration>
       </plugin>-->
       <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-javadoc-plugin</artifactId>
-          <configuration>
-            <additionalparam>-Xdoclint:none</additionalparam>
-          </configuration>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <configuration>
+          <additionalparam>-Xdoclint:none</additionalparam>
+        </configuration>
       </plugin>
     </plugins>
   </build>

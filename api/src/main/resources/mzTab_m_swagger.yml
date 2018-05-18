@@ -159,6 +159,7 @@ definitions:
       id:
         type: integer
         format: int32
+        minimum: 1
       elementType:
         type: string
         default: element_type
@@ -189,8 +190,9 @@ definitions:
         default: MTD
       mzTab-version:
         type: string
+        pattern: '^\\d{1}\.\\d{1}\.\\d{1}-[A-Z]{1}$'
         example: >-
-          MTD mzTab-version 1.1.0
+          MTD mzTab-version 1.1.0-M
       mzTab-ID:
         type: string
         example: >-
@@ -234,14 +236,12 @@ definitions:
         type: array
         default: []
         items:
-          type: string
-          format: uri
+          $ref: '#/definitions/Uri'
       external_study_uri:
         type: array
         default: []
         items:
-          type: string
-          format: uri
+          $ref: '#/definitions/Uri'
       quantification_method:
         $ref: '#/definitions/Parameter'
       study_variable:
@@ -383,6 +383,7 @@ definitions:
       adduct_ions:
         type: array
         default: []
+        pattern: '^\[\d*M([-][\w]*)\]\d*[+-]$'
         items:
           type: string
       reliability:
@@ -452,7 +453,7 @@ definitions:
         format: int32
       adduct_ion:
         type: string
-        #regex
+        pattern: '^\[\d*M([-][\w]*)\]\d*[+-]$'
       isotopomer:
         $ref: '#/definitions/Parameter'
       exp_mass_to_charge:
@@ -525,7 +526,7 @@ definitions:
         $ref: '#/definitions/Parameter'
       adduct_ion:
         type: string
-        #regex
+        pattern: '^\[\d*M([-][\w]*)\]\d*[+-]$'
       exp_mass_to_charge:
         type: number
         format: double
@@ -571,10 +572,10 @@ definitions:
         - name
         - value
       properties:
-        id:
-          type: integer
-          format: int32
-          minimum: 1
+#        id:
+#          type: integer
+#          format: int32
+#          minimum: 1
         cv_label:
           type: string
           default: ''
@@ -591,10 +592,10 @@ definitions:
     - $ref: '#/definitions/IndexedElement'
     - type: object
       properties:
-        id:
-          type: integer
-          format: int32
-          minimum: 1
+#        id:
+#          type: integer
+#          format: int32
+#          minimum: 1
         instrument_name:
           $ref: '#/definitions/Parameter'
           example:
@@ -616,10 +617,10 @@ definitions:
     - $ref: '#/definitions/IndexedElement'
     - type: object
       properties:
-        id:
-          type: integer
-          format: int32
-          minimum: 1
+#        id:
+#          type: integer
+#          format: int32
+#          minimum: 1
         sampleProcessing:
           type: array
           default: []
@@ -641,10 +642,10 @@ definitions:
           MTD\tsoftware[1]\t[MS, MS:1001207, Mascot, 2.3]
           MTD\tsoftware[2]\t[MS, MS:1001561, Scaffold, 1.0]
       properties:
-        id:
-          type: integer
-          format: int32
-          minimum: 1
+#        id:
+#          type: integer
+#          format: int32
+#          minimum: 1
         parameter:
           $ref: '#/definitions/Parameter'
         setting:
@@ -677,10 +678,10 @@ definitions:
       required:
         - publicationItems
       properties:
-        id:
-          type: integer
-          format: int32
-          minimum: 1
+#        id:
+#          type: integer
+#          format: int32
+#          minimum: 1
         publicationItems:
           type: array
           default: []
@@ -721,25 +722,37 @@ definitions:
     - $ref: '#/definitions/IndexedElement'
     - type: object
       properties:
-        id:
-          type: integer
-          format: int32
-          minimum: 1
+#        id:
+#          type: integer
+#          format: int32
+#          minimum: 1
         name:
           type: string
         affiliation:
           type: string
         email:
           type: string
+  Uri:
+    allOf:
+    - $ref: '#/definitions/IndexedElement'
+    - type: object
+      properties:
+#        id:
+#          type: integer
+#          format: int32
+#          minimum: 1
+        value:
+          type: string
+          format: uri
   Sample:
     allOf:
     - $ref: '#/definitions/IndexedElement'
     - type: object
       properties:
-        id:
-          type: integer
-          format: int32
-          minimum: 1
+#        id:
+#          type: integer
+#          format: int32
+#          minimum: 1
         name:
           type: string
         custom:
@@ -783,10 +796,10 @@ definitions:
         - location
         - name
       properties:
-        id:
-          type: integer
-          format: int32
-          minimum: 1
+#        id:
+#          type: integer
+#          format: int32
+#          minimum: 1
         name:
           type: string
         location:
@@ -817,10 +830,10 @@ definitions:
         - id
         - name
       properties:
-        id:
-          type: integer
-          format: int32
-          minimum: 1
+#        id:
+#          type: integer
+#          format: int32
+#          minimum: 1
         name:
           type: string
         assay_refs:
@@ -853,10 +866,10 @@ definitions:
       - sample_ref
       - ms_run_ref
       properties:
-        id:
-          type: integer
-          format: int32
-          minimum: 1
+#        id:
+#          type: integer
+#          format: int32
+#          minimum: 1
         name:
           type: string
         custom:
@@ -882,10 +895,10 @@ definitions:
         - version
         - url
       properties:
-        id:
-          type: integer
-          format: int32
-          minimum: 1
+#        id:
+#          type: integer
+#          format: int32
+#          minimum: 1
         label:
           type: string
         full_name:
@@ -905,10 +918,10 @@ definitions:
         - version
         - url
       properties:
-        id:
-          type: integer
-          format: int32
-          minimum: 1
+#        id:
+#          type: integer
+#          format: int32
+#          minimum: 1
         param:
           $ref: '#/definitions/Parameter'
         prefix:

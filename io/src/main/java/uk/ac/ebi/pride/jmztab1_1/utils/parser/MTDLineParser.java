@@ -13,7 +13,6 @@ import uk.ac.ebi.pride.jmztab1_1.utils.errors.MZTabErrorOverflowException;
 import de.isas.mztab1_1.model.Assay;
 import de.isas.mztab1_1.model.Contact;
 import de.isas.mztab1_1.model.Database;
-import de.isas.mztab1_1.model.ExternalStudy;
 import de.isas.mztab1_1.model.IndexedElement;
 import de.isas.mztab1_1.model.Instrument;
 import de.isas.mztab1_1.model.Metadata;
@@ -24,6 +23,8 @@ import de.isas.mztab1_1.model.Sample;
 import de.isas.mztab1_1.model.SampleProcessing;
 import de.isas.mztab1_1.model.Software;
 import de.isas.mztab1_1.model.StudyVariable;
+import de.isas.mztab1_1.model.Uri;
+import java.net.URI;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -32,7 +33,6 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static uk.ac.ebi.pride.jmztab1_1.model.MZTabUtils.*;
-import static uk.ac.ebi.pride.jmztab1_1.utils.errors.FormatErrorType.Param;
 import uk.ac.ebi.pride.jmztab1_1.utils.errors.MZTabErrorType;
 
 /**
@@ -374,12 +374,6 @@ public class MTDLineParser extends MZTabLineParser {
                                     defineLabel, valueLabel));
                             }
                             break;
-//                        case MZTAB_MODE:
-//                            metadata.setMZTabMode(checkMZTabMode(defineLabel, valueLabel));
-//                            break;
-//                        case MZTAB_TYPE:
-//                            metadata.setMZTabType(checkMZTabType(defineLabel, valueLabel));
-//                            break;
                         case MZTAB_ID:
                             if (metadata.getMzTabID() != null) {
                                 throw new MZTabException(new MZTabError(
@@ -423,33 +417,6 @@ public class MTDLineParser extends MZTabLineParser {
                     property = checkProperty(element, matcher.group(5));
                     addSoftware(metadata, property, defineLabel, valueLabel, id);
                     break;
-//                case PROTEIN_SEARCH_ENGINE_SCORE:
-//                    id = checkIndex(defineLabel, matcher.group(3));
-//                    metadata.addProteinSearchEngineScoreParameter(id, checkParameter(defineLabel, valueLabel));
-//                    break;
-//                case PEPTIDE_SEARCH_ENGINE_SCORE:
-//                    id = checkIndex(defineLabel, matcher.group(3));
-//                    metadata.addPeptideSearchEngineScoreParameter(id, checkParameter(defineLabel, valueLabel));
-//                    break;
-//                case PSM_SEARCH_ENGINE_SCORE:
-//                    id = checkIndex(defineLabel, matcher.group(3));
-//                    metadata.addPsmSearchEngineScoreParameter(id, checkParameter(defineLabel, valueLabel));
-//                    break;
-//                case SMALLMOLECULE_SEARCH_ENGINE_SCORE:
-//                    id = checkIndex(defineLabel, matcher.group(3));
-//                    metadata.addSmallMoleculeSearchEngineScoreParameter(id, checkParameter(defineLabel, valueLabel));
-//                    break;
-//                case FALSE_DISCOVERY_RATE:
-//                    if (metadata.getFalseDiscoveryRate().size() > 0) {
-//                        throw new MZTabException(new MZTabError(LogicalErrorType.DuplicationDefine, lineNumber, defineLabel));
-//                    }
-//                    paramList = checkParameterList(defineLabel, valueLabel);
-//                    metadata.setFalseDiscoveryRate(paramList);
-//                    break;
-                case EXTERNAL_STUDY:
-                    property = checkProperty(element, matcher.group(5));
-                    addExternalStudy(metadata, property, defineLabel, valueLabel);
-                    break;
                 case PUBLICATION:
                     id = checkIndex(defineLabel, matcher.group(3));
                     checkPublication(id, defineLabel, valueLabel);
@@ -461,53 +428,13 @@ public class MTDLineParser extends MZTabLineParser {
                     addContact(metadata, property, id, valueLabel, defineLabel);
                     break;
                 case URI:
-                    metadata.addUriItem(checkURI(defineLabel, valueLabel).
-                        toASCIIString());
+                    id = checkIndex(defineLabel, matcher.group(3));
+                    metadata.addUriItem(new Uri().id(id).value(checkURI(defineLabel, valueLabel).toASCIIString()));
                     break;
                 case EXTERNAL_STUDY_URI:
-                    metadata.addExUriItem(checkURI(defineLabel, valueLabel).
-                        toASCIIString());
+                    id = checkIndex(defineLabel, matcher.group(3));
+                    metadata.addExternalStudyUriItem(new Uri().id(id).value(checkURI(defineLabel, valueLabel).toASCIIString()));
                     break;
-//                case FIXED_MOD:
-//                    id = checkIndex(defineLabel, matcher.group(3));
-//                    property = checkProperty(element, matcher.group(5));
-//                    if (property == null) {
-//                        param = checkParameter(defineLabel, valueLabel);
-//                        if (param != null) {
-//                            // fixed modification parameter should be setting.
-//                            metadata.addFixedModParameter(id, param);
-//                        }
-//                    } else {
-//                        switch (property) {
-//                            case FIXED_MOD_POSITION:
-//                                metadata.addFixedModPosition(id, valueLabel);
-//                                break;
-//                            case FIXED_MOD_SITE:
-//                                metadata.addFixedModSite(id, valueLabel);
-//                                break;
-//                        }
-//                    }
-//                    break;
-//                case VARIABLE_MOD:
-//                    id = checkIndex(defineLabel, matcher.group(3));
-//                    property = checkProperty(element, matcher.group(5));
-//                    if (property == null) {
-//                        param = checkParameter(defineLabel, valueLabel);
-//                        if (param != null) {
-//                            // variable modification parameter should be setting.
-//                            metadata.addVariableModParameter(id, param);
-//                        }
-//                    } else {
-//                        switch (property) {
-//                            case VARIABLE_MOD_POSITION:
-//                                metadata.addVariableModPosition(id, valueLabel);
-//                                break;
-//                            case VARIABLE_MOD_SITE:
-//                                metadata.addVariableModSite(id, valueLabel);
-//                                break;
-//                        }
-//                    }
-//                    break;
                 case QUANTIFICATION_METHOD:
                     if (metadata.getQuantificationMethod() != null) {
                         throw new MZTabException(new MZTabError(
@@ -517,28 +444,6 @@ public class MTDLineParser extends MZTabLineParser {
                     metadata.setQuantificationMethod(checkParameter(
                         defineLabel, valueLabel));
                     break;
-//                case PROTEIN:
-//                    property = checkProperty(element, matcher.group(5));
-//                    switch (property != null ? property : null) {
-//                        case PROTEIN_QUANTIFICATION_UNIT:
-//                            if (metadata.getProteinQuantificationUnit() != null) {
-//                                throw new MZTabException(new MZTabError(LogicalErrorType.DuplicationDefine, lineNumber, defineLabel));
-//                            }
-//                            metadata.setProteinQuantificationUnit(checkParameter(defineLabel, valueLabel));
-//                            break;
-//                    }
-//                    break;
-//                case PEPTIDE:
-//                    property = checkProperty(element, matcher.group(5));
-//                    switch (property != null ? property : null) {
-//                        case PEPTIDE_QUANTIFICATION_UNIT:
-//                            if (metadata.getPeptideQuantificationUnit() != null) {
-//                                throw new MZTabException(new MZTabError(LogicalErrorType.DuplicationDefine, lineNumber, defineLabel));
-//                            }
-//                            metadata.setPeptideQuantificationUnit(checkParameter(defineLabel, valueLabel));
-//                            break;
-//                    }
-//                    break;
                 case SMALL_MOLECULE:
                     property = checkProperty(element, matcher.group(5));
                     switch (property != null ? property : null) {
@@ -602,30 +507,8 @@ public class MTDLineParser extends MZTabLineParser {
                         property = checkProperty(element, matcher.group(5));
                         addAssay(metadata, property, defineLabel, valueLabel, id);
                     } else {
-                        // quantification modification. For example: assay[1]-quantification_mod[1], assay[1]-quantification_mod[1]-site
-//                        id = checkIndex(defineLabel, matcher.group(3));
-//                        MetadataSubElement subElement = MetadataSubElement.findSubElement(element, matcher.group(5));
-//                        switch (subElement) {
-//                            case ASSAY_QUANTIFICATION_MOD:
-//                                int modId = checkIndex(defineLabel, matcher.group(7));
-//                                property = checkProperty(subElement, matcher.group(9));
-//                                if (property == null) {
-//                                    metadata.addAssayQuantificationModParameter(id, modId, checkParameter(defineLabel, valueLabel));
-//                                } else {
-//                                    switch (property) {
-//                                        case ASSAY_QUANTIFICATION_MOD_SITE:
-//                                            metadata.addAssayQuantificationModSite(id, modId, valueLabel);
-//                                            break;
-//                                        case ASSAY_QUANTIFICATION_MOD_POSITION:
-//                                            metadata.addAssayQuantificationModPosition(id, modId, valueLabel);
-//                                            break;
-//                                    }
-//                                }
-//
-//                                break;
-//                        }
+                        throw new MZTabException("assay does not support quantification modification!");
                     }
-
                     break;
                 case STUDY_VARIABLE:
                     id = checkIndex(defineLabel, matcher.group(3));
@@ -790,67 +673,6 @@ public class MTDLineParser extends MZTabLineParser {
         if (sp == null) {
             throw new MZTabException(new MZTabError(LogicalErrorType.NULL,
                 lineNumber, "sample_processing[" + id + "]"));
-        }
-    }
-
-    private void addExternalStudy(Metadata metadata, MetadataProperty property,
-        String defineLabel,
-        String valueLabel) throws MZTabException {
-        ExternalStudy externalStudy = metadata.getStudy();
-        if(externalStudy==null) {
-            externalStudy = new ExternalStudy();
-            metadata.setStudy(externalStudy);
-        }
-        /*
-        MTD study-url https://www.ebi.ac.uk/metabolights/MTBLS517
-MTD study-id MTBLS517
-MTD study-id-format [,EMBL-EBI Metabolights,https://fairsharing.org/biodbcore-000168, ]
-MTD study-title MaHPIC Experiment 04: Metabolomics from Macaca mulatta infected with Plasmodium cynomolgi B strain to produce and integrate clinical, hematological, parasitological, and omics measures of acute primary infection and relapses
-MTD study-version 1.0
-         */
-        switch (property != null ? property : null) {
-            case EXTERNAL_STUDY_ID:
-                if (isEmpty(valueLabel)) {
-                    throw new IllegalArgumentException(
-                        "External study id should not set empty.");
-                }
-                externalStudy.setId(valueLabel);
-                break;
-            case EXTERNAL_STUDY_ID_FORMAT:
-                handleParam(defineLabel, valueLabel,
-                    LogicalErrorType.ExternalStudyIdFormatNotDefined, lineNumber,
-                    externalStudy::idFormat);
-                break;
-            case EXTERNAL_STUDY_FORMAT:
-                handleParam(defineLabel, valueLabel,
-                    LogicalErrorType.ExternalStudyFormatNotDefined, lineNumber,
-                    externalStudy::format);
-                break;
-            case EXTERNAL_STUDY_TITLE:
-                if (isEmpty(valueLabel)) {
-                    throw new IllegalArgumentException(
-                        "External study title should not set empty.");
-                }
-                externalStudy.setTitle(valueLabel);
-                break;
-            case EXTERNAL_STUDY_URL:
-                if (isEmpty(valueLabel)) {
-                    throw new IllegalArgumentException(
-                        "External study url should not set empty.");
-                }
-                externalStudy.setUrl(valueLabel);
-                break;
-            case EXTERNAL_STUDY_VERSION:
-                if (isEmpty(valueLabel)) {
-                    throw new IllegalArgumentException(
-                        "External study version should not set empty.");
-                }
-                externalStudy.setVersion(valueLabel);
-                break;
-        }
-        if (externalStudy == null) {
-            throw new MZTabException(new MZTabError(FormatErrorType.MTDLine,
-                lineNumber, line));
         }
     }
 
