@@ -15,6 +15,7 @@
  */
 package de.isas.lipidomics.jmztabm.cvmapping;
 
+import de.isas.mztab1_1.model.Parameter;
 import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
@@ -40,5 +41,26 @@ public class OlsLookupTest {
         List<Term> children = client.getTermChildren(ident, "MS", 5);
         Assert.assertTrue(children.size() > 0);
         System.out.println(children);
+    }
+    
+    
+    @Test
+    public void testTermExpansionAndComparison() {
+        OLSWsConfig config = new OLSWsConfig();
+        OLSClient client = new OLSClient(config);
+        Identifier ident = new Identifier("MS:1000831", Identifier.IdentifierType.OBO);
+        List<Term> children = client.getTermChildren(ident, "MS", 5);
+        //query explicitly for child_of relation for given term
+    }
+    
+    public boolean isEqual(Term term, Parameter param) {
+        if(param.getCvLabel().equals(term.getOntologyPrefix())) {
+            if(param.getCvAccession().equals(term.getOboId().getIdentifier())) {
+                if(param.getName().equals(term.getLabel())) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }

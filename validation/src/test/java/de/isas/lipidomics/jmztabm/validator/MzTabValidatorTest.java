@@ -227,6 +227,7 @@ public class MzTabValidatorTest {
         CvMapping mapping = (CvMapping) u.unmarshal(MzTabValidatorTest.class.
             getResourceAsStream("/mzTab-M-test-mapping.xml"));
         MzTab mzTab = createTestFile();
+        List<ValidationMessage> validationMessages = new ArrayList<>();
         JXPathContext context = JXPathContext.newContext(mzTab);
         mapping.getCvMappingRuleList().
             getCvMappingRule().
@@ -243,10 +244,20 @@ public class MzTabValidatorTest {
                         System.out.
                             println("Applying to selection: " + selection);
                         boolean skip = false;
+                        ValidationMessage message;
                         switch (rule.getRequirementLevel()) {
                             case MAY:
                                 //info level
                                 if (selection.getValue() == null) {
+                                    validationMessages.add(
+                                        new ValidationMessage().
+                                            code("SV-1981").
+                                            messageType(
+                                                ValidationMessage.MessageTypeEnum.INFO).
+                                            message(
+                                                "Parameter at path '" + selection.
+                                                    getKey().
+                                                    asPath() + "' was null!"));
                                     System.out.
                                         println(
                                             "Skipping validation of null parameter for selection: " + selection);
@@ -256,6 +267,16 @@ public class MzTabValidatorTest {
                             case SHOULD:
                                 //warning level
                                 if (selection.getValue() == null) {
+                                    validationMessages.add(
+                                        message = new ValidationMessage().
+                                            code("SV-1981").
+                                            messageType(
+                                                ValidationMessage.MessageTypeEnum.WARN).
+                                            message(
+                                                "Parameter at path '" + selection.
+                                                    getKey().
+                                                    asPath() + "' " + rule.
+                                                    getRequirementLevel() + " not be null!"));
                                     System.out.
                                         println(
                                             "Skipping validation of null parameter for selection: " + selection);
@@ -265,6 +286,16 @@ public class MzTabValidatorTest {
                             case MUST:
                                 if (selection.getValue() == null) {
                                     //error level
+                                    validationMessages.add(
+                                        new ValidationMessage().
+                                            code("SV-1981").
+                                            messageType(
+                                                ValidationMessage.MessageTypeEnum.ERROR).
+                                            message(
+                                                "Parameter at path '" + selection.
+                                                    getKey().
+                                                    asPath() + "' " + rule.
+                                                    getRequirementLevel() + " not be null!"));
                                     System.err.println(
                                         "Rule requirement level MUST requires defined CvTerms to be non-null for rule: " + ruleToString(
                                             rule) + " for context: " + selection);
@@ -298,7 +329,9 @@ public class MzTabValidatorTest {
                                         //                                    });
                                     } else {
                                         Term t = new Term();
-                                        t.setOntologyPrefix(term.getCvIdentifierRef().getCvIdentifier());
+                                        t.setOntologyPrefix(term.
+                                            getCvIdentifierRef().
+                                            getCvIdentifier());
                                         t.setOboId(term.getTermAccession());
                                         t.setLabel(term.getTermName());
                                         comparisonList = Arrays.asList(t);
@@ -314,10 +347,11 @@ public class MzTabValidatorTest {
                                                 "Rule " + ruleToString(rule) + " matched on: " + term + " for selection: " + selection);
                                         } else {
                                             String errMessage = "Mismatch of rule " + ruleToString(
-                                                    rule) + " at " + selection.
+                                                rule) + " at " + selection.
                                                     getLeft();
                                             System.err.println(errMessage);
-                                            throw new RuntimeException(errMessage);
+                                            throw new RuntimeException(
+                                                errMessage);
                                             //we do not have a match, if we are in OR mode, if we are in AND mode, this should issue a violation
                                         }
                                     }
