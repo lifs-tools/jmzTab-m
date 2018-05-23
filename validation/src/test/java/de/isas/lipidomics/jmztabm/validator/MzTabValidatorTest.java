@@ -97,8 +97,7 @@ public class MzTabValidatorTest {
         PublicationItem item1_2 = new PublicationItem().type(
             PublicationItem.TypeEnum.DOI).
             accession("10.1007/978-1-60761-987-1_6");
-        Publication publication1 = new Publication();
-        publication1.id(1);
+        Publication publication1 = new Publication().id(1);
         publication1.publicationItems(Arrays.asList(item1_1, item1_2));
 
         PublicationItem item2_1 = new PublicationItem().type(
@@ -107,8 +106,7 @@ public class MzTabValidatorTest {
         PublicationItem item2_2 = new PublicationItem().type(
             PublicationItem.TypeEnum.DOI).
             accession("10.1016/j.jprot.2010.06.008");
-        Publication publication2 = new Publication();
-        publication2.id(2);
+        Publication publication2 = new Publication().id(2);
         publication2.publicationItems(Arrays.asList(item2_1, item2_2));
 
         mztabfile.getMetadata().
