@@ -374,12 +374,6 @@ definitions:
         items:
           type: number
           format: double
-      exp_mass_to_charge:
-        type: number
-        format: double
-      retention_time_in_seconds:
-        type: number
-        format: double
       adduct_ions:
         type: array
         default: []

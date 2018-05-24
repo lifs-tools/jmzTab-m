@@ -31,7 +31,7 @@ public class SmallMoleculeEvidenceColumn implements ISmallMoleculeEvidenceColumn
 
     public static enum Stable implements ISmallMoleculeEvidenceColumn {
         SME_ID("SME_ID", Integer.class, false, "01"),
-        EVIDENCE_UNIQUE_ID("evidence_unique_ID", Integer.class, false, "02"),
+        EVIDENCE_UNIQUE_ID("evidence_input_id", Integer.class, false, "02"),
         DATABASE_IDENTIFIER("database_identifier", String.class, false, "03"),
         CHEMICAL_FORMULA(
             "chemical_formula", String.class, true, "04"),
@@ -39,7 +39,6 @@ public class SmallMoleculeEvidenceColumn implements ISmallMoleculeEvidenceColumn
             String.class, true, "05"),
         INCHI("inchi",
             String.class, true, "06"),
-        //    INCHI_KEY("inchi_key", SplitList.class, false, "04");
         CHEMICAL_NAME(
             "chemical_name", String.class, true, "07"),
         URI("uri",

@@ -89,12 +89,6 @@ public class SmallMoleculeSummarySerializer extends StdSerializer<SmallMoleculeS
             writeAsNumberArray(SmallMoleculeColumn.Stable.THEOR_NEUTRAL_MASS, jg,
                 smallMoleculeSummary.
                     getTheoreticalNeutralMass());
-            writeNumber(
-                SmallMoleculeColumn.Stable.EXP_MASS_TO_CHARGE, jg,
-                smallMoleculeSummary.
-                    getExpMassToCharge());
-            writeNumber(SmallMoleculeColumn.Stable.RETENTION_TIME_IN_SECONDS,
-                jg, smallMoleculeSummary.getRetentionTimeInSeconds());
             writeAsStringArray(SmallMoleculeColumn.Stable.ADDUCT_IONS, jg,
                 smallMoleculeSummary.getAdductIons());
             writeString(SmallMoleculeColumn.Stable.RELIABILITY, jg,

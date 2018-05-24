@@ -78,17 +78,11 @@ public class SMLLineParser extends MZTabDataLineParser<SmallMoleculeSummary> {
                         case DATABASE_IDENTIFIER:
                             smallMoleculeSummary.databaseIdentifier(checkStringList(column, target, MZTabConstants.BAR));
                             break;
-                        case EXP_MASS_TO_CHARGE:
-                            smallMoleculeSummary.expMassToCharge(checkDouble(column, target));
-                            break;
                         case INCHI:
                             smallMoleculeSummary.inchi(checkStringList(column, target, MZTabConstants.BAR));
                             break;
                         case RELIABILITY:
                             smallMoleculeSummary.reliability(checkString(column, target));
-                            break;
-                        case RETENTION_TIME_IN_SECONDS:
-                            smallMoleculeSummary.retentionTimeInSeconds(checkDouble(column, target));
                             break;
                         case SMF_ID_REFS:
                             smallMoleculeSummary.smfIdRefs(checkStringList(column, target, MZTabConstants.BAR));

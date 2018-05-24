@@ -1,8 +1,6 @@
 package uk.ac.ebi.pride.jmztab1_1.model;
 
-import de.isas.mztab1_1.model.Assay;
 import de.isas.mztab1_1.model.IndexedElement;
-import de.isas.mztab1_1.model.Parameter;
 import de.isas.mztab1_1.model.StringList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -32,7 +30,7 @@ public class SmallMoleculeFeatureColumn implements ISmallMoleculeFeatureColumn {
     public static enum Stable implements ISmallMoleculeFeatureColumn {
         SMF_ID("SMF_ID", Integer.class, false, "01"),
         SME_ID_REFS("SME_ID_REFS", StringList.class, true, "02"),
-        SME_ID_REF_AMBIGUITY_CODE("SME_ID_REF_Ambiguity_code", Integer.class, true, "03"),
+        SME_ID_REF_AMBIGUITY_CODE("SME_ID_REF_ambiguity_code", Integer.class, true, "03"),
         ADDUCT_ION(
                 "adduct_ion", String.class, true, "04"),
         ISOTOPOMER("isotopomer", String.class, true, "05"),

@@ -242,10 +242,6 @@ public class MzTabWriter {
                 CsvSchema.ColumnType.STRING).
             addColumn(SmallMoleculeColumn.Stable.THEOR_NEUTRAL_MASS.getHeader(),
                 CsvSchema.ColumnType.STRING).
-            addColumn(SmallMoleculeColumn.Stable.EXP_MASS_TO_CHARGE.getHeader(),
-                CsvSchema.ColumnType.NUMBER_OR_STRING).
-            addColumn(SmallMoleculeColumn.Stable.RETENTION_TIME_IN_SECONDS.getHeader(),
-                CsvSchema.ColumnType.NUMBER_OR_STRING).
             addColumn(SmallMoleculeColumn.Stable.ADDUCT_IONS.getHeader(),
                 CsvSchema.ColumnType.STRING).
             addColumn(SmallMoleculeColumn.Stable.RELIABILITY.getHeader(),

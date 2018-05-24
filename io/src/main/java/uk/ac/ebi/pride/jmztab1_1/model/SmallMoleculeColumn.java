@@ -39,25 +39,20 @@ public class SmallMoleculeColumn implements ISmallMoleculeColumn {
             SplitList.class, false, "05"),
         INCHI("inchi",
             SplitList.class, false, "06"),
-        //    INCHI_KEY("inchi_key", SplitList.class, false, "04");
         CHEMICAL_NAME(
             "chemical_name", SplitList.class, false, "07"),
         URI("uri",
             java.net.URI.class, false, "08"),
         THEOR_NEUTRAL_MASS(
             "theoretical_neutral_mass", Double.class, false, "09"),
-        EXP_MASS_TO_CHARGE(
-            "exp_mass_to_charge", Double.class, false, "10"),
-        RETENTION_TIME_IN_SECONDS(
-            "retention_time_in_seconds", Double.class, false, "11"),
         ADDUCT_IONS(
-            "adduct_ions", SplitList.class, false, "12"),
+            "adduct_ions", SplitList.class, false, "10"),
         RELIABILITY(
-            "reliability", String.class, false, "13"),
+            "reliability", String.class, false, "11"),
         BEST_ID_CONFIDENCE_MEASURE(
-            "best_id_confidence_measure", Parameter.class, false, "14"),
+            "best_id_confidence_measure", Parameter.class, false, "12"),
         BEST_ID_CONFIDENCE_VALUE(
-            "best_id_confidence_value", Double.class, false, "15");
+            "best_id_confidence_value", Double.class, false, "13");
 
         private final ISmallMoleculeColumn column;
 

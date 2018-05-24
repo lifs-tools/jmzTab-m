@@ -455,8 +455,6 @@ public class MzTabWriterTest {
             addUriItem(
                 "http://www.lipidmaps.org/data/LMSDRecord.php?LM_ID=LMSP02010012").
             addTheoreticalNeutralMassItem(649.6373).
-            expMassToCharge(650.6432).
-            retentionTimeInSeconds(821.2341).
             addAdductIonsItem("[M+H]1+").
             reliability("1").
             bestIdConfidenceMeasure(new Parameter().name(
@@ -518,8 +516,6 @@ public class MzTabWriterTest {
             addUriItem(
                 "http://www.lipidmaps.org/data/LMSDRecord.php?LM_ID=LMSP02010012").
             addTheoreticalNeutralMassItem(649.6373).
-            //            expMassToCharge(650.6432).
-            retentionTimeInSeconds(821.2341).
             addAdductIonsItem("[M+H]1+").
             reliability("1").
             bestIdConfidenceMeasure(new Parameter().name(
@@ -858,8 +854,6 @@ public class MzTabWriterTest {
         summary.setInchi(new ArrayList<String>());
         summary.setChemicalName(new ArrayList<String>());
         summary.setUri(new ArrayList<String>());
-        summary.setExpMassToCharge(null);
-        summary.setRetentionTimeInSeconds(123.414d);
         List<String> adducts = new ArrayList<String>();
         adducts.add("[M+H]1+");
         summary.setAdductIons(adducts);
