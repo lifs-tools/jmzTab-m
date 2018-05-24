@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.isas.lipidomics.jmztabm.cvmapping;
+package de.isas.lipidomics.jmztabm.validation;
 
 import de.isas.lipidomics.jmztabm.validation.Validator;
 import de.isas.mztab1_1.model.MzTab;

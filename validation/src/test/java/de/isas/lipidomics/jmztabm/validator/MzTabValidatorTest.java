@@ -2,6 +2,7 @@ package de.isas.lipidomics.jmztabm.validator;
 
 import static de.isas.lipidomics.jmztabm.cvmapping.JxPathElement.toStream;
 import de.isas.lipidomics.jmztabm.validation.MzTabBeanValidator;
+import de.isas.lipidomics.jmztabm.validation.MzTabValidator;
 import de.isas.mztab.jmztabm.test.utils.LogMethodName;
 import de.isas.mztab1_1.model.CV;
 import de.isas.mztab1_1.model.Contact;
@@ -80,7 +81,7 @@ public class MzTabValidatorTest {
             );
         final MzTab mztabfile = new MzTab().metadata(
             new de.isas.mztab1_1.model.Metadata().mzTabVersion(
-                "1.1.0").
+                "2.0.0-M").
                 mzTabID("ISAS_2017_M_11451").
                 title("A minimal test file").
                 description("A description of an mzTab file.").
@@ -141,6 +142,16 @@ public class MzTabValidatorTest {
         List<ValidationMessage> violations = validator.validate(
             createTestFile());
         for (ValidationMessage violation : violations) {
+            System.err.println(violation);
+        }
+    }
+
+    @Test
+    public void testDelegatingValidator() {
+        List<ValidationMessage> messages = MzTabValidator.validate(
+            createTestFile(), ValidationMessage.MessageTypeEnum.INFO,
+            new MzTabBeanValidator(false));
+        for (ValidationMessage violation : messages) {
             System.err.println(violation);
         }
     }

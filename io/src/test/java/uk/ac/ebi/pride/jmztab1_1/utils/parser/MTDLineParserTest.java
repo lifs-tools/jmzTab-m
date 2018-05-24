@@ -20,6 +20,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import org.junit.Rule;
 import de.isas.mztab.jmztabm.test.utils.LogMethodName;
+import org.junit.Assert;
 import uk.ac.ebi.pride.jmztab1_1.model.MZTabUtils;
 import uk.ac.ebi.pride.jmztab1_1.utils.errors.MZTabErrorList;
 import uk.ac.ebi.pride.jmztab1_1.utils.errors.MZTabErrorType;
@@ -31,15 +32,15 @@ import uk.ac.ebi.pride.jmztab1_1.utils.errors.MZTabException;
  * @since 11/02/13
  */
 public class MTDLineParserTest {
-
+    
     @Rule
     public LogMethodName methodNameLogger = new LogMethodName();
-
+    
     private MTDLineParser parser;
     private Metadata metadata;
     private MZTabErrorList errorList;
     private MZTabParserContext context;
-
+    
     @Before
     public void setUp() throws MZTabException {
         context = new MZTabParserContext();
@@ -47,7 +48,7 @@ public class MTDLineParserTest {
         metadata = parser.getMetadata();
         errorList = new MZTabErrorList();
     }
-
+    
     @Test
     public void testQuantMethod() throws MZTabException {
         //        parser.parse(1, "MTD\tfixed_mod[11]\t[UNIMOD, UNIMOD:4, Carbamidomethyl, ]", errorList);
@@ -63,7 +64,7 @@ public class MTDLineParserTest {
             errorList);
         assertTrue(metadata.getQuantificationMethod() != null);
     }
-
+    
     @Test
     public void testUri() throws MZTabException {
         parser.
@@ -75,7 +76,7 @@ public class MTDLineParserTest {
         assertTrue(metadata.getUri().
             size() == 2);
     }
-
+    
     @Test
     public void testContact() throws MZTabException {
         parser.parse(1, "MTD\tcontact[11]-name\tJames D. Watson", errorList);
@@ -89,7 +90,7 @@ public class MTDLineParserTest {
         assertTrue(metadata.getContacts().
             size() == 2);
     }
-
+    
     @Test
     public void testPublication() throws MZTabException {
         //        parser.parse(1, "MTD\tprotein_search_engine_score[1]\t[MS, MS:1001171, Mascot:score,]", errorList);
@@ -109,7 +110,7 @@ public class MTDLineParserTest {
         assertTrue(metadata.getPublications().
             size() == 2);
     }
-
+    
     @Test
     public void testSoftware() throws MZTabException {
         Parameter param;
@@ -129,7 +130,7 @@ public class MTDLineParserTest {
             getSetting();
         assertTrue(settingList.size() == 2);
     }
-
+    
     @Test
     public void testInstrument() throws MZTabException {
         Parameter param;
@@ -164,7 +165,7 @@ public class MTDLineParserTest {
         assertTrue(param.toString().
             contains("electron multiplier"));
     }
-
+    
     @Test
     public void testSampleProcessing() throws MZTabException {
         parser.parse(1,
@@ -178,7 +179,7 @@ public class MTDLineParserTest {
         assertTrue(cvParam.getName().
             contains("SDS PAGE"));
         assertTrue(MZTabUtils.isEmpty(cvParam.getValue()));
-
+        
         parser.parse(1,
             "MTD\tsample_processing[12]\t[SEP, SEP:00142, enzyme digestion, ]|[MS, MS:1001251, Trypsin, ]",
             errorList);
@@ -203,12 +204,25 @@ public class MTDLineParserTest {
             contains("Trypsin"));
         assertTrue(MZTabUtils.isEmpty(cvParam.getValue()));
     }
-
+    
     @Test
     public void testMzTabFileInfo() throws MZTabException {
-        parser.parse(1, "MTD\tmzTab-version\t1.1", errorList);
+        parser.parse(1, "MTD\tmzTab-version\t2.0.0-M", errorList);
         assertTrue(metadata.getMzTabVersion().
-            equals("1.1"));
+            equals("2.0.0-M"));
+        try {
+            parser.parse(1, "MTD\tmzTab-version\t1.0.0", errorList);
+            Assert.fail("You shall not pass!");
+        } catch (MZTabException ex) {
+            
+        }
+        
+        try {
+            parser.parse(1, "MTD\tmzTab-version\t3.0.0", errorList);
+            Assert.fail("You shall not pass!");
+        } catch (MZTabException ex) {
+            
+        }
 
 //        parser.parse(1, "MTD\tmzTab-mode\tComplete", errorList);
 //        assertTrue(metadata.getTabDescription().getMode() == MZTabDescription.Mode.Complete);
@@ -224,18 +238,18 @@ public class MTDLineParserTest {
         parser.parse(1, "MTD\tmzTab-ID\tPRIDE_1234", errorList);
         assertTrue(metadata.getMzTabID().
             equals("PRIDE_1234"));
-
+        
         parser.parse(1, "MTD\ttitle\tmzTab iTRAQ test", errorList);
         assertTrue(metadata.getTitle().
             contains("mzTab iTRAQ test"));
-
+        
         parser.parse(1,
             "MTD\tdescription\tAn experiment investigating the effects of Il-6.",
             errorList);
         assertTrue(metadata.getDescription().
             contains("An experiment investigating the effects of Il-6."));
     }
-
+    
     @Test
     public void testDatabase() throws MZTabException {
         parser.parse(1, "MTD\tdatabase[1]\t[MIRIAM,MIR:00100079 , “HMDB”, ]",
@@ -263,14 +277,14 @@ public class MTDLineParserTest {
             get(1).
             getParam());
     }
-
+    
     @Test
     public void testCustom() throws MZTabException {
         parser.parse(1, "MTD\tcustom[1]\t[, , MS operator, Florian]", errorList);
         assertTrue(metadata.getCustom().
             size() == 1);
     }
-
+    
     @Test
     public void testCv() throws MZTabException {
         parser.parse(1, "MTD\tcv[1]-label\tMS", errorList);
@@ -291,7 +305,7 @@ public class MTDLineParserTest {
             equals(
                 "http://psidev.cvs.sourceforge.net/viewvc/psidev/psi/psi-ms/mzML/controlledVocabulary/psi-ms.obo"));
     }
-
+    
     @Test
     public void testIdConfidenceMeasure() throws MZTabException {
         //MTD id_confidence_measure[1] [MS, MS:1001419, SpectraST:discriminant score F,]
@@ -309,7 +323,7 @@ public class MTDLineParserTest {
             value(null), context.getIdConfidenceMeasureMap().
             get(1));
     }
-
+    
     @Test
     public void testMsRun() throws MZTabException {
         parser.parse(1, "MTD\tms_run[1]-format\t[MS, MS:1000584, mzML file, ]",
@@ -336,7 +350,7 @@ public class MTDLineParserTest {
             get(0).
             getCvAccession().
             equals("MS:1000133"));
-
+        
         parser.parse(1,
             "MTD\tms_run[2]-hash\tde9f2c7fd25e1b3afad3e85a0bd17d9b100db4b3",
             errorList);
@@ -349,7 +363,7 @@ public class MTDLineParserTest {
             getName().
             equals("SHA-1"));
     }
-
+    
     @Test
     public void testMsRunLocationNull() throws MZTabException {
         parser.parse(1, "MTD\tms_run[1]-location\tnull\n", errorList);
@@ -369,7 +383,7 @@ public class MTDLineParserTest {
         MsRun msRun1 = context.getMsRunMap().
             get(1);
         assertNull(msRun1.getLocation());
-
+        
         MsRun msRun2 = context.getMsRunMap().
             get(2);
         assertTrue(msRun2.getLocation().
@@ -379,7 +393,7 @@ public class MTDLineParserTest {
             get(0).
             getCvAccession().
             equals("MS:1000133"));
-
+        
         parser.parse(1,
             "MTD\tms_run[2]-hash\tde9f2c7fd25e1b3afad3e85a0bd17d9b100db4b3\n",
             errorList);
@@ -392,7 +406,7 @@ public class MTDLineParserTest {
             getName().
             equals("SHA-1"));
     }
-
+    
     @Test
     public void testSample() throws MZTabException {
         parser.parse(1,
@@ -405,18 +419,18 @@ public class MTDLineParserTest {
             get(1);
         assertTrue(sample1.getSpecies().
             size() == 2);
-
+        
         parser.parse(1, "MTD\tsample[1]-tissue[1]\t[BTO, BTO:0000759, liver, ]",
             errorList);
         assertTrue(sample1.getTissue().
             size() == 1);
-
+        
         parser.parse(1,
             " MTD\tsample[1]-cell_type[1]\t[CL, CL:0000182, hepatocyte, ]",
             errorList);
         assertTrue(sample1.getCellType().
             size() == 1);
-
+        
         parser.parse(1,
             " MTD\tsample[1]-disease[1]\t[DOID, DOID:684, hepatocellular carcinoma, ]",
             errorList);
@@ -425,7 +439,7 @@ public class MTDLineParserTest {
             errorList);
         assertTrue(sample1.getDisease().
             size() == 2);
-
+        
         parser.parse(1,
             " MTD \t sample[1]-description \t  Hepatocellular carcinoma samples.",
             errorList);
@@ -438,7 +452,7 @@ public class MTDLineParserTest {
             get(2);
         assertTrue(sample2.getDescription().
             contains("Healthy control samples."));
-
+        
         parser.parse(1,
             "MTD\tsample[1]-custom[1]\t[,,Extraction date, 2011-12-21]",
             errorList);
@@ -448,7 +462,7 @@ public class MTDLineParserTest {
         assertTrue(sample1.getCustom().
             size() == 2);
     }
-
+    
     @Test
     public void testAssay() throws MZTabException {
 //        parser.parse(1, "MTD\tassay[1]-quantification_reagent\t[PRIDE,PRIDE:0000114,iTRAQ reagent,114]", errorList);
@@ -472,7 +486,7 @@ public class MTDLineParserTest {
             get(2).
             getSampleRef().
             equals(sample2));
-
+        
         MsRun msRun1 = new MsRun();
         msRun1.id(1);
         MsRun msRun2 = new MsRun();
@@ -502,7 +516,7 @@ public class MTDLineParserTest {
 //        quantificationMod = metadata.getAssayMap().get(2).getQuantificationModMap().get(2);
 //        assertTrue(quantificationMod.getPosition().equals("Anywhere"));
     }
-
+    
     @Test
     public void testStudyVariable() throws MZTabException {
         parser.parse(1,
@@ -514,7 +528,7 @@ public class MTDLineParserTest {
             get(1).
             getDescription().
             equals("Group B (spike-in 0,74 fmol/uL)"));
-
+        
         Sample sample1 = new Sample();
         sample1.id(1);
         Sample sample2 = new Sample();
@@ -531,7 +545,7 @@ public class MTDLineParserTest {
             get(1).
             getSampleRefs().
             get((2 - 1)) == sample2);
-
+        
         Assay assay1 = new Assay();
         assay1.id(1);
         Assay assay2 = new Assay();
@@ -549,11 +563,11 @@ public class MTDLineParserTest {
             getAssayRefs().
             get(0) == assay1);
     }
-
+    
     public Metadata parseMetadata(String mtdFile) throws Exception {
         BufferedReader reader = new BufferedReader(new FileReader(mtdFile));
         MTDLineParser parser = new MTDLineParser(context);
-
+        
         String line;
         int lineNumber = 0;
         while ((line = reader.readLine()) != null) {
@@ -562,20 +576,20 @@ public class MTDLineParserTest {
                 length() == 0) {
                 continue;
             }
-
+            
             parser.parse(lineNumber, line, errorList);
         }
-
+        
         reader.close();
-
+        
         parser.refineNormalMetadata();
         return parser.getMetadata();
     }
-
+    
     @Test
     public void testCreateMetadata() throws Exception {
         String fileName = "testset/mtdFile.txt";
-
+        
         URL uri = MTDLineParserTest.class.getClassLoader().
             getResource(fileName);
         if (uri != null) {
@@ -585,7 +599,7 @@ public class MTDLineParserTest {
             throw new FileNotFoundException(fileName);
         }
     }
-
+    
     @Test
     public void testSmIdReliability() throws MZTabException {
         String toParse = "MTD\tsmall_molecule-identification_reliability\t[PRIDE, PRIDE:0000395, Ratio, ]";
@@ -597,7 +611,7 @@ public class MTDLineParserTest {
             name("Ratio").
             value(null), metadata.getSmallMoleculeIdentificationReliability());
     }
-
+    
     @Test
     public void testSmQuantUnit() throws MZTabException {
         //        parser.parse(1, "MTD\tprotein-quantification_unit\t[PRIDE, PRIDE:0000395, Ratio, ]", errorList);
@@ -617,7 +631,7 @@ public class MTDLineParserTest {
             name("Progenesis QI Normalised Abundance").
             value(null), metadata.getSmallMoleculeQuantificationUnit());
     }
-
+    
     @Test
     public void testSmFeatureQuantUnit() throws MZTabException {
         String toParse = "MTD\tsmall_molecule_feature-quantification_unit\t[PSI-MS, MS:000XXXX, Progenesis QI Normalised Abundance, ]";

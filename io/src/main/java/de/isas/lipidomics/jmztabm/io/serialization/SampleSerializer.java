@@ -81,7 +81,7 @@ public class SampleSerializer extends StdSerializer<Sample> {
                 sample.getCustom(), false);
         } else {
             Logger.getLogger(SampleSerializer.class.getName()).
-                log(Level.FINE, "SampleSerializer is null!");
+                log(Level.FINE, "Sample is null!");
         }
     }
 }

@@ -113,12 +113,40 @@ public class MZTabUtils {
             return null;
         }
 
-//        String regexp = "^\\s*\\w+(?:\\.{0,1}[\\w-]+)*@[a-zA-Z0-9]+(?:[-.][a-zA-Z0-9]+)*\\.[a-zA-Z]+\\s*$";
         String regexp = "[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-']+)*@[A-Za-z0-9]+(?:[-.][A-Za-z0-9]+)*(\\.[A-Za-z]{2,})";
         Pattern pattern = Pattern.compile(regexp);
         Matcher matcher = pattern.matcher(target);
 
         return matcher.find() ? target : null;
+    }
+    
+    /**
+     * Parse the target string, and check it follows the mzTab Version format. If not, return null.
+     * 
+     * @param target a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
+    public static String parseMzTabVersion(String target) {
+        target = parseString(target);
+        if (target == null) {
+            return null;
+        }
+
+        Pattern versionPattern = Pattern.compile("(?<major>[2]{1})\\.(?<minor>\\d{1})\\.(?<micro>\\d{1})-(?<profile>[M]{1})");
+        Matcher m = versionPattern.matcher(target);
+        if(m.matches()) {
+            Integer major = Integer.parseInt(m.group("major"));
+            Integer minor = Integer.parseInt(m.group("minor"));
+            Integer micro = Integer.parseInt(m.group("micro"));
+            if(major!=2) {
+                return null;
+            }
+            if(!"M".equals(m.group("profile"))) {
+                return null;
+            }
+            return target;
+        }
+        return null;
     }
 
     /**

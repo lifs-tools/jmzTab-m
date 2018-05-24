@@ -1,4 +1,4 @@
-MTD	mzTab-version	1.1
+MTD	mzTab-version	2.0.0-M
 MTD	mzTab-ID	PRIDE_1234
 MTD	title	My first test experiment
 MTD	description	An experiment investigating the effects of Il-6.

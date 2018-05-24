@@ -31,6 +31,7 @@ import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import uk.ac.ebi.pride.jmztab1_1.model.MZTabUtils;
 
 import static uk.ac.ebi.pride.jmztab1_1.model.MZTabUtils.*;
 import uk.ac.ebi.pride.jmztab1_1.utils.errors.MZTabErrorType;
@@ -366,13 +367,17 @@ public class MTDLineParser extends MZTabLineParser {
                     property = checkProperty(element, matcher.group(5));
                     switch (property != null ? property : null) {
                         case MZTAB_VERSION:
-                            metadata.mzTabVersion(valueLabel);
-                            if (metadata.getMzTabVersion().
-                                matches("1\\.0")) {
+                            if (metadata.getMzTabVersion()!= null) {
+                                throw new MZTabException(new MZTabError(
+                                    LogicalErrorType.DuplicationDefine,
+                                    lineNumber, defineLabel));
+                            }
+                            if (MZTabUtils.parseMzTabVersion(valueLabel) == null) {
                                 throw new MZTabException(new MZTabError(
                                     FormatErrorType.MZTabVersion, lineNumber,
                                     defineLabel, valueLabel));
                             }
+                            metadata.mzTabVersion(valueLabel);
                             break;
                         case MZTAB_ID:
                             if (metadata.getMzTabID() != null) {

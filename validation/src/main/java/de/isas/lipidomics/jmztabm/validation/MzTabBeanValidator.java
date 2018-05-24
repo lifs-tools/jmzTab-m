@@ -18,7 +18,6 @@ package de.isas.lipidomics.jmztabm.validation;
 import de.isas.mztab1_1.model.MzTab;
 import de.isas.mztab1_1.model.ValidationMessage;
 import java.lang.annotation.Annotation;
-import java.net.URI;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -31,7 +30,9 @@ import org.hibernate.validator.cfg.ConstraintMapping;
 
 /**
  * <p>
- * MzTabValidator class.</p>
+ * This validator used the HibernateValidator bean validation reference
+ * implementation. It understands the standard annotations that are placed on
+ * the domain objects generated from Swagger Codegen.</p>
  *
  * @author nilshoffmann
  *
@@ -133,9 +134,8 @@ public class MzTabBeanValidator implements Validator<MzTab> {
                 violation) + ": " + violation.getMessage()).
                 messageType(ValidationMessage.MessageTypeEnum.ERROR));
         }
-        
+
         //add additional validators
-        
         return list;
     }
 

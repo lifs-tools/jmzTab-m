@@ -55,7 +55,6 @@ public class MsRunSerializer extends StdSerializer<MsRun> {
     @Override
     public void serialize(MsRun msRun, JsonGenerator jg,
         SerializerProvider sp) throws IOException {
-        
         if (msRun != null) {
             addLineWithProperty(jg, Section.Metadata.getPrefix(), "name", msRun,
                 msRun.getName());

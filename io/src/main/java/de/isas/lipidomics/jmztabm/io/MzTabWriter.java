@@ -39,7 +39,7 @@ import de.isas.lipidomics.jmztabm.io.formats.SoftwareFormat;
 import de.isas.lipidomics.jmztabm.io.formats.StudyVariableFormat;
 import de.isas.lipidomics.jmztabm.io.formats.UriFormat;
 import de.isas.lipidomics.jmztabm.io.serialization.Serializers;
-import de.isas.lipidomics.jmztabm.validation.MzTabBeanValidator;
+import de.isas.lipidomics.jmztabm.validation.Validator;
 import de.isas.mztab1_1.model.Assay;
 import de.isas.mztab1_1.model.CV;
 import de.isas.mztab1_1.model.Contact;
@@ -68,6 +68,8 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -75,7 +77,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import javax.validation.ValidationException;
+
 import uk.ac.ebi.pride.jmztab1_1.model.MZTabConstants;
 import uk.ac.ebi.pride.jmztab1_1.model.SmallMoleculeColumn;
 import uk.ac.ebi.pride.jmztab1_1.model.SmallMoleculeEvidenceColumn;
@@ -90,22 +94,8 @@ import uk.ac.ebi.pride.jmztab1_1.model.SmallMoleculeFeatureColumn;
  */
 public class MzTabWriter {
 
-    private final boolean validateBeforeWrite;
-
-    /**
-     * Creates a new instance of MzTabWriter.
-     * Does not validate with bean validation before writing.
-     */    
     public MzTabWriter() {
-        this.validateBeforeWrite = false;
-    }
-
-    /**
-     * Creates a new instance of MzTabWriter.
-     * @param validateBeforeWrite if true, validates with bean validation before writing, otherwise not.
-     */
-    public MzTabWriter(boolean validateBeforeWrite) {
-        this.validateBeforeWrite = validateBeforeWrite;
+        
     }
 
     /**
@@ -147,19 +137,7 @@ public class MzTabWriter {
         }
     }
 
-    public List<ValidationMessage> validate(MzTab mzTab) {
-        MzTabBeanValidator validator = new MzTabBeanValidator();
-        return validator.validate(mzTab);
-    }
-
-    void writeMzTab(MzTab mzTab, final Writer writer) throws IOException, ValidationException {
-        if(validateBeforeWrite) {
-            List<ValidationMessage> validationMessages = validate(mzTab);
-            if (!validationMessages.isEmpty()) {
-                 throw new ValidationException("Validation failed for mzTab with messages: \n" + validationMessages);
-            }
-        }
-
+    void writeMzTab(MzTab mzTab, final Writer writer) throws IOException {
         writeMetadataWithJackson(mzTab, writer);
         writer.write("\n");
         writeSmallMoleculeSummaryWithJackson(mzTab, writer);
@@ -337,12 +315,15 @@ public class MzTabWriter {
                 getHeader(), CsvSchema.ColumnType.NUMBER_OR_STRING).
             addColumn(SmallMoleculeFeatureColumn.Stable.CHARGE.getHeader(),
                 CsvSchema.ColumnType.NUMBER_OR_STRING).
-            addColumn(SmallMoleculeFeatureColumn.Stable.RETENTION_TIME_IN_SECONDS.
-                getHeader(), CsvSchema.ColumnType.NUMBER_OR_STRING).
-            addColumn(SmallMoleculeFeatureColumn.Stable.RETENTION_TIME_IN_SECONDS_START.
-                getHeader(), CsvSchema.ColumnType.NUMBER_OR_STRING).
-            addColumn(SmallMoleculeFeatureColumn.Stable.RETENTION_TIME_IN_SECONDS_END.
-                getHeader(), CsvSchema.ColumnType.NUMBER_OR_STRING);
+            addColumn(
+                SmallMoleculeFeatureColumn.Stable.RETENTION_TIME_IN_SECONDS.
+                    getHeader(), CsvSchema.ColumnType.NUMBER_OR_STRING).
+            addColumn(
+                SmallMoleculeFeatureColumn.Stable.RETENTION_TIME_IN_SECONDS_START.
+                    getHeader(), CsvSchema.ColumnType.NUMBER_OR_STRING).
+            addColumn(
+                SmallMoleculeFeatureColumn.Stable.RETENTION_TIME_IN_SECONDS_END.
+                    getHeader(), CsvSchema.ColumnType.NUMBER_OR_STRING);
 
         Optional.ofNullable(mztabfile.getMetadata().
             getAssay()).

@@ -15,7 +15,7 @@
  */
 package de.isas.mztab.cli;
 
-import de.isas.lipidomics.jmztabm.cvmapping.CvMappingValidator;
+import de.isas.lipidomics.jmztabm.validation.CvMappingValidator;
 import de.isas.lipidomics.jmztabm.validation.MzTabBeanValidator;
 import de.isas.mztab1_1.model.ValidationMessage;
 import org.apache.commons.cli.*;

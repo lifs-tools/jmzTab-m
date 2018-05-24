@@ -30,6 +30,8 @@ public interface Validator<T> {
     /**
      * <p>
      * validate.</p>
+     * 
+     * Please make sure that all exceptions are caught within the validate method!
      *
      * @param t the object to validate.
      * @return a {@link java.util.List} object.

@@ -1,5 +1,5 @@
 COM	Meta data section																				
-MTD	mzTab-version	1.1.0																			
+MTD	mzTab-version	2.0.0-M																			
 MTD	description	Minimal proposed sample file for identification and quantification of lipids																			
 MTD	publication[1]	pubmed:29039908 | doi:10.1021/acs.analchem.7b03576																			
 MTD	cv[1]-label	MS																			
@@ -60,7 +60,7 @@ MTD	colunit-small_molecule_evidence	opt_global_mass_error=[UO, UO:0000169, parts
 MTD	id_confidence_measure[1]	[,,characteristic qualifier ions, ]																			
 MTD	external_study_uri[1]	file://c:/data/prm.sky.zip																			
 																					
-COM	"MzTab 1.1.0 ""proposed"" specification"																				
+COM	"MzTab 2.0.0-M ""proposed"" specification"																				
 COM	Summary rows. 																				
 COM	Evidences (e.g. multiple modifications, adducts incl. charge variants are summarized). 																				
 COM	For most use cases this summary lines may be sufficient.																				
