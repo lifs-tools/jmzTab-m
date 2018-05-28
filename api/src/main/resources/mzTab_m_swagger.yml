@@ -9,7 +9,7 @@ info:
     name: Apache 2.0
     url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
 host: lifs.isas.de
-basePath: /mztabvalidator/rest/v1_1/
+basePath: /mztabvalidator/rest/v2/
 schemes:
   - http
 tags:
@@ -399,7 +399,7 @@ definitions:
         items:
           type: number
           format: double
-      abundance_coeffvar_study_variable:
+      abundance_variation_study_variable:
         type: array
         default: []
         items:
@@ -566,10 +566,6 @@ definitions:
         - name
         - value
       properties:
-#        id:
-#          type: integer
-#          format: int32
-#          minimum: 1
         cv_label:
           type: string
           default: ''
@@ -586,10 +582,6 @@ definitions:
     - $ref: '#/definitions/IndexedElement'
     - type: object
       properties:
-#        id:
-#          type: integer
-#          format: int32
-#          minimum: 1
         instrument_name:
           $ref: '#/definitions/Parameter'
           example:
@@ -605,16 +597,16 @@ definitions:
           items:
             $ref: '#/definitions/Parameter'
         instrument_detector:
+          x-customValidation:
+            validator: 'CheckParameter'
+            message: 'contact.fail'
+            code: 16257
           $ref: '#/definitions/Parameter'
   SampleProcessing:
     allOf:
     - $ref: '#/definitions/IndexedElement'
     - type: object
       properties:
-#        id:
-#          type: integer
-#          format: int32
-#          minimum: 1
         sampleProcessing:
           type: array
           default: []
@@ -636,10 +628,6 @@ definitions:
           MTD\tsoftware[1]\t[MS, MS:1001207, Mascot, 2.3]
           MTD\tsoftware[2]\t[MS, MS:1001561, Scaffold, 1.0]
       properties:
-#        id:
-#          type: integer
-#          format: int32
-#          minimum: 1
         parameter:
           $ref: '#/definitions/Parameter'
         setting:
@@ -672,10 +660,6 @@ definitions:
       required:
         - publicationItems
       properties:
-#        id:
-#          type: integer
-#          format: int32
-#          minimum: 1
         publicationItems:
           type: array
           default: []
@@ -716,25 +700,18 @@ definitions:
     - $ref: '#/definitions/IndexedElement'
     - type: object
       properties:
-#        id:
-#          type: integer
-#          format: int32
-#          minimum: 1
         name:
           type: string
         affiliation:
           type: string
         email:
           type: string
+          pattern: '^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$'
   Uri:
     allOf:
     - $ref: '#/definitions/IndexedElement'
     - type: object
       properties:
-#        id:
-#          type: integer
-#          format: int32
-#          minimum: 1
         value:
           type: string
           format: uri
@@ -743,10 +720,6 @@ definitions:
     - $ref: '#/definitions/IndexedElement'
     - type: object
       properties:
-#        id:
-#          type: integer
-#          format: int32
-#          minimum: 1
         name:
           type: string
         custom:
@@ -790,14 +763,12 @@ definitions:
         - location
         - name
       properties:
-#        id:
-#          type: integer
-#          format: int32
-#          minimum: 1
         name:
           type: string
         location:
           type: string
+        instrument_ref:
+          $ref: '#/definitions/Instrument'
         format:
           $ref: '#/definitions/Parameter'
         id_format:
@@ -824,10 +795,6 @@ definitions:
         - id
         - name
       properties:
-#        id:
-#          type: integer
-#          format: int32
-#          minimum: 1
         name:
           type: string
         assay_refs:
@@ -860,10 +827,6 @@ definitions:
       - sample_ref
       - ms_run_ref
       properties:
-#        id:
-#          type: integer
-#          format: int32
-#          minimum: 1
         name:
           type: string
         custom:
@@ -889,10 +852,6 @@ definitions:
         - version
         - url
       properties:
-#        id:
-#          type: integer
-#          format: int32
-#          minimum: 1
         label:
           type: string
         full_name:
@@ -912,10 +871,6 @@ definitions:
         - version
         - url
       properties:
-#        id:
-#          type: integer
-#          format: int32
-#          minimum: 1
         param:
           $ref: '#/definitions/Parameter'
         prefix:

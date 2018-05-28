@@ -50,4 +50,263 @@ public class SerializersTest {
             camelCaseToUnderscoreLowerCase(camelCase3));
     }
 
+    /**
+     * Test of getReference method, of class Serializers.
+     */
+    @Test
+    public void testGetReference() {
+    }
+
+    /**
+     * Test of printAbundanceAssay method, of class Serializers.
+     */
+    @Test
+    public void testPrintAbundanceAssay() {
+    }
+
+    /**
+     * Test of printAbundanceStudyVar method, of class Serializers.
+     */
+    @Test
+    public void testPrintAbundanceStudyVar() {
+    }
+
+    /**
+     * Test of printAbundanceCoeffVarStudyVar method, of class Serializers.
+     */
+    @Test
+    public void testPrintAbundanceCoeffVarStudyVar() {
+    }
+
+    /**
+     * Test of printOptColumnMapping method, of class Serializers.
+     */
+    @Test
+    public void testPrintOptColumnMapping() {
+    }
+
+    /**
+     * Test of addIndexedLine method, of class Serializers.
+     */
+    @Test
+    public void testAddIndexedLine_5args_1() {
+    }
+
+    /**
+     * Test of addIndexedLine method, of class Serializers.
+     */
+    @Test
+    public void testAddIndexedLine_5args_2() {
+    }
+
+    /**
+     * Test of addLineWithParameters method, of class Serializers.
+     */
+    @Test
+    public void testAddLineWithParameters() {
+    }
+
+    /**
+     * Test of addLineWithPropertyParameters method, of class Serializers.
+     */
+    @Test
+    public void testAddLineWithPropertyParameters() {
+    }
+
+    /**
+     * Test of addLineWithMetadataProperty method, of class Serializers.
+     */
+    @Test
+    public void testAddLineWithMetadataProperty() {
+    }
+
+    /**
+     * Test of addLineWithProperty method, of class Serializers.
+     */
+    @Test
+    public void testAddLineWithProperty() {
+    }
+
+    /**
+     * Test of addLine method, of class Serializers.
+     */
+    @Test
+    public void testAddLine() {
+    }
+
+    /**
+     * Test of getElementName method, of class Serializers.
+     */
+    @Test
+    public void testGetElementName() {
+    }
+
+    /**
+     * Test of getPropertyNames method, of class Serializers.
+     */
+    @Test
+    public void testGetPropertyNames() {
+    }
+
+    /**
+     * Test of asMap method, of class Serializers.
+     */
+    @Test
+    public void testAsMap() {
+    }
+
+    /**
+     * Test of camelCaseToUnderscoreLowerCase method, of class Serializers.
+     */
+    @Test
+    public void testCamelCaseToUnderscoreLowerCase() {
+    }
+
+    /**
+     * Test of addSubElementStrings method, of class Serializers.
+     */
+    @Test
+    public void testAddSubElementStrings() {
+    }
+
+    /**
+     * Test of addSubElementParameter method, of class Serializers.
+     */
+    @Test
+    public void testAddSubElementParameter() {
+    }
+
+    /**
+     * Test of addSubElementParameters method, of class Serializers.
+     */
+    @Test
+    public void testAddSubElementParameters() {
+    }
+
+    /**
+     * Test of checkForNull method, of class Serializers.
+     */
+    @Test
+    public void testCheckForNull() {
+    }
+
+    /**
+     * Test of writeString method, of class Serializers.
+     */
+    @Test
+    public void testWriteString_3args_1() throws Exception {
+    }
+
+    /**
+     * Test of writeString method, of class Serializers.
+     */
+    @Test
+    public void testWriteString_3args_2() throws Exception {
+    }
+
+    /**
+     * Test of writeObject method, of class Serializers.
+     */
+    @Test
+    public void testWriteObject_4args_1() throws Exception {
+    }
+
+    /**
+     * Test of writeObject method, of class Serializers.
+     */
+    @Test
+    public void testWriteObject_4args_2() throws Exception {
+    }
+
+    /**
+     * Test of writeAsNumberArray method, of class Serializers.
+     */
+    @Test
+    public void testWriteAsNumberArray_3args_1() {
+    }
+
+    /**
+     * Test of writeAsNumberArray method, of class Serializers.
+     */
+    @Test
+    public void testWriteAsNumberArray_3args_2() {
+    }
+
+    /**
+     * Test of writeAsStringArray method, of class Serializers.
+     */
+    @Test
+    public void testWriteAsStringArray_3args_1() {
+    }
+
+    /**
+     * Test of writeAsStringArray method, of class Serializers.
+     */
+    @Test
+    public void testWriteAsStringArray_JsonGenerator_List() {
+    }
+
+    /**
+     * Test of writeAsStringArray method, of class Serializers.
+     */
+    @Test
+    public void testWriteAsStringArray_3args_2() {
+    }
+
+    /**
+     * Test of writeNumber method, of class Serializers.
+     */
+    @Test
+    public void testWriteNumber_3args_1() throws Exception {
+    }
+
+    /**
+     * Test of writeNumber method, of class Serializers.
+     */
+    @Test
+    public void testWriteNumber_3args_2() throws Exception {
+    }
+
+    /**
+     * Test of writeNumber method, of class Serializers.
+     */
+    @Test
+    public void testWriteNumber_3args_3() throws Exception {
+    }
+
+    /**
+     * Test of writeNumber method, of class Serializers.
+     */
+    @Test
+    public void testWriteNumber_3args_4() throws Exception {
+    }
+
+    /**
+     * Test of writeNumber method, of class Serializers.
+     */
+    @Test
+    public void testWriteNumber_JsonGenerator_Integer() throws Exception {
+    }
+
+    /**
+     * Test of writeNumber method, of class Serializers.
+     */
+    @Test
+    public void testWriteNumber_JsonGenerator_Double() throws Exception {
+    }
+
+    /**
+     * Test of writeOptColumnMappings method, of class Serializers.
+     */
+    @Test
+    public void testWriteOptColumnMappings() throws Exception {
+    }
+
+    /**
+     * Test of writeIndexedDoubles method, of class Serializers.
+     */
+    @Test
+    public void testWriteIndexedDoubles() {
+    }
+
 }

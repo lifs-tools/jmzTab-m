@@ -19,6 +19,8 @@ public class MZTabConstants {
 
     /** Constant <code>TAB='\u0009'</code> */
     public final static char TAB = '\u0009';
+    /** Constant <code>TABs=""+'\u0009'</code> */
+    public final static String TABs = ""+TAB;
     /** Constant <code>MINUS='-'</code> */
     public final static char MINUS = '-';
     /** Constant <code>BAR='\u007c'</code> */
@@ -29,6 +31,6 @@ public class MZTabConstants {
     public final static char COLON = ':';
     /** Constant <code>COMMA=','</code> */
     public final static char COMMA = ',';
-    /** Constant <code>VERSION="1.1"</code> */
-    public final static String VERSION = "1.1";
+    /** Constant <code>VERSION="2.0.0-M"</code> */
+    public final static String VERSION = "2.0.0-M";
 }

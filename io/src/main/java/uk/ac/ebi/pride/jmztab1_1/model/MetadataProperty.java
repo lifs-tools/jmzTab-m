@@ -38,6 +38,7 @@ public enum MetadataProperty {
 
     MS_RUN_FORMAT                         (MetadataElement.MS_RUN,                              "format"),
     MS_RUN_LOCATION                       (MetadataElement.MS_RUN,                              "location"),
+    MS_RUN_INSTRUMENT_REF                 (MetadataElement.MS_RUN,                              "instrument_ref"),
     MS_RUN_ID_FORMAT                      (MetadataElement.MS_RUN,                              "id_format"),
     MS_RUN_FRAGMENTATION_METHOD           (MetadataElement.MS_RUN,                              "fragmentation_method"),
     MS_RUN_HASH                           (MetadataElement.MS_RUN,                              "hash"),

@@ -39,7 +39,6 @@ import de.isas.lipidomics.jmztabm.io.formats.SoftwareFormat;
 import de.isas.lipidomics.jmztabm.io.formats.StudyVariableFormat;
 import de.isas.lipidomics.jmztabm.io.formats.UriFormat;
 import de.isas.lipidomics.jmztabm.io.serialization.Serializers;
-import de.isas.lipidomics.jmztabm.validation.Validator;
 import de.isas.mztab1_1.model.Assay;
 import de.isas.mztab1_1.model.CV;
 import de.isas.mztab1_1.model.Contact;
@@ -59,7 +58,6 @@ import de.isas.mztab1_1.model.SmallMoleculeSummary;
 import de.isas.mztab1_1.model.Software;
 import de.isas.mztab1_1.model.StudyVariable;
 import de.isas.mztab1_1.model.Uri;
-import de.isas.mztab1_1.model.ValidationMessage;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -68,17 +66,12 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
-import javax.validation.ValidationException;
 
 import uk.ac.ebi.pride.jmztab1_1.model.MZTabConstants;
 import uk.ac.ebi.pride.jmztab1_1.model.SmallMoleculeColumn;
@@ -179,6 +172,10 @@ public class MzTabWriter {
             withoutEscapeChar().
             withLineSeparator(MZTabConstants.NEW_LINE).
             withColumnSeparator(MZTabConstants.TAB);
+        if(mztabfile.getMetadata().getMzTabVersion()==null) {
+            //set default version if not set
+            mztabfile.getMetadata().mzTabVersion(MZTabConstants.VERSION);
+        }
         try {
             mapper.writer(schema).
                 writeValue(writer, mztabfile.getMetadata());

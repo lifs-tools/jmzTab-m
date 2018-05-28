@@ -251,13 +251,13 @@ public class MZTabUtils {
     }
 
     /**
-     * parse the target into a {@link de.isas.mztab1_1.model.Parameter} object.
+     * parse the target into a {@link de.isas.mztab1_1.model.IndexedElement} object.
      *
      * @param target a {@link java.lang.String} object.
      * @param element a {@link uk.ac.ebi.pride.jmztab1_1.model.MetadataElement} object.
      * @return a {@link de.isas.mztab1_1.model.IndexedElement} object.
      */
-    public static IndexedElement parseParameter(String target, MetadataElement element) {
+    public static IndexedElement parseIndexedElement(String target, MetadataElement element) {
         target = parseString(target);
         if (target == null) {
             return null;
@@ -276,7 +276,7 @@ public class MZTabUtils {
     }
 
     /**
-     * Parse the target into a {@link de.isas.mztab1_1.model.Parameter} list.
+     * Parse the target into a {@link de.isas.mztab1_1.model.IndexedElement} list.
      *
      * @param target a {@link java.lang.String} object.
      * @param element a {@link uk.ac.ebi.pride.jmztab1_1.model.MetadataElement} object.
@@ -288,7 +288,7 @@ public class MZTabUtils {
         List<IndexedElement> indexedElementList = new ArrayList<>();
         IndexedElement indexedElement;
         for (String item : list) {
-            indexedElement = parseParameter(item, element);
+            indexedElement = parseIndexedElement(item, element);
             if (indexedElement == null) {
                 indexedElementList.clear();
                 return indexedElementList;

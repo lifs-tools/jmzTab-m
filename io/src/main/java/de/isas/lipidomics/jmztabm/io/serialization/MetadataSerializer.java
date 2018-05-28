@@ -162,9 +162,7 @@ public class MetadataSerializer extends StdSerializer<Metadata> {
         if (t != null) {
             String prefix = t.getPrefix().
                 name();
-            addLine(jg, prefix, "mzTab-version", Optional.ofNullable(t.
-                getMzTabVersion()).
-                orElse(MZTabConstants.VERSION));
+            addLine(jg, prefix, "mzTab-version", t.getMzTabID());
             addLine(jg, prefix, "mzTab-ID", t.
                 getMzTabID());
             addLine(jg, prefix, "title", t.

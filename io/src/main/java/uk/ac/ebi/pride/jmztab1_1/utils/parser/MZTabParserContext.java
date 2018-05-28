@@ -1111,6 +1111,36 @@ public class MZTabParserContext {
         }
         return msRun;
     }
+    
+    /**
+     * Add ms_run[id]-instrument_ref into metadata. Reference to a commonly used instrument.
+     * 
+     * @param metadata a {@link de.isas.mztab1_1.model.Metadata} object.
+     * @param id SHOULD be positive integer.
+     * @param instrument if null ignore operation.
+     * @return a {@link de.isas.mztab1_1.model.MsRun} object.
+     */
+    public MsRun addMsRunInstrumentRef(Metadata metadata, Integer id, Instrument instrument) {
+        if (id <= 0) {
+            throw new IllegalArgumentException("ms_run id should be great than 0!");
+        }
+        
+        if (instrument==null) {
+            throw new IllegalArgumentException("instrument must not be null!");
+        }
+
+        MsRun msRun = msRunMap.get(id);
+        if (msRun == null) {
+            msRun = new MsRun();
+            msRun.id(id);
+            msRun.setInstrumentRef(instrument);
+            msRunMap.put(id, msRun);
+            metadata.addMsrunItem(msRun);
+        } else {
+            msRun.setInstrumentRef(instrument);
+        }
+        return msRun;
+    }
 
     /**
      * Add ms_run[id]-id_format into metadata. Parameter specifying the id format used in the external data file.

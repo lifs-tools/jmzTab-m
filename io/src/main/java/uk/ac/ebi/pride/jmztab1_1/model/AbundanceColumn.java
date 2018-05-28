@@ -22,7 +22,7 @@ public class AbundanceColumn extends MZTabColumn {
     public enum Field {
         ABUNDANCE_ASSAY          ("abundance_assay",              Double.class,    1),
         ABUNDANCE_STUDY_VARIABLE ("abundance_study_variable",     Double.class,    2),
-        ABUNDANCE_COEFFVAR_STUDY_VARIABLE ("abundance_coeffvar_study_variable",        Double.class,    3);
+        ABUNDANCE_VARIATION_STUDY_VARIABLE ("abundance_variation_study_variable",        Double.class,    3);
 
         private String name;
         private Class columnType;
@@ -103,8 +103,8 @@ public class AbundanceColumn extends MZTabColumn {
         if(columnHeader.startsWith("study_variable")) {
             column = new AbundanceColumn(dataSection, Field.ABUNDANCE_STUDY_VARIABLE, studyVariable, offset);
             columns.put(column.getLogicPosition(), column);
-        } else if (columnHeader.startsWith("coeffvar_study_variable")) {
-            column = new AbundanceColumn(dataSection, Field.ABUNDANCE_COEFFVAR_STUDY_VARIABLE, studyVariable, offset);
+        } else if (columnHeader.startsWith("variation_study_variable")) {
+            column = new AbundanceColumn(dataSection, Field.ABUNDANCE_VARIATION_STUDY_VARIABLE, studyVariable, offset);
             columns.put(column.getLogicPosition(), column);
         } else {
             throw new IllegalArgumentException("column header "+columnHeader+" is not allowed for abundance definition!");
@@ -139,7 +139,7 @@ public class AbundanceColumn extends MZTabColumn {
 //        columns.put(column.getLogicPosition(), column);
         column = new AbundanceColumn(dataSection, Field.ABUNDANCE_STUDY_VARIABLE, studyVariable, lastOrder);
         columns.put(column.getLogicPosition(), column);
-        column = new AbundanceColumn(dataSection, Field.ABUNDANCE_COEFFVAR_STUDY_VARIABLE, studyVariable, lastOrder);
+        column = new AbundanceColumn(dataSection, Field.ABUNDANCE_VARIATION_STUDY_VARIABLE, studyVariable, lastOrder);
         columns.put(column.getLogicPosition(), column);
 
         return columns;

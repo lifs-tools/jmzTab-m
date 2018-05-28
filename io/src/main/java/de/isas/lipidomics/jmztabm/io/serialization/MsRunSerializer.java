@@ -21,29 +21,37 @@ import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import static de.isas.lipidomics.jmztabm.io.serialization.Serializers.addLineWithProperty;
 import static de.isas.lipidomics.jmztabm.io.serialization.Serializers.addSubElementParameter;
 import static de.isas.lipidomics.jmztabm.io.serialization.Serializers.addSubElementParameters;
+import static de.isas.lipidomics.jmztabm.io.serialization.Serializers.addSubElementStrings;
+import de.isas.mztab1_1.model.Instrument;
 import de.isas.mztab1_1.model.MsRun;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import uk.ac.ebi.pride.jmztab1_1.model.Section;
 
 /**
- * <p>MsRunSerializer class.</p>
+ * <p>
+ * MsRunSerializer class.</p>
  *
  * @author nilshoffmann
- * 
+ *
  */
 public class MsRunSerializer extends StdSerializer<MsRun> {
 
     /**
-     * <p>Constructor for MsRunSerializer.</p>
+     * <p>
+     * Constructor for MsRunSerializer.</p>
      */
     public MsRunSerializer() {
         this(null);
     }
 
     /**
-     * <p>Constructor for MsRunSerializer.</p>
+     * <p>
+     * Constructor for MsRunSerializer.</p>
      *
      * @param t a {@link java.lang.Class} object.
      */
@@ -51,7 +59,9 @@ public class MsRunSerializer extends StdSerializer<MsRun> {
         super(t);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void serialize(MsRun msRun, JsonGenerator jg,
         SerializerProvider sp) throws IOException {
@@ -60,9 +70,28 @@ public class MsRunSerializer extends StdSerializer<MsRun> {
                 msRun.getName());
             addLineWithProperty(jg, Section.Metadata.getPrefix(), "location",
                 msRun, msRun.getLocation());
+            if(msRun.getInstrumentRef()!=null) {
+                addSubElementStrings(jg, Section.Metadata.getPrefix(), msRun,
+                    "instrument_ref", Arrays.asList(msRun.getInstrumentRef()).
+                        stream().
+                        sorted(Comparator.comparing(Instrument::getId,
+                            Comparator.nullsFirst(Comparator.
+                                naturalOrder())
+                        )).
+                        map((mref) ->
+                        {
+                            return new StringBuilder().append("ms_run").
+                                append(mref.getId()).
+                                toString();
+                        }).
+                        collect(Collectors.toList()), true);
+            }
+            addLineWithProperty(jg, Section.Metadata.getPrefix(),
+                "instrument_ref", msRun, msRun.getInstrumentRef());
             addLineWithProperty(jg, Section.Metadata.getPrefix(), "hash",
                 msRun, msRun.getHash());
-            addSubElementParameter(jg, Section.Metadata.getPrefix(), msRun, "hash_method",
+            addSubElementParameter(jg, Section.Metadata.getPrefix(), msRun,
+                "hash_method",
                 msRun.getHashMethod());
             addSubElementParameter(jg, Section.Metadata.getPrefix(), msRun,
                 "format", msRun.getFormat());
@@ -74,7 +103,7 @@ public class MsRunSerializer extends StdSerializer<MsRun> {
                 msRun.getIdFormat());
         } else {
             Logger.getLogger(MsRunSerializer.class.getName()).
-                    log(Level.FINE, "MsRun is null!");
+                log(Level.FINE, "MsRun is null!");
         }
     }
 }

@@ -53,7 +53,7 @@ public class MzTabValidatorTest {
     static MzTab createTestFile() {
         Contact contact1 = new Contact().
             name("Nils Hoffmann").
-            email("nils.hoffmann_at_isas.de").
+            email("nils.hoffmann@isas.de").
             affiliation(
                 "ISAS e.V. Dortmund, Germany");
         contact1.id(1);

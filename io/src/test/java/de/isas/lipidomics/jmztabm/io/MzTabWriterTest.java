@@ -464,8 +464,8 @@ public class MzTabWriterTest {
             addAbundanceAssayItem(5.448784E-05).
             addAbundanceStudyVariableItem(4.448784E-05).
             addAbundanceStudyVariableItem(5.448784E-05).
-            addAbundanceCoeffvarStudyVariableItem(0.0d).
-            addAbundanceCoeffvarStudyVariableItem(0.00001d);
+            addAbundanceVariationStudyVariableItem(0.0d).
+            addAbundanceVariationStudyVariableItem(0.00001d);
         mzTabFile.addSmallMoleculeSummaryItem(smsi);
         try (StringWriter sw = new StringWriter()) {
             new MzTabWriter().
@@ -525,8 +525,8 @@ public class MzTabWriterTest {
             addAbundanceAssayItem(null).
             addAbundanceStudyVariableItem(4.448784E-05).
             addAbundanceStudyVariableItem(null).
-            addAbundanceCoeffvarStudyVariableItem(0.0d).
-            addAbundanceCoeffvarStudyVariableItem(0.00001d);
+            addAbundanceVariationStudyVariableItem(0.0d).
+            addAbundanceVariationStudyVariableItem(0.00001d);
         mzTabFile.addSmallMoleculeSummaryItem(smsi);
         try (StringWriter sw = new StringWriter()) {
             new MzTabWriter().
@@ -878,7 +878,7 @@ public class MzTabWriterTest {
         }
         summary.setAbundanceStudyVariable(abundanceStudyVariable);
         summary.
-            setAbundanceCoeffvarStudyVariable(abundanceCoeffvarStudyVariable);
+            setAbundanceVariationStudyVariable(abundanceCoeffvarStudyVariable);
         mztab.addSmallMoleculeSummaryItem(summary);
 
         File tempFile = File.createTempFile(

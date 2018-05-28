@@ -110,8 +110,8 @@ public class SMLLineParser extends MZTabDataLineParser<SmallMoleculeSummary> {
                         smallMoleculeSummary.addAbundanceAssayItem(checkDouble(column, target));
                     }else if(columnName.startsWith("abundance_study_variable")) {
                         smallMoleculeSummary.addAbundanceStudyVariableItem(checkDouble(column, target));
-                    }else if(columnName.startsWith("abundance_coeffvar_study_variable")) {
-                        smallMoleculeSummary.addAbundanceCoeffvarStudyVariableItem(checkDouble(column, target));
+                    }else if(columnName.startsWith("abundance_variation_study_variable")) {
+                        smallMoleculeSummary.addAbundanceVariationStudyVariableItem(checkDouble(column, target));
                     }
                 } else if (column instanceof OptionColumn) {
                     //Double check, the column name should opt

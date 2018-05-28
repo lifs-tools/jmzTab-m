@@ -108,9 +108,9 @@ public class SmallMoleculeSummarySerializer extends StdSerializer<SmallMoleculeS
                 toString(), jg, smallMoleculeSummary.
                     getAbundanceStudyVariable());
             writeIndexedDoubles(
-                AbundanceColumn.Field.ABUNDANCE_COEFFVAR_STUDY_VARIABLE.
+                AbundanceColumn.Field.ABUNDANCE_VARIATION_STUDY_VARIABLE.
                     toString(), jg,
-                smallMoleculeSummary.getAbundanceCoeffvarStudyVariable());
+                smallMoleculeSummary.getAbundanceVariationStudyVariable());
 
             writeOptColumnMappings(smallMoleculeSummary.getOpt(), jg, sp);
             jg.writeEndObject();

@@ -284,7 +284,7 @@ public class MTDLineParser extends MZTabLineParser {
      */
     private IndexedElement checkIndexedElement(String defineLabel,
         String valueLabel, MetadataElement element) throws MZTabException {
-        IndexedElement indexedElement = parseParameter(valueLabel, element);
+        IndexedElement indexedElement = parseIndexedElement(valueLabel, element);
         if (indexedElement == null) {
             MZTabError error = new MZTabError(FormatErrorType.IndexedElement,
                 lineNumber, Error_Header + defineLabel, valueLabel);
@@ -803,6 +803,21 @@ public class MTDLineParser extends MZTabLineParser {
                 case MS_RUN_LOCATION:
                     msRun = context.addMsRunLocation(metadata, id, checkURL(
                         defineLabel, valueLabel));
+                    break;
+                case MS_RUN_INSTRUMENT_REF:
+                    List<IndexedElement> indexedElements = checkIndexedElementList(defineLabel, valueLabel,
+                        MetadataElement.INSTRUMENT);
+                    if (indexedElements != null && !indexedElements.isEmpty() && indexedElements.size()==1) {
+                        Instrument instrument = context.getInstrumentMap().
+                            get(indexedElements.get(0).getId());
+                        if (instrument == null) {
+                            throw new MZTabException(new MZTabError(
+                                LogicalErrorType.NotDefineInMetadata, lineNumber,
+                                valueLabel,
+                                valueLabel));
+                        }
+                        msRun = context.addMsRunInstrumentRef(metadata, id, instrument);
+                    }
                     break;
                 case MS_RUN_ID_FORMAT:
                     msRun = context.addMsRunIdFormat(metadata, id,
