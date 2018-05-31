@@ -19,7 +19,7 @@ package uk.ac.ebi.pride.jmztab1_1.model;
  * <p>ISmallMoleculeColumn interface.</p>
  *
  * @author nilshoffmann
- * @since 1.1
+ * @since 2.0
  * 
  */
 public interface ISmallMoleculeColumn extends IMZTabColumn {

@@ -41,17 +41,16 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import uk.ac.ebi.pride.jmztab1_1.model.MZTabConstants;
 import uk.ac.ebi.pride.jmztab1_1.model.MetadataElement;
 import uk.ac.ebi.pride.jmztab1_1.model.MetadataProperty;
 import uk.ac.ebi.pride.jmztab1_1.model.Section;
 
 /**
  * <p>
- * MetadataSerializer class.</p>
+ * MetadataSerializer class. Implements a custom, partially delegating serializer for MzTab objects 
+ * based on Jackson CSV.</p>
  *
  * @author nilshoffmann
  *
@@ -162,7 +161,7 @@ public class MetadataSerializer extends StdSerializer<Metadata> {
         if (t != null) {
             String prefix = t.getPrefix().
                 name();
-            addLine(jg, prefix, "mzTab-version", t.getMzTabID());
+            addLine(jg, prefix, "mzTab-version", t.getMzTabVersion());
             addLine(jg, prefix, "mzTab-ID", t.
                 getMzTabID());
             addLine(jg, prefix, "title", t.
@@ -170,8 +169,8 @@ public class MetadataSerializer extends StdSerializer<Metadata> {
             addLine(jg, prefix, "description", t.
                 getDescription());
             //contacts
-            if (t.getContacts() != null) {
-                serializeList(t.getContacts(), jg, sp, Comparator.comparing(
+            if (t.getContact() != null) {
+                serializeList(t.getContact(), jg, sp, Comparator.comparing(
                     Contact::getId,
                     Comparator.nullsFirst(Comparator.naturalOrder())
                 ));
@@ -180,8 +179,8 @@ public class MetadataSerializer extends StdSerializer<Metadata> {
                     log(Level.FINE, "Contacts are null!");
             }
             //publications
-            if (t.getPublications() != null) {
-                serializeList(t.getPublications(), jg, sp, Comparator.comparing(
+            if (t.getPublication() != null) {
+                serializeList(t.getPublication(), jg, sp, Comparator.comparing(
                     Publication::getId,
                     Comparator.nullsFirst(Comparator.naturalOrder())
                 ));
@@ -211,9 +210,9 @@ public class MetadataSerializer extends StdSerializer<Metadata> {
                     log(Level.FINE, "External Study is null!");
             }
             //instruments
-            if (t.getInstruments() != null) {
+            if (t.getInstrument() != null) {
                 serializeList(
-                    t.getInstruments(), jg, sp, Comparator.comparing(
+                    t.getInstrument(), jg, sp, Comparator.comparing(
                     Instrument::getId,
                     Comparator.nullsFirst(Comparator.naturalOrder())
                 ));
@@ -274,8 +273,8 @@ public class MetadataSerializer extends StdSerializer<Metadata> {
                     log(Level.FINE, "Derivatization agent is null!");
             }
             //ms run
-            if (t.getMsrun() != null) {
-                serializeList(t.getMsrun(), jg, sp, Comparator.comparing(
+            if (t.getMsRun() != null) {
+                serializeList(t.getMsRun(), jg, sp, Comparator.comparing(
                     MsRun::getId,
                     Comparator.nullsFirst(Comparator.naturalOrder())
                 ));

@@ -39,9 +39,9 @@ public enum Section {
     Small_Molecule_Evidence         ("SME", "small_molecule_evidence",           13);
     
 
-    private String prefix;
-    private String name;
-    private int level;
+    private final String prefix;
+    private final String name;
+    private final int level;
 
     Section(String prefix, String name, int level) {
         this.prefix = prefix;

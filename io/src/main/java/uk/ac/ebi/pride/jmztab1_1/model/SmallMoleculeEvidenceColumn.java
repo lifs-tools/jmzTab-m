@@ -3,6 +3,8 @@ package uk.ac.ebi.pride.jmztab1_1.model;
 import de.isas.mztab1_1.model.IndexedElement;
 import de.isas.mztab1_1.model.Parameter;
 import de.isas.mztab1_1.model.StringList;
+import de.isas.mztab1_1.model.SmallMoleculeEvidence;
+import static de.isas.mztab1_1.model.SmallMoleculeEvidence.Properties.*;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -30,37 +32,49 @@ public class SmallMoleculeEvidenceColumn implements ISmallMoleculeEvidenceColumn
     }
 
     public static enum Stable implements ISmallMoleculeEvidenceColumn {
-        SME_ID("SME_ID", Integer.class, false, "01"),
-        EVIDENCE_UNIQUE_ID("evidence_input_id", Integer.class, false, "02"),
-        DATABASE_IDENTIFIER("database_identifier", String.class, false, "03"),
+        SME_ID(smeId.toUpper(), Integer.class, false, "01"),
+        EVIDENCE_INPUT_ID(evidenceInputId, Integer.class, false, "02"),
+        DATABASE_IDENTIFIER(databaseIdentifier, String.class, false, "03"),
         CHEMICAL_FORMULA(
-            "chemical_formula", String.class, true, "04"),
-        SMILES("smiles",
+            chemicalFormula, String.class, true, "04"),
+        SMILES(smiles,
             String.class, true, "05"),
-        INCHI("inchi",
+        INCHI(inchi,
             String.class, true, "06"),
         CHEMICAL_NAME(
-            "chemical_name", String.class, true, "07"),
-        URI("uri",
+            chemicalName, String.class, true, "07"),
+        URI(uri,
             java.net.URI.class, true, "08"),
-        DERIVATIZED_FORM("derivatized_form", String.class, true, "09"),
+        DERIVATIZED_FORM(derivatizedForm, String.class, true, "09"),
         ADDUCT_ION(
-            "adduct_ion", String.class, false, "10"),
+            adductIon, String.class, false, "10"),
         EXP_MASS_TO_CHARGE(
-            "exp_mass_to_charge", Double.class, false, "11"),
-        CHARGE("charge", Integer.class, false, "12"),
-        THEORETICAL_MASS_TO_CHARGE("theoretical_mass_to_charge", Double.class,
+            expMassToCharge, Double.class, false, "11"),
+        CHARGE(charge, Integer.class, false, "12"),
+        THEORETICAL_MASS_TO_CHARGE(theoreticalMassToCharge, Double.class,
             false, "13"),
-        SPECTRA_REF("spectra_ref", StringList.class, false, "14"),
-        IDENTIFICATION_METHOD("identification_method", Parameter.class, false,
+        SPECTRA_REF(spectraRef, StringList.class, false, "14"),
+        IDENTIFICATION_METHOD(identificationMethod, Parameter.class, false,
             "15"),
-        MS_LEVEL("ms_level", Parameter.class, false, "16"),
-        RANK("rank", Integer.class, false, "17");
+        MS_LEVEL(msLevel, Parameter.class, false, "16"),
+        RANK(rank, Integer.class, false, "17");
         // FIXME check whether this works (indexed columns), may require custom serializer
 //        ID_CONFIDENCE_MEASURE("id_confidence_measure", StringList.class, true, "18");
 
         private final ISmallMoleculeEvidenceColumn column;
 
+        private Stable(SmallMoleculeEvidence.Properties property, Class columnType, boolean optional,
+            String order, Integer id) {
+            this.column = new SmallMoleculeEvidenceColumn(property.getPropertyName(), columnType, optional,
+                order, id);
+        }
+        
+        private Stable(SmallMoleculeEvidence.Properties property, Class columnType, boolean optional,
+            String order) {
+            this.column = new SmallMoleculeEvidenceColumn(property.getPropertyName(), columnType, optional,
+                order);
+        }
+        
         private Stable(String name, Class columnType, boolean optional,
             String order) {
             this.column = new SmallMoleculeEvidenceColumn(name, columnType,

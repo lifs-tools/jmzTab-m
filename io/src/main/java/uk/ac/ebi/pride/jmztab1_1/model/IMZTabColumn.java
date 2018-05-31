@@ -21,7 +21,7 @@ import de.isas.mztab1_1.model.IndexedElement;
  * <p>IMZTabColumn interface.</p>
  *
  * @author nilshoffmann
- * @since 1.1
+ * @since 2.0
  * 
  */
 public interface IMZTabColumn {

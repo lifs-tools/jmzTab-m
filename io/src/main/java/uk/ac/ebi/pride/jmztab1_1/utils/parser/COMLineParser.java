@@ -38,6 +38,6 @@ public class COMLineParser extends MZTabLineParser {
      */
     public Comment getComment() {
         String msg = items.length == 1 ? "" : items[1];
-        return new Comment().msg(msg).lineNumber(Integer.valueOf(lineNumber));
+        return new Comment().msg(msg).lineNumber(lineNumber);
     }
 }

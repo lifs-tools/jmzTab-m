@@ -1,6 +1,8 @@
 package uk.ac.ebi.pride.jmztab1_1.model;
 
 import de.isas.mztab1_1.model.IndexedElement;
+import de.isas.mztab1_1.model.SmallMoleculeFeature;
+import static de.isas.mztab1_1.model.SmallMoleculeFeature.Properties.*;
 import de.isas.mztab1_1.model.StringList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -28,21 +30,33 @@ public class SmallMoleculeFeatureColumn implements ISmallMoleculeFeatureColumn {
     }
 
     public static enum Stable implements ISmallMoleculeFeatureColumn {
-        SMF_ID("SMF_ID", Integer.class, false, "01"),
-        SME_ID_REFS("SME_ID_REFS", StringList.class, true, "02"),
+        SMF_ID(smfId.toUpper(), Integer.class, false, "01"),
+        SME_ID_REFS(smeIdRefs.toUpper(), StringList.class, true, "02"),
         SME_ID_REF_AMBIGUITY_CODE("SME_ID_REF_ambiguity_code", Integer.class, true, "03"),
         ADDUCT_ION(
-                "adduct_ion", String.class, true, "04"),
-        ISOTOPOMER("isotopomer", String.class, true, "05"),
+                adductIon, String.class, true, "04"),
+        ISOTOPOMER(isotopomer, String.class, true, "05"),
         EXP_MASS_TO_CHARGE(
-                "exp_mass_to_charge", Double.class, false, "06"),
-        CHARGE("charge", Integer.class, false, "07"),
-        RETENTION_TIME_IN_SECONDS("retention_time_in_seconds", Double.class, true, "08"),
-        RETENTION_TIME_IN_SECONDS_START("retention_time_in_seconds_start", Double.class, true, "09"),
-        RETENTION_TIME_IN_SECONDS_END("retention_time_in_seconds_end", Double.class, true, "10");
+                expMassToCharge, Double.class, false, "06"),
+        CHARGE(charge, Integer.class, false, "07"),
+        RETENTION_TIME_IN_SECONDS(retentionTimeInSeconds, Double.class, true, "08"),
+        RETENTION_TIME_IN_SECONDS_START(retentionTimeInSecondsStart, Double.class, true, "09"),
+        RETENTION_TIME_IN_SECONDS_END(retentionTimeInSecondsEnd, Double.class, true, "10");
 
         private final ISmallMoleculeFeatureColumn column;
 
+        private Stable(SmallMoleculeFeature.Properties property, Class columnType, boolean optional,
+            String order, Integer id) {
+            this.column = new SmallMoleculeFeatureColumn(property.getPropertyName(), columnType, optional,
+                order, id);
+        }
+        
+        private Stable(SmallMoleculeFeature.Properties property, Class columnType, boolean optional,
+            String order) {
+            this.column = new SmallMoleculeFeatureColumn(property.getPropertyName(), columnType, optional,
+                order);
+        }
+        
         private Stable(String name, Class columnType, boolean optional,
                 String order) {
             this.column = new SmallMoleculeFeatureColumn(name, columnType, optional,

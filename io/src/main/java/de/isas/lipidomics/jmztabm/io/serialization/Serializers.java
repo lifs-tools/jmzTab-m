@@ -40,6 +40,8 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import uk.ac.ebi.pride.jmztab1_1.model.IMZTabColumn;
 import uk.ac.ebi.pride.jmztab1_1.model.MZTabConstants;
+import static uk.ac.ebi.pride.jmztab1_1.model.MZTabConstants.CALCULATE_ERROR;
+import static uk.ac.ebi.pride.jmztab1_1.model.MZTabConstants.INFINITY;
 import static uk.ac.ebi.pride.jmztab1_1.model.MZTabConstants.NULL;
 import uk.ac.ebi.pride.jmztab1_1.model.MetadataElement;
 import uk.ac.ebi.pride.jmztab1_1.model.MetadataProperty;
@@ -284,9 +286,8 @@ public class Serializers {
         String propertyName, Object element,
         List<Parameter> value) {
         if (value == null || value.isEmpty()) {
-            Logger.getLogger(Serializers.class.getName()).
-                fine("Skipping null or empty values for " + getElementName(
-                    element));
+            Logger.getLogger(Serializers.class.getName()).log(Level.FINE, "Skipping null or empty values for {0}", getElementName(
+                element));
             return;
         }
         addLineWithProperty(jg, prefix, propertyName, element, value.stream().
@@ -328,15 +329,13 @@ public class Serializers {
         String propertyName, Object element,
         Object... value) {
         if (value == null || value.length == 0) {
-            Logger.getLogger(Serializers.class.getName()).
-                fine("Skipping null or empty values for " + getElementName(
-                    element));
+            Logger.getLogger(Serializers.class.getName()).log(Level.FINE, "Skipping null or empty values for {0}", getElementName(
+                element));
             return;
         }
         if (value.length == 1 && (value[0] == null)) {
-            Logger.getLogger(Serializers.class.getName()).
-                fine("Skipping empty value for " + getElementName(
-                    element));
+            Logger.getLogger(Serializers.class.getName()).log(Level.FINE, "Skipping empty value for {0}", getElementName(
+                element));
             return;
         }
         try {
@@ -474,7 +473,7 @@ public class Serializers {
         boolean oneLine) {
         if (checkForNull(element, subElements, subElementName)) {
             return;
-        };
+        }
         String elementName = Serializers.getElementName(element).
             get();
         if (oneLine) {
@@ -515,8 +514,8 @@ public class Serializers {
             String elementName = Serializers.getElementName(element).
                 get();
             Logger.getLogger(Serializers.class.getName()).
-                log(Level.FINE,
-                    "'" + elementName + "-" + subElementName + "' is null or empty!");
+                log(Level.FINE, "''{0}-{1}'' is null or empty!", new Object[]{elementName,
+                    subElementName});
             return;
         }
         addSubElementStrings(jg, prefix, element, subElementName, Arrays.asList(
@@ -539,7 +538,7 @@ public class Serializers {
         boolean oneLine) {
         if (checkForNull(element, subElements, subElementName)) {
             return;
-        };
+        }
         addSubElementStrings(jg, prefix, element, subElementName,
             subElements.stream().
                 map((parameter) ->
@@ -548,8 +547,7 @@ public class Serializers {
                         return new ParameterConverter().convert(parameter);
                     } catch (IllegalArgumentException npe) {
                         Logger.getLogger(Serializers.class.getName()).
-                            log(Level.FINE,
-                                "parameter is null for " + subElementName);
+                            log(Level.FINE, "parameter is null for {0}", subElementName);
                         System.err.println();
                         return "null";
                     }
@@ -572,8 +570,8 @@ public class Serializers {
             get();
         if (subElements == null || subElements.isEmpty()) {
             Logger.getLogger(Serializers.class.getName()).
-                log(Level.FINE,
-                    "'" + elementName + "-" + subElementName + "' is null or empty!");
+                log(Level.FINE, "''{0}-{1}'' is null or empty!", new Object[]{elementName,
+                    subElementName});
             return true;
         }
         return false;
@@ -823,7 +821,13 @@ public class Serializers {
         if (value == null) {
             jg.writeNullField(columnName);
         } else {
-            jg.writeNumberField(columnName, value);
+            if (value.equals(Double.NaN)) {
+                jg.writeStringField(columnName, MZTabConstants.CALCULATE_ERROR);
+            } else if (value.equals(Double.POSITIVE_INFINITY)) {
+                jg.writeStringField(columnName, MZTabConstants.INFINITY);
+            } else {
+                jg.writeNumberField(columnName, value);
+            }
         }
     }
 

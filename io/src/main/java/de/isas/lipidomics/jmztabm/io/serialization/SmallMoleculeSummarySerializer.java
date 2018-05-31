@@ -68,7 +68,7 @@ public class SmallMoleculeSummarySerializer extends StdSerializer<SmallMoleculeS
         SerializerProvider sp) throws IOException {
         if (smallMoleculeSummary != null) {
             jg.writeStartObject();
-            writeString("SMH", jg, SmallMoleculeSummary.PrefixEnum.SML.
+            writeString(SmallMoleculeSummary.HeaderPrefixEnum.SMH.getValue(), jg, SmallMoleculeSummary.PrefixEnum.SML.
                 getValue());
             writeString(SmallMoleculeColumn.Stable.SML_ID, jg,
                 smallMoleculeSummary.getSmlId());
@@ -116,7 +116,7 @@ public class SmallMoleculeSummarySerializer extends StdSerializer<SmallMoleculeS
             jg.writeEndObject();
         } else {
             Logger.getLogger(SmallMoleculeSummarySerializer.class.getName()).
-                log(Level.FINE, "SmallMoleculeSummary is null!");
+                log(Level.FINE, "{0} null!", smallMoleculeSummary.getClass().getSimpleName());
         }
     }
 

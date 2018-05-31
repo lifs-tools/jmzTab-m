@@ -18,7 +18,6 @@ import de.isas.mztab1_1.model.Sample;
 import de.isas.mztab1_1.model.SampleProcessing;
 import de.isas.mztab1_1.model.Software;
 import de.isas.mztab1_1.model.StudyVariable;
-import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -39,36 +38,28 @@ import static uk.ac.ebi.pride.jmztab1_1.model.MZTabUtils.isEmpty;
  */
 @Data
 public class MZTabParserContext {
-    private SortedMap<Integer, SampleProcessing> sampleProcessingMap = new TreeMap<Integer, SampleProcessing>(); //1.1
-    private SortedMap<Integer, Instrument> instrumentMap = new TreeMap<Integer, Instrument>(); //1.1
-    private SortedMap<Integer, Software> softwareMap = new TreeMap<Integer, Software>(); //1.1
-//    private SortedMap<Integer, ProteinSearchEngineScore> proteinSearchEngineScoreMap = new TreeMap<Integer, ProteinSearchEngineScore>(); 
-//    private SortedMap<Integer, PeptideSearchEngineScore> peptideSearchEngineScoreMap = new TreeMap<Integer, PeptideSearchEngineScore>();
-//    private SortedMap<Integer, PSMSearchEngineScore> psmSearchEngineScoreMap = new TreeMap<Integer, PSMSearchEngineScore>();
+    private SortedMap<Integer, SampleProcessing> sampleProcessingMap = new TreeMap<>(); 
+    private SortedMap<Integer, Instrument> instrumentMap = new TreeMap<>(); 
+    private SortedMap<Integer, Software> softwareMap = new TreeMap<>(); 
 
-    private SortedMap<Integer, Publication> publicationMap = new TreeMap<Integer, Publication>(); //1.1
-//    private SplitList<Parameter> falseDiscoveryRate = new SplitList<Parameter>(BAR);
-    private SortedMap<Integer, Contact> contactMap = new TreeMap<Integer, Contact>(); //1.1
-//    private List<URI> uriList = new ArrayList<URI>(); //1.1
-//    private SortedMap<Integer, FixedMod> fixedModMap = new TreeMap<Integer, FixedMod>();
-//    private SortedMap<Integer, VariableMod> variableModMap = new TreeMap<Integer, VariableMod>();
-    private Parameter quantificationMethod; //1.1
-//    private Parameter proteinQuantificationUnit;
-//    private Parameter peptideQuantificationUnit;
-    private SortedMap<Integer, Assay> assayMap = new TreeMap<Integer, Assay>(); //1.1
-    private Parameter smallMoleculeQuantificationUnit;
-    private SortedMap<Integer, MsRun> msRunMap = new TreeMap<Integer, MsRun>();
-    private SortedMap<Integer, Parameter> customItemMap = new TreeMap<Integer, Parameter>(); //1.1
-    private SortedMap<Integer, Parameter> idConfidenceMeasureMap = new TreeMap<Integer, Parameter>(); //1.1
+    private SortedMap<Integer, Publication> publicationMap = new TreeMap<>(); 
+    private SortedMap<Integer, Contact> contactMap = new TreeMap<>();
+    private Parameter quantificationMethod; 
     
-    private SortedMap<Integer, Sample> sampleMap = new TreeMap<Integer, Sample>();
-    private SortedMap<Integer, StudyVariable> studyVariableMap = new TreeMap<Integer, StudyVariable>();
-    private SortedMap<Integer, CV> cvMap = new TreeMap<Integer, CV>();
-    private SortedMap<Integer, Database> databaseMap = new TreeMap<Integer, Database>();
-    private List<ColumnParameterMapping> smallMoleculeColUnitList = new ArrayList<ColumnParameterMapping>();
-    private List<ColumnParameterMapping> smallMoleculeFeatureColUnitList = new ArrayList<ColumnParameterMapping>();
-    private List<ColumnParameterMapping> smallMoleculeEvidenceColUnitList = new ArrayList<ColumnParameterMapping>();
-    private Map<String, String> colUnitMap = new HashMap<String, String>();
+    private SortedMap<Integer, Assay> assayMap = new TreeMap<>(); 
+    private Parameter smallMoleculeQuantificationUnit;
+    private SortedMap<Integer, MsRun> msRunMap = new TreeMap<>();
+    private SortedMap<Integer, Parameter> customItemMap = new TreeMap<>(); 
+    private SortedMap<Integer, Parameter> idConfidenceMeasureMap = new TreeMap<>(); 
+    
+    private SortedMap<Integer, Sample> sampleMap = new TreeMap<>();
+    private SortedMap<Integer, StudyVariable> studyVariableMap = new TreeMap<>();
+    private SortedMap<Integer, CV> cvMap = new TreeMap<>();
+    private SortedMap<Integer, Database> databaseMap = new TreeMap<>();
+    private List<ColumnParameterMapping> smallMoleculeColUnitList = new ArrayList<>();
+    private List<ColumnParameterMapping> smallMoleculeFeatureColUnitList = new ArrayList<>();
+    private List<ColumnParameterMapping> smallMoleculeEvidenceColUnitList = new ArrayList<>();
+    private Map<String, String> colUnitMap = new HashMap<>();
     
     /**
      * Add a sample to metadata. Samples are NOT MANDATORY in mzTab, since many software packages cannot determine what
@@ -331,7 +322,7 @@ public class MZTabParserContext {
             throw new IllegalArgumentException("Instrument should not be null");
         }
         instrumentMap.put(instrument.getId(), instrument);
-        metadata.addInstrumentsItem(instrument);
+        metadata.addInstrumentItem(instrument);
         return instrument;
     }
 
@@ -357,7 +348,7 @@ public class MZTabParserContext {
             instrument.id(id);
             instrument.instrumentName(name);
             instrumentMap.put(id, instrument);
-            metadata.addInstrumentsItem(instrument);
+            metadata.addInstrumentItem(instrument);
         } else {
             instrument.instrumentName(name);
         }
@@ -386,7 +377,7 @@ public class MZTabParserContext {
             instrument.id(id);
             instrument.setInstrumentSource(source);
             instrumentMap.put(id, instrument);
-            metadata.addInstrumentsItem(instrument);
+            metadata.addInstrumentItem(instrument);
         } else {
             instrument.setInstrumentSource(source);
         }
@@ -415,7 +406,7 @@ public class MZTabParserContext {
             instrument.id(id);
             instrument.addInstrumentAnalyzerItem(analyzer);
             instrumentMap.put(id, instrument);
-            metadata.addInstrumentsItem(instrument);
+            metadata.addInstrumentItem(instrument);
         } else {
             instrument.addInstrumentAnalyzerItem(analyzer);
         }
@@ -445,7 +436,7 @@ public class MZTabParserContext {
             instrument.id(id);
             instrument.setInstrumentDetector(detector);
             instrumentMap.put(id, instrument);
-            metadata.addInstrumentsItem(instrument);
+            metadata.addInstrumentItem(instrument);
         } else {
             instrument.setInstrumentDetector(detector);
         }
@@ -531,125 +522,6 @@ public class MZTabParserContext {
     }
 
     /**
-     * Add a protein_search_engine_score[id] parameter. The parameter's value SHOULD contain the engine score cv param.
-     * The order (numbering) SHOULD reflect their importance for the identification and be used to determine
-     * the identification's rank.
-     *
-     * @param id SHOULD be positive integer.
-     * @param param if null ignore operation.
-     */
-//    public void addProteinSearchEngineScoreParameter(Integer id, Parameter param) {
-//        if (id <= 0) {
-//            throw new IllegalArgumentException("Protein search engine score id should be great than 0!");
-//        }
-//        if (param == null) {
-//            return;
-//        }
-//
-//        ProteinSearchEngineScore searchEngineScore = proteinSearchEngineScoreMap.get(id);
-//        if (searchEngineScore == null) {
-//            searchEngineScore = new ProteinSearchEngineScore(id);
-//            searchEngineScore.setParameter(param);
-//            proteinSearchEngineScoreMap.put(id, searchEngineScore);
-//        } else {
-//            searchEngineScore.setParameter(param);
-//        }
-//    }
-
-    /**
-     * Add a peptide_search_engine_score[id] parameter. The parameter's value SHOULD contain the engine score cv param.
-     * The order (numbering) SHOULD reflect their importance for the identification and be used to determine
-     * the identification's rank.
-     *
-     * @param id SHOULD be positive integer.
-     * @param param if null ignore operation.
-     */
-//    public void addPeptideSearchEngineScoreParameter(Integer id, Parameter param) {
-//        if (id <= 0) {
-//            throw new IllegalArgumentException("Peptide search engine score id should be great than 0!");
-//        }
-//        if (param == null) {
-//            return;
-//        }
-//
-//        PeptideSearchEngineScore searchEngineScore = peptideSearchEngineScoreMap.get(id);
-//        if (searchEngineScore == null) {
-//            searchEngineScore = new PeptideSearchEngineScore(id);
-//            searchEngineScore.setParameter(param);
-//            peptideSearchEngineScoreMap.put(id, searchEngineScore);
-//        } else {
-//            searchEngineScore.setParameter(param);
-//        }
-//    }
-
-    /**
-     * Add a psm_search_engine_score[id] parameter. The parameter's value SHOULD contain the engine score cv param.
-     * The order (numbering) SHOULD reflect their importance for the identification and be used to determine
-     * the identification's rank.
-     *
-     * @param id SHOULD be positive integer.
-     * @param param if null ignore operation.
-     */
-//    public void addPsmSearchEngineScoreParameter(Integer id, Parameter param) {
-//        if (id <= 0) {
-//            throw new IllegalArgumentException("PSM search engine score id should be great than 0!");
-//        }
-//        if (param == null) {
-//            return;
-//        }
-//
-//        PSMSearchEngineScore searchEngineScore = psmSearchEngineScoreMap.get(id);
-//        if (searchEngineScore == null) {
-//            searchEngineScore = new PSMSearchEngineScore(id);
-//            searchEngineScore.setParameter(param);
-//            psmSearchEngineScoreMap.put(id, searchEngineScore);
-//        } else {
-//            searchEngineScore.setParameter(param);
-//        }
-//    }
-
-    /**
-     * Add a smallmolecule_search_engine_score[id] parameter. The parameter's value SHOULD contain the engine score cv param.
-     * The order (numbering) SHOULD reflect their importance for the identification and be used to determine
-     * the identification's rank.
-     *
-     * @param id SHOULD be positive integer.
-     * @param param if null ignore operation.
-     */
-//    public void addSmallMoleculeSearchEngineScoreParameter(Integer id, Parameter param) {
-//        if (id <= 0) {
-//            throw new IllegalArgumentException("PSM search engine score id should be great than 0!");
-//        }
-//        if (param == null) {
-//            return;
-//        }
-//
-//        SmallMoleculeSearchEngineScore searchEngineScore = smallMoleculeSearchEngineScoreMap.get(id);
-//        if (searchEngineScore == null) {
-//            searchEngineScore = new SmallMoleculeSearchEngineScore(id);
-//            searchEngineScore.setParameter(param);
-//            smallMoleculeSearchEngineScoreMap.put(id, searchEngineScore);
-//        } else {
-//            searchEngineScore.setParameter(param);
-//        }
-//    }
-
-    /**
-     * Add a false_discovery_rate parameter to metadata. The file's false discovery rate(s) reported at the PSM,
-     * peptide, and/or protein level. False Localization Rate (FLD) for the reporting of modifications can also be
-     * reported here. Multiple parameters MUST be separated by "|".
-     *
-     * @param param SHOULD NOT set null.
-     */
-//    public void addFalseDiscoveryRateParameter(Parameter param) {
-//        if (param == null) {
-//            throw new NullPointerException("False discovery rate parameter should not set null");
-//        }
-//
-//        this.falseDiscoveryRate.add(param);
-//    }
-
-    /**
      * Add a publiction to metadata. A publication associated with this file. Several publications can be given by
      * indicating the number in the square brackets after "publication". PubMed ids must be prefixed by "pubmed:",
      * DOIs by "doi:". Multiple identifiers MUST be separated by "|".
@@ -663,7 +535,7 @@ public class MZTabParserContext {
             throw new IllegalArgumentException("Publication should not be null");
         }
         publicationMap.put(publication.getId(), publication);
-        metadata.addPublicationsItem(publication);
+        metadata.addPublicationItem(publication);
         return publication;
     }
 
@@ -694,7 +566,7 @@ public class MZTabParserContext {
             publication.id(id);
             publication.addPublicationItemsItem(new PublicationItem().type(type).accession(accession));
             publicationMap.put(id, publication);
-            metadata.addPublicationsItem(publication);
+            metadata.addPublicationItem(publication);
         } else {
             publication.addPublicationItemsItem(new PublicationItem().type(type).accession(accession));
         }
@@ -725,7 +597,7 @@ public class MZTabParserContext {
             publication.id(id);
             publication.setPublicationItems(new ArrayList<>(items));
             publicationMap.put(id, publication);
-            metadata.addPublicationsItem(publication);
+            metadata.addPublicationItem(publication);
         } else {
             publication.setPublicationItems(new ArrayList<>(items));
         }
@@ -745,7 +617,7 @@ public class MZTabParserContext {
         }
 
         contactMap.put(contact.getId(), contact);
-        metadata.addContactsItem(contact);
+        metadata.addContactItem(contact);
         return contact;
     }
 
@@ -772,7 +644,7 @@ public class MZTabParserContext {
             contact.id(id);
             contact.setName(name);
             contactMap.put(id, contact);
-            metadata.addContactsItem(contact);
+            metadata.addContactItem(contact);
         } else {
             contact.setName(name);
         }
@@ -801,7 +673,7 @@ public class MZTabParserContext {
             contact.id(id);
             contact.setAffiliation(affiliation);
             contactMap.put(id, contact);
-            metadata.addContactsItem(contact);
+            metadata.addContactItem(contact);
         } else {
             contact.setAffiliation(affiliation);
         }
@@ -830,209 +702,12 @@ public class MZTabParserContext {
             contact.id(id);
             contact.setEmail(email);
             contactMap.put(id, contact);
-            metadata.addContactsItem(contact);
+            metadata.addContactItem(contact);
         } else {
             contact.setEmail(email);
         }
         return contact;
     }
-//
-//    /**
-//     * Add uri into metadata. The URI pointing to the file's source data (e.g., a PRIDE experiment or a PeptideAtlas build).
-//     *
-//     * @param uri if null ignore operation.
-//     * @param metadata a {@link de.isas.mztab1_1.model.Metadata} object.
-//     * @return a {@link java.net.URI} object.
-//     */
-//    public URI addUri(Metadata metadata, URI uri) {
-//        if (uri == null) {
-//            return null;
-//        }
-//
-//        this.uriList.add(uri);
-//        metadata.addUriItem(uri.toASCIIString());
-//        return uri;
-//    }
-
-    /**
-     * Add fixed_mod[id] into metadata. A parameter describing a fixed modifications searched for. Multiple
-     * fixed modifications are numbered 1..n.
-     *
-     * @param mod if null ignore operation.
-     */
-//    public void addFixedMod(FixedMod mod) {
-//        if (mod == null) {
-//            return;
-//        }
-//
-//        this.fixedModMap.put(mod.getId(), mod);
-//    }
-
-    /**
-     * Add fixed_mod[id] parameter into metadata. A parameter describing a fixed modifications searched for.
-     *
-     * @param id SHOULD be positive integer.
-     * @param param if null ignore operation.
-     */
-//    public void addFixedModParameter(Integer id, Parameter param) {
-//        if (id <= 0) {
-//            throw new IllegalArgumentException("fixed_mod id should be great than 0!");
-//        }
-//        if (param == null) {
-//            return;
-//        }
-//
-//        FixedMod mod = fixedModMap.get(id);
-//        if (mod == null) {
-//            mod = new FixedMod(id);
-//            mod.setParameter(param);
-//            fixedModMap.put(id, mod);
-//        } else {
-//            mod.setParameter(param);
-//        }
-//    }
-
-    /**
-     * Add fixed_mod[id]-site into metadata. A string describing a fixed modifications site. Following the unimod
-     * convention, modification site is a residue (e.g. "M"), terminus ("N-term" or "C-term") or both (e.g.
-     * "N-term Q" or "C-term K").
-     *
-     * @param id SHOULD be positive integer.
-     * @param site SHOULD NOT set empty.
-     */
-//    public void addFixedModSite(Integer id, String site) {
-//        if (id <= 0) {
-//            throw new IllegalArgumentException("fixed_mod id should be great than 0!");
-//        }
-//        if (isEmpty(site)) {
-//            throw new IllegalArgumentException("fixed_mod site should not set empty.");
-//        }
-//
-//        FixedMod mod = fixedModMap.get(id);
-//        if (mod == null) {
-//            mod = new FixedMod(id);
-//            mod.setSite(site);
-//            fixedModMap.put(id, mod);
-//        } else  {
-//            mod.setSite(site);
-//        }
-//    }
-
-    /**
-     * Add fixed_mod[id]-position into metadata. A string describing the term specifity of a fixed modification.
-     * Following the unimod convention, term specifity is denoted by the strings "Anywhere", "Any N-term",
-     * "Any C-term", "Protein N-term", "Protein C-term".
-     *
-     * @param id SHOULD be positive integer.
-     * @param position SHOULD NOT set empty.
-     */
-//    public void addFixedModPosition(Integer id, String position) {
-//        if (id <= 0) {
-//            throw new IllegalArgumentException("fixed_mod id should be great than 0!");
-//        }
-//        if (isEmpty(position)) {
-//            throw new IllegalArgumentException("fixed_mod position should not set empty.");
-//        }
-//
-//        FixedMod mod = fixedModMap.get(id);
-//        if (mod == null) {
-//            mod = new FixedMod(id);
-//            mod.setPosition(position);
-//            fixedModMap.put(id, mod);
-//        } else  {
-//            mod.setPosition(position);
-//        }
-//    }
-
-    /**
-     * Add variable_mod[id] into metadata.
-     *
-     * @param mod if null ignore operation.
-     */
-//    public void addVariableMod(VariableMod mod) {
-//        if (mod == null) {
-//            return;
-//        }
-//
-//        this.variableModMap.put(mod.getId(), mod);
-//    }
-
-    /**
-     * Add variable_mod[id] parameter into metadata. A parameter describing a variable modifications searched for.
-     * Multiple variable modifications are numbered 1.. n.
-     *
-     * @param id SHOULD be positive integer.
-     * @param param if null ignore operation.
-     */
-//    public void addVariableModParameter(Integer id, Parameter param) {
-//        if (id <= 0) {
-//            throw new IllegalArgumentException("variable_mod id should be great than 0!");
-//        }
-//        if (param == null) {
-//            return;
-//        }
-//
-//        VariableMod mod = variableModMap.get(id);
-//        if (mod == null) {
-//            mod = new VariableMod(id);
-//            mod.setParameter(param);
-//            variableModMap.put(id, mod);
-//        } else {
-//            mod.setParameter(param);
-//        }
-//    }
-
-    /**
-     * Add variable_mod[id]-site into metadata. A string describing a variable modifications site.
-     * Following the unimod convention, modification site is a residue (e.g. "M"), terminus ("N-term"
-     * or "C-term") or both (e.g. "N-term Q" or "C-term K").
-     *
-     * @param id SHOULD be positive integer.
-     * @param site SHOULD NOT set empty.
-     */
-//    public void addVariableModSite(Integer id, String site) {
-//        if (id <= 0) {
-//            throw new IllegalArgumentException("variable_mod id should be great than 0!");
-//        }
-//        if (isEmpty(site)) {
-//            throw new IllegalArgumentException("variable_mod site should not set empty.");
-//        }
-//
-//        VariableMod mod = variableModMap.get(id);
-//        if (mod == null) {
-//            mod = new VariableMod(id);
-//            mod.setSite(site);
-//            variableModMap.put(id, mod);
-//        } else  {
-//            mod.setSite(site);
-//        }
-//    }
-
-    /**
-     * Add variable_mod[id]-position into metadata. A string describing the term specifity of a variable modification.
-     * Following the unimod convention, term specifity is denoted by the strings "Anywhere", "Any N-term",
-     * "Any C-term", "Protein N-term", "Protein C-term".
-     *
-     * @param id SHOULD be positive integer.
-     * @param position SHOULD NOT set empty.
-     */
-//    public void addVariableModPosition(Integer id, String position) {
-//        if (id <= 0) {
-//            throw new IllegalArgumentException("variable_mod id should be great than 0!");
-//        }
-//        if (isEmpty(position)) {
-//            throw new IllegalArgumentException("variable_mod position should not set empty.");
-//        }
-//
-//        VariableMod mod = variableModMap.get(id);
-//        if (mod == null) {
-//            mod = new VariableMod(id);
-//            mod.setPosition(position);
-//            variableModMap.put(id, mod);
-//        } else  {
-//            mod.setPosition(position);
-//        }
-//    }
 
     /**
      * Add a ms_run[id] into metadata. An MS run is effectively one run (or set of runs on pre-fractionated samples)
@@ -1048,7 +723,7 @@ public class MZTabParserContext {
         }
 
         msRunMap.put(msRun.getId(), msRun);
-        metadata.addMsrunItem(msRun);
+        metadata.addMsRunItem(msRun);
         return msRun;
     }
 
@@ -1074,7 +749,7 @@ public class MZTabParserContext {
             msRun.id(id);
             msRun.setFormat(format);
             msRunMap.put(id, msRun);
-            metadata.addMsrunItem(msRun);
+            metadata.addMsRunItem(msRun);
         } else {
             msRun.setFormat(format);
         }
@@ -1105,7 +780,7 @@ public class MZTabParserContext {
             msRun.id(id);
             msRun.setLocation(location==null?null:location.toString());
             msRunMap.put(id, msRun);
-            metadata.addMsrunItem(msRun);
+            metadata.addMsRunItem(msRun);
         } else {
             msRun.setLocation(location.toString());
         }
@@ -1135,7 +810,7 @@ public class MZTabParserContext {
             msRun.id(id);
             msRun.setInstrumentRef(instrument);
             msRunMap.put(id, msRun);
-            metadata.addMsrunItem(msRun);
+            metadata.addMsRunItem(msRun);
         } else {
             msRun.setInstrumentRef(instrument);
         }
@@ -1146,7 +821,6 @@ public class MZTabParserContext {
      * Add ms_run[id]-id_format into metadata. Parameter specifying the id format used in the external data file.
      *
      * @param id SHOULD be positive integer.
-     * @param idFormat if null ignore operation.
      * @param idFormat if null ignore operation.
      * @param metadata a {@link de.isas.mztab1_1.model.Metadata} object.
      * @return a {@link de.isas.mztab1_1.model.MsRun} object.
@@ -1165,7 +839,7 @@ public class MZTabParserContext {
             msRun.id(id);
             msRun.setIdFormat(idFormat);
             msRunMap.put(id, msRun);
-            metadata.addMsrunItem(msRun);
+            metadata.addMsRunItem(msRun);
         } else {
             msRun.setIdFormat(idFormat);
         }
@@ -1195,7 +869,7 @@ public class MZTabParserContext {
             msRun.id(id);
             msRun.addFragmentationMethodItem(fragmentationMethod);
             msRunMap.put(id, msRun);
-            metadata.addMsrunItem(msRun);
+            metadata.addMsRunItem(msRun);
         } else {
             msRun.addFragmentationMethodItem(fragmentationMethod);
         }
@@ -1224,7 +898,7 @@ public class MZTabParserContext {
             msRun.id(id);
             msRun.setHash(hash);
             msRunMap.put(id, msRun);
-            metadata.addMsrunItem(msRun);
+            metadata.addMsRunItem(msRun);
         } else {
             msRun.setHash(hash);
         }
@@ -1253,27 +927,12 @@ public class MZTabParserContext {
             msRun.id(id);
             msRun.setHashMethod(hashMethod);
             msRunMap.put(id, msRun);
-            metadata.addMsrunItem(msRun);
+            metadata.addMsRunItem(msRun);
         } else {
             msRun.setHashMethod(hashMethod);
         }
         return msRun;
     }
-
-//    /**
-//     * Add a custom parameter into metadata. Any additional parameters describing the analysis reported.
-//     *
-//     * @param custom if null ignore operation.
-//     */
-//    public Parameter addCustom(Metadata metadata, Parameter custom) {
-//        if (custom == null) {
-//            return null;
-//        }
-//
-//        this.customList.add(custom);
-//        metadata.addCustomItem(custom);
-//        return custom;
-//    }
 
     /**
      * Add a assay into metadata. The application of a measurement about the sample (in this case through MS) -
@@ -1296,36 +955,8 @@ public class MZTabParserContext {
     }
 
     /**
-     * Add assay[id]-quantification_reagent into metadata. The reagent used to label the sample in the assay.
-     * For label-free analyses the "unlabeled sample" CV term SHOULD be used. For the "light" channel in
-     * label-based experiments the appropriate CV term specifying the labelling channel should be used.
-     *
-     * @param id SHOULD be positive integer.
-     * @param quantificationReagent if null ignore operation.
-     */
-//    public void addAssayQuantificationReagent(Integer id, Parameter quantificationReagent) {
-//        if (id <= 0) {
-//            throw new IllegalArgumentException("assay id should be great than 0!");
-//        }
-//        if (quantificationReagent == null) {
-//            return;
-//        }
-//
-//        Assay assay = assayMap.get(id);
-//        if (assay == null) {
-//            assay = new Assay();
-//            assay.id(id);
-//            assay.setQuantificationReagent(quantificationReagent);
-//            assayMap.put(id, assay);
-//        } else {
-//            assay.setQuantificationReagent(quantificationReagent);
-//        }
-//    }
-
-    /**
      * Add assay[id]-sample_ref into metadata. An association from a given assay to the sample analysed.
      *
-     * @param id SHOULD be positive integer.
      * @param id SHOULD be positive integer.
      * @param sample SHOULD NOT set null, and SHOULD be defined in metadata first.
      * @param metadata a {@link de.isas.mztab1_1.model.Metadata} object.
@@ -1386,122 +1017,6 @@ public class MZTabParserContext {
         }
         return assay;
     }
-
-    /**
-     * Add assay[assayId]-quantification_mod[1-n] into metadata. A parameter describing a modification
-     * associated with a quantification_reagent. Multiple modifications are numbered 1..n.
-     *
-     * @param assayId SHOULD be positive integer.
-     * @param mod if null ignore operation.
-     */
-//    public void addAssayQuantificationMod(Integer assayId, AssayQuantificationMod mod) {
-//        if (assayId <= 0) {
-//            throw new IllegalArgumentException("assay id should be great than 0!");
-//        }
-//        if (mod == null) {
-//            return;
-//        }
-//
-//        Assay assay = assayMap.get(assayId);
-//        if (assay == null) {
-//            assay = new Assay();
-//            assay.id(assayId);
-//            assay.addQuantificationMod(mod);
-//            assayMap.put(assayId, assay);
-//        } else {
-//            assay.addQuantificationMod(mod);
-//        }
-//    }
-
-    /**
-     * Add assay[assayId]-quantification_mod[quanModId] into metadata. A parameter describing a modification
-     * associated with a quantification_reagent.
-     *
-     * @param assayId SHOULD be positive integer.
-     * @param quanModId SHOULD be positive integer.
-     * @param param if null ignore operation.
-     */
-//    public void addAssayQuantificationModParameter(Integer assayId, Integer quanModId, Parameter param) {
-//        if (assayId <= 0) {
-//            throw new IllegalArgumentException("assay id should be great than 0!");
-//        }
-//        if (quanModId <= 0) {
-//            throw new IllegalArgumentException("quantification_mod id should be great than 0!");
-//        }
-//        if (param == null) {
-//            return;
-//        }
-//
-//        Assay assay = assayMap.get(assayId);
-//        if (assay == null) {
-//            assay = new Assay();
-//            assay.id(assayId);
-//            assay.addQuantificationModParameter(quanModId, param);
-//            assayMap.put(assayId, assay);
-//        } else {
-//            assay.addQuantificationModParameter(quanModId, param);
-//        }
-//    }
-
-    /**
-     * Add assay[assayId]-quantification_mod[quanModId]-site into metadata. A string describing the modifications
-     * site. Following the unimod convention, modification site is a residue (e.g. "M"), terminus ("N-term"
-     * or "C-term") or both (e.g. "N-term Q" or "C-term K").
-     *
-     * @param assayId SHOULD be positive integer.
-     * @param quanModId SHOULD be positive integer.
-     * @param site SHOULD NOT empty.
-     */
-//    public void addAssayQuantificationModSite(Integer assayId, Integer quanModId, String site) {
-//        if (assayId <= 0) {
-//            throw new IllegalArgumentException("assay id should be great than 0!");
-//        }
-//        if (quanModId <= 0) {
-//            throw new IllegalArgumentException("quantification_mod id should be great than 0!");
-//        }
-//        if (isEmpty(site)) {
-//            throw new IllegalArgumentException("quantification_mod-site should not empty!");
-//        }
-//
-//        Assay assay = assayMap.get(assayId);
-//        if (assay == null) {
-//            assay = new Assay(assayId);
-//            assay.addQuantificationModSite(quanModId, site);
-//            assayMap.put(assayId, assay);
-//        } else {
-//            assay.addQuantificationModSite(quanModId, site);
-//        }
-//    }
-
-    /**
-     * Add assay[assayId]-quantification_mod[quanModId]-site into metadata. A string describing the term specifity
-     * of the modification. Following the unimod convention, term specifity is denoted by the strings "Anywhere",
-     * "Any N-term", "Any C-term", "Protein N-term", "Protein C-term".
-     *
-     * @param assayId SHOULD be positive integer.
-     * @param quanModId SHOULD be positive integer.
-     * @param position SHOULD NOT empty.
-     */
-//    public void addAssayQuantificationModPosition(Integer assayId, Integer quanModId, String position) {
-//        if (assayId <= 0) {
-//            throw new IllegalArgumentException("assay id should be great than 0!");
-//        }
-//        if (quanModId <= 0) {
-//            throw new IllegalArgumentException("quantification_mod id should be great than 0!");
-//        }
-//        if (isEmpty(position)) {
-//            throw new IllegalArgumentException("quantification_mod position should not empty!");
-//        }
-//
-//        Assay assay = assayMap.get(assayId);
-//        if (assay == null) {
-//            assay = new Assay(assayId);
-//            assay.addQuantificationModPosition(quanModId, position);
-//            assayMap.put(assayId, assay);
-//        } else {
-//            assay.addQuantificationModPosition(quanModId, position);
-//        }
-//    }
 
     /**
      * Add a study variable into metadata. The variables about which the final results of a study are reported, which
@@ -1789,47 +1304,6 @@ public class MZTabParserContext {
         cv.setUrl(url);
         return cvMap.put(id, cv);
     }
-
-    /**
-     * Defines the unit for the data reported in a column of the protein section. Defines the unit for the data reported
-     * in a column of the protein section. The format of the value has to be {column name}={Parameter defining the unit}
-     * This field MUST NOT be used to define a unit for quantification columns. The unit used for protein quantification
-     * values MUST be set in protein-quantification_unit.
-     *
-     * @param column SHOULD NOT set null
-     * @param param SHOULD NOT set null
-     */
-//    public void addProteinColUnit(MZTabColumn column, Parameter param) {
-//        this.proteinColUnitList.add(new ColUnit(column, param));
-//    }
-
-    /**
-     * Defines the unit for the data reported in a column of the peptide section. Defines the used unit for a column in the
-     * peptide section. The format of the value has to be {column name}={Parameter defining the unit}. This field MUST NOT
-     * be used to define a unit for quantification columns. The unit used for peptide quantification values MUST be set in
-     * peptide-quantification_unit.
-
-     *
-     * @param column SHOULD NOT set null
-     * @param param SHOULD NOT set null
-     */
-//    public void addPeptideColUnit(MZTabColumn column, Parameter param) {
-//        this.peptideColUnitList.add(new ColUnit(column, param));
-//    }
-
-    /**
-     * Defines the unit for the data reported in a column of the PSM section. Defines the used unit for a column in the PSM
-     * section. The format of the value has to be {column name}={Parameter defining the unit} This field MUST NOT be used to
-     * define a unit for quantification columns. The unit used for peptide quantification values MUST be set in
-     * peptide-quantification_unit.
-
-     *
-     * @param column SHOULD NOT set null
-     * @param param SHOULD NOT set null
-     */
-//    public void addPSMColUnit(MZTabColumn column, Parameter param) {
-//        this.psmColUnitList.add(new ColUnit(column, param));
-//    }
 
     /**
      * Defines the unit for the data reported in a column of the small molecule section. Defines the used unit for a column

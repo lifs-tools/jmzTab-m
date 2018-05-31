@@ -174,7 +174,7 @@ public class MzTabWriter {
             withColumnSeparator(MZTabConstants.TAB);
         if(mztabfile.getMetadata().getMzTabVersion()==null) {
             //set default version if not set
-            mztabfile.getMetadata().mzTabVersion(MZTabConstants.VERSION);
+            mztabfile.getMetadata().mzTabVersion(MZTabConstants.VERSION_MZTAB_M);
         }
         try {
             mapper.writer(schema).
@@ -198,7 +198,7 @@ public class MzTabWriter {
             SmallMoleculeSummaryFormat.class);
         Builder builder = mapper.schema().
             builder();
-        builder.addColumn("SMH", CsvSchema.ColumnType.STRING).
+        builder.addColumn(SmallMoleculeSummary.HeaderPrefixEnum.SMH.getValue(), CsvSchema.ColumnType.STRING).
             addColumn(SmallMoleculeColumn.Stable.SML_ID.getHeader(),
                 CsvSchema.ColumnType.STRING).
             addColumn(SmallMoleculeColumn.Stable.SMF_ID_REFS.getHeader(),
@@ -229,14 +229,14 @@ public class MzTabWriter {
             getAssay().
             forEach((assay) ->
             {
-                builder.addColumn("abundance_assay[" + assay.getId() + "]",
+                builder.addColumn(SmallMoleculeSummary.Properties.abundanceAssay+"[" + assay.getId() + "]",
                     CsvSchema.ColumnType.NUMBER_OR_STRING);
             });
         mztabfile.getMetadata().
             getStudyVariable().
             forEach((studyVariable) ->
             {
-                builder.addColumn("abundance_study_variable[" + studyVariable.
+                builder.addColumn(SmallMoleculeSummary.Properties.abundanceStudyVariable+"[" + studyVariable.
                     getId() + "]", CsvSchema.ColumnType.NUMBER_OR_STRING);
             });
         mztabfile.getMetadata().
@@ -244,7 +244,7 @@ public class MzTabWriter {
             forEach((studyVariable) ->
             {
                 builder.addColumn(
-                    "abundance_coeffvar_study_variable[" + studyVariable.getId() + "]",
+                    SmallMoleculeSummary.Properties.abundanceVariationStudyVariable+"[" + studyVariable.getId() + "]",
                     CsvSchema.ColumnType.NUMBER_OR_STRING);
             });
         Map<String, OptColumnMapping> optColumns = new LinkedHashMap<>();
@@ -296,7 +296,7 @@ public class MzTabWriter {
 
         Builder builder = mapper.schema().
             builder();
-        builder.addColumn("SFH", CsvSchema.ColumnType.STRING).
+        builder.addColumn(SmallMoleculeFeature.HeaderPrefixEnum.SFH.getValue(), CsvSchema.ColumnType.STRING).
             addColumn(SmallMoleculeFeatureColumn.Stable.SMF_ID.getHeader(),
                 CsvSchema.ColumnType.STRING).
             addColumn(SmallMoleculeFeatureColumn.Stable.SME_ID_REFS.getHeader(),
@@ -327,7 +327,7 @@ public class MzTabWriter {
             ifPresent((assayList) ->
                 assayList.forEach((assay) ->
                 {
-                    builder.addColumn("abundance_assay[" + assay.getId() + "]",
+                    builder.addColumn(SmallMoleculeFeature.Properties.abundanceAssay+"[" + assay.getId() + "]",
                         CsvSchema.ColumnType.NUMBER_OR_STRING);
                 })
             );
@@ -366,10 +366,10 @@ public class MzTabWriter {
             SmallMoleculeEvidenceFormat.class);
         Builder builder = mapper.schema().
             builder();
-        builder.addColumn("SEH", CsvSchema.ColumnType.STRING).
+        builder.addColumn(SmallMoleculeEvidence.HeaderPrefixEnum.SEH.getValue(), CsvSchema.ColumnType.STRING).
             addColumn(SmallMoleculeEvidenceColumn.Stable.SME_ID.getHeader(),
                 CsvSchema.ColumnType.STRING).
-            addColumn(SmallMoleculeEvidenceColumn.Stable.EVIDENCE_UNIQUE_ID.
+            addColumn(SmallMoleculeEvidenceColumn.Stable.EVIDENCE_INPUT_ID.
                 getHeader(), CsvSchema.ColumnType.NUMBER_OR_STRING).
             addColumn(SmallMoleculeEvidenceColumn.Stable.DATABASE_IDENTIFIER.
                 getHeader(), CsvSchema.ColumnType.STRING).
@@ -407,7 +407,7 @@ public class MzTabWriter {
                 parameterList.forEach((param) ->
                 {
                     builder.
-                        addColumn("id_confidence_measure[" + param.getId() + "]",
+                        addColumn(SmallMoleculeEvidence.Properties.idConfidenceMeasure+"[" + param.getId() + "]",
                             CsvSchema.ColumnType.NUMBER_OR_STRING);
                 });
             });

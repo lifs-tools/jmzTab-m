@@ -20,7 +20,7 @@ public class MZTabConstants {
     /** Constant <code>TAB='\u0009'</code> */
     public final static char TAB = '\u0009';
     /** Constant <code>TABs=""+'\u0009'</code> */
-    public final static String TABs = ""+TAB;
+    public final static String TAB_STRING = ""+TAB;
     /** Constant <code>MINUS='-'</code> */
     public final static char MINUS = '-';
     /** Constant <code>BAR='\u007c'</code> */
@@ -32,5 +32,7 @@ public class MZTabConstants {
     /** Constant <code>COMMA=','</code> */
     public final static char COMMA = ',';
     /** Constant <code>VERSION="2.0.0-M"</code> */
-    public final static String VERSION = "2.0.0-M";
+    public final static String VERSION_MZTAB_M = "2.0.0-M";
+    /** Constant <code>OPT_PREFIX="opt_"</code> */
+    public final static String OPT_PREFIX = "opt_";
 }

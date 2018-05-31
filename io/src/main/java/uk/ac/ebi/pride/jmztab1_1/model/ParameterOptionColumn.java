@@ -19,7 +19,7 @@ public class ParameterOptionColumn extends OptionColumn {
     /** Constant <code>CV="cv_"</code> */
     public static final String CV = "cv_";
 
-    private Parameter param;
+    private final Parameter param;
 
     /**
      * Define a {@link uk.ac.ebi.pride.jmztab1_1.model.OptionColumn} which use CV parameter accessions in following the format:

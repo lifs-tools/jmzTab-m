@@ -85,10 +85,10 @@ public class MzTabValidatorTest {
                 mzTabID("ISAS_2017_M_11451").
                 title("A minimal test file").
                 description("A description of an mzTab file.").
-                addContactsItem(
+                addContactItem(
                     contact1
                 ).
-                addMsrunItem(
+                addMsRunItem(
                     msRun1
                 )
         );
@@ -111,8 +111,8 @@ public class MzTabValidatorTest {
         publication2.publicationItems(Arrays.asList(item2_1, item2_2));
 
         mztabfile.getMetadata().
-            addPublicationsItem(publication1).
-            addPublicationsItem(publication2);
+            addPublicationItem(publication1).
+            addPublicationItem(publication2);
         CV cv1 = new CV().label("MS").
             fullName("PSI-MS").
             version("4.0.18").

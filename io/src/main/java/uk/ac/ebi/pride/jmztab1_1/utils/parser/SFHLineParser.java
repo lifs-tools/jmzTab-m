@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
+import uk.ac.ebi.pride.jmztab1_1.model.MZTabConstants;
 import uk.ac.ebi.pride.jmztab1_1.utils.errors.MZTabErrorList;
 
 /**
@@ -26,7 +27,7 @@ import uk.ac.ebi.pride.jmztab1_1.utils.errors.MZTabErrorList;
  */
 public class SFHLineParser extends MZTabHeaderLineParser {
 
-    private static Logger logger = LoggerFactory.getLogger(SFHLineParser.class);
+    private static final Logger logger = LoggerFactory.getLogger(SFHLineParser.class);
     private Map<Integer, String> physPositionToOrder;
 
 
@@ -62,9 +63,7 @@ public class SFHLineParser extends MZTabHeaderLineParser {
 
             if (header.contains("abundance_")) {
                 checkAbundanceColumns(physicalPosition, physPositionToOrder.get(physicalPosition));
-            } else if (header.contains("abundance_stdev") || header.contains("abundance_std_error")) {
-                // ignore then, they have been process....
-            } else if (header.startsWith("opt_")) {
+            } else if (header.startsWith(MZTabConstants.OPT_PREFIX)) {
                 checkOptColumnName(header);
             } else {
                 try {
@@ -117,7 +116,7 @@ public class SFHLineParser extends MZTabHeaderLineParser {
     protected void refine() throws MZTabException {
 
         //mandatory columns
-        List<String> mandatoryColumnHeaders = new ArrayList<String>();
+        List<String> mandatoryColumnHeaders = new ArrayList<>();
         for(ISmallMoleculeFeatureColumn column: SmallMoleculeFeatureColumn.Stable.values()) {
             mandatoryColumnHeaders.add(column.getName());
         }

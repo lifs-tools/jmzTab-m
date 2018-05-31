@@ -8,6 +8,7 @@ import java.util.Objects;
 {{#supportJava6}}
 import org.apache.commons.lang3.ObjectUtils;
 {{/supportJava6}}
+import java.util.Arrays;
 {{#imports}}
 import {{import}};
 {{/imports}}
@@ -29,6 +30,7 @@ import android.os.Parcel;
 {{#useBeanValidation}}
 import javax.validation.constraints.*;
 import javax.validation.Valid;
+import de.isas.lipidomics.jmztabm.validation.constraints.*;
 {{/useBeanValidation}}
 {{#models}}
 {{#model}}

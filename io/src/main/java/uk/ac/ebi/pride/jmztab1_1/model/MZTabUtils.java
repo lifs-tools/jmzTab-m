@@ -1,6 +1,5 @@
 package uk.ac.ebi.pride.jmztab1_1.model;
 
-import de.isas.lipidomics.jmztabm.io.serialization.Serializers;
 import de.isas.mztab1_1.model.IndexedElement;
 import de.isas.mztab1_1.model.Metadata;
 import de.isas.mztab1_1.model.MsRun;
@@ -33,7 +32,7 @@ import uk.ac.ebi.pride.jmztab1_1.utils.parser.MZTabParserContext;
  */
 public class MZTabUtils {
 
-    private static Logger logger = LoggerFactory.getLogger(MZTabUtils.class);
+    private static final Logger logger = LoggerFactory.getLogger(MZTabUtils.class);
 
     /**
      * Check the string is null or blank.
@@ -214,7 +213,7 @@ public class MZTabUtils {
      * @return a {@link java.util.List} object.
      */
     public static List<String> parseStringList(char splitChar, String target) {
-        List<String> list = new ArrayList<String>(splitChar);
+        List<String> list = new ArrayList<>(splitChar);
 
         target = parseString(target);
         if (target == null) {
@@ -308,7 +307,7 @@ public class MZTabUtils {
         List<String> list = parseStringList(BAR, target);
 
         Parameter param;
-        SplitList<Parameter> paramList = new SplitList<Parameter>(BAR);
+        SplitList<Parameter> paramList = new SplitList<>(BAR);
         for (String item : list) {
             param = parseParam(item);
             if (param == null) {
@@ -331,7 +330,7 @@ public class MZTabUtils {
     public static List<String> parseGOTermList(String target) {
         List<String> list = parseStringList(COMMA, target);
 
-        List<String> goList = new SplitList<String>(COMMA);
+        List<String> goList = new SplitList<>(COMMA);
         for (String item : list) {
             item = parseString(item);
             if (item.startsWith("GO:")) {
@@ -430,7 +429,7 @@ public class MZTabUtils {
         List<String> list = parseStringList(BAR, target);
 
         Double value;
-        List<Double> valueList = new ArrayList<Double>(BAR);
+        List<Double> valueList = new ArrayList<>(BAR);
         for (String item : list) {
             value = parseDouble(item);
             if (value == null) {
@@ -544,7 +543,7 @@ public class MZTabUtils {
      */
     public static List<SpectraRef> parseSpectraRefList(MZTabParserContext context, Metadata metadata, String target) {
         List<String> list = parseStringList(BAR, target);
-        List<SpectraRef> refList = new ArrayList<SpectraRef>();
+        List<SpectraRef> refList = new ArrayList<>();
 
         Pattern pattern = Pattern.compile("ms_run\\[(\\d+)\\]:(.*)");
         Matcher matcher;

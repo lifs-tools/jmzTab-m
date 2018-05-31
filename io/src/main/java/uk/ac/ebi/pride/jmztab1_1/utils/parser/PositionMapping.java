@@ -1,6 +1,5 @@
 package uk.ac.ebi.pride.jmztab1_1.utils.parser;
 
-import uk.ac.ebi.pride.jmztab1_1.model.MZTabColumn;
 import uk.ac.ebi.pride.jmztab1_1.model.MZTabColumnFactory;
 
 import java.util.Collection;
@@ -18,9 +17,9 @@ import uk.ac.ebi.pride.jmztab1_1.model.IMZTabColumn;
  * @since 16/10/13
  * 
  */
-public class PositionMapping {
+public final class PositionMapping {
     // physicalPosition <--> logicalPosition
-    private SortedMap<Integer, String> mappings = new TreeMap<Integer, String>();
+    private final SortedMap<Integer, String> mappings = new TreeMap<>();
 
     /**
      * <p>Constructor for PositionMapping.</p>
@@ -122,7 +121,7 @@ public class PositionMapping {
      * @return a {@link java.util.SortedMap} object.
      */
     public SortedMap<String, Integer> reverse() {
-        SortedMap<String, Integer> reverseMappings = new TreeMap<String, Integer>();
+        SortedMap<String, Integer> reverseMappings = new TreeMap<>();
 
         String logicalPosition;
         for (Integer physicalPosition : mappings.keySet()) {

@@ -43,10 +43,10 @@ import static uk.ac.ebi.pride.jmztab1_1.model.MZTabConstants.TAB;
  */
 public class MZTabColumnFactory {
 
-    private SortedMap<String, IMZTabColumn> stableColumnMapping = new TreeMap<String, IMZTabColumn>();
-    private SortedMap<String, IMZTabColumn> optionalColumnMapping = new TreeMap<String, IMZTabColumn>();
-    private SortedMap<String, IMZTabColumn> abundanceColumnMapping = new TreeMap<String, IMZTabColumn>();
-    private SortedMap<String, IMZTabColumn> columnMapping = new TreeMap<String, IMZTabColumn>();
+    private SortedMap<String, IMZTabColumn> stableColumnMapping = new TreeMap<>();
+    private SortedMap<String, IMZTabColumn> optionalColumnMapping = new TreeMap<>();
+    private SortedMap<String, IMZTabColumn> abundanceColumnMapping = new TreeMap<>();
+    private SortedMap<String, IMZTabColumn> columnMapping = new TreeMap<>();
 
     private Section section;
 
@@ -275,118 +275,12 @@ public class MZTabColumnFactory {
     }
 
     /**
-     * Add the best {@link SearchEngineScore} across all replicates reported into {@link #optionalColumnMapping} and
-     * {@link #columnMapping}. This column is not available for the PSM section
-     *
-     * @param column best search_engine_score column to add. SHOULD NOT be null.
-     * @param id of the {section}_search_engine_score[id] param defined in {@link Metadata} for this column. SHOULD NOT be null.
-     *
-     * The header of the column will be represented as: best_search_engine_score[id]
-     */
-//    public void addBestSearchEngineScoreOptionalColumn(IMZTabColumn column, Integer id) {
-//        String position = column.getLogicPosition();
-//        if (columnMapping.containsKey(position)) {
-//            throw new IllegalArgumentException("There exists column " + columnMapping.get(position) + " in position " + position);
-//        }
-//
-//        IMZTabColumn newColumn = null;
-//
-//        switch (section) {
-////            case Protein_Header:
-////                if (column.getName().equals(ProteinColumn.BEST_SEARCH_ENGINE_SCORE.getName())) {
-////                    newColumn = MZTabColumn.createOptionalColumn(section, column, id, null);
-////                }
-////                break;
-////            case Peptide_Header:
-////                if (column.getName().equals(PeptideColumn.BEST_SEARCH_ENGINE_SCORE.getName())) {
-////                    newColumn = MZTabColumn.createOptionalColumn(section, column, id, null);
-////                }
-////                break;
-////            case Small_Molecule_Header:
-////                if (column.getName().equals(SmallMoleculeColumn.BEST_SEARCH_ENGINE_SCORE.getName())) {
-////                    newColumn = MZTabColumn.createOptionalColumn(section, column, id, null);
-////                }
-////                break;
-////            
-//            // TODO add a warning for PSMs, combination not possible
-//        }
-//
-//        if (newColumn != null) {
-//            optionalColumnMapping.put(newColumn.getLogicPosition(), newColumn);
-//            columnMapping.put(newColumn.getLogicPosition(), newColumn);
-//        }
-//    }
-
-    /**
-     * Add {@link SearchEngineScore} followed by {@link de.isas.mztab1_1.model.MsRun} (MsRun will be null in the PSM section) which has stable order and name,
-     * into {@link #optionalColumnMapping} and {@link #columnMapping}.
-     *
-     * @param column search_engine_score column to add. SHOULD NOT be null.
-     * @param id of the {section}_search_engine_score[id] param defined in {@link Metadata} for this column. SHOULD NOT be null.
-     * @param msRun {@link de.isas.mztab1_1.model.MsRun} for this search_engine_score
-     *
-     * The header will be represented as: search_engine_score[id]{_ms_run[1-n]}
-     */
-//    public void addSearchEngineScoreOptionalColumn(IMZTabColumn column, Integer id, MsRun msRun) {
-//        String position = column.getLogicPosition();
-//        if (columnMapping.containsKey(position)) {
-//            throw new IllegalArgumentException("There exists column " + columnMapping.get(position) + " in position " + position);
-//        }
-//
-//        IMZTabColumn newColumn = null;
-//
-//        switch (section) {
-////            case Protein_Header:
-////                if (column.getName().equals(ProteinColumn.SEARCH_ENGINE_SCORE.getName())) {
-////                    newColumn = MZTabColumn.createOptionalColumn(section, column, id, msRun);
-////                }
-////                break;
-////            case Peptide_Header:
-////                if (column.getName().equals(PeptideColumn.SEARCH_ENGINE_SCORE.getName())) {
-////                    newColumn = MZTabColumn.createOptionalColumn(section, column, id, msRun);
-////                }
-////                break;
-////            case Small_Molecule_Header:
-////                if (column.getName().equals(SmallMoleculeColumn.SEARCH_ENGINE_SCORE.getName())) {
-////                    newColumn = MZTabColumn.createOptionalColumn(section, column, id, msRun);
-////                }
-////                break;
-////            case PSM_Header:
-////                if (column.getName().equals(PSMColumn.SEARCH_ENGINE_SCORE.getName())) {
-////                    newColumn = MZTabColumn.createOptionalColumn(section, column, id, null);
-////                }
-////                break;
-//        }
-//
-//        if (newColumn != null) {
-//            optionalColumnMapping.put(newColumn.getLogicPosition(), newColumn);
-//            columnMapping.put(newColumn.getLogicPosition(), newColumn);
-//        }
-//    }
-
-
-    /**
      * Extract the order from logical position. Normally, the order is coming from top two characters of logical position.
      * For example, logical position is 092, then the order number is 9.
      */
     private String getColumnOrder(String position) {
         return position.substring(0, 2);
     }
-
-//    /**
-//     * Add {@link ProteinColumn#GO_TERMS} into {@link #optionalColumnMapping} and {@link #columnMapping}.
-//     * 
-//     * Notice: this function only used in {@link uk.ac.ebi.pride.jmztab1_1.model.Section#Protein_Header}
-//     */
-//    public void addGoTermsOptionalColumn() {
-//        if (section != Section.Protein_Header) {
-//            throw new IllegalArgumentException("go_terms optional column only add into the protein section.");
-//        }
-//
-////        MZTabColumn column = ProteinColumn.GO_TERMS;
-////        optionalColumnMapping.put(column.getLogicPosition(), column);
-////        columnMapping.put(column.getLogicPosition(), column);
-//    }
 
     /**
      * Add Reliability optional column into {@link #optionalColumnMapping} and {@link #columnMapping}.
@@ -797,7 +691,7 @@ public class MZTabColumnFactory {
             throw new NullPointerException("Parameter should not be null!");
         }
 
-        SortedMap<String, MZTabColumn> columns = new TreeMap<String, MZTabColumn>();
+        SortedMap<String, MZTabColumn> columns = new TreeMap<>();
 
         MZTabColumn column = new MZTabColumn("id_confidence_measure", columnType, false, new Integer(getColumnOrder(columnMapping.lastKey()))+"", index);
         
@@ -813,7 +707,7 @@ public class MZTabColumnFactory {
      * @return tab split column header string list.
      */
     public SplitList<String> getHeaderList() {
-        SplitList<String> headerList = new SplitList<String>(TAB);
+        SplitList<String> headerList = new SplitList<>(TAB);
 
         for (IMZTabColumn mzTabColumn : columnMapping.values()) {
             headerList.add(mzTabColumn.getHeader());
@@ -903,7 +797,7 @@ public class MZTabColumnFactory {
                 break;
         }
 
-        return header.startsWith("opt_");
+        return header.startsWith(MZTabConstants.OPT_PREFIX);
 
     }
 

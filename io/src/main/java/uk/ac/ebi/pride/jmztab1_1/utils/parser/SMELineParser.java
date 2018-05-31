@@ -10,17 +10,9 @@ import uk.ac.ebi.pride.jmztab1_1.model.ISmallMoleculeEvidenceColumn;
 import de.isas.mztab1_1.model.Metadata;
 import de.isas.mztab1_1.model.OptColumnMapping;
 import de.isas.mztab1_1.model.SmallMoleculeEvidence;
-import uk.ac.ebi.pride.jmztab1_1.utils.errors.FormatErrorType;
-import uk.ac.ebi.pride.jmztab1_1.utils.errors.LogicalErrorType;
-import uk.ac.ebi.pride.jmztab1_1.utils.errors.MZTabError;
+import uk.ac.ebi.pride.jmztab1_1.model.MZTabConstants;
 import uk.ac.ebi.pride.jmztab1_1.utils.errors.MZTabErrorList;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import uk.ac.ebi.pride.jmztab1_1.model.ISmallMoleculeColumn;
-
-import static uk.ac.ebi.pride.jmztab1_1.model.MZTabUtils.parseString;
-import static uk.ac.ebi.pride.jmztab1_1.model.SmallMoleculeColumn.*;
 
 /**
  * <p>SMELineParser class.</p>
@@ -56,7 +48,7 @@ public class SMELineParser extends MZTabDataLineParser<SmallMoleculeEvidence> {
         String target;
         int physicalPosition;
         String logicalPosition;
-        smallMoleculeEvidence = new SmallMoleculeEvidence();//(factory, metadata);
+        smallMoleculeEvidence = new SmallMoleculeEvidence();
 
         for (physicalPosition = 1; physicalPosition < items.length; physicalPosition++) {
             logicalPosition = positionMapping.get(physicalPosition);
@@ -89,8 +81,8 @@ public class SMELineParser extends MZTabDataLineParser<SmallMoleculeEvidence> {
                         case DERIVATIZED_FORM:
                             smallMoleculeEvidence.derivatizedForm(checkParameter(column, target, true));
                             break;
-                        case EVIDENCE_UNIQUE_ID:
-                            smallMoleculeEvidence.evidenceUniqueId(checkString(column, target));
+                        case EVIDENCE_INPUT_ID:
+                            smallMoleculeEvidence.evidenceInputId(checkString(column, target));
                             break;
                         case EXP_MASS_TO_CHARGE:
                             smallMoleculeEvidence.expMassToCharge(checkDouble(column, target));
@@ -126,10 +118,10 @@ public class SMELineParser extends MZTabDataLineParser<SmallMoleculeEvidence> {
 
                 } else if (column instanceof OptionColumn) {
                     //Double check, the column name should opt
-                   if (columnName.startsWith("opt_")) {
+                   if (columnName.startsWith(MZTabConstants.OPT_PREFIX)) {
                         Class dataType = column.getDataType();
                         OptColumnMapping optColMapping = new OptColumnMapping();
-                        optColMapping.identifier(columnName.substring("opt_".length()));
+                        optColMapping.identifier(columnName.substring(MZTabConstants.OPT_PREFIX.length()));
                         if (dataType.equals(String.class)) {
                             optColMapping.value(checkString(column, target));
                         } else if (dataType.equals(Double.class)) {
@@ -139,7 +131,7 @@ public class SMELineParser extends MZTabDataLineParser<SmallMoleculeEvidence> {
                         }
                         smallMoleculeEvidence.addOptItem(optColMapping);
                    }
-                } else if (column.getName().equals("id_confidence_measure")) {
+                } else if (column.getName().equals(SmallMoleculeEvidence.Properties.idConfidenceMeasure.getPropertyName())) {
                     smallMoleculeEvidence.addIdConfidenceMeasureItem(checkDouble(column, target));
                 }
             }

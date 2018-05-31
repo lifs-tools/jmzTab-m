@@ -179,7 +179,7 @@ definitions:
       - study_variable
       - cv
       - database
-      - small_molecule_quantification_unit
+      - small_molecule-quantification_unit
       - small_molecule_feature-quantification_unit
       - id_confidence_measure
     properties:
@@ -210,7 +210,7 @@ definitions:
         default: []
         items:
           $ref: '#/definitions/SampleProcessing'
-      instruments:
+      instrument:
         type: array
         default: []
         items:
@@ -220,14 +220,14 @@ definitions:
         default: []
         items:
           $ref: '#/definitions/Software'
-      publications:
+      publication:
         required:
           - items
         type: array
         default: []
         items:
           $ref: '#/definitions/Publication'
-      contacts:
+      contact:
         type: array
         default: []
         items:
@@ -254,7 +254,7 @@ definitions:
         default: []
         items:
           $ref: '#/definitions/Assay'
-      msrun:
+      ms_run:
         type: array
         default: []
         items:
@@ -284,28 +284,28 @@ definitions:
         default: []
         items:
           $ref: '#/definitions/Parameter'
-      small_molecule_quantification_unit:
+      small_molecule-quantification_unit:
         $ref: '#/definitions/Parameter'
-      small_molecule_feature_quantification_unit:
+      small_molecule_feature-quantification_unit:
         $ref: '#/definitions/Parameter'
-      small_molecule_identification_reliability:
+      small_molecule-identification_reliability:
         $ref: '#/definitions/Parameter'
       id_confidence_measure:
         type: array
         default: []
         items:
           $ref: '#/definitions/Parameter'
-      colunit_small_molecule:
+      colunit-small_molecule:
         type: array
         default: []
         items:
           $ref: '#/definitions/ColumnParameterMapping'
-      colunit_small_molecule_feature:
+      colunit-small_molecule_feature:
         type: array
         default: []
         items:
           $ref: '#/definitions/ColumnParameterMapping'
-      colunit_small_molecule_evidence:
+      colunit-small_molecule_evidence:
         type: array
         default: []
         items:
@@ -496,12 +496,12 @@ definitions:
       header_prefix:
         type: string
         enum:
-          - SHE
-        default: SHE
+          - SEH
+        default: SEH
         readOnly: true
       sme_id:
         type: string
-      evidence_unique_id:
+      evidence_input_id:
         type: string
       database_identifier:
         type: string

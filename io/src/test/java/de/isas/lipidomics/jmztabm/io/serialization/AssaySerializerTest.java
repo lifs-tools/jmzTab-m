@@ -22,11 +22,11 @@ import de.isas.mztab1_1.model.MsRun;
 import de.isas.mztab1_1.model.Sample;
 import org.junit.Test;
 import static uk.ac.ebi.pride.jmztab1_1.model.MZTabConstants.NEW_LINE;
-import static uk.ac.ebi.pride.jmztab1_1.model.MZTabConstants.TABs;
 import static de.isas.mztab1_1.model.Metadata.PrefixEnum.MTD;
 import de.isas.mztab1_1.model.Parameter;
 import uk.ac.ebi.pride.jmztab1_1.model.MetadataElement;
 import uk.ac.ebi.pride.jmztab1_1.model.MetadataProperty;
+import static uk.ac.ebi.pride.jmztab1_1.model.MZTabConstants.TAB_STRING;
 
 /**
  *
@@ -47,9 +47,8 @@ public class AssaySerializerTest extends AbstractSerializerTest {
             name(MetadataElement.ASSAY + " 1");
         metadata.addAssayItem(assay);
 
-        assertEqSentry(
-            MTD + TABs + MetadataElement.ASSAY + "[1]" + TABs + MetadataElement.ASSAY + " 1" + NEW_LINE
-            + MTD + TABs + MetadataElement.ASSAY + "[1]-external_uri" + TABs + "http://jus.tf.for.testing.de/really" + NEW_LINE,
+        assertEqSentry(MTD + TAB_STRING + MetadataElement.ASSAY + "[1]" + TAB_STRING + MetadataElement.ASSAY + " 1" + NEW_LINE
+            + MTD + TAB_STRING + MetadataElement.ASSAY + "[1]-external_uri" + TAB_STRING + "http://jus.tf.for.testing.de/really" + NEW_LINE,
             serialize(writer, metadata));
 
     }
@@ -70,10 +69,9 @@ public class AssaySerializerTest extends AbstractSerializerTest {
             sampleRef(sample);
         metadata.addAssayItem(assay);
 
-        assertEqSentry(
-            MTD + TABs + MetadataElement.ASSAY + "[" + assay.getId() + "]" + TABs + "assay 1" + NEW_LINE
-            + MTD + TABs + MetadataElement.ASSAY + "[" + assay.getId() + "]-" + MetadataProperty.ASSAY_EXTERNAL_URI + TABs + "http://jus.tf.for.testing.de/really" + NEW_LINE
-            + MTD + TABs + MetadataElement.ASSAY + "[" + assay.getId() + "]-" + MetadataProperty.ASSAY_SAMPLE_REF + TABs + "sample[1]" + NEW_LINE,
+        assertEqSentry(MTD + TAB_STRING + MetadataElement.ASSAY + "[" + assay.getId() + "]" + TAB_STRING + "assay 1" + NEW_LINE
+            + MTD + TAB_STRING + MetadataElement.ASSAY + "[" + assay.getId() + "]-" + MetadataProperty.ASSAY_EXTERNAL_URI + TAB_STRING + "http://jus.tf.for.testing.de/really" + NEW_LINE
+            + MTD + TAB_STRING + MetadataElement.ASSAY + "[" + assay.getId() + "]-" + MetadataProperty.ASSAY_SAMPLE_REF + TAB_STRING + "sample[1]" + NEW_LINE,
             serialize(writer, metadata));
     }
 
@@ -93,10 +91,9 @@ public class AssaySerializerTest extends AbstractSerializerTest {
             msRunRef(msRun);
         metadata.addAssayItem(assay);
 
-        assertEqSentry(
-            MTD + TABs + MetadataElement.ASSAY + "[" + assay.getId() + "]" + TABs + MetadataElement.ASSAY + " 1" + NEW_LINE
-            + MTD + TABs + MetadataElement.ASSAY + "[" + assay.getId() + "]-" + MetadataProperty.ASSAY_EXTERNAL_URI + TABs + "http://jus.tf.for.testing.de/really" + NEW_LINE
-            + MTD + TABs + MetadataElement.ASSAY + "[" + assay.getId() + "]-" + MetadataProperty.ASSAY_MS_RUN_REF + TABs + MetadataElement.MS_RUN + "[" + msRun.
+        assertEqSentry(MTD + TAB_STRING + MetadataElement.ASSAY + "[" + assay.getId() + "]" + TAB_STRING + MetadataElement.ASSAY + " 1" + NEW_LINE
+            + MTD + TAB_STRING + MetadataElement.ASSAY + "[" + assay.getId() + "]-" + MetadataProperty.ASSAY_EXTERNAL_URI + TAB_STRING + "http://jus.tf.for.testing.de/really" + NEW_LINE
+            + MTD + TAB_STRING + MetadataElement.ASSAY + "[" + assay.getId() + "]-" + MetadataProperty.ASSAY_MS_RUN_REF + TAB_STRING + MetadataElement.MS_RUN + "[" + msRun.
             getId() + "]" + NEW_LINE,
             serialize(writer, metadata));
     }
@@ -118,9 +115,8 @@ public class AssaySerializerTest extends AbstractSerializerTest {
             addCustomItem(customParam);
         metadata.addAssayItem(assay);
 
-        assertEqSentry(
-            MTD + TABs + MetadataElement.ASSAY + "[" + assay.getId() + "]" + TABs + MetadataElement.ASSAY + " 1" + NEW_LINE
-            + MTD + TABs + MetadataElement.ASSAY + "[" + assay.getId() + "]-" + MetadataProperty.ASSAY_CUSTOM + TABs + new ParameterConverter().
+        assertEqSentry(MTD + TAB_STRING + MetadataElement.ASSAY + "[" + assay.getId() + "]" + TAB_STRING + MetadataElement.ASSAY + " 1" + NEW_LINE
+            + MTD + TAB_STRING + MetadataElement.ASSAY + "[" + assay.getId() + "]-" + MetadataProperty.ASSAY_CUSTOM + TAB_STRING + new ParameterConverter().
             convert(customParam)
             + NEW_LINE,
             serialize(writer, metadata));

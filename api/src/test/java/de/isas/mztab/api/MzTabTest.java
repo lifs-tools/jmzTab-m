@@ -112,14 +112,14 @@ MTD	id_confidence_measure[3]	[,,Isotopic fit Score,]
                 title("A sample study").
                 description(
                     "This sample study has been created with the sole purpose of testing.").
-                addContactsItem(
+                addContactItem(
                     new Contact().
                         name("Nils Hoffmann").
                         email("nils.hoffmann_at_isas.de").
                         affiliation(
                             "ISAS e.V. Dortmund, Germany")
                 ).
-                msrun(msRuns).
+                msRun(msRuns).
                 assay(assays)
         );
         //referencing inside while building the datastructure is not possible
@@ -129,7 +129,7 @@ MTD	id_confidence_measure[3]	[,,Isotopic fit Score,]
                 new Assay().
                     name("assay1").
                     msRunRef(mztabfile.getMetadata().
-                        getMsrun().
+                        getMsRun().
                         get(0))
             );
         return mztabfile;

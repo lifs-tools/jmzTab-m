@@ -87,7 +87,7 @@ public class MTDLineParserTest {
         parser.parse(1, "MTD\tcontact[2]-affiliation\tCambridge University, UK",
             errorList);
         parser.parse(1, "MTD\tcontact[2]-email\tcrick@cam.ac.uk", errorList);
-        assertTrue(metadata.getContacts().
+        assertTrue(metadata.getContact().
             size() == 2);
     }
 
@@ -107,7 +107,7 @@ public class MTDLineParserTest {
         parser.parse(1,
             "MTD\tpublication[12]\tpubmed:20615486|doi:10.1016/j.jprot.2010.06.008",
             errorList);
-        assertTrue(metadata.getPublications().
+        assertTrue(metadata.getPublication().
             size() == 2);
     }
 

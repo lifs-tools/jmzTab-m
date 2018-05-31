@@ -65,7 +65,7 @@ public class SmallMoleculeFeatureSerializer extends StdSerializer<SmallMoleculeF
         SerializerProvider sp) throws IOException {
         if (smallMoleculeFeature != null) {
             jg.writeStartObject();
-            writeString("SFH", jg, SmallMoleculeFeature.PrefixEnum.SMF.
+            writeString(SmallMoleculeFeature.HeaderPrefixEnum.SFH.getValue(), jg, SmallMoleculeFeature.PrefixEnum.SMF.
                 getValue());
             writeString(SmallMoleculeFeatureColumn.Stable.SMF_ID, jg,
                 smallMoleculeFeature.getSmfId());
@@ -106,7 +106,7 @@ public class SmallMoleculeFeatureSerializer extends StdSerializer<SmallMoleculeF
             jg.writeEndObject();
         } else {
             Logger.getLogger(SmallMoleculeFeatureSerializer.class.getName()).
-                log(Level.FINE, "SmallMoleculeFeature is null!");
+                log(Level.FINE, "{0} is null!", smallMoleculeFeature.getClass().getSimpleName());
         }
     }
 }

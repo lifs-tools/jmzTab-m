@@ -2,6 +2,8 @@ package uk.ac.ebi.pride.jmztab1_1.model;
 
 import de.isas.mztab1_1.model.IndexedElement;
 import de.isas.mztab1_1.model.Parameter;
+import de.isas.mztab1_1.model.SmallMoleculeSummary;
+import static de.isas.mztab1_1.model.SmallMoleculeSummary.Properties.*;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -30,32 +32,43 @@ public class SmallMoleculeColumn implements ISmallMoleculeColumn {
     }
 
     public static enum Stable implements ISmallMoleculeColumn {
-        SML_ID("SML_ID", String.class, false, "01"),
-        SMF_ID_REFS("SMF_ID_REFS", SplitList.class, false, "02"),
-        DATABASE_IDENTIFIER("database_identifier", SplitList.class, false, "03"),
-        CHEMICAL_FORMULA(
-            "chemical_formula", String.class, false, "04"),
-        SMILES("smiles",
+        SML_ID(smlId.toUpper(), String.class, false, "01"),
+        SMF_ID_REFS(smfIdRefs.toUpper(), SplitList.class, false, "02"),
+        DATABASE_IDENTIFIER(databaseIdentifier, SplitList.class, false, "03"),
+        CHEMICAL_FORMULA(chemicalFormula, String.class, false, "04"),
+        SMILES(smiles,
             SplitList.class, false, "05"),
-        INCHI("inchi",
+        INCHI(inchi,
             SplitList.class, false, "06"),
         CHEMICAL_NAME(
-            "chemical_name", SplitList.class, false, "07"),
-        URI("uri",
+            chemicalName, SplitList.class, false, "07"),
+        URI(uri,
             java.net.URI.class, false, "08"),
         THEOR_NEUTRAL_MASS(
-            "theoretical_neutral_mass", Double.class, false, "09"),
+            theoreticalNeutralMass, Double.class, false, "09"),
         ADDUCT_IONS(
-            "adduct_ions", SplitList.class, false, "10"),
+            adductIons, SplitList.class, false, "10"),
         RELIABILITY(
-            "reliability", String.class, false, "11"),
+            reliability, String.class, false, "11"),
         BEST_ID_CONFIDENCE_MEASURE(
-            "best_id_confidence_measure", Parameter.class, false, "12"),
+            bestIdConfidenceMeasure, Parameter.class, false, "12"),
         BEST_ID_CONFIDENCE_VALUE(
-            "best_id_confidence_value", Double.class, false, "13");
+            bestIdConfidenceValue, Double.class, false, "13");
 
         private final ISmallMoleculeColumn column;
 
+        private Stable(SmallMoleculeSummary.Properties property, Class columnType, boolean optional,
+            String order, Integer id) {
+            this.column = new SmallMoleculeColumn(property.getPropertyName(), columnType, optional,
+                order, id);
+        }
+        
+        private Stable(SmallMoleculeSummary.Properties property, Class columnType, boolean optional,
+            String order) {
+            this.column = new SmallMoleculeColumn(property.getPropertyName(), columnType, optional,
+                order);
+        }
+        
         private Stable(String name, Class columnType, boolean optional,
             String order) {
             this.column = new SmallMoleculeColumn(name, columnType, optional,

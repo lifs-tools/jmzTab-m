@@ -22,6 +22,7 @@ import static de.isas.lipidomics.jmztabm.io.serialization.Serializers.writeAsStr
 import static de.isas.lipidomics.jmztabm.io.serialization.Serializers.writeNumber;
 import static de.isas.lipidomics.jmztabm.io.serialization.Serializers.writeString;
 import static de.isas.lipidomics.jmztabm.io.serialization.Serializers.writeObject;
+import de.isas.mztab1_1.model.Metadata;
 import de.isas.mztab1_1.model.SmallMoleculeEvidence;
 import java.io.IOException;
 import java.util.logging.Level;
@@ -65,12 +66,12 @@ public class SmallMoleculeEvidenceSerializer extends StdSerializer<SmallMolecule
         SerializerProvider sp) throws IOException {
         if (smallMoleculeEvidence != null) {
             jg.writeStartObject();
-            writeString("SEH", jg, SmallMoleculeEvidence.PrefixEnum.SME.
+            writeString(SmallMoleculeEvidence.HeaderPrefixEnum.SEH.getValue(), jg, SmallMoleculeEvidence.PrefixEnum.SME.
                 getValue());
             writeString(SmallMoleculeEvidenceColumn.Stable.SME_ID, jg,
                 smallMoleculeEvidence.getSmeId());
-            writeString(SmallMoleculeEvidenceColumn.Stable.EVIDENCE_UNIQUE_ID,
-                jg, smallMoleculeEvidence.getEvidenceUniqueId());
+            writeString(SmallMoleculeEvidenceColumn.Stable.EVIDENCE_INPUT_ID,
+                jg, smallMoleculeEvidence.getEvidenceInputId());
             writeString(SmallMoleculeEvidenceColumn.Stable.DATABASE_IDENTIFIER,
                 jg, smallMoleculeEvidence.getDatabaseIdentifier());
             writeString(SmallMoleculeEvidenceColumn.Stable.CHEMICAL_FORMULA, jg,
@@ -102,7 +103,7 @@ public class SmallMoleculeEvidenceSerializer extends StdSerializer<SmallMolecule
                     stream().
                     map((spectraRef) ->
                     {
-                        return "ms_run[" + spectraRef.getMsRun().
+                        return Metadata.Properties.msRun.getPropertyName()+"[" + spectraRef.getMsRun().
                             getId() + "]:" + spectraRef.getReference();
                     }).
                     collect(Collectors.toList()));
@@ -111,7 +112,7 @@ public class SmallMoleculeEvidenceSerializer extends StdSerializer<SmallMolecule
             writeObject(SmallMoleculeEvidenceColumn.Stable.MS_LEVEL, jg, sp,
                 smallMoleculeEvidence.
                     getMsLevel());
-            Serializers.writeIndexedDoubles("id_confidence_measure", jg,
+            Serializers.writeIndexedDoubles(SmallMoleculeEvidence.Properties.idConfidenceMeasure.getPropertyName(), jg,
                 smallMoleculeEvidence.
                     getIdConfidenceMeasure());
             writeNumber(SmallMoleculeEvidenceColumn.Stable.RANK, jg,
@@ -121,7 +122,7 @@ public class SmallMoleculeEvidenceSerializer extends StdSerializer<SmallMolecule
             jg.writeEndObject();
         } else {
             Logger.getLogger(SmallMoleculeEvidenceSerializer.class.getName()).
-                log(Level.FINE, "SmallMoleculeEvidence is null!");
+                log(Level.FINE, "{0} is null!", smallMoleculeEvidence.getClass().getSimpleName());
         }
     }
 }

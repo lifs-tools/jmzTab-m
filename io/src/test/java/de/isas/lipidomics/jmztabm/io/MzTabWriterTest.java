@@ -68,14 +68,14 @@ public class MzTabWriterTest {
                 mzTabID("ISAS_2017_M_11451").
                 title("A minimal test file").
                 description("A description of an mzTab file.").
-                addContactsItem(
+                addContactItem(
                     new Contact().id(1).
                         name("Nils Hoffmann").
                         email("nils.hoffmann_at_isas.de").
                         affiliation(
                             "ISAS e.V. Dortmund, Germany")
                 ).
-                addMsrunItem(
+                addMsRunItem(
                     new MsRun().id(1).
                         location("file:///path/to/file1.mzML").
                         format(
@@ -111,8 +111,8 @@ public class MzTabWriterTest {
         publication2.setPublicationItems(Arrays.asList(item2_1, item2_2));
 
         mztabfile.getMetadata().
-            addPublicationsItem(publication1).
-            addPublicationsItem(publication2);
+            addPublicationItem(publication1).
+            addPublicationItem(publication2);
         return mztabfile;
     }
 
@@ -153,7 +153,7 @@ public class MzTabWriterTest {
                     cvAccession("MS:1000253").
                     name("electron multiplier")
             );
-        mtd.addInstrumentsItem(instrument1);
+        mtd.addInstrumentItem(instrument1);
         Instrument instrument2 = new Instrument().id(2).
             instrumentName(
                 new Parameter().cvLabel("MS").
@@ -169,7 +169,7 @@ public class MzTabWriterTest {
             instrumentDetector(new Parameter().cvLabel("MS").
                 cvAccession("MS:1000348").
                 name("focal plane collector"));
-        mtd.addInstrumentsItem(instrument2);
+        mtd.addInstrumentItem(instrument2);
         Software software1 = new Software().id(1).
             parameter(new Parameter().cvLabel(
                 "MS").
@@ -198,14 +198,14 @@ public class MzTabWriterTest {
         Publication publication2 = new Publication().id(2);
         publication2.setPublicationItems(Arrays.asList(item2_1, item2_2));
 
-        mtd.addPublicationsItem(publication1).
-            addPublicationsItem(publication2);
+        mtd.addPublicationItem(publication1).
+            addPublicationItem(publication2);
 
-        mtd.addContactsItem(new Contact().id(1).
+        mtd.addContactItem(new Contact().id(1).
             name("James D. Watson").
             affiliation("Cambridge University, UK").
             email("watson@cam.ac.uk"));
-        mtd.addContactsItem(new Contact().id(2).
+        mtd.addContactItem(new Contact().id(2).
             name("Francis Crick").
             affiliation("Cambridge University, UK").
             email("crick@cam.ac.uk"));
@@ -231,7 +231,7 @@ public class MzTabWriterTest {
                 new Parameter().cvLabel("MS").
                     cvAccession("MS:1000133").
                     name("CID"));
-        mtd.addMsrunItem(msRun1);
+        mtd.addMsRunItem(msRun1);
         MsRun msRun2 = new MsRun().id(2).
             location("ftp://ftp.ebi.ac.uk/path/to/file").
             format(new Parameter().cvLabel("MS").
@@ -245,7 +245,7 @@ public class MzTabWriterTest {
             addFragmentationMethodItem(new Parameter().cvLabel("MS").
                 cvAccession("MS:1000422").
                 name("HCD"));
-        mtd.addMsrunItem(msRun2);
+        mtd.addMsRunItem(msRun2);
         mtd.addCustomItem(new Parameter().id(1).
             name("MS operator").
             value("Florian"));
@@ -643,6 +643,7 @@ public class MzTabWriterTest {
         MZTabFileParser parser = new MZTabFileParser(tempFile);
         MZTabErrorList errors = parser.parse(System.out,
             MZTabErrorType.Level.Info, 500);
+        System.err.println(errors);
         Assert.assertTrue(errors.isEmpty());
         compareMzTabModels(mzTabFile, parser.getMZTabFile());
     }
@@ -768,14 +769,14 @@ public class MzTabWriterTest {
     public void testSmlNullEmptyHandling() throws IOException {
         MzTab mztab = new MzTab();
         Metadata mtd = new Metadata();
-        mtd.mzTabVersion("1.1");
+        mtd.mzTabVersion("2.0.0-M");
         mtd.mzTabID("1");
         for (int i = 1; i <= 10; i++) {
             Contact c = new Contact().id(i).
                 name("C" + i).
                 email("c" + i + "@email.com").
                 affiliation("A" + i);
-            mtd.addContactsItem(c);
+            mtd.addContactItem(c);
         }
 //        mtd.addQuantificationMethodItem(new Parameter().id(1).
 //            cvLabel("MS").
@@ -800,11 +801,11 @@ public class MzTabWriterTest {
         MsRun msrun5 = new MsRun().id(5).
             location(
                 "file://D:/Experiment1/Orbitrap_CID/negative/50/018_Ex1_Orbitrap_CID_neg_50.chrom");
-        mtd.addMsrunItem(msrun1).
-            addMsrunItem(msrun2).
-            addMsrunItem(msrun3).
-            addMsrunItem(msrun4).
-            addMsrunItem(msrun5);
+        mtd.addMsRunItem(msrun1).
+            addMsRunItem(msrun2).
+            addMsRunItem(msrun3).
+            addMsRunItem(msrun4).
+            addMsRunItem(msrun5);
         Assay a1 = new Assay().id(1).
             msRunRef(msrun1);
         Assay a2 = new Assay().id(2).
@@ -848,12 +849,12 @@ public class MzTabWriterTest {
 
         SmallMoleculeSummary summary = new SmallMoleculeSummary();
         summary.setSmlId(null);
-        summary.setSmfIdRefs(new ArrayList<String>());
-        summary.setDatabaseIdentifier(new ArrayList<String>());
-        summary.setSmiles(new ArrayList<String>());
-        summary.setInchi(new ArrayList<String>());
-        summary.setChemicalName(new ArrayList<String>());
-        summary.setUri(new ArrayList<String>());
+        summary.setSmfIdRefs(new ArrayList<>());
+        summary.setDatabaseIdentifier(new ArrayList<>());
+        summary.setSmiles(new ArrayList<>());
+        summary.setInchi(new ArrayList<>());
+        summary.setChemicalName(new ArrayList<>());
+        summary.setUri(new ArrayList<>());
         List<String> adducts = new ArrayList<String>();
         adducts.add("[M+H]1+");
         summary.setAdductIons(adducts);

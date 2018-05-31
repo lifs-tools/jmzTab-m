@@ -4,7 +4,6 @@ import uk.ac.ebi.pride.jmztab1_1.model.MZTabColumnFactory;
 import uk.ac.ebi.pride.jmztab1_1.model.MZTabConstants;
 import uk.ac.ebi.pride.jmztab1_1.model.MZBoolean;
 import uk.ac.ebi.pride.jmztab1_1.model.IMZTabColumn;
-import uk.ac.ebi.pride.jmztab1_1.model.MZTabRecord;
 import uk.ac.ebi.pride.jmztab1_1.model.SplitList;
 import uk.ac.ebi.pride.jmztab1_1.model.MZTabUtils;
 import uk.ac.ebi.pride.jmztab1_1.utils.errors.MZTabError;
@@ -38,6 +37,7 @@ import static uk.ac.ebi.pride.jmztab1_1.model.MZTabUtils.*;
  * integer) to record the column location in mzTab file. And use {@link uk.ac.ebi.pride.jmztab1_1.utils.parser.PositionMapping} structure to maintain
  * the mapping between them.
  *
+ * @param <T> the type of domain object the parser creates.
  * @see SMLLineParser
  * @see SMFLineParser
  * @see SMELineParser
@@ -52,7 +52,6 @@ public abstract class MZTabDataLineParser<T> extends MZTabLineParser {
 
     protected SortedMap<Integer, IMZTabColumn> mapping;   // logical position --> offset
     protected Metadata metadata;
-    protected MZTabRecord record;
 
     /**
      * <p>Constructor for MZTabDataLineParser.</p>
@@ -102,15 +101,18 @@ public abstract class MZTabDataLineParser<T> extends MZTabLineParser {
      *
      * Validate and parse the data line, if there exist errors, add them into {@link MZTabErrorList}.
      */
+    @Override
     public void parse(int lineNumber, String line, MZTabErrorList errorList) throws MZTabException {
         super.parse(lineNumber, line, errorList);
         checkCount();
 
         int offset = checkData();
         if (offset != items.length) {
-            Logger.getLogger(MZTabDataLineParser.class.getName()).log(Level.SEVERE, "Number of expected items after parsing header is: "+offset+" but data line has: "+items.length+" items!");
-            Logger.getLogger(MZTabDataLineParser.class.getName()).log(Level.SEVERE, "Current mapping is: "+mapping);
-            Logger.getLogger(MZTabDataLineParser.class.getName()).log(Level.SEVERE, "Items given: "+Arrays.toString(items)+" expected: "+Arrays.toString(line.split("\\t")));
+            Logger.getLogger(MZTabDataLineParser.class.getName()).log(Level.SEVERE, "Number of expected items after parsing header is: {0} but data line has: {1} items!", new Object[]{offset,
+                items.length});
+            Logger.getLogger(MZTabDataLineParser.class.getName()).log(Level.SEVERE, "Current mapping is: {0}", mapping);
+            Logger.getLogger(MZTabDataLineParser.class.getName()).log(Level.SEVERE, "Items given: {0} expected: {1}", new Object[]{Arrays.toString(items),
+                Arrays.toString(line.split("\\t"))});
             this.errorList.add(new MZTabError(FormatErrorType.CountMatch, lineNumber, "" + offset, "" + items.length));
         }
     }
@@ -127,9 +129,11 @@ public abstract class MZTabDataLineParser<T> extends MZTabLineParser {
         int dataCount = items.length - 1;
 
         if (headerCount != dataCount) {
-            Logger.getLogger(MZTabDataLineParser.class.getName()).log(Level.SEVERE, "Number of expected items after parsing header is: "+headerCount+" but data line has: "+dataCount+" items!");
-            Logger.getLogger(MZTabDataLineParser.class.getName()).log(Level.SEVERE, "Current mapping is: "+mapping);
-            Logger.getLogger(MZTabDataLineParser.class.getName()).log(Level.SEVERE, "Items given: "+Arrays.toString(items)+" expected: "+Arrays.toString(line.split("\\t")));
+            Logger.getLogger(MZTabDataLineParser.class.getName()).log(Level.SEVERE, "Number of expected items after parsing header is: {0} but data line has: {1} items!", new Object[]{headerCount,
+                dataCount});
+            Logger.getLogger(MZTabDataLineParser.class.getName()).log(Level.SEVERE, "Current mapping is: {0}", mapping);
+            Logger.getLogger(MZTabDataLineParser.class.getName()).log(Level.SEVERE, "Items given: {0} expected: {1}", new Object[]{Arrays.toString(items),
+                Arrays.toString(line.split("\\t"))});
             this.errorList.add(new MZTabError(FormatErrorType.CountMatch, lineNumber, "" + dataCount, "" + headerCount));
         }
     }
@@ -207,12 +211,6 @@ public abstract class MZTabDataLineParser<T> extends MZTabLineParser {
             this.errorList.add(new MZTabError(LogicalErrorType.NULL, lineNumber, column.getHeader()));
             return null;
         }
-
-//        if (target.equalsIgnoreCase(NULL)) {
-//            if (! allowNull || metadata.getMZTabMode() == MZTabDescription.Mode.Complete) {
-//                this.errorList.add(new MZTabError(LogicalErrorType.NotNULL, lineNumber, column.getHeader()));
-//            }
-//        }
 
         return target;
     }
@@ -293,11 +291,11 @@ public abstract class MZTabDataLineParser<T> extends MZTabLineParser {
         String result = checkData(column, target, true);
 
         if (result == null || result.equalsIgnoreCase(NULL)) {
-            return new ArrayList<Parameter>(BAR);
+            return new ArrayList<>(BAR);
         }
 
         List<Parameter> paramList = parseParamList(result);
-        if (paramList.size() == 0) {
+        if (paramList.isEmpty()) {
             this.errorList.add(new MZTabError(FormatErrorType.ParamList, lineNumber, "Column " + column.getHeader(), target));
         }
 
@@ -333,11 +331,11 @@ public abstract class MZTabDataLineParser<T> extends MZTabLineParser {
         String result = checkData(column, target, true);
 
         if (result == null || result.equalsIgnoreCase(NULL)) {
-            return new ArrayList<String>(splitChar);
+            return new ArrayList<>(splitChar);
         }
 
         List<String> stringList = parseStringList(splitChar, result);
-        if (stringList.size() == 0) {
+        if (stringList.isEmpty()) {
             this.errorList.add(new MZTabError(FormatErrorType.StringList, lineNumber, column.getHeader(), result, "" + splitChar));
         }
 
@@ -356,11 +354,11 @@ public abstract class MZTabDataLineParser<T> extends MZTabLineParser {
         String result = checkData(column, target, true);
 
         if (result == null || result.equalsIgnoreCase(NULL)) {
-            return new ArrayList<Double>(MZTabConstants.BAR);
+            return new ArrayList<>(MZTabConstants.BAR);
         }
 
         List<Double> doubleList = parseDoubleList(target);
-        if (doubleList.size() == 0) {
+        if (doubleList.isEmpty()) {
             this.errorList.add(new MZTabError(FormatErrorType.DoubleList, lineNumber, column.getHeader(), result, "" + MZTabConstants.BAR));
         }
 
@@ -494,33 +492,9 @@ public abstract class MZTabDataLineParser<T> extends MZTabLineParser {
     }
 
     /**
-     * Check and translate reliability string into {@link Reliability}. Currently, only "1", "2", "3" and "null" are
-     * correct value, and others will raise {@link FormatErrorType#Reliability} error.
-     * But in "Complete" file, in general "null" values SHOULD not be given.
-     *
-     * @param column SHOULD NOT set null
-     * @param reliability SHOULD NOT be empty.
-     */
-//    protected Reliability checkReliability(IMZTabColumn column, String reliability) {
-//        String result_reliaility = checkData(column, reliability, true);
-//
-//        if (result_reliaility == null || result_reliaility.equalsIgnoreCase(NULL)) {
-//            return null;
-//        }
-//
-//        Reliability result = Reliability.findReliability(result_reliaility);
-//        if (result == null) {
-//            this.errorList.add(new MZTabError(FormatErrorType.Reliability, lineNumber, column.getHeader(), result_reliaility));
-//        }
-//
-//        return result;
-//    }
-
-    /**
      * Check and translate numPSMs string into Integer. If exists error during parse, raise {@link uk.ac.ebi.pride.jmztab1_1.utils.errors.FormatErrorType#Integer} error.
      * Normally, numPSMs can set "null", but in "Complete" file, in general "null" values SHOULD not be given.
      *
-     * @param column SHOULD NOT set null
      * @param column SHOULD NOT set null
      * @param numPSMs SHOULD NOT be empty.
      * @return a {@link java.lang.Integer} object.
@@ -566,32 +540,6 @@ public abstract class MZTabDataLineParser<T> extends MZTabLineParser {
         return checkStringList(column, ambiguityMembers, COMMA);
     }
 
-    /**
-     * Check and translate target string into {@link Modification} list which split by ',' character..
-     * If parse incorrect, raise {@link uk.ac.ebi.pride.jmztab1_1.utils.errors.FormatErrorType#ModificationList} error.
-     * Normally, ambiguityMembers can set "null", but in "Complete" file, in general "null" values SHOULD not be given.
-     *
-     * If software cannot determine protein-level modifications, "null" MUST be used.
-     * If the software has determined that there are no modifications to a given protein "0" MUST be used.
-     *
-     * @param column SHOULD NOT set null
-     * @param uri a {@link java.lang.String} object.
-     * @return a {@link java.lang.String} object.
-     */
-//    protected SplitList<Modification> checkModifications(Section section, IMZTabColumn column, String modificationsLabel) {
-//        String result_modifications = checkData(column, modificationsLabel, true);
-//
-//        if (result_modifications == null || result_modifications.equalsIgnoreCase(NULL) || result_modifications.equals("0")) {
-//            return new SplitList<Modification>(COMMA);
-//        }
-//
-//        SplitList<Modification> modificationList = parseModificationList(section, modificationsLabel);
-//        if (modificationList.size() == 0) {
-//            this.errorList.add(new MZTabError(FormatErrorType.ModificationList, lineNumber, column.getHeader(), result_modifications));
-//        }
-//
-//        return modificationList;
-//    }
     
     /**
      * Checks the provided URI string.
@@ -609,9 +557,10 @@ public abstract class MZTabDataLineParser<T> extends MZTabLineParser {
         java.net.URI result = parseURI(result_uri);
         if (result == null) {
             this.errorList.add(new MZTabError(FormatErrorType.URI, lineNumber, "Column " + column.getHeader(), result_uri));
+            return null;
+        } else {
+            return result.toASCIIString();
         }
-
-        return result.toASCIIString();
     }
 
     /**
@@ -628,11 +577,11 @@ public abstract class MZTabDataLineParser<T> extends MZTabLineParser {
         String result_spectraRef = checkData(column, spectraRef, true);
 
         if (result_spectraRef == null || result_spectraRef.equalsIgnoreCase(NULL)) {
-            return new SplitList<SpectraRef>(BAR);
+            return new SplitList<>(BAR);
         }
 
         List<SpectraRef> refList = parseSpectraRefList(context, metadata, result_spectraRef);
-        if (refList.size() == 0) {
+        if (refList.isEmpty()) {
             this.errorList.add(new MZTabError(FormatErrorType.SpectraRef, lineNumber, column.getHeader(), result_spectraRef));
         } else {
             for (SpectraRef ref : refList) {
@@ -713,12 +662,12 @@ public abstract class MZTabDataLineParser<T> extends MZTabLineParser {
         String result_go_terms = checkData(column, go_terms, true);
 
         if (result_go_terms == null || result_go_terms.equalsIgnoreCase(NULL)) {
-            return new ArrayList<String>(COMMA);
+            return new ArrayList<>(COMMA);
         }
 
 
         List<String> stringList = parseGOTermList(result_go_terms);
-        if (stringList.size() == 0) {
+        if (stringList.isEmpty()) {
             this.errorList.add(new MZTabError(FormatErrorType.GOTermList, lineNumber, column.getHeader(), result_go_terms));
         }
 
@@ -920,11 +869,11 @@ public abstract class MZTabDataLineParser<T> extends MZTabLineParser {
         String result = checkData(column, retention_time, true);
 
         if (result == null || result.equalsIgnoreCase(NULL)) {
-            return new SplitList<Double>(BAR);
+            return new SplitList<>(BAR);
         }
 
         List<Double> valueList = parseDoubleList(result);
-        if (valueList.size() == 0) {
+        if (valueList.isEmpty()) {
             this.errorList.add(new MZTabError(FormatErrorType.DoubleList, lineNumber, column.getHeader(), result, "" + BAR));
         }
 
@@ -944,11 +893,11 @@ public abstract class MZTabDataLineParser<T> extends MZTabLineParser {
         String result = checkData(column, retention_time_window, true);
 
         if (result == null || result.equalsIgnoreCase(NULL)) {
-            return new SplitList<Double>(BAR);
+            return new SplitList<>(BAR);
         }
 
         List<Double> valueList = parseDoubleList(result);
-        if (valueList.size() == 0) {
+        if (valueList.isEmpty()) {
             this.errorList.add(new MZTabError(FormatErrorType.DoubleList, lineNumber, column.getHeader(), result, "" + BAR));
         }
 

@@ -105,15 +105,15 @@ public class SMFLineParser extends MZTabDataLineParser<SmallMoleculeFeature> {
                 } else if (column instanceof AbundanceColumn) {
                     //Double check, the column name should contain
                     //Double check, the column name should contain
-                    if (columnName.startsWith("abundance_assay")) {
+                    if (columnName.startsWith(SmallMoleculeFeature.Properties.abundanceAssay.getPropertyName())) {
                         smallMoleculeFeature.addAbundanceAssayItem(checkDouble(column, target));
                     }
                 } else if (column instanceof OptionColumn) {
                     //Double check, the column name should opt
-                   if (columnName.startsWith("opt_")) {
+                   if (columnName.startsWith(MZTabConstants.OPT_PREFIX)) {
                         Class dataType = column.getDataType();
                         OptColumnMapping optColMapping = new OptColumnMapping();
-                        optColMapping.identifier(columnName.substring("opt_".length()));
+                        optColMapping.identifier(columnName.substring(MZTabConstants.OPT_PREFIX.length()));
                         if (dataType.equals(String.class)) {
                             optColMapping.value(checkString(column, target));
                         } else if (dataType.equals(Double.class)) {
@@ -139,41 +139,4 @@ public class SMFLineParser extends MZTabDataLineParser<SmallMoleculeFeature> {
         }
         return smallMoleculeFeature;
     }
-
-    /**
-     * As these two ontologies are not applicable to small molecules, so-called CHEMMODs can also be defined.
-     * CHEMMODs MUST NOT be used if the modification can be reported using a PSI-MOD or UNIMOD accession.
-     * Mass deltas MUST NOT be used for CHEMMODs if the delta can be expressed through a known chemical formula .
-     */
-//    protected SplitList<Modification> checkModifications(MZTabColumn column, String target) {
-//        SplitList<Modification> modificationList = super.checkModifications(section, column, target);
-//
-//        for (Modification mod : modificationList) {
-//            if (mod.getType() == Modification.Type.CHEMMOD) {
-//                if (target.contains("-MOD:") || target.contains("-UNIMOD:")) {
-//                    errorList.add(new MZTabError(LogicalErrorType.CHEMMODS, lineNumber, column.getHeader(), mod.toString()));
-//                }
-//
-//                if (parseChemmodAccession(mod.getAccession()) == null) {
-//                    errorList.add(new MZTabError(FormatErrorType.CHEMMODSAccession, lineNumber, column.getHeader(), mod.toString()));
-//                    return null;
-//                }
-//            }
-//        }
-//
-//        return modificationList;
-//    }
-
-//    private String parseChemmodAccession(String accession) {
-//        accession = parseString(accession);
-//
-//        Pattern pattern = Pattern.compile("[+-](\\d+(.\\d+)?)?|(([A-Z][a-z]*)(\\d*))?");
-//        Matcher matcher = pattern.matcher(accession);
-//
-//        if (matcher.find()) {
-//            return accession;
-//        } else {
-//            return null;
-//        }
-//    }
 }

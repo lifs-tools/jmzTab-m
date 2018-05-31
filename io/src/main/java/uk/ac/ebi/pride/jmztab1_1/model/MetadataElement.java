@@ -47,7 +47,7 @@ public enum MetadataElement {
     SMALLMOLECULE_FEATURE_QUANTIFICATION_UNIT ("small_molecule_feature-quantification_unit"),
     SMALLMOLECULE_IDENTIFICATION_RELIABILITY ("small_molecule-identification_reliability");
 
-    private String name;
+    private final String name;
 
     MetadataElement(String name) {
         this.name = name;

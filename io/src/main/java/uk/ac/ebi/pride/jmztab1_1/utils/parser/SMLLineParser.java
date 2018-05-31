@@ -106,19 +106,19 @@ public class SMLLineParser extends MZTabDataLineParser<SmallMoleculeSummary> {
 
                 } else if (column instanceof AbundanceColumn) {
                     //Double check, the column name should contain
-                    if (columnName.startsWith("abundance_assay")) {
+                    if (columnName.startsWith(SmallMoleculeSummary.Properties.abundanceAssay.getPropertyName())) {
                         smallMoleculeSummary.addAbundanceAssayItem(checkDouble(column, target));
-                    }else if(columnName.startsWith("abundance_study_variable")) {
+                    }else if(columnName.startsWith(SmallMoleculeSummary.Properties.abundanceStudyVariable.getPropertyName())) {
                         smallMoleculeSummary.addAbundanceStudyVariableItem(checkDouble(column, target));
-                    }else if(columnName.startsWith("abundance_variation_study_variable")) {
+                    }else if(columnName.startsWith(SmallMoleculeSummary.Properties.abundanceVariationStudyVariable.getPropertyName())) {
                         smallMoleculeSummary.addAbundanceVariationStudyVariableItem(checkDouble(column, target));
                     }
                 } else if (column instanceof OptionColumn) {
                     //Double check, the column name should opt
-                    if (columnName.startsWith("opt_")) {
+                    if (columnName.startsWith(MZTabConstants.OPT_PREFIX)) {
                         Class dataType = column.getDataType();
                         OptColumnMapping optColMapping = new OptColumnMapping();
-                        optColMapping.identifier(columnName.substring("opt_".length()));
+                        optColMapping.identifier(columnName.substring(MZTabConstants.OPT_PREFIX.length()));
                         if (dataType.equals(String.class)) {
                             optColMapping.value(checkString(column, target));
                         } else if (dataType.equals(Double.class)) {
@@ -140,6 +140,7 @@ public class SMLLineParser extends MZTabDataLineParser<SmallMoleculeSummary> {
      *
      * @return a {@link de.isas.mztab1_1.model.SmallMoleculeSummary} object.
      */
+    @Override
     public SmallMoleculeSummary getRecord() {
 
         if(smallMoleculeSummary == null){

@@ -1,27 +1,23 @@
 package uk.ac.ebi.pride.jmztab1_1.utils.parser;
 
 import uk.ac.ebi.pride.jmztab1_1.model.MZTabColumnFactory;
-import uk.ac.ebi.pride.jmztab1_1.model.IMZTabColumn;
 import uk.ac.ebi.pride.jmztab1_1.model.MZBoolean;
-import uk.ac.ebi.pride.jmztab1_1.model.Section;
 import uk.ac.ebi.pride.jmztab1_1.utils.errors.MZTabError;
 import uk.ac.ebi.pride.jmztab1_1.utils.errors.MZTabException;
 import uk.ac.ebi.pride.jmztab1_1.utils.errors.MZTabErrorList;
 import uk.ac.ebi.pride.jmztab1_1.utils.errors.FormatErrorType;
 import uk.ac.ebi.pride.jmztab1_1.utils.errors.LogicalErrorType;
 import de.isas.mztab1_1.model.Assay;
-import de.isas.mztab1_1.model.ColumnParameterMapping;
 import de.isas.mztab1_1.model.Metadata;
 import de.isas.mztab1_1.model.MsRun;
 import de.isas.mztab1_1.model.Parameter;
+import de.isas.mztab1_1.model.SmallMoleculeSummary;
 import de.isas.mztab1_1.model.StudyVariable;
-import java.util.Arrays;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import uk.ac.ebi.pride.jmztab1_1.model.MZTabColumn;
 
-import static uk.ac.ebi.pride.jmztab1_1.model.MZTabUtils.parseParam;
 
 /**
  * A couple of common method used to parse a header line into {@link uk.ac.ebi.pride.jmztab1_1.model.MZTabColumnFactory} structure.
@@ -71,6 +67,7 @@ public abstract class MZTabHeaderLineParser extends MZTabLineParser {
      * Step 1: {@link #parseColumns()} focus on validate and parse all columns. 
      * Step 2: {@link #refine()}
      */
+    @Override
     public void parse(int lineNumber, String line, MZTabErrorList errorList) throws MZTabException {
         super.parse(lineNumber, line, errorList);
 
@@ -273,10 +270,10 @@ public abstract class MZTabHeaderLineParser extends MZTabLineParser {
      */
     protected int checkAbundanceColumns(int offset, String order) throws MZTabException {
         String headerString = items[offset];
-        if (headerString.contains("abundance_assay")) {
+        if (headerString.contains(SmallMoleculeSummary.Properties.abundanceAssay.getPropertyName())) {
             checkAbundanceAssayColumn(headerString, order);
             return offset;
-        } else if (headerString.contains("abundance_study_variable") || headerString.contains("abundance_coeffvar_study_variable")) {
+        } else if (headerString.contains(SmallMoleculeSummary.Properties.abundanceStudyVariable.getPropertyName()) || headerString.contains(SmallMoleculeSummary.Properties.abundanceVariationStudyVariable.getPropertyName())) {
             checkAbundanceStudyVariableColumns(headerString, order);
             return offset;
         } else {
@@ -337,7 +334,8 @@ public abstract class MZTabHeaderLineParser extends MZTabLineParser {
                                                     String order) throws MZTabException {
         header = header.trim().toLowerCase();
 
-        if (!header.contains("abundance_study_variable") && !header.contains("abundance_coeffvar_study_variable")) {
+        if (!header.contains(SmallMoleculeSummary.Properties.abundanceStudyVariable.getPropertyName()
+            ) && !header.contains(SmallMoleculeSummary.Properties.abundanceVariationStudyVariable.getPropertyName())) {
             MZTabError error = new MZTabError(FormatErrorType.AbundanceColumn, lineNumber, header);
             throw new MZTabException(error);
         } else {
