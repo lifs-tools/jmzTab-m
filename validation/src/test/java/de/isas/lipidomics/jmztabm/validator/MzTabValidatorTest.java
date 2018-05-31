@@ -161,11 +161,11 @@ public class MzTabValidatorTest {
         MzTab mzTab = createTestFile();
         JXPathContext context = JXPathContext.newContext(mzTab);
 
-        List<?> msRuns = (List<?>) context.getValue("/metadata/msrun",
+        List<?> msRuns = (List<?>) context.getValue("/metadata/msRun",
             List.class);
         assertFalse(msRuns.isEmpty());
         assertEquals("file:///path/to/file1.mzML", toStream(context.
-            getPointer("/metadata/msrun/@location"), String.class).
+            getPointer("/metadata/msRun/@location"), String.class).
             findFirst().
             map((t) ->
             {
@@ -176,25 +176,25 @@ public class MzTabValidatorTest {
             get().
             getValue());
         Stream<? extends String> stream = toStream(context.iterate(
-            "/metadata/msrun/@location"), String.class);
+            "/metadata/msRun/@location"), String.class);
         assertEquals("file:///path/to/file1.mzML", stream.findFirst().
             get());
 
         //scopePath /metadata/msrun
         Stream<Pair<Pointer, ? extends Parameter>> pointerFormatParameters = toStream(
             context.getPointer(
-                "/metadata/msrun/@format"), Parameter.class);
+                "/metadata/msRun/@format"), Parameter.class);
         Pair<Pointer, ? extends Parameter> pair = pointerFormatParameters.
             findFirst().
             get();
-        assertEquals("/metadata/msrun[1]/@format", pair.getKey().
+        assertEquals("/metadata/msRun[1]/@format", pair.getKey().
             asPath());
         assertEquals("MS:1000584", pair.
             getValue().
             getCvAccession());
 
         Stream<? extends Parameter> formatParameters = toStream(context.iterate(
-            "/metadata/msrun/@format"), Parameter.class);
+            "/metadata/msRun/@format"), Parameter.class);
         assertEquals("MS:1000584", formatParameters.findFirst().
             get().
             getCvAccession());
