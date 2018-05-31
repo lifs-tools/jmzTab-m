@@ -1,9 +1,9 @@
-= mzTab 1.1 for Metabolomics Reader, Writer and Validator
+= mzTab 2.0 for Metabolomics Reader, Writer and Validator
 Nils Hoffmann <nils.hoffmann@isas.de>
 
 Build status: image:https://travis-ci.org/nilshoffmann/jmzTab-m.svg?branch=master["Build Status", link="https://travis-ci.org/nilshoffmann/jmzTab-m"]
 
-This project is the reference reader, writer and validator implementation for mzTab 1.1+, based on the https://github.com/PRIDE-Utilities/jmztab[jmztab project].
+This project is the reference reader, writer and validator implementation for mzTab 2.0+, based on the https://github.com/PRIDE-Utilities/jmztab[jmztab project].
 
 The latest draft version of the mzTab spec is available https://github.com/HUPO-PSI/mzTab/blob/master/specification_document/1_1_draft_specs/mzTab_format_specification_1_1-M_draft.adoc[here].
 
@@ -29,7 +29,7 @@ The generated client libraries only contain the basic domain object code. Parsin
 implemented separately. 
 
 == Running a validation with the command-line interface
-The `cli` sub-project provides a command line interface for validation of files using the mzTab 1.1 draft validator. 
+The `cli` sub-project provides a command line interface for validation of files using the mzTab 2.0 draft validator. 
 
 NOTE: Currently, we do not plan to provide a CLI-based validator for mzTab 1.0, since that is still being provided by the original https://github.com/PRIDE-Utilities/jmzTab[jmzTab project].
 
