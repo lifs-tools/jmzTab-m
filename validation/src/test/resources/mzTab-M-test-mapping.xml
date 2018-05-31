@@ -19,24 +19,24 @@
     <CvMappingRuleList>
 
         <!-- run -->
-        <CvMappingRule id="msrun_format_may" cvElementPath="/metadata/msrun/@format" requirementLevel="MAY"  scopePath="/metadata/msrun" cvTermsCombinationLogic="AND">
+        <CvMappingRule id="msrun_format_may" cvElementPath="/metadata/msRun/@format" requirementLevel="MAY"  scopePath="/metadata/msRun" cvTermsCombinationLogic="AND">
           <CvTerm termAccession="MS:1000560" useTerm="false" termName="mass spectrometer file format" isRepeatable="false" allowChildren="true" cvIdentifierRef="MS"></CvTerm>
         </CvMappingRule> 
         
-        <CvMappingRule id="msrun_id_format_may" cvElementPath="/metadata/msrun/@idformat" requirementLevel="MAY"  scopePath="/metadata/msrun" cvTermsCombinationLogic="AND">
+        <CvMappingRule id="msrun_id_format_may" cvElementPath="/metadata/msRun/@idformat" requirementLevel="MAY"  scopePath="/metadata/msRun" cvTermsCombinationLogic="AND">
           <CvTerm termAccession="MS:1000767" useTerm="false" termName="native spectrum identifier format" isRepeatable="false" allowChildren="true" cvIdentifierRef="MS"></CvTerm>
         </CvMappingRule> 
         
-        <CvMappingRule id="msrun_fragmentation_method_may" cvElementPath="/metadata/msrun/@fragmentationMethod" requirementLevel="MAY"  scopePath="/metadata/msrun" cvTermsCombinationLogic="OR">
+        <CvMappingRule id="msrun_fragmentation_method_may" cvElementPath="/metadata/msRun/@fragmentationMethod" requirementLevel="MAY"  scopePath="/metadata/msRun" cvTermsCombinationLogic="OR">
           <CvTerm termAccession="MS:1000044" useTerm="false" termName="dissociation method" isRepeatable="true" allowChildren="true" cvIdentifierRef="MS"></CvTerm>
         </CvMappingRule> 
         
-        <CvMappingRule id="msrun_scan_polarity_must" cvElementPath="/metadata/msrun/@scanPolarity" requirementLevel="MUST"  scopePath="/metadata/msrun" cvTermsCombinationLogic="OR">
+        <CvMappingRule id="msrun_scan_polarity_must" cvElementPath="/metadata/msRun/@scanPolarity" requirementLevel="MUST"  scopePath="/metadata/msRun" cvTermsCombinationLogic="OR">
           <CvTerm termAccession="MS:1000129" useTerm="true" termName="negative scan" isRepeatable="false" allowChildren="false" cvIdentifierRef="MS"></CvTerm>
           <CvTerm termAccession="MS:1000130" useTerm="true" termName="positive scan" isRepeatable="false" allowChildren="false" cvIdentifierRef="MS"></CvTerm>
         </CvMappingRule> 
         
-        <CvMappingRule id="msrun_hash_method_may" cvElementPath="/metadata/msrun/@hashMethod" requirementLevel="MAY"  scopePath="/metadata/msrun" cvTermsCombinationLogic="AND">
+        <CvMappingRule id="msrun_hash_method_may" cvElementPath="/metadata/msRun/@hashMethod" requirementLevel="MAY"  scopePath="/metadata/msRun" cvTermsCombinationLogic="AND">
           <CvTerm termAccession="MS:1000561" useTerm="false" termName="data file checksum type" isRepeatable="false" allowChildren="true" cvIdentifierRef="MS"></CvTerm>
         </CvMappingRule> 
         
@@ -46,19 +46,19 @@
         </CvMappingRule> 
         
         <!-- instrument -->
-        <CvMappingRule id="instrument_name_may" cvElementPath="/metadata/instruments/@instrumentName" requirementLevel="MAY"  scopePath="/metadata/instruments" cvTermsCombinationLogic="AND">
+        <CvMappingRule id="instrument_name_may" cvElementPath="/metadata/instrument/@instrumentName" requirementLevel="MAY"  scopePath="/metadata/instrument" cvTermsCombinationLogic="AND">
           <CvTerm termAccession="MS:1000031" useTerm="false" termName="instrument model" isRepeatable="false" allowChildren="true" cvIdentifierRef="MS"></CvTerm>
         </CvMappingRule>
         
-        <CvMappingRule id="instrument_source_may" cvElementPath="/metadata/instruments/@instrumentSource" requirementLevel="MAY"  scopePath="/metadata/instruments" cvTermsCombinationLogic="AND">
+        <CvMappingRule id="instrument_source_may" cvElementPath="/metadata/instrument/@instrumentSource" requirementLevel="MAY"  scopePath="/metadata/instrument" cvTermsCombinationLogic="AND">
           <CvTerm termAccession="MS:1000458" useTerm="false" termName="source" isRepeatable="false" allowChildren="true" cvIdentifierRef="MS"></CvTerm>
         </CvMappingRule>
         
-        <CvMappingRule id="instrument_analyzer_may" cvElementPath="/metadata/instruments/@instrumentAnalyzer" requirementLevel="MAY"  scopePath="/metadata/instruments" cvTermsCombinationLogic="AND">
+        <CvMappingRule id="instrument_analyzer_may" cvElementPath="/metadata/instrument/@instrumentAnalyzer" requirementLevel="MAY"  scopePath="/metadata/instrument" cvTermsCombinationLogic="AND">
           <CvTerm termAccession="MS:1000451" useTerm="false" termName="mass analyzer" isRepeatable="false" allowChildren="true" cvIdentifierRef="MS"></CvTerm>
         </CvMappingRule>
         
-        <CvMappingRule id="instrument_detector_may" cvElementPath="/metadata/instruments/@instrumentDetector" requirementLevel="MAY"  scopePath="/metadata/instruments" cvTermsCombinationLogic="AND">
+        <CvMappingRule id="instrument_detector_may" cvElementPath="/metadata/instrument/@instrumentDetector" requirementLevel="MAY"  scopePath="/metadata/instrument" cvTermsCombinationLogic="AND">
           <CvTerm termAccession="MS:1000026" useTerm="false" termName="detector type" isRepeatable="false" allowChildren="true" cvIdentifierRef="MS"></CvTerm>
         </CvMappingRule>
         
