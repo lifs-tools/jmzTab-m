@@ -87,6 +87,11 @@ public class MZTabErrorTypeMap {
         add(LogicalErrorType.NoSmallMoleculeSummarySection);
         add(LogicalErrorType.NoSmallMoleculeFeatureSection);
         add(LogicalErrorType.NoSmallMoleculeEvidenceSection);
+        
+        add(CrossCheckErrorType.CvTermNotAllowed);
+        add(CrossCheckErrorType.CvTermRequired);
+        add(CrossCheckErrorType.CvTermRecommended);
+        add(CrossCheckErrorType.CvTermOptional);
     }
 
     /**

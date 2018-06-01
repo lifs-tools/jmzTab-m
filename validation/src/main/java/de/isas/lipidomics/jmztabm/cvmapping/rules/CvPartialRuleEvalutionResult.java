@@ -13,43 +13,51 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.isas.lipidomics.jmztabm.validator;
+package de.isas.lipidomics.jmztabm.cvmapping.rules;
 
+import de.isas.lipidomics.jmztabm.cvmapping.ParameterComparisonResult;
 import de.isas.mztab1_1.model.Parameter;
 import info.psidev.cvmapping.CvMappingRule;
+import info.psidev.cvmapping.CvTerm;
 import org.apache.commons.jxpath.Pointer;
 import org.apache.commons.lang3.tuple.Pair;
-import uk.ac.ebi.pride.utilities.ols.web.service.model.Term;
 
 /**
+ * Lowest level evaluation result of one rule and one root term against a
+ * specific parameter selection from the domain model.
  *
  * @author nilshoffmann
  */
-public class RuleEvalutionResult {
-    
-    public static enum Status{MATCH,NO_MATCH};
-    
-    private final CvMappingRule rule;
-    private final Pair<Pointer, ? extends Parameter> selection;
-    private final RuleEvalutionResult.Status status;
+public class CvPartialRuleEvalutionResult {
 
-    public RuleEvalutionResult(CvMappingRule rule, Term term, 
-        Pair<Pointer, ? extends Parameter> selection, RuleEvalutionResult.Status status) {
+    private final CvMappingRule rule;
+    private final CvTerm ruleCvTerm;
+    private final Pair<Pointer, ? extends Parameter> selection;
+    private final ParameterComparisonResult result;
+
+    public CvPartialRuleEvalutionResult(CvMappingRule rule, CvTerm ruleCvTerm,
+        Pair<Pointer, ? extends Parameter> selection,
+        ParameterComparisonResult result) {
         this.rule = rule;
+        this.ruleCvTerm = ruleCvTerm;
         this.selection = selection;
-        this.status = status;
+        this.result = result;
     }
 
     public CvMappingRule getRule() {
         return rule;
     }
 
+    public CvTerm getRuleCvTerm() {
+        return ruleCvTerm;
+    }
+
     public Pair<Pointer, ? extends Parameter> getSelection() {
         return selection;
     }
 
-    public Status getStatus() {
-        return status;
+    public ParameterComparisonResult getResult() {
+        return result;
     }
-    
+
 }

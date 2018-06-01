@@ -27,7 +27,7 @@ public class OptionColumn extends MZTabColumn {
      * @return a {@link java.lang.String} object.
      */
     public static String getHeader(IndexedElement element, String value) {
-        if (MZTabUtils.isEmpty(value)) {
+        if (MZTabStringUtils.isEmpty(value)) {
             throw new IllegalArgumentException("Optional column's value should not be empty.");
         }
 

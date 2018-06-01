@@ -25,7 +25,7 @@ public enum MetadataSubElement {
         if (element == null) {
             throw new NullPointerException("Metadata element should not be null!");
         }
-        if (MZTabUtils.isEmpty(subName)) {
+        if (MZTabStringUtils.isEmpty(subName)) {
             throw new IllegalArgumentException("sub element's name should not be empty.");
         }
 

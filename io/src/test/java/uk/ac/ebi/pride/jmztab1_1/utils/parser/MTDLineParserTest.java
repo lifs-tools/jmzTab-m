@@ -21,6 +21,7 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Rule;
 import de.isas.mztab.jmztabm.test.utils.LogMethodName;
 import org.junit.Assert;
+import uk.ac.ebi.pride.jmztab1_1.model.MZTabStringUtils;
 import uk.ac.ebi.pride.jmztab1_1.model.MZTabUtils;
 import uk.ac.ebi.pride.jmztab1_1.utils.errors.MZTabErrorList;
 import uk.ac.ebi.pride.jmztab1_1.utils.errors.MZTabErrorType;
@@ -178,7 +179,7 @@ public class MTDLineParserTest {
         Parameter cvParam = param;
         assertTrue(cvParam.getName().
             contains("SDS PAGE"));
-        assertTrue(MZTabUtils.isEmpty(cvParam.getValue()));
+        assertTrue(MZTabStringUtils.isEmpty(cvParam.getValue()));
 
         parser.parse(1,
             "MTD\tsample_processing[12]\t[SEP, SEP:00142, enzyme digestion, ]|[MS, MS:1001251, Trypsin, ]",
@@ -193,7 +194,7 @@ public class MTDLineParserTest {
         cvParam = (Parameter) param;
         assertTrue(cvParam.getName().
             contains("enzyme digestion"));
-        assertTrue(MZTabUtils.isEmpty(cvParam.getValue()));
+        assertTrue(MZTabStringUtils.isEmpty(cvParam.getValue()));
         param = context.getSampleProcessingMap().
             get(12).
             getSampleProcessing().
@@ -202,7 +203,7 @@ public class MTDLineParserTest {
         cvParam = (Parameter) param;
         assertTrue(cvParam.getName().
             contains("Trypsin"));
-        assertTrue(MZTabUtils.isEmpty(cvParam.getValue()));
+        assertTrue(MZTabStringUtils.isEmpty(cvParam.getValue()));
     }
 
     @Test

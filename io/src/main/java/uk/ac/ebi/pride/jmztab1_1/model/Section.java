@@ -275,7 +275,7 @@ public enum Section {
      * @return a {@link uk.ac.ebi.pride.jmztab1_1.model.Section} object.
      */
     public static Section findSection(String key) {
-        if (MZTabUtils.isEmpty(key)) {
+        if (MZTabStringUtils.isEmpty(key)) {
             return null;
         }
 

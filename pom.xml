@@ -190,6 +190,13 @@
         <scope>test</scope>
       </dependency>
       <dependency>
+        <groupId>org.hamcrest</groupId>
+        <artifactId>hamcrest-library</artifactId>
+        <version>1.3</version>
+        <scope>test</scope>
+      </dependency>
+
+      <dependency>
         <groupId>io.swagger</groupId>
         <artifactId>swagger-annotations</artifactId>
         <version>${swagger.version}</version>
@@ -261,6 +268,11 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.hamcrest</groupId>
+      <artifactId>hamcrest-library</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -339,10 +351,10 @@
       <id>ossrh-snapshot</id>
       <build>
         <plugins>
-      <plugin>
-        <groupId>org.owasp</groupId>
-        <artifactId>dependency-check-maven</artifactId>
-      </plugin>
+          <plugin>
+            <groupId>org.owasp</groupId>
+            <artifactId>dependency-check-maven</artifactId>
+          </plugin>
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-source-plugin</artifactId>
@@ -391,7 +403,7 @@
       </activation>
       <build>
         <plugins>
-      	  <plugin>
+          <plugin>
             <groupId>org.owasp</groupId>
             <artifactId>dependency-check-maven</artifactId>
           </plugin>

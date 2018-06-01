@@ -30,9 +30,8 @@ import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import uk.ac.ebi.pride.jmztab1_1.model.MZTabUtils;
-
 import static uk.ac.ebi.pride.jmztab1_1.model.MZTabUtils.*;
+import static uk.ac.ebi.pride.jmztab1_1.model.MZTabStringUtils.*;
 import uk.ac.ebi.pride.jmztab1_1.utils.errors.MZTabErrorType;
 
 /**
@@ -610,7 +609,7 @@ public class MTDLineParser extends MZTabLineParser {
                         LogicalErrorType.DuplicationDefine,
                         lineNumber, defineLabel));
                 }
-                if (MZTabUtils.parseMzTabVersion(valueLabel) == null) {
+                if (parseMzTabVersion(valueLabel) == null) {
                     throw new MZTabException(new MZTabError(
                         FormatErrorType.MZTabVersion, lineNumber,
                         defineLabel, valueLabel));

@@ -1,7 +1,6 @@
 package uk.ac.ebi.pride.jmztab1_1.utils.errors;
 
 import uk.ac.ebi.pride.jmztab1_1.model.MZTabConstants;
-import uk.ac.ebi.pride.jmztab1_1.utils.MZTabProperties;
 
 import java.io.IOException;
 import java.io.OutputStream;

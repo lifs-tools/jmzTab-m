@@ -281,5 +281,11 @@
       <artifactId>jackson-dataformat-xml</artifactId>
       <version>${jackson.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>${slf4j.version}</version>
+      <type>jar</type>
+    </dependency>
   </dependencies>
 </project>

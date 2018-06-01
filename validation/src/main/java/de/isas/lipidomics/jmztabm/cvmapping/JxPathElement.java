@@ -33,13 +33,13 @@ public final class JxPathElement {
 
     public static <T> Stream<Pair<Pointer, ? extends T>> toStream(Pointer pointer, Class<? extends T> type) {
         if(pointer.getValue() instanceof Collection) {
-            Collection<Pair<Pointer, ? extends T>> coll = collectionOf(pointer, type);
+            Collection<Pair<Pointer, ? extends T>> coll = toCollection(pointer, type);
             return coll.stream();
         }
         return Stream.of(Pair.of(pointer, type.cast(pointer.getValue())));
     }
-
-    static <T> Collection<Pair<Pointer, ? extends T>> collectionOf(Pointer pointer,
+    
+    public static <T> Collection<Pair<Pointer, ? extends T>> toCollection(Pointer pointer,
         Class<? extends T> type) {
         if (pointer.getValue() instanceof Collection) {
             Collection<?> c = (Collection) pointer.getValue();

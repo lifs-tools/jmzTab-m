@@ -1,5 +1,6 @@
 package de.isas.lipidomics.jmztabm.validator;
 
+import de.isas.lipidomics.jmztabm.cvmapping.rules.CvPartialRuleEvalutionResult;
 import static de.isas.lipidomics.jmztabm.cvmapping.JxPathElement.toStream;
 import de.isas.lipidomics.jmztabm.validation.MzTabBeanValidator;
 import de.isas.lipidomics.jmztabm.validation.MzTabValidator;
@@ -322,7 +323,7 @@ public class MzTabValidatorTest {
                                 forEach((term) ->
                                 {
                                     List<Term> comparisonList;
-                                    List<RuleEvalutionResult> ruleEvalResults = new ArrayList<>();
+                                    List<CvPartialRuleEvalutionResult> ruleEvalResults = new ArrayList<>();
                                     if (term.isAllowChildren()) {
                                         Identifier ident = new Identifier(term.
                                             getTermAccession(),

@@ -1,6 +1,7 @@
 package uk.ac.ebi.pride.jmztab1_1.utils.errors;
 
-import uk.ac.ebi.pride.jmztab1_1.model.MZTabUtils;
+//import uk.ac.ebi.pride.jmztab1_1.model.MZTabUtils;
+import uk.ac.ebi.pride.jmztab1_1.model.MZTabStringUtils;
 import uk.ac.ebi.pride.jmztab1_1.utils.MZTabProperties;
 
 /**
@@ -14,7 +15,7 @@ public class MZTabErrorType {
     protected enum Category {
         Format,                // single field format error
         Logical,               // exists logical error among fields value.
-        CrossCheck             // cross check validate by calling outside files or web services. Not implement yet.
+        CrossCheck             // cross check validation by calling outside files or web services.
     }
 
     /**
@@ -103,7 +104,7 @@ public class MZTabErrorType {
      *  stable format. Thus, this method used to load these properties and create a error.
      */
     private static MZTabErrorType createMZTabError(Category category, Level level, String keyword) {
-        if (MZTabUtils.isEmpty(keyword)) {
+        if (MZTabStringUtils.isEmpty(keyword)) {
             throw new NullPointerException(keyword + " can not empty!");
         }
 
@@ -194,11 +195,11 @@ public class MZTabErrorType {
      * @param target a {@link java.lang.String} object.
      */
     public static Level findLevel(String target) {
-        if (MZTabUtils.isEmpty(target)) {
+        if (MZTabStringUtils.isEmpty(target)) {
             return null;
         }
 
-        target = MZTabUtils.toCapital(target.trim());
+        target = MZTabStringUtils.toCapital(target.trim());
 
         Level level;
         try {

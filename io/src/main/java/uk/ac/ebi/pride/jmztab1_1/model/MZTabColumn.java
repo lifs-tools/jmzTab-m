@@ -59,7 +59,7 @@ public class MZTabColumn implements IMZTabColumn {
      * @param id incremental index used for some optional columns like best_search_engine_score[1], best_search_engine_score[2]
      */
     public MZTabColumn(String name, Class dataType, boolean optional, String order, Integer id) {
-        if (MZTabUtils.isEmpty(name)) {
+        if (MZTabStringUtils.isEmpty(name)) {
             throw new IllegalArgumentException("Column name should not empty.");
         }
         this.name = name;

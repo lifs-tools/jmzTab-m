@@ -33,6 +33,7 @@ import java.util.TreeMap;
 import java.util.zip.GZIPInputStream;
 import static uk.ac.ebi.pride.jmztab1_1.model.MZTabConstants.NEW_LINE;
 import static uk.ac.ebi.pride.jmztab1_1.model.MZTabConstants.TAB;
+import uk.ac.ebi.pride.jmztab1_1.model.MZTabStringUtils;
 import uk.ac.ebi.pride.jmztab1_1.model.MZTabUtils;
 import uk.ac.ebi.pride.jmztab1_1.model.Section;
 import static uk.ac.ebi.pride.jmztab1_1.utils.MZTabProperties.*;
@@ -249,7 +250,7 @@ public class MZTabFileParser {
                 try {
                     lineNumber++;
 
-                    if (MZTabUtils.isEmpty(line)) {
+                    if (MZTabStringUtils.isEmpty(line)) {
                         continue;
                     }
 

@@ -28,7 +28,7 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 import lombok.Data;
 import uk.ac.ebi.pride.jmztab1_1.model.MZTabColumn;
-import static uk.ac.ebi.pride.jmztab1_1.model.MZTabUtils.isEmpty;
+import static uk.ac.ebi.pride.jmztab1_1.model.MZTabStringUtils.isEmpty;
 
 /**
  * <p>MZTabParserContext is used to keep track of indexed elements and interrelations during parsing.</p>

@@ -16,5 +16,14 @@ public class CrossCheckErrorType extends MZTabErrorType {
 
     /** Constant <code>CvTermNotAllowed</code> */
     public static MZTabErrorType CvTermNotAllowed = createWarn(Category.Logical, "CvTermNotAllowed");
+    
+    /** Constant <code>CvTermRequired</code> */
+    public static MZTabErrorType CvTermRequired = createError(Category.Logical, "CvTermRequired");
+    
+    /** Constant <code>CvTermRecommended</code> */
+    public static MZTabErrorType CvTermRecommended = createWarn(Category.Logical, "CvTermRecommended");
+    
+    /** Constant <code>CvTermOptional</code> */
+    public static MZTabErrorType CvTermOptional = createInfo(Category.Logical, "CvTermOptional");
 
 }

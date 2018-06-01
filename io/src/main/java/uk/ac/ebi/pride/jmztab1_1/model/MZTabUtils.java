@@ -21,6 +21,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static uk.ac.ebi.pride.jmztab1_1.model.MZTabConstants.*;
+import static uk.ac.ebi.pride.jmztab1_1.model.MZTabStringUtils.*;
 import uk.ac.ebi.pride.jmztab1_1.utils.parser.MZTabParserContext;
 
 /**
@@ -33,51 +34,6 @@ import uk.ac.ebi.pride.jmztab1_1.utils.parser.MZTabParserContext;
 public class MZTabUtils {
 
     private static final Logger logger = LoggerFactory.getLogger(MZTabUtils.class);
-
-    /**
-     * Check the string is null or blank.
-     *
-     * @param s a {@link java.lang.String} object.
-     * @return a boolean.
-     */
-    public static boolean isEmpty(String s) {
-        return s == null || s.trim().length() == 0;
-    }
-
-    /**
-     * Translate the string to the first char is upper case, others are lower case.
-     *
-     * @param s a {@link java.lang.String} object.
-     * @return a {@link java.lang.String} object.
-     */
-    public static String toCapital(String s) {
-        if (isEmpty(s)) {
-            return s;
-        }
-
-        if (s.length() == 1) {
-            return s.toUpperCase();
-        }
-
-        String firstChar = s.substring(0, 1);
-        String leftString = s.substring(1);
-        return firstChar.toUpperCase().concat(leftString.toLowerCase());
-    }
-
-    /**
-     * Pre-process the String object. If object is null, return null; otherwise
-     * remove heading and tailing white space.
-     *
-     * @param target a {@link java.lang.String} object.
-     * @return a {@link java.lang.String} object.
-     */
-    public static String parseString(String target) {
-        if (target == null || target.isEmpty() || target.trim().equalsIgnoreCase(NULL)) {
-            return null;
-        } else {
-            return target.trim();
-        }
-    }
 
     /**
      * If ratios are included and the denominator is zero, the "INF" value MUST be used.
