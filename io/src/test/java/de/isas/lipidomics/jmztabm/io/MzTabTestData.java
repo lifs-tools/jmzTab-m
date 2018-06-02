@@ -1,80 +1,99 @@
 /*
+ * Copyright 2018 Leibniz-Institut für Analytische Wissenschaften – ISAS – e.V..
  *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
-package de.isas.mztab1_1.model;
+package de.isas.lipidomics.jmztabm.io;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.StandardOpenOption;
+import de.isas.mztab1_1.model.Assay;
+import de.isas.mztab1_1.model.CV;
+import de.isas.mztab1_1.model.Contact;
+import de.isas.mztab1_1.model.Instrument;
+import de.isas.mztab1_1.model.MsRun;
+import de.isas.mztab1_1.model.MzTab;
+import de.isas.mztab1_1.model.Parameter;
+import de.isas.mztab1_1.model.Publication;
+import de.isas.mztab1_1.model.PublicationItem;
+import de.isas.mztab1_1.model.Sample;
+import de.isas.mztab1_1.model.SampleProcessing;
+import de.isas.mztab1_1.model.Software;
+import de.isas.mztab1_1.model.StudyVariable;
+import de.isas.mztab1_1.model.Uri;
 import java.util.Arrays;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.junit.Assert;
-import org.junit.Test;
 
 /**
  *
  * @author nilshoffmann
  */
-public class MzTabTest {
+public class MzTabTestData {
+    public static MzTab createTestFile() {
 
-    /*
-    MTD	mzTab-version	1.1.0
-MTD	mzTab-ID	JetBike Test
-MTD	ms_run[1]	3injections_inj1_POS
-MTD	ms_run[1]-location	D:\Data Sets\Metabolomics\MTBLS263\3injections_inj1_POS.mzML
-MTD	ms_run[2]	3injections_inj2_POS
-MTD	ms_run[2]-location	D:\Data Sets\Metabolomics\MTBLS263\3injections_inj2_POS.mzML
-MTD	ms_run[3]	3injections_inj3_POS
-MTD	ms_run[3]-location	D:\Data Sets\Metabolomics\MTBLS263\3injections_inj3_POS.mzML
-MTD	ms_run[4]	3samples_sampl1_POS
-MTD	ms_run[4]-location	D:\Data Sets\Metabolomics\MTBLS263\3samples_sampl1_POS.mzML
-MTD	ms_run[5]	3samples_sampl2_POS
-MTD	ms_run[5]-location	D:\Data Sets\Metabolomics\MTBLS263\3samples_sampl2_POS.mzML
-MTD	ms_run[6]	3samples_sampl3_POS
-MTD	ms_run[6]-location	D:\Data Sets\Metabolomics\MTBLS263\3samples_sampl3_POS.mzML
-MTD	assay[1]-ms_run_ref	ms_run[1]
-MTD	assay[2]-ms_run_ref	ms_run[2]
-MTD	assay[3]-ms_run_ref	ms_run[3]
-MTD	assay[4]-ms_run_ref	ms_run[4]
-MTD	assay[5]-ms_run_ref	ms_run[5]
-MTD	assay[6]-ms_run_ref	ms_run[6]
-MTD	software[1]	[,,Progenesis QI,2.4.6479.46580]
-MTD	study_variable[1]	Replicates
-MTD	study_variable[1]-description	Replicates
-MTD	study_variable[1]-assay_refs	assay[1] | assay[2] | assay[3]
-MTD	study_variable[2]	Samples
-MTD	study_variable[2]-description	Samples
-MTD	study_variable[2]-assay_refs	assay[4] | assay[5] | assay[6]
-MTD	cv[1]-label	MS
-MTD	cv[1]-full_name	PSI-MS controlled vocabulary
-MTD	cv[1]-version	4.0.9
-MTD	cv[1]-url	https://raw.githubusercontent.com/HUPO-PSI/psi-ms-CV/master/psi-ms.obo
-MTD	database[1]	[,,No database,]
-MTD	database[1]-prefix	nd
-MTD	database[1]-version	Unknown
-MTD	database[2]	[,,D:\Databases\HMDB\hmdb+analgesic.sdf,]
-MTD	database[2]-prefix	hmdb
-MTD	database[2]-version	Unknown
-MTD	small_molecule-quantification_unit	[,,Progenesis QI Normalised Abundance,]
-MTD	small_molecule_feature-quantification_unit	[,,Progenesis QI Normalised Abundance,]
-MTD	id_confidence_measure[1]	[,,Progenesis MetaScope Score,]
-MTD	id_confidence_measure[2]	[,,Fragmentation Score,]
-MTD	id_confidence_measure[3]	[,,Isotopic fit Score,]
-     */
-    @Test
-    public void testMzTabObjectCreation() {
-        
-        System.out.println(createTestMzTab());
+        final MzTab mztabfile = new MzTab().metadata(
+            new de.isas.mztab1_1.model.Metadata().mzTabVersion("2.0.0-M").
+                mzTabID("ISAS_2017_M_11451").
+                title("A minimal test file").
+                description("A description of an mzTab file.").
+                addContactItem(
+                    new Contact().id(1).
+                        name("Nils Hoffmann").
+                        email("nils.hoffmann_at_isas.de").
+                        affiliation(
+                            "ISAS e.V. Dortmund, Germany")
+                ).
+                addMsRunItem(
+                    new MsRun().id(1).
+                        location("file:///path/to/file1.mzML").
+                        format(
+                            new Parameter().
+                                cvLabel("MS").
+                                cvAccession("MS:1000584").
+                                name("mzML file")
+                        ).
+                        idFormat(
+                            new Parameter().
+                                cvLabel("MS").
+                                cvAccession("MS:1001530").
+                                name("mzML unique identifier")
+                        )
+                )
+        );
+        PublicationItem item1_1 = new PublicationItem().type(
+            PublicationItem.TypeEnum.PUBMED).
+            accession("21063943");
+        PublicationItem item1_2 = new PublicationItem().type(
+            PublicationItem.TypeEnum.DOI).
+            accession("10.1007/978-1-60761-987-1_6");
+        Publication publication1 = new Publication().id(1);
+        publication1.setPublicationItems(Arrays.asList(item1_1, item1_2));
+
+        PublicationItem item2_1 = new PublicationItem().type(
+            PublicationItem.TypeEnum.PUBMED).
+            accession("20615486");
+        PublicationItem item2_2 = new PublicationItem().type(
+            PublicationItem.TypeEnum.DOI).
+            accession("10.1016/j.jprot.2010.06.008");
+        Publication publication2 = new Publication().id(2);
+        publication2.setPublicationItems(Arrays.asList(item2_1, item2_2));
+
+        mztabfile.getMetadata().
+            addPublicationItem(publication1).
+            addPublicationItem(publication2);
+        return mztabfile;
     }
-    
-    private MzTab createTestMzTab() {
+
+    public static MzTab create1_1TestFile() {
         de.isas.mztab1_1.model.Metadata mtd = new de.isas.mztab1_1.model.Metadata();
-        mtd.mzTabID("SomeId 1234").
+        mtd.mzTabID("PRIDE_1234").
             mzTabVersion("2.0.0-M").
             title("My first test experiment").
             description("An experiment investigating the effects of Il-6.");
@@ -89,7 +108,7 @@ MTD	id_confidence_measure[3]	[,,Isotopic fit Score,]
                 cvAccession("SEP:00173").
                 name("SDS PAGE"));
         mtd.sampleProcessing(Arrays.asList(sp));
-        
+
         Instrument instrument1 = new Instrument().id(1).
             name(
                 new Parameter().cvLabel("MS").
@@ -135,7 +154,7 @@ MTD	id_confidence_measure[3]	[,,Isotopic fit Score,]
             setting(Arrays.asList("Fragment tolerance = 0.1Da",
                 "Parent tolerance = 0.5Da"));
         mtd.addSoftwareItem(software1);
-        
+
         PublicationItem item1_1 = new PublicationItem().type(
             PublicationItem.TypeEnum.PUBMED).
             accession("21063943");
@@ -144,7 +163,7 @@ MTD	id_confidence_measure[3]	[,,Isotopic fit Score,]
             accession("10.1007/978-1-60761-987-1_6");
         Publication publication1 = new Publication().id(1);
         publication1.setPublicationItems(Arrays.asList(item1_1, item1_2));
-        
+
         PublicationItem item2_1 = new PublicationItem().type(
             PublicationItem.TypeEnum.PUBMED).
             accession("20615486");
@@ -153,10 +172,10 @@ MTD	id_confidence_measure[3]	[,,Isotopic fit Score,]
             accession("10.1016/j.jprot.2010.06.008");
         Publication publication2 = new Publication().id(2);
         publication2.setPublicationItems(Arrays.asList(item2_1, item2_2));
-        
+
         mtd.addPublicationItem(publication1).
             addPublicationItem(publication2);
-        
+
         mtd.addContactItem(new Contact().id(1).
             name("James D. Watson").
             affiliation("Cambridge University, UK").
@@ -205,7 +224,7 @@ MTD	id_confidence_measure[3]	[,,Isotopic fit Score,]
         mtd.addCustomItem(new Parameter().id(1).
             name("MS operator").
             value("Florian"));
-        
+
         Sample sample1 = new Sample().id(1).
             description("Hepatocellular carcinoma samples.").
             addSpeciesItem(new Parameter().cvLabel("NEWT").
@@ -257,7 +276,7 @@ MTD	id_confidence_measure[3]	[,,Isotopic fit Score,]
             addIdConfidenceMeasureItem(new Parameter().name(
                 "coelution with authentic standard"));
         mtd.addSampleItem(sample2);
-        
+
         Assay assay1 = new Assay().id(1).
             name("Assay 1").
             addMsRunRefItem(msRun1).
@@ -268,7 +287,7 @@ MTD	id_confidence_measure[3]	[,,Isotopic fit Score,]
             addMsRunRefItem(msRun2).
             sampleRef(sample2);
         mtd.addAssayItem(assay2);
-        
+
         StudyVariable studyVariable1 = new StudyVariable().
             id(1).
             description(
@@ -294,109 +313,20 @@ MTD	id_confidence_measure[3]	[,,Isotopic fit Score,]
             fullName("PSI-MS ontology").
             version("3.54.0").
             url("https://raw.githubusercontent.com/HUPO-PSI/psi-ms-CV/master/psi-ms.obo"));
+//
+//        mtd.addQuantificationMethodItem(new Parameter().cvLabel("MS").
+//            cvAccession("MS:1001837").
+//            name("iTRAQ quantitation analysis"));
+//        mtd.addQuantificationMethodItem(new Parameter().cvLabel("MS").
+//            cvAccession("MS:1001838").
+//            name("SRM quantitation analysis"));
+
         mtd.addIdConfidenceMeasureItem(new Parameter().id(1).
             name("some confidence measure term"));
-        
-        mtd.addDatabaseItem(new Database().id(1).
-            param(new Parameter().name("nd")));
-        
+
         MzTab mzTab = new MzTab();
         mzTab.metadata(mtd);
-        SmallMoleculeSummary smsi = new SmallMoleculeSummary();
-        smsi.smlId("" + 1).
-            smfIdRefs(Arrays.asList("" + 1, "" + 2, "" + 3, "" + 4, "" + 5)).
-            chemicalName(Arrays.asList("Cer(d18:1/24:0)",
-                "N-(tetracosanoyl)-sphing-4-enine", "C24 Cer")).
-            addOptItem(new OptColumnMapping().identifier("global").
-                value("lipid_category").
-                param(new Parameter().cvLabel("LM").
-                    cvAccession("LM:SP").
-                    name("Category").
-                    value("Sphingolipids"))).
-            addOptItem(new OptColumnMapping().identifier("global").
-                value("lipid_species").
-                param(new Parameter().cvLabel("LH").
-                    cvAccession("LH:XXXXX").
-                    name("Species").
-                    value("Cer 42:1"))).
-            addOptItem(new OptColumnMapping().identifier("global").
-                value("lipid_best_id_level").
-                param(new Parameter().cvLabel("LH").
-                    cvAccession("LH:XXXXX").
-                    name("Sub Species").
-                    value("Cer d18:1/24:0"))).
-            addDatabaseIdentifierItem("LM:LMSP02010012").
-            addChemicalFormulaItem("C42H83NO3").
-            addSmilesItem(
-                "CCCCCCCCCCCCCCCCCCCCCCCC(=O)N[C@@H](CO)[C@H](O)/C=C/CCCCCCCCCCCCC").
-            addInchiItem(
-                "InChI=1S/C42H83NO3/c1-3-5-7-9-11-13-15-17-18-19-20-21-22-23-24-26-28-30-32-34-36-38-42(46)43-40(39-44)41(45)37-35-33-31-29-27-25-16-14-12-10-8-6-4-2/h35,37,40-41,44-45H,3-34,36,38-39H2,1-2H3,(H,43,46)/b37-35+/t40-,41+/m0/s1").
-            addUriItem(
-                "http://www.lipidmaps.org/data/LMSDRecord.php?LM_ID=LMSP02010012").
-            addTheoreticalNeutralMassItem(649.6373).
-            addAdductIonsItem("[M+H]1+").
-            reliability("1").
-            bestIdConfidenceMeasure(new Parameter().name(
-                "qualifier ions exact mass")).
-            bestIdConfidenceValue(0.958).
-            addAbundanceAssayItem(4.448784E-05).
-            addAbundanceAssayItem(5.448784E-05).
-            addAbundanceStudyVariableItem(4.448784E-05).
-            addAbundanceStudyVariableItem(5.448784E-05).
-            addAbundanceVariationStudyVariableItem(0.0d).
-            addAbundanceVariationStudyVariableItem(0.00001d);
-        mzTab.addSmallMoleculeSummaryItem(smsi);
-        SmallMoleculeFeature smf = new SmallMoleculeFeature().smfId("1").
-            addSmeIdRefsItem("1").
-            adductIon("[M+H]1+").
-            charge(1).
-            expMassToCharge(650.6373).
-            retentionTimeInSeconds(346.34).
-            retentionTimeInSecondsEnd(349.87).
-            retentionTimeInSecondsStart(342.98).
-            smeIdRefAmbiguityCode(1).
-            addOptItem(new OptColumnMapping().identifier("global").
-                value("idk"));
-        mzTab.addSmallMoleculeFeatureItem(smf);
-        SmallMoleculeEvidence sme = new SmallMoleculeEvidence().smeId("1").
-            addIdConfidenceMeasureItem(1.00).
-            addSpectraRefItem(new SpectraRef().msRun(msRun2).
-                reference("index=2")).
-            charge(1).
-            chemicalFormula("C42H83NO3").
-            chemicalName("Cer(d18:1/24:0)").
-            databaseIdentifier("nd").
-            evidenceInputId("1").
-            expMassToCharge(650.6373).
-            msLevel(new Parameter().cvLabel("MS").
-                cvAccession("MS:1000511").
-                name("ms level").
-                value("2")).
-            rank(1).
-            smiles(
-                "CCCCCCCCCCCCCCCCCCCCCCCC(=O)N[C@@H](CO)[C@H](O)/C=C/CCCCCCCCCCCCC").
-            theoreticalMassToCharge(649.6373).
-            uri("http://link.to.me/hj551a-2asdkj-12451").
-            addCommentItem(new Comment().prefix(Comment.PrefixEnum.COM).
-                msg("Needs further investigation"));
-        mzTab.addSmallMoleculeEvidenceItem(sme);
         return mzTab;
     }
-    
-    @Test
-    public void testWriteReadViaJsonMapper() throws IOException {
-        File testFile = File.createTempFile(
-            "testWriteJson", ".json");
-        MzTab testMzTab = createTestMzTab();
-        ObjectMapper mapper = new ObjectMapper();
-        try (BufferedWriter bw = Files.newBufferedWriter(testFile.toPath(),
-            Charset.forName("UTF-8"), StandardOpenOption.WRITE)) {
-            bw.write(mapper.writeValueAsString(testMzTab));
-        } catch (IOException ex) {
-            Logger.getLogger(MzTabTest.class.getName()).
-                log(Level.SEVERE, null, ex);
-        }
-        MzTab restoredFile = mapper.readValue(testFile, MzTab.class);
-        Assert.assertEquals(testMzTab, restoredFile);
-    }
+
 }

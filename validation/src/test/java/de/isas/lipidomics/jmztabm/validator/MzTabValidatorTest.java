@@ -17,6 +17,7 @@ package de.isas.lipidomics.jmztabm.validator;
 
 import de.isas.lipidomics.jmztabm.cvmapping.rules.CvPartialRuleEvalutionResult;
 import static de.isas.lipidomics.jmztabm.cvmapping.JxPathElement.toStream;
+import de.isas.lipidomics.jmztabm.cvmapping.rules.CvMappingUtils;
 import de.isas.lipidomics.jmztabm.validation.MzTabBeanValidator;
 import de.isas.lipidomics.jmztabm.validation.MzTabValidator;
 import de.isas.mztab.jmztabm.test.utils.LogMethodName;
@@ -29,7 +30,6 @@ import de.isas.mztab1_1.model.Publication;
 import de.isas.mztab1_1.model.PublicationItem;
 import de.isas.mztab1_1.model.ValidationMessage;
 import info.psidev.cvmapping.CvMapping;
-import info.psidev.cvmapping.CvMappingRule;
 import static info.psidev.cvmapping.CvMappingRule.RequirementLevel.MUST;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -46,8 +46,6 @@ import javax.xml.bind.Unmarshaller;
 import org.apache.commons.jxpath.JXPathContext;
 import org.apache.commons.jxpath.Pointer;
 import org.apache.commons.lang3.tuple.Pair;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
@@ -172,75 +170,7 @@ public class MzTabValidatorTest {
         }
     }
 
-    @Test
-    public void testJXpathAccess() {
-        MzTab mzTab = createTestFile();
-        JXPathContext context = JXPathContext.newContext(mzTab);
-
-        List<?> msRuns = (List<?>) context.getValue("/metadata/msRun",
-            List.class);
-        assertFalse(msRuns.isEmpty());
-        assertEquals("file:///path/to/file1.mzML", toStream(context.
-            getPointer("/metadata/msRun/@location"), String.class).
-            findFirst().
-            map((t) ->
-            {
-                System.out.println("Path: " + t.getLeft() + " to object: " + t.
-                    getRight());
-                return t;
-            }).
-            get().
-            getValue());
-        Stream<? extends String> stream = toStream(context.iterate(
-            "/metadata/msRun/@location"), String.class);
-        assertEquals("file:///path/to/file1.mzML", stream.findFirst().
-            get());
-
-        //scopePath /metadata/msrun
-        Stream<Pair<Pointer, ? extends Parameter>> pointerFormatParameters = toStream(
-            context.getPointer(
-                "/metadata/msRun/@format"), Parameter.class);
-        Pair<Pointer, ? extends Parameter> pair = pointerFormatParameters.
-            findFirst().
-            get();
-        assertEquals("/metadata/msRun[1]/@format", pair.getKey().
-            asPath());
-        assertEquals("MS:1000584", pair.
-            getValue().
-            getCvAccession());
-
-        Stream<? extends Parameter> formatParameters = toStream(context.iterate(
-            "/metadata/msRun/@format"), Parameter.class);
-        assertEquals("MS:1000584", formatParameters.findFirst().
-            get().
-            getCvAccession());
-
-    }
-
-    private String ruleToString(CvMappingRule rule) {
-        StringBuilder sb = new StringBuilder();
-        return sb.append("Rule{").
-            append("id='").
-            append(rule.getId()).
-            append("', ").
-            append("name='").
-            append(rule.getName()).
-            append("', ").
-            append("cvElementPath='").
-            append(rule.getCvElementPath()).
-            append("', ").
-            append("scopePath='").
-            append(rule.getScopePath()).
-            append("', ").
-            append("cvTermsCombinationLogic='").
-            append(rule.getCvTermsCombinationLogic()).
-            append("', ").
-            append("requirementLevel='").
-            append(rule.getRequirementLevel()).
-            append("', ").
-            append("}").
-            toString();
-    }
+    
 
     @Ignore
     @Test
@@ -263,7 +193,7 @@ public class MzTabValidatorTest {
                     Stream<Pair<Pointer, ? extends Parameter>> pointerFormatParameters = toStream(
                         context.getPointer(
                             path), Parameter.class);
-                    System.out.println("Applying rule: " + ruleToString(rule));
+                    System.out.println("Applying rule: " + CvMappingUtils.toString(rule));
                     pointerFormatParameters.forEach((selection) ->
                     {
                         System.out.
@@ -322,7 +252,7 @@ public class MzTabValidatorTest {
                                                     asPath() + "' " + rule.
                                                     getRequirementLevel() + " not be null!"));
                                     System.err.println(
-                                        "Rule requirement level MUST requires defined CvTerms to be non-null for rule: " + ruleToString(
+                                        "Rule requirement level MUST requires defined CvTerms to be non-null for rule: " + CvMappingUtils.toString(
                                             rule) + " for context: " + selection);
                                     skip = true;
                                 }
@@ -369,9 +299,9 @@ public class MzTabValidatorTest {
                                                     getCvAccession())) {
                                             //positive, we have a match
                                             System.out.println(
-                                                "Rule " + ruleToString(rule) + " matched on: " + term + " for selection: " + selection);
+                                                "Rule " + CvMappingUtils.toString(rule) + " matched on: " + term + " for selection: " + selection);
                                         } else {
-                                            String errMessage = "Mismatch of rule " + ruleToString(
+                                            String errMessage = "Mismatch of rule " + CvMappingUtils.toString(
                                                 rule) + " at " + selection.
                                                     getLeft();
                                             System.err.println(errMessage);
@@ -387,16 +317,6 @@ public class MzTabValidatorTest {
                     System.err.println(ex.getLocalizedMessage());
                 }
             });
-    }
-
-    @Test
-    public void testCvExpansion() {
-        //OLS call should retrieve children for CvTerms, where allowChildren=true
-
-        //otherwise, we will start off with exactly the terms as defined
-        // based on the expanded reference list, we need to apply the combination logic:
-        // or, means, any match of the term under validation against the expanded comparison set 
-        // should yield a positive match, no match -> level logic applies: optional (MAY) -> INFO, recommended (SHOULD) -> WARNING, or mandatory (MUST) -> ERROR
     }
 
 }

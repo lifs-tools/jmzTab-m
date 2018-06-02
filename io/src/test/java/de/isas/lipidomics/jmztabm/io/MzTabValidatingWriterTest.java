@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2018 Leibniz-Institut für Analytische Wissenschaften – ISAS – e.V..
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,22 +13,39 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.isas.lipidomics.jmztabm.io.serialization;
+package de.isas.lipidomics.jmztabm.io;
 
 import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
  *
- * @author Leibniz-Institut für Analytische Wissenschaften – ISAS – e.V.
+ * @author nilshoffmann
  */
-public class ElementNameMappingExceptionTest {
+public class MzTabValidatingWriterTest {
     
-    public ElementNameMappingExceptionTest() {
+    public MzTabValidatingWriterTest() {
     }
 
+    /**
+     * Test of write method, of class MzTabValidatingWriter.
+     */
     @Test
-    public void testSomeMethod() {
+    public void testWrite_OutputStreamWriter_MzTab() throws Exception {
+    }
+
+    /**
+     * Test of write method, of class MzTabValidatingWriter.
+     */
+    @Test
+    public void testWrite_Path_MzTab() throws Exception {
+    }
+
+    /**
+     * Test of getValidationMessagesForLevel method, of class MzTabValidatingWriter.
+     */
+    @Test
+    public void testGetValidationMessagesForLevel() {
     }
     
 }

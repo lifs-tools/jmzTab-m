@@ -55,20 +55,20 @@ public class ContactSerializer extends StdSerializer<Contact> {
         SerializerProvider sp) throws IOException {
         if (contact != null) {
             addLineWithProperty(jg, Section.Metadata.getPrefix(),
-                "name", contact,
+                Contact.Properties.name.getPropertyName(), contact,
                 contact.
                     getName());
             addLineWithProperty(jg, Section.Metadata.getPrefix(),
-                "email", contact,
+                Contact.Properties.email.getPropertyName(), contact,
                 contact.
                     getEmail());
             addLineWithProperty(jg, Section.Metadata.getPrefix(),
-                "affiliation", contact,
+                Contact.Properties.affiliation.getPropertyName(), contact,
                 contact.getAffiliation());
 
         } else {
             Logger.getLogger(ContactSerializer.class.getName()).
-                log(Level.FINE, "Contact is null!");
+                log(Level.FINE, Contact.class.getSimpleName()+" is null!");
         }
     }
 }

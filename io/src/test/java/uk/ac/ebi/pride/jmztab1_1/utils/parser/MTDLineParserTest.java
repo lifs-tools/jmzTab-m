@@ -163,21 +163,21 @@ public class MTDLineParserTest {
             errorList);
         param = context.getInstrumentMap().
             get(1).
-            getInstrumentName();
+            getName();
         assertTrue(param.toString().
             contains("LTQ Orbitrap"));
         List<Parameter> analyzerList = context.getInstrumentMap().
             get(1).
-            getInstrumentAnalyzer();
+            getAnalyzer();
         assertTrue(analyzerList.size() == 1);
         param = context.getInstrumentMap().
             get(2).
-            getInstrumentSource();
+            getSource();
         assertTrue(param.toString().
             contains("ETD"));
         param = context.getInstrumentMap().
             get(13).
-            getInstrumentDetector();
+            getDetector();
         assertTrue(param.toString().
             contains("electron multiplier"));
     }
@@ -434,12 +434,12 @@ public class MTDLineParserTest {
             errorList);
         param = context.getInstrumentMap().
             get(1).
-            getInstrumentName();
+            getName();
         assertTrue(param.toString().
             contains("LTQ Orbitrap"));
         List<Parameter> analyzerList = context.getInstrumentMap().
             get(1).
-            getInstrumentAnalyzer();
+            getAnalyzer();
         assertTrue(analyzerList.size() == 1);
 
         parser.parse(1, "MTD\tms_run[1]-format\t[MS, MS:1000584, mzML file, ]",

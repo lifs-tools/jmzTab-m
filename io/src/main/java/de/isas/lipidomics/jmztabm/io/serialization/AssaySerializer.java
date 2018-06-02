@@ -16,23 +16,24 @@
 package de.isas.lipidomics.jmztabm.io.serialization;
 
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.type.WritableTypeId;
 import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import static de.isas.lipidomics.jmztabm.io.serialization.Serializers.addLineWithProperty;
 import static de.isas.lipidomics.jmztabm.io.serialization.Serializers.addSubElementStrings;
 import static de.isas.lipidomics.jmztabm.io.serialization.Serializers.addLineWithPropertyParameters;
 import de.isas.mztab1_1.model.Assay;
+import de.isas.mztab1_1.model.Metadata;
 import de.isas.mztab1_1.model.MsRun;
 import de.isas.mztab1_1.model.Sample;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import uk.ac.ebi.pride.jmztab1_1.model.Section;
+import static uk.ac.ebi.pride.jmztab1_1.model.Section.Metadata;
 
 /**
  * <p>AssaySerializer class.</p>
@@ -65,17 +66,19 @@ public class AssaySerializer extends StdSerializer<Assay> {
             addLineWithProperty(jg, Section.Metadata.getPrefix(), null, assay,
                 assay.
                     getName());
-            addLineWithProperty(jg, Section.Metadata.getPrefix(), "external_uri",
+            
+            addLineWithProperty(jg, Section.Metadata.getPrefix(), Assay.Properties.externalUri.getPropertyName(),
                 assay, assay.getExternalUri());
 
-            addLineWithPropertyParameters(jg, Section.Metadata.getPrefix(),
-                "custom",
-                assay, assay.getCustom());
+            addSubElementStrings(jg, Section.Metadata.getPrefix(), assay, Assay.Properties.custom.getPropertyName(), assay.getCustom(), false);
+//            addLineWithPropertyParameters(jg, Section.Metadata.getPrefix(),
+//                Assay.Properties.custom.getPropertyName(),
+//                assay, assay.getCustom());
 
-            MsRun msRunRef = assay.getMsRunRef();
+            List<MsRun> msRunRef = assay.getMsRunRef();
             if (msRunRef != null) {
                 addSubElementStrings(jg, Section.Metadata.getPrefix(), assay,
-                    "ms_run_ref", Arrays.asList(assay.getMsRunRef()).
+                    Assay.Properties.msRunRef.getPropertyName(), msRunRef.
                         stream().
                         sorted(Comparator.comparing(MsRun::getId,
                             Comparator.nullsFirst(Comparator.
@@ -83,7 +86,7 @@ public class AssaySerializer extends StdSerializer<Assay> {
                         )).
                         map((mref) ->
                         {
-                            return new StringBuilder().append("ms_run").
+                            return new StringBuilder().append(de.isas.mztab1_1.model.Metadata.Properties.msRun.getPropertyName()).
                                 append("[").
                                 append(mref.getId()).
                                 append("]").
@@ -94,7 +97,7 @@ public class AssaySerializer extends StdSerializer<Assay> {
             Sample sampleRef = assay.getSampleRef();
             if (sampleRef != null) {
                 addSubElementStrings(jg, Section.Metadata.getPrefix(), assay,
-                    "sample_ref", Arrays.asList(assay.getSampleRef()).
+                    Assay.Properties.sampleRef.getPropertyName(), Arrays.asList(sampleRef).
                         stream().
                         sorted(Comparator.comparing(Sample::getId,
                             Comparator.nullsFirst(Comparator.
@@ -102,7 +105,7 @@ public class AssaySerializer extends StdSerializer<Assay> {
                         )).
                         map((sref) ->
                         {
-                            return new StringBuilder().append("sample").
+                            return new StringBuilder().append(de.isas.mztab1_1.model.Metadata.Properties.sample.getPropertyName()).
                                 append("[").
                                 append(sref.getId()).
                                 append("]").
@@ -113,7 +116,7 @@ public class AssaySerializer extends StdSerializer<Assay> {
 
         } else {
             Logger.getLogger(AssaySerializer.class.getName()).
-                log(Level.FINE, "Assay is null!");
+                log(Level.FINE, Assay.class.getSimpleName()+" is null!");
         }
     }
 }

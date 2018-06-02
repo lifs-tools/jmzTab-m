@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?xml-stylesheet href="https://psidev.svn.sourceforge.net/svnroot/psidev/psi/tools/current/xsl/cv-mapping/CvMappingRules.xsl" type="text/xsl"?>
+<!-- 
+The mapping file for mzTab refers to attribute and object names in the Java-typical CamelCase notation. 
+The mzTab specification uses a dialect of snake_case-for_attributes to name objects and associated attributes.
+To select certain axis in xpath for example metadata/snake_case-for_attribute in mzTab, this would be written as /metadata/snakeCase/@forAttributes
+
+Note that the JXPath library does not include the MzTab object as an explicit root in selections, but rather implies it as the anonymous root '/'.
+-->
 <CvMapping xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.psidev.info/files/validator/CvMapping.xsd" modelName="mzML.xsd" modelURI="http://psidev.cvs.sourceforge.net/*checkout*/psidev/psi/psi-ms/mzML/schema/mzML1.0.0.xsd" modelVersion="1.0.0">
 
     <CvReferenceList>

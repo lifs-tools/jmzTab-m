@@ -18,6 +18,7 @@ package de.isas.lipidomics.jmztabm.io.serialization;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+import static de.isas.lipidomics.jmztabm.io.serialization.Serializers.addLineWithNullProperty;
 import static de.isas.lipidomics.jmztabm.io.serialization.Serializers.addLineWithProperty;
 import de.isas.mztab1_1.model.Database;
 import java.io.IOException;
@@ -57,19 +58,24 @@ public class DatabaseSerializer extends StdSerializer<Database> {
         if (database != null) {
             Serializers.addLineWithPropertyParameters(jg, Section.Metadata.getPrefix(),
                 null, database, Arrays.asList(database.getParam()));
+            if(database.getParam()!= null && database.getParam().getName().equals("no database")) {
+                addLineWithNullProperty(jg, Section.Metadata.getPrefix(),
+                    Database.Properties.prefix.getPropertyName(), database);
+            } else {
+                addLineWithProperty(jg, Section.Metadata.getPrefix(),
+                    Database.Properties.prefix.getPropertyName(), database,
+                    database.
+                        getPrefix());
+            }
             addLineWithProperty(jg, Section.Metadata.getPrefix(),
-                "prefix", database,
-                database.
-                    getPrefix());
-            addLineWithProperty(jg, Section.Metadata.getPrefix(),
-                "url", database,
+                Database.Properties.url.getPropertyName(), database,
                 database.getUrl());
             addLineWithProperty(jg, Section.Metadata.getPrefix(),
-                "version", database,
+                Database.Properties.version.getPropertyName(), database,
                 database.getVersion());
         } else {
             Logger.getLogger(DatabaseSerializer.class.getName()).
-                log(Level.FINE, "Database is null!");
+                log(Level.FINE, Database.class.getSimpleName()+" is null!");
         }
     }
 

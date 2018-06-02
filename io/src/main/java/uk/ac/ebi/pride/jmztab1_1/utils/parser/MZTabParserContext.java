@@ -358,11 +358,11 @@ public class MZTabParserContext {
         if (instrument == null) {
             instrument = new Instrument();
             instrument.id(id);
-            instrument.instrumentName(name);
+            instrument.name(name);
             instrumentMap.put(id, instrument);
             metadata.addInstrumentItem(instrument);
         } else {
-            instrument.instrumentName(name);
+            instrument.name(name);
         }
         return instrument;
     }
@@ -387,11 +387,11 @@ public class MZTabParserContext {
         if (instrument == null) {
             instrument = new Instrument();
             instrument.id(id);
-            instrument.setInstrumentSource(source);
+            instrument.setSource(source);
             instrumentMap.put(id, instrument);
             metadata.addInstrumentItem(instrument);
         } else {
-            instrument.setInstrumentSource(source);
+            instrument.setSource(source);
         }
         return instrument;
     }
@@ -416,11 +416,11 @@ public class MZTabParserContext {
         if (instrument == null) {
             instrument = new Instrument();
             instrument.id(id);
-            instrument.addInstrumentAnalyzerItem(analyzer);
+            instrument.addAnalyzerItem(analyzer);
             instrumentMap.put(id, instrument);
             metadata.addInstrumentItem(instrument);
         } else {
-            instrument.addInstrumentAnalyzerItem(analyzer);
+            instrument.addAnalyzerItem(analyzer);
         }
         return instrument;
     }
@@ -446,11 +446,11 @@ public class MZTabParserContext {
         if (instrument == null) {
             instrument = new Instrument();
             instrument.id(id);
-            instrument.setInstrumentDetector(detector);
+            instrument.setDetector(detector);
             instrumentMap.put(id, instrument);
             metadata.addInstrumentItem(instrument);
         } else {
-            instrument.setInstrumentDetector(detector);
+            instrument.setDetector(detector);
         }
         return instrument;
     }
@@ -1008,10 +1008,10 @@ public class MZTabParserContext {
      */
     public Assay addAssayMsRun(Metadata metadata, Integer id, MsRun msRun) {
         if (id <= 0) {
-            throw new IllegalArgumentException("assay id should be great than 0!");
+            throw new IllegalArgumentException("assay id should be greater than 0!");
         }
         if (msRun == null) {
-            throw new NullPointerException("assay ms_run_ref should not set null.");
+            throw new NullPointerException("assay ms_run_ref should not be null.");
         }
         if (! msRunMap.containsValue(msRun)) {
             throw new IllegalArgumentException("ms_run should be defined in metadata first.");
@@ -1021,11 +1021,11 @@ public class MZTabParserContext {
         if (assay == null) {
             assay = new Assay();
             assay.id(id);
-            assay.setMsRunRef(msRun);
+            assay.addMsRunRefItem(msRun);
             assayMap.put(id, assay);
             metadata.addAssayItem(assay);
         } else {
-            assay.setMsRunRef(msRun);
+            assay.addMsRunRefItem(msRun);
         }
         return assay;
     }

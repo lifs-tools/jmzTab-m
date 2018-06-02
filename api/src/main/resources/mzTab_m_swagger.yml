@@ -116,6 +116,7 @@ definitions:
       smallMoleculeSummary:
         type: array
         default: []
+        minItems: 1
         items:
           $ref: '#/definitions/SmallMoleculeSummary'
       smallMoleculeFeature:
@@ -170,8 +171,6 @@ definitions:
       - fileDescription
       - mzTab-version
       - mzTab-ID
-      - title
-      - description
       - quantification_method
       - software
       - ms_run
@@ -221,8 +220,6 @@ definitions:
         items:
           $ref: '#/definitions/Software'
       publication:
-        required:
-          - items
         type: array
         default: []
         items:
@@ -582,21 +579,21 @@ definitions:
     - $ref: '#/definitions/IndexedElement'
     - type: object
       properties:
-        instrument_name:
+        name:
           $ref: '#/definitions/Parameter'
           example:
             - >-
               MTD instrument[1]-name [MS, MS:1000449, LTQ Orbitrap,]
             - >-
               MTD instrument[2]-name [MS, MS:1000031, Instrument model, name of the instrument not included in the CV]
-        instrument_source:
+        source:
           $ref: '#/definitions/Parameter'
-        instrument_analyzer:
+        analyzer:
           type: array
           default: []
           items:
             $ref: '#/definitions/Parameter'
-        instrument_detector:
+        detector:
           x-customValidation:
             validator: 'CheckParameter'
             message: 'contact.fail'
@@ -824,7 +821,6 @@ definitions:
     - type: object
       required:
       - name
-      - sample_ref
       - ms_run_ref
       properties:
         name:
@@ -838,10 +834,14 @@ definitions:
           type: string
           format: uri
         sample_ref:
+          default: []
           $ref: '#/definitions/Sample'
-#possible n-multiplicity
         ms_run_ref:
-          $ref: '#/definitions/MsRun'
+          type: array
+          default: []
+          minItems: 1
+          items:
+            $ref: '#/definitions/MsRun'
   CV:
     allOf:
     - $ref: '#/definitions/IndexedElement'

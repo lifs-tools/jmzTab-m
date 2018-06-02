@@ -203,7 +203,7 @@ public class Serializers {
             jg.writeString(new StringBuilder().append(getElementName(element).
                 orElseThrow(() ->
                 {
-                    return new ElementNameMappingException(element);
+                    return new ElementNameMappingException("unknown", element);
                 })).
                 toString());
             //value
@@ -254,7 +254,7 @@ public class Serializers {
             jg.writeString(new StringBuilder().append(getElementName(element).
                 orElseThrow(() ->
                 {
-                    return new ElementNameMappingException(element);
+                    return new ElementNameMappingException("unknown", element);
                 })).
                 toString());
             //value
@@ -317,6 +317,41 @@ public class Serializers {
 
     /**
      * <p>
+     * addLineWithNullProperty.</p>
+     *
+     * @param jg a {@link com.fasterxml.jackson.core.JsonGenerator} object.
+     * @param prefix a {@link java.lang.String} object.
+     * @param propertyName a {@link java.lang.String} object.
+     * @param element a {@link java.lang.Object} object.
+     */
+    public static void addLineWithNullProperty(JsonGenerator jg, String prefix,
+        String propertyName, Object element) {
+        try {
+            jg.writeStartArray();
+            //prefix
+            jg.writeString(prefix);
+            //key
+            String key = getElementName(element).
+                orElseThrow(() ->
+                {
+                    return new ElementNameMappingException(propertyName, element);
+                });
+            if (propertyName == null) {
+                jg.writeString(key);
+            } else {
+                jg.writeString(key + "-" + propertyName);
+            }
+            //value
+            jg.writeString(NULL);
+            jg.writeEndArray();
+        } catch (IOException ex) {
+            Logger.getLogger(Serializers.class.getName()).
+                log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    /**
+     * <p>
      * addLineWithProperty.</p>
      *
      * @param jg a {@link com.fasterxml.jackson.core.JsonGenerator} object.
@@ -346,7 +381,7 @@ public class Serializers {
             String key = getElementName(element).
                 orElseThrow(() ->
                 {
-                    return new ElementNameMappingException(element);
+                    return new ElementNameMappingException(propertyName, element);
                 });
             if (propertyName == null) {
                 jg.writeString(key);

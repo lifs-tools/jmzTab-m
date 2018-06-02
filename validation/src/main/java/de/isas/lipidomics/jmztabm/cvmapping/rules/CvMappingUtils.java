@@ -28,25 +28,30 @@ public class CvMappingUtils {
     public static String toString(CvMappingRule rule) {
         StringBuilder sb = new StringBuilder();
         return sb.append("Rule{").
-            append("id=").
+            append("id='").
             append(rule.getId()).
-            append("; ").
-            append("cvElementPath=").
+            append("', ").
+            append("name='").
+            append(rule.getName()).
+            append("', ").
+            append("cvElementPath='").
             append(rule.getCvElementPath()).
-            append("; ").
+            append("', ").
             append("scopePath=").
             append(rule.getScopePath()).
-            append("; ").
-            append("requirementLevel=").
+            append("', ").
+            append("requirementLevel='").
             append(rule.getRequirementLevel()).
-            append("combinationLogic=").
+            append("', ").
+            append(rule.getName()).
+            append("combinationLogic='").
             append(rule.getCvTermsCombinationLogic()).
-            append("; ").
-            append("terms=").
+            append("', ").
+            append("terms='").
             append(
                 toString(rule.getCvTerm())
             ).
-            append("}").
+            append("'}").
             toString();
     }
 

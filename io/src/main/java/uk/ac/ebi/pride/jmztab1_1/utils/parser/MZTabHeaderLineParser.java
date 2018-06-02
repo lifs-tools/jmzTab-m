@@ -32,6 +32,7 @@ import de.isas.mztab1_1.model.StudyVariable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import uk.ac.ebi.pride.jmztab1_1.model.MZTabColumn;
+import uk.ac.ebi.pride.jmztab1_1.model.Section;
 
 
 /**
@@ -119,12 +120,13 @@ public abstract class MZTabHeaderLineParser extends MZTabLineParser {
      * Refine optional columns and check, whether they were properly defined.
      * These re-validate operation will called in {@link #refine()} method.
      *
+     * @param section a {@link Section} object defining the part of the document.
      * @param columnHeader a {@link java.lang.String} object.
      * @throws uk.ac.ebi.pride.jmztab1_1.utils.errors.MZTabException if any structural or logical errors are encountered that prohibit further processing.
      */
-    protected void refineOptionalColumn(String columnHeader) throws MZTabException {
+    protected void refineOptionalColumn(Section section, String columnHeader) throws MZTabException {
         if (factory.findColumnByHeader(columnHeader) == null) {
-            throw new MZTabException(new MZTabError(LogicalErrorType.NotDefineInHeader, lineNumber, columnHeader));
+            throw new MZTabException(new MZTabError(LogicalErrorType.NotDefineInHeader, lineNumber, columnHeader, section.getName()));
         }
     }
 

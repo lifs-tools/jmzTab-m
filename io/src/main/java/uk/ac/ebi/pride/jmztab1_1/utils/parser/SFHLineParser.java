@@ -148,7 +148,7 @@ public class SFHLineParser extends MZTabHeaderLineParser {
 
         for (Assay assay : metadata.getAssay()) {
             String assayLabel = "_assay[" + assay.getId() + "]";
-            refineOptionalColumn("abundance" + assayLabel);
+            refineOptionalColumn(Section.Small_Molecule_Feature_Header, "abundance" + assayLabel);
         }
     }
 }

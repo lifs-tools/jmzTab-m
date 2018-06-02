@@ -148,12 +148,12 @@ public class SMHLineParser extends MZTabHeaderLineParser {
         }
         for (StudyVariable studyVariable : metadata.getStudyVariable()) {
             String svLabel = "_study_variable[" + studyVariable.getId() + "]";
-            refineOptionalColumn("abundance" + svLabel);
-            refineOptionalColumn("abundance_variation" + svLabel);
+            refineOptionalColumn(Section.Small_Molecule_Header, "abundance" + svLabel);
+            refineOptionalColumn(Section.Small_Molecule_Header, "abundance_variation" + svLabel);
         }
         for (Assay assay : metadata.getAssay()) {
             String assayLabel = "_assay[" + assay.getId() + "]";
-            refineOptionalColumn("abundance" + assayLabel);
+            refineOptionalColumn(Section.Small_Molecule_Header, "abundance" + assayLabel);
         }
     }
 }

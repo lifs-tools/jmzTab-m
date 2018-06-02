@@ -26,22 +26,25 @@ import java.util.logging.Logger;
 import uk.ac.ebi.pride.jmztab1_1.model.Section;
 
 /**
- * <p>CvSerializer class.</p>
+ * <p>
+ * CvSerializer class.</p>
  *
  * @author nilshoffmann
- * 
+ *
  */
 public class CvSerializer extends StdSerializer<CV> {
 
     /**
-     * <p>Constructor for CvSerializer.</p>
+     * <p>
+     * Constructor for CvSerializer.</p>
      */
     public CvSerializer() {
         this(null);
     }
 
     /**
-     * <p>Constructor for CvSerializer.</p>
+     * <p>
+     * Constructor for CvSerializer.</p>
      *
      * @param t a {@link java.lang.Class} object.
      */
@@ -49,29 +52,31 @@ public class CvSerializer extends StdSerializer<CV> {
         super(t);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void serialize(CV cv, JsonGenerator jg,
         SerializerProvider sp) throws IOException {
         if (cv != null) {
             addLineWithProperty(jg, Section.Metadata.getPrefix(),
-                "label", cv,
+                CV.Properties.label.getPropertyName(), cv,
                 cv.
                     getLabel());
             addLineWithProperty(jg, Section.Metadata.getPrefix(),
-                "url", cv,
+                CV.Properties.url.getPropertyName(), cv,
                 cv.
                     getUrl());
             addLineWithProperty(jg, Section.Metadata.getPrefix(),
-                "version", cv,
+                CV.Properties.version.getPropertyName(), cv,
                 cv.getVersion());
             addLineWithProperty(jg, Section.Metadata.getPrefix(),
-                "full_name", cv,
+                CV.Properties.fullName.getPropertyName(), cv,
                 cv.getFullName());
 
         } else {
             Logger.getLogger(CvSerializer.class.getName()).
-                log(Level.FINE, "CV is null!");
+                log(Level.FINE, CV.class.getSimpleName() + " is null!");
         }
     }
 }

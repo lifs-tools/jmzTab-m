@@ -19,8 +19,8 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
- *
- * @author Leibniz-Institut für Analytische Wissenschaften – ISAS – e.V.
+  * TODO
+ * @author nilshoffmann
  */
 public class StudyVariableSerializerTest {
     

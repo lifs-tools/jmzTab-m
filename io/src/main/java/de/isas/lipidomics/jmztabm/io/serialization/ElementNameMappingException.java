@@ -28,10 +28,10 @@ public final class ElementNameMappingException extends RuntimeException {
      *
      * @param element a {@link java.lang.Object} object.
      */
-    public ElementNameMappingException(Object element) {
-        super("No mzTab element name mapping available for " + element.
+    public ElementNameMappingException(String property, Object element) {
+        super("No mzTab element name mapping available for property '"+property+"' on element '" + element.
             getClass().
-            getName());
+            getName()+"'");
     }
 
 }

@@ -16,6 +16,7 @@
 package de.isas.lipidomics.jmztabm.validation;
 
 import de.isas.mztab1_1.model.ValidationMessage;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -23,6 +24,7 @@ import java.util.List;
  * Validator interface.</p>
  *
  * @author nilshoffmann
+ * @param <T>
  *
  */
 public interface Validator<T> {
@@ -36,5 +38,8 @@ public interface Validator<T> {
      * @param t the object to validate.
      * @return a {@link java.util.List} object.
      */
-    public List<ValidationMessage> validate(T t);
+    public default List<ValidationMessage> validate(T t) {
+        return Collections.emptyList();
+    }
+
 }

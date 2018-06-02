@@ -79,7 +79,7 @@ public class MzTabRawParserTest {
         Integer expectedErrors) throws MZTabException {
         try {
             MzTab mzTab = parseResource(resource, level, expectedErrors);
-            MzTabWriter writer = new MzTabWriter();
+            MzTabNonValidatingWriter writer = new MzTabNonValidatingWriter();
             System.out.println("JACKSON serialized: " + resource);
             try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
                 try (OutputStreamWriter osw = new OutputStreamWriter(
