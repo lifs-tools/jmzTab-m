@@ -20,14 +20,13 @@
       <artifactId>jmztabm-api</artifactId>
       <version>${project.version}</version>
     </dependency>
-
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
       <version>${slf4j.version}</version>
       <type>jar</type>
     </dependency>
-        <dependency>
+    <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>jmztabm-test-utils</artifactId>
       <version>${project.version}</version>

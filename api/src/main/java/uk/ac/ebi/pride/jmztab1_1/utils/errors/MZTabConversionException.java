@@ -4,7 +4,6 @@ package uk.ac.ebi.pride.jmztab1_1.utils.errors;
  * Runtime exception for mzTab conversion
  *
  * @author Rui Wang
- * @version $Id$
  */
 public class MZTabConversionException extends RuntimeException {
 

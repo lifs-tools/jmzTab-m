@@ -15,18 +15,20 @@ import uk.ac.ebi.pride.jmztab1_1.utils.errors.MZTabErrorType;
  * @since 29/01/13
  * 
  */
-public class MZTabProperties {
+public final class MZTabProperties {
 //    private static Logger logger = LoggerFactory.getLogger(MZTabProperties.class);
+    
+    private MZTabProperties()  {
+        
+    }
 
-    private static Properties properties;
+    private static final Properties properties = new Properties();
     static {
-        String mzTabProperties = "/conf1_1/mztab.properties";
-        String formatProperties = "/conf1_1/mztab_format_error.properties";
-        String logicalProperties = "/conf1_1/mztab_logical_error.properties";
-        String crosscheckProperties = "/conf1_1/mztab_crosscheck_error.properties";
+        final String mzTabProperties = "/conf1_1/mztab.properties";
+        final String formatProperties = "/conf1_1/mztab_format_error.properties";
+        final String logicalProperties = "/conf1_1/mztab_logical_error.properties";
+        final String crosscheckProperties = "/conf1_1/mztab_crosscheck_error.properties";
         try {
-            properties = new Properties();
-
             properties.load(MZTabProperties.class.getResourceAsStream(mzTabProperties));
             properties.load(MZTabProperties.class.getResourceAsStream(formatProperties));
             properties.load(MZTabProperties.class.getResourceAsStream(logicalProperties));
@@ -58,7 +60,5 @@ public class MZTabProperties {
     public final static int MAX_ERROR_COUNT = Integer.parseInt(getProperty("mztab.max_error_count"));
     /** Constant <code>LEVEL</code> */
     public final static LogicalErrorType.Level LEVEL = MZTabErrorType.findLevel(getProperty("mztab.level"));
-    /** Constant <code>CVPARAM_CHECK=Boolean.parseBoolean(getProperty("mztab.cvparam_webservice"))</code> */
-    public final static boolean CVPARAM_CHECK = Boolean.parseBoolean(getProperty("mztab.cvparam_webservice"));
 
 }

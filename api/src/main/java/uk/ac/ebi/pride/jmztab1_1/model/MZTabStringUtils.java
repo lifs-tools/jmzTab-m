@@ -12,7 +12,7 @@ import static uk.ac.ebi.pride.jmztab1_1.model.MZTabConstants.*;
  * @since 30/01/13
  * 
  */
-public class MZTabStringUtils {
+public final class MZTabStringUtils {
 
     private static final Logger logger = LoggerFactory.getLogger(MZTabStringUtils.class);
 

@@ -7,7 +7,7 @@ package uk.ac.ebi.pride.jmztab1_1.model;
  * @since 08/03/13
  * 
  */
-public class MZTabConstants {
+public final class MZTabConstants {
     /** Constant <code>NEW_LINE="System.getProperty(line.separator)"</code> */
     public final static String NEW_LINE = "\r\n";//System.getProperty("line.separator");
     /** Constant <code>NULL="null"</code> */

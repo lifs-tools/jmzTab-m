@@ -1,4 +1,4 @@
-/*
+/* 
  * Copyright 2018 Leibniz-Institut für Analytische Wissenschaften – ISAS – e.V..
  *
  * Licensed under the Apache License, Version 2.0 (the "License");

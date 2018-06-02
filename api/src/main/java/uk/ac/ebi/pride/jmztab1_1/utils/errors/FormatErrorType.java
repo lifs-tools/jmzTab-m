@@ -10,7 +10,12 @@ import static uk.ac.ebi.pride.jmztab1_1.utils.errors.MZTabErrorType.Category.For
  * @since 29/01/13
  * 
  */
-public class FormatErrorType extends MZTabErrorType {
+public final class FormatErrorType extends MZTabErrorType {
+    
+    private FormatErrorType() {
+        
+    }
+    
     /** Constant <code>LinePrefix</code> */
     public static MZTabErrorType LinePrefix = createError(Format, "LinePrefix");
     /** Constant <code>CountMatch</code> */

@@ -11,10 +11,6 @@
   <build>
     <pluginManagement>
       <plugins>
-        <!--
-            If we e.g. execute on JDK 1.7, we should compile for Java 7 to get
-            the same (or higher) JAXB API version as used during the xjc execution.
-        -->
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>

@@ -8,7 +8,12 @@ package uk.ac.ebi.pride.jmztab1_1.utils.errors;
  * @since 29/01/13
  * 
  */
-public class LogicalErrorType extends MZTabErrorType {
+public final class LogicalErrorType extends MZTabErrorType {
+    
+    private LogicalErrorType() {
+        
+    }
+    
     /** Constant <code>NULL</code> */
     public static MZTabErrorType NULL = createError(Category.Logical, "NULL");
     /** Constant <code>NotNULL</code> */

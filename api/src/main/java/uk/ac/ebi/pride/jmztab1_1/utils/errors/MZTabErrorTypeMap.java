@@ -11,7 +11,7 @@ import java.util.TreeMap;
  * @since 27/02/13
  * 
  */
-public class MZTabErrorTypeMap {
+public final class MZTabErrorTypeMap {
     private Map<Integer, MZTabErrorType> typeMap = new TreeMap<Integer, MZTabErrorType>();
 
     private void add(MZTabErrorType type) {
