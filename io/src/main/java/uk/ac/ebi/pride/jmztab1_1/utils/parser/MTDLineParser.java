@@ -349,7 +349,6 @@ public class MTDLineParser extends MZTabLineParser {
                     break;
                 case MS_RUN:
                     handleMsRun(defineLabel, matcher, element, valueLabel);
-
                     break;
                 case CUSTOM:
                     handleCustom(defineLabel, matcher, valueLabel);

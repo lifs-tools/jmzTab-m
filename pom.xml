@@ -160,6 +160,7 @@
             <parallel>classes</parallel>
             <threadCount>2</threadCount>
             <trimStackTrace>false</trimStackTrace>
+            <workingDirectory>${project.build.directory}/surefire-files</workingDirectory>
           </configuration>
         </plugin>
         <plugin>

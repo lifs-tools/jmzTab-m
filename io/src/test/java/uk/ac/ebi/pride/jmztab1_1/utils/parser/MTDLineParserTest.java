@@ -559,11 +559,11 @@ public class MTDLineParserTest {
         parser.parse(1, "MTD\tassay[2]-ms_run_ref\tms_run[2]", errorList);
         assertTrue(context.getAssayMap().
             get(1).
-            getMsRunRef().
+            getMsRunRef().get(0).
             equals(msRun1));
         assertTrue(context.getAssayMap().
             get(2).
-            getMsRunRef().
+            getMsRunRef().get(0).
             equals(msRun2));
 
 //        parser.parse(1, "MTD\tassay[2]-quantification_mod[1]\t[UNIMOD, UNIMOD:188, Label:13C(6), ]", errorList);

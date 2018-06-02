@@ -550,6 +550,10 @@ public class MzTabWriterTest {
             ".mztab");
         MzTabNonValidatingWriter writer = new MzTabNonValidatingWriter();
         writer.write(tempFile.toPath(), mztab);
+        Files.lines(tempFile.toPath()).forEach((line) ->
+            {
+                System.out.println(line);
+            });
         long lines = Files.lines(tempFile.toPath()).
             count();
         Assert.assertEquals(
