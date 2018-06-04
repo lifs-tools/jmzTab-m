@@ -29,22 +29,25 @@ import java.util.stream.Collectors;
 import uk.ac.ebi.pride.jmztab1_1.model.Section;
 
 /**
- * <p>PublicationSerializer class.</p>
+ * <p>
+ * PublicationSerializer class.</p>
  *
  * @author nilshoffmann
- * 
+ *
  */
 public class PublicationSerializer extends StdSerializer<Publication> {
 
     /**
-     * <p>Constructor for PublicationSerializer.</p>
+     * <p>
+     * Constructor for PublicationSerializer.</p>
      */
     public PublicationSerializer() {
         this(null);
     }
 
     /**
-     * <p>Constructor for PublicationSerializer.</p>
+     * <p>
+     * Constructor for PublicationSerializer.</p>
      *
      * @param t a {@link java.lang.Class} object.
      */
@@ -52,7 +55,9 @@ public class PublicationSerializer extends StdSerializer<Publication> {
         super(t);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void serialize(Publication publication, JsonGenerator jg,
         SerializerProvider sp) throws IOException {
@@ -65,7 +70,7 @@ public class PublicationSerializer extends StdSerializer<Publication> {
                 stream().
                 map(pitem ->
                     pitem.getType().
-                        name() + ":" + pitem.getAccession()).
+                        getValue() + ":" + pitem.getAccession()).
                 collect(Collectors.joining(
                     "|", "", "")));
         } else {

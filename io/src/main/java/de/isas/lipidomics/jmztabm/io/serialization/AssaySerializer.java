@@ -20,9 +20,7 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import static de.isas.lipidomics.jmztabm.io.serialization.Serializers.addLineWithProperty;
 import static de.isas.lipidomics.jmztabm.io.serialization.Serializers.addSubElementStrings;
-import static de.isas.lipidomics.jmztabm.io.serialization.Serializers.addLineWithPropertyParameters;
 import de.isas.mztab1_1.model.Assay;
-import de.isas.mztab1_1.model.Metadata;
 import de.isas.mztab1_1.model.MsRun;
 import de.isas.mztab1_1.model.Sample;
 import java.io.IOException;
@@ -33,7 +31,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import uk.ac.ebi.pride.jmztab1_1.model.Section;
-import static uk.ac.ebi.pride.jmztab1_1.model.Section.Metadata;
 
 /**
  * <p>AssaySerializer class.</p>
@@ -71,9 +68,6 @@ public class AssaySerializer extends StdSerializer<Assay> {
                 assay, assay.getExternalUri());
 
             addSubElementStrings(jg, Section.Metadata.getPrefix(), assay, Assay.Properties.custom.getPropertyName(), assay.getCustom(), false);
-//            addLineWithPropertyParameters(jg, Section.Metadata.getPrefix(),
-//                Assay.Properties.custom.getPropertyName(),
-//                assay, assay.getCustom());
 
             List<MsRun> msRunRef = assay.getMsRunRef();
             if (msRunRef != null) {

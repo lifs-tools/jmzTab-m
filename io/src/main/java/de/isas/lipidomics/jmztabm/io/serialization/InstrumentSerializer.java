@@ -17,6 +17,7 @@ package de.isas.lipidomics.jmztabm.io.serialization;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import static de.isas.lipidomics.jmztabm.io.serialization.Serializers.addLineWithProperty;
 import static de.isas.lipidomics.jmztabm.io.serialization.Serializers.addLineWithPropertyParameters;
@@ -55,6 +56,14 @@ public class InstrumentSerializer extends StdSerializer<Instrument> {
         super(t);
     }
 
+    @Override
+    public void serializeWithType(Instrument value, JsonGenerator gen,
+        SerializerProvider serializers, TypeSerializer typeSer) throws IOException {
+        typeSer.writeTypePrefixForObject(value, gen);
+        serialize(value, gen, serializers);
+        typeSer.writeTypeSuffixForObject(value, gen);
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -73,7 +82,6 @@ public class InstrumentSerializer extends StdSerializer<Instrument> {
                 instrument, Arrays.asList(instrument.getSource()));
 
             if (instrument.getAnalyzer() != null) {
-
                 addSubElementStrings(jg, Section.Metadata.getPrefix(),
                     instrument,
                     Instrument.Properties.analyzer.getPropertyName(),

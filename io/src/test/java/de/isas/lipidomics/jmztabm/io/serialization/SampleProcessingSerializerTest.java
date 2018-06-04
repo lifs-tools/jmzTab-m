@@ -15,23 +15,40 @@
  */
 package de.isas.lipidomics.jmztabm.io.serialization;
 
+import com.fasterxml.jackson.databind.ObjectWriter;
+import de.isas.lipidomics.jmztabm.io.AbstractSerializerTest;
+import de.isas.mztab1_1.model.Metadata;
+import static de.isas.mztab1_1.model.Metadata.PrefixEnum.MTD;
+import de.isas.mztab1_1.model.Parameter;
+import de.isas.mztab1_1.model.SampleProcessing;
 import org.junit.Test;
-import static org.junit.Assert.*;
+import static uk.ac.ebi.pride.jmztab1_1.model.MZTabConstants.NEW_LINE;
+import static uk.ac.ebi.pride.jmztab1_1.model.MZTabConstants.TAB_STRING;
 
 /**
- * TODO
- * @author Leibniz-Institut für Analytische Wissenschaften – ISAS – e.V.
+ * @author nilshoffmann
  */
-public class SampleProcessingSerializerTest {
-    
-    public SampleProcessingSerializerTest() {
-    }
+public class SampleProcessingSerializerTest extends AbstractSerializerTest {
 
     /**
      * Test of serialize method, of class SampleProcessingSerializer.
      */
     @Test
     public void testSerialize() throws Exception {
+        Metadata mtd = new Metadata();
+        SampleProcessing sp = new SampleProcessing().id(1);
+        sp.addSampleProcessingItem(new Parameter().id(1).
+            cvLabel("SEP").
+            cvAccession("sep:00210").
+            name("liquid chromatograhy"));
+        mtd.addSampleProcessingItem(sp);
+        ObjectWriter writer = metaDataWriter();
+        assertEqSentry(
+            MTD + TAB_STRING + Metadata.Properties.sampleProcessing.
+                getPropertyName() + "[1]" + TAB_STRING + new ParameterConverter().
+                convert(sp.getSampleProcessing().
+                    get(0))
+            + NEW_LINE, serialize(writer, mtd));
     }
-    
+
 }

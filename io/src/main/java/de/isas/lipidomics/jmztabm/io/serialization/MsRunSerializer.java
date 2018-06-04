@@ -23,6 +23,7 @@ import static de.isas.lipidomics.jmztabm.io.serialization.Serializers.addSubElem
 import static de.isas.lipidomics.jmztabm.io.serialization.Serializers.addSubElementParameters;
 import static de.isas.lipidomics.jmztabm.io.serialization.Serializers.addSubElementStrings;
 import de.isas.mztab1_1.model.Instrument;
+import de.isas.mztab1_1.model.Metadata;
 import de.isas.mztab1_1.model.MsRun;
 import java.io.IOException;
 import java.util.Arrays;
@@ -66,44 +67,40 @@ public class MsRunSerializer extends StdSerializer<MsRun> {
     public void serialize(MsRun msRun, JsonGenerator jg,
         SerializerProvider sp) throws IOException {
         if (msRun != null) {
-            addLineWithProperty(jg, Section.Metadata.getPrefix(), "name", msRun,
+            addLineWithProperty(jg, Section.Metadata.getPrefix(),
+                MsRun.Properties.name.getPropertyName(), msRun,
                 msRun.getName());
-            addLineWithProperty(jg, Section.Metadata.getPrefix(), "location",
+            addLineWithProperty(jg, Section.Metadata.getPrefix(),
+                MsRun.Properties.location.getPropertyName(),
                 msRun, msRun.getLocation());
-            if(msRun.getInstrumentRef()!=null) {
-                addSubElementStrings(jg, Section.Metadata.getPrefix(), msRun,
-                    "instrument_ref", Arrays.asList(msRun.getInstrumentRef()).
-                        stream().
-                        sorted(Comparator.comparing(Instrument::getId,
-                            Comparator.nullsFirst(Comparator.
-                                naturalOrder())
-                        )).
-                        map((mref) ->
-                        {
-                            return new StringBuilder().append("ms_run").
-                                append(mref.getId()).
-                                toString();
-                        }).
-                        collect(Collectors.toList()), true);
+            if (msRun.getInstrumentRef() != null) {
+                addLineWithProperty(jg, Section.Metadata.getPrefix(),
+                    MsRun.Properties.instrumentRef.getPropertyName(), msRun,
+                    new StringBuilder().append(Metadata.Properties.instrument.
+                        getPropertyName() + "[" + msRun.getInstrumentRef().
+                            getId() + "]").
+                        toString());
             }
             addLineWithProperty(jg, Section.Metadata.getPrefix(),
-                "instrument_ref", msRun, msRun.getInstrumentRef());
-            addLineWithProperty(jg, Section.Metadata.getPrefix(), "hash",
+                MsRun.Properties.hash.getPropertyName(),
                 msRun, msRun.getHash());
             addSubElementParameter(jg, Section.Metadata.getPrefix(), msRun,
-                "hash_method",
+                MsRun.Properties.hashMethod.getPropertyName(),
                 msRun.getHashMethod());
             addSubElementParameter(jg, Section.Metadata.getPrefix(), msRun,
-                "format", msRun.getFormat());
+                MsRun.Properties.format.getPropertyName(), msRun.getFormat());
             addSubElementParameters(jg, Section.Metadata.getPrefix(), msRun,
-                "fragmentation_method",
-                msRun.getFragmentationMethod(), true);
+                MsRun.Properties.fragmentationMethod.getPropertyName(),
+                msRun.getFragmentationMethod(), false);
+            addSubElementParameters(jg, Section.Metadata.getPrefix(), msRun,
+                MsRun.Properties.scanPolarity.getPropertyName(),
+                msRun.getScanPolarity(), false);
             addSubElementParameter(jg, Section.Metadata.getPrefix(), msRun,
-                "id_format",
+                MsRun.Properties.idFormat.getPropertyName(),
                 msRun.getIdFormat());
         } else {
             Logger.getLogger(MsRunSerializer.class.getName()).
-                log(Level.FINE, "MsRun is null!");
+                log(Level.FINE, MsRun.class.getSimpleName() + " is null!");
         }
     }
 }

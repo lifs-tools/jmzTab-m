@@ -39,28 +39,10 @@ public class MsRunSerializerTest extends AbstractSerializerTest {
     @Test
     public void testSerialize() throws Exception {
         Metadata mtd = new Metadata();
-        Instrument instrument1 = new Instrument().id(1).
-            name(
-                new Parameter().cvLabel("MS").
-                    cvAccession("MS:100049").
-                    name("LTQ Orbitrap")).
-            source(
-                new Parameter().cvLabel("MS").
-                    cvAccession("MS:1000073").
-                    name("ESI")).
-            analyzer(Arrays.asList(
-                new Parameter().cvLabel("MS").
-                    cvAccession("MS:1000291").
-                    name("linear ion trap"))
-            ).
-            detector(
-                new Parameter().cvLabel("MS").
-                    cvAccession("MS:1000253").
-                    name("electron multiplier")
-            );
-        mtd.addInstrumentItem(instrument1);
+        Instrument instrument1 = new Instrument().id(1);
+        //mtd.addInstrumentItem(instrument1);
         MsRun msRun1 = new MsRun().id(1).
-            location("file://ftp.ebi.ac.uk/path/to/file1.mgf").
+            location("file://ftp.ebi.ac.uk/path/to/file1.mzml").
             idFormat(new Parameter().cvLabel("MS").
                 cvAccession("MS:1001530").
                 name(
@@ -68,6 +50,10 @@ public class MsRunSerializerTest extends AbstractSerializerTest {
             format(new Parameter().cvLabel("MS").
                 cvAccession("MS:1000584").
                 name("mzML file")).
+            hash("de9f2c7fd25e1b3afad3e85a0bd17d9b100db4b3").
+            hashMethod(new Parameter().cvLabel("MS").
+                cvAccession("MS:1000569").
+                name("SHA-1")).
             addFragmentationMethodItem(
                 new Parameter().cvLabel("MS").
                     cvAccession("MS:1000133").
@@ -82,22 +68,8 @@ public class MsRunSerializerTest extends AbstractSerializerTest {
         mtd.addMsRunItem(msRun1);
 
         ObjectWriter writer = metaDataWriter();
-        //[MS, MS:1000584, mzML file, ]
-        //id_format [MS, MS:1000530, mzML unique identifier, ]
         assertEqSentry(
-            MTD + TAB_STRING + Metadata.Properties.instrument + "[1]-name" + TAB_STRING + new ParameterConverter().
-                convert(instrument1.getName()) + NEW_LINE
-            + MTD + TAB_STRING + Metadata.Properties.instrument + "[1]-source" + TAB_STRING + new ParameterConverter().
-                convert(instrument1.getSource()) + NEW_LINE
-            + MTD + TAB_STRING + Metadata.Properties.instrument + "[1]-analyzer[1]" + TAB_STRING + new ParameterConverter().
-                convert(instrument1.getAnalyzer().
-                    get(0)) + NEW_LINE
-            + MTD + TAB_STRING + Metadata.Properties.instrument + "[1]-analyzer[2]" + TAB_STRING + new ParameterConverter().
-                convert(instrument1.getAnalyzer().
-                    get(1)) + NEW_LINE
-            + MTD + TAB_STRING + Metadata.Properties.instrument + "[1]-detector" + TAB_STRING + new ParameterConverter().
-                convert(instrument1.getDetector()) + NEW_LINE
-            + MTD + TAB_STRING + Metadata.Properties.msRun + "[1]-location" + TAB_STRING + msRun1.
+            MTD + TAB_STRING + Metadata.Properties.msRun + "[1]-location" + TAB_STRING + msRun1.
                 getLocation() + NEW_LINE
             + MTD + TAB_STRING + Metadata.Properties.msRun + "[1]-instrument_ref" + TAB_STRING + "instrument[" + instrument1.
                 getId() + "]" + NEW_LINE
