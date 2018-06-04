@@ -16,7 +16,7 @@
 package de.isas.lipidomics.jmztabm.validation.validators;
 
 import de.isas.lipidomics.jmztabm.validation.constraints.CheckParameter;
-import de.isas.mztab1_1.model.Parameter;
+import de.isas.mztab2.model.Parameter;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 

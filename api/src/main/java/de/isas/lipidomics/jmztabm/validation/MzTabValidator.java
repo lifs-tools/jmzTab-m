@@ -15,11 +15,11 @@
  */
 package de.isas.lipidomics.jmztabm.validation;
 
-import de.isas.mztab1_1.model.MzTab;
-import de.isas.mztab1_1.model.ValidationMessage;
-import static de.isas.mztab1_1.model.ValidationMessage.MessageTypeEnum.ERROR;
-import static de.isas.mztab1_1.model.ValidationMessage.MessageTypeEnum.INFO;
-import static de.isas.mztab1_1.model.ValidationMessage.MessageTypeEnum.WARN;
+import de.isas.mztab2.model.MzTab;
+import de.isas.mztab2.model.ValidationMessage;
+import static de.isas.mztab2.model.ValidationMessage.MessageTypeEnum.ERROR;
+import static de.isas.mztab2.model.ValidationMessage.MessageTypeEnum.INFO;
+import static de.isas.mztab2.model.ValidationMessage.MessageTypeEnum.WARN;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;

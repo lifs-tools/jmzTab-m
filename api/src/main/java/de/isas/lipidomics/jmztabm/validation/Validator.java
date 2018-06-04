@@ -15,7 +15,7 @@
  */
 package de.isas.lipidomics.jmztabm.validation;
 
-import de.isas.mztab1_1.model.ValidationMessage;
+import de.isas.mztab2.model.ValidationMessage;
 import java.util.Collections;
 import java.util.List;
 

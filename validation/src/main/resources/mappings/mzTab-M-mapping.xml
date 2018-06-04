@@ -7,7 +7,7 @@ To select certain axis in xpath for example metadata/snake_case-for_attribute in
 
 Note that the JXPath library does not include the MzTab object as an explicit root in selections, but rather implies it as the anonymous root '/'.
 -->
-<CvMapping xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.psidev.info/files/validator/CvMapping.xsd" modelName="mzML.xsd" modelURI="http://psidev.cvs.sourceforge.net/*checkout*/psidev/psi/psi-ms/mzML/schema/mzML1.0.0.xsd" modelVersion="1.0.0">
+<CvMapping xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.psidev.info/files/validator/CvMapping.xsd" modelName="mzTab_m_swagger.yml" modelURI="https://raw.githubusercontent.com/nilshoffmann/jmzTab-m/master/api/src/main/resources/mzTab_m_swagger.yml" modelVersion="2.0.0">
 
     <CvReferenceList>
       <CvReference cvName="PSI-MS" cvIdentifier="MS"/>
