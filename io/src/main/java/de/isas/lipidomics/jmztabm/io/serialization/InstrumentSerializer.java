@@ -18,21 +18,14 @@ package de.isas.lipidomics.jmztabm.io.serialization;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
-import static de.isas.lipidomics.jmztabm.io.serialization.Serializers.addLine;
 import static de.isas.lipidomics.jmztabm.io.serialization.Serializers.addLineWithProperty;
 import static de.isas.lipidomics.jmztabm.io.serialization.Serializers.addLineWithPropertyParameters;
 import static de.isas.lipidomics.jmztabm.io.serialization.Serializers.addSubElementStrings;
-import de.isas.mztab1_1.model.Assay;
 import de.isas.mztab1_1.model.Instrument;
-import static de.isas.mztab1_1.model.Metadata.Properties.assay;
-import de.isas.mztab1_1.model.MsRun;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import uk.ac.ebi.pride.jmztab1_1.model.Section;
 
 /**
@@ -74,40 +67,17 @@ public class InstrumentSerializer extends StdSerializer<Instrument> {
                 Instrument.Properties.name.getPropertyName(),
                 instrument,
                 instrument.getName());
-//            addLine(jg, Section.Metadata.getPrefix(),
-//                "instrument[" + instrument.getId() + "]-name",
-//                instrument.
-//                    getInstrumentName());
-
-//            addLineWithProperty(jg, Section.Metadata.getPrefix(),
-//                Assay.Properties.externalUri.getPropertyName(),
-//                assay, assay.getExternalUri());
 
             addLineWithPropertyParameters(jg, Section.Metadata.getPrefix(),
                 Instrument.Properties.source.getPropertyName(),
                 instrument, Arrays.asList(instrument.getSource()));
 
-//            addLine(jg, Section.Metadata.getPrefix(),
-//                "instrument[" + instrument.getId() + "]-source",
-//                instrument.
-//                    getInstrumentSource());
             if (instrument.getAnalyzer() != null) {
 
-//                addLineWithPropertyParameters(jg, Section.Metadata.getPrefix(),
-//                    Instrument.Properties.instrumentAnalyzer.getPropertyName(),
-//                    instrument, instrument.getInstrumentAnalyzer());
-                addSubElementStrings(jg, Section.Metadata.getPrefix(), instrument,
-                    Instrument.Properties.analyzer.getPropertyName(), instrument.getAnalyzer(), false);
-//                IntStream.range(0, instrument.getInstrumentAnalyzer().
-//                    size()).
-//                    forEachOrdered(i ->
-//                    {
-//                        addLine(jg, Section.Metadata.getPrefix(),
-//                            "instrument[" + instrument.getId() + "]-analyzer[" + (i + 1) + "]",
-//                            instrument.
-//                                getInstrumentAnalyzer().
-//                                get(i));
-//                    });
+                addSubElementStrings(jg, Section.Metadata.getPrefix(),
+                    instrument,
+                    Instrument.Properties.analyzer.getPropertyName(),
+                    instrument.getAnalyzer(), false);
             }
             if (instrument.getDetector() != null) {
                 addLineWithProperty(jg, Section.Metadata.getPrefix(),
