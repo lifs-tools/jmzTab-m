@@ -272,7 +272,6 @@ MTD	id_confidence_measure[3]	[,,Isotopic fit Score,]
             addAssayRefsItem(
                 assay1).
             addAssayRefsItem(assay2).
-            addSampleRefsItem(sample1).
             addFactorsItem(new Parameter().name("spike-in").
                 value("0.74 fmol/uL"));
         mtd.addStudyVariableItem(studyVariable1);
@@ -281,7 +280,6 @@ MTD	id_confidence_measure[3]	[,,Isotopic fit Score,]
             description("Group B").
             addAssayRefsItem(assay1).
             addAssayRefsItem(assay2).
-            addSampleRefsItem(sample2).
             addFactorsItem(new Parameter().name("spike-in").
                 value("0.74 fmol/uL"));
         mtd.addStudyVariableItem(studyVariable2);

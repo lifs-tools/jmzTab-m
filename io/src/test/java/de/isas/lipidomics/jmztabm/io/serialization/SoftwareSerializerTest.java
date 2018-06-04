@@ -15,15 +15,23 @@
  */
 package de.isas.lipidomics.jmztabm.io.serialization;
 
+import com.fasterxml.jackson.databind.ObjectWriter;
+import de.isas.lipidomics.jmztabm.io.AbstractSerializerTest;
+import de.isas.mztab1_1.model.Metadata;
+import static de.isas.mztab1_1.model.Metadata.PrefixEnum.MTD;
+import de.isas.mztab1_1.model.Parameter;
+import de.isas.mztab1_1.model.Software;
+import java.util.Arrays;
 import org.junit.Test;
-import static org.junit.Assert.*;
+import static uk.ac.ebi.pride.jmztab1_1.model.MZTabConstants.NEW_LINE;
+import static uk.ac.ebi.pride.jmztab1_1.model.MZTabConstants.TAB_STRING;
 
 /**
-  * TODO
+ *
  * @author nilshoffmann
  */
-public class SoftwareSerializerTest {
-    
+public class SoftwareSerializerTest extends AbstractSerializerTest {
+
     public SoftwareSerializerTest() {
     }
 
@@ -32,6 +40,32 @@ public class SoftwareSerializerTest {
      */
     @Test
     public void testSerialize() throws Exception {
+        Metadata mtd = new Metadata();
+        Software software1 = new Software().id(1).
+            parameter(new Parameter().cvLabel(
+                "MS").
+                cvAccession("MS:1001207").
+                name("Mascot").
+                value("2.3")).
+            setting(Arrays.asList("Fragment tolerance = 0.1Da",
+                "Parent tolerance = 0.5Da"));
+        mtd.addSoftwareItem(software1);
+
+        ObjectWriter writer = metaDataWriter();
+        assertEqSentry(
+            MTD + TAB_STRING + Metadata.Properties.software + "[1]" + TAB_STRING + new ParameterConverter().
+                convert(software1.
+                    getParameter())
+            + NEW_LINE
+            + MTD + TAB_STRING + Metadata.Properties.software + "[1]-" + Software.Properties.setting + "[1]" + TAB_STRING + software1.
+                getSetting().
+                get(0)
+            + NEW_LINE
+            + MTD + TAB_STRING + Metadata.Properties.software + "[1]-" + Software.Properties.setting + "[2]" + TAB_STRING + software1.
+                getSetting().
+                get(1)
+            + NEW_LINE,
+            serialize(writer, mtd));
     }
-    
+
 }

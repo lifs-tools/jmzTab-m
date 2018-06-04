@@ -591,23 +591,6 @@ public class MTDLineParserTest {
             getDescription().
             equals("Group B (spike-in 0,74 fmol/uL)"));
 
-        Sample sample1 = new Sample();
-        sample1.id(1);
-        Sample sample2 = new Sample();
-        sample2.id(2);
-        context.addSample(metadata, sample1);
-        context.addSample(metadata, sample2);
-        parser.parse(1,
-            "MTD\tstudy_variable[1]-sample_refs\tsample[1],sample[2]", errorList);
-        assertTrue(context.getStudyVariableMap().
-            get(1).
-            getSampleRefs().
-            size() == 2);
-        assertTrue(context.getStudyVariableMap().
-            get(1).
-            getSampleRefs().
-            get((2 - 1)) == sample2);
-
         Assay assay1 = new Assay();
         assay1.id(1);
         Assay assay2 = new Assay();

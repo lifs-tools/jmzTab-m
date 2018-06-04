@@ -34,22 +34,25 @@ import java.util.stream.Collectors;
 import uk.ac.ebi.pride.jmztab1_1.model.Section;
 
 /**
- * <p>StudyVariableSerializer class.</p>
+ * <p>
+ * StudyVariableSerializer class.</p>
  *
  * @author nilshoffmann
- * 
+ *
  */
 public class StudyVariableSerializer extends StdSerializer<StudyVariable> {
 
     /**
-     * <p>Constructor for StudyVariableSerializer.</p>
+     * <p>
+     * Constructor for StudyVariableSerializer.</p>
      */
     public StudyVariableSerializer() {
         this(null);
     }
 
     /**
-     * <p>Constructor for StudyVariableSerializer.</p>
+     * <p>
+     * Constructor for StudyVariableSerializer.</p>
      *
      * @param t a {@link java.lang.Class} object.
      */
@@ -57,7 +60,9 @@ public class StudyVariableSerializer extends StdSerializer<StudyVariable> {
         super(t);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void serialize(StudyVariable studyVariable, JsonGenerator jg,
         SerializerProvider sp) throws IOException {
@@ -70,9 +75,11 @@ public class StudyVariableSerializer extends StdSerializer<StudyVariable> {
             addSubElementParameters(jg, Section.Metadata.getPrefix(),
                 studyVariable,
                 "factors", studyVariable.getFactors(), true);
-            addLineWithProperty(jg, Section.Metadata.getPrefix(), "average_function", studyVariable, studyVariable.
+            addLineWithProperty(jg, Section.Metadata.getPrefix(),
+                "average_function", studyVariable, studyVariable.
                     getAverageFunction());
-            addLineWithProperty(jg, Section.Metadata.getPrefix(), "variation_function", studyVariable, studyVariable.
+            addLineWithProperty(jg, Section.Metadata.getPrefix(),
+                "variation_function", studyVariable, studyVariable.
                     getVariationFunction());
             addSubElementStrings(jg, Section.Metadata.getPrefix(), studyVariable,
                 "assay_refs", Optional.ofNullable(studyVariable.getAssayRefs()).
@@ -85,24 +92,6 @@ public class StudyVariableSerializer extends StdSerializer<StudyVariable> {
                     map((assayRef) ->
                     {
                         return new StringBuilder().append("assay").
-                            append("[").
-                            append(assayRef.getId()).
-                            append("]").
-                            toString();
-                    }).
-                    collect(Collectors.toList()), true);
-            addSubElementStrings(jg, Section.Metadata.getPrefix(), studyVariable,
-                "sample_refs", Optional.
-                    ofNullable(studyVariable.getSampleRefs()).
-                    orElse(Collections.emptyList()).
-                    stream().
-                    sorted(Comparator.comparing(Sample::getId,
-                        Comparator.nullsFirst(Comparator.
-                            naturalOrder())
-                    )).
-                    map((assayRef) ->
-                    {
-                        return new StringBuilder().append("sample").
                             append("[").
                             append(assayRef.getId()).
                             append("]").

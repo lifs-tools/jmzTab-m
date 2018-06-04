@@ -274,12 +274,6 @@ public class MTDLineValidateTest {
             errorList);
         assertTrue(errorList.getError(0).
             getType() == LogicalErrorType.DuplicationID);
-
-        parser.parse(1,
-            "MTD\tstudy_variable[1]-sample_refs\tsample[1], sample[1]",
-            errorList);
-        assertTrue(errorList.getError(1).
-            getType() == LogicalErrorType.DuplicationID);
     }
 
     @Test

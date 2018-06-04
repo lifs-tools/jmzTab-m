@@ -1,7 +1,7 @@
 swagger: '2.0'
 info:
   description: This is an mzTab validation service.
-  version: 1.1.0
+  version: 2.0.0
   title: mzTab validation API.
   contact:
     email: nils.hoffmann@isas.de
@@ -794,11 +794,6 @@ definitions:
           default: []
           items:
             $ref: '#/definitions/Assay'
-        sample_refs:
-          type: array
-          default: []
-          items:
-            $ref: '#/definitions/Sample'
         average_function:
           $ref: '#/definitions/Parameter'
         variation_function:

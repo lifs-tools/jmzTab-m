@@ -1020,35 +1020,6 @@ public class MTDLineParser extends MZTabLineParser {
                             get(e.getId()));
                     }
                     break;
-                case STUDY_VARIABLE_SAMPLE_REFS:
-                    indexedElementList = checkIndexedElementList(defineLabel,
-                        valueLabel, MetadataElement.SAMPLE);
-                    // detect duplicates
-                    indexedElementList.stream().
-                        filter(i ->
-                            Collections.frequency(indexedElementList, i) > 1).
-                        collect(Collectors.toSet()).
-                        forEach((indexedElement) ->
-                        {
-                            errorList.add(new MZTabError(
-                                LogicalErrorType.DuplicationID, lineNumber,
-                                valueLabel));
-                        });
-                    // check that sample exist
-                    for (IndexedElement e : indexedElementList) {
-                        if (!context.getSampleMap().
-                            containsKey(e.getId())) {
-                            // can not find assay[id] in metadata.
-                            throw new MZTabException(new MZTabError(
-                                LogicalErrorType.NotDefineInMetadata, lineNumber,
-                                valueLabel,
-                                valueLabel));
-                        }
-                        context.addStudyVariableSample(metadata, id, context.
-                            getSampleMap().
-                            get(e.getId()));
-                    }
-                    break;
                 case STUDY_VARIABLE_DESCRIPTION:
                     context.
                         addStudyVariableDescription(metadata, id, valueLabel);

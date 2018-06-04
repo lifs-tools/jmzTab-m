@@ -1081,38 +1081,6 @@ public class MZTabParserContext {
     }
 
     /**
-     * Add a study_variable[id]-sample_refs. Comma-separated references to the samples that were analysed in the study variable.
-     *
-     * @param id SHOULD be positive integer.
-     * @param sample SHOULD NOT set null, and should be defined in metadata first.
-     * @param metadata a {@link de.isas.mztab1_1.model.Metadata} object.
-     * @return a {@link de.isas.mztab1_1.model.StudyVariable} object.
-     */
-    public StudyVariable addStudyVariableSample(Metadata metadata, Integer id, Sample sample) {
-        if (id <= 0) {
-            throw new IllegalArgumentException("study variable id should be greater than 0!");
-        }
-        if (sample == null) {
-            throw new NullPointerException("study_variable[n]-sample_ref should not set null.");
-        }
-        if (! sampleMap.containsValue(sample)) {
-            throw new IllegalArgumentException("sample should be defined in metadata first");
-        }
-
-        StudyVariable studyVariable = studyVariableMap.get(id);
-        if (studyVariable == null) {
-            studyVariable = new StudyVariable();
-            studyVariable.id(id);
-            studyVariable.addSampleRefsItem(sample);
-            studyVariableMap.put(id, studyVariable);
-            metadata.addStudyVariableItem(studyVariable);
-        } else {
-            studyVariable.addSampleRefsItem(sample);
-        }
-        return studyVariable;
-    }
-
-    /**
      * Add a study_variable[id]-description. A textual description of the study variable.
      *
      * @param id SHOULD be positive integer.
