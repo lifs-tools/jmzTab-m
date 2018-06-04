@@ -28,7 +28,6 @@ import static uk.ac.ebi.pride.jmztab1_1.model.MZTabConstants.NEW_LINE;
 import static uk.ac.ebi.pride.jmztab1_1.model.MZTabConstants.TAB_STRING;
 
 /**
- * TODO
  *
  * @author nilshoffmann
  */

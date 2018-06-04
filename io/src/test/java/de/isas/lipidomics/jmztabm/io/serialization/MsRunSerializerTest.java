@@ -22,7 +22,6 @@ import de.isas.mztab1_1.model.Metadata;
 import static de.isas.mztab1_1.model.Metadata.PrefixEnum.MTD;
 import de.isas.mztab1_1.model.MsRun;
 import de.isas.mztab1_1.model.Parameter;
-import java.util.Arrays;
 import org.junit.Test;
 import static uk.ac.ebi.pride.jmztab1_1.model.MZTabConstants.NEW_LINE;
 import static uk.ac.ebi.pride.jmztab1_1.model.MZTabConstants.TAB_STRING;
@@ -40,7 +39,6 @@ public class MsRunSerializerTest extends AbstractSerializerTest {
     public void testSerialize() throws Exception {
         Metadata mtd = new Metadata();
         Instrument instrument1 = new Instrument().id(1);
-        //mtd.addInstrumentItem(instrument1);
         MsRun msRun1 = new MsRun().id(1).
             location("file://ftp.ebi.ac.uk/path/to/file1.mzml").
             idFormat(new Parameter().cvLabel("MS").

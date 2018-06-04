@@ -249,9 +249,7 @@ public class MzTabTestData {
             addCustomItem(new Parameter().name("Extraction date").
                 value("2011-12-21")).
             addCustomItem(new Parameter().name("Extraction reason").
-                value("liver biopsy")).
-            addIdConfidenceMeasureItem(new Parameter().name(
-                "coelution with authentic standard"));
+                value("liver biopsy"));
         mtd.addSampleItem(sample1);
         Sample sample2 = new Sample().id(2).
             name("Sample 2").
@@ -272,9 +270,7 @@ public class MzTabTestData {
             addCustomItem(new Parameter().name("Extraction date").
                 value("2011-12-19")).
             addCustomItem(new Parameter().name("Extraction reason").
-                value("liver biopsy")).
-            addIdConfidenceMeasureItem(new Parameter().name(
-                "coelution with authentic standard"));
+                value("liver biopsy"));
         mtd.addSampleItem(sample2);
 
         Assay assay1 = new Assay().id(1).

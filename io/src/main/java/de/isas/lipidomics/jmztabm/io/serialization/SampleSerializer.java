@@ -74,9 +74,6 @@ public class SampleSerializer extends StdSerializer<Sample> {
                 "tissue",
                 sample.getTissue(), false);
             addSubElementParameters(jg, Section.Metadata.getPrefix(), sample,
-                "id_confidence_measure", sample.
-                    getIdConfidenceMeasure(), false);
-            addSubElementParameters(jg, Section.Metadata.getPrefix(), sample,
                 "custom",
                 sample.getCustom(), false);
         } else {

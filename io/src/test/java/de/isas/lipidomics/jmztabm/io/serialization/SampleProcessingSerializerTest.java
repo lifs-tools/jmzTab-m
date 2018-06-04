@@ -40,7 +40,7 @@ public class SampleProcessingSerializerTest extends AbstractSerializerTest {
         sp.addSampleProcessingItem(new Parameter().id(1).
             cvLabel("SEP").
             cvAccession("sep:00210").
-            name("liquid chromatograhy"));
+            name("liquid chromatography"));
         mtd.addSampleProcessingItem(sp);
         ObjectWriter writer = metaDataWriter();
         assertEqSentry(

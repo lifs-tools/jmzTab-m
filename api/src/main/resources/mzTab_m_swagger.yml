@@ -724,11 +724,6 @@ definitions:
           default: []
           items:
             $ref: '#/definitions/Parameter'
-        id_confidence_measure:
-          type: array
-          default: []
-          items:
-            $ref: '#/definitions/Parameter'
         species:
           type: array
           default: []
