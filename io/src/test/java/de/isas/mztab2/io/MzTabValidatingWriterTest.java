@@ -15,8 +15,15 @@
  */
 package de.isas.mztab2.io;
 
+import de.isas.mztab2.model.ValidationMessage;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.OutputStreamWriter;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import org.junit.Assert;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *
@@ -32,6 +39,11 @@ public class MzTabValidatingWriterTest {
      */
     @Test
     public void testWrite_OutputStreamWriter_MzTab() throws Exception {
+        MzTabValidatingWriter writer = new MzTabValidatingWriter();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        Optional<List<ValidationMessage>> messages = writer.write(new OutputStreamWriter(baos), MzTabTestData.create1_1TestFile());
+        Assert.assertEquals(1, messages.get().size());
+        String baosString = baos.toString("UTF-8");
     }
 
     /**
@@ -39,6 +51,10 @@ public class MzTabValidatingWriterTest {
      */
     @Test
     public void testWrite_Path_MzTab() throws Exception {
+        MzTabValidatingWriter writer = new MzTabValidatingWriter();
+        File f = File.createTempFile(UUID.randomUUID().toString(), ".mztab");
+        Optional<List<ValidationMessage>> messages = writer.write(f.toPath(), MzTabTestData.create1_1TestFile());
+        Assert.assertEquals(1, messages.get().size());
     }
 
     /**

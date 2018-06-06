@@ -315,8 +315,13 @@ public class MzTabTestData {
 //            cvAccession("MS:1001838").
 //            name("SRM quantitation analysis"));
 
+        mtd.setSmallMoleculeQuantificationUnit(new Parameter().name("Progenesis QI Normalised Abundance"));
+        mtd.setSmallMoleculeFeatureQuantificationUnit(new Parameter().name("Progenesis QI Normalised Abundance"));
         mtd.addIdConfidenceMeasureItem(new Parameter().id(1).
             name("some confidence measure term"));
+        
+        mtd.setSmallMoleculeIdentificationReliability(
+            new Parameter().name("Identification Reliability from 1 (lowest reliability) to 4 (highest reliability)"));
 
         MzTab mzTab = new MzTab();
         mzTab.metadata(mtd);

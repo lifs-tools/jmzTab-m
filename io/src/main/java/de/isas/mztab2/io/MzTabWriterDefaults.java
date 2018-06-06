@@ -19,7 +19,6 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonGenerator.Feature;
 import com.fasterxml.jackson.dataformat.csv.CsvFactory;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
-import com.fasterxml.jackson.dataformat.csv.CsvParser;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import de.isas.mztab2.io.formats.AssayFormat;
 import de.isas.mztab2.io.formats.ContactFormat;
@@ -68,11 +67,13 @@ import uk.ac.ebi.pride.jmztab2.model.SmallMoleculeEvidenceColumn;
 import uk.ac.ebi.pride.jmztab2.model.SmallMoleculeFeatureColumn;
 
 /**
+ * Default mapper and schema definitions for writing of mzTab files using the
+ * Jackson CSV mapper.
  *
  * @author nilshoffmann
  */
 public class MzTabWriterDefaults {
-        
+
     public CsvMapper defaultMapper() {
         CsvFactory factory = new CsvFactory();
         factory.disable(JsonGenerator.Feature.AUTO_CLOSE_TARGET);
@@ -106,7 +107,7 @@ public class MzTabWriterDefaults {
         return builder.addColumn("PREFIX",
             CsvSchema.ColumnType.STRING).
             addColumn("KEY",
-            CsvSchema.ColumnType.STRING).
+                CsvSchema.ColumnType.STRING).
             addArrayColumn("VALUES", MZTabConstants.BAR_S).
             build().
             withAllowComments(true).
@@ -118,28 +119,28 @@ public class MzTabWriterDefaults {
             withLineSeparator(MZTabConstants.NEW_LINE).
             withColumnSeparator(MZTabConstants.TAB);
     }
-    
+
     public CsvMapper smallMoleculeSummaryMapper() {
         CsvMapper mapper = metadataMapper();
         mapper.addMixIn(SmallMoleculeSummary.class,
             SmallMoleculeSummaryFormat.class);
         return mapper;
     }
-    
+
     public CsvMapper smallMoleculeFeatureMapper() {
         CsvMapper mapper = metadataMapper();
         mapper.addMixIn(SmallMoleculeFeature.class,
             SmallMoleculeFeatureFormat.class);
         return mapper;
     }
-    
+
     public CsvMapper smallMoleculeEvidenceMapper() {
         CsvMapper mapper = metadataMapper();
         mapper.addMixIn(SmallMoleculeEvidence.class,
             SmallMoleculeEvidenceFormat.class);
         return mapper;
     }
-    
+
     public CsvSchema defaultSchemaForBuilder(CsvSchema.Builder builder) {
         return builder.
             build().
@@ -152,11 +153,13 @@ public class MzTabWriterDefaults {
             withLineSeparator(MZTabConstants.NEW_LINE).
             withColumnSeparator(MZTabConstants.TAB);
     }
-    
-    public CsvSchema smallMoleculeSummarySchema(CsvMapper mapper, MzTab mzTabFile) {
+
+    public CsvSchema smallMoleculeSummarySchema(CsvMapper mapper,
+        MzTab mzTabFile) {
         CsvSchema.Builder builder = mapper.schema().
             builder();
-        builder.addColumn(SmallMoleculeSummary.HeaderPrefixEnum.SMH.getValue(), CsvSchema.ColumnType.STRING).
+        builder.addColumn(SmallMoleculeSummary.HeaderPrefixEnum.SMH.getValue(),
+            CsvSchema.ColumnType.STRING).
             addColumn(SmallMoleculeColumn.Stable.SML_ID.getHeader(),
                 CsvSchema.ColumnType.STRING).
             addColumn(SmallMoleculeColumn.Stable.SMF_ID_REFS.getHeader(),
@@ -187,22 +190,26 @@ public class MzTabWriterDefaults {
             getAssay().
             forEach((assay) ->
             {
-                builder.addColumn(SmallMoleculeSummary.Properties.abundanceAssay+"[" + assay.getId() + "]",
+                builder.addColumn(
+                    SmallMoleculeSummary.Properties.abundanceAssay + "[" + assay.
+                        getId() + "]",
                     CsvSchema.ColumnType.NUMBER_OR_STRING);
             });
         mzTabFile.getMetadata().
             getStudyVariable().
             forEach((studyVariable) ->
             {
-                builder.addColumn(SmallMoleculeSummary.Properties.abundanceStudyVariable+"[" + studyVariable.
-                    getId() + "]", CsvSchema.ColumnType.NUMBER_OR_STRING);
+                builder.addColumn(
+                    SmallMoleculeSummary.Properties.abundanceStudyVariable + "[" + studyVariable.
+                        getId() + "]", CsvSchema.ColumnType.NUMBER_OR_STRING);
             });
         mzTabFile.getMetadata().
             getStudyVariable().
             forEach((studyVariable) ->
             {
                 builder.addColumn(
-                    SmallMoleculeSummary.Properties.abundanceVariationStudyVariable+"[" + studyVariable.getId() + "]",
+                    SmallMoleculeSummary.Properties.abundanceVariationStudyVariable + "[" + studyVariable.
+                        getId() + "]",
                     CsvSchema.ColumnType.NUMBER_OR_STRING);
             });
         Map<String, OptColumnMapping> optColumns = new LinkedHashMap<>();
@@ -225,11 +232,13 @@ public class MzTabWriterDefaults {
             });
         return defaultSchemaForBuilder(builder);
     }
-    
-    public CsvSchema smallMoleculeFeatureSchema(CsvMapper mapper, MzTab mzTabFile) {
+
+    public CsvSchema smallMoleculeFeatureSchema(CsvMapper mapper,
+        MzTab mzTabFile) {
         CsvSchema.Builder builder = mapper.schema().
             builder();
-        builder.addColumn(SmallMoleculeFeature.HeaderPrefixEnum.SFH.getValue(), CsvSchema.ColumnType.STRING).
+        builder.addColumn(SmallMoleculeFeature.HeaderPrefixEnum.SFH.getValue(),
+            CsvSchema.ColumnType.STRING).
             addColumn(SmallMoleculeFeatureColumn.Stable.SMF_ID.getHeader(),
                 CsvSchema.ColumnType.STRING).
             addColumn(SmallMoleculeFeatureColumn.Stable.SME_ID_REFS.getHeader(),
@@ -260,7 +269,9 @@ public class MzTabWriterDefaults {
             ifPresent((assayList) ->
                 assayList.forEach((assay) ->
                 {
-                    builder.addColumn(SmallMoleculeFeature.Properties.abundanceAssay+"[" + assay.getId() + "]",
+                    builder.addColumn(
+                        SmallMoleculeFeature.Properties.abundanceAssay + "[" + assay.
+                            getId() + "]",
                         CsvSchema.ColumnType.NUMBER_OR_STRING);
                 })
             );
@@ -285,11 +296,13 @@ public class MzTabWriterDefaults {
             });
         return defaultSchemaForBuilder(builder);
     }
-    
-    public CsvSchema smallMoleculeEvidenceSchema(CsvMapper mapper, MzTab mzTabFile) {
+
+    public CsvSchema smallMoleculeEvidenceSchema(CsvMapper mapper,
+        MzTab mzTabFile) {
         CsvSchema.Builder builder = mapper.schema().
             builder();
-        builder.addColumn(SmallMoleculeEvidence.HeaderPrefixEnum.SEH.getValue(), CsvSchema.ColumnType.STRING).
+        builder.addColumn(SmallMoleculeEvidence.HeaderPrefixEnum.SEH.getValue(),
+            CsvSchema.ColumnType.STRING).
             addColumn(SmallMoleculeEvidenceColumn.Stable.SME_ID.getHeader(),
                 CsvSchema.ColumnType.STRING).
             addColumn(SmallMoleculeEvidenceColumn.Stable.EVIDENCE_INPUT_ID.
@@ -330,7 +343,9 @@ public class MzTabWriterDefaults {
                 parameterList.forEach((param) ->
                 {
                     builder.
-                        addColumn(SmallMoleculeEvidence.Properties.idConfidenceMeasure+"[" + param.getId() + "]",
+                        addColumn(
+                            SmallMoleculeEvidence.Properties.idConfidenceMeasure + "[" + param.
+                                getId() + "]",
                             CsvSchema.ColumnType.NUMBER_OR_STRING);
                 });
             });

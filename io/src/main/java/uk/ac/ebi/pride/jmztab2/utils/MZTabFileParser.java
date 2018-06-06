@@ -39,12 +39,16 @@ import de.isas.mztab2.model.MzTab;
 import de.isas.mztab2.model.SmallMoleculeEvidence;
 import de.isas.mztab2.model.SmallMoleculeFeature;
 import de.isas.mztab2.model.SmallMoleculeSummary;
+import de.isas.mztab2.model.ValidationMessage;
 
 import java.io.*;
 import java.net.URI;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.logging.Logger;
 import java.util.zip.GZIPInputStream;
 import static uk.ac.ebi.pride.jmztab2.model.MZTabConstants.NEW_LINE;
 import static uk.ac.ebi.pride.jmztab2.model.MZTabConstants.TAB;
@@ -167,6 +171,49 @@ public class MZTabFileParser {
      */
     public MZTabErrorList getErrorList() {
         return errorList;
+    }
+    
+    public List<ValidationMessage> convertToValidationMessages() throws IllegalStateException {
+        return convertToValidationMessages(errorList);
+    }
+    
+    /**
+     * Converts the provided error list to a list of validation messages.
+     * @param errorList the error list to convert.
+     * @return a list of validation messages.
+     * @throws IllegalStateException 
+     */
+    public List<ValidationMessage> convertToValidationMessages(MZTabErrorList errorList) throws IllegalStateException {
+        List<ValidationMessage> validationResults = new ArrayList<>(
+            errorList.size());
+        for (MZTabError error : errorList.getErrorList()) {
+            ValidationMessage.MessageTypeEnum level = ValidationMessage.MessageTypeEnum.INFO;
+            switch (error.getType().
+                getLevel()) {
+                case Error:
+                    level = ValidationMessage.MessageTypeEnum.ERROR;
+                    break;
+                case Info:
+                    level = ValidationMessage.MessageTypeEnum.INFO;
+                    break;
+                case Warn:
+                    level = ValidationMessage.MessageTypeEnum.WARN;
+                    break;
+                default:
+                    throw new IllegalStateException("State " + error.
+                        getType().
+                        getLevel() + " is not handled in switch/case statement!");
+            }
+            ValidationMessage vr = new ValidationMessage().lineNumber(
+                Long.valueOf(error.getLineNumber())).
+                messageType(level).
+                message(error.getMessage()).
+                code(error.toString());
+            Logger.getLogger(MZTabFileParser.class.getName()).
+                info(vr.toString());
+            validationResults.add(vr);
+        }
+        return validationResults;
     }
 
     private Section getSection(String line) {

@@ -22,6 +22,7 @@ import java.nio.file.Path;
 import java.util.Optional;
 
 /**
+ * Interface for mztab writer implementors.
  *
  * @author nilshoffmann
  */
@@ -43,7 +44,7 @@ public interface MzTabWriter<T> {
 
     /**
      * <p>
-     * Write the mzTab object to the provided path / file.</p>
+     * Write the mzTab object to the provided path file.</p>
      *
      *
      * @param path a {@link java.nio.file.Path} object.
@@ -52,5 +53,5 @@ public interface MzTabWriter<T> {
      * @throws java.io.IOException if any.
      */
     Optional<T> write(Path path, MzTab mzTab) throws IOException;
-    
+
 }

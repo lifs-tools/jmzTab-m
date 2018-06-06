@@ -35,19 +35,28 @@ import uk.ac.ebi.pride.jmztab2.model.MZTabConstants;
 
 /**
  * <p>
- * MzTabWriter class.</p>
+ * MzTabNonValidatingWriter allows to write MzTab objects without additional
+ * validation checks. Use this if you are sure that your object structure
+ * conforms to the mzTab constraints. Otherwise, use the
+ * MzTabValidatingWriter.</p>
+ *
+ * <p>To create a non-validating instance, call:</p>
+ * {@code MzTabWriter plainWriter = new MzTabNonValidatingWriter();}
+ * <p>To create a <b>validating</b> writer using the default checks also applied by the parser,
+ * call:</p>
+ * {@code MzTabWriter validatingWriter = new MzTabValidatingWriter.Default();}
  *
  * @author nilshoffmann
- *
+ * @see MzTabValidatingWriter
  */
 public class MzTabNonValidatingWriter implements MzTabWriter<Void> {
 
     private final MzTabWriterDefaults writerDefaults;
-    
+
     public MzTabNonValidatingWriter() {
         this.writerDefaults = new MzTabWriterDefaults();
     }
-    
+
     public MzTabNonValidatingWriter(MzTabWriterDefaults writerDefaults) {
         this.writerDefaults = writerDefaults;
     }
@@ -77,7 +86,7 @@ public class MzTabNonValidatingWriter implements MzTabWriter<Void> {
 
     /**
      * <p>
-     * Write the mzTab object to the provided path / file.</p>
+     * Write the mzTab object to the provided path.</p>
      *
      *
      * @param path a {@link java.nio.file.Path} object.
@@ -110,9 +119,11 @@ public class MzTabNonValidatingWriter implements MzTabWriter<Void> {
     void writeMetadataWithJackson(MzTab mztabfile, Writer writer) throws IOException {
         CsvMapper mapper = writerDefaults.metadataMapper();
         CsvSchema schema = writerDefaults.metaDataSchema(mapper);
-        if(mztabfile.getMetadata().getMzTabVersion()==null) {
+        if (mztabfile.getMetadata().
+            getMzTabVersion() == null) {
             //set default version if not set
-            mztabfile.getMetadata().mzTabVersion(MZTabConstants.VERSION_MZTAB_M);
+            mztabfile.getMetadata().
+                mzTabVersion(MZTabConstants.VERSION_MZTAB_M);
         }
         try {
             mapper.writer(schema).
@@ -125,7 +136,8 @@ public class MzTabNonValidatingWriter implements MzTabWriter<Void> {
 
     void writeSmallMoleculeSummaryWithJackson(MzTab mztabfile, Writer writer) throws IOException {
         CsvMapper mapper = writerDefaults.smallMoleculeSummaryMapper();
-        CsvSchema schema = writerDefaults.smallMoleculeSummarySchema(mapper, mztabfile);
+        CsvSchema schema = writerDefaults.smallMoleculeSummarySchema(mapper,
+            mztabfile);
         try {
             mapper.writer(schema).
                 writeValue(writer, mztabfile.getSmallMoleculeSummary());
@@ -137,7 +149,8 @@ public class MzTabNonValidatingWriter implements MzTabWriter<Void> {
 
     void writeSmallMoleculeFeaturesWithJackson(MzTab mztabfile, Writer writer) throws IOException {
         CsvMapper mapper = writerDefaults.smallMoleculeFeatureMapper();
-        CsvSchema schema = writerDefaults.smallMoleculeFeatureSchema(mapper, mztabfile);
+        CsvSchema schema = writerDefaults.smallMoleculeFeatureSchema(mapper,
+            mztabfile);
         try {
             mapper.writer(schema).
                 writeValue(writer, mztabfile.getSmallMoleculeFeature());
@@ -149,7 +162,8 @@ public class MzTabNonValidatingWriter implements MzTabWriter<Void> {
 
     void writeSmallMoleculeEvidenceWithJackson(MzTab mztabfile, Writer writer) throws IOException {
         CsvMapper mapper = writerDefaults.smallMoleculeEvidenceMapper();
-        CsvSchema schema = writerDefaults.smallMoleculeEvidenceSchema(mapper, mztabfile);
+        CsvSchema schema = writerDefaults.smallMoleculeEvidenceSchema(mapper,
+            mztabfile);
         try {
             mapper.writer(schema).
                 writeValue(writer, mztabfile.getSmallMoleculeEvidence());
