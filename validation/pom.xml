@@ -136,6 +136,11 @@
       <artifactId>spring-web</artifactId>
       <version>${spring.version}</version>
     </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>jmztabm-io</artifactId>
+      <version>${project.version}</version>
+    </dependency>
   </dependencies>
   <name>jmztabm-validation</name>
   <properties>

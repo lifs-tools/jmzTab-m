@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.isas.lipidomics.jmztabm.validation.validators;
+package de.isas.lipidomics.mztab2.validation.validators;
 
-import de.isas.lipidomics.jmztabm.validation.constraints.CheckParameter;
+import de.isas.lipidomics.mztab2.validation.constraints.CheckParameter;
 import de.isas.mztab2.model.Parameter;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;

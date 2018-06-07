@@ -15,13 +15,16 @@
  */
 package de.isas.mztab2.cvmapping;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
+import org.apache.commons.jxpath.JXPathContext;
 import org.apache.commons.jxpath.Pointer;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -31,15 +34,18 @@ import org.apache.commons.lang3.tuple.Pair;
  */
 public final class JxPathElement {
 
-    public static <T> Stream<Pair<Pointer, ? extends T>> toStream(Pointer pointer, Class<? extends T> type) {
-        if(pointer.getValue() instanceof Collection) {
-            Collection<Pair<Pointer, ? extends T>> coll = toCollection(pointer, type);
+    public static <T> Stream<Pair<Pointer, ? extends T>> toStream(
+        Pointer pointer, Class<? extends T> type) {
+        if (pointer.getValue() instanceof Collection) {
+            Collection<Pair<Pointer, ? extends T>> coll = JxPathElement.toList(pointer,
+                type);
             return coll.stream();
         }
         return Stream.of(Pair.of(pointer, type.cast(pointer.getValue())));
     }
-    
-    public static <T> Collection<Pair<Pointer, ? extends T>> toCollection(Pointer pointer,
+
+    public static <T> List<Pair<Pointer, ? extends T>> toList(
+        Pointer pointer,
         Class<? extends T> type) {
         if (pointer.getValue() instanceof Collection) {
             Collection<?> c = (Collection) pointer.getValue();
@@ -50,9 +56,19 @@ public final class JxPathElement {
                 }).
                 collect(Collectors.toList());
         } else {
-            throw new IllegalArgumentException(
-                "Pointer value must inherit from Collection!");
+            return Arrays.asList(Pair.of(pointer, (T) type.cast(pointer.
+                getValue())));
         }
+    }
+
+    public static <T> List<Pair<Pointer, ? extends T>> toList(
+        JXPathContext context, String xpath, Class<? extends T> type) {
+        return toStream(context.iteratePointers(xpath), Pointer.class).
+            map((pointer) ->
+            {
+                return Pair.of(pointer, (T) type.cast(pointer.getValue()));
+            }).
+            collect(Collectors.toList());
     }
 
     public static <T> Iterator<? extends T> typedIter(final Iterator iter,
@@ -70,7 +86,8 @@ public final class JxPathElement {
         };
     }
 
-    public static <T> Stream<? extends T> toStream(Iterator iter, Class<? extends T> type) {
+    public static <T> Stream<? extends T> toStream(Iterator iter,
+        Class<? extends T> type) {
         return toStream(typedIter(iter, type));
     }
 

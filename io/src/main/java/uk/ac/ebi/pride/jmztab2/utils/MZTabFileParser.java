@@ -172,49 +172,6 @@ public class MZTabFileParser {
     public MZTabErrorList getErrorList() {
         return errorList;
     }
-    
-    public List<ValidationMessage> convertToValidationMessages() throws IllegalStateException {
-        return convertToValidationMessages(errorList);
-    }
-    
-    /**
-     * Converts the provided error list to a list of validation messages.
-     * @param errorList the error list to convert.
-     * @return a list of validation messages.
-     * @throws IllegalStateException 
-     */
-    public List<ValidationMessage> convertToValidationMessages(MZTabErrorList errorList) throws IllegalStateException {
-        List<ValidationMessage> validationResults = new ArrayList<>(
-            errorList.size());
-        for (MZTabError error : errorList.getErrorList()) {
-            ValidationMessage.MessageTypeEnum level = ValidationMessage.MessageTypeEnum.INFO;
-            switch (error.getType().
-                getLevel()) {
-                case Error:
-                    level = ValidationMessage.MessageTypeEnum.ERROR;
-                    break;
-                case Info:
-                    level = ValidationMessage.MessageTypeEnum.INFO;
-                    break;
-                case Warn:
-                    level = ValidationMessage.MessageTypeEnum.WARN;
-                    break;
-                default:
-                    throw new IllegalStateException("State " + error.
-                        getType().
-                        getLevel() + " is not handled in switch/case statement!");
-            }
-            ValidationMessage vr = new ValidationMessage().lineNumber(
-                Long.valueOf(error.getLineNumber())).
-                messageType(level).
-                message(error.getMessage()).
-                code(error.toString());
-            Logger.getLogger(MZTabFileParser.class.getName()).
-                info(vr.toString());
-            validationResults.add(vr);
-        }
-        return validationResults;
-    }
 
     private Section getSection(String line) {
         String[] items = line.split("\\s*" + TAB + "\\s*");

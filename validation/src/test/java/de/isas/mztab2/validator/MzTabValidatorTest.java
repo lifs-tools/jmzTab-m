@@ -15,11 +15,8 @@
  */
 package de.isas.mztab2.validator;
 
-import de.isas.mztab2.cvmapping.rules.CvPartialRuleEvalutionResult;
-import static de.isas.mztab2.cvmapping.JxPathElement.toStream;
-import de.isas.mztab2.cvmapping.rules.CvMappingUtils;
 import de.isas.mztab2.validation.MzTabBeanValidator;
-import de.isas.lipidomics.jmztabm.validation.MzTabValidator;
+import de.isas.lipidomics.mztab2.validation.MzTabValidator;
 import de.isas.mztab2.test.utils.LogMethodName;
 import de.isas.mztab2.model.CV;
 import de.isas.mztab2.model.Contact;
@@ -28,31 +25,19 @@ import de.isas.mztab2.model.MzTab;
 import de.isas.mztab2.model.Parameter;
 import de.isas.mztab2.model.Publication;
 import de.isas.mztab2.model.PublicationItem;
+import de.isas.mztab2.model.Sample;
 import de.isas.mztab2.model.ValidationMessage;
-import info.psidev.cvmapping.CvMapping;
-import static info.psidev.cvmapping.CvMappingRule.RequirementLevel.MUST;
-import java.util.ArrayList;
+import de.isas.mztab2.validation.CvMappingValidator;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Stream;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-import org.apache.commons.jxpath.JXPathContext;
-import org.apache.commons.jxpath.Pointer;
-import org.apache.commons.lang3.tuple.Pair;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
-import uk.ac.ebi.pride.utilities.ols.web.service.client.OLSClient;
-import uk.ac.ebi.pride.utilities.ols.web.service.config.OLSWsConfig;
-import uk.ac.ebi.pride.utilities.ols.web.service.model.Identifier;
-import uk.ac.ebi.pride.utilities.ols.web.service.model.Term;
 
 /**
  * Test class for MzTabWriter.
@@ -106,6 +91,33 @@ public class MzTabValidatorTest {
                     msRun1
                 )
         );
+        Sample sample1 = new Sample().id(1).
+            description("Hepatocellular carcinoma samples.").
+            addSpeciesItem(new Parameter().cvLabel("NCBITaxon").
+                cvAccession("NCBITaxon:9606").
+                name(
+                    "Homo sapiens (Human)")).
+            addSpeciesItem(new Parameter().cvLabel("NCBITaxon").
+                cvAccession("NCBITaxon:12134").
+                name("Human rhinovirus 1")).
+            addTissueItem(new Parameter().cvLabel("BTO").
+                cvAccession("BTO:0000759").
+                name("liver")).
+            addCellTypeItem(new Parameter().cvLabel("CL").
+                cvAccession("CL:0000182").
+                name("hepatocyte")).
+            addDiseaseItem(new Parameter().cvLabel("DOID").
+                cvAccession("DOID:684").
+                name("hepatocellular carcinoma")).
+            addDiseaseItem(new Parameter().cvLabel("DOID").
+                cvAccession("DOID:9452").
+                name("alcoholic fatty liver")).
+            addCustomItem(new Parameter().name("Extraction date").
+                value("2011-12-21")).
+            addCustomItem(new Parameter().name("Extraction reason").
+                value("liver biopsy"));
+        mztabfile.getMetadata().
+            addSampleItem(sample1);
         PublicationItem item1_1 = new PublicationItem().type(
             PublicationItem.TypeEnum.PUBMED).
             accession("21063943");
@@ -170,153 +182,16 @@ public class MzTabValidatorTest {
         }
     }
 
-    
-
-    @Ignore
     @Test
     public void testJaxbCvMapping() throws JAXBException {
-        OLSWsConfig config = new OLSWsConfig();
-        OLSClient client = new OLSClient(config);
-        JAXBContext jaxbContext = JAXBContext.newInstance(CvMapping.class);
-        Unmarshaller u = jaxbContext.createUnmarshaller();
-        CvMapping mapping = (CvMapping) u.unmarshal(MzTabValidatorTest.class.
-            getResourceAsStream("/mzTab-M-test-mapping.xml"));
         MzTab mzTab = createTestFile();
-        List<ValidationMessage> validationMessages = new ArrayList<>();
-        JXPathContext context = JXPathContext.newContext(mzTab);
-        mapping.getCvMappingRuleList().
-            getCvMappingRule().
-            forEach((rule) ->
-            {
-                String path = rule.getCvElementPath(); // this selects all nodes for that rule
-                try {
-                    Stream<Pair<Pointer, ? extends Parameter>> pointerFormatParameters = toStream(
-                        context.getPointer(
-                            path), Parameter.class);
-                    System.out.println("Applying rule: " + CvMappingUtils.toString(rule));
-                    pointerFormatParameters.forEach((selection) ->
-                    {
-                        System.out.
-                            println("Applying to selection: " + selection);
-                        boolean skip = false;
-                        ValidationMessage message;
-                        switch (rule.getRequirementLevel()) {
-                            case MAY:
-                                //info level
-                                if (selection.getValue() == null) {
-                                    validationMessages.add(
-                                        new ValidationMessage().
-                                            code("SV-1981").
-                                            messageType(
-                                                ValidationMessage.MessageTypeEnum.INFO).
-                                            message(
-                                                "Parameter at path '" + selection.
-                                                    getKey().
-                                                    asPath() + "' was null!"));
-                                    System.out.
-                                        println(
-                                            "Skipping validation of null parameter for selection: " + selection);
-                                    skip = true;
-                                }
-                                break;
-                            case SHOULD:
-                                //warning level
-                                if (selection.getValue() == null) {
-                                    validationMessages.add(
-                                        message = new ValidationMessage().
-                                            code("SV-1981").
-                                            messageType(
-                                                ValidationMessage.MessageTypeEnum.WARN).
-                                            message(
-                                                "Parameter at path '" + selection.
-                                                    getKey().
-                                                    asPath() + "' " + rule.
-                                                    getRequirementLevel() + " not be null!"));
-                                    System.out.
-                                        println(
-                                            "Skipping validation of null parameter for selection: " + selection);
-                                    skip = true;
-                                }
-                                break;
-                            case MUST:
-                                if (selection.getValue() == null) {
-                                    //error level
-                                    validationMessages.add(
-                                        new ValidationMessage().
-                                            code("SV-1981").
-                                            messageType(
-                                                ValidationMessage.MessageTypeEnum.ERROR).
-                                            message(
-                                                "Parameter at path '" + selection.
-                                                    getKey().
-                                                    asPath() + "' " + rule.
-                                                    getRequirementLevel() + " not be null!"));
-                                    System.err.println(
-                                        "Rule requirement level MUST requires defined CvTerms to be non-null for rule: " + CvMappingUtils.toString(
-                                            rule) + " for context: " + selection);
-                                    skip = true;
-                                }
-                                break;
-                            default:
-                                throw new IllegalStateException(
-                                    "Unhandled requirement level: " + rule.
-                                        getRequirementLevel());
-                        }
-                        if (!skip) {
-                            // TODO: implement combination logic (OR, AND, XOR)
-                            rule.getCvTerm().
-                                forEach((term) ->
-                                {
-                                    List<Term> comparisonList;
-                                    List<CvPartialRuleEvalutionResult> ruleEvalResults = new ArrayList<>();
-                                    if (term.isAllowChildren()) {
-                                        Identifier ident = new Identifier(term.
-                                            getTermAccession(),
-                                            Identifier.IdentifierType.OBO);
-                                        comparisonList = client.getTermChildren(
-                                            ident,
-                                            term.getCvIdentifierRef().
-                                                getCvIdentifier(), 1);
-                                        boolean match = false;
-                                        //                                comparisonList.stream().filter((comparisonTerm) ->
-                                        //                                    {
-                                        ////                                       return comparisonTerm.get 
-                                        //                                    });
-                                    } else {
-                                        Term t = new Term();
-                                        t.setOntologyPrefix(term.
-                                            getCvIdentifierRef().
-                                            getCvIdentifier());
-                                        t.setOboId(term.getTermAccession());
-                                        t.setLabel(term.getTermName());
-                                        comparisonList = Arrays.asList(t);
-                                        if (term.getCvIdentifierRef().
-                                            getCvIdentifier().
-                                            equals(selection.getRight().
-                                                getCvLabel()) && term.
-                                                getTermAccession().
-                                                equals(selection.getRight().
-                                                    getCvAccession())) {
-                                            //positive, we have a match
-                                            System.out.println(
-                                                "Rule " + CvMappingUtils.toString(rule) + " matched on: " + term + " for selection: " + selection);
-                                        } else {
-                                            String errMessage = "Mismatch of rule " + CvMappingUtils.toString(
-                                                rule) + " at " + selection.
-                                                    getLeft();
-                                            System.err.println(errMessage);
-                                            throw new RuntimeException(
-                                                errMessage);
-                                            //we do not have a match, if we are in OR mode, if we are in AND mode, this should issue a violation
-                                        }
-                                    }
-                                });
-                        }
-                    });
-                } catch (org.apache.commons.jxpath.JXPathNotFoundException ex) {
-                    System.err.println(ex.getLocalizedMessage());
-                }
-            });
+        CvMappingValidator validator = CvMappingValidator.of(
+            MzTabValidatorTest.class.
+                getResource("/mzTab-M-test-mapping.xml"), true);
+        List<ValidationMessage> validationMessages = validator.validate(mzTab);
+        for (ValidationMessage violation : validationMessages) {
+            System.err.println(violation);
+        }
     }
 
 }

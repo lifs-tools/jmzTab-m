@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.isas.lipidomics.jmztabm.validation.constraints;
+package de.isas.lipidomics.mztab2.validation.constraints;
 
-import de.isas.lipidomics.jmztabm.validation.validators.ParameterValidator;
+import de.isas.lipidomics.mztab2.validation.validators.ParameterValidator;
 import java.lang.annotation.Documented;
 import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
 import static java.lang.annotation.ElementType.TYPE;

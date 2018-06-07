@@ -142,6 +142,9 @@ public class MZTabCommandLine {
                 "Example: -checkSemantic mappingFile=/path/to/mappingFile.xml. Use the provided mapping file for semantic validation. This parameter may be null.").
             create(checkSemanticOpt);
         options.addOption(mappingFileOption);
+        
+        //TODO add option to set whether extra terms not defined in mapping file create a warning or error
+//        options.addOption()
 
         // Parse command line
         CommandLine line = parser.parse(options, args);
@@ -205,7 +208,7 @@ public class MZTabCommandLine {
                         System.out.println(
                             "Beginning semantic validation of mztab file: " + inFile.
                                 getAbsolutePath() + " with mapping file: " +mappingFile.toASCIIString());
-                        CvMappingValidator cvMappingValidator = CvMappingValidator.of(mappingFile.toURL());
+                        CvMappingValidator cvMappingValidator = CvMappingValidator.of(mappingFile.toURL(), true);
                         List<ValidationMessage> validationMessages = cvMappingValidator.
                             validate(mzTabParser.getMZTabFile());
                         for(ValidationMessage message:validationMessages) {

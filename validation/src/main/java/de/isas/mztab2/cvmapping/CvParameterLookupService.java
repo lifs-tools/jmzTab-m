@@ -44,7 +44,7 @@ public class CvParameterLookupService {
         this(new OLSClient(config));
     }
 
-    List<Parameter> resolveParents(Parameter parameter, int levels) {
+    public List<Parameter> resolveParents(Parameter parameter, int levels) throws org.springframework.web.client.HttpClientErrorException  {
         if (parameter.getCvAccession() == null || parameter.getCvLabel() == null) {
             throw new IllegalArgumentException(
                 "Parameter must provide cvAccession and cvLabel!");
@@ -57,7 +57,7 @@ public class CvParameterLookupService {
             collect(Collectors.toList());
     }
 
-    List<Parameter> resolveChildren(Parameter parameter) {
+    public List<Parameter> resolveChildren(Parameter parameter) throws org.springframework.web.client.HttpClientErrorException {
         if (parameter.getCvAccession() == null || parameter.getCvLabel() == null) {
             throw new IllegalArgumentException(
                 "Parameter must provide cvAccession and cvLabel!");
@@ -71,16 +71,17 @@ public class CvParameterLookupService {
     }
 
     public ParameterComparisonResult isChildOfOrSame(Parameter parent,
-        Parameter potentialChild) {
-        if (parent.getCvAccession().
-            equals(potentialChild.getCvAccession())) {
+        Parameter potentialChild) throws org.springframework.web.client.HttpClientErrorException {
+        if (parent.getCvAccession().toUpperCase().
+            equals(potentialChild.getCvAccession().toUpperCase())) {
             return ParameterComparisonResult.IDENTICAL;
         }
-        List<Parameter> childrenOf = resolveChildren(parent);
-        boolean result = childrenOf.stream().
-            anyMatch((child) ->
+        List<Parameter> parentsOf = resolveParents(potentialChild, -1);
+//        List<Parameter> childrenOf = resolveChildren(parent);
+        boolean result = parentsOf.stream().
+            anyMatch((potentialParent) ->
             {
-                return Parameters.isEqualTo(potentialChild, child);
+                return Parameters.isEqualTo(potentialParent, parent);
             });
         if (result) {
             return ParameterComparisonResult.CHILD_OF;

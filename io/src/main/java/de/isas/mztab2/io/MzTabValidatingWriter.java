@@ -15,7 +15,7 @@
  */
 package de.isas.mztab2.io;
 
-import de.isas.lipidomics.jmztabm.validation.Validator;
+import de.isas.lipidomics.mztab2.validation.Validator;
 import de.isas.mztab2.model.MzTab;
 import de.isas.mztab2.model.ValidationMessage;
 import java.io.File;
@@ -34,18 +34,22 @@ import uk.ac.ebi.pride.jmztab2.utils.MZTabFileParser;
 
 /**
  * <p>
- * MzTabValidatingWriter allows to write MzTab objects after validation with a custom or default validator.
- * Use this if you want to make sure that your fail satisfies the structural and minimal reporting constraints of mzTab.
+ * MzTabValidatingWriter allows to write MzTab objects after validation with a
+ * custom or default validator. Use this if you want to make sure that your fail
+ * satisfies the structural and minimal reporting constraints of mzTab.
  * Otherwise, use the MzTabNonValidatingWriter.</p>
  *
- * <p>To create a <b>validating</b> writer using the default checks also applied by the parser,
- * call:</p>
+ * <p>
+ * To create a <b>validating</b> writer using the default checks also applied by
+ * the parser, call:</p>
  * {@code MzTabWriter validatingWriter = new MzTabValidatingWriter.Default();}
- * <p>Otherwise, to create a non-validating instance, call:</p>
+ * <p>
+ * Otherwise, to create a non-validating instance, call:</p>
  * {@code MzTabWriter plainWriter = new MzTabNonValidatingWriter();}
  *
  * @author nilshoffmann
  * @see MzTabValidatingWriter
+ * @see MzTabValidator
  */
 public class MzTabValidatingWriter implements MzTabWriter<List<ValidationMessage>> {
 
@@ -61,6 +65,18 @@ public class MzTabValidatingWriter implements MzTabWriter<List<ValidationMessage
      */
     public MzTabValidatingWriter() {
         this(new WriteAndParseValidator(), new MzTabWriterDefaults(), true);
+    }
+
+    /**
+     * Uses the provided validator and default writer configuration. The output
+     * file will not be written, if any validation failures occur.
+     *
+     * @param validator
+     * @param skipWriteOnValidationFailure
+     */
+    public MzTabValidatingWriter(Validator<MzTab> validator,
+        boolean skipWriteOnValidationFailure) {
+        this(validator, new MzTabWriterDefaults(), skipWriteOnValidationFailure);
     }
 
     /**
@@ -93,7 +109,7 @@ public class MzTabValidatingWriter implements MzTabWriter<List<ValidationMessage
 
                 MZTabFileParser parser = new MZTabFileParser(mzTabFile);
                 parser.parse(System.out);
-                return parser.convertToValidationMessages();
+                return parser.getErrorList().convertToValidationMessages();
             } catch (IOException ex) {
                 Logger.getLogger(MzTabValidatingWriter.class.getName()).
                     log(Level.SEVERE, null, ex);
@@ -114,7 +130,7 @@ public class MzTabValidatingWriter implements MzTabWriter<List<ValidationMessage
         if (skipWriteOnValidationFailure && !this.validationMessages.isEmpty()) {
             return Optional.of(this.validationMessages);
         }
-        new MzTabNonValidatingWriter().write(writer, mzTab);
+        new MzTabNonValidatingWriter(writerDefaults).write(writer, mzTab);
         return Optional.of(this.validationMessages);
     }
 
@@ -125,7 +141,7 @@ public class MzTabValidatingWriter implements MzTabWriter<List<ValidationMessage
         if (skipWriteOnValidationFailure && !this.validationMessages.isEmpty()) {
             return Optional.of(this.validationMessages);
         }
-        new MzTabNonValidatingWriter().write(path, mzTab);
+        new MzTabNonValidatingWriter(writerDefaults).write(path, mzTab);
         return Optional.of(this.validationMessages);
     }
 

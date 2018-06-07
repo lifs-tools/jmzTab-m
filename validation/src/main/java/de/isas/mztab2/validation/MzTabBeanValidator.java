@@ -15,7 +15,7 @@
  */
 package de.isas.mztab2.validation;
 
-import de.isas.lipidomics.jmztabm.validation.Validator;
+import de.isas.lipidomics.mztab2.validation.Validator;
 import de.isas.mztab2.model.MzTab;
 import de.isas.mztab2.model.ValidationMessage;
 import java.lang.annotation.Annotation;

@@ -1,5 +1,6 @@
 package uk.ac.ebi.pride.jmztab2.utils.errors;
 
+import de.isas.mztab2.model.ValidationMessage;
 import uk.ac.ebi.pride.jmztab2.model.MZTabConstants;
 
 import java.io.IOException;
@@ -7,6 +8,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Logger;
 
 import static uk.ac.ebi.pride.jmztab2.utils.MZTabProperties.MAX_ERROR_COUNT;
 
@@ -191,5 +193,32 @@ public class MZTabErrorList {
         }
 
         return sb.toString();
+    }
+    
+    /**
+     * Converts the provided error list to a list of validation messages.
+     * @param errorList the error list to convert.
+     * @return a list of validation messages.
+     * @throws IllegalStateException for unhandled mappings of {@link ValidationMessage.MessageTypeEnum}.
+     */
+    public static List<ValidationMessage> convertToValidationMessages(MZTabErrorList errorList) throws IllegalStateException {
+        List<ValidationMessage> validationResults = new ArrayList<>(
+            errorList.size());
+        for (MZTabError error : errorList.getErrorList()) {
+            ValidationMessage vr = error.toValidationMessage();
+            Logger.getLogger(MZTabErrorList.class.getName()).
+                info(vr.toString());
+            validationResults.add(vr);
+        }
+        return validationResults;
+    }
+    
+   /**
+     * Converts this error list to a list of validation messages.
+     * @return a list of validation messages.
+     * @throws IllegalStateException for unhandled mappings of {@link ValidationMessage.MessageTypeEnum}.
+     */    
+    public List<ValidationMessage> convertToValidationMessages() throws IllegalStateException{
+        return convertToValidationMessages(this);
     }
 }

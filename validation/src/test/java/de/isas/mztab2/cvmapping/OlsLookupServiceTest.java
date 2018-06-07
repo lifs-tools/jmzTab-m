@@ -59,7 +59,6 @@ public class OlsLookupServiceTest {
         List<Term> children = client.getTermChildren(ident, "MS", 1);
         Assert.assertThat(children.size(), allOf(greaterThan(0),
             greaterThanOrEqualTo(1)));
-        //query explicitly for child_of relation for given term
     }
     
     @Test
@@ -74,7 +73,6 @@ public class OlsLookupServiceTest {
         System.out.println("Found "+children.size()+" child terms of "+ident.getIdentifier());
         Assert.assertThat(children.size(), allOf(greaterThan(0),
             greaterThanOrEqualTo(1)));
-        //query explicitly for child_of relation for given term
     }
 
     @Test

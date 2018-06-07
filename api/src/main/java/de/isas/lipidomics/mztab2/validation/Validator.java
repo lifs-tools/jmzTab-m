@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.isas.lipidomics.jmztabm.validation;
+package de.isas.lipidomics.mztab2.validation;
 
 import de.isas.mztab2.model.ValidationMessage;
 import java.util.Collections;

@@ -6,6 +6,9 @@ The mzTab specification uses a dialect of snake_case-for_attributes to name obje
 To select certain axis in xpath for example metadata/snake_case-for_attribute in mzTab, this would be written as /metadata/snakeCase/@forAttributes
 
 Note that the JXPath library does not include the MzTab object as an explicit root in selections, but rather implies it as the anonymous root '/'.
+
+Special considerations: a rule with AND as cvTermsCombinationLogic can have at most one term child with allowChildren = true to avoid nonsensical term expansion and combination.
+Alternative term roots should either be expressed as OR (for choose any, even from the expanded term roots when allowChildren = true) or XOR to require EXACTLY one of the term roots' children to be present.
 -->
 <CvMapping xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.psidev.info/files/validator/CvMapping.xsd" modelName="mzTab_m_swagger.yml" modelURI="https://raw.githubusercontent.com/nilshoffmann/jmzTab-m/master/api/src/main/resources/mzTab_m_swagger.yml" modelVersion="2.0.0">
 
@@ -14,6 +17,7 @@ Note that the JXPath library does not include the MzTab object as an explicit ro
       <CvReference cvName="DOID" cvIdentifier="DOID"/>
       <CvReference cvName="CL" cvIdentifier="CL"/>
       <CvReference cvName="BTO" cvIdentifier="BTO"/>
+      <CvReference cvName="NCBITaxon" cvIdentifier="NCBITaxon"/>
 <!--      <CvReference cvName="NEWT" cvIdentifier="NEWT"/>
       <CvReference cvName="GO" cvIdentifier="GO"/>
       <CvReference cvName="PATO" cvIdentifier="PATO"/>

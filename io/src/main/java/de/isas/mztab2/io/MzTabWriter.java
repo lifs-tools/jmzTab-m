@@ -25,6 +25,7 @@ import java.util.Optional;
  * Interface for mztab writer implementors.
  *
  * @author nilshoffmann
+ * @param <T> the return type of the write methods.
  */
 public interface MzTabWriter<T> {
 

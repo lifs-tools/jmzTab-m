@@ -15,10 +15,14 @@
  */
 package de.isas.mztab2.validator;
 
+import de.isas.mztab2.cvmapping.JxPathElement;
 import static de.isas.mztab2.cvmapping.JxPathElement.toStream;
 import static de.isas.mztab2.validator.MzTabValidatorTest.createTestFile;
 import de.isas.mztab2.model.MzTab;
 import de.isas.mztab2.model.Parameter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Stream;
 import org.apache.commons.jxpath.JXPathContext;
@@ -32,10 +36,9 @@ import static org.junit.Assert.*;
  * @author nilshoffmann
  */
 public class JxPathTest {
-    
-    
+
     @Test
-    public void testJXpathAccess() {
+    public void testMsRunParameterSelection() {
         MzTab mzTab = createTestFile();
         JXPathContext context = JXPathContext.newContext(mzTab);
 
@@ -76,7 +79,41 @@ public class JxPathTest {
         assertEquals("MS:1000584", formatParameters.findFirst().
             get().
             getCvAccession());
+    }
 
+    @Test
+    public void testSampleCustomMultipleElementSelection() {
+        MzTab mzTab = createTestFile();
+        JXPathContext context = JXPathContext.newContext(mzTab);
+
+        //retrieve multiple children with complete paths
+        List<Pair<Pointer, ? extends Parameter>> customParameters = JxPathElement.
+            toList(context,
+                "/metadata/sample/@custom", Parameter.class);
+        assertEquals(2, customParameters.size());
+        assertEquals("Extraction date", customParameters.stream().
+            findFirst().
+            get().
+            getRight().
+            getName());
+        assertEquals("/metadata/sample[1]/custom[1]", customParameters.stream().
+            findFirst().
+            get().
+            getLeft().
+            asPath());
+
+        assertEquals("Extraction date", customParameters.get(0).
+            getRight().
+            getName());
+        assertEquals("Extraction reason", customParameters.get(1).
+            getRight().
+            getName());
+        assertEquals("/metadata/sample[1]/custom[1]", customParameters.get(0).
+            getKey().
+            asPath());
+        assertEquals("/metadata/sample[1]/custom[2]", customParameters.get(1).
+            getKey().
+            asPath());
     }
 
 }

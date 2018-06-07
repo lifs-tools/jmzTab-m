@@ -905,10 +905,17 @@ definitions:
     type: object
     required:
       - code
+      - category
       - message
     properties:
       code:
         type: string
+      category:
+        enum:
+          - format
+          - logical
+          - cross_check
+        default: format
       message_type:
         enum:
           - error

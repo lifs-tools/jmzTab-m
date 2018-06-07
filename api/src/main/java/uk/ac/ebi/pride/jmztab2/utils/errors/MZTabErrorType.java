@@ -1,6 +1,7 @@
 package uk.ac.ebi.pride.jmztab2.utils.errors;
 
 //import uk.ac.ebi.pride.jmztab2.model.MZTabUtils;
+import de.isas.mztab2.model.ValidationMessage;
 import uk.ac.ebi.pride.jmztab2.model.MZTabStringUtils;
 import uk.ac.ebi.pride.jmztab2.utils.MZTabProperties;
 
@@ -187,6 +188,10 @@ public class MZTabErrorType {
                 "Original:\t" + original + "\r\n" +
                 "   Cause:\t" + (cause == null ? "" : cause) + "\r\n";
     }
+    
+//    public ValidationMessage toValidationMessage() {
+//        ValidationMessage message = new ValidationMessage().code(""+code).message(cause).messageType();
+//    }
 
     /**
      * <p>findLevel.</p>

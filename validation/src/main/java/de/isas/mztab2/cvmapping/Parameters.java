@@ -27,13 +27,13 @@ import info.psidev.cvmapping.CvTerm;
 public class Parameters {
 
     public static boolean isEqualTo(Parameter one, Parameter two) {
-        if (one.getCvLabel().
-            equals(two.getCvLabel())) {
-            if (one.getCvAccession().
-                equals(two.getCvAccession())) {
+        if (one.getCvLabel().toUpperCase().
+            equals(two.getCvLabel().toUpperCase())) {
+            if (one.getCvAccession().toUpperCase().
+                equals(two.getCvAccession().toUpperCase())) {
                 if (one.getName() != null && two.getName() != null) {
-                    return one.getName().
-                        equals(two.getName());
+                    return one.getName().toUpperCase().
+                        equals(two.getName().toUpperCase());
                 } else { // equal if one or both names are null
                     return true;
                 }

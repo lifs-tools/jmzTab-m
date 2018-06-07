@@ -15,8 +15,6 @@
  */
 package de.isas.mztab2.cvmapping;
 
-import de.isas.mztab2.cvmapping.CheckCvMapping;
-import de.isas.mztab2.model.MzTab;
 import de.isas.mztab2.model.Parameter;
 import de.isas.mztab2.model.ValidationMessage;
 import java.util.LinkedList;
