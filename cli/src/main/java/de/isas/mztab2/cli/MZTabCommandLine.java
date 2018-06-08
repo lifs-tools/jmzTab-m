@@ -172,7 +172,7 @@ public class MZTabCommandLine {
             MZTabErrorType.Level level = MZTabErrorType.Level.Error;
             if (line.hasOption(levelOpt)) {
                 level = MZTabErrorType.findLevel(line.getOptionValue(levelOpt));
-                System.out.println("Valdiator set to level '" + level + "'");
+                System.out.println("Validator set to level '" + level + "'");
             }
 
             if (line.hasOption(checkOpt)) {
