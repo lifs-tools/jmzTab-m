@@ -64,7 +64,7 @@ public class MzTabRawParserTest {
         //setting the level to Error includes Error only, missing section is a warning,
         //so we do not expect an exception to be raised here.
         testExample("metabolomics/minimal-m-2.0.mztab",
-            MZTabErrorType.Level.Error, 0);
+            MZTabErrorType.Level.Error, 1);
     }
 
     @Test
