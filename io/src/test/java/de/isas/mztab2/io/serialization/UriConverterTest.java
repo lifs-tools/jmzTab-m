@@ -15,23 +15,23 @@
  */
 package de.isas.mztab2.io.serialization;
 
+import de.isas.mztab2.model.Uri;
+import org.junit.Assert;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
- * TODO
  * @author nilshoffmann
  */
 public class UriConverterTest {
-    
-    public UriConverterTest() {
-    }
 
     /**
      * Test of convert method, of class UriConverter.
      */
     @Test
     public void testConvert() {
+        UriConverter converter = new UriConverter();
+        String converted = converter.convert(new Uri().value("https://github.com/HUPO-PSI/mzTab"));
+        Assert.assertEquals("https://github.com/HUPO-PSI/mzTab", converted);
     }
     
 }

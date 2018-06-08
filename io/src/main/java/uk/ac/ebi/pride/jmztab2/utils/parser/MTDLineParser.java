@@ -834,7 +834,7 @@ public class MTDLineParser extends MZTabLineParser {
                         defineLabel, valueLabel));
                     break;
                 case MS_RUN_LOCATION:
-                    msRun = context.addMsRunLocation(metadata, id, checkURL(
+                    msRun = context.addMsRunLocation(metadata, id, checkURI(
                         defineLabel, valueLabel));
                     break;
                 case MS_RUN_INSTRUMENT_REF:

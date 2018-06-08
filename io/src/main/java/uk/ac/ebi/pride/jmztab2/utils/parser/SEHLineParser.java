@@ -111,7 +111,7 @@ public class SEHLineParser extends MZTabHeaderLineParser {
     private void checkIdConfidenceMeasure(String header) throws MZTabException {
         String valueLabel = header;
         
-        Pattern pattern = Pattern.compile(SmallMoleculeEvidence.Properties.idConfidenceMeasure.getPropertyName()+"\\[(\\d+)\\]");
+        Pattern pattern = Pattern.compile(SmallMoleculeEvidence.Properties.idConfidenceMeasure.getPropertyName()+MZTabConstants.REGEX_INDEXED_VALUE);
         Matcher matcher = pattern.matcher(valueLabel);
         if (!matcher.find()) {
             MZTabError error = new MZTabError(FormatErrorType.StableColumn, lineNumber, header);

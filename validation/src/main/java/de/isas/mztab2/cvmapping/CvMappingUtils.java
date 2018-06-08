@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.isas.mztab2.cvmapping.rules;
+package de.isas.mztab2.cvmapping;
 
 import info.psidev.cvmapping.CvMappingRule;
 import info.psidev.cvmapping.CvTerm;

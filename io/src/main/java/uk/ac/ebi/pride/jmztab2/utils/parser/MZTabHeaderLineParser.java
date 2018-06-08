@@ -32,6 +32,7 @@ import de.isas.mztab2.model.StudyVariable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import uk.ac.ebi.pride.jmztab2.model.MZTabColumn;
+import uk.ac.ebi.pride.jmztab2.model.MZTabConstants;
 import uk.ac.ebi.pride.jmztab2.model.Section;
 
 
@@ -153,7 +154,7 @@ public abstract class MZTabHeaderLineParser extends MZTabLineParser {
     protected boolean checkOptColumnName(String nameLabel) throws MZTabException {
         nameLabel = nameLabel.trim();
 
-        String regexp = "opt_((assay|study_variable|ms_run)\\[(\\w+)\\]|global)_([A-Za-z0-9_\\-\\[\\]:\\.]+)";
+        String regexp = MZTabConstants.REGEX_OPT_COLUMN_NAME;
         Pattern pattern = Pattern.compile(regexp);
         Matcher matcher = pattern.matcher(nameLabel);
 
@@ -166,13 +167,13 @@ public abstract class MZTabHeaderLineParser extends MZTabLineParser {
             value = matcher.group(4);
 
             Parameter param = null;
-            if (value.startsWith("cv_")) {
+            if (value.startsWith(MZTabConstants.CV_PREFIX)) {
                 param = checkCVParamOptColumnName(nameLabel, value);
             }
 
             Class dataType = getDataType(param);
 
-            if (object_id.contains("global")) {
+            if (object_id.contains(MZTabConstants.GLOBAL)) {
                 if (param == null) {
                     factory.addOptionalColumn(value, dataType);
                 } else {
@@ -181,7 +182,7 @@ public abstract class MZTabHeaderLineParser extends MZTabLineParser {
             } else {
                 id = parseIndex(nameLabel, matcher.group(3));
 
-                if (object_id.contains("assay")) {
+                if (object_id.contains(Metadata.Properties.assay.getPropertyName())) {
                     Assay element = context.getAssayMap().get(id);
                     // not found assay_id in metadata.
                     if (element == null) {
@@ -192,7 +193,7 @@ public abstract class MZTabHeaderLineParser extends MZTabLineParser {
                     } else {
                         factory.addOptionalColumn(element, param, dataType);
                     }
-                } else if (object_id.contains("study_variable")) {
+                } else if (object_id.contains(Metadata.Properties.studyVariable.getPropertyName())) {
                     StudyVariable element = context.getStudyVariableMap().get(id);
                     // not found study_variable_id in metadata.
                     if (element == null) {
@@ -203,7 +204,7 @@ public abstract class MZTabHeaderLineParser extends MZTabLineParser {
                     } else {
                         factory.addOptionalColumn(element, param, dataType);
                     }
-                } else if (object_id.contains("ms_run")) {
+                } else if (object_id.contains(Metadata.Properties.msRun.getPropertyName())) {
                     // not found ms_run_id in metadata.
                     MsRun element = context.getMsRunMap().get(id);
                     if (element == null) {
@@ -231,7 +232,7 @@ public abstract class MZTabHeaderLineParser extends MZTabLineParser {
         nameLabel = nameLabel.trim();
         valueLabel = valueLabel.trim();
 
-        String regexp = "cv(_([A-Za-z0-9\\-\\[\\]:\\.]+))?(_([A-Za-z0-9_\\-\\[\\]:\\.]+)*)";
+        String regexp = MZTabConstants.REGEX_CV_PARAM_OPT_COLUMN_NAME;
         Pattern pattern = Pattern.compile(regexp);
         Matcher matcher = pattern.matcher(valueLabel);
 
@@ -306,7 +307,7 @@ public abstract class MZTabHeaderLineParser extends MZTabLineParser {
     private String checkAbundanceSection(String abundanceHeader) throws MZTabException {
         abundanceHeader = abundanceHeader.trim().toLowerCase();
 
-        Pattern pattern = Pattern.compile("abundance_(.+)");
+        Pattern pattern = Pattern.compile(MZTabConstants.REGEX_ABUNDANCE_COLUMN_NAME);
         Matcher matcher = pattern.matcher(abundanceHeader);
 
         if (matcher.find()) {
@@ -329,7 +330,7 @@ public abstract class MZTabHeaderLineParser extends MZTabLineParser {
     private void checkAbundanceAssayColumn(String abundanceHeader, String order) throws MZTabException {
         String valueLabel = checkAbundanceSection(abundanceHeader);
 
-        Pattern pattern = Pattern.compile("assay\\[(\\d+)\\]");
+        Pattern pattern = Pattern.compile(MZTabConstants.REGEX_ABUNDANCE_ASSAY_COLUMN_NAME);
         Matcher matcher = pattern.matcher(valueLabel);
         if (!matcher.find()) {
             MZTabError error = new MZTabError(FormatErrorType.AbundanceColumn, lineNumber, abundanceHeader);
@@ -371,7 +372,7 @@ public abstract class MZTabHeaderLineParser extends MZTabLineParser {
     private StudyVariable checkAbundanceStudyVariableColumn(String abundanceHeader) throws MZTabException {
         String valueLabel = checkAbundanceSection(abundanceHeader);
 
-        Pattern pattern = Pattern.compile("study_variable\\[(\\d+)\\]");
+        Pattern pattern = Pattern.compile(MZTabConstants.REGEX_STUDY_VARIABLE_COLUMN_NAME);
         Matcher matcher = pattern.matcher(valueLabel);
         if (!matcher.find()) {
             MZTabError error = new MZTabError(FormatErrorType.AbundanceColumn, lineNumber, abundanceHeader);

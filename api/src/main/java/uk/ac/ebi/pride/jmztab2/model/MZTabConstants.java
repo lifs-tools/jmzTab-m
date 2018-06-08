@@ -35,4 +35,27 @@ public final class MZTabConstants {
     public final static String VERSION_MZTAB_M = "2.0.0-M";
     /** Constant <code>OPT_PREFIX="opt_"</code> */
     public final static String OPT_PREFIX = "opt_";
+    /** Constant <code>ABUNDANCE_PREFIX="abundance_"</code> */
+    public static String ABUNDANCE_PREFIX = "abundance_";
+    /** Constant <code>GLOBAL="global"</code> */
+    public static String GLOBAL = "global";
+    /** Constant <code>CV_PREFIX="cv_"</code> */
+    public static String CV_PREFIX = "cv_";
+    
+    /*
+     Regular expressions that are not directly applicable to domain objects.
+    */
+    /** Constant <code>REGEX_INDEXED_VALUE="\\[(\\d+)\\]"</code> */
+    public static String REGEX_INDEXED_VALUE = "\\[(\\d+)\\]";
+    /** Constant <code>REGEX_CV_PARAM_OPT_COLUMN_NAME="cv(_([A-Za-z0-9\\-\\[\\]:\\.]+))?(_([A-Za-z0-9_\\-\\[\\]:\\.]+)*)"</code> */
+    public static String REGEX_CV_PARAM_OPT_COLUMN_NAME = "cv(_([A-Za-z0-9\\-\\[\\]:\\.]+))?(_([A-Za-z0-9_\\-\\[\\]:\\.]+)*)";
+    /** Constant <code>REGEX_OPT_COLUMN_NAME="opt_((assay|study_variable|ms_run)\\[(\\w+)\\]|global)_([A-Za-z0-9_\\-\\[\\]:\\.]+)"</code> */
+    public static String REGEX_OPT_COLUMN_NAME = "opt_((assay|study_variable|ms_run)\\[(\\w+)\\]|global)_([A-Za-z0-9_\\-\\[\\]:\\.]+)";
+    /** Constant <code>REGEX_ABUNDANCE_COLUMN_NAME="abundance_(.+)"</code> */
+    public static String REGEX_ABUNDANCE_COLUMN_NAME = "abundance_(.+)";
+    /** Constant <code>REGEX_ABUNDANCE_ASSAY_COLUMN_NAME="assay\\[(\\d+)\\]"</code> */
+    public static String REGEX_ABUNDANCE_ASSAY_COLUMN_NAME = "assay"+REGEX_INDEXED_VALUE;
+    /** Constant <code>REGEX_STUDY_VARIABLE_COLUMN_NAME="study_variable\\[(\\d+)\\]"</code> */
+    public static String REGEX_STUDY_VARIABLE_COLUMN_NAME = "study_variable"+REGEX_INDEXED_VALUE;
+    
 }

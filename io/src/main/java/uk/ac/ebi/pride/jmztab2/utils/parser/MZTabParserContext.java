@@ -30,6 +30,7 @@ import de.isas.mztab2.model.Sample;
 import de.isas.mztab2.model.SampleProcessing;
 import de.isas.mztab2.model.Software;
 import de.isas.mztab2.model.StudyVariable;
+import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -46,6 +47,7 @@ import static uk.ac.ebi.pride.jmztab2.model.MZTabStringUtils.isEmpty;
  * <p>MZTabParserContext is used to keep track of indexed elements and interrelations during parsing.</p>
  *
  * @author nilshoffmann
+ * @since 11/09/17
  * 
  */
 @Data
@@ -777,7 +779,7 @@ public class MZTabParserContext {
      * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
      * @return a {@link de.isas.mztab2.model.MsRun} object.
      */
-    public MsRun addMsRunLocation(Metadata metadata, Integer id, URL location) {
+    public MsRun addMsRunLocation(Metadata metadata, Integer id, URI location) {
         if (id <= 0) {
             throw new IllegalArgumentException("ms_run id should be great than 0!");
         }
@@ -790,7 +792,7 @@ public class MZTabParserContext {
         if (msRun == null) {
             msRun = new MsRun();
             msRun.id(id);
-            msRun.setLocation(location==null?null:location.toString());
+            msRun.setLocation(location==null?null:location.toASCIIString());
             msRunMap.put(id, msRun);
             metadata.addMsRunItem(msRun);
         } else {
@@ -1446,7 +1448,7 @@ public class MZTabParserContext {
     }
 
     /**
-     * <p>addDatabaseUrl.</p>
+     * <p>addDatabaseUri.</p>
      *
      * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
      * @param id a {@link java.lang.Integer} object.

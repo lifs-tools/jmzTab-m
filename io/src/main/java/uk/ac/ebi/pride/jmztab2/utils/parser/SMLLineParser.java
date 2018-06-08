@@ -33,6 +33,7 @@ import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorList;
  * <p>SMLLineParser class.</p>
  *
  * @author qingwei
+ * @author nilshoffmann
  * @since 10/02/13
  * 
  */
@@ -63,7 +64,7 @@ public class SMLLineParser extends MZTabDataLineParser<SmallMoleculeSummary> {
         String target;
         int physicalPosition;
         String logicalPosition;
-        smallMoleculeSummary = new SmallMoleculeSummary();//(factory, metadata);
+        smallMoleculeSummary = new SmallMoleculeSummary();
 
         for (physicalPosition = 1; physicalPosition < items.length; physicalPosition++) {
             logicalPosition = positionMapping.get(physicalPosition);
@@ -120,7 +121,6 @@ public class SMLLineParser extends MZTabDataLineParser<SmallMoleculeSummary> {
                     }
 
                 } else if (column instanceof AbundanceColumn) {
-                    //Double check, the column name should contain
                     if (columnName.startsWith(SmallMoleculeSummary.Properties.abundanceAssay.getPropertyName())) {
                         smallMoleculeSummary.addAbundanceAssayItem(checkDouble(column, target));
                     }else if(columnName.startsWith(SmallMoleculeSummary.Properties.abundanceStudyVariable.getPropertyName())) {
@@ -129,7 +129,6 @@ public class SMLLineParser extends MZTabDataLineParser<SmallMoleculeSummary> {
                         smallMoleculeSummary.addAbundanceVariationStudyVariableItem(checkDouble(column, target));
                     }
                 } else if (column instanceof OptionColumn) {
-                    //Double check, the column name should opt
                     if (columnName.startsWith(MZTabConstants.OPT_PREFIX)) {
                         Class dataType = column.getDataType();
                         OptColumnMapping optColMapping = new OptColumnMapping();
@@ -159,7 +158,7 @@ public class SMLLineParser extends MZTabDataLineParser<SmallMoleculeSummary> {
     public SmallMoleculeSummary getRecord() {
 
         if(smallMoleculeSummary == null){
-            smallMoleculeSummary = new SmallMoleculeSummary();//(factory, metadata);
+            smallMoleculeSummary = new SmallMoleculeSummary();
         }
         return smallMoleculeSummary;
     }

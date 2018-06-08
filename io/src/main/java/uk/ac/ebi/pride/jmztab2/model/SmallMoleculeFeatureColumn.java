@@ -22,6 +22,7 @@ import de.isas.mztab2.model.StringList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabException;
 
 /**
  * Define the stable columns and optional columns which have stable order in small molecule feature header line.
@@ -138,7 +139,7 @@ public class SmallMoleculeFeatureColumn implements ISmallMoleculeFeatureColumn {
             this.column.setOrder(order);
         }
 
-        public static Stable forName(String name) throws IllegalArgumentException {
+        public static Stable forName(String name) throws MZTabException {
             return Arrays.stream(Stable.values()).
                     filter((v) ->
                             v.getColumn().

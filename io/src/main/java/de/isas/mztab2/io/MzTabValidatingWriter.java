@@ -21,16 +21,18 @@ import de.isas.mztab2.model.ValidationMessage;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.ac.ebi.pride.jmztab2.utils.MZTabFileParser;
+import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorType.Level;
 
 /**
  * <p>
@@ -53,6 +55,8 @@ import uk.ac.ebi.pride.jmztab2.utils.MZTabFileParser;
  */
 public class MzTabValidatingWriter implements MzTabWriter<List<ValidationMessage>> {
 
+    private static final Logger logger = LoggerFactory.getLogger(MzTabValidatingWriter.class);
+    
     private final Validator<MzTab> validator;
     private final boolean skipWriteOnValidationFailure;
     private final MzTabWriterDefaults writerDefaults;
@@ -64,7 +68,7 @@ public class MzTabValidatingWriter implements MzTabWriter<List<ValidationMessage
      * written, if any validation failures occur.
      */
     public MzTabValidatingWriter() {
-        this(new WriteAndParseValidator(), new MzTabWriterDefaults(), true);
+        this(new WriteAndParseValidator(System.out, Level.Info, 100), new MzTabWriterDefaults(), true);
     }
 
     /**
@@ -95,7 +99,19 @@ public class MzTabValidatingWriter implements MzTabWriter<List<ValidationMessage
     }
 
     public static class WriteAndParseValidator implements Validator<MzTab> {
+        
+        private static final Logger logger = LoggerFactory.getLogger(WriteAndParseValidator.class);
 
+        private final OutputStream outputStream;
+        private final Level level;
+        private final int maxErrorCount;
+        
+        public WriteAndParseValidator(OutputStream outputStream, Level level, int maxErrorCount) {
+            this.outputStream = outputStream;
+            this.level = level;
+            this.maxErrorCount = maxErrorCount;
+        }
+        
         @Override
         public List<ValidationMessage> validate(MzTab mzTab) {
             MzTabNonValidatingWriter writer = new MzTabNonValidatingWriter();
@@ -108,11 +124,10 @@ public class MzTabValidatingWriter implements MzTabWriter<List<ValidationMessage
                     write(new FileWriter(mzTabFile), mzTab);
 
                 MZTabFileParser parser = new MZTabFileParser(mzTabFile);
-                parser.parse(System.out);
+                parser.parse(outputStream, level, maxErrorCount);
                 return parser.getErrorList().convertToValidationMessages();
             } catch (IOException ex) {
-                Logger.getLogger(MzTabValidatingWriter.class.getName()).
-                    log(Level.SEVERE, null, ex);
+                logger.error("Caught exception while trying to parse "+mzTabFile, ex);
             } finally {
                 if (mzTabFile != null && mzTabFile.exists()) {
                     mzTabFile.delete();

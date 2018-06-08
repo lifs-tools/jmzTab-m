@@ -76,7 +76,7 @@ public class SFHLineParser extends MZTabHeaderLineParser {
             column = null;
             header = items[physicalPosition];
 
-            if (header.contains("abundance_")) {
+            if (header.contains(MZTabConstants.ABUNDANCE_PREFIX)) {
                 checkAbundanceColumns(physicalPosition, physPositionToOrder.get(physicalPosition));
             } else if (header.startsWith(MZTabConstants.OPT_PREFIX)) {
                 checkOptColumnName(header);
@@ -84,7 +84,7 @@ public class SFHLineParser extends MZTabHeaderLineParser {
                 try {
                     column = SmallMoleculeFeatureColumn.Stable.forName(header);
                 } catch(IllegalArgumentException ex) {
-                    throw new MZTabException(new MZTabError(LogicalErrorType.ColumnNotValid,lineNumber,header,section.getName()));    
+                    throw new MZTabException(new MZTabError(LogicalErrorType.ColumnNotValid,lineNumber,header,section.getName()));
                 }
                 
             }
@@ -147,7 +147,7 @@ public class SFHLineParser extends MZTabHeaderLineParser {
         }
 
         for (Assay assay : metadata.getAssay()) {
-            String assayLabel = "_assay[" + assay.getId() + "]";
+            String assayLabel = "_"+Metadata.Properties.assay+"[" + assay.getId() + "]";
             refineOptionalColumn(Section.Small_Molecule_Feature_Header, "abundance" + assayLabel);
         }
     }

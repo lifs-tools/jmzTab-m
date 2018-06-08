@@ -17,7 +17,7 @@ package de.isas.mztab2.cvmapping;
 
 /**
  *
- * @author Leibniz-Institut für Analytische Wissenschaften – ISAS – e.V.
+ * @author nilshoffmann
  */
 public enum ParameterComparisonResult {
     IDENTICAL, CHILD_OF, NOT_RELATED;

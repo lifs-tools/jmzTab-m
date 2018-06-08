@@ -132,7 +132,6 @@ public class SMELineParser extends MZTabDataLineParser<SmallMoleculeEvidence> {
                     }
 
                 } else if (column instanceof OptionColumn) {
-                    //Double check, the column name should opt
                    if (columnName.startsWith(MZTabConstants.OPT_PREFIX)) {
                         Class dataType = column.getDataType();
                         OptColumnMapping optColMapping = new OptColumnMapping();
@@ -160,7 +159,7 @@ public class SMELineParser extends MZTabDataLineParser<SmallMoleculeEvidence> {
     public SmallMoleculeEvidence getRecord() {
 
         if(smallMoleculeEvidence == null){
-            smallMoleculeEvidence = new SmallMoleculeEvidence();//factory, metadata);
+            smallMoleculeEvidence = new SmallMoleculeEvidence();
         }
         return smallMoleculeEvidence;
     }

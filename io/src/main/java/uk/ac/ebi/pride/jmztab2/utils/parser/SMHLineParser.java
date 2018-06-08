@@ -40,6 +40,7 @@ import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorList;
  *
  * @author qingwei
  * @author ntoro
+ * @author nilshoffmann
  * @since 10/02/13
  * 
  */
@@ -78,7 +79,7 @@ public class SMHLineParser extends MZTabHeaderLineParser {
 
             column = null;
             header = items[physicalPosition];
-            if (header.startsWith("abundance_")) {
+            if (header.startsWith(MZTabConstants.ABUNDANCE_PREFIX)) {
                 checkAbundanceColumns(physicalPosition, physPositionToOrder.get(physicalPosition));
             } else if (header.startsWith(MZTabConstants.OPT_PREFIX)) {
                 checkOptColumnName(header);
@@ -147,12 +148,12 @@ public class SMHLineParser extends MZTabHeaderLineParser {
             throw new MZTabException(new MZTabError(LogicalErrorType.NoSmallMoleculeIdentificationReliability, lineNumber));
         }
         for (StudyVariable studyVariable : metadata.getStudyVariable()) {
-            String svLabel = "_study_variable[" + studyVariable.getId() + "]";
+            String svLabel = "_"+Metadata.Properties.studyVariable+"[" + studyVariable.getId() + "]";
             refineOptionalColumn(Section.Small_Molecule_Header, "abundance" + svLabel);
             refineOptionalColumn(Section.Small_Molecule_Header, "abundance_variation" + svLabel);
         }
         for (Assay assay : metadata.getAssay()) {
-            String assayLabel = "_assay[" + assay.getId() + "]";
+            String assayLabel = "_"+Metadata.Properties.assay+"[" + assay.getId() + "]";
             refineOptionalColumn(Section.Small_Molecule_Header, "abundance" + assayLabel);
         }
     }

@@ -63,7 +63,7 @@ public class SMFLineParser extends MZTabDataLineParser<SmallMoleculeFeature> {
         String target;
         int physicalPosition;
         String logicalPosition;
-        smallMoleculeFeature = new SmallMoleculeFeature();//(factory, metadata);
+        smallMoleculeFeature = new SmallMoleculeFeature();
 
         for (physicalPosition = 1; physicalPosition < items.length; physicalPosition++) {
             logicalPosition = positionMapping.get(physicalPosition);
@@ -118,13 +118,10 @@ public class SMFLineParser extends MZTabDataLineParser<SmallMoleculeFeature> {
                     }
 
                 } else if (column instanceof AbundanceColumn) {
-                    //Double check, the column name should contain
-                    //Double check, the column name should contain
                     if (columnName.startsWith(SmallMoleculeFeature.Properties.abundanceAssay.getPropertyName())) {
                         smallMoleculeFeature.addAbundanceAssayItem(checkDouble(column, target));
                     }
                 } else if (column instanceof OptionColumn) {
-                    //Double check, the column name should opt
                    if (columnName.startsWith(MZTabConstants.OPT_PREFIX)) {
                         Class dataType = column.getDataType();
                         OptColumnMapping optColMapping = new OptColumnMapping();

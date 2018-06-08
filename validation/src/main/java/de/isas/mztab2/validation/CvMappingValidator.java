@@ -43,7 +43,10 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import org.apache.commons.jxpath.JXPathContext;
 import org.apache.commons.jxpath.Pointer;
+import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.tuple.Pair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.ac.ebi.pride.jmztab2.utils.errors.CrossCheckErrorType;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabError;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorType;
@@ -51,10 +54,13 @@ import uk.ac.ebi.pride.utilities.ols.web.service.client.OLSClient;
 import uk.ac.ebi.pride.utilities.ols.web.service.config.OLSWsConfig;
 
 /**
- *
+ * Validator implementation that uses a provided xml mapping file with rules 
+ * for required, recommended and optional CV parameters to assert that an mzTab follows these rules. 
  * @author nilshoffmann
  */
 public class CvMappingValidator implements Validator<MzTab> {
+    
+    private static final Logger logger = LoggerFactory.getLogger(CvMappingValidator.class);
 
     private final CvMapping mapping;
     private final CvParameterLookupService client;
@@ -108,8 +114,7 @@ public class CvMappingValidator implements Validator<MzTab> {
             getCvMappingRule().
             forEach((rule) ->
             {
-                System.out.println(
-                    "Evaluating rule " + rule.getId() + " on " + rule.
+                logger.debug("Evaluating rule " + rule.getId() + " on " + rule.
                     getCvElementPath());
                 if (rule.getCvTermsCombinationLogic() == CvMappingRule.CvTermsCombinationLogic.AND) {
                     if (rule.getCvTerm().
@@ -133,7 +138,7 @@ public class CvMappingValidator implements Validator<MzTab> {
         List<Pair<Pointer, ? extends Parameter>> selection = JxPathElement.
             toList(context, path, Parameter.class);
         if (selection.isEmpty()) {
-            System.out.println(
+            logger.debug(
                 "Evaluating rule " + rule.getId() + " on " + rule.
                 getCvElementPath() + " did not yield any selected elements!");
             if (rule.getRequirementLevel() == CvMappingRule.RequirementLevel.MUST) {
@@ -165,7 +170,7 @@ public class CvMappingValidator implements Validator<MzTab> {
             {
                 for (Pair<Pointer, ? extends Parameter> pair : selection) {
                     if (cvTerm.isAllowChildren()) {
-                        System.out.println("Resolving children of " + cvTerm.
+                        logger.debug("Resolving children of " + cvTerm.
                             getTermAccession() + " against " + pair.getValue().
                                 getCvAccession());
                         //resolve children
@@ -175,7 +180,7 @@ public class CvMappingValidator implements Validator<MzTab> {
                                     pair.getValue());
                             switch (result) {
                                 case CHILD_OF:
-                                    System.out.println(pair.getValue().
+                                    logger.debug(pair.getValue().
                                         getCvAccession() + " is a child of " + cvTerm.
                                             getTermAccession());
                                     //use key of found parameter, since it is a child of cvTerm / cvTerm is a parent of the child
@@ -189,7 +194,7 @@ public class CvMappingValidator implements Validator<MzTab> {
                                     break;
                                 case IDENTICAL:
                                     if (cvTerm.isUseTerm()) {
-                                        System.out.println(pair.getValue().
+                                        logger.debug(pair.getValue().
                                             getCvAccession() + " is identical to " + cvTerm.
                                                 getTermAccession());
                                         //use key of found parameter, since both are identical
@@ -203,7 +208,7 @@ public class CvMappingValidator implements Validator<MzTab> {
                                     }
                                     break;
                                 case NOT_RELATED:
-                                    System.out.println(pair.getValue().
+                                    logger.debug(pair.getValue().
                                         getCvAccession() + " is not related to " + cvTerm.
                                             getTermAccession());
                                     //add term from rule as is
@@ -379,7 +384,8 @@ public class CvMappingValidator implements Validator<MzTab> {
         final Map<String, Pair<Pointer, ? extends Parameter>> foundParameters,
         CvMappingRule rule, boolean errorOnTermNotInRule) {
         // xor logic means, if one of the defined terms is set, none of the others is allowed
-        return Collections.emptyList();
+        throw new NotImplementedException("XOR logic is currently not implemented!");
+//        return Collections.emptyList();
     }
 
 }

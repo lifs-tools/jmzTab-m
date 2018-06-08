@@ -16,7 +16,6 @@
 package de.isas.mztab2.cli;
 
 import de.isas.mztab2.validation.CvMappingValidator;
-import de.isas.mztab2.validation.MzTabBeanValidator;
 import de.isas.mztab2.model.ValidationMessage;
 import org.apache.commons.cli.*;
 
@@ -203,7 +202,7 @@ public class MZTabCommandLine {
                             mappingFile = new File(values[1].trim()).getAbsoluteFile().toURI();
                         } else {
                             // read default file
-                            mappingFile = MzTabBeanValidator.class.getResource("/mappings/mzTab-M-mapping.xml").toURI();
+                            mappingFile = CvMappingValidator.class.getResource("/mappings/mzTab-M-mapping.xml").toURI();
                         }
                         System.out.println(
                             "Beginning semantic validation of mztab file: " + inFile.
