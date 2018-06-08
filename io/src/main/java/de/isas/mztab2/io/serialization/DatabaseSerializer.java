@@ -17,6 +17,7 @@ package de.isas.mztab2.io.serialization;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import static de.isas.mztab2.io.serialization.Serializers.addLineWithNullProperty;
 import static de.isas.mztab2.io.serialization.Serializers.addLineWithProperty;
@@ -28,22 +29,25 @@ import java.util.logging.Logger;
 import uk.ac.ebi.pride.jmztab2.model.Section;
 
 /**
- * <p>DatabaseSerializer class.</p>
+ * <p>
+ * DatabaseSerializer class.</p>
  *
  * @author nilshoffmann
- * 
+ *
  */
 public class DatabaseSerializer extends StdSerializer<Database> {
 
     /**
-     * <p>Constructor for DatabaseSerializer.</p>
+     * <p>
+     * Constructor for DatabaseSerializer.</p>
      */
     public DatabaseSerializer() {
         this(null);
     }
 
     /**
-     * <p>Constructor for DatabaseSerializer.</p>
+     * <p>
+     * Constructor for DatabaseSerializer.</p>
      *
      * @param t a {@link java.lang.Class} object.
      */
@@ -51,31 +55,49 @@ public class DatabaseSerializer extends StdSerializer<Database> {
         super(t);
     }
 
-    /** {@inheritDoc} */
+    @Override
+    public void serializeWithType(Database value, JsonGenerator gen,
+        SerializerProvider serializers, TypeSerializer typeSer) throws IOException {
+        typeSer.writeTypePrefixForObject(value, gen);
+        serialize(value, gen, serializers);
+        typeSer.writeTypeSuffixForObject(value, gen);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void serialize(Database database, JsonGenerator jg,
         SerializerProvider sp) throws IOException {
         if (database != null) {
-            Serializers.addLineWithPropertyParameters(jg, Section.Metadata.getPrefix(),
+            Serializers.addLineWithPropertyParameters(jg, Section.Metadata.
+                getPrefix(),
                 null, database, Arrays.asList(database.getParam()));
-            if(database.getParam()!= null && database.getParam().getName().equals("no database")) {
+            if (database.getParam() != null && database.getParam().
+                getName().
+                equals("no database")) {
                 addLineWithNullProperty(jg, Section.Metadata.getPrefix(),
                     Database.Properties.prefix.getPropertyName(), database);
+                addLineWithProperty(jg, Section.Metadata.getPrefix(),
+                    Database.Properties.url.getPropertyName(), database,
+                    "null");
             } else {
                 addLineWithProperty(jg, Section.Metadata.getPrefix(),
                     Database.Properties.prefix.getPropertyName(), database,
                     database.
                         getPrefix());
+                addLineWithProperty(jg, Section.Metadata.getPrefix(),
+                    Database.Properties.url.getPropertyName(), database,
+                    database.getUrl());
             }
             addLineWithProperty(jg, Section.Metadata.getPrefix(),
-                Database.Properties.url.getPropertyName(), database,
-                database.getUrl());
-            addLineWithProperty(jg, Section.Metadata.getPrefix(),
                 Database.Properties.version.getPropertyName(), database,
-                database.getVersion());
+                database.getVersion() == null ? "Unknown" : database.
+                getVersion());
+
         } else {
             Logger.getLogger(DatabaseSerializer.class.getName()).
-                log(Level.FINE, Database.class.getSimpleName()+" is null!");
+                log(Level.FINE, Database.class.getSimpleName() + " is null!");
         }
     }
 

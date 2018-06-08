@@ -17,20 +17,16 @@ package de.isas.mztab2.io.serialization;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import static de.isas.mztab2.io.serialization.Serializers.addLineWithProperty;
 import static de.isas.mztab2.io.serialization.Serializers.addSubElementParameter;
 import static de.isas.mztab2.io.serialization.Serializers.addSubElementParameters;
-import static de.isas.mztab2.io.serialization.Serializers.addSubElementStrings;
-import de.isas.mztab2.model.Instrument;
 import de.isas.mztab2.model.Metadata;
 import de.isas.mztab2.model.MsRun;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 import uk.ac.ebi.pride.jmztab2.model.Section;
 
 /**
@@ -58,6 +54,14 @@ public class MsRunSerializer extends StdSerializer<MsRun> {
      */
     public MsRunSerializer(Class<MsRun> t) {
         super(t);
+    }
+
+    @Override
+    public void serializeWithType(MsRun value, JsonGenerator gen,
+        SerializerProvider serializers, TypeSerializer typeSer) throws IOException {
+        typeSer.writeTypePrefixForObject(value, gen);
+        serialize(value, gen, serializers);
+        typeSer.writeTypeSuffixForObject(value, gen);
     }
 
     /**

@@ -39,21 +39,16 @@ import de.isas.mztab2.model.MzTab;
 import de.isas.mztab2.model.SmallMoleculeEvidence;
 import de.isas.mztab2.model.SmallMoleculeFeature;
 import de.isas.mztab2.model.SmallMoleculeSummary;
-import de.isas.mztab2.model.ValidationMessage;
 
 import java.io.*;
 import java.net.URI;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
-import java.util.logging.Logger;
 import java.util.zip.GZIPInputStream;
 import static uk.ac.ebi.pride.jmztab2.model.MZTabConstants.NEW_LINE;
 import static uk.ac.ebi.pride.jmztab2.model.MZTabConstants.TAB;
 import uk.ac.ebi.pride.jmztab2.model.MZTabStringUtils;
-import uk.ac.ebi.pride.jmztab2.model.MZTabUtils;
 import uk.ac.ebi.pride.jmztab2.model.Section;
 import static uk.ac.ebi.pride.jmztab2.utils.MZTabProperties.*;
 
@@ -123,13 +118,19 @@ public class MZTabFileParser {
             refine();
         } catch (MZTabException e) {
             out.write(MZTabExceptionMessage.getBytes());
+            try(PrintStream ps = new PrintStream(out)) {
+                e.printStackTrace(ps);
+            }
             errorList.add(e.getError());
         } catch (MZTabErrorOverflowException e) {
+            try(PrintStream ps = new PrintStream(out)) {
+                e.printStackTrace(ps);
+            }
             out.write(MZTabErrorOverflowExceptionMessage.getBytes());
         }
 
         errorList.print(out);
-        if (errorList.isEmpty()) {
+        if (mzTabFile!=null && errorList.isEmpty()) {
             out.write(("No errors in " + tabFile + " file!" + NEW_LINE).
                 getBytes());
         }
@@ -295,109 +296,12 @@ public class MZTabFileParser {
                     }
 
                     highWaterMark = section.getLevel();
-                    // There exists errors during checking metadata section.
-                    // However it stop with warnings too, so we should try to continue parsing as much as
-                    // possible to provide several errors/warnings not only the first one in metadata
-                    //            if (highWaterMark == 1 && ! errorList.isEmpty()) {
-                    //                break;
-                    //            }
-
+                    
                     switch (highWaterMark) {
                         case 1:
                             // metadata section.
                             mtdParser.parse(lineNumber, line, errorList);
                             break;
-                        //                case 2:
-                        //                    if (prhParser != null) {
-                        //                        // header line only display once!
-                        //                        error = new MZTabError(LogicalErrorType.HeaderLine, lineNumber, subString(line));
-                        //                        throw new MZTabException(error);
-                        //                    }
-                        //
-                        //                    // protein header section
-                        //                    prhParser = new PRHLineParser(mtdParser.getMetadata());
-                        //                    prhParser.parse(lineNumber, line, errorList);
-                        //                    prtPositionMapping = new PositionMapping(prhParser.getFactory(), line);
-                        //
-                        //                    // tell system to continue check protein data line.
-                        //                    highWaterMark = 3;
-                        //                    break;
-                        //                case 3:
-                        //                    if (prhParser == null) {
-                        //                        // header line should be check first.
-                        //                        error = new MZTabError(LogicalErrorType.NoHeaderLine, lineNumber, subString(line));
-                        //                        throw new MZTabException(error);
-                        //                    }
-                        //
-                        //                    if (prtParser == null) {
-                        //                        prtParser = new PRTLineParser(prhParser.getFactory(), prtPositionMapping, mtdParser.getMetadata(), errorList);
-                        //                    }
-                        //                    prtParser.parse(lineNumber, line, errorList);
-                        //                    proteinMap.put(lineNumber, prtParser.getRecord());
-                        //
-                        //                    break;
-                        //                case 4:
-                        //                    if (pehParser != null) {
-                        //                        // header line only display once!
-                        //                        error = new MZTabError(LogicalErrorType.HeaderLine, lineNumber, subString(line));
-                        //                        throw new MZTabException(error);
-                        //                    }
-                        //
-                        //                    if (mtdParser.getMetadata().getMZTabType() == MZTabDescription.Type.Identification) {
-                        //                        errorList.add(new MZTabError(LogicalErrorType.PeptideSection, lineNumber, subString(line)));
-                        //                    }
-                        //
-                        //                    // peptide header section
-                        //                    pehParser = new PEHLineParser(mtdParser.getMetadata());
-                        //                    pehParser.parse(lineNumber, line, errorList);
-                        //                    pepPositionMapping = new PositionMapping(pehParser.getFactory(), line);
-                        //
-                        //                    // tell system to continue check peptide data line.
-                        //                    highWaterMark = 5;
-                        //                    break;
-                        //                case 5:
-                        //                    if (pehParser == null) {
-                        //                        // header line should be check first.
-                        //                        error = new MZTabError(LogicalErrorType.NoHeaderLine, lineNumber, subString(line));
-                        //                        throw new MZTabException(error);
-                        //                    }
-                        //
-                        //                    if (pepParser == null) {
-                        //                        pepParser = new PEPLineParser(pehParser.getFactory(), pepPositionMapping, mtdParser.getMetadata(), errorList);
-                        //                    }
-                        //                    pepParser.parse(lineNumber, line, errorList);
-                        //                    peptideMap.put(lineNumber, pepParser.getRecord());
-                        //
-                        //                    break;
-                        //                case 6:
-                        //                    if (pshParser != null) {
-                        //                        // header line only display once!
-                        //                        error = new MZTabError(LogicalErrorType.HeaderLine, lineNumber, subString(line));
-                        //                        throw new MZTabException(error);
-                        //                    }
-                        //
-                        //                    // psm header section
-                        //                    pshParser = new PSHLineParser(mtdParser.getMetadata());
-                        //                    pshParser.parse(lineNumber, line, errorList);
-                        //                    psmPositionMapping = new PositionMapping(pshParser.getFactory(), line);
-                        //
-                        //                    // tell system to continue check peptide data line.
-                        //                    highWaterMark = 7;
-                        //                    break;
-                        //                case 7:
-                        //                    if (pshParser == null) {
-                        //                        // header line should be check first.
-                        //                        error = new MZTabError(LogicalErrorType.NoHeaderLine, lineNumber, subString(line));
-                        //                        throw new MZTabException(error);
-                        //                    }
-                        //
-                        //                    if (psmParser == null) {
-                        //                        psmParser = new PSMLineParser(pshParser.getFactory(), psmPositionMapping, mtdParser.getMetadata(), errorList);
-                        //                    }
-                        //                    psmParser.parse(lineNumber, line, errorList);
-                        //                    psmMap.put(lineNumber, psmParser.getRecord());
-                        //
-                        //                    break;
                         case 8:
                             if (smhParser != null) {
                                 MZTabError error = new MZTabError(
@@ -529,8 +433,7 @@ public class MZTabFileParser {
 
             if (smallMoleculeSummaryMap.isEmpty()) {
                 errorList.add(new MZTabError(
-                    LogicalErrorType.NoSmallMoleculeSummarySection, -1,
-                    "NoSmallMoleculeSummarySection"));
+                    LogicalErrorType.NoSmallMoleculeSummarySection, -1));
             }
             if (smhParser != null) {
 
@@ -544,8 +447,7 @@ public class MZTabFileParser {
             if (smallMoleculeFeatureMap.isEmpty() && !smallMoleculeSummaryMap.
                 isEmpty()) {
                 errorList.add(new MZTabError(
-                    LogicalErrorType.NoSmallMoleculeFeatureSection, -1,
-                    "NoSmallMoleculeFeatureSection"));
+                    LogicalErrorType.NoSmallMoleculeFeatureSection, -1));
             }
             if (smfParser != null) {
                 for (Integer id : smallMoleculeFeatureMap.keySet()) {
@@ -553,12 +455,15 @@ public class MZTabFileParser {
                         smallMoleculeFeatureMap.get(
                             id));
                 }
+                if(smallMoleculeFeatureMap.size()>0 && mzTabFile.getMetadata().getSmallMoleculeFeatureQuantificationUnit()==null) {
+                    errorList.add(new MZTabError(
+                    LogicalErrorType.NoSmallMoleculeFeatureQuantificationUnit, -1));
+                }
             }
             if (smallMoleculeEvidenceMap.isEmpty() && !smallMoleculeSummaryMap.
                 isEmpty()) {
                 errorList.add(new MZTabError(
-                    LogicalErrorType.NoSmallMoleculeEvidenceSection, -1,
-                    "NoSmallMoleculeFeatureSection"));
+                    LogicalErrorType.NoSmallMoleculeEvidenceSection, -1));
             }
             if (smeParser != null) {
                 for (Integer id : smallMoleculeEvidenceMap.keySet()) {

@@ -19,6 +19,7 @@ import de.isas.mztab2.model.Assay;
 import de.isas.mztab2.model.CV;
 import de.isas.mztab2.model.Contact;
 import de.isas.mztab2.model.Instrument;
+import de.isas.mztab2.model.Metadata;
 import de.isas.mztab2.model.MsRun;
 import de.isas.mztab2.model.MzTab;
 import de.isas.mztab2.model.Parameter;
@@ -36,6 +37,61 @@ import java.util.Arrays;
  * @author nilshoffmann
  */
 public class MzTabTestData {
+
+    public static Metadata createSmallMetadata() {
+        Metadata metadata
+            = new de.isas.mztab2.model.Metadata().mzTabVersion("2.0.0-M").
+                mzTabID("ISAS_2017_M_11451").
+                title("A minimal test file").
+                description("A description of an mzTab file.").
+                addContactItem(
+                    new Contact().id(1).
+                        name("Nils Hoffmann").
+                        email("nils.hoffmann_at_isas.de").
+                        affiliation(
+                            "ISAS e.V. Dortmund, Germany")
+                ).
+                addMsRunItem(
+                    new MsRun().id(1).
+                        location("file:///path/to/file1.mzML").
+                        format(
+                            new Parameter().
+                                cvLabel("MS").
+                                cvAccession("MS:1000584").
+                                name("mzML file")
+                        ).
+                        idFormat(
+                            new Parameter().
+                                cvLabel("MS").
+                                cvAccession("MS:1001530").
+                                name("mzML unique identifier")
+                        )
+                );
+
+        PublicationItem item1_1 = new PublicationItem().type(
+            PublicationItem.TypeEnum.PUBMED).
+            accession("21063943");
+        PublicationItem item1_2 = new PublicationItem().type(
+            PublicationItem.TypeEnum.DOI).
+            accession("10.1007/978-1-60761-987-1_6");
+        Publication publication1 = new Publication().id(1);
+        publication1.setPublicationItems(Arrays.asList(item1_1, item1_2));
+
+        PublicationItem item2_1 = new PublicationItem().type(
+            PublicationItem.TypeEnum.PUBMED).
+            accession("20615486");
+        PublicationItem item2_2 = new PublicationItem().type(
+            PublicationItem.TypeEnum.DOI).
+            accession("10.1016/j.jprot.2010.06.008");
+        Publication publication2 = new Publication().id(2);
+        publication2.setPublicationItems(Arrays.asList(item2_1, item2_2));
+
+        metadata.
+            addPublicationItem(publication1).
+            addPublicationItem(publication2);
+        return metadata;
+    }
+
     public static MzTab createTestFile() {
 
         final MzTab mztabfile = new MzTab().metadata(
@@ -91,7 +147,7 @@ public class MzTabTestData {
         return mztabfile;
     }
 
-    public static MzTab create1_1TestFile() {
+    public static MzTab create2_0TestFile() {
         de.isas.mztab2.model.Metadata mtd = new de.isas.mztab2.model.Metadata();
         mtd.mzTabID("PRIDE_1234").
             mzTabVersion("2.0.0-M").
@@ -315,13 +371,16 @@ public class MzTabTestData {
 //            cvAccession("MS:1001838").
 //            name("SRM quantitation analysis"));
 
-        mtd.setSmallMoleculeQuantificationUnit(new Parameter().name("Progenesis QI Normalised Abundance"));
-        mtd.setSmallMoleculeFeatureQuantificationUnit(new Parameter().name("Progenesis QI Normalised Abundance"));
+        mtd.setSmallMoleculeQuantificationUnit(new Parameter().name(
+            "Progenesis QI Normalised Abundance"));
+        mtd.setSmallMoleculeFeatureQuantificationUnit(new Parameter().name(
+            "Progenesis QI Normalised Abundance"));
         mtd.addIdConfidenceMeasureItem(new Parameter().id(1).
             name("some confidence measure term"));
-        
+
         mtd.setSmallMoleculeIdentificationReliability(
-            new Parameter().name("Identification Reliability from 1 (lowest reliability) to 4 (highest reliability)"));
+            new Parameter().name(
+                "Identification Reliability from 1 (lowest reliability) to 4 (highest reliability)"));
 
         MzTab mzTab = new MzTab();
         mzTab.metadata(mtd);

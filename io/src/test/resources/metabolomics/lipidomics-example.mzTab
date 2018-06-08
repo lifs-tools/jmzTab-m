@@ -1,5 +1,6 @@
 COM	Meta data section																				
 MTD	mzTab-version	2.0.0-M																			
+MTD	mzTab-ID	ISAS-2018-1234
 MTD	description	Minimal proposed sample file for identification and quantification of lipids																			
 MTD	publication[1]	pubmed:29039908 | doi:10.1021/acs.analchem.7b03576																			
 MTD	cv[1]-label	MS																			

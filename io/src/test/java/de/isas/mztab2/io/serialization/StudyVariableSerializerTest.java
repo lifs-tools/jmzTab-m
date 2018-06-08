@@ -15,7 +15,6 @@
  */
 package de.isas.mztab2.io.serialization;
 
-import de.isas.mztab2.io.serialization.ParameterConverter;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import de.isas.mztab2.io.AbstractSerializerTest;
 import de.isas.mztab2.model.Assay;
@@ -23,7 +22,6 @@ import de.isas.mztab2.model.Metadata;
 import static de.isas.mztab2.model.Metadata.PrefixEnum.MTD;
 import de.isas.mztab2.model.Parameter;
 import de.isas.mztab2.model.Sample;
-import de.isas.mztab2.model.Software;
 import de.isas.mztab2.model.StudyVariable;
 import java.util.stream.Collectors;
 import org.junit.Test;
@@ -48,8 +46,6 @@ public class StudyVariableSerializerTest extends AbstractSerializerTest {
         Metadata mtd = new Metadata();
         Assay assay1 = new Assay().id(1);
         Assay assay2 = new Assay().id(2);
-        Sample sample1 = new Sample().id(1);
-        Sample sample2 = new Sample().id(2);
         StudyVariable studyVariable1 = new StudyVariable().
             id(1).
             name("Study Variable 1").
@@ -81,6 +77,7 @@ public class StudyVariableSerializerTest extends AbstractSerializerTest {
                 name("median")).
             addFactorsItem(new Parameter().name("spike-in").
                 value("0.74 fmol/uL"));
+
         mtd.addStudyVariableItem(studyVariable2);
 
         ObjectWriter writer = metaDataWriter();

@@ -17,6 +17,7 @@ package de.isas.mztab2.io.serialization;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import static de.isas.mztab2.io.serialization.Serializers.writeAsStringArray;
 import static de.isas.mztab2.io.serialization.Serializers.writeNumber;
@@ -25,6 +26,8 @@ import static de.isas.mztab2.io.serialization.Serializers.writeObject;
 import de.isas.mztab2.model.Metadata;
 import de.isas.mztab2.model.SmallMoleculeEvidence;
 import java.io.IOException;
+import java.util.Collections;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -57,6 +60,14 @@ public class SmallMoleculeEvidenceSerializer extends StdSerializer<SmallMolecule
         super(t);
     }
 
+    @Override
+    public void serializeWithType(SmallMoleculeEvidence value, JsonGenerator gen,
+        SerializerProvider serializers, TypeSerializer typeSer) throws IOException {
+        typeSer.writeTypePrefixForObject(value, gen);
+        serialize(value, gen, serializers);
+        typeSer.writeTypeSuffixForObject(value, gen);
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -66,8 +77,9 @@ public class SmallMoleculeEvidenceSerializer extends StdSerializer<SmallMolecule
         SerializerProvider sp) throws IOException {
         if (smallMoleculeEvidence != null) {
             jg.writeStartObject();
-            writeString(SmallMoleculeEvidence.HeaderPrefixEnum.SEH.getValue(), jg, SmallMoleculeEvidence.PrefixEnum.SME.
-                getValue());
+            writeString(SmallMoleculeEvidence.HeaderPrefixEnum.SEH.getValue(),
+                jg, SmallMoleculeEvidence.PrefixEnum.SME.
+                    getValue());
             writeString(SmallMoleculeEvidenceColumn.Stable.SME_ID, jg,
                 smallMoleculeEvidence.getSmeId());
             writeString(SmallMoleculeEvidenceColumn.Stable.EVIDENCE_INPUT_ID,
@@ -84,7 +96,8 @@ public class SmallMoleculeEvidenceSerializer extends StdSerializer<SmallMolecule
                 smallMoleculeEvidence.getChemicalName());
             writeString(SmallMoleculeEvidenceColumn.Stable.URI, jg,
                 smallMoleculeEvidence.getUri());
-            writeObject(SmallMoleculeEvidenceColumn.Stable.DERIVATIZED_FORM, jg, sp,
+            writeObject(SmallMoleculeEvidenceColumn.Stable.DERIVATIZED_FORM, jg,
+                sp,
                 smallMoleculeEvidence.getDerivatizedForm());
             writeString(SmallMoleculeEvidenceColumn.Stable.ADDUCT_ION, jg,
                 smallMoleculeEvidence.getAdductIon());
@@ -98,12 +111,13 @@ public class SmallMoleculeEvidenceSerializer extends StdSerializer<SmallMolecule
                 jg, smallMoleculeEvidence.
                     getTheoreticalMassToCharge());
             writeAsStringArray(SmallMoleculeEvidenceColumn.Stable.SPECTRA_REF,
-                jg, smallMoleculeEvidence.
-                    getSpectraRef().
+                jg, Optional.ofNullable(smallMoleculeEvidence.
+                    getSpectraRef()).orElse(Collections.emptyList()).
                     stream().
                     map((spectraRef) ->
                     {
-                        return Metadata.Properties.msRun.getPropertyName()+"[" + spectraRef.getMsRun().
+                        return Metadata.Properties.msRun.getPropertyName() + "[" + spectraRef.
+                            getMsRun().
                             getId() + "]:" + spectraRef.getReference();
                     }).
                     collect(Collectors.toList()));
@@ -112,9 +126,11 @@ public class SmallMoleculeEvidenceSerializer extends StdSerializer<SmallMolecule
             writeObject(SmallMoleculeEvidenceColumn.Stable.MS_LEVEL, jg, sp,
                 smallMoleculeEvidence.
                     getMsLevel());
-            Serializers.writeIndexedDoubles(SmallMoleculeEvidence.Properties.idConfidenceMeasure.getPropertyName(), jg,
-                smallMoleculeEvidence.
-                    getIdConfidenceMeasure());
+            Serializers.writeIndexedDoubles(
+                SmallMoleculeEvidence.Properties.idConfidenceMeasure.
+                    getPropertyName(), jg,
+                Optional.ofNullable(smallMoleculeEvidence.
+                    getIdConfidenceMeasure()).orElse(Collections.emptyList()));
             writeNumber(SmallMoleculeEvidenceColumn.Stable.RANK, jg,
                 smallMoleculeEvidence.getRank());
             Serializers.writeOptColumnMappings(smallMoleculeEvidence.getOpt(),
@@ -122,7 +138,9 @@ public class SmallMoleculeEvidenceSerializer extends StdSerializer<SmallMolecule
             jg.writeEndObject();
         } else {
             Logger.getLogger(SmallMoleculeEvidenceSerializer.class.getName()).
-                log(Level.FINE, "{0} is null!", smallMoleculeEvidence.getClass().getSimpleName());
+                log(Level.FINE, "{0} is null!",
+                    smallMoleculeEvidence.getClass().
+                        getSimpleName());
         }
     }
 }

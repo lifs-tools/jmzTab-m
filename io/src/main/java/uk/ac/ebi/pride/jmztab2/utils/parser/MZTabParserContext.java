@@ -103,7 +103,7 @@ public class MZTabParserContext {
      */
     public Sample addSampleSpecies(Metadata metadata, Integer id, Parameter species) {
         if (id <= 0) {
-            throw new IllegalArgumentException("Sample id should be great than 0!");
+            throw new IllegalArgumentException("Sample id should be greater than 0!");
         }
         Sample sample = sampleMap.get(id);
         if (species == null) {
@@ -132,7 +132,7 @@ public class MZTabParserContext {
      */
     public Sample addSampleTissue(Metadata metadata, Integer id, Parameter tissue) {
         if (id <= 0) {
-            throw new IllegalArgumentException("Sample id should be great than 0!");
+            throw new IllegalArgumentException("Sample id should be greater than 0!");
         }
         Sample sample = sampleMap.get(id);
         if (tissue == null) {
@@ -161,7 +161,7 @@ public class MZTabParserContext {
      */
     public Sample addSampleCellType(Metadata metadata, Integer id, Parameter cellType) {
         if (id <= 0) {
-            throw new IllegalArgumentException("Sample id should be great than 0!");
+            throw new IllegalArgumentException("Sample id should be greater than 0!");
         }
         Sample sample = sampleMap.get(id);
         if (cellType == null) {
@@ -190,7 +190,7 @@ public class MZTabParserContext {
      */
     public Sample addSampleDisease(Metadata metadata, Integer id, Parameter disease) {
         if (id <= 0) {
-            throw new IllegalArgumentException("Sample id should be great than 0!");
+            throw new IllegalArgumentException("Sample id should be greater than 0!");
         }
         Sample sample = sampleMap.get(id);
         if (disease == null) {
@@ -219,7 +219,7 @@ public class MZTabParserContext {
      */
     public Sample addSampleDescription(Metadata metadata, Integer id, String description) {
         if (id <= 0) {
-            throw new IllegalArgumentException("Sample id should be great than 0!");
+            throw new IllegalArgumentException("Sample id should be greater than 0!");
         }
 
         Sample sample = sampleMap.get(id);
@@ -249,7 +249,7 @@ public class MZTabParserContext {
      */
     public Sample addSampleCustom(Metadata metadata, Integer id, Parameter custom) {
         if (id <= 0) {
-            throw new IllegalArgumentException("Sample id should be great than 0!");
+            throw new IllegalArgumentException("Sample id should be greater than 0!");
         }
         Sample sample = sampleMap.get(id);
         if (custom == null) {
@@ -280,7 +280,7 @@ public class MZTabParserContext {
      */
     public SampleProcessing addSampleProcessing(Metadata metadata, Integer id, List<Parameter> sampleProcessing) {
         if (id <= 0) {
-            throw new IllegalArgumentException("Sample id should be great than 0!");
+            throw new IllegalArgumentException("Sample id should be greater than 0!");
         }
         if (sampleProcessing == null) {
             return null;
@@ -305,7 +305,7 @@ public class MZTabParserContext {
      */
     public SampleProcessing addSampleProcessingParameter(Metadata metadata, Integer id, Parameter param) {
         if (id <= 0) {
-            throw new IllegalArgumentException("Sample processing id should be great than 0!");
+            throw new IllegalArgumentException("Sample processing id should be greater than 0!");
         }
         SampleProcessing sampleProcessing = sampleProcessingMap.get(id);
         if (param == null) {
@@ -350,7 +350,7 @@ public class MZTabParserContext {
      */
     public Instrument addInstrumentName(Metadata metadata, Integer id, Parameter name) {
         if (id <= 0) {
-            throw new IllegalArgumentException("Instrument id should be great than 0!");
+            throw new IllegalArgumentException("Instrument id should be greater than 0!");
         }
         Instrument instrument = instrumentMap.get(id);
         if (name == null) {
@@ -379,7 +379,7 @@ public class MZTabParserContext {
      */
     public Instrument addInstrumentSource(Metadata metadata, Integer id, Parameter source) {
         if (id <= 0) {
-            throw new IllegalArgumentException("Instrument id should be great than 0!");
+            throw new IllegalArgumentException("Instrument id should be greater than 0!");
         }
         Instrument instrument = instrumentMap.get(id);
         if (source == null) {
@@ -408,7 +408,7 @@ public class MZTabParserContext {
      */
     public Instrument addInstrumentAnalyzer(Metadata metadata, Integer id, Parameter analyzer) {
         if (id <= 0) {
-            throw new IllegalArgumentException("Instrument id should be great than 0!");
+            throw new IllegalArgumentException("Instrument id should be greater than 0!");
         }
         Instrument instrument = instrumentMap.get(id);
         if (analyzer == null) {
@@ -437,7 +437,7 @@ public class MZTabParserContext {
      */
     public Instrument addInstrumentDetector(Metadata metadata, Integer id, Parameter detector) {
         if (id <= 0) {
-            throw new IllegalArgumentException("Instrument id should be great than 0!");
+            throw new IllegalArgumentException("Instrument id should be greater than 0!");
         }
 
         Instrument instrument = instrumentMap.get(id);
@@ -485,7 +485,7 @@ public class MZTabParserContext {
      */
     public Software addSoftwareParameter(Metadata metadata, Integer id, Parameter param) {
         if (id <= 0) {
-            throw new IllegalArgumentException("Software id should be great than 0!");
+            throw new IllegalArgumentException("Software id should be greater than 0!");
         }
         Software software = softwareMap.get(id);
         if (param == null) {
@@ -516,7 +516,7 @@ public class MZTabParserContext {
      */
     public Software addSoftwareSetting(Metadata metadata, Integer id, String setting) {
         if (id <= 0) {
-            throw new IllegalArgumentException("Software id should be great than 0!");
+            throw new IllegalArgumentException("Software id should be greater than 0!");
         }
         Software software = softwareMap.get(id);
         if (isEmpty(setting)) {
@@ -565,13 +565,13 @@ public class MZTabParserContext {
      */
     public Publication addPublicationItem(Metadata metadata, Integer id, PublicationItem.TypeEnum type, String accession) {
         if (id <= 0) {
-            throw new IllegalArgumentException("Publication id should be great than 0!");
+            throw new IllegalArgumentException("Publication id should be greater than 0!");
         }
         if (type == null) {
-            throw new NullPointerException("Publication type should not set null");
+            throw new NullPointerException("Publication type should not be null");
         }
         if (isEmpty(accession)) {
-            throw new IllegalArgumentException("Publication accession should not set empty.");
+            throw new IllegalArgumentException("Publication accession should not be empty.");
         }
 
         Publication publication = publicationMap.get(id);
@@ -599,10 +599,10 @@ public class MZTabParserContext {
      */
     public Publication addPublicationItems(Metadata metadata, Integer id, Collection<PublicationItem> items) {
         if (id <= 0) {
-            throw new IllegalArgumentException("Publication id should be great than 0!");
+            throw new IllegalArgumentException("Publication id should be greater than 0!");
         }
         if (items == null) {
-            throw new NullPointerException("Publication items should not set null");
+            throw new NullPointerException("Publication items should not be null");
         }
 
         Publication publication = publicationMap.get(id);
@@ -646,10 +646,10 @@ public class MZTabParserContext {
      */
     public Contact addContactName(Metadata metadata, Integer id, String name) {
         if (id <= 0) {
-            throw new IllegalArgumentException("Contact id should be great than 0!");
+            throw new IllegalArgumentException("Contact id should be greater than 0!");
         }
         if (isEmpty(name)) {
-            throw new IllegalArgumentException("Contact name should not set empty.");
+            throw new IllegalArgumentException("Contact name should not be empty.");
         }
 
         Contact contact = contactMap.get(id);
@@ -675,10 +675,10 @@ public class MZTabParserContext {
      */
     public Contact addContactAffiliation(Metadata metadata, Integer id, String affiliation) {
         if (id <= 0) {
-            throw new IllegalArgumentException("Contact id should be great than 0!");
+            throw new IllegalArgumentException("Contact id should be greater than 0!");
         }
         if (isEmpty(affiliation)) {
-            throw new IllegalArgumentException("Contact affiliation should not set empty.");
+            throw new IllegalArgumentException("Contact affiliation should not be empty.");
         }
 
         Contact contact = contactMap.get(id);
@@ -704,10 +704,10 @@ public class MZTabParserContext {
      */
     public Contact addContactEmail(Metadata metadata, Integer id, String email) {
         if (id <= 0) {
-            throw new IllegalArgumentException("Contact id should be great than 0!");
+            throw new IllegalArgumentException("Contact id should be greater than 0!");
         }
         if (isEmpty(email)) {
-            throw new IllegalArgumentException("Contact email should not set empty.");
+            throw new IllegalArgumentException("Contact email should not be empty.");
         }
 
         Contact contact = contactMap.get(id);
@@ -751,7 +751,7 @@ public class MZTabParserContext {
      */
     public MsRun addMsRunFormat(Metadata metadata, Integer id, Parameter format) {
         if (id <= 0) {
-            throw new IllegalArgumentException("ms_run id should be great than 0!");
+            throw new IllegalArgumentException("ms_run id should be greater than 0!");
         }
         MsRun msRun = msRunMap.get(id);
         if (format == null) {
@@ -781,11 +781,11 @@ public class MZTabParserContext {
      */
     public MsRun addMsRunLocation(Metadata metadata, Integer id, URI location) {
         if (id <= 0) {
-            throw new IllegalArgumentException("ms_run id should be great than 0!");
+            throw new IllegalArgumentException("ms_run id should be greater than 0!");
         }
 //        The ms_run[id]-location needs to be created even if it is null because it is mandatory.
 //        if (location == null) {
-//            return;
+//            throw new IllegalArgumentException("ms_run location must not be null!");
 //        }
 
         MsRun msRun = msRunMap.get(id);
@@ -811,7 +811,7 @@ public class MZTabParserContext {
      */
     public MsRun addMsRunInstrumentRef(Metadata metadata, Integer id, Instrument instrument) {
         if (id <= 0) {
-            throw new IllegalArgumentException("ms_run id should be great than 0!");
+            throw new IllegalArgumentException("ms_run id should be greater than 0!");
         }
         
         if (instrument==null) {
@@ -841,7 +841,7 @@ public class MZTabParserContext {
      */
     public MsRun addMsRunIdFormat(Metadata metadata, Integer id, Parameter idFormat) {
         if (id <= 0) {
-            throw new IllegalArgumentException("ms_run id should be great than 0!");
+            throw new IllegalArgumentException("ms_run id should be greater than 0!");
         }
         MsRun msRun = msRunMap.get(id);
         if (idFormat == null) {
@@ -871,7 +871,7 @@ public class MZTabParserContext {
      */
     public MsRun addMsRunFragmentationMethod(Metadata metadata, Integer id, Parameter fragmentationMethod) {
         if (id <= 0) {
-            throw new IllegalArgumentException("ms_run id should be great than 0!");
+            throw new IllegalArgumentException("ms_run id should be greater than 0!");
         }
         MsRun msRun = msRunMap.get(id);
         if (fragmentationMethod == null) {
@@ -900,10 +900,10 @@ public class MZTabParserContext {
      */
     public MsRun addMsRunHash(Metadata metadata, Integer id, String hash) {
         if (id <= 0) {
-            throw new IllegalArgumentException("ms_run id should be great than 0!");
+            throw new IllegalArgumentException("ms_run id should be greater than 0!");
         }
         if (isEmpty(hash)) {
-            throw new IllegalArgumentException("ms_run hash should not set empty.");
+            throw new IllegalArgumentException("ms_run hash should not be empty.");
         }
 
         MsRun msRun = msRunMap.get(id);
@@ -929,7 +929,7 @@ public class MZTabParserContext {
      */
     public MsRun addMsRunHashMethod(Metadata metadata, Integer id, Parameter hashMethod) {
         if (id <= 0) {
-            throw new IllegalArgumentException("ms_run id should be great than 0!");
+            throw new IllegalArgumentException("ms_run id should be greater than 0!");
         }
         MsRun msRun = msRunMap.get(id);
         if (hashMethod == null) {
@@ -944,6 +944,35 @@ public class MZTabParserContext {
             metadata.addMsRunItem(msRun);
         } else {
             msRun.setHashMethod(hashMethod);
+        }
+        return msRun;
+    }
+    
+    /**
+     * <p>addMsRunScanPolarity.</p>
+     *
+     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
+     * @param id a {@link java.lang.Integer} object.
+     * @param scanPolarity a {@link de.isas.mztab2.model.Parameter} object.
+     * @return a {@link de.isas.mztab2.model.MsRun} object.
+     */
+    public MsRun addMsRunScanPolarity(Metadata metadata, Integer id, Parameter scanPolarity) {
+        if (id <= 0) {
+            throw new IllegalArgumentException("ms_run id should be greater than 0!");
+        }
+        MsRun msRun = msRunMap.get(id);
+        if (scanPolarity == null) {
+            return msRun;
+        }
+
+        if (msRun == null) {
+            msRun = new MsRun();
+            msRun.id(id);
+            msRun.addScanPolarityItem(scanPolarity);
+            msRunMap.put(id, msRun);
+            metadata.addMsRunItem(msRun);
+        } else {
+            msRun.addScanPolarityItem(scanPolarity);
         }
         return msRun;
     }
@@ -978,10 +1007,10 @@ public class MZTabParserContext {
      */
     public Assay addAssaySample(Metadata metadata, Integer id, Sample sample) {
         if (id <= 0) {
-            throw new IllegalArgumentException("assay id should be great than 0!");
+            throw new IllegalArgumentException("assay id should be greater than 0!");
         }
         if (sample == null) {
-            throw new NullPointerException("assay sample_ref should not set null.");
+            throw new NullPointerException("assay sample_ref should not be null.");
         }
         if (! sampleMap.containsValue(sample)) {
             throw new IllegalArgumentException("Sample not defined in metadata.");
@@ -1063,7 +1092,7 @@ public class MZTabParserContext {
             throw new IllegalArgumentException("study variable id should be greater than 0!");
         }
         if (assay == null) {
-            throw new NullPointerException("study_variable[n]-assay_ref should not set null.");
+            throw new NullPointerException("study_variable[n]-assay_ref should not be null.");
         }
         if (! assayMap.containsValue(assay)) {
             throw new IllegalArgumentException("assay should be defined in metadata first");
@@ -1198,7 +1227,7 @@ public class MZTabParserContext {
      */
     public CV addCVLabel(Metadata metadata, Integer id, String label) {
         if (id <= 0) {
-            throw new IllegalArgumentException("controlled vocabularies id should be great than 0!");
+            throw new IllegalArgumentException("controlled vocabularies id should be greater than 0!");
         }
 
         CV cv = cvMap.get(id);
@@ -1223,7 +1252,7 @@ public class MZTabParserContext {
      */
     public CV addCVFullName(Metadata metadata, Integer id, String fullName) {
         if (id <= 0) {
-            throw new IllegalArgumentException("controlled vocabularies id should be great than 0!");
+            throw new IllegalArgumentException("controlled vocabularies id should be greater than 0!");
         }
 
         CV cv = cvMap.get(id);
@@ -1248,7 +1277,7 @@ public class MZTabParserContext {
      */
     public CV addCVVersion(Metadata metadata, Integer id, String version) {
         if (id <= 0) {
-            throw new IllegalArgumentException("controlled vocabularies id should be great than 0!");
+            throw new IllegalArgumentException("controlled vocabularies id should be greater than 0!");
         }
 
         CV cv = cvMap.get(id);
@@ -1273,7 +1302,7 @@ public class MZTabParserContext {
      */
     public CV addCVURL(Metadata metadata, Integer id, String url) {
         if (id <= 0) {
-            throw new IllegalArgumentException("controlled vocabularies id should be great than 0!");
+            throw new IllegalArgumentException("controlled vocabularies id should be greater than 0!");
         }
 
         CV cv = cvMap.get(id);
@@ -1405,7 +1434,7 @@ public class MZTabParserContext {
      */
     public Database addDatabasePrefix(Metadata metadata, Integer id, String valueLabel) {
         if (id <= 0) {
-            throw new IllegalArgumentException("database id should be great than 0!");
+            throw new IllegalArgumentException("database id should be greater than 0!");
         }
 
         Database database = databaseMap.get(id);
@@ -1431,7 +1460,7 @@ public class MZTabParserContext {
      */
     public Database addDatabaseVersion(Metadata metadata, Integer id, String version) {
         if (id <= 0) {
-            throw new IllegalArgumentException("database id should be great than 0!");
+            throw new IllegalArgumentException("database id should be greater than 0!");
         }
 
         Database database = databaseMap.get(id);
@@ -1457,18 +1486,18 @@ public class MZTabParserContext {
      */
     public Database addDatabaseUrl(Metadata metadata, Integer id, URL checkURL) {
         if (id <= 0) {
-            throw new IllegalArgumentException("database id should be great than 0!");
+            throw new IllegalArgumentException("database id should be greater than 0!");
         }
 
         Database database = databaseMap.get(id);
         if (database == null) {
             database = new Database();
             database.id(id);
-            database.setUrl(checkURL.toString());
+            database.setUrl(checkURL==null?null:checkURL.toString());
             databaseMap.put(id, database);
             metadata.addDatabaseItem(database);
         } else {
-            database.setUrl(checkURL.toString());
+            database.setUrl(checkURL==null?null:checkURL.toString());
         }
         return database;
     }

@@ -99,12 +99,14 @@ public final class LogicalErrorType extends MZTabErrorType {
     /** Constant <code>HeaderNotValid</code> */
     public static MZTabErrorType HeaderNotValid = createError(Category.Logical, "HeaderNotValid");
     
+    /** Constant <code>NoMetadataSection</code> */
+    public static MZTabErrorType NoMetadataSection = createError(Category.Logical, "NoMetadataSection");
     /** Constant <code>NoSmallMoleculeEvidenceSection</code> */
     public static MZTabErrorType NoSmallMoleculeEvidenceSection = createInfo(Category.Logical, "NoSmallMoleculeEvidenceSection");
     /** Constant <code>NoSmallMoleculeFeatureSection</code> */
     public static MZTabErrorType NoSmallMoleculeFeatureSection = createInfo(Category.Logical, "NoSmallMoleculeFeatureSection");
     /** Constant <code>NoSmallMoleculeSummarySection</code> */
-    public static MZTabErrorType NoSmallMoleculeSummarySection = createWarn(Category.Logical, "NoSmallMoleculeSummarySection");
+    public static MZTabErrorType NoSmallMoleculeSummarySection = createError(Category.Logical, "NoSmallMoleculeSummarySection");
     
     /** Constant <code>NoSmallMoleculeQuantificationUnit</code> */
     public static MZTabErrorType NoSmallMoleculeQuantificationUnit = createError(Category.Logical, "NoSmallMoleculeQuantificationUnit");
@@ -117,5 +119,8 @@ public final class LogicalErrorType extends MZTabErrorType {
     public static MZTabErrorType ExternalStudyIdFormatNotDefined = createError(Category.Logical, "ExternalStudyIdFormatNotDefined");
     /** Constant <code>ExternalStudyFormatNotDefined</code> */
     public static MZTabErrorType ExternalStudyFormatNotDefined = createError(Category.Logical, "ExternalStudyFormatNotDefined");
+    
+    /** Constant <code>NoDatabaseMustHaveNullPrefix</code> */
+    public static MZTabErrorType NoDatabaseMustHaveNullPrefix = createError(Category.Logical, "NoDatabaseMustHaveNullPrefix");
 
 }

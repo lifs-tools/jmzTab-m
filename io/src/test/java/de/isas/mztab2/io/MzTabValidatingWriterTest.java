@@ -41,7 +41,7 @@ public class MzTabValidatingWriterTest {
     public void testWrite_OutputStreamWriter_MzTab() throws Exception {
         MzTabValidatingWriter writer = new MzTabValidatingWriter();
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        Optional<List<ValidationMessage>> messages = writer.write(new OutputStreamWriter(baos), MzTabTestData.create1_1TestFile());
+        Optional<List<ValidationMessage>> messages = writer.write(new OutputStreamWriter(baos), MzTabTestData.create2_0TestFile());
         Assert.assertEquals(1, messages.get().size());
         String baosString = baos.toString("UTF-8");
     }
@@ -53,7 +53,7 @@ public class MzTabValidatingWriterTest {
     public void testWrite_Path_MzTab() throws Exception {
         MzTabValidatingWriter writer = new MzTabValidatingWriter();
         File f = File.createTempFile(UUID.randomUUID().toString(), ".mztab");
-        Optional<List<ValidationMessage>> messages = writer.write(f.toPath(), MzTabTestData.create1_1TestFile());
+        Optional<List<ValidationMessage>> messages = writer.write(f.toPath(), MzTabTestData.create2_0TestFile());
         Assert.assertEquals(1, messages.get().size());
     }
 

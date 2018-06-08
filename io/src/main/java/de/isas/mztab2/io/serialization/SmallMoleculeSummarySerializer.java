@@ -17,6 +17,7 @@ package de.isas.mztab2.io.serialization;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import static de.isas.mztab2.io.serialization.Serializers.writeAsNumberArray;
 import static de.isas.mztab2.io.serialization.Serializers.writeAsStringArray;
@@ -31,6 +32,8 @@ import uk.ac.ebi.pride.jmztab2.model.AbundanceColumn;
 import uk.ac.ebi.pride.jmztab2.model.SmallMoleculeColumn;
 import static de.isas.mztab2.io.serialization.Serializers.writeIndexedDoubles;
 import static de.isas.mztab2.io.serialization.Serializers.writeObject;
+import java.util.Collections;
+import java.util.Optional;
 
 /**
  * <p>
@@ -59,6 +62,14 @@ public class SmallMoleculeSummarySerializer extends StdSerializer<SmallMoleculeS
         super(t);
     }
 
+    @Override
+    public void serializeWithType(SmallMoleculeSummary value, JsonGenerator gen,
+        SerializerProvider serializers, TypeSerializer typeSer) throws IOException {
+        typeSer.writeTypePrefixForObject(value, gen);
+        serialize(value, gen, serializers);
+        typeSer.writeTypeSuffixForObject(value, gen);
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -68,8 +79,9 @@ public class SmallMoleculeSummarySerializer extends StdSerializer<SmallMoleculeS
         SerializerProvider sp) throws IOException {
         if (smallMoleculeSummary != null) {
             jg.writeStartObject();
-            writeString(SmallMoleculeSummary.HeaderPrefixEnum.SMH.getValue(), jg, SmallMoleculeSummary.PrefixEnum.SML.
-                getValue());
+            writeString(SmallMoleculeSummary.HeaderPrefixEnum.SMH.getValue(), jg,
+                SmallMoleculeSummary.PrefixEnum.SML.
+                    getValue());
             writeString(SmallMoleculeColumn.Stable.SML_ID, jg,
                 smallMoleculeSummary.getSmlId());
             writeAsStringArray(SmallMoleculeColumn.Stable.SMF_ID_REFS, jg,
@@ -102,21 +114,22 @@ public class SmallMoleculeSummarySerializer extends StdSerializer<SmallMoleculeS
                 smallMoleculeSummary.
                     getBestIdConfidenceValue());
             writeIndexedDoubles(AbundanceColumn.Field.ABUNDANCE_ASSAY.toString(),
-                jg, smallMoleculeSummary.
-                    getAbundanceAssay());
+                jg, Optional.ofNullable(smallMoleculeSummary.
+                    getAbundanceAssay()).orElse(Collections.emptyList()));
             writeIndexedDoubles(AbundanceColumn.Field.ABUNDANCE_STUDY_VARIABLE.
-                toString(), jg, smallMoleculeSummary.
-                    getAbundanceStudyVariable());
+                toString(), jg, Optional.ofNullable(smallMoleculeSummary.
+                    getAbundanceStudyVariable()).orElse(Collections.emptyList()));
             writeIndexedDoubles(
                 AbundanceColumn.Field.ABUNDANCE_VARIATION_STUDY_VARIABLE.
                     toString(), jg,
-                smallMoleculeSummary.getAbundanceVariationStudyVariable());
+                Optional.ofNullable(smallMoleculeSummary.getAbundanceVariationStudyVariable()).orElse(Collections.emptyList()));
 
             writeOptColumnMappings(smallMoleculeSummary.getOpt(), jg, sp);
             jg.writeEndObject();
         } else {
             Logger.getLogger(SmallMoleculeSummarySerializer.class.getName()).
-                log(Level.FINE, "{0} null!", smallMoleculeSummary.getClass().getSimpleName());
+                log(Level.FINE, "{0} null!", smallMoleculeSummary.getClass().
+                    getSimpleName());
         }
     }
 

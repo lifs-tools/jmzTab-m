@@ -39,7 +39,7 @@ public interface MzTabWriter<T> {
      * @param writer a {@link java.io.OutputStreamWriter} object.
      * @param mzTab a {@link de.isas.mztab2.model.MzTab} object.
      * @return the optional payload.
-     * @throws java.io.IOException if any.
+     * @throws java.io.IOException if any errors occur during writing.
      */
     Optional<T> write(OutputStreamWriter writer, MzTab mzTab) throws IOException;
 
@@ -51,7 +51,7 @@ public interface MzTabWriter<T> {
      * @param path a {@link java.nio.file.Path} object.
      * @param mzTab a {@link de.isas.mztab2.model.MzTab} object.
      * @return the optional payload.
-     * @throws java.io.IOException if any.
+     * @throws java.io.IOException if any errors occur during writing.
      */
     Optional<T> write(Path path, MzTab mzTab) throws IOException;
 

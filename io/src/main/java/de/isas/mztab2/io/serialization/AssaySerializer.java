@@ -17,6 +17,7 @@ package de.isas.mztab2.io.serialization;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import static de.isas.mztab2.io.serialization.Serializers.addLineWithProperty;
 import static de.isas.mztab2.io.serialization.Serializers.addSubElementStrings;
@@ -54,6 +55,14 @@ public class AssaySerializer extends StdSerializer<Assay> {
      */
     public AssaySerializer(Class<Assay> t) {
         super(t);
+    }
+    
+    @Override
+    public void serializeWithType(Assay value, JsonGenerator gen,
+        SerializerProvider serializers, TypeSerializer typeSer) throws IOException {
+        typeSer.writeTypePrefixForObject(value, gen);
+        serialize(value, gen, serializers);
+        typeSer.writeTypeSuffixForObject(value, gen);
     }
 
     /** {@inheritDoc} */

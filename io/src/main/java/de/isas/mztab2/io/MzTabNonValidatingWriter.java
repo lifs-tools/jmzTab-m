@@ -32,6 +32,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import uk.ac.ebi.pride.jmztab2.model.MZTabConstants;
+import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabException;
 
 /**
  * <p>
@@ -40,10 +41,12 @@ import uk.ac.ebi.pride.jmztab2.model.MZTabConstants;
  * conforms to the mzTab constraints. Otherwise, use the
  * MzTabValidatingWriter.</p>
  *
- * <p>To create a non-validating instance, call:</p>
+ * <p>
+ * To create a non-validating instance, call:</p>
  * {@code MzTabWriter plainWriter = new MzTabNonValidatingWriter();}
- * <p>To create a <b>validating</b> writer using the default checks also applied by the parser,
- * call:</p>
+ * <p>
+ * To create a <b>validating</b> writer using the default checks also applied by
+ * the parser, call:</p>
  * {@code MzTabWriter validatingWriter = new MzTabValidatingWriter.Default();}
  *
  * @author nilshoffmann
@@ -119,6 +122,7 @@ public class MzTabNonValidatingWriter implements MzTabWriter<Void> {
     void writeMetadataWithJackson(MzTab mztabfile, Writer writer) throws IOException {
         CsvMapper mapper = writerDefaults.metadataMapper();
         CsvSchema schema = writerDefaults.metaDataSchema(mapper);
+        
         if (mztabfile.getMetadata().
             getMzTabVersion() == null) {
             //set default version if not set
@@ -136,40 +140,38 @@ public class MzTabNonValidatingWriter implements MzTabWriter<Void> {
 
     void writeSmallMoleculeSummaryWithJackson(MzTab mztabfile, Writer writer) throws IOException {
         CsvMapper mapper = writerDefaults.smallMoleculeSummaryMapper();
-        CsvSchema schema = writerDefaults.smallMoleculeSummarySchema(mapper,
-            mztabfile);
         try {
+            CsvSchema schema = writerDefaults.smallMoleculeSummarySchema(mapper,
+                mztabfile);
             mapper.writer(schema).
                 writeValue(writer, mztabfile.getSmallMoleculeSummary());
-        } catch (JsonProcessingException ex) {
-            Logger.getLogger(MzTabNonValidatingWriter.class.getName()).
-                log(Level.SEVERE, null, ex);
+        } catch (JsonProcessingException | MZTabException ex) {
+            throw new IOException(ex);
         }
     }
 
     void writeSmallMoleculeFeaturesWithJackson(MzTab mztabfile, Writer writer) throws IOException {
         CsvMapper mapper = writerDefaults.smallMoleculeFeatureMapper();
-        CsvSchema schema = writerDefaults.smallMoleculeFeatureSchema(mapper,
-            mztabfile);
         try {
+            CsvSchema schema = writerDefaults.smallMoleculeFeatureSchema(mapper,
+                mztabfile);
             mapper.writer(schema).
                 writeValue(writer, mztabfile.getSmallMoleculeFeature());
-        } catch (JsonProcessingException ex) {
-            Logger.getLogger(MzTabNonValidatingWriter.class.getName()).
-                log(Level.SEVERE, null, ex);
+        } catch (JsonProcessingException | MZTabException ex) {
+            throw new IOException(ex);
         }
     }
 
     void writeSmallMoleculeEvidenceWithJackson(MzTab mztabfile, Writer writer) throws IOException {
         CsvMapper mapper = writerDefaults.smallMoleculeEvidenceMapper();
-        CsvSchema schema = writerDefaults.smallMoleculeEvidenceSchema(mapper,
-            mztabfile);
         try {
+            CsvSchema schema = writerDefaults.
+                smallMoleculeEvidenceSchema(mapper,
+                    mztabfile);
             mapper.writer(schema).
                 writeValue(writer, mztabfile.getSmallMoleculeEvidence());
-        } catch (JsonProcessingException ex) {
-            Logger.getLogger(MzTabNonValidatingWriter.class.getName()).
-                log(Level.SEVERE, null, ex);
+        } catch (JsonProcessingException | MZTabException ex) {
+            throw new IOException(ex);
         }
     }
 

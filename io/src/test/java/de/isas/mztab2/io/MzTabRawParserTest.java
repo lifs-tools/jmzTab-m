@@ -46,33 +46,38 @@ public class MzTabRawParserTest {
     @Test
     public void testLipidomicsExample() throws MZTabException {
         testExample("metabolomics/lipidomics-example.mzTab",
-            MZTabErrorType.Level.Error, 0);
+            MZTabErrorType.Level.Warn, 0);
     }
 
     @Test
     public void testMtbls263Example() throws MZTabException {
-        testExample("metabolomics/MTBLS263.mztab", MZTabErrorType.Level.Error, 0);
+        testExample("metabolomics/MTBLS263.mztab", MZTabErrorType.Level.Warn, 0);
+    }
+    
+    @Test
+    public void testLda2Example() throws MZTabException {
+        testExample("metabolomics/lda2-lipidomics.mztab", MZTabErrorType.Level.Warn, 0);
     }
 
     @Test
     public void testMetadataOnlyExampleError() throws MZTabException {
         //setting the level to Error includes Error only, missing section is a warning,
         //so we do not expect an exception to be raised here.
-        testExample("metabolomics/minimal-m-1.1.mztab",
+        testExample("metabolomics/minimal-m-2.0.mztab",
             MZTabErrorType.Level.Error, 0);
     }
 
     @Test
     public void testMetadataOnlyExampleWarn() throws MZTabException {
         //setting the level to Warn includes Warn and Error
-        testExample("metabolomics/minimal-m-1.1.mztab",
+        testExample("metabolomics/minimal-m-2.0.mztab",
             MZTabErrorType.Level.Warn, 1);
     }
 
     @Test
     public void testMetadataOnlyExampleInfo() throws MZTabException {
         //setting the level to Info includes Warn and Error
-        testExample("metabolomics/minimal-m-1.1.mztab",
+        testExample("metabolomics/minimal-m-2.0.mztab",
             MZTabErrorType.Level.Info, 1);
     }
 
@@ -80,6 +85,8 @@ public class MzTabRawParserTest {
         Integer expectedErrors) throws MZTabException {
         try {
             MzTab mzTab = parseResource(resource, level, expectedErrors);
+            Assert.assertNotNull(mzTab);
+            Assert.assertNotNull(mzTab.getMetadata());
             MzTabNonValidatingWriter writer = new MzTabNonValidatingWriter();
             System.out.println("JACKSON serialized: " + resource);
             try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
@@ -123,6 +130,10 @@ public class MzTabRawParserTest {
         parser.parse(System.err, level, 500);
         if (parser.getErrorList().
             size() != expectedErrors) {
+            Assert.fail(parser.getErrorList().
+                toString());
+        }
+        if (parser.getMZTabFile()==null) {
             Assert.fail(parser.getErrorList().
                 toString());
         }

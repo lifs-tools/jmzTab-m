@@ -17,12 +17,13 @@ package de.isas.mztab2.io.serialization;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import static de.isas.mztab2.io.serialization.Serializers.addLineWithProperty;
 import static de.isas.mztab2.io.serialization.Serializers.addSubElementParameters;
 import static de.isas.mztab2.io.serialization.Serializers.addSubElementStrings;
 import de.isas.mztab2.model.Assay;
-import de.isas.mztab2.model.Sample;
+import de.isas.mztab2.model.Metadata;
 import de.isas.mztab2.model.StudyVariable;
 import java.io.IOException;
 import java.util.Collections;
@@ -60,6 +61,14 @@ public class StudyVariableSerializer extends StdSerializer<StudyVariable> {
         super(t);
     }
 
+    @Override
+    public void serializeWithType(StudyVariable value, JsonGenerator gen,
+        SerializerProvider serializers, TypeSerializer typeSer) throws IOException {
+        typeSer.writeTypePrefixForObject(value, gen);
+        serialize(value, gen, serializers);
+        typeSer.writeTypeSuffixForObject(value, gen);
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -70,34 +79,40 @@ public class StudyVariableSerializer extends StdSerializer<StudyVariable> {
             addLineWithProperty(jg, Section.Metadata.getPrefix(), null,
                 studyVariable,
                 studyVariable.getName());
-            addLineWithProperty(jg, Section.Metadata.getPrefix(), "description",
+            addLineWithProperty(jg, Section.Metadata.getPrefix(),
+                StudyVariable.Properties.description.getPropertyName(),
                 studyVariable, studyVariable.getDescription());
             addSubElementParameters(jg, Section.Metadata.getPrefix(),
                 studyVariable,
-                "factors", studyVariable.getFactors(), true);
+                StudyVariable.Properties.factors.getPropertyName(),
+                studyVariable.getFactors(), true);
             addLineWithProperty(jg, Section.Metadata.getPrefix(),
-                "average_function", studyVariable, studyVariable.
+                StudyVariable.Properties.averageFunction.getPropertyName(),
+                studyVariable, studyVariable.
                     getAverageFunction());
             addLineWithProperty(jg, Section.Metadata.getPrefix(),
-                "variation_function", studyVariable, studyVariable.
+                StudyVariable.Properties.variationFunction.getPropertyName(),
+                studyVariable, studyVariable.
                     getVariationFunction());
             addSubElementStrings(jg, Section.Metadata.getPrefix(), studyVariable,
-                "assay_refs", Optional.ofNullable(studyVariable.getAssayRefs()).
-                    orElse(Collections.emptyList()).
-                    stream().
-                    sorted(Comparator.comparing(Assay::getId,
-                        Comparator.nullsFirst(Comparator.
-                            naturalOrder())
-                    )).
-                    map((assayRef) ->
-                    {
-                        return new StringBuilder().append("assay").
-                            append("[").
-                            append(assayRef.getId()).
-                            append("]").
-                            toString();
-                    }).
-                    collect(Collectors.toList()), true);
+                StudyVariable.Properties.assayRefs.getPropertyName(), Optional.
+                ofNullable(studyVariable.getAssayRefs()).
+                orElse(Collections.emptyList()).
+                stream().
+                sorted(Comparator.comparing(Assay::getId,
+                    Comparator.nullsFirst(Comparator.
+                        naturalOrder())
+                )).
+                map((assayRef) ->
+                {
+                    return new StringBuilder().append(Metadata.Properties.assay.
+                        getPropertyName()).
+                        append("[").
+                        append(assayRef.getId()).
+                        append("]").
+                        toString();
+                }).
+                collect(Collectors.toList()), true);
         } else {
             Logger.getLogger(StudyVariableSerializer.class.getName()).
                 log(Level.FINE, "StudyVariable is null!");

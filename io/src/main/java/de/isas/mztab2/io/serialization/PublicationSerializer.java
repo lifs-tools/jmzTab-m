@@ -17,8 +17,10 @@ package de.isas.mztab2.io.serialization;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import static de.isas.mztab2.io.serialization.Serializers.addLine;
+import de.isas.mztab2.model.Metadata;
 import de.isas.mztab2.model.Publication;
 import java.io.IOException;
 import java.util.Collections;
@@ -54,6 +56,14 @@ public class PublicationSerializer extends StdSerializer<Publication> {
     public PublicationSerializer(Class<Publication> t) {
         super(t);
     }
+    
+    @Override
+    public void serializeWithType(Publication value, JsonGenerator gen,
+        SerializerProvider serializers, TypeSerializer typeSer) throws IOException {
+        typeSer.writeTypePrefixForObject(value, gen);
+        serialize(value, gen, serializers);
+        typeSer.writeTypeSuffixForObject(value, gen);
+    }
 
     /**
      * {@inheritDoc}
@@ -63,7 +73,7 @@ public class PublicationSerializer extends StdSerializer<Publication> {
         SerializerProvider sp) throws IOException {
         if (publication != null) {
             addLine(jg, Section.Metadata.getPrefix(),
-                "publication[" + publication.getId() + "]", Optional.ofNullable(
+                Metadata.Properties.publication+"[" + publication.getId() + "]", Optional.ofNullable(
                 publication.
                     getPublicationItems()).
                 orElse(Collections.emptyList()).

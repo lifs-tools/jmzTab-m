@@ -17,7 +17,6 @@ package de.isas.mztab2.io.serialization;
 
 import de.isas.mztab2.io.AbstractSerializerTest;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import static de.isas.mztab2.io.MzTabTestData.create1_1TestFile;
 import static de.isas.mztab2.model.Metadata.PrefixEnum.MTD;
 import de.isas.mztab2.model.MzTab;
 import de.isas.mztab2.model.OptColumnMapping;
@@ -30,9 +29,12 @@ import org.junit.Test;
 import static uk.ac.ebi.pride.jmztab2.model.MZTabConstants.NEW_LINE;
 import static uk.ac.ebi.pride.jmztab2.model.MZTabConstants.TAB_STRING;
 import uk.ac.ebi.pride.jmztab2.model.MetadataElement;
+import static de.isas.mztab2.io.MzTabTestData.create2_0TestFile;
+import org.junit.Assert;
+import org.junit.Ignore;
+import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabException;
 
 /**
- * TODO
  * @author nilshoffmann
  */
 public class SmallMoleculeSummarySerializerTest extends AbstractSerializerTest {
@@ -40,16 +42,10 @@ public class SmallMoleculeSummarySerializerTest extends AbstractSerializerTest {
     public SmallMoleculeSummarySerializerTest() {
     }
 
-    /**
-     * Test of serialize method, of class SmallMoleculeSummarySerializer.
-     */
+    @Ignore
     @Test
-    public void testSerialize() throws Exception {
-    }
-    
-     @Test
-    public void testWriteSmallMoleculeSummaryToTsvWithJackson() throws IOException {
-        MzTab mzTabFile = create1_1TestFile();
+    public void testSerialize() throws IOException, MZTabException {
+        MzTab mzTabFile = create2_0TestFile();
         SmallMoleculeSummary smsi = new SmallMoleculeSummary();
         smsi.smlId("" + 1).
             smfIdRefs(Arrays.asList("" + 1, "" + 2, "" + 3, "" + 4, "" + 5)).
@@ -95,17 +91,19 @@ public class SmallMoleculeSummarySerializerTest extends AbstractSerializerTest {
             addAbundanceVariationStudyVariableItem(0.00001d);
         mzTabFile.addSmallMoleculeSummaryItem(smsi);
         ObjectWriter writer = smallMoleculeSummaryWriter(mzTabFile);
-        serialize(writer, mzTabFile);
-//
-//        assertEqSentry(
-//            SMH + TAB_STRING + MetadataElement.DATABASE + "[1]" + TAB_STRING + "[, , no database, null]" + NEW_LINE
-//            + MTD + TAB_STRING + MetadataElement.DATABASE + "[1]-prefix" + TAB_STRING + "null" + NEW_LINE
-//            + MTD + TAB_STRING + MetadataElement.DATABASE + "[1]-version" + TAB_STRING + "Unknown" + NEW_LINE
-//            + MTD + TAB_STRING + MetadataElement.DATABASE + "[2]" + TAB_STRING + "[MIRIAM, MIR:00100079, HMDB, ]" + NEW_LINE
-//            + MTD + TAB_STRING + MetadataElement.DATABASE + "[2]-prefix" + TAB_STRING + "hmdb" + NEW_LINE
-//            + MTD + TAB_STRING + MetadataElement.DATABASE + "[2]-url" + TAB_STRING + "http://www.hmdb.ca/" + NEW_LINE
-//            + MTD + TAB_STRING + MetadataElement.DATABASE + "[2]-version" + TAB_STRING + "3.6" + NEW_LINE,
-//            serialize(writer, smsi));
+
+        String serialized = serialize(writer, mzTabFile);
+        serialized = serialized.substring(serialized.indexOf("SMH"));
+        Assert.assertTrue(serialized.startsWith("SMH"));
+        assertEqSentry(
+            SMH + TAB_STRING + MetadataElement.DATABASE + "[1]" + TAB_STRING + "[, , no database, null]" + NEW_LINE
+            + SMH + TAB_STRING + MetadataElement.DATABASE + "[1]-prefix" + TAB_STRING + "null" + NEW_LINE
+            + MTD + TAB_STRING + MetadataElement.DATABASE + "[1]-version" + TAB_STRING + "Unknown" + NEW_LINE
+            + MTD + TAB_STRING + MetadataElement.DATABASE + "[2]" + TAB_STRING + "[MIRIAM, MIR:00100079, HMDB, ]" + NEW_LINE
+            + MTD + TAB_STRING + MetadataElement.DATABASE + "[2]-prefix" + TAB_STRING + "hmdb" + NEW_LINE
+            + MTD + TAB_STRING + MetadataElement.DATABASE + "[2]-url" + TAB_STRING + "http://www.hmdb.ca/" + NEW_LINE
+            + MTD + TAB_STRING + MetadataElement.DATABASE + "[2]-version" + TAB_STRING + "3.6" + NEW_LINE,
+            serialized);
     }
     
 }

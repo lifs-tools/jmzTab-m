@@ -19,7 +19,6 @@ import de.isas.mztab2.io.MzTabNonValidatingWriter;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectMapper.DefaultTyping;
-import static de.isas.mztab2.io.MzTabTestData.create1_1TestFile;
 import de.isas.mztab2.io.serialization.ParameterConverter;
 import de.isas.mztab2.model.Assay;
 import de.isas.mztab2.model.CV;
@@ -58,6 +57,7 @@ import uk.ac.ebi.pride.jmztab2.utils.MZTabFileParser;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorList;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorType;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabException;
+import static de.isas.mztab2.io.MzTabTestData.create2_0TestFile;
 
 /**
  * Test class for MzTabWriter.
@@ -75,7 +75,7 @@ public class MzTabWriterTest {
         try (BufferedWriter bw = Files.newBufferedWriter(File.createTempFile(
             "testWriteDefaultToString", ".txt").
             toPath(), Charset.forName("UTF-8"), StandardOpenOption.WRITE)) {
-            bw.write(create1_1TestFile().
+            bw.write(create2_0TestFile().
                 toString());
         } catch (IOException ex) {
             Logger.getLogger(MzTabWriterTest.class.getName()).
@@ -89,7 +89,7 @@ public class MzTabWriterTest {
             "testWriteJson", ".json").
             toPath(), Charset.forName("UTF-8"), StandardOpenOption.WRITE)) {
             ObjectMapper mapper = new ObjectMapper();
-            bw.write(mapper.writeValueAsString(create1_1TestFile()));
+            bw.write(mapper.writeValueAsString(create2_0TestFile()));
         } catch (IOException ex) {
             Logger.getLogger(MzTabWriterTest.class.getName()).
                 log(Level.SEVERE, null, ex);
@@ -125,7 +125,7 @@ public class MzTabWriterTest {
 
     @Test
     public void testWriteMetadataToTsvWithJackson() throws IOException {
-        MzTab mzTabFile = create1_1TestFile();
+        MzTab mzTabFile = create2_0TestFile();
         try (StringWriter sw = new StringWriter()) {
             new MzTabNonValidatingWriter().writeMetadataWithJackson(mzTabFile, sw);
             System.out.println("Serialized Metadata: ");
@@ -138,7 +138,7 @@ public class MzTabWriterTest {
 
     @Test
     public void testWriteSmallMoleculeSummaryWithNullToTsvWithJackson() throws IOException {
-        MzTab mzTabFile = create1_1TestFile();
+        MzTab mzTabFile = create2_0TestFile();
         SmallMoleculeSummary smsi = new SmallMoleculeSummary();
         smsi.smlId("" + 1).
             smfIdRefs(Arrays.asList("" + 1, "" + 2, "" + 3, "" + 4, "" + 5)).
@@ -200,7 +200,7 @@ public class MzTabWriterTest {
 
     @Test
     public void testWriteSmallMoleculeFeaturesToTsvWithJackson() throws IOException {
-        MzTab mzTabFile = create1_1TestFile();
+        MzTab mzTabFile = create2_0TestFile();
         try (StringWriter sw = new StringWriter()) {
             new MzTabNonValidatingWriter().
                 writeSmallMoleculeFeaturesWithJackson(mzTabFile, sw);
@@ -217,7 +217,7 @@ public class MzTabWriterTest {
 
     @Test
     public void testWriteSmallMoleculeEvidenceToTsvWithJackson() throws IOException {
-        MzTab mzTabFile = create1_1TestFile();
+        MzTab mzTabFile = create2_0TestFile();
         try (StringWriter sw = new StringWriter()) {
             new MzTabNonValidatingWriter().
                 writeSmallMoleculeEvidenceWithJackson(mzTabFile, sw);
@@ -234,7 +234,7 @@ public class MzTabWriterTest {
 
     @Test
     public void testWriteMzTabToTsvWithJackson() throws IOException {
-        MzTab mzTabFile = create1_1TestFile();
+        MzTab mzTabFile = create2_0TestFile();
         MzTabNonValidatingWriter writer = new MzTabNonValidatingWriter();
         try (OutputStreamWriter osw = new OutputStreamWriter(System.out,
             Charset.forName(
@@ -245,7 +245,7 @@ public class MzTabWriterTest {
 
     @Test
     public void testWriteMzTabToTsvWithJacksonForPath() throws IOException {
-        MzTab mzTabFile = create1_1TestFile();
+        MzTab mzTabFile = create2_0TestFile();
         MzTabNonValidatingWriter writer = new MzTabNonValidatingWriter();
         File tempFile = File.createTempFile("mzTabWriterTest", ".mztab");
         writer.write(tempFile.toPath(), mzTabFile);
@@ -261,7 +261,7 @@ public class MzTabWriterTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testWriteMzTabToTsvWithJacksonInvalidEncoding() throws IOException {
-        MzTab mzTabFile = create1_1TestFile();
+        MzTab mzTabFile = create2_0TestFile();
         MzTabNonValidatingWriter writer = new MzTabNonValidatingWriter();
         writer.write(new OutputStreamWriter(System.out, Charset.forName(
             "ISO-8859-15")), mzTabFile);
@@ -495,9 +495,9 @@ public class MzTabWriterTest {
             version("4.0.9").
             fullName("PSI-MS controlled vocabulary"));
         mtd.addDatabaseItem(new Database().id(1).
-            prefix("nd").
-            url("none").
-            version("none").
+            prefix(null).
+            url(null).
+            version("Undefined").
             param(new Parameter().name("no database").
                 value(null)));
         mztab.metadata(mtd);

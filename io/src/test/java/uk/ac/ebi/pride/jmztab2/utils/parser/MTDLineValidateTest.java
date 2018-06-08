@@ -286,8 +286,8 @@ public class MTDLineValidateTest {
         parser.parse(1, "MTD\tms_run[1]-location\tnull\n", errorList);
         assertTrue(!errorList.isEmpty());
         assertEquals(errorList.size(), 1);
-        assertEquals(errorList.getError(0).
-            getType(), LogicalErrorType.NotNULL);
+        assertEquals(LogicalErrorType.NotNULL, errorList.getError(0).
+            getType());
 
     }
 }

@@ -23,6 +23,7 @@ import de.isas.mztab2.model.MzTab;
 import java.io.IOException;
 import java.io.StringWriter;
 import org.junit.Assert;
+import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabException;
 
 /**
  *
@@ -32,19 +33,19 @@ public abstract class AbstractSerializerTest {
 
     private final MzTabWriterDefaults writerDefaults = new MzTabWriterDefaults();
     
-    public ObjectWriter smallMoleculeSummaryWriter(MzTab mzTabFile) {
+    public ObjectWriter smallMoleculeSummaryWriter(MzTab mzTabFile) throws MZTabException {
         CsvMapper smallMoleculeSummaryMapper = writerDefaults.smallMoleculeSummaryMapper();
         CsvSchema smallMoleculeSummarySchema = writerDefaults.smallMoleculeSummarySchema(smallMoleculeSummaryMapper, mzTabFile);
         return writer(smallMoleculeSummaryMapper, smallMoleculeSummarySchema);
     }
     
-    public ObjectWriter smallMoleculeFeatureWriter(MzTab mzTabFile) {
+    public ObjectWriter smallMoleculeFeatureWriter(MzTab mzTabFile) throws MZTabException  {
         CsvMapper smallMoleculeFeatureMapper = writerDefaults.smallMoleculeFeatureMapper();
         CsvSchema smallMoleculeFeatureSchema = writerDefaults.smallMoleculeFeatureSchema(smallMoleculeFeatureMapper, mzTabFile);
         return writer(smallMoleculeFeatureMapper, smallMoleculeFeatureSchema);
     }
     
-    public ObjectWriter smallMoleculeEvidenceWriter(MzTab mzTabFile) {
+    public ObjectWriter smallMoleculeEvidenceWriter(MzTab mzTabFile) throws MZTabException  {
         CsvMapper smallMoleculeEvidenceMapper = writerDefaults.smallMoleculeEvidenceMapper();
         CsvSchema smallMoleculeEvidenceSchema = writerDefaults.smallMoleculeEvidenceSchema(smallMoleculeEvidenceMapper, mzTabFile);
         return writer(smallMoleculeEvidenceMapper, smallMoleculeEvidenceSchema);

@@ -17,6 +17,7 @@ package de.isas.mztab2.io.serialization;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import static de.isas.mztab2.io.serialization.Serializers.addLineWithProperty;
 import static de.isas.mztab2.io.serialization.Serializers.addSubElementParameters;
@@ -49,6 +50,14 @@ public class SampleSerializer extends StdSerializer<Sample> {
     public SampleSerializer(Class<Sample> t) {
         super(t);
     }
+    
+    @Override
+    public void serializeWithType(Sample value, JsonGenerator gen,
+        SerializerProvider serializers, TypeSerializer typeSer) throws IOException {
+        typeSer.writeTypePrefixForObject(value, gen);
+        serialize(value, gen, serializers);
+        typeSer.writeTypeSuffixForObject(value, gen);
+    }
 
     /** {@inheritDoc} */
     @Override
@@ -58,23 +67,23 @@ public class SampleSerializer extends StdSerializer<Sample> {
             addLineWithProperty(jg, Section.Metadata.getPrefix(), null, sample,
                 sample.
                     getName());
-            addLineWithProperty(jg, Section.Metadata.getPrefix(), "description",
+            addLineWithProperty(jg, Section.Metadata.getPrefix(), Sample.Properties.description.getPropertyName(),
                 sample,
                 sample.getDescription());
             addSubElementParameters(jg, Section.Metadata.getPrefix(), sample,
-                "species",
+                Sample.Properties.species.getPropertyName(),
                 sample.getSpecies(), false);
             addSubElementParameters(jg, Section.Metadata.getPrefix(), sample,
-                "cell_type",
+                Sample.Properties.cellType.getPropertyName(),
                 sample.getCellType(), false);
             addSubElementParameters(jg, Section.Metadata.getPrefix(), sample,
-                "disease",
+                Sample.Properties.disease.getPropertyName(),
                 sample.getDisease(), false);
             addSubElementParameters(jg, Section.Metadata.getPrefix(), sample,
-                "tissue",
+                Sample.Properties.tissue.getPropertyName(),
                 sample.getTissue(), false);
             addSubElementParameters(jg, Section.Metadata.getPrefix(), sample,
-                "custom",
+                Sample.Properties.custom.getPropertyName(),
                 sample.getCustom(), false);
         } else {
             Logger.getLogger(SampleSerializer.class.getName()).

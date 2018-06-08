@@ -17,6 +17,7 @@ package de.isas.mztab2.io.serialization;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import static de.isas.mztab2.io.serialization.Serializers.addSubElementStrings;
 import de.isas.mztab2.model.Software;
@@ -26,22 +27,25 @@ import java.util.logging.Logger;
 import uk.ac.ebi.pride.jmztab2.model.Section;
 
 /**
- * <p>SoftwareSerializer class.</p>
+ * <p>
+ * SoftwareSerializer class.</p>
  *
  * @author nilshoffmann
- * 
+ *
  */
 public class SoftwareSerializer extends StdSerializer<Software> {
 
     /**
-     * <p>Constructor for SoftwareSerializer.</p>
+     * <p>
+     * Constructor for SoftwareSerializer.</p>
      */
     public SoftwareSerializer() {
         this(null);
     }
 
     /**
-     * <p>Constructor for SoftwareSerializer.</p>
+     * <p>
+     * Constructor for SoftwareSerializer.</p>
      *
      * @param t a {@link java.lang.Class} object.
      */
@@ -49,7 +53,17 @@ public class SoftwareSerializer extends StdSerializer<Software> {
         super(t);
     }
 
-    /** {@inheritDoc} */
+    @Override
+    public void serializeWithType(Software value, JsonGenerator gen,
+        SerializerProvider serializers, TypeSerializer typeSer) throws IOException {
+        typeSer.writeTypePrefixForObject(value, gen);
+        serialize(value, gen, serializers);
+        typeSer.writeTypeSuffixForObject(value, gen);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void serialize(Software software, JsonGenerator jg,
         SerializerProvider sp) throws IOException {
@@ -58,7 +72,7 @@ public class SoftwareSerializer extends StdSerializer<Software> {
                 software,
                 software.getParameter());
             addSubElementStrings(jg, Section.Metadata.getPrefix(), software,
-                "setting",
+                Software.Properties.setting.getPropertyName(),
                 software.getSetting(), false);
         } else {
             Logger.getLogger(SoftwareSerializer.class.getName()).

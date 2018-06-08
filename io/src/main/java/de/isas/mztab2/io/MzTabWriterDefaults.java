@@ -65,6 +65,9 @@ import uk.ac.ebi.pride.jmztab2.model.MZTabConstants;
 import uk.ac.ebi.pride.jmztab2.model.SmallMoleculeColumn;
 import uk.ac.ebi.pride.jmztab2.model.SmallMoleculeEvidenceColumn;
 import uk.ac.ebi.pride.jmztab2.model.SmallMoleculeFeatureColumn;
+import uk.ac.ebi.pride.jmztab2.utils.errors.LogicalErrorType;
+import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabError;
+import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabException;
 
 /**
  * Default mapper and schema definitions for writing of mzTab files using the
@@ -155,7 +158,7 @@ public class MzTabWriterDefaults {
     }
 
     public CsvSchema smallMoleculeSummarySchema(CsvMapper mapper,
-        MzTab mzTabFile) {
+        MzTab mzTabFile) throws MZTabException {
         CsvSchema.Builder builder = mapper.schema().
             builder();
         builder.addColumn(SmallMoleculeSummary.HeaderPrefixEnum.SMH.getValue(),
@@ -186,6 +189,13 @@ public class MzTabWriterDefaults {
                 getHeader(), CsvSchema.ColumnType.STRING).
             addColumn(SmallMoleculeColumn.Stable.BEST_ID_CONFIDENCE_VALUE.
                 getHeader(), CsvSchema.ColumnType.NUMBER_OR_STRING);
+        if(mzTabFile.getMetadata()==null) {
+            throw new MZTabException(new MZTabError(LogicalErrorType.NoMetadataSection, -1));
+        }
+        if(mzTabFile.getSmallMoleculeSummary()==null) {
+            throw new MZTabException(new MZTabError(LogicalErrorType.NoSmallMoleculeSummarySection, -1));
+        }
+        
         mzTabFile.getMetadata().
             getAssay().
             forEach((assay) ->
@@ -234,7 +244,7 @@ public class MzTabWriterDefaults {
     }
 
     public CsvSchema smallMoleculeFeatureSchema(CsvMapper mapper,
-        MzTab mzTabFile) {
+        MzTab mzTabFile) throws MZTabException {
         CsvSchema.Builder builder = mapper.schema().
             builder();
         builder.addColumn(SmallMoleculeFeature.HeaderPrefixEnum.SFH.getValue(),
@@ -263,7 +273,9 @@ public class MzTabWriterDefaults {
             addColumn(
                 SmallMoleculeFeatureColumn.Stable.RETENTION_TIME_IN_SECONDS_END.
                     getHeader(), CsvSchema.ColumnType.NUMBER_OR_STRING);
-
+        if(mzTabFile.getMetadata()==null) {
+            throw new MZTabException(new MZTabError(LogicalErrorType.NoMetadataSection, -1));
+        }
         Optional.ofNullable(mzTabFile.getMetadata().
             getAssay()).
             ifPresent((assayList) ->
@@ -298,7 +310,7 @@ public class MzTabWriterDefaults {
     }
 
     public CsvSchema smallMoleculeEvidenceSchema(CsvMapper mapper,
-        MzTab mzTabFile) {
+        MzTab mzTabFile) throws MZTabException {
         CsvSchema.Builder builder = mapper.schema().
             builder();
         builder.addColumn(SmallMoleculeEvidence.HeaderPrefixEnum.SEH.getValue(),
@@ -336,6 +348,9 @@ public class MzTabWriterDefaults {
                 getHeader(), CsvSchema.ColumnType.STRING).
             addColumn(SmallMoleculeEvidenceColumn.Stable.MS_LEVEL.getHeader(),
                 CsvSchema.ColumnType.STRING);
+        if(mzTabFile.getMetadata()==null) {
+            throw new MZTabException(new MZTabError(LogicalErrorType.NoMetadataSection, -1));
+        }
         Optional.ofNullable(mzTabFile.getMetadata().
             getIdConfidenceMeasure()).
             ifPresent((parameterList) ->

@@ -17,6 +17,7 @@ package de.isas.mztab2.io.serialization;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import static de.isas.mztab2.io.serialization.Serializers.addLineWithProperty;
 import de.isas.mztab2.model.Contact;
@@ -26,22 +27,25 @@ import java.util.logging.Logger;
 import uk.ac.ebi.pride.jmztab2.model.Section;
 
 /**
- * <p>ContactSerializer class.</p>
+ * <p>
+ * ContactSerializer class.</p>
  *
  * @author nilshoffmann
- * 
+ *
  */
 public class ContactSerializer extends StdSerializer<Contact> {
 
     /**
-     * <p>Constructor for ContactSerializer.</p>
+     * <p>
+     * Constructor for ContactSerializer.</p>
      */
     public ContactSerializer() {
         this(null);
     }
 
     /**
-     * <p>Constructor for ContactSerializer.</p>
+     * <p>
+     * Constructor for ContactSerializer.</p>
      *
      * @param t a {@link java.lang.Class} object.
      */
@@ -49,7 +53,17 @@ public class ContactSerializer extends StdSerializer<Contact> {
         super(t);
     }
 
-    /** {@inheritDoc} */
+    @Override
+    public void serializeWithType(Contact value, JsonGenerator gen,
+        SerializerProvider serializers, TypeSerializer typeSer) throws IOException {
+        typeSer.writeTypePrefixForObject(value, gen);
+        serialize(value, gen, serializers);
+        typeSer.writeTypeSuffixForObject(value, gen);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void serialize(Contact contact, JsonGenerator jg,
         SerializerProvider sp) throws IOException {
@@ -68,7 +82,7 @@ public class ContactSerializer extends StdSerializer<Contact> {
 
         } else {
             Logger.getLogger(ContactSerializer.class.getName()).
-                log(Level.FINE, Contact.class.getSimpleName()+" is null!");
+                log(Level.FINE, Contact.class.getSimpleName() + " is null!");
         }
     }
 }

@@ -139,7 +139,7 @@ public class SmallMoleculeFeatureColumn implements ISmallMoleculeFeatureColumn {
             this.column.setOrder(order);
         }
 
-        public static Stable forName(String name) throws MZTabException {
+        public static Stable forName(String name) throws IllegalArgumentException {
             return Arrays.stream(Stable.values()).
                     filter((v) ->
                             v.getColumn().

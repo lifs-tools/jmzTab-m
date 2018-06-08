@@ -17,6 +17,7 @@ package de.isas.mztab2.io.serialization;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import de.isas.mztab2.model.SampleProcessing;
 import java.io.IOException;
@@ -46,6 +47,14 @@ public class SampleProcessingSerializer extends StdSerializer<SampleProcessing> 
      */
     public SampleProcessingSerializer(Class<SampleProcessing> t) {
         super(t);
+    }
+    
+    @Override
+    public void serializeWithType(SampleProcessing value, JsonGenerator gen,
+        SerializerProvider serializers, TypeSerializer typeSer) throws IOException {
+        typeSer.writeTypePrefixForObject(value, gen);
+        serialize(value, gen, serializers);
+        typeSer.writeTypeSuffixForObject(value, gen);
     }
 
     /** {@inheritDoc} */
