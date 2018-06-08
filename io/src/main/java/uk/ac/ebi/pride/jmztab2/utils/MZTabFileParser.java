@@ -423,7 +423,7 @@ public class MZTabFileParser {
 
         }
         
-
+        mtdParser.refineNormalMetadata();
         if (errorList.isEmpty()) {
             mzTabFile = new MzTab();
             mzTabFile.metadata(mtdParser.getMetadata());

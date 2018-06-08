@@ -84,8 +84,9 @@ Alternative term roots should either be expressed as OR (for choose any, even fr
         </CvMappingRule>
         
         <!-- sample -->
-        <CvMappingRule id="sample_species_may" cvElementPath="/metadata/sample/@species" requirementLevel="MAY"  scopePath="/metadata/sample" cvTermsCombinationLogic="AND">
+        <CvMappingRule id="sample_species_may" cvElementPath="/metadata/sample/@species" requirementLevel="MAY"  scopePath="/metadata/sample" cvTermsCombinationLogic="OR">
           <CvTerm termAccession="PRIDE:0000033" useTerm="false" termName="NEWT" isRepeatable="false" allowChildren="true" cvIdentifierRef="PRIDE"></CvTerm>
+          <CvTerm termAccession="NCBITaxon:1" useTerm="false" termName="root" isRepeatable="false" allowChildren="true" cvIdentifierRef="NCBITaxon"></CvTerm>
         </CvMappingRule>
         
         <CvMappingRule id="sample_tissue_may" cvElementPath="/metadata/sample/@tissue" requirementLevel="MAY"  scopePath="/metadata/sample" cvTermsCombinationLogic="OR">
@@ -103,7 +104,7 @@ Alternative term roots should either be expressed as OR (for choose any, even fr
         </CvMappingRule>
         
         <!-- database -->
-        <CvMappingRule id="database_must" cvElementPath="/metadata/database/@param" requirementLevel="MUST"  scopePath="/metadata/database" cvTermsCombinationLogic="XOR">
+        <CvMappingRule id="database_must" cvElementPath="/metadata/database/@param" requirementLevel="MUST"  scopePath="/metadata/database" cvTermsCombinationLogic="OR">
           <CvTerm termAccession="MS:1001013" useTerm="false" termName="database name" isRepeatable="false" allowChildren="true" cvIdentifierRef="MS"></CvTerm>
           <CvTerm termAccession="MS:1001347" useTerm="false" termName="database file formats" isRepeatable="false" allowChildren="true" cvIdentifierRef="MS"></CvTerm>
           <CvTerm termAccession="MS:1001011" useTerm="false" termName="search database details" isRepeatable="false" allowChildren="true" cvIdentifierRef="MS"></CvTerm>
@@ -159,7 +160,7 @@ Alternative term roots should either be expressed as OR (for choose any, even fr
         </CvMappingRule>
         
         <!-- identification method -->
-        <CvMappingRule id="identification_method_must" cvElementPath="/smallMoleculeEvidence/@identificationMethod" requirementLevel="MUST"  scopePath="/smallMoleculeEvidence" cvTermsCombinationLogic="XOR">
+        <CvMappingRule id="identification_method_must" cvElementPath="/smallMoleculeEvidence/@identificationMethod" requirementLevel="MUST"  scopePath="/smallMoleculeEvidence" cvTermsCombinationLogic="OR">
           <CvTerm termAccession="MS:1001058" useTerm="true" termName="quality estimation by manual validation" isRepeatable="false" allowChildren="false" cvIdentifierRef="MS"></CvTerm>
           <CvTerm termAccession="MS:1001060" useTerm="false" termName="search type" isRepeatable="false" allowChildren="true" cvIdentifierRef="MS"></CvTerm>
         </CvMappingRule>

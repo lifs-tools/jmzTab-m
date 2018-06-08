@@ -24,10 +24,13 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.time.Instant;
 import java.util.List;
 import java.util.Properties;
+import javax.xml.bind.JAXBException;
 import uk.ac.ebi.pride.jmztab2.utils.MZTabFileParser;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorList;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorType;
@@ -135,7 +138,7 @@ public class MZTabCommandLine {
         String checkSemanticOpt = "checkSemantic";
         String mappingFileOpt = "mappingFile";
         Option mappingFileOption = OptionBuilder.withArgName(mappingFileOpt).
-            hasArgs(2).
+            hasOptionalArgs(2).
             withValueSeparator('=').
             withDescription(
                 "Example: -checkSemantic mappingFile=/path/to/mappingFile.xml. Use the provided mapping file for semantic validation. This parameter may be null.").
@@ -175,57 +178,69 @@ public class MZTabCommandLine {
                 System.out.println("Validator set to level '" + level + "'");
             }
 
-            if (line.hasOption(checkOpt)) {
-                String[] values = line.getOptionValues(checkOpt);
-                if (values.length != 2) {
-                    throw new IllegalArgumentException("Not setting input file!");
-                }
-                File inFile = new File(values[1].trim());
-                System.out.println(
-                    "Beginning validation of mztab file: " + inFile.
-                        getAbsolutePath());
-                try (OutputStream out = outFile == null ? System.out : new BufferedOutputStream(
-                    new FileOutputStream(outFile))) {
-                    MZTabFileParser mzTabParser = new MZTabFileParser(inFile);
-                    MZTabErrorList errorList = mzTabParser.parse(out, level);
-                    if (!errorList.isEmpty()) {
-                        //these are reported to std.err already.
-                        System.out.println(
-                            "There were errors while processing your file, please check the output for details!");
-                    }
-                    if (line.hasOption(checkSemanticOpt)) {
-                        String[] semValues = line.getOptionValues(
-                            checkSemanticOpt);
-                        URI mappingFile;
-                        if (values.length == 2) {
-                            // read file from path
-                            mappingFile = new File(values[1].trim()).getAbsoluteFile().toURI();
-                        } else {
-                            // read default file
-                            mappingFile = CvMappingValidator.class.getResource("/mappings/mzTab-M-mapping.xml").toURI();
-                        }
-                        System.out.println(
-                            "Beginning semantic validation of mztab file: " + inFile.
-                                getAbsolutePath() + " with mapping file: " +mappingFile.toASCIIString());
-                        CvMappingValidator cvMappingValidator = CvMappingValidator.of(mappingFile.toURL(), true);
-                        List<ValidationMessage> validationMessages = cvMappingValidator.
-                            validate(mzTabParser.getMZTabFile());
-                        for(ValidationMessage message:validationMessages) {
-                            System.err.println(message);
-                        }
-                        if (!validationMessages.isEmpty()) {
-                            System.out.println(
-                                "There were errors during semantic validation of your file, please check the output for details!");
-                        }
-                    }
-                } catch (IOException e) {
-                    System.out.println(
-                        "Caught an IO Exception: " + e.getMessage());
-                }
-            }
+            handleValidation(line, checkOpt, outFile, level, checkSemanticOpt);
 
-            System.out.println("Finished validation!");
             System.out.println();
+        }
+    }
+
+    protected static void handleValidation(CommandLine line, String checkOpt,
+        File outFile, MZTabErrorType.Level level, String checkSemanticOpt) throws URISyntaxException, JAXBException, IllegalArgumentException {
+        if (line.hasOption(checkOpt)) {
+            String[] values = line.getOptionValues(checkOpt);
+            if (values.length != 2) {
+                throw new IllegalArgumentException("Not setting input file!");
+            }
+            File inFile = new File(values[1].trim());
+            System.out.println(
+                "Beginning validation of mztab file: " + inFile.
+                    getAbsolutePath());
+            try (OutputStream out = outFile == null ? System.out : new BufferedOutputStream(
+                new FileOutputStream(outFile))) {
+                MZTabFileParser mzTabParser = new MZTabFileParser(inFile);
+                MZTabErrorList errorList = mzTabParser.parse(out, level);
+                if (!errorList.isEmpty()) {
+                    //these are reported to std.err already.
+                    System.out.println(
+                        "There were errors while processing your file, please check the output for details!");
+                }
+                handleSemanticValidation(line, checkSemanticOpt, inFile,
+                    mzTabParser);
+            } catch (IOException e) {
+                System.out.println(
+                    "Caught an IO Exception: " + e.getMessage());
+            }
+            System.out.println("Finished validation!");
+        }
+    }
+
+    protected static void handleSemanticValidation(CommandLine line,
+        String checkSemanticOpt, File inFile, MZTabFileParser mzTabParser) throws JAXBException, MalformedURLException, URISyntaxException {
+        if (line.hasOption(checkSemanticOpt)) {
+            String[] semValues = line.getOptionValues(
+                checkSemanticOpt);
+            URI mappingFile;
+            if (semValues!=null && semValues.length == 2) {
+                // read file from path
+                mappingFile = new File(semValues[1].trim()).getAbsoluteFile().toURI();
+            } else {
+                System.out.println("Using default mapping file from classpath: /mappings/mzTab-M-mapping.xml");
+                // read default file
+                mappingFile = CvMappingValidator.class.getResource("/mappings/mzTab-M-mapping.xml").toURI();
+            }
+            System.out.println(
+                "Beginning semantic validation of mztab file: " + inFile.
+                    getAbsolutePath() + " with mapping file: " +mappingFile.toASCIIString());
+            CvMappingValidator cvMappingValidator = CvMappingValidator.of(mappingFile.toURL(), true);
+            List<ValidationMessage> validationMessages = cvMappingValidator.
+                validate(mzTabParser.getMZTabFile());
+            for(ValidationMessage message:validationMessages) {
+                System.err.println(message);
+            }
+            if (!validationMessages.isEmpty()) {
+                System.out.println(
+                    "There were errors during semantic validation of your file, please check the output for details!");
+            }
         }
     }
 

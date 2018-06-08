@@ -58,7 +58,7 @@ MTD	database[2]-version	2017-12
 MTD	database[2]-url	http://www.lipidmaps.org/																			
 COM	MTD	colunit-small_molecule	retention_time=[UO, UO:0000010, second, ]																		
 MTD	colunit-small_molecule_evidence	opt_global_mass_error=[UO, UO:0000169, parts per million, ]																			
-MTD	id_confidence_measure[1]	[,,characteristic qualifier ions, ]																			
+MTD	id_confidence_measure[1]	[MS, MS:1002890, fragmentation score, ]																		
 MTD	external_study_uri[1]	file://c:/data/prm.sky.zip																			
 																					
 COM	"MzTab 2.0.0-M ""proposed"" specification"																				

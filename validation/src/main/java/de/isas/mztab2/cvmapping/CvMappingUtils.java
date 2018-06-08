@@ -37,13 +37,12 @@ public class CvMappingUtils {
             append("cvElementPath='").
             append(rule.getCvElementPath()).
             append("', ").
-            append("scopePath=").
+            append("scopePath='").
             append(rule.getScopePath()).
             append("', ").
             append("requirementLevel='").
             append(rule.getRequirementLevel()).
             append("', ").
-            append(rule.getName()).
             append("combinationLogic='").
             append(rule.getCvTermsCombinationLogic()).
             append("', ").
@@ -60,24 +59,25 @@ public class CvMappingUtils {
         terms.forEach((term) ->
         {
             sb.append("Term{").
-                append("cv=").
+                append("cv='").
                 append(term.getCvIdentifierRef().
                     getCvIdentifier()).
-                append("; ").
-                append("accession=").
+                append("', ").
+                append("accession='").
                 append(term.getTermAccession()).
-                append("allowChildren=").
+                append("', ").
+                append("allowChildren='").
                 append(term.isAllowChildren()).
-                append("; ").
-                append("repeatable=").
+                append("', ").
+                append("repeatable='").
                 append(term.isIsRepeatable()).
-                append(" ;").
-                append("useTerm=").
+                append("', ").
+                append("useTerm='").
                 append(term.isUseTerm()).
-                append("; ").
-                append("useTermName=").
+                append("', ").
+                append("useTermName='").
                 append(term.isUseTermName()).
-                append("}");
+                append("'}");
         });
         return sb.toString();
     }

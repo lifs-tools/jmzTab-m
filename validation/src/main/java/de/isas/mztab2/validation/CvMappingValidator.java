@@ -16,6 +16,7 @@
 package de.isas.mztab2.validation;
 
 import de.isas.lipidomics.mztab2.validation.Validator;
+import de.isas.mztab2.cvmapping.CvMappingUtils;
 import de.isas.mztab2.cvmapping.CvParameterLookupService;
 import de.isas.mztab2.cvmapping.JxPathElement;
 import de.isas.mztab2.cvmapping.ParameterComparisonResult;
@@ -62,14 +63,14 @@ import uk.ac.ebi.pride.utilities.ols.web.service.config.OLSWsConfig;
  * @author nilshoffmann
  */
 public class CvMappingValidator implements Validator<MzTab> {
-    
+
     private static final Logger logger = LoggerFactory.getLogger(
         CvMappingValidator.class);
-    
+
     private final CvMapping mapping;
     private final CvParameterLookupService client;
     private final boolean errorIfTermNotInRule;
-    
+
     public static CvMappingValidator of(File mappingFile,
         boolean errorIfTermNotInRule) throws JAXBException {
         OLSWsConfig config = new OLSWsConfig();
@@ -77,16 +78,16 @@ public class CvMappingValidator implements Validator<MzTab> {
         CvParameterLookupService service = new CvParameterLookupService(client);
         return of(mappingFile, service, errorIfTermNotInRule);
     }
-    
+
     public static CvMappingValidator of(File mappingFile,
         CvParameterLookupService client, boolean errorIfTermNotInRule) throws JAXBException {
-        
+
         JAXBContext jaxbContext = JAXBContext.newInstance(CvMapping.class);
         Unmarshaller u = jaxbContext.createUnmarshaller();
         CvMapping mapping = (CvMapping) u.unmarshal(mappingFile);
         return new CvMappingValidator(mapping, client, errorIfTermNotInRule);
     }
-    
+
     public static CvMappingValidator of(URL mappingFile,
         boolean errorIfTermNotInRule) throws JAXBException {
         OLSWsConfig config = new OLSWsConfig();
@@ -94,7 +95,7 @@ public class CvMappingValidator implements Validator<MzTab> {
         CvParameterLookupService service = new CvParameterLookupService(client);
         return of(mappingFile, service, errorIfTermNotInRule);
     }
-    
+
     public static CvMappingValidator of(URL mappingFile,
         CvParameterLookupService client, boolean errorIfTermNotInRule) throws JAXBException {
         JAXBContext jaxbContext = JAXBContext.newInstance(CvMapping.class);
@@ -102,14 +103,14 @@ public class CvMappingValidator implements Validator<MzTab> {
         CvMapping mapping = (CvMapping) u.unmarshal(mappingFile);
         return new CvMappingValidator(mapping, client, errorIfTermNotInRule);
     }
-    
+
     public CvMappingValidator(CvMapping mapping, CvParameterLookupService client,
         boolean errorIfTermNotInRule) {
         this.mapping = mapping;
         this.client = client;
         this.errorIfTermNotInRule = errorIfTermNotInRule;
     }
-    
+
     @Override
     public List<ValidationMessage> validate(MzTab mzTab) {
         final List<ValidationMessage> messages = new LinkedList<>();
@@ -126,7 +127,7 @@ public class CvMappingValidator implements Validator<MzTab> {
                         for (CvTerm term : rule.getCvTerm()) {
                             if (term.isAllowChildren()) {
                                 throw new IllegalArgumentException(
-                                    rule + " uses 'AND' combination logic with multiple CvTerms and allowChildren=true! Please change to OR or XOR logic!");
+                                   CvMappingUtils.toString(rule)  + " uses 'AND' combination logic with multiple CvTerms and allowChildren=true! Please change to OR or XOR logic!");
                             }
                         }
                     }
@@ -135,7 +136,7 @@ public class CvMappingValidator implements Validator<MzTab> {
             });
         return messages;
     }
-    
+
     private List<ValidationMessage> handleRule(JXPathContext context,
         CvMappingRule rule, boolean errorOnTermNotInRule) {
         String path = rule.getCvElementPath();
@@ -153,17 +154,9 @@ public class CvMappingValidator implements Validator<MzTab> {
             }
             return Collections.emptyList();
         }
-        selection.forEach((pair) ->
-        {
-            Parameter p = pair.getValue();
-            if (!p.getCvAccession().
-                contains(":")) {
-                throw new RuntimeException(
-                    "Malformed cv accession for " + p + ". Must be: CV:TERMNUMBER");
-            }
-        });
         
-        List<Pair<Pointer, ? extends Parameter>> filteredSelection = selection.stream().
+        List<Pair<Pointer, ? extends Parameter>> filteredSelection = selection.
+            stream().
             filter((pair) ->
             {
                 if (pair.getValue().
@@ -179,6 +172,20 @@ public class CvMappingValidator implements Validator<MzTab> {
                 return true;
             }).
             collect(Collectors.toList());
+        
+        filteredSelection.forEach((pair) ->
+        {
+            Parameter p = pair.getValue();
+            if (!p.getCvAccession().
+                contains(":")) {
+                throw new RuntimeException(
+                    "Malformed cv accession '" + p.getCvAccession() + "' for " + pair.
+                    getKey().
+                    asPath() + ". Must be: <CV>:<TERMNUMBER>");
+            }
+        });
+
+        
         // and logic means that ALL of the defined terms or their children MUST appear
         // we only compare valid CVParameters here, user Params (no cv accession), are not compared!
 
@@ -269,7 +276,7 @@ public class CvMappingValidator implements Validator<MzTab> {
                     }
                 }
             });
-        
+
         switch (rule.getCvTermsCombinationLogic()) {
             case AND:
                 messages.addAll(handleAnd(allowedParameters, foundParameters,
@@ -293,10 +300,10 @@ public class CvMappingValidator implements Validator<MzTab> {
                         toString(CvMappingRule.CvTermsCombinationLogic.
                             values()));
         }
-        
+
         return messages.isEmpty() ? Collections.emptyList() : messages;
     }
-    
+
     protected List<ValidationMessage> handleAnd(
         final Map<String, Parameter> allowedParameters,
         final Map<String, Pair<Pointer, ? extends Parameter>> foundParameters,
@@ -330,7 +337,7 @@ public class CvMappingValidator implements Validator<MzTab> {
             errorOnTermNotInRule, rule, messages);
         return messages;
     }
-    
+
     protected List<ValidationMessage> handleOr(
         final Map<String, Parameter> allowedParameters,
         final Map<String, Pair<Pointer, ? extends Parameter>> foundParameters,
@@ -362,12 +369,12 @@ public class CvMappingValidator implements Validator<MzTab> {
                 messages.add(error.toValidationMessage());
             }
         }
-        
+
         handleExtraParameters(allowedParameters, foundParameters,
             errorOnTermNotInRule, rule, messages);
         return messages;
     }
-    
+
     protected void handleExtraParameters(
         final Map<String, Parameter> allowedParameters,
         final Map<String, Pair<Pointer, ? extends Parameter>> foundParameters,
@@ -399,7 +406,7 @@ public class CvMappingValidator implements Validator<MzTab> {
             }
         }
     }
-    
+
     protected List<ValidationMessage> handleXor(
         final Map<String, Parameter> allowedParameters,
         final Map<String, Pair<Pointer, ? extends Parameter>> foundParameters,
@@ -409,5 +416,5 @@ public class CvMappingValidator implements Validator<MzTab> {
             "XOR logic is currently not implemented!");
 //        return Collections.emptyList();
     }
-    
+
 }
