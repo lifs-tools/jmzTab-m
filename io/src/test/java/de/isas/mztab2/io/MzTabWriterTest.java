@@ -395,7 +395,7 @@ public class MzTabWriterTest {
         Assert.assertEquals(
             3
             + // additional empty lines
-            53
+            62
             +//metadata lines
             1 + 17
             +//summary header and original data

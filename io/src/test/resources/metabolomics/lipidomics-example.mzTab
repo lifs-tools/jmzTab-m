@@ -35,12 +35,14 @@ MTD	software[2]	[MS, MS:1000922, Skyline, 3.5.0.9319]
 MTD	software[2]-setting[1]	MSMSmassrange: (50.0, 1800.0)																			
 MTD	sample[1]	QEx-1273-prm-sp1																			
 MTD	sample[1]-description	Sphingolipids with concentration reported as picomolar per mg of protein, abundances are reported after calibration correction.																			
-MTD	ms_run[1]-location	file://c:/data/QEx-1273-prm-sp1.mzML																			
+MTD	ms_run[1]-location	file:///C:/data/QEx-1273-prm-sp1.mzML																			
 MTD	ms_run[1]-format	[MS, MS:1000584, mzML file, ]																			
 MTD	ms_run[1]-id_format	[MS, MS:1000530, mzML unique identifier, ]																			
+MTD	ms_run[1]-scan_polarity[1]	[MS, MS:1000130, positive scan, ]																			
 MTD	assay[1]	Description of assay 1																			
 MTD	assay[1]-sample_ref	sample[1]																			
 MTD	assay[1]-ms_run_ref	ms_run[1]																			
+MTD	study_variable[1]	Sphingolipid SRM Quantitation																			
 MTD	study_variable[1]-assay_refs	assay[1]																			
 MTD	study_variable[1]-description	sphingolipid srm quantitation																			
 MTD	study_variable[1]-average_function	[MS, MS:XXXXX, Arithmetic Mean, ]																			
@@ -59,7 +61,7 @@ MTD	database[2]-url	http://www.lipidmaps.org/
 COM	MTD	colunit-small_molecule	retention_time=[UO, UO:0000010, second, ]																		
 MTD	colunit-small_molecule_evidence	opt_global_mass_error=[UO, UO:0000169, parts per million, ]																			
 MTD	id_confidence_measure[1]	[MS, MS:1002890, fragmentation score, ]																		
-MTD	external_study_uri[1]	file://c:/data/prm.sky.zip																			
+MTD	external_study_uri[1]	file:///C:/data/prm.sky.zip																			
 																					
 COM	"MzTab 2.0.0-M ""proposed"" specification"																				
 COM	Summary rows. 																				
