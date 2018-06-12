@@ -25,8 +25,7 @@ import static de.isas.mztab2.io.serialization.Serializers.addSubElementParameter
 import de.isas.mztab2.model.Metadata;
 import de.isas.mztab2.model.MsRun;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import lombok.extern.slf4j.Slf4j;
 import uk.ac.ebi.pride.jmztab2.model.Section;
 
 /**
@@ -36,6 +35,7 @@ import uk.ac.ebi.pride.jmztab2.model.Section;
  * @author nilshoffmann
  *
  */
+@Slf4j
 public class MsRunSerializer extends StdSerializer<MsRun> {
 
     /**
@@ -103,8 +103,7 @@ public class MsRunSerializer extends StdSerializer<MsRun> {
                 MsRun.Properties.idFormat.getPropertyName(),
                 msRun.getIdFormat());
         } else {
-            Logger.getLogger(MsRunSerializer.class.getName()).
-                log(Level.FINE, MsRun.class.getSimpleName() + " is null!");
+            log.debug(MsRun.class.getSimpleName() + " is null!");
         }
     }
 }

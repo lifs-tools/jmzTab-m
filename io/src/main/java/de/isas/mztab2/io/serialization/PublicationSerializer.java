@@ -25,9 +25,8 @@ import de.isas.mztab2.model.Publication;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Optional;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
 import uk.ac.ebi.pride.jmztab2.model.Section;
 
 /**
@@ -37,6 +36,7 @@ import uk.ac.ebi.pride.jmztab2.model.Section;
  * @author nilshoffmann
  *
  */
+@Slf4j
 public class PublicationSerializer extends StdSerializer<Publication> {
 
     /**
@@ -84,8 +84,7 @@ public class PublicationSerializer extends StdSerializer<Publication> {
                 collect(Collectors.joining(
                     "|", "", "")));
         } else {
-            Logger.getLogger(PublicationSerializer.class.getName()).
-                log(Level.FINE, "Publication is null!");
+            log.debug(Publication.class.getSimpleName()+" is null!");
         }
     }
 }

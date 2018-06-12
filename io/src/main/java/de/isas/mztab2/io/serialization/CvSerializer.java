@@ -22,8 +22,7 @@ import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import static de.isas.mztab2.io.serialization.Serializers.addLineWithProperty;
 import de.isas.mztab2.model.CV;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import lombok.extern.slf4j.Slf4j;
 import uk.ac.ebi.pride.jmztab2.model.Section;
 
 /**
@@ -33,6 +32,7 @@ import uk.ac.ebi.pride.jmztab2.model.Section;
  * @author nilshoffmann
  *
  */
+@Slf4j
 public class CvSerializer extends StdSerializer<CV> {
 
     /**
@@ -84,8 +84,7 @@ public class CvSerializer extends StdSerializer<CV> {
                 cv.getFullName());
 
         } else {
-            Logger.getLogger(CvSerializer.class.getName()).
-                log(Level.FINE, CV.class.getSimpleName() + " is null!");
+           log.debug(CV.class.getSimpleName() + " is null!");
         }
     }
 }

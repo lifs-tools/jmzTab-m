@@ -21,8 +21,7 @@ import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import de.isas.mztab2.model.SampleProcessing;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import lombok.extern.slf4j.Slf4j;
 import uk.ac.ebi.pride.jmztab2.model.Section;
 
 /**
@@ -31,6 +30,7 @@ import uk.ac.ebi.pride.jmztab2.model.Section;
  * @author nilshoffmann
  * 
  */
+@Slf4j
 public class SampleProcessingSerializer extends StdSerializer<SampleProcessing> {
 
     /**
@@ -66,8 +66,7 @@ public class SampleProcessingSerializer extends StdSerializer<SampleProcessing> 
                 sampleProcessing,
                 sampleProcessing.getSampleProcessing());
         } else {
-            Logger.getLogger(SampleProcessingSerializer.class.getName()).
-                log(Level.FINE, "SampleProcessing is null!");
+            log.debug(SampleProcessing.class.getSimpleName()+" is null!");
         }
     }
 }

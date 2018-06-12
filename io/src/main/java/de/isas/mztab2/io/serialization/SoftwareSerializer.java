@@ -22,8 +22,7 @@ import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import static de.isas.mztab2.io.serialization.Serializers.addSubElementStrings;
 import de.isas.mztab2.model.Software;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import lombok.extern.slf4j.Slf4j;
 import uk.ac.ebi.pride.jmztab2.model.Section;
 
 /**
@@ -33,6 +32,7 @@ import uk.ac.ebi.pride.jmztab2.model.Section;
  * @author nilshoffmann
  *
  */
+@Slf4j
 public class SoftwareSerializer extends StdSerializer<Software> {
 
     /**
@@ -75,8 +75,7 @@ public class SoftwareSerializer extends StdSerializer<Software> {
                 Software.Properties.setting.getPropertyName(),
                 software.getSetting(), false);
         } else {
-            Logger.getLogger(SoftwareSerializer.class.getName()).
-                log(Level.FINE, "Software is null!");
+            log.debug(Software.class.getSimpleName() + " is null!");
         }
     }
 }

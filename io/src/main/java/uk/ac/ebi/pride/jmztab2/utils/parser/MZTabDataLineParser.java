@@ -35,10 +35,9 @@ import java.util.Arrays;
 import java.util.List;
 
 import java.util.SortedMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import lombok.extern.slf4j.Slf4j;
 
 import static uk.ac.ebi.pride.jmztab2.model.MZTabConstants.*;
 import static uk.ac.ebi.pride.jmztab2.model.MZTabUtils.*;
@@ -60,6 +59,7 @@ import static uk.ac.ebi.pride.jmztab2.model.MZTabUtils.*;
  * @since 14/02/13
  * 
  */
+@Slf4j
 public abstract class MZTabDataLineParser<T> extends MZTabLineParser {
     protected MZTabColumnFactory factory;
     protected PositionMapping positionMapping;
@@ -123,11 +123,11 @@ public abstract class MZTabDataLineParser<T> extends MZTabLineParser {
 
         int offset = checkData();
         if (offset != items.length) {
-            Logger.getLogger(MZTabDataLineParser.class.getName()).log(Level.SEVERE, "Number of expected items after parsing header is: {0} but data line has: {1} items!", new Object[]{offset,
-                items.length});
-            Logger.getLogger(MZTabDataLineParser.class.getName()).log(Level.SEVERE, "Current mapping is: {0}", mapping);
-            Logger.getLogger(MZTabDataLineParser.class.getName()).log(Level.SEVERE, "Items given: {0} expected: {1}", new Object[]{Arrays.toString(items),
-                Arrays.toString(line.split("\\t"))});
+            log.error( "Number of expected items after parsing header is: {} but data line has: {} items!", offset,
+                items.length);
+            log.error( "Current mapping is: {}", mapping);
+            log.error( "Items given: {} expected: {}", Arrays.toString(items),
+                Arrays.toString(line.split("\\t")));
             this.errorList.add(new MZTabError(FormatErrorType.CountMatch, lineNumber, "" + offset, "" + items.length));
         }
     }
@@ -144,11 +144,11 @@ public abstract class MZTabDataLineParser<T> extends MZTabLineParser {
         int dataCount = items.length - 1;
 
         if (headerCount != dataCount) {
-            Logger.getLogger(MZTabDataLineParser.class.getName()).log(Level.SEVERE, "Number of expected items after parsing header is: {0} but data line has: {1} items!", new Object[]{headerCount,
-                dataCount});
-            Logger.getLogger(MZTabDataLineParser.class.getName()).log(Level.SEVERE, "Current mapping is: {0}", mapping);
-            Logger.getLogger(MZTabDataLineParser.class.getName()).log(Level.SEVERE, "Items given: {0} expected: {1}", new Object[]{Arrays.toString(items),
-                Arrays.toString(line.split("\\t"))});
+            log.error( "Number of expected items after parsing header is: {} but data line has: {} items!", headerCount,
+                dataCount);
+            log.error( "Current mapping is: {}", mapping);
+            log.error( "Items given: {} expected: {}", Arrays.toString(items),
+                Arrays.toString(line.split("\\t")));
             this.errorList.add(new MZTabError(FormatErrorType.CountMatch, lineNumber, "" + dataCount, "" + headerCount));
         }
     }

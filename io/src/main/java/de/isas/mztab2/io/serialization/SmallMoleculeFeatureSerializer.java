@@ -27,8 +27,7 @@ import de.isas.mztab2.model.SmallMoleculeFeature;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Optional;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import lombok.extern.slf4j.Slf4j;
 import uk.ac.ebi.pride.jmztab2.model.AbundanceColumn;
 import uk.ac.ebi.pride.jmztab2.model.SmallMoleculeFeatureColumn;
 
@@ -39,6 +38,7 @@ import uk.ac.ebi.pride.jmztab2.model.SmallMoleculeFeatureColumn;
  * @author nilshoffmann
  *
  */
+@Slf4j
 public class SmallMoleculeFeatureSerializer extends StdSerializer<SmallMoleculeFeature> {
 
     /**
@@ -83,7 +83,8 @@ public class SmallMoleculeFeatureSerializer extends StdSerializer<SmallMoleculeF
                 smallMoleculeFeature.getSmfId());
             writeAsStringArray(SmallMoleculeFeatureColumn.Stable.SME_ID_REFS, jg,
                 Optional.ofNullable(smallMoleculeFeature.
-                    getSmeIdRefs()).orElse(Collections.emptyList()));
+                    getSmeIdRefs()).
+                    orElse(Collections.emptyList()));
             writeNumber(
                 SmallMoleculeFeatureColumn.Stable.SME_ID_REF_AMBIGUITY_CODE, jg,
                 smallMoleculeFeature.
@@ -112,14 +113,13 @@ public class SmallMoleculeFeatureSerializer extends StdSerializer<SmallMoleculeF
                     getRetentionTimeInSecondsEnd());
             Serializers.writeIndexedDoubles(
                 AbundanceColumn.Field.ABUNDANCE_ASSAY.toString(), jg,
-                Optional.ofNullable(smallMoleculeFeature.getAbundanceAssay()).orElse(Collections.emptyList()));
+                Optional.ofNullable(smallMoleculeFeature.getAbundanceAssay()).
+                    orElse(Collections.emptyList()));
             Serializers.
                 writeOptColumnMappings(smallMoleculeFeature.getOpt(), jg, sp);
             jg.writeEndObject();
         } else {
-            Logger.getLogger(SmallMoleculeFeatureSerializer.class.getName()).
-                log(Level.FINE, "{0} is null!", smallMoleculeFeature.getClass().
-                    getSimpleName());
+            log.debug(SmallMoleculeFeature.class.getSimpleName(), " is null!");
         }
     }
 }

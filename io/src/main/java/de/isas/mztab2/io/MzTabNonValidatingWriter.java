@@ -28,8 +28,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.Optional;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import uk.ac.ebi.pride.jmztab2.model.MZTabConstants;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabException;
@@ -133,8 +131,7 @@ public class MzTabNonValidatingWriter implements MzTabWriter<Void> {
             mapper.writer(schema).
                 writeValue(writer, mztabfile.getMetadata());
         } catch (JsonProcessingException ex) {
-            Logger.getLogger(MzTabNonValidatingWriter.class.getName()).
-                log(Level.SEVERE, null, ex);
+            throw new IOException(ex);
         }
     }
 

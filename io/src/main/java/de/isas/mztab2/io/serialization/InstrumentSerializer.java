@@ -25,8 +25,7 @@ import static de.isas.mztab2.io.serialization.Serializers.addSubElementStrings;
 import de.isas.mztab2.model.Instrument;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import lombok.extern.slf4j.Slf4j;
 import uk.ac.ebi.pride.jmztab2.model.Section;
 
 /**
@@ -36,6 +35,7 @@ import uk.ac.ebi.pride.jmztab2.model.Section;
  * @author nilshoffmann
  *
  */
+@Slf4j
 public class InstrumentSerializer extends StdSerializer<Instrument> {
 
     /**
@@ -95,8 +95,7 @@ public class InstrumentSerializer extends StdSerializer<Instrument> {
                         getDetector());
             }
         } else {
-            Logger.getLogger(InstrumentSerializer.class.getName()).
-                log(Level.FINE, Instrument.class.getSimpleName() + " is null!");
+            log.debug(Instrument.class.getSimpleName() + " is null!");
         }
     }
 }

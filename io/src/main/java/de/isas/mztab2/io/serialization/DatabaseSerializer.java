@@ -24,8 +24,7 @@ import static de.isas.mztab2.io.serialization.Serializers.addLineWithProperty;
 import de.isas.mztab2.model.Database;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import lombok.extern.slf4j.Slf4j;
 import uk.ac.ebi.pride.jmztab2.model.Section;
 
 /**
@@ -35,6 +34,7 @@ import uk.ac.ebi.pride.jmztab2.model.Section;
  * @author nilshoffmann
  *
  */
+@Slf4j
 public class DatabaseSerializer extends StdSerializer<Database> {
 
     /**
@@ -96,8 +96,7 @@ public class DatabaseSerializer extends StdSerializer<Database> {
                 getVersion());
 
         } else {
-            Logger.getLogger(DatabaseSerializer.class.getName()).
-                log(Level.FINE, Database.class.getSimpleName() + " is null!");
+           log.debug(Database.class.getSimpleName() + " is null!");
         }
     }
 

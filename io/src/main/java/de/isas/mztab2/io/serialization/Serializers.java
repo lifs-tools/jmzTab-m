@@ -32,16 +32,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import lombok.extern.slf4j.Slf4j;
 import uk.ac.ebi.pride.jmztab2.model.IMZTabColumn;
 import uk.ac.ebi.pride.jmztab2.model.MZTabConstants;
-import static uk.ac.ebi.pride.jmztab2.model.MZTabConstants.CALCULATE_ERROR;
-import static uk.ac.ebi.pride.jmztab2.model.MZTabConstants.INFINITY;
 import static uk.ac.ebi.pride.jmztab2.model.MZTabConstants.NULL;
 import uk.ac.ebi.pride.jmztab2.model.MetadataElement;
 import uk.ac.ebi.pride.jmztab2.model.MetadataProperty;
@@ -54,6 +51,7 @@ import uk.ac.ebi.pride.jmztab2.model.MetadataProperty;
  * @since 11/30/17
  *
  */
+@Slf4j
 public class Serializers {
 
     /**
@@ -66,7 +64,7 @@ public class Serializers {
      */
     public static String getReference(Object element, Integer idx) {
         StringBuilder sb = new StringBuilder();
-
+        
         sb.append(getElementName(element).
             orElseThrow(() ->
             {
@@ -78,7 +76,7 @@ public class Serializers {
             append("[").
             append(idx).
             append("]");
-
+        
         return sb.toString();
     }
 
@@ -188,11 +186,11 @@ public class Serializers {
         Object element,
         List<T> indexedElementList) {
         if (indexedElementList == null || indexedElementList.isEmpty()) {
-            Logger.getLogger(Serializers.class.getName()).
-                log(Level.FINE,
-                    "Skipping null or empty indexed element list values for {0}",
-                    getElementName(
-                        element));
+            
+            log.debug(
+                "Skipping null or empty indexed element list values for {0}",
+                getElementName(
+                    element));
             return;
         }
         try {
@@ -223,8 +221,9 @@ public class Serializers {
                 collect(Collectors.joining("|")));
             jg.writeEndArray();
         } catch (IOException ex) {
-            Logger.getLogger(Serializers.class.getName()).
-                log(Level.SEVERE, null, ex);
+            
+            log.error("Caught IO Exception while trying to write indexed line:",
+                ex);
         }
     }
 
@@ -241,10 +240,10 @@ public class Serializers {
         Object element,
         List<Parameter> parameterList) {
         if (parameterList == null || parameterList.isEmpty()) {
-            Logger.getLogger(Serializers.class.getName()).
-                fine(
-                    "Skipping null or empty parameter list values for " + getElementName(
-                        element));
+            
+            log.debug(
+                "Skipping null or empty parameter list values for " + getElementName(
+                    element));
             return;
         }
         try {
@@ -267,8 +266,9 @@ public class Serializers {
                 collect(Collectors.joining("|")));
             jg.writeEndArray();
         } catch (IOException ex) {
-            Logger.getLogger(MetadataSerializer.class.getName()).
-                log(Level.SEVERE, null, ex);
+            log.error(
+                "Caught IO Exception while trying to write line with parameters:",
+                ex);
         }
     }
 
@@ -287,10 +287,10 @@ public class Serializers {
         String propertyName, Object element,
         List<Parameter> value) {
         if (value == null || value.isEmpty()) {
-            Logger.getLogger(Serializers.class.getName()).
-                log(Level.FINE, "Skipping null or empty values for {0}",
-                    getElementName(
-                        element));
+            
+            log.debug("Skipping null or empty values for {0}",
+                getElementName(
+                    element));
             return;
         }
         addLineWithProperty(jg, prefix, propertyName, element, value.stream().
@@ -307,8 +307,8 @@ public class Serializers {
      *
      * @param jg a {@link com.fasterxml.jackson.core.JsonGenerator} object.
      * @param prefix a {@link java.lang.String} object.
-     * @param property a
-     * {@link uk.ac.ebi.pride.jmztab2.model.MetadataProperty} object.
+     * @param property a {@link uk.ac.ebi.pride.jmztab2.model.MetadataProperty}
+     * object.
      * @param element a {@link java.lang.Object} object.
      * @param value a {@link java.lang.Object} object.
      */
@@ -348,8 +348,10 @@ public class Serializers {
             jg.writeString(NULL);
             jg.writeEndArray();
         } catch (IOException ex) {
-            Logger.getLogger(Serializers.class.getName()).
-                log(Level.SEVERE, null, ex);
+            
+            log.error(
+                "Caught exception while trying to write line with null property:",
+                ex);
         }
     }
 
@@ -367,16 +369,16 @@ public class Serializers {
         String propertyName, Object element,
         Object... value) {
         if (value == null || value.length == 0) {
-            Logger.getLogger(Serializers.class.getName()).
-                log(Level.FINE, "Skipping null or empty values for {0}",
-                    getElementName(
-                        element));
+            
+            log.debug("Skipping null or empty values for {0}",
+                getElementName(
+                    element));
             return;
         }
         if (value.length == 1 && (value[0] == null)) {
-            Logger.getLogger(Serializers.class.getName()).
-                log(Level.FINE, "Skipping empty value for {0}", getElementName(
-                    element));
+            
+            log.debug("Skipping empty value for {0}", getElementName(
+                element));
             return;
         }
         try {
@@ -400,8 +402,10 @@ public class Serializers {
             }
             jg.writeEndArray();
         } catch (IOException ex) {
-            Logger.getLogger(Serializers.class.getName()).
-                log(Level.SEVERE, null, ex);
+            
+            log.error(
+                "Caught IO exception while trying to write line with property:",
+                ex);
         }
     }
 
@@ -487,7 +491,7 @@ public class Serializers {
     public static String camelCaseToUnderscoreLowerCase(String camelCase) {
         Matcher m = Pattern.compile("(?<=[a-z])[A-Z]").
             matcher(camelCase);
-
+        
         StringBuffer sb = new StringBuffer();
         while (m.find()) {
             m.appendReplacement(sb, "_" + m.group().
@@ -554,8 +558,8 @@ public class Serializers {
         if (subElement == null) {
             String elementName = Serializers.getElementName(element).
                 get();
-            Logger.getLogger(Serializers.class.getName()).
-                log(Level.FINE, "''{0}-{1}'' is null or empty!", new Object[]{
+            
+            log.debug("''{0}-{1}'' is null or empty!", new Object[]{
                 elementName,
                 subElementName});
             return;
@@ -588,9 +592,9 @@ public class Serializers {
                     try {
                         return new ParameterConverter().convert(parameter);
                     } catch (IllegalArgumentException npe) {
-                        Logger.getLogger(Serializers.class.getName()).
-                            log(Level.FINE, "parameter is null for {0}",
-                                subElementName);
+                        
+                        log.debug("parameter is null for {0}",
+                            subElementName);
                         return "null";
                     }
                 }).
@@ -611,8 +615,8 @@ public class Serializers {
         String elementName = Serializers.getElementName(element).
             get();
         if (subElements == null || subElements.isEmpty()) {
-            Logger.getLogger(Serializers.class.getName()).
-                log(Level.FINE, "''{0}-{1}'' is null or empty!", new Object[]{
+            
+            log.debug("''{0}-{1}'' is null or empty!", new Object[]{
                 elementName,
                 subElementName});
             return true;
@@ -680,7 +684,7 @@ public class Serializers {
                     "Serialization of objects of type " + value.getClass()
                     + " currently not supported!");
             }
-
+            
         }
     }
 
@@ -742,9 +746,9 @@ public class Serializers {
                 }
             }
         } catch (IOException ex) {
-            Logger.getLogger(Serializers.class.
-                getName()).
-                log(Level.SEVERE, null, ex);
+            log.error(
+                "Caught IO exception while trying to write as number array: ",
+                ex);
         }
     }
 
@@ -784,9 +788,7 @@ public class Serializers {
                 }
             }
         } catch (IOException ex) {
-            Logger.getLogger(Serializers.class.
-                getName()).
-                log(Level.SEVERE, null, ex);
+            log.error("Error while trying to write as string array:", ex);
         }
     }
 
@@ -813,9 +815,7 @@ public class Serializers {
                 }
             }
         } catch (IOException ex) {
-            Logger.getLogger(Serializers.class.
-                getName()).
-                log(Level.SEVERE, null, ex);
+            log.error("Error while trying to write as string array: ", ex);
         }
     }
 
@@ -969,11 +969,11 @@ public class Serializers {
                         values.
                             get(i));
                 } catch (IOException ex) {
-                    Logger.getLogger(SmallMoleculeSummarySerializer.class.
-                        getName()).
-                        log(Level.SEVERE, null, ex);
+                    log.error(
+                        "Caught IO exception while trying to write indexed doubles:",
+                        ex);
                 }
             });
     }
-
+    
 }

@@ -23,8 +23,7 @@ import static de.isas.mztab2.io.serialization.Serializers.addLineWithProperty;
 import static de.isas.mztab2.io.serialization.Serializers.addSubElementParameters;
 import de.isas.mztab2.model.Sample;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import lombok.extern.slf4j.Slf4j;
 import uk.ac.ebi.pride.jmztab2.model.Section;
 
 /**
@@ -33,6 +32,7 @@ import uk.ac.ebi.pride.jmztab2.model.Section;
  * @author nilshoffmann
  * 
  */
+@Slf4j
 public class SampleSerializer extends StdSerializer<Sample> {
 
     /**
@@ -86,8 +86,7 @@ public class SampleSerializer extends StdSerializer<Sample> {
                 Sample.Properties.custom.getPropertyName(),
                 sample.getCustom(), false);
         } else {
-            Logger.getLogger(SampleSerializer.class.getName()).
-                log(Level.FINE, "Sample is null!");
+            log.debug(Sample.class.getSimpleName()+" is null!");
         }
     }
 }

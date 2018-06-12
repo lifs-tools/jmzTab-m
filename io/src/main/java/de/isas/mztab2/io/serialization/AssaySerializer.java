@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
 import uk.ac.ebi.pride.jmztab2.model.Section;
 
 /**
@@ -39,6 +40,7 @@ import uk.ac.ebi.pride.jmztab2.model.Section;
  * @author nilshoffmann
  * 
  */
+@Slf4j
 public class AssaySerializer extends StdSerializer<Assay> {
 
     /**
@@ -118,8 +120,7 @@ public class AssaySerializer extends StdSerializer<Assay> {
             }
 
         } else {
-            Logger.getLogger(AssaySerializer.class.getName()).
-                log(Level.FINE, Assay.class.getSimpleName()+" is null!");
+            log.debug(Assay.class.getSimpleName()+" is null!");
         }
     }
 }

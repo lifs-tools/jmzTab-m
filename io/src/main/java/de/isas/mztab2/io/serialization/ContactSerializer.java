@@ -24,6 +24,7 @@ import de.isas.mztab2.model.Contact;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import lombok.extern.slf4j.Slf4j;
 import uk.ac.ebi.pride.jmztab2.model.Section;
 
 /**
@@ -33,6 +34,7 @@ import uk.ac.ebi.pride.jmztab2.model.Section;
  * @author nilshoffmann
  *
  */
+@Slf4j
 public class ContactSerializer extends StdSerializer<Contact> {
 
     /**
@@ -81,8 +83,7 @@ public class ContactSerializer extends StdSerializer<Contact> {
                 contact.getAffiliation());
 
         } else {
-            Logger.getLogger(ContactSerializer.class.getName()).
-                log(Level.FINE, Contact.class.getSimpleName() + " is null!");
+            log.debug(Contact.class.getSimpleName() + " is null!");
         }
     }
 }

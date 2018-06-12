@@ -29,9 +29,8 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Optional;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
 import uk.ac.ebi.pride.jmztab2.model.Section;
 
 /**
@@ -41,6 +40,7 @@ import uk.ac.ebi.pride.jmztab2.model.Section;
  * @author nilshoffmann
  *
  */
+@Slf4j
 public class StudyVariableSerializer extends StdSerializer<StudyVariable> {
 
     /**
@@ -114,8 +114,7 @@ public class StudyVariableSerializer extends StdSerializer<StudyVariable> {
                 }).
                 collect(Collectors.toList()), true);
         } else {
-            Logger.getLogger(StudyVariableSerializer.class.getName()).
-                log(Level.FINE, "StudyVariable is null!");
+            log.debug(StudyVariable.class.getSimpleName() + " is null!");
         }
     }
 }

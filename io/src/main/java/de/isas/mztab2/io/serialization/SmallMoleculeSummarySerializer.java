@@ -26,14 +26,13 @@ import static de.isas.mztab2.io.serialization.Serializers.writeOptColumnMappings
 import static de.isas.mztab2.io.serialization.Serializers.writeString;
 import de.isas.mztab2.model.SmallMoleculeSummary;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import uk.ac.ebi.pride.jmztab2.model.AbundanceColumn;
 import uk.ac.ebi.pride.jmztab2.model.SmallMoleculeColumn;
 import static de.isas.mztab2.io.serialization.Serializers.writeIndexedDoubles;
 import static de.isas.mztab2.io.serialization.Serializers.writeObject;
 import java.util.Collections;
 import java.util.Optional;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * <p>
@@ -42,6 +41,7 @@ import java.util.Optional;
  * @author nilshoffmann
  *
  */
+@Slf4j
 public class SmallMoleculeSummarySerializer extends StdSerializer<SmallMoleculeSummary> {
 
     /**
@@ -115,21 +115,23 @@ public class SmallMoleculeSummarySerializer extends StdSerializer<SmallMoleculeS
                     getBestIdConfidenceValue());
             writeIndexedDoubles(AbundanceColumn.Field.ABUNDANCE_ASSAY.toString(),
                 jg, Optional.ofNullable(smallMoleculeSummary.
-                    getAbundanceAssay()).orElse(Collections.emptyList()));
+                    getAbundanceAssay()).
+                    orElse(Collections.emptyList()));
             writeIndexedDoubles(AbundanceColumn.Field.ABUNDANCE_STUDY_VARIABLE.
                 toString(), jg, Optional.ofNullable(smallMoleculeSummary.
-                    getAbundanceStudyVariable()).orElse(Collections.emptyList()));
+                    getAbundanceStudyVariable()).
+                    orElse(Collections.emptyList()));
             writeIndexedDoubles(
                 AbundanceColumn.Field.ABUNDANCE_VARIATION_STUDY_VARIABLE.
                     toString(), jg,
-                Optional.ofNullable(smallMoleculeSummary.getAbundanceVariationStudyVariable()).orElse(Collections.emptyList()));
+                Optional.ofNullable(smallMoleculeSummary.
+                    getAbundanceVariationStudyVariable()).
+                    orElse(Collections.emptyList()));
 
             writeOptColumnMappings(smallMoleculeSummary.getOpt(), jg, sp);
             jg.writeEndObject();
         } else {
-            Logger.getLogger(SmallMoleculeSummarySerializer.class.getName()).
-                log(Level.FINE, "{0} null!", smallMoleculeSummary.getClass().
-                    getSimpleName());
+            log.debug(SmallMoleculeSummary.class.getSimpleName() + " is null!");
         }
     }
 

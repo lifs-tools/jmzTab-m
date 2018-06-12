@@ -31,6 +31,7 @@ import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
 import uk.ac.ebi.pride.jmztab2.model.SmallMoleculeEvidenceColumn;
 
 /**
@@ -40,6 +41,7 @@ import uk.ac.ebi.pride.jmztab2.model.SmallMoleculeEvidenceColumn;
  * @author nilshoffmann
  *
  */
+@Slf4j
 public class SmallMoleculeEvidenceSerializer extends StdSerializer<SmallMoleculeEvidence> {
 
     /**
@@ -112,7 +114,8 @@ public class SmallMoleculeEvidenceSerializer extends StdSerializer<SmallMolecule
                     getTheoreticalMassToCharge());
             writeAsStringArray(SmallMoleculeEvidenceColumn.Stable.SPECTRA_REF,
                 jg, Optional.ofNullable(smallMoleculeEvidence.
-                    getSpectraRef()).orElse(Collections.emptyList()).
+                    getSpectraRef()).
+                    orElse(Collections.emptyList()).
                     stream().
                     map((spectraRef) ->
                     {
@@ -130,17 +133,15 @@ public class SmallMoleculeEvidenceSerializer extends StdSerializer<SmallMolecule
                 SmallMoleculeEvidence.Properties.idConfidenceMeasure.
                     getPropertyName(), jg,
                 Optional.ofNullable(smallMoleculeEvidence.
-                    getIdConfidenceMeasure()).orElse(Collections.emptyList()));
+                    getIdConfidenceMeasure()).
+                    orElse(Collections.emptyList()));
             writeNumber(SmallMoleculeEvidenceColumn.Stable.RANK, jg,
                 smallMoleculeEvidence.getRank());
             Serializers.writeOptColumnMappings(smallMoleculeEvidence.getOpt(),
                 jg, sp);
             jg.writeEndObject();
         } else {
-            Logger.getLogger(SmallMoleculeEvidenceSerializer.class.getName()).
-                log(Level.FINE, "{0} is null!",
-                    smallMoleculeEvidence.getClass().
-                        getSimpleName());
+            log.debug(SmallMoleculeEvidence.class.getSimpleName() + " is null!");
         }
     }
 }
