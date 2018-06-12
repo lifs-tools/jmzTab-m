@@ -37,4 +37,6 @@ public final class CrossCheckErrorType extends MZTabErrorType {
     /** Constant <code>RulePointerObjectNull</code> */
     public static MZTabErrorType RulePointerObjectNull = createError(Category.CrossCheck, "RulePointerObjectNull");
 
+    /** Constant <code>CvTermXor</code> */
+    public static MZTabErrorType CvTermXor = createError(Category.CrossCheck, "CvTermXor");
 }

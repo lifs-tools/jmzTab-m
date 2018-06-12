@@ -43,15 +43,14 @@ import java.util.stream.Collectors;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.jxpath.JXPathContext;
 import org.apache.commons.jxpath.Pointer;
-import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.tuple.Pair;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import uk.ac.ebi.pride.jmztab2.utils.errors.CrossCheckErrorType;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabError;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorType;
+import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorType.Level;
 import uk.ac.ebi.pride.utilities.ols.web.service.client.OLSClient;
 import uk.ac.ebi.pride.utilities.ols.web.service.config.OLSWsConfig;
 
@@ -62,10 +61,8 @@ import uk.ac.ebi.pride.utilities.ols.web.service.config.OLSWsConfig;
  *
  * @author nilshoffmann
  */
+@Slf4j
 public class CvMappingValidator implements Validator<MzTab> {
-
-    private static final Logger logger = LoggerFactory.getLogger(
-        CvMappingValidator.class);
 
     private final CvMapping mapping;
     private final CvParameterLookupService client;
@@ -119,7 +116,7 @@ public class CvMappingValidator implements Validator<MzTab> {
             getCvMappingRule().
             forEach((rule) ->
             {
-                logger.debug("Evaluating rule " + rule.getId() + " on " + rule.
+                log.debug("Evaluating rule " + rule.getId() + " on " + rule.
                     getCvElementPath());
                 if (rule.getCvTermsCombinationLogic() == CvMappingRule.CvTermsCombinationLogic.AND) {
                     if (rule.getCvTerm().
@@ -127,7 +124,7 @@ public class CvMappingValidator implements Validator<MzTab> {
                         for (CvTerm term : rule.getCvTerm()) {
                             if (term.isAllowChildren()) {
                                 throw new IllegalArgumentException(
-                                   CvMappingUtils.toString(rule)  + " uses 'AND' combination logic with multiple CvTerms and allowChildren=true! Please change to OR or XOR logic!");
+                                    CvMappingUtils.toString(rule) + " uses 'AND' combination logic with multiple CvTerms and allowChildren=true! Please change to OR or XOR logic!");
                             }
                         }
                     }
@@ -143,7 +140,7 @@ public class CvMappingValidator implements Validator<MzTab> {
         List<Pair<Pointer, ? extends Parameter>> selection = JxPathElement.
             toList(context, path, Parameter.class);
         if (selection.isEmpty()) {
-            logger.debug(
+            log.debug(
                 "Evaluating rule " + rule.getId() + " on " + rule.
                 getCvElementPath() + " did not yield any selected elements!");
             if (rule.getRequirementLevel() == CvMappingRule.RequirementLevel.MUST) {
@@ -154,7 +151,7 @@ public class CvMappingValidator implements Validator<MzTab> {
             }
             return Collections.emptyList();
         }
-        
+
         List<Pair<Pointer, ? extends Parameter>> filteredSelection = selection.
             stream().
             filter((pair) ->
@@ -164,7 +161,7 @@ public class CvMappingValidator implements Validator<MzTab> {
                         getCvAccession().
                         isEmpty()) {
                     //user parameter
-                    logger.debug("Removing user parameter for path " + pair.
+                    log.debug("Removing user parameter for path " + pair.
                         getKey().
                         asPath() + " with value " + pair.getValue());
                     return false;
@@ -172,7 +169,7 @@ public class CvMappingValidator implements Validator<MzTab> {
                 return true;
             }).
             collect(Collectors.toList());
-        
+
         filteredSelection.forEach((pair) ->
         {
             Parameter p = pair.getValue();
@@ -185,10 +182,8 @@ public class CvMappingValidator implements Validator<MzTab> {
             }
         });
 
-        
         // and logic means that ALL of the defined terms or their children MUST appear
         // we only compare valid CVParameters here, user Params (no cv accession), are not compared!
-
         // if combination logic is AND, child expansion needs to be disabled to avoid nonsensical combinations
         final List<ValidationMessage> messages = new ArrayList<>();
         final Map<String, Parameter> allowedParameters = new LinkedHashMap<>();
@@ -198,7 +193,7 @@ public class CvMappingValidator implements Validator<MzTab> {
             {
                 for (Pair<Pointer, ? extends Parameter> pair : filteredSelection) {
                     if (cvTerm.isAllowChildren()) {
-                        logger.debug("Resolving children of " + cvTerm.
+                        log.debug("Resolving children of " + cvTerm.
                             getTermAccession() + " against " + pair.getValue().
                                 getCvAccession());
                         //resolve children
@@ -208,7 +203,7 @@ public class CvMappingValidator implements Validator<MzTab> {
                                     pair.getValue());
                             switch (result) {
                                 case CHILD_OF:
-                                    logger.debug(pair.getValue().
+                                    log.debug(pair.getValue().
                                         getCvAccession() + " is a child of " + cvTerm.
                                             getTermAccession());
                                     //use key of found parameter, since it is a child of cvTerm / cvTerm is a parent of the child
@@ -222,7 +217,7 @@ public class CvMappingValidator implements Validator<MzTab> {
                                     break;
                                 case IDENTICAL:
                                     if (cvTerm.isUseTerm()) {
-                                        logger.debug(pair.getValue().
+                                        log.debug(pair.getValue().
                                             getCvAccession() + " is identical to " + cvTerm.
                                                 getTermAccession());
                                         //use key of found parameter, since both are identical
@@ -236,7 +231,7 @@ public class CvMappingValidator implements Validator<MzTab> {
                                     }
                                     break;
                                 case NOT_RELATED:
-                                    logger.debug(pair.getValue().
+                                    log.debug(pair.getValue().
                                         getCvAccession() + " is not related to " + cvTerm.
                                             getTermAccession());
                                     //add term from rule as is
@@ -349,7 +344,6 @@ public class CvMappingValidator implements Validator<MzTab> {
         matchedParameters.addAll(allowedParameters.keySet());
         matchedParameters.retainAll(foundParameters.keySet());
         if (matchedParameters.isEmpty()) {
-            //TODO: this may produce many entries in the message list
             for (String s : allowedParameters.keySet()) {
                 MZTabErrorType errorType = null;
                 switch (rule.getRequirementLevel()) {
@@ -411,10 +405,59 @@ public class CvMappingValidator implements Validator<MzTab> {
         final Map<String, Parameter> allowedParameters,
         final Map<String, Pair<Pointer, ? extends Parameter>> foundParameters,
         CvMappingRule rule, boolean errorOnTermNotInRule) {
-        // xor logic means, if one of the defined terms is set, none of the others is allowed
-        throw new NotImplementedException(
-            "XOR logic is currently not implemented!");
-//        return Collections.emptyList();
+        // xor logic means, if one of the defined terms or its children is set, none of the others is allowed
+        final List<ValidationMessage> messages = new ArrayList<>();
+        // all defined terms or children thereof need to appear
+        Set<String> matchedParameters = new HashSet<String>();
+        matchedParameters.addAll(allowedParameters.keySet());
+        matchedParameters.retainAll(foundParameters.keySet());
+        if (matchedParameters.isEmpty()) {
+            for (String s : allowedParameters.keySet()) {
+                MZTabErrorType errorType = null;
+                switch (rule.getRequirementLevel()) {
+                    case MAY:
+                        errorType = CrossCheckErrorType.CvTermOptional;
+                        break;
+                    case SHOULD:
+                        errorType = CrossCheckErrorType.CvTermRecommended;
+                        break;
+                    case MUST:
+                        errorType = CrossCheckErrorType.CvTermRequired;
+                        break;
+                }
+                MZTabError error = new MZTabError(errorType, -1,
+                    new ParameterConverter().convert(allowedParameters.get(
+                        s)), rule.getCvElementPath(), rule.getId());
+                messages.add(error.toValidationMessage());
+            }
+        } else if (matchedParameters.size() > 1) {
+            //Only one of the provided cv terms for "{1}" {0} be reported. You defined terms "{2}". Allowed terms are defined in rule "{3}".
+            String definedParameters = matchedParameters.stream().
+                collect(Collectors.joining(", "));
+            MZTabErrorType xorErrorType = MZTabErrorType.forLevel(MZTabErrorType.Category.CrossCheck,
+                toErrorLevel(rule.getRequirementLevel()), "CvTermXor");
+            MZTabError error = new MZTabError(xorErrorType, -1, rule.getRequirementLevel().value(), rule.getCvElementPath(), definedParameters, rule.getId());
+            messages.add(error.toValidationMessage());
+        }
+
+        handleExtraParameters(allowedParameters, foundParameters,
+            errorOnTermNotInRule, rule, messages);
+        return messages;
+    }
+
+    private Level toErrorLevel(
+        CvMappingRule.RequirementLevel requirementLevel) {
+        switch (requirementLevel) {
+            case MAY:
+                return Level.Info;
+            case SHOULD:
+                return Level.Warn;
+            case MUST:
+                return Level.Error;
+            default:
+                throw new IllegalArgumentException(
+                    "Unhandled case: " + requirementLevel);
+        }
     }
 
 }

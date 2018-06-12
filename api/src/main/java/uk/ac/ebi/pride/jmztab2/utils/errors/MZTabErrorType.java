@@ -1,7 +1,6 @@
 package uk.ac.ebi.pride.jmztab2.utils.errors;
 
 //import uk.ac.ebi.pride.jmztab2.model.MZTabUtils;
-import de.isas.mztab2.model.ValidationMessage;
 import uk.ac.ebi.pride.jmztab2.model.MZTabStringUtils;
 import uk.ac.ebi.pride.jmztab2.utils.MZTabProperties;
 
@@ -13,7 +12,7 @@ import uk.ac.ebi.pride.jmztab2.utils.MZTabProperties;
  * 
  */
 public class MZTabErrorType {
-    protected enum Category {
+    public enum Category {
         Format,                // single field format error
         Logical,               // exists logical error among fields value.
         CrossCheck             // cross check validation by calling outside files or web services.
@@ -30,7 +29,7 @@ public class MZTabErrorType {
     public enum Level {
         Info,
         Warn,
-        Error
+        Error;
     }
 
     private Integer code;
@@ -46,7 +45,7 @@ public class MZTabErrorType {
 
     /**
      * Code: Unique number for error/warn
-     * Category: Currently, there are three types of messages: Format, Logical
+     * Category: Currently, there are three types of messages: Format, Logical, CrossCheck
      * Original: Message expression pattern. "{?}" is a couple of parameters which can be filled during validate processing.
      * Cause: A readable text to describe the reason why raise this error/warn. Currently, these cause message coming from mztab specification mainly.
      */
@@ -65,6 +64,10 @@ public class MZTabErrorType {
         }
         this.original = original.trim();
         this.cause = cause;
+    }
+    
+    public static MZTabErrorType forLevel(MZTabErrorType.Category category, Level level, String keyword) {
+        return MZTabErrorType.createMZTabError(category, level, keyword);
     }
 
     /**

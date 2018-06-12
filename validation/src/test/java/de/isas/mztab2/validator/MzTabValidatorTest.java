@@ -187,7 +187,7 @@ public class MzTabValidatorTest {
         MzTab mzTab = createTestFile();
         CvMappingValidator validator = CvMappingValidator.of(
             MzTabValidatorTest.class.
-                getResource("/mzTab-M-test-mapping.xml"), true);
+                getResource("/mappings/mzTab-M-mapping.xml"), true);
         List<ValidationMessage> validationMessages = validator.validate(mzTab);
         for (ValidationMessage violation : validationMessages) {
             System.err.println(violation);
