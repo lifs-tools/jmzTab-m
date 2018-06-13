@@ -18,12 +18,79 @@ package de.isas.mztab2.cvmapping;
 import info.psidev.cvmapping.CvMappingRule;
 import info.psidev.cvmapping.CvTerm;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  *
- * @author Leibniz-Institut für Analytische Wissenschaften – ISAS – e.V.
+ * @author nilshoffmann
  */
 public class CvMappingUtils {
+
+    public static String niceToString(CvMappingRule rule) {
+        StringBuilder sb = new StringBuilder();
+        switch (rule.getRequirementLevel()) {
+            case MAY:
+                sb.append("OPTIONAL ");
+                break;
+            case SHOULD:
+                sb.append("RECOMMENDED ");
+                break;
+            case MUST:
+                sb.append("REQUIRED ");
+                break;
+        }
+
+        sb.append("rule '").
+            append(rule.getId()).
+            append("' for path '").
+            append(rule.getCvElementPath()).
+            append("' and with scope '").
+            append(rule.getScopePath()).
+            append("' ");
+
+        sb.append(" matching ");
+        switch (rule.getCvTermsCombinationLogic()) {
+            case AND:
+                sb.append(" ALL of");
+                break;
+            case OR:
+                sb.append(" ANY of");
+                break;
+            case XOR:
+                sb.append(" EXACTLY ONE of");
+                break;
+        }
+        sb.append(" the terms ");
+        sb.append(rule.getCvTerm().
+            stream().
+            map((term) ->
+            {
+                StringBuilder termString = new StringBuilder();
+                termString.append(" '").
+                    append(term.getTermAccession()).
+                    append("' with name '").
+                    append(term.getTermName()).
+                    append("'");
+
+                if (term.isAllowChildren()) {
+                    if (term.isUseTerm()) {
+                        termString.append(
+                            " including itself or any of its children.");
+                    } else {
+                        termString.append(" excluding itself but including any children.");
+                    }
+                } else {
+                    if (term.isUseTerm()) {
+                        termString.append(" exactly.");
+                    }
+                }
+
+                return termString.append("'").
+                    toString();
+            }).
+            collect(Collectors.joining("|", "[", "]")));
+        return sb.toString();
+    }
 
     public static String toString(CvMappingRule rule) {
         StringBuilder sb = new StringBuilder();

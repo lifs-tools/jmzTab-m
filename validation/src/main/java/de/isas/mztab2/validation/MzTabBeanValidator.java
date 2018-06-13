@@ -135,8 +135,6 @@ public class MzTabBeanValidator implements Validator<MzTab> {
                 violation) + ": " + violation.getMessage()).
                 messageType(ValidationMessage.MessageTypeEnum.ERROR));
         }
-
-        //add additional validators
         return list;
     }
 

@@ -34,8 +34,14 @@ public final class CrossCheckErrorType extends MZTabErrorType {
     /** Constant <code>CvTermNotInRule</code> */
     public static MZTabErrorType CvTermNotInRule = createWarn(Category.CrossCheck, "CvTermNotInRule");
     
-    /** Constant <code>RulePointerObjectNull</code> */
-    public static MZTabErrorType RulePointerObjectNull = createError(Category.CrossCheck, "RulePointerObjectNull");
+    /** *  Constant <code>RulePointerObjectNullRequired</code> */
+    public static MZTabErrorType RulePointerObjectNullRequired = createError(Category.CrossCheck, "RulePointerObjectNull");
+    
+    /** *  Constant <code>RulePointerObjectNullRecommended</code> */
+    public static MZTabErrorType RulePointerObjectNullRecommended = createWarn(Category.CrossCheck, "RulePointerObjectNull");
+    
+    /** *  Constant <code>RulePointerObjectNullOptional</code> */
+    public static MZTabErrorType RulePointerObjectNullOptional = createInfo(Category.CrossCheck, "RulePointerObjectNull");
 
     /** Constant <code>CvTermXor</code> */
     public static MZTabErrorType CvTermXor = createError(Category.CrossCheck, "CvTermXor");

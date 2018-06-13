@@ -22,7 +22,7 @@ import info.psidev.cvmapping.CvTerm;
  * Ignores parameter value property, comparse only cvLabel, cvAccession, and
  * name, if the latter is non-null.
  *
- * @author Leibniz-Institut für Analytische Wissenschaften – ISAS – e.V.
+ * @author nilshoffmann
  */
 public class Parameters {
 

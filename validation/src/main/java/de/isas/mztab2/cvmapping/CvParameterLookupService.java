@@ -16,8 +16,11 @@
 package de.isas.mztab2.cvmapping;
 
 import de.isas.mztab2.model.Parameter;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
 import uk.ac.ebi.pride.utilities.ols.web.service.client.OLSClient;
 import uk.ac.ebi.pride.utilities.ols.web.service.config.OLSWsConfig;
 import uk.ac.ebi.pride.utilities.ols.web.service.model.Identifier;
@@ -28,9 +31,21 @@ import uk.ac.ebi.pride.utilities.ols.web.service.model.Identifier;
  *
  * @author nilshoffmann
  */
+@Slf4j
 public class CvParameterLookupService {
 
     private final OLSClient client;
+    private final Map<Parameter, List<Parameter>> childCache;
+    private final Map<Parameter, List<Parameter>> parentCache;
+
+    private static <K, V> Map<K, V> lruCache(final int maxSize) {
+        return new LinkedHashMap<K, V>(maxSize * 4 / 3, 0.75f, true) {
+            @Override
+            protected boolean removeEldestEntry(Map.Entry<K, V> eldest) {
+                return size() > maxSize;
+            }
+        };
+    }
 
     public CvParameterLookupService() {
         this(new OLSClient(new OLSWsConfig()));
@@ -38,45 +53,74 @@ public class CvParameterLookupService {
 
     public CvParameterLookupService(OLSClient client) {
         this.client = client;
+        this.childCache = lruCache(4096);
+        this.parentCache = lruCache(4096);
     }
 
     public CvParameterLookupService(OLSWsConfig config) {
         this(new OLSClient(config));
     }
+    
+    public void clearCaches() {
+        this.childCache.clear();
+        this.parentCache.clear();
+    }
 
-    public List<Parameter> resolveParents(Parameter parameter, int levels) throws org.springframework.web.client.HttpClientErrorException  {
+    public List<Parameter> resolveParents(Parameter parameter) throws org.springframework.web.client.HttpClientErrorException {
+        return resolveParents(parameter, -1);
+    }
+
+    public List<Parameter> resolveParents(Parameter parameter, int levels) throws org.springframework.web.client.HttpClientErrorException {
         if (parameter.getCvAccession() == null || parameter.getCvLabel() == null) {
             throw new IllegalArgumentException(
                 "Parameter must provide cvAccession and cvLabel!");
         }
+        if(parentCache.containsKey(parameter)) {
+            log.info("Cache hit for parameter "+parameter+" in parent cache!");
+            return parentCache.get(parameter);
+        }
         Identifier ident = new Identifier(parameter.getCvAccession(),
             Identifier.IdentifierType.OBO);
-        return client.getTermParents(ident, parameter.getCvLabel(), levels).
+        List<Parameter> parents = client.getTermParents(ident, parameter.getCvLabel(), levels).
             stream().
             map(Terms::asParameter).
             collect(Collectors.toList());
+        parentCache.put(parameter, parents);
+        return parents;
+    }
+
+    public List<Parameter> resolveChildren(Parameter parameter, int levels) throws org.springframework.web.client.HttpClientErrorException {
+        if (parameter.getCvAccession() == null || parameter.getCvLabel() == null) {
+            throw new IllegalArgumentException(
+                "Parameter must provide cvAccession and cvLabel!");
+        }
+        if(childCache.containsKey(parameter)) {
+            log.info("Cache hit for parameter "+parameter+" in child cache!");
+            return childCache.get(parameter);
+        }
+        Identifier ident = new Identifier(parameter.getCvAccession(),
+            Identifier.IdentifierType.OBO);
+        List<Parameter> children = client.getTermChildren(ident, parameter.getCvLabel(), levels).
+            stream().
+            map(Terms::asParameter).
+            collect(Collectors.toList());
+        childCache.put(parameter, children);
+        return children;
     }
 
     public List<Parameter> resolveChildren(Parameter parameter) throws org.springframework.web.client.HttpClientErrorException {
-        if (parameter.getCvAccession() == null || parameter.getCvLabel() == null) {
-            throw new IllegalArgumentException(
-                "Parameter must provide cvAccession and cvLabel!");
-        }
-        Identifier ident = new Identifier(parameter.getCvAccession(),
-            Identifier.IdentifierType.OBO);
-        return client.getTermChildren(ident, parameter.getCvLabel(), -1).
-            stream().
-            map(Terms::asParameter).
-            collect(Collectors.toList());
+        return resolveChildren(parameter, -1);
     }
 
     public ParameterComparisonResult isChildOfOrSame(Parameter parent,
         Parameter potentialChild) throws org.springframework.web.client.HttpClientErrorException {
-        if (parent.getCvAccession().toUpperCase().
-            equals(potentialChild.getCvAccession().toUpperCase())) {
+        if (parent.getCvAccession().
+            toUpperCase().
+            equals(potentialChild.getCvAccession().
+                toUpperCase())) {
             return ParameterComparisonResult.IDENTICAL;
         }
-        List<Parameter> parentsOf = resolveParents(potentialChild, -1);
+        List<Parameter> parentsOf = resolveParents(potentialChild);
 //        List<Parameter> childrenOf = resolveChildren(parent);
         boolean result = parentsOf.stream().
             anyMatch((potentialParent) ->

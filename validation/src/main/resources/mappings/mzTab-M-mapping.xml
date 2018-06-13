@@ -80,8 +80,9 @@ Alternative term roots should either be expressed as OR (for choose any, even fr
         </CvMappingRule>
         
         <!-- quantification method -->
-        <CvMappingRule id="quantification_method_must" cvElementPath="/metadata/@quantificationMethod" requirementLevel="MUST"  scopePath="/metadata" cvTermsCombinationLogic="AND">
+        <CvMappingRule id="quantification_method_must" cvElementPath="/metadata/@quantificationMethod" requirementLevel="MUST"  scopePath="/metadata" cvTermsCombinationLogic="OR">
           <CvTerm termAccession="PRIDE:0000307" useTerm="false" termName="Quantification method" isRepeatable="false" allowChildren="true" cvIdentifierRef="PRIDE"></CvTerm>
+          <CvTerm termAccession="MS:1001833" useTerm="false" termName="quantitation analysis summary" isRepeatable="false" allowChildren="true" cvIdentifierRef="MS"></CvTerm>
         </CvMappingRule>
         
         <!-- sample -->

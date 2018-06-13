@@ -20,7 +20,7 @@ import uk.ac.ebi.pride.utilities.ols.web.service.model.Term;
 
 /**
  *
- * @author Leibniz-Institut für Analytische Wissenschaften – ISAS – e.V.
+ * @author nilshoffmann
  */
 public class Terms {
 

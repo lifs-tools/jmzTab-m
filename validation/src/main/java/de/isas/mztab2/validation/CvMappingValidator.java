@@ -124,7 +124,7 @@ public class CvMappingValidator implements Validator<MzTab> {
                         for (CvTerm term : rule.getCvTerm()) {
                             if (term.isAllowChildren()) {
                                 throw new IllegalArgumentException(
-                                    CvMappingUtils.toString(rule) + " uses 'AND' combination logic with multiple CvTerms and allowChildren=true! Please change to OR or XOR logic!");
+                                    CvMappingUtils.niceToString(rule) + " uses 'AND' combination logic with multiple CvTerms and allowChildren=true! Please change to OR or XOR logic!");
                             }
                         }
                     }
@@ -143,11 +143,24 @@ public class CvMappingValidator implements Validator<MzTab> {
             log.debug(
                 "Evaluating rule " + rule.getId() + " on " + rule.
                 getCvElementPath() + " did not yield any selected elements!");
-            if (rule.getRequirementLevel() == CvMappingRule.RequirementLevel.MUST) {
-                MZTabError error = new MZTabError(
-                    CrossCheckErrorType.RulePointerObjectNull, -1,
-                    rule.getCvElementPath(), rule.getId());
-                return Arrays.asList(error.toValidationMessage());
+            switch (rule.getRequirementLevel()) {
+                case MAY:
+                    return Arrays.asList(new MZTabError(
+                        CrossCheckErrorType.RulePointerObjectNullOptional, -1,
+                        rule.getCvElementPath(), rule.getId(), "optional", CvMappingUtils.niceToString(rule)).
+                        toValidationMessage());
+                case SHOULD:
+                    return Arrays.asList(new MZTabError(
+                        CrossCheckErrorType.RulePointerObjectNullRecommended, -1,
+                        rule.getCvElementPath(), rule.getId(), "recommended", CvMappingUtils.niceToString(rule)).
+                        toValidationMessage());
+                case MUST:
+                    //The object "{0}" accessed by {1} is {2}, but was null or empty. Allowed terms are defined in {3}
+                    return Arrays.asList(new MZTabError(
+                        CrossCheckErrorType.RulePointerObjectNullRequired, -1,
+                        rule.getCvElementPath(), rule.getId(), "required", CvMappingUtils.niceToString(rule)).
+                        toValidationMessage());
+
             }
             return Collections.emptyList();
         }
@@ -265,8 +278,8 @@ public class CvMappingValidator implements Validator<MzTab> {
                             allowedParameters.put(pair.getValue().
                                 getCvAccession().
                                 toUpperCase(), Parameters.asParameter(cvTerm));
-                            allowedParameters.put(cvTerm.getTermAccession().
-                                toUpperCase(), Parameters.asParameter(cvTerm));
+                            foundParameters.put(cvTerm.getTermAccession().
+                                toUpperCase(), pair);
                         }
                     }
                 }
@@ -324,7 +337,8 @@ public class CvMappingValidator implements Validator<MzTab> {
                 }
                 MZTabError error = new MZTabError(errorType, -1,
                     new ParameterConverter().convert(allowedParameters.get(
-                        s)), rule.getCvElementPath(), rule.getId());
+                        s)), rule.getCvElementPath(), CvMappingUtils.niceToString(
+                    rule));
                 messages.add(error.toValidationMessage());
             }
         }
@@ -359,7 +373,8 @@ public class CvMappingValidator implements Validator<MzTab> {
                 }
                 MZTabError error = new MZTabError(errorType, -1,
                     new ParameterConverter().convert(allowedParameters.get(
-                        s)), rule.getCvElementPath(), rule.getId());
+                        s)), rule.getCvElementPath(), CvMappingUtils.niceToString(
+                    rule));
                 messages.add(error.toValidationMessage());
             }
         }
@@ -388,13 +403,15 @@ public class CvMappingValidator implements Validator<MzTab> {
                         -1,
                         new ParameterConverter().convert(foundParameters.get(
                             s).
-                            getValue()), rule.getCvElementPath(), rule.getId());
+                            getValue()), rule.getCvElementPath(),
+                        CvMappingUtils.niceToString(rule));
                 } else {
                     error = new MZTabError(CrossCheckErrorType.CvTermNotInRule,
                         -1,
                         new ParameterConverter().convert(foundParameters.get(
                             s).
-                            getValue()), rule.getCvElementPath(), rule.getId());
+                            getValue()), rule.getCvElementPath(),
+                        CvMappingUtils.niceToString(rule));
                 }
                 messages.add(error.toValidationMessage());
             }
@@ -427,16 +444,21 @@ public class CvMappingValidator implements Validator<MzTab> {
                 }
                 MZTabError error = new MZTabError(errorType, -1,
                     new ParameterConverter().convert(allowedParameters.get(
-                        s)), rule.getCvElementPath(), rule.getId());
+                        s)), rule.getCvElementPath(), CvMappingUtils.niceToString(
+                    rule));
                 messages.add(error.toValidationMessage());
             }
         } else if (matchedParameters.size() > 1) {
             //Only one of the provided cv terms for "{1}" {0} be reported. You defined terms "{2}". Allowed terms are defined in rule "{3}".
             String definedParameters = matchedParameters.stream().
                 collect(Collectors.joining(", "));
-            MZTabErrorType xorErrorType = MZTabErrorType.forLevel(MZTabErrorType.Category.CrossCheck,
+            MZTabErrorType xorErrorType = MZTabErrorType.forLevel(
+                MZTabErrorType.Category.CrossCheck,
                 toErrorLevel(rule.getRequirementLevel()), "CvTermXor");
-            MZTabError error = new MZTabError(xorErrorType, -1, rule.getRequirementLevel().value(), rule.getCvElementPath(), definedParameters, rule.getId());
+            MZTabError error = new MZTabError(xorErrorType, -1, rule.
+                getRequirementLevel().
+                value(), rule.getCvElementPath(), definedParameters,
+                CvMappingUtils.niceToString(rule));
             messages.add(error.toValidationMessage());
         }
 
