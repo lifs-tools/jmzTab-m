@@ -70,6 +70,7 @@ public class DatabaseSerializer extends StdSerializer<Database> {
     public void serialize(Database database, JsonGenerator jg,
         SerializerProvider sp) throws IOException {
         if (database != null) {
+            Serializers.checkIndexedElement(database);
             Serializers.addLineWithPropertyParameters(jg, Section.Metadata.
                 getPrefix(),
                 null, database, Arrays.asList(database.getParam()));

@@ -70,6 +70,7 @@ public class ContactSerializer extends StdSerializer<Contact> {
     public void serialize(Contact contact, JsonGenerator jg,
         SerializerProvider sp) throws IOException {
         if (contact != null) {
+            Serializers.checkIndexedElement(contact);
             addLineWithProperty(jg, Section.Metadata.getPrefix(),
                 Contact.Properties.name.getPropertyName(), contact,
                 contact.

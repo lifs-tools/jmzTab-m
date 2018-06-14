@@ -71,7 +71,7 @@ public class InstrumentSerializer extends StdSerializer<Instrument> {
     public void serialize(Instrument instrument, JsonGenerator jg,
         SerializerProvider sp) throws IOException {
         if (instrument != null) {
-
+            Serializers.checkIndexedElement(instrument);
             addLineWithProperty(jg, Section.Metadata.getPrefix(),
                 Instrument.Properties.name.getPropertyName(),
                 instrument,

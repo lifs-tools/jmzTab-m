@@ -29,6 +29,7 @@ public class ParameterConverter extends StdConverter<Parameter, String> {
 
     @Override
     public String convert(Parameter in) {
+//        Serializers.checkIndexedElement(in);
         return toString(in);
     }
 

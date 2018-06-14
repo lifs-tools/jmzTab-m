@@ -72,6 +72,7 @@ public class PublicationSerializer extends StdSerializer<Publication> {
     public void serialize(Publication publication, JsonGenerator jg,
         SerializerProvider sp) throws IOException {
         if (publication != null) {
+            Serializers.checkIndexedElement(publication);
             addLine(jg, Section.Metadata.getPrefix(),
                 Metadata.Properties.publication+"[" + publication.getId() + "]", Optional.ofNullable(
                 publication.

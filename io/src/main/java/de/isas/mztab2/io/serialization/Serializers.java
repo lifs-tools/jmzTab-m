@@ -36,10 +36,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import javax.validation.ValidationException;
 import lombok.extern.slf4j.Slf4j;
 import uk.ac.ebi.pride.jmztab2.model.IMZTabColumn;
 import uk.ac.ebi.pride.jmztab2.model.MZTabConstants;
 import static uk.ac.ebi.pride.jmztab2.model.MZTabConstants.NULL;
+import uk.ac.ebi.pride.jmztab2.model.MZTabStringUtils;
+import uk.ac.ebi.pride.jmztab2.model.MZTabUtils;
 import uk.ac.ebi.pride.jmztab2.model.MetadataElement;
 import uk.ac.ebi.pride.jmztab2.model.MetadataProperty;
 
@@ -64,7 +67,7 @@ public class Serializers {
      */
     public static String getReference(Object element, Integer idx) {
         StringBuilder sb = new StringBuilder();
-        
+
         sb.append(getElementName(element).
             orElseThrow(() ->
             {
@@ -76,7 +79,7 @@ public class Serializers {
             append("[").
             append(idx).
             append("]");
-        
+
         return sb.toString();
     }
 
@@ -186,7 +189,7 @@ public class Serializers {
         Object element,
         List<T> indexedElementList) {
         if (indexedElementList == null || indexedElementList.isEmpty()) {
-            
+
             log.debug(
                 "Skipping null or empty indexed element list values for {0}",
                 getElementName(
@@ -221,7 +224,7 @@ public class Serializers {
                 collect(Collectors.joining("|")));
             jg.writeEndArray();
         } catch (IOException ex) {
-            
+
             log.error("Caught IO Exception while trying to write indexed line:",
                 ex);
         }
@@ -240,7 +243,7 @@ public class Serializers {
         Object element,
         List<Parameter> parameterList) {
         if (parameterList == null || parameterList.isEmpty()) {
-            
+
             log.debug(
                 "Skipping null or empty parameter list values for " + getElementName(
                     element));
@@ -287,7 +290,7 @@ public class Serializers {
         String propertyName, Object element,
         List<Parameter> value) {
         if (value == null || value.isEmpty()) {
-            
+
             log.debug("Skipping null or empty values for {0}",
                 getElementName(
                     element));
@@ -348,7 +351,7 @@ public class Serializers {
             jg.writeString(NULL);
             jg.writeEndArray();
         } catch (IOException ex) {
-            
+
             log.error(
                 "Caught exception while trying to write line with null property:",
                 ex);
@@ -369,14 +372,14 @@ public class Serializers {
         String propertyName, Object element,
         Object... value) {
         if (value == null || value.length == 0) {
-            
+
             log.debug("Skipping null or empty values for {0}",
                 getElementName(
                     element));
             return;
         }
         if (value.length == 1 && (value[0] == null)) {
-            
+
             log.debug("Skipping empty value for {0}", getElementName(
                 element));
             return;
@@ -402,7 +405,7 @@ public class Serializers {
             }
             jg.writeEndArray();
         } catch (IOException ex) {
-            
+
             log.error(
                 "Caught IO exception while trying to write line with property:",
                 ex);
@@ -443,6 +446,10 @@ public class Serializers {
             String underscoreName = camelCaseToUnderscoreLowerCase(
                 rootElement.localName());
             if (element instanceof IndexedElement) {
+                if (((IndexedElement) element).getId() == null) {
+                    throw new NullPointerException(
+                        "Field 'id' must not be null for element '" + underscoreName + "'!");
+                }
                 return Optional.of(
                     underscoreName + "[" + ((IndexedElement) element).getId() + "]");
             }
@@ -491,7 +498,7 @@ public class Serializers {
     public static String camelCaseToUnderscoreLowerCase(String camelCase) {
         Matcher m = Pattern.compile("(?<=[a-z])[A-Z]").
             matcher(camelCase);
-        
+
         StringBuffer sb = new StringBuffer();
         while (m.find()) {
             m.appendReplacement(sb, "_" + m.group().
@@ -558,7 +565,7 @@ public class Serializers {
         if (subElement == null) {
             String elementName = Serializers.getElementName(element).
                 get();
-            
+
             log.debug("''{0}-{1}'' is null or empty!", new Object[]{
                 elementName,
                 subElementName});
@@ -592,7 +599,7 @@ public class Serializers {
                     try {
                         return new ParameterConverter().convert(parameter);
                     } catch (IllegalArgumentException npe) {
-                        
+
                         log.debug("parameter is null for {0}",
                             subElementName);
                         return "null";
@@ -615,7 +622,7 @@ public class Serializers {
         String elementName = Serializers.getElementName(element).
             get();
         if (subElements == null || subElements.isEmpty()) {
-            
+
             log.debug("''{0}-{1}'' is null or empty!", new Object[]{
                 elementName,
                 subElementName});
@@ -684,7 +691,7 @@ public class Serializers {
                     "Serialization of objects of type " + value.getClass()
                     + " currently not supported!");
             }
-            
+
         }
     }
 
@@ -975,5 +982,16 @@ public class Serializers {
                 }
             });
     }
-    
+
+    public static void checkIndexedElement(IndexedElement element) {
+        if (element.getId() == null) {
+            throw new ValidationException(
+                "'id' field of " + element.toString() + " must not be null!");
+        }
+        if (element.getId() < 1) {
+            throw new ValidationException(
+                "'id' field of " + element.toString() + " must have a value greater to equal to 1!");
+        }
+    }
+
 }

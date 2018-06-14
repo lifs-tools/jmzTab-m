@@ -76,6 +76,7 @@ public class StudyVariableSerializer extends StdSerializer<StudyVariable> {
     public void serialize(StudyVariable studyVariable, JsonGenerator jg,
         SerializerProvider sp) throws IOException {
         if (studyVariable != null) {
+            Serializers.checkIndexedElement(studyVariable);
             addLineWithProperty(jg, Section.Metadata.getPrefix(), null,
                 studyVariable,
                 studyVariable.getName());

@@ -64,6 +64,7 @@ public class SampleSerializer extends StdSerializer<Sample> {
     public void serialize(Sample sample, JsonGenerator jg,
         SerializerProvider sp) throws IOException {
         if (sample != null) {
+            Serializers.checkIndexedElement(sample);
             addLineWithProperty(jg, Section.Metadata.getPrefix(), null, sample,
                 sample.
                     getName());

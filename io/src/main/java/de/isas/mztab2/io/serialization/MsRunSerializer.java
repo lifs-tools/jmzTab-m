@@ -71,6 +71,7 @@ public class MsRunSerializer extends StdSerializer<MsRun> {
     public void serialize(MsRun msRun, JsonGenerator jg,
         SerializerProvider sp) throws IOException {
         if (msRun != null) {
+            Serializers.checkIndexedElement(msRun);
             addLineWithProperty(jg, Section.Metadata.getPrefix(),
                 MsRun.Properties.name.getPropertyName(), msRun,
                 msRun.getName());

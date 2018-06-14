@@ -68,6 +68,7 @@ public class CvSerializer extends StdSerializer<CV> {
     public void serialize(CV cv, JsonGenerator jg,
         SerializerProvider sp) throws IOException {
         if (cv != null) {
+            Serializers.checkIndexedElement(cv);
             addLineWithProperty(jg, Section.Metadata.getPrefix(),
                 CV.Properties.label.getPropertyName(), cv,
                 cv.
