@@ -32,7 +32,6 @@ import static de.isas.mztab2.io.serialization.Serializers.writeIndexedDoubles;
 import static de.isas.mztab2.io.serialization.Serializers.writeObject;
 import java.util.Collections;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 
 /**

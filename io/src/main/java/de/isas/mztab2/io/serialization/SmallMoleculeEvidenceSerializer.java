@@ -28,8 +28,6 @@ import de.isas.mztab2.model.SmallMoleculeEvidence;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Optional;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import uk.ac.ebi.pride.jmztab2.model.SmallMoleculeEvidenceColumn;
