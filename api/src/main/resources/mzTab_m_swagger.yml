@@ -328,12 +328,14 @@ definitions:
         default: SMH
         readOnly: true
       sml_id:
-        type: string
+        type: integer
+        format: int32
       smf_id_refs:
         type: array
         default: []
         items:
-          type: string
+          type: integer
+          format: int32
       database_identifier:
         type: array
         default: []
@@ -433,12 +435,14 @@ definitions:
         default: SFH
         readOnly: true
       smf_id:
-        type: string
+        type: integer
+        format: int32
       sme_id_refs:
         type: array
         default: []
         items:
-          type: string
+          type: integer
+          format: int32
       sme_id_ref_ambiguity_code:
         type: integer
         format: int32
@@ -497,7 +501,8 @@ definitions:
         default: SEH
         readOnly: true
       sme_id:
-        type: string
+        type: integer
+        format: int32
       evidence_input_id:
         type: string
       database_identifier:

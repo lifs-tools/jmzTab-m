@@ -104,7 +104,7 @@ public class SMFLineParser extends MZTabDataLineParser<SmallMoleculeFeature> {
                                 column, target));
                             break;
                         case SME_ID_REFS:
-                            smallMoleculeFeature.smeIdRefs(checkStringList(
+                            smallMoleculeFeature.smeIdRefs(checkIntegerList(
                                 column, target, MZTabConstants.BAR));
                             break;
                         case SME_ID_REF_AMBIGUITY_CODE:
@@ -112,7 +112,7 @@ public class SMFLineParser extends MZTabDataLineParser<SmallMoleculeFeature> {
                                 column, target));
                             break;
                         case SMF_ID:
-                            smallMoleculeFeature.smfId(checkString(
+                            smallMoleculeFeature.smfId(checkInteger(
                                 column, target));
                             break;
                     }

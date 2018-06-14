@@ -15,10 +15,12 @@
  */
 package de.isas.mztab2.io;
 
-import de.isas.mztab2.io.MzTabNonValidatingWriter;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectMapper.DefaultTyping;
+import de.danielbechler.diff.ObjectDifferBuilder;
+import de.danielbechler.diff.node.DiffNode;
+import de.danielbechler.diff.node.Visit;
 import de.isas.mztab2.io.serialization.ParameterConverter;
 import de.isas.mztab2.model.Assay;
 import de.isas.mztab2.model.CV;
@@ -58,6 +60,7 @@ import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorList;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorType;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabException;
 import static de.isas.mztab2.io.MzTabTestData.create2_0TestFile;
+import static uk.ac.ebi.pride.jmztab2.model.MZTabConstants.NEW_LINE;
 
 /**
  * Test class for MzTabWriter.
@@ -69,7 +72,6 @@ public class MzTabWriterTest {
     @Rule
     public LogMethodName methodNameLogger = new LogMethodName();
 
-    
     @Test
     public void testWriteDefaultToString() {
         try (BufferedWriter bw = Files.newBufferedWriter(File.createTempFile(
@@ -127,7 +129,8 @@ public class MzTabWriterTest {
     public void testWriteMetadataToTsvWithJackson() throws IOException {
         MzTab mzTabFile = create2_0TestFile();
         try (StringWriter sw = new StringWriter()) {
-            new MzTabNonValidatingWriter().writeMetadataWithJackson(mzTabFile, sw);
+            new MzTabNonValidatingWriter().writeMetadataWithJackson(mzTabFile,
+                sw);
             System.out.println("Serialized Metadata: ");
             sw.flush();
             String metadataString = sw.toString();
@@ -140,8 +143,8 @@ public class MzTabWriterTest {
     public void testWriteSmallMoleculeSummaryWithNullToTsvWithJackson() throws IOException {
         MzTab mzTabFile = create2_0TestFile();
         SmallMoleculeSummary smsi = new SmallMoleculeSummary();
-        smsi.smlId("" + 1).
-            smfIdRefs(Arrays.asList("" + 1, "" + 2, "" + 3, "" + 4, "" + 5)).
+        smsi.smlId(1).
+            smfIdRefs(Arrays.asList(1, 2, 3, 4, 5)).
             chemicalName(Arrays.asList("Cer(d18:1/24:0)",
                 "N-(tetracosanoyl)-sphing-4-enine", "C24 Cer")).
             addOptItem(new OptColumnMapping().identifier("global").
@@ -254,7 +257,7 @@ public class MzTabWriterTest {
             MZTabErrorType.Level.Info, 500);
         //we expect errors here, since our test file has neither summary, feature nor evidence sections.
         Assert.assertFalse(errors.isEmpty());
-        Assert.assertEquals(1, errors.size());
+        Assert.assertEquals(errors.toString(), 6, errors.size());
 //        MzTab mzTabReRead = parser.getMZTabFile();
 //        Assert.assertEquals(mzTabFile, mzTabReRead);
     }
@@ -279,9 +282,7 @@ public class MzTabWriterTest {
         MZTabFileParser parser = new MZTabFileParser(tempFile);
         MZTabErrorList errors = parser.parse(System.out,
             MZTabErrorType.Level.Info, 500);
-        Assert.assertTrue(errors.isEmpty());
-        //TODO we can not use equals, since comments are not preserved during writing
-        //Assert.assertEquals(mzTabFile, parser.getMZTabFile());
+        Assert.assertTrue(errors.toString(), errors.isEmpty());
         compareMzTabModels(mzTabFile, parser.getMZTabFile());
     }
 
@@ -298,20 +299,95 @@ public class MzTabWriterTest {
         MZTabFileParser parser = new MZTabFileParser(tempFile);
         MZTabErrorList errors = parser.parse(System.out,
             MZTabErrorType.Level.Info, 500);
-        System.err.println(errors);
-        Assert.assertTrue(errors.isEmpty());
+        Assert.assertTrue(errors.toString(), errors.isEmpty());
         compareMzTabModels(mzTabFile, parser.getMZTabFile());
     }
 
     void compareMzTabModels(MzTab model1, MzTab model2
     ) {
-        Assert.assertEquals(model1.getMetadata(), model2.getMetadata());
-        Assert.assertEquals(model1.getSmallMoleculeSummary(), model2.
-            getSmallMoleculeSummary());
-        Assert.assertEquals(model1.getSmallMoleculeFeature(), model2.
-            getSmallMoleculeFeature());
-        Assert.assertEquals(model1.getSmallMoleculeEvidence(), model2.
-            getSmallMoleculeEvidence());
+
+        DiffNode metadataDiff = ObjectDifferBuilder.buildDefault().
+            compare(model1.getMetadata(), model2.getMetadata());
+        if (metadataDiff.hasChanges()) {
+            final StringBuilder sb = new StringBuilder();
+            metadataDiff.visit(new DiffNode.Visitor() {
+                public void node(DiffNode node, Visit visit) {
+                    final Object baseValue = node.canonicalGet(model1.
+                        getMetadata());
+                    final Object workingValue = node.canonicalGet(model2.
+                        getMetadata());
+                    final String message = node.getPath() + " differed: '"
+                        + baseValue + "' != '" + workingValue + "'";
+                    sb.append(message).
+                        append(NEW_LINE);
+
+                }
+            });
+            Assert.assertFalse(sb.toString(), metadataDiff.hasChanges());
+        }
+
+        DiffNode summaryDiff = ObjectDifferBuilder.buildDefault().
+            compare(model1.getSmallMoleculeSummary(), model2.
+                getSmallMoleculeSummary());
+        if (summaryDiff.hasChanges()) {
+            final StringBuilder sb = new StringBuilder();
+            summaryDiff.visit(new DiffNode.Visitor() {
+                public void node(DiffNode node, Visit visit) {
+                    final Object baseValue = node.canonicalGet(model1.
+                        getSmallMoleculeSummary());
+                    final Object workingValue = node.canonicalGet(model2.
+                        getSmallMoleculeSummary());
+                    final String message = node.getPath() + " differed: '"
+                        + baseValue + "' != '" + workingValue + "'";
+                    sb.append(message).
+                        append(NEW_LINE);
+
+                }
+            });
+            Assert.assertFalse(sb.toString(), summaryDiff.hasChanges());
+        }
+
+        DiffNode featureDiff = ObjectDifferBuilder.buildDefault().
+            compare(model1.getSmallMoleculeFeature(), model2.
+                getSmallMoleculeFeature());
+        if (featureDiff.hasChanges()) {
+            final StringBuilder sb = new StringBuilder();
+            featureDiff.visit(new DiffNode.Visitor() {
+                public void node(DiffNode node, Visit visit) {
+                    final Object baseValue = node.canonicalGet(model1.
+                        getSmallMoleculeFeature());
+                    final Object workingValue = node.canonicalGet(model2.
+                        getSmallMoleculeFeature());
+                    final String message = node.getPath() + " differed: '"
+                        + baseValue + "' != '" + workingValue + "'";
+                    sb.append(message).
+                        append(NEW_LINE);
+
+                }
+            });
+            Assert.assertFalse(sb.toString(), featureDiff.hasChanges());
+        }
+
+        DiffNode evidenceDiff = ObjectDifferBuilder.buildDefault().
+            compare(model1.getSmallMoleculeEvidence(), model2.
+                getSmallMoleculeEvidence());
+        if (evidenceDiff.hasChanges()) {
+            final StringBuilder sb = new StringBuilder();
+            evidenceDiff.visit(new DiffNode.Visitor() {
+                public void node(DiffNode node, Visit visit) {
+                    final Object baseValue = node.canonicalGet(model1.
+                        getSmallMoleculeEvidence());
+                    final Object workingValue = node.canonicalGet(model2.
+                        getSmallMoleculeEvidence());
+                    final String message = node.getPath() + " differed: '"
+                        + baseValue + "' != '" + workingValue + "'";
+                    sb.append(message).
+                        append(NEW_LINE);
+
+                }
+            });
+            Assert.assertFalse(sb.toString(), evidenceDiff.hasChanges());
+        }
     }
 
     @Test
@@ -330,7 +406,7 @@ public class MzTabWriterTest {
                 try {
                     SmallMoleculeSummary clone = clone(
                         SmallMoleculeSummary.class, smallMolecule);
-                    clone.setSmlId((smsIds.get() + i) + "");
+                    clone.setSmlId((smsIds.get() + i));
                     newSms.add(clone);
                 } catch (IOException ex) {
                     Logger.getLogger(MzTabWriterTest.class.getName()).
@@ -352,7 +428,7 @@ public class MzTabWriterTest {
                 try {
                     SmallMoleculeFeature clone = clone(
                         SmallMoleculeFeature.class, smallMoleculeFeature);
-                    clone.setSmfId((smfIds.get() + i) + "");
+                    clone.setSmfId((smfIds.get() + i));
                     newSmf.add(clone);
                 } catch (IOException ex) {
                     Logger.getLogger(MzTabWriterTest.class.getName()).
@@ -374,7 +450,7 @@ public class MzTabWriterTest {
                 try {
                     SmallMoleculeEvidence clone = clone(
                         SmallMoleculeEvidence.class, smallMoleculeEvidence);
-                    clone.setSmeId((smeIds.get() + i) + "");
+                    clone.setSmeId((smeIds.get() + i));
                     newSme.add(clone);
                 } catch (IOException ex) {
                     Logger.getLogger(MzTabWriterTest.class.getName()).
@@ -542,7 +618,8 @@ public class MzTabWriterTest {
             ".mztab");
         MzTabNonValidatingWriter writer = new MzTabNonValidatingWriter();
         writer.write(tempFile.toPath(), mztab);
-        Files.lines(tempFile.toPath()).forEach((line) ->
+        Files.lines(tempFile.toPath()).
+            forEach((line) ->
             {
                 System.out.println(line);
             });

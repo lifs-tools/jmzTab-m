@@ -357,6 +357,31 @@ public abstract class MZTabDataLineParser<T> extends MZTabLineParser {
         return stringList;
     }
     
+
+    /**
+     * Check and translate target string into integer list which split by splitChar character..
+     * If parse incorrect, raise {@link uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType#StringList} error.
+     *
+     * @param column SHOULD NOT set null
+     * @param target SHOULD NOT be empty.
+     * @param splitChar a char.
+     * @return a {@link java.util.List} object.
+     */
+    protected List<Integer> checkIntegerList(IMZTabColumn column, String target, char splitChar) {
+        String result = checkData(column, target, true);
+
+        if (result == null || result.equalsIgnoreCase(NULL)) {
+            return new ArrayList<>(splitChar);
+        }
+
+        List<Integer> stringList = parseIntegerList(result);
+        if (stringList.isEmpty()) {
+            this.errorList.add(new MZTabError(FormatErrorType.IntegerList, lineNumber, column.getHeader(), result, "" + splitChar));
+        }
+
+        return stringList;
+    }    
+    
     /**
      * Check and translate target string into parameter list which split by splitChar character..
      * If parse incorrect, raise {@link uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType#StringList} error.

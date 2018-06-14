@@ -82,7 +82,7 @@ public class SmallMoleculeEvidenceSerializer extends StdSerializer<SmallMolecule
             writeString(SmallMoleculeEvidence.HeaderPrefixEnum.SEH.getValue(),
                 jg, SmallMoleculeEvidence.PrefixEnum.SME.
                     getValue());
-            writeString(SmallMoleculeEvidenceColumn.Stable.SME_ID, jg,
+            writeNumber(SmallMoleculeEvidenceColumn.Stable.SME_ID, jg,
                 smallMoleculeEvidence.getSmeId());
             writeString(SmallMoleculeEvidenceColumn.Stable.EVIDENCE_INPUT_ID,
                 jg, smallMoleculeEvidence.getEvidenceInputId());

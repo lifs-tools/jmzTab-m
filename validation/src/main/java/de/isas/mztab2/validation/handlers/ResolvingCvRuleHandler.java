@@ -49,7 +49,7 @@ public class ResolvingCvRuleHandler implements CvRuleHandler {
 
         final Map<String, Parameter> allowedParameters = new LinkedHashMap<>();
         final Map<String, Pair<Pointer, ? extends Parameter>> foundParameters = new LinkedHashMap<>();
-        
+
         log.debug("Evaluating rule " + rule.getId() + " on " + rule.
             getCvElementPath());
         if (rule.getCvTermsCombinationLogic() == CvMappingRule.CvTermsCombinationLogic.AND) {
@@ -74,7 +74,8 @@ public class ResolvingCvRuleHandler implements CvRuleHandler {
                         //resolve children
                         try {
                             ParameterComparisonResult result = client.
-                                isChildOfOrSame(CvMappingUtils.asParameter(cvTerm),
+                                isChildOfOrSame(CvMappingUtils.asParameter(
+                                    cvTerm),
                                     pair.getValue());
                             switch (result) {
                                 case CHILD_OF:
@@ -84,8 +85,9 @@ public class ResolvingCvRuleHandler implements CvRuleHandler {
                                     //use key of found parameter, since it is a child of cvTerm / cvTerm is a parent of the child
                                     allowedParameters.put(pair.getValue().
                                         getCvAccession().
-                                        toUpperCase(), CvMappingUtils.asParameter(
-                                            cvTerm));
+                                        toUpperCase(), CvMappingUtils.
+                                            asParameter(
+                                                cvTerm));
                                     foundParameters.put(pair.getValue().
                                         getCvAccession().
                                         toUpperCase(), pair);
@@ -122,9 +124,11 @@ public class ResolvingCvRuleHandler implements CvRuleHandler {
                             }
                         } catch (org.springframework.web.client.HttpClientErrorException ex) {
                             throw new IllegalArgumentException(
-                                "Could not retrieve parents for term " + pair.
+                                "Could not retrieve parents for cv with label '" + pair.
                                     getValue().
-                                    getCvAccession() + "! Please check, whether the term accession is correct!",
+                                    getCvLabel() + "' and term accession '" + pair.
+                                    getValue().
+                                    getCvAccession() + "'! Please check, whether the cv label and term accession is correct!",
                                 ex);
                         }
                     } else if (cvTerm.isUseTermName()) {
@@ -139,7 +143,8 @@ public class ResolvingCvRuleHandler implements CvRuleHandler {
                             //TODO repeatable terms
                             allowedParameters.put(pair.getValue().
                                 getCvAccession().
-                                toUpperCase(), CvMappingUtils.asParameter(cvTerm));
+                                toUpperCase(), CvMappingUtils.
+                                    asParameter(cvTerm));
                             foundParameters.put(pair.getValue().
                                 getCvAccession().
                                 toUpperCase(), pair);

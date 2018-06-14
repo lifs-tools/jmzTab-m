@@ -131,7 +131,7 @@ public class MZTabFileParser {
 
         errorList.print(out);
         if (mzTabFile!=null && errorList.isEmpty()) {
-            out.write(("No errors in " + tabFile + " file!" + NEW_LINE).
+            out.write(("No structural or logical errors in " + tabFile + " file!" + NEW_LINE).
                 getBytes());
         }
         return errorList;
@@ -424,6 +424,7 @@ public class MZTabFileParser {
         }
         
         mtdParser.refineNormalMetadata();
+        //TODO implement post hoc checks for SML, SMF and SME
         if (errorList.isEmpty()) {
             mzTabFile = new MzTab();
             mzTabFile.metadata(mtdParser.getMetadata());

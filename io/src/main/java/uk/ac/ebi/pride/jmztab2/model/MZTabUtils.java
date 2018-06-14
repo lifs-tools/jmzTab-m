@@ -36,6 +36,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import static uk.ac.ebi.pride.jmztab2.model.MZTabConstants.*;
 import static uk.ac.ebi.pride.jmztab2.model.MZTabStringUtils.*;
+import uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType;
+import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabError;
+import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabException;
 import uk.ac.ebi.pride.jmztab2.utils.parser.MZTabParserContext;
 
 /**
@@ -82,7 +85,7 @@ public class MZTabUtils {
             return null;
         }
 
-        String regexp = "[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-']+)*@[A-Za-z0-9]+(?:[-.][A-Za-z0-9]+)*(\\.[A-Za-z]{2,})";
+        String regexp = REGEX_EMAIL;
         Pattern pattern = Pattern.compile(regexp);
         Matcher matcher = pattern.matcher(target);
 
@@ -101,7 +104,7 @@ public class MZTabUtils {
             return null;
         }
 
-        Pattern versionPattern = Pattern.compile("(?<major>[2]{1})\\.(?<minor>\\d{1})\\.(?<micro>\\d{1})-(?<profile>[M]{1})");
+        Pattern versionPattern = Pattern.compile(MZTabConstants.REGEX_MZTAB_M);
         Matcher m = versionPattern.matcher(target);
         if(m.matches()) {
             Integer major = Integer.parseInt(m.group("major"));
@@ -137,7 +140,7 @@ public class MZTabUtils {
 
         try {
             target = target.substring(target.indexOf("[") + 1, target.lastIndexOf("]"));
-            String[] tokens = target.split(",(?=([^\"]*\"[^\"]*\")*[^\"]*$)", -1);
+            String[] tokens = target.split(REGEX_PARAM_SPLIT, -1);
 
             if (tokens.length == 4) {
                 String cvLabel = tokens[0].trim();
@@ -412,6 +415,30 @@ public class MZTabUtils {
 
         return valueList;
     }
+    
+    /**
+     * <p>parseIntegerList.</p>
+     *
+     * @param target a {@link java.lang.String} object.
+     * @return a {@link java.util.List} object.
+     */
+    public static List<Integer> parseIntegerList(String target) {
+        List<String> list = parseStringList(BAR, target);
+
+        Integer value;
+        List<Integer> valueList = new ArrayList<>(BAR);
+        for (String item : list) {
+            value = parseInteger(item);
+            if (value == null) {
+                valueList.clear();
+                break;
+            } else {
+                valueList.add(value);
+            }
+        }
+
+        return valueList;
+    }
 
     /**
      * <p>parseURL.</p>
@@ -464,10 +491,11 @@ public class MZTabUtils {
      * DOIs by "doi:". Multiple identifiers MUST be separated by "|".
      *
      * @param publication a {@link de.isas.mztab2.model.Publication} object.
+     * @param lineNumber the line number while parsing.
      * @param target a {@link java.lang.String} object.
      * @return a {@link de.isas.mztab2.model.Publication} object.
      */
-    public static Publication parsePublicationItems(Publication publication, String target) {
+    public static Publication parsePublicationItems(Publication publication, int lineNumber, String target) throws MZTabException {
         List<String> list = parseStringList(BAR, target);
 
         PublicationItem.TypeEnum type;
@@ -483,19 +511,13 @@ public class MZTabUtils {
             if (items.length == 2) {
                 type = PublicationItem.TypeEnum.fromValue(items[0]);
                 if(type == null) {
-                    //FIXME add logging?
-                    publication.getPublicationItems().clear();
-                    //Publication not supported
-                    return publication;
+                    throw new MZTabException(new MZTabError(FormatErrorType.Publication, lineNumber, target, pub));
                 }
                 accession = items[1].trim();
                 item = new PublicationItem().type(type).accession(accession);
                 publication.addPublicationItemsItem(item);
             }  else {
-                //FIXME add logging?
-                publication.getPublicationItems().clear();
-                //Publication not supported
-                return publication;
+                throw new MZTabException(new MZTabError(FormatErrorType.Publication, lineNumber, target, pub));
             }
 
         }

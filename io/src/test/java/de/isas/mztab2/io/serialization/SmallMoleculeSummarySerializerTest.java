@@ -47,8 +47,8 @@ public class SmallMoleculeSummarySerializerTest extends AbstractSerializerTest {
     public void testSerialize() throws IOException, MZTabException {
         MzTab mzTabFile = create2_0TestFile();
         SmallMoleculeSummary smsi = new SmallMoleculeSummary();
-        smsi.smlId("" + 1).
-            smfIdRefs(Arrays.asList("" + 1, "" + 2, "" + 3, "" + 4, "" + 5)).
+        smsi.smlId(1).
+            smfIdRefs(Arrays.asList(1, 2, 3, 4, 5)).
             chemicalName(Arrays.asList("Cer(d18:1/24:0)",
                 "N-(tetracosanoyl)-sphing-4-enine", "C24 Cer")).
             addOptItem(new OptColumnMapping().identifier("global").

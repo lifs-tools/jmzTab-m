@@ -317,9 +317,43 @@ MTD	id_confidence_measure[3]	[,,Isotopic fit Score,]
         
         MzTab mzTab = new MzTab();
         mzTab.metadata(mtd);
+        SmallMoleculeEvidence sme = new SmallMoleculeEvidence().smeId(1).
+            addIdConfidenceMeasureItem(1.00).
+            addSpectraRefItem(new SpectraRef().msRun(msRun2).
+                reference("index=2")).
+            charge(1).
+            chemicalFormula("C42H83NO3").
+            chemicalName("Cer(d18:1/24:0)").
+            databaseIdentifier("nd").
+            evidenceInputId("1").
+            expMassToCharge(650.6373).
+            msLevel(new Parameter().cvLabel("MS").
+                cvAccession("MS:1000511").
+                name("ms level").
+                value("2")).
+            rank(1).
+            smiles(
+                "CCCCCCCCCCCCCCCCCCCCCCCC(=O)N[C@@H](CO)[C@H](O)/C=C/CCCCCCCCCCCCC").
+            theoreticalMassToCharge(649.6373).
+            uri("http://link.to.me/hj551a-2asdkj-12451").
+            addCommentItem(new Comment().prefix(Comment.PrefixEnum.COM).
+                msg("Needs further investigation"));
+        SmallMoleculeFeature smf = new SmallMoleculeFeature().smfId(1).
+            addSmeIdRefsItem(sme.getSmeId()).
+            adductIon("[M+H]1+").
+            charge(1).
+            expMassToCharge(650.6373).
+            retentionTimeInSeconds(346.34).
+            retentionTimeInSecondsEnd(349.87).
+            retentionTimeInSecondsStart(342.98).
+            smeIdRefAmbiguityCode(1).
+            addOptItem(new OptColumnMapping().identifier("global").
+                value("idk"));
+        mzTab.addSmallMoleculeFeatureItem(smf);
+        mzTab.addSmallMoleculeEvidenceItem(sme);
         SmallMoleculeSummary smsi = new SmallMoleculeSummary();
-        smsi.smlId("" + 1).
-            smfIdRefs(Arrays.asList("" + 1, "" + 2, "" + 3, "" + 4, "" + 5)).
+        smsi.smlId(1).
+            addSmfIdRefsItem(smf.getSmfId()).
             chemicalName(Arrays.asList("Cer(d18:1/24:0)",
                 "N-(tetracosanoyl)-sphing-4-enine", "C24 Cer")).
             addOptItem(new OptColumnMapping().identifier("global").
@@ -361,40 +395,6 @@ MTD	id_confidence_measure[3]	[,,Isotopic fit Score,]
             addAbundanceVariationStudyVariableItem(0.0d).
             addAbundanceVariationStudyVariableItem(0.00001d);
         mzTab.addSmallMoleculeSummaryItem(smsi);
-        SmallMoleculeFeature smf = new SmallMoleculeFeature().smfId("1").
-            addSmeIdRefsItem("1").
-            adductIon("[M+H]1+").
-            charge(1).
-            expMassToCharge(650.6373).
-            retentionTimeInSeconds(346.34).
-            retentionTimeInSecondsEnd(349.87).
-            retentionTimeInSecondsStart(342.98).
-            smeIdRefAmbiguityCode(1).
-            addOptItem(new OptColumnMapping().identifier("global").
-                value("idk"));
-        mzTab.addSmallMoleculeFeatureItem(smf);
-        SmallMoleculeEvidence sme = new SmallMoleculeEvidence().smeId("1").
-            addIdConfidenceMeasureItem(1.00).
-            addSpectraRefItem(new SpectraRef().msRun(msRun2).
-                reference("index=2")).
-            charge(1).
-            chemicalFormula("C42H83NO3").
-            chemicalName("Cer(d18:1/24:0)").
-            databaseIdentifier("nd").
-            evidenceInputId("1").
-            expMassToCharge(650.6373).
-            msLevel(new Parameter().cvLabel("MS").
-                cvAccession("MS:1000511").
-                name("ms level").
-                value("2")).
-            rank(1).
-            smiles(
-                "CCCCCCCCCCCCCCCCCCCCCCCC(=O)N[C@@H](CO)[C@H](O)/C=C/CCCCCCCCCCCCC").
-            theoreticalMassToCharge(649.6373).
-            uri("http://link.to.me/hj551a-2asdkj-12451").
-            addCommentItem(new Comment().prefix(Comment.PrefixEnum.COM).
-                msg("Needs further investigation"));
-        mzTab.addSmallMoleculeEvidenceItem(sme);
         return mzTab;
     }
     

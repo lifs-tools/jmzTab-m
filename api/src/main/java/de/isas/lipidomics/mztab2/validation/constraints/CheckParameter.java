@@ -27,10 +27,6 @@ import javax.validation.Payload;
 
 /**
  *
- * @author Leibniz-Institut für Analytische Wissenschaften – ISAS – e.V.
- */
-/**
- *
  * @author nilshoffmann
  */
 @Target({ TYPE, ANNOTATION_TYPE })

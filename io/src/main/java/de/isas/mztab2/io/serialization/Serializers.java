@@ -27,9 +27,11 @@ import de.isas.mztab2.model.Parameter;
 import de.isas.mztab2.model.StudyVariable;
 import de.isas.mztab2.model.Uri;
 import java.io.IOException;
+import java.text.NumberFormat;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -743,7 +745,17 @@ public class Serializers {
                 String arrayElements = elements.stream().
                     map((number) ->
                     {
-                        return "" + number.doubleValue();
+                        if (number instanceof Short) {
+                            return "" + number.shortValue();
+                        } else if (number instanceof Integer) {
+                            return "" + number.intValue();
+                        } else if (number instanceof Long) {
+                            return "" + number.longValue();
+                        } else if (number instanceof Float) {
+                            return "" + number.floatValue();
+                        } else {
+                            return "" + number.doubleValue();
+                        }
                     }).
                     collect(Collectors.joining("" + MZTabConstants.BAR));
                 if (arrayElements.isEmpty()) {

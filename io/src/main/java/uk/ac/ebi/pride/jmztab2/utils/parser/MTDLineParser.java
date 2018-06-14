@@ -45,6 +45,7 @@ import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import uk.ac.ebi.pride.jmztab2.model.MZTabConstants;
 import static uk.ac.ebi.pride.jmztab2.model.MZTabUtils.*;
 import static uk.ac.ebi.pride.jmztab2.model.MZTabStringUtils.*;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorType;
@@ -65,8 +66,6 @@ public class MTDLineParser extends MZTabLineParser {
 
     private static final String Error_Header = Metadata.PrefixEnum.MTD.
         getValue() + "\t";
-
-    public static final String normalMetadataRegexp = "(\\w+)(\\[(\\w+)\\])?(-(\\w+)(\\[(\\w+)\\])?)?(-(\\w+))?";
 
     private final Metadata metadata = new Metadata();
 
@@ -175,24 +174,29 @@ public class MTDLineParser extends MZTabLineParser {
      * error, add it into {@link MZTabErrorList}
      */
     private Publication checkPublication(Integer id, String defineLabel,
-        String valueLabel) {
+        String valueLabel) throws MZTabException {
         if (!context.getPublicationMap().
             containsKey(id)) {
             context.addPublication(metadata, new Publication().id(id));
         }
-        Publication publications = parsePublicationItems(context.
-            getPublicationMap().
-            get(id), valueLabel);
-
-        if (publications.getPublicationItems() == null || publications.
-            getPublicationItems().
-            isEmpty()) {
-            errorList.add(
-                new MZTabError(FormatErrorType.Publication, lineNumber,
-                    Error_Header + defineLabel, valueLabel));
+        Publication publications = null;
+        try {
+            publications = parsePublicationItems(context.
+                getPublicationMap().
+                get(id), lineNumber, valueLabel);
+            if (publications == null || publications.getPublicationItems() == null || publications.
+                getPublicationItems().
+                isEmpty()) {
+                errorList.add(
+                    new MZTabError(FormatErrorType.Publication, lineNumber,
+                        Error_Header + defineLabel, valueLabel));
+            }
+        } catch(MZTabException ex) {
+            errorList.add(ex.getError());
         }
 
         return publications;
+
     }
 
     /**
@@ -224,10 +228,11 @@ public class MTDLineParser extends MZTabLineParser {
     private java.net.URL checkURL(String defineLabel, String valueLabel,
         boolean mandatory) {
 
-        if(null==parseString(valueLabel)) {
-            if(mandatory) {
+        if (null == parseString(valueLabel)) {
+            if (mandatory) {
                 // "null" value is supported when the ms_run[1-n]-location is unknown
-                errorList.add(new MZTabError(LogicalErrorType.NotNULL, lineNumber,
+                errorList.add(new MZTabError(LogicalErrorType.NotNULL,
+                    lineNumber,
                     Error_Header + defineLabel, valueLabel));
             }
             return null;
@@ -307,7 +312,7 @@ public class MTDLineParser extends MZTabLineParser {
      * If exists parse error, add it into {@link MZTabErrorList}
      */
     private void parseNormalMetadata(String defineLabel, String valueLabel) throws MZTabException {
-        Pattern pattern = Pattern.compile(normalMetadataRegexp);
+        Pattern pattern = Pattern.compile(MZTabConstants.REGEX_NORMAL_METADATA);
         Matcher matcher = pattern.matcher(defineLabel);
 
         if (matcher.find()) {
@@ -364,9 +369,6 @@ public class MTDLineParser extends MZTabLineParser {
                 case MS_RUN:
                     handleMsRun(defineLabel, matcher, element, valueLabel);
                     break;
-                case CUSTOM:
-                    handleCustom(defineLabel, matcher, valueLabel);
-                    break;
                 case SAMPLE:
                     handleSample(defineLabel, matcher, element, valueLabel);
                     break;
@@ -377,12 +379,17 @@ public class MTDLineParser extends MZTabLineParser {
                     handleStudyVariable(defineLabel, matcher, element,
                         valueLabel);
                     break;
+                case CUSTOM:
+                    handleCustom(defineLabel, matcher, valueLabel);
+                    break;
                 case CV:
                     handleCv(defineLabel, matcher, element, valueLabel);
                     break;
                 case DATABASE:
                     handleDatabase(defineLabel, matcher, element, valueLabel);
                     break;
+                case DERIVATIZATION_AGENT:
+                    handleDerivatizationAgent(defineLabel, matcher, valueLabel);
                 case COLUNIT:
                 case COLUNIT_SMALL_MOLECULE:
                 case COLUNIT_SMALL_MOLECULE_FEATURE:
@@ -438,7 +445,7 @@ public class MTDLineParser extends MZTabLineParser {
         MetadataProperty property;
         id = checkIndex(defineLabel, matcher.group(3));
         property = checkProperty(element, matcher.group(5));
-        addDatabase(metadata, property, id, defineLabel, valueLabel);
+        addDatabase(context, metadata, property, id, defineLabel, valueLabel);
     }
 
     protected void handleCv(String defineLabel, Matcher matcher,
@@ -447,7 +454,7 @@ public class MTDLineParser extends MZTabLineParser {
         MetadataProperty property;
         id = checkIndex(defineLabel, matcher.group(3));
         property = checkProperty(element, matcher.group(5));
-        addCv(metadata, property, id, valueLabel);
+        addCv(context, metadata, property, id, valueLabel);
     }
 
     protected void handleStudyVariable(String defineLabel, Matcher matcher,
@@ -456,7 +463,7 @@ public class MTDLineParser extends MZTabLineParser {
         MetadataProperty property;
         id = checkIndex(defineLabel, matcher.group(3));
         property = checkProperty(element, matcher.group(5));
-        addStudyVariable(metadata, property, defineLabel, valueLabel,
+        addStudyVariable(context, metadata, property, defineLabel, valueLabel,
             id);
     }
 
@@ -468,7 +475,7 @@ public class MTDLineParser extends MZTabLineParser {
             // no quantification modification. For example: assay[1-n]-quantification_reagent
             id = checkIndex(defineLabel, matcher.group(3));
             property = checkProperty(element, matcher.group(5));
-            addAssay(metadata, property, defineLabel, valueLabel, id);
+            addAssay(context, metadata, property, defineLabel, valueLabel, id);
         } else {
             throw new MZTabException(
                 "assay does not support quantification modification!");
@@ -481,7 +488,7 @@ public class MTDLineParser extends MZTabLineParser {
         MetadataProperty property;
         id = checkIndex(defineLabel, matcher.group(3));
         property = checkProperty(element, matcher.group(5));
-        addSample(metadata, property, id, defineLabel, valueLabel);
+        addSample(context, metadata, property, id, defineLabel, valueLabel);
     }
 
     protected void handleCustom(String defineLabel, Matcher matcher,
@@ -491,6 +498,14 @@ public class MTDLineParser extends MZTabLineParser {
         context.addCustomItem(metadata, id, checkParameter(
             defineLabel, valueLabel));
     }
+    
+    protected void handleDerivatizationAgent(String defineLabel, Matcher matcher,
+        String valueLabel) throws MZTabException {
+        Integer id;
+        id = checkIndex(defineLabel, matcher.group(3));
+        context.addDerivatizationAgentItem(metadata, id, checkParameter(
+            defineLabel, valueLabel));
+    }
 
     protected void handleMsRun(String defineLabel, Matcher matcher,
         MetadataElement element, String valueLabel) throws MZTabException {
@@ -498,7 +513,7 @@ public class MTDLineParser extends MZTabLineParser {
         MetadataProperty property;
         id = checkIndex(defineLabel, matcher.group(3));
         property = checkProperty(element, matcher.group(5));
-        addMsRun(metadata, property, id, defineLabel, valueLabel);
+        addMsRun(context, metadata, property, id, defineLabel, valueLabel);
     }
 
     protected void handleSmallMoleculeFeature(MetadataElement element,
@@ -563,8 +578,8 @@ public class MTDLineParser extends MZTabLineParser {
                 LogicalErrorType.DuplicationDefine, lineNumber,
                 defineLabel));
         }
-        metadata.setQuantificationMethod(checkParameter(
-            defineLabel, valueLabel));
+        metadata.
+            setQuantificationMethod(checkParameter(defineLabel, valueLabel));
     }
 
     protected void handleExternalStudyUri(String defineLabel, Matcher matcher,
@@ -591,7 +606,7 @@ public class MTDLineParser extends MZTabLineParser {
         MetadataProperty property;
         id = checkIndex(defineLabel, matcher.group(3));
         property = checkProperty(element, matcher.group(5));
-        addContact(metadata, property, id, valueLabel, defineLabel);
+        addContact(context, metadata, property, id, valueLabel, defineLabel);
     }
 
     protected void handlePublication(String defineLabel, Matcher matcher,
@@ -607,7 +622,7 @@ public class MTDLineParser extends MZTabLineParser {
         MetadataProperty property;
         id = checkIndex(defineLabel, matcher.group(3));
         property = checkProperty(element, matcher.group(5));
-        addSoftware(metadata, property, defineLabel, valueLabel, id);
+        addSoftware(context, metadata, property, defineLabel, valueLabel, id);
     }
 
     protected void handleInstrument(String defineLabel, Matcher matcher,
@@ -618,14 +633,14 @@ public class MTDLineParser extends MZTabLineParser {
         id = checkIndex(defineLabel, matcher.group(3));
         property = checkProperty(element, matcher.group(5));
         param = checkParameter(defineLabel, valueLabel);
-        addInstrument(metadata, property, id, param);
+        addInstrument(context, metadata, property, id, param);
     }
 
     protected void handleSampleProcessing(String defineLabel, Matcher matcher,
         String valueLabel) throws MZTabException {
         Integer id;
         id = checkIndex(defineLabel, matcher.group(3));
-        addSampleProcessing(metadata, id, checkParameterList(
+        addSampleProcessing(context, metadata, id, checkParameterList(
             defineLabel, valueLabel));
     }
 
@@ -671,6 +686,11 @@ public class MTDLineParser extends MZTabLineParser {
                         LogicalErrorType.DuplicationDefine,
                         lineNumber, defineLabel));
                 }
+                if (parseString(valueLabel) == null) {
+                    throw new MZTabException(new MZTabError(
+                        FormatErrorType.MZTabId, lineNumber,
+                        defineLabel, valueLabel));
+                }
                 metadata.mzTabID(parseString(valueLabel));
                 break;
             default:
@@ -694,41 +714,36 @@ public class MTDLineParser extends MZTabLineParser {
         SortedMap<Integer, MsRun> runMap = context.getMsRunMap();
 
         if (metadata.getMzTabVersion() == null) {
-            
+
             errorList.add(new MZTabError(
-                LogicalErrorType.NotDefineInMetadata, lineNumber,
+                LogicalErrorType.NotDefineInMetadata, -1,
                 Metadata.Properties.mzTabVersion.getPropertyName(),
                 metadata.getMzTabVersion()));
         }
 
         if (metadata.getMzTabID() == null) {
             errorList.add(new MZTabError(
-                LogicalErrorType.NotDefineInMetadata, lineNumber,
+                LogicalErrorType.NotDefineInMetadata, -1,
                 Metadata.Properties.mzTabID.getPropertyName(),
                 metadata.getMzTabVersion()));
         }
 
-//        if (metadata.getDescription() == null) {
-//            throw new MZTabException(new MZTabError(
-//                LogicalErrorType.NotDefineInMetadata, lineNumber, Metadata.Properties.description.getPropertyName(),
-//                metadata.getMzTabVersion()));
-//        }
         if (metadata.getSoftware() == null) {
             errorList.add(new MZTabError(
-                LogicalErrorType.NotDefineInMetadata, lineNumber,
+                LogicalErrorType.NotDefineInMetadata, -1,
                 Metadata.Properties.software.getPropertyName(),
                 metadata.getMzTabVersion()));
         }
 
         if (metadata.getQuantificationMethod() == null) {
             errorList.add(new MZTabError(
-                LogicalErrorType.NotDefineInMetadata, lineNumber,
+                LogicalErrorType.NotDefineInMetadata, -1,
                 Metadata.Properties.quantificationMethod.getPropertyName()));
         }
 
         if (assayMap.isEmpty()) {
             errorList.add(new MZTabError(
-                LogicalErrorType.NotDefineInMetadata, lineNumber,
+                LogicalErrorType.NotDefineInMetadata, -1,
                 Metadata.Properties.assay + ""));
         }
 
@@ -736,27 +751,27 @@ public class MTDLineParser extends MZTabLineParser {
             if (assayMap.get(id).
                 getMsRunRef() == null) {
                 errorList.add(new MZTabError(
-                    LogicalErrorType.NotDefineInMetadata, lineNumber,
+                    LogicalErrorType.NotDefineInMetadata, -1,
                     Metadata.Properties.assay + "[" + id + "]-" + Assay.Properties.msRunRef));
             }
         }
 
         if (svMap.isEmpty()) {
             errorList.add(new MZTabError(
-                LogicalErrorType.NotDefineInMetadata, lineNumber,
+                LogicalErrorType.NotDefineInMetadata, -1,
                 Metadata.Properties.studyVariable + ""));
         } else {
             for (Integer id : svMap.keySet()) {
                 if (svMap.get(id).
                     getName() == null) {
                     errorList.add(new MZTabError(
-                        LogicalErrorType.NotDefineInMetadata, lineNumber,
+                        LogicalErrorType.NotDefineInMetadata, -1,
                         Metadata.Properties.studyVariable + "[" + id + "]" + "\t" + "<NAME>"));
                 }
                 if (svMap.get(id).
                     getDescription() == null) {
                     errorList.add(new MZTabError(
-                        LogicalErrorType.NotDefineInMetadata, lineNumber,
+                        LogicalErrorType.NotDefineInMetadata, -1,
                         Metadata.Properties.studyVariable + "[" + id + "]-" + StudyVariable.Properties.description + "\t" + "<DESCRIPTION>"));
                 }
             }
@@ -768,7 +783,7 @@ public class MTDLineParser extends MZTabLineParser {
                     getAssayRefs().
                     size() == 0) {
                     errorList.add(new MZTabError(
-                        LogicalErrorType.AssayRefs, lineNumber,
+                        LogicalErrorType.AssayRefs, -1,
                         Metadata.Properties.studyVariable + "[" + id + "]-" + StudyVariable.Properties.assayRefs));
                 }
             }
@@ -778,14 +793,14 @@ public class MTDLineParser extends MZTabLineParser {
             if (runMap.get(id).
                 getLocation() == null) {
                 errorList.add(new MZTabError(
-                    LogicalErrorType.NotDefineInMetadata, lineNumber,
+                    LogicalErrorType.NotDefineInMetadata, -1,
                     Metadata.Properties.msRun + "[" + id + "]-" + MsRun.Properties.location));
             }
             List<Parameter> scanPolarity = runMap.get(id).
                 getScanPolarity();
             if (scanPolarity == null || scanPolarity.isEmpty()) {
                 errorList.add(new MZTabError(
-                    LogicalErrorType.NotDefineInMetadata, lineNumber,
+                    LogicalErrorType.NotDefineInMetadata, -1,
                     Metadata.Properties.msRun + "[" + id + "]-" + MsRun.Properties.scanPolarity));
             }
 
@@ -794,28 +809,28 @@ public class MTDLineParser extends MZTabLineParser {
         if (metadata.getCv() == null || metadata.getCv().
             isEmpty()) {
             errorList.add(new MZTabError(
-                LogicalErrorType.NotDefineInMetadata, lineNumber,
+                LogicalErrorType.NotDefineInMetadata, -1,
                 Metadata.Properties.cv + ""));
         } else {
             for (CV cv : metadata.getCv()) {
                 if (cv.getLabel() == null) {
                     errorList.add(new MZTabError(
-                        LogicalErrorType.NotDefineInMetadata, lineNumber,
+                        LogicalErrorType.NotDefineInMetadata, -1,
                         Metadata.Properties.cv + "[" + cv.getId() + "]-" + CV.Properties.label));
                 }
                 if (cv.getFullName() == null) {
                     errorList.add(new MZTabError(
-                        LogicalErrorType.NotDefineInMetadata, lineNumber,
+                        LogicalErrorType.NotDefineInMetadata, -1,
                         Metadata.Properties.cv + "[" + cv.getId() + "]-" + CV.Properties.fullName));
                 }
                 if (cv.getVersion() == null) {
                     errorList.add(new MZTabError(
-                        LogicalErrorType.NotDefineInMetadata, lineNumber,
+                        LogicalErrorType.NotDefineInMetadata, -1,
                         Metadata.Properties.cv + "[" + cv.getId() + "]-" + CV.Properties.version));
                 }
                 if (cv.getUrl() == null) {
                     errorList.add(new MZTabError(
-                        LogicalErrorType.NotDefineInMetadata, lineNumber,
+                        LogicalErrorType.NotDefineInMetadata, -1,
                         Metadata.Properties.cv + "[" + cv.getId() + "]-" + CV.Properties.url));
                 }
             }
@@ -823,34 +838,36 @@ public class MTDLineParser extends MZTabLineParser {
         if (metadata.getDatabase() == null || metadata.getDatabase().
             isEmpty()) {
             errorList.add(new MZTabError(
-                LogicalErrorType.NotDefineInMetadata, lineNumber,
+                LogicalErrorType.NotDefineInMetadata, -1,
                 Metadata.Properties.database + ""));
         } else {
             for (Database db : metadata.getDatabase()) {
                 if (db.getParam().
                     getName().
                     equals("no database")) {
-                    if (db.getPrefix() != null && !db.getPrefix().equals("null")) {
+                    if (db.getPrefix() != null && !db.getPrefix().
+                        equals("null")) {
                         errorList.add(new MZTabError(
                             LogicalErrorType.NoDatabaseMustHaveNullPrefix,
-                            lineNumber,
+                            -1,
                             db.getId() + "", db.getPrefix()));
                     }
-                    if (db.getUrl() != null && !db.getUrl().equals("null")) {
+                    if (db.getUrl() != null && !db.getUrl().
+                        equals("null")) {
                         errorList.add(new MZTabError(
-                        LogicalErrorType.NotDefineInMetadata, lineNumber,
-                        Metadata.Properties.database + "[" + db.getId() + "]-" + Database.Properties.url));
+                            LogicalErrorType.NotDefineInMetadata, -1,
+                            Metadata.Properties.database + "[" + db.getId() + "]-" + Database.Properties.url));
                     }
                 } else {
                     if (db.getUrl() == null) {
                         errorList.add(new MZTabError(
-                            LogicalErrorType.NotDefineInMetadata, lineNumber,
+                            LogicalErrorType.NotDefineInMetadata, -1,
                             Metadata.Properties.database + "[" + db.getId() + "]-" + Database.Properties.url));
                     }
                 }
                 if (db.getVersion() == null) {
                     errorList.add(new MZTabError(
-                        LogicalErrorType.NotDefineInMetadata, lineNumber,
+                        LogicalErrorType.NotDefineInMetadata, -1,
                         Metadata.Properties.database + "[" + db.getId() + "]-" + Database.Properties.version));
                 }
             }
@@ -858,19 +875,19 @@ public class MTDLineParser extends MZTabLineParser {
 
         if (metadata.getSmallMoleculeQuantificationUnit() == null) {
             errorList.add(new MZTabError(
-                LogicalErrorType.NotDefineInMetadata, lineNumber,
+                LogicalErrorType.NotDefineInMetadata, -1,
                 Metadata.Properties.smallMoleculeQuantificationUnit + ""));
         }
         if (metadata.getSmallMoleculeFeatureQuantificationUnit() == null) {
             errorList.add(new MZTabError(
-                LogicalErrorType.NotDefineInMetadata, lineNumber,
+                LogicalErrorType.NotDefineInMetadata, -1,
                 Metadata.Properties.smallMoleculeFeatureQuantificationUnit + ""));
         }
         if (metadata.getIdConfidenceMeasure() == null || metadata.
             getIdConfidenceMeasure().
             isEmpty()) {
             errorList.add(new MZTabError(
-                LogicalErrorType.NotDefineInMetadata, lineNumber,
+                LogicalErrorType.NotDefineInMetadata, -1,
                 Metadata.Properties.idConfidenceMeasure + ""));
         }
     }
@@ -885,7 +902,8 @@ public class MTDLineParser extends MZTabLineParser {
         return metadata;
     }
 
-    private void addSampleProcessing(Metadata metadata, Integer id,
+    private void addSampleProcessing(MZTabParserContext context,
+        Metadata metadata, Integer id,
         List<Parameter> checkParameterList) throws MZTabException {
         SampleProcessing sp = context.addSampleProcessing(metadata, id,
             checkParameterList);
@@ -923,7 +941,8 @@ public class MTDLineParser extends MZTabLineParser {
         }
     }
 
-    private void addInstrument(Metadata metadata, MetadataProperty property,
+    private void addInstrument(MZTabParserContext context, Metadata metadata,
+        MetadataProperty property,
         Integer id,
         Parameter param) throws MZTabException {
         Instrument instrument = null;
@@ -954,7 +973,8 @@ public class MTDLineParser extends MZTabLineParser {
         }
     }
 
-    private void addSoftware(Metadata metadata, MetadataProperty property,
+    private void addSoftware(MZTabParserContext context, Metadata metadata,
+        MetadataProperty property,
         String defineLabel,
         String valueLabel, Integer id) throws MZTabErrorOverflowException, MZTabException {
         Parameter param;
@@ -988,7 +1008,8 @@ public class MTDLineParser extends MZTabLineParser {
         }
     }
 
-    private void addContact(Metadata metadata, MetadataProperty property,
+    private void addContact(MZTabParserContext context, Metadata metadata,
+        MetadataProperty property,
         Integer id,
         String valueLabel, String defineLabel) throws MZTabException {
         Contact contact = null;
@@ -1016,11 +1037,13 @@ public class MTDLineParser extends MZTabLineParser {
         }
     }
 
-    private void addPublication(Metadata metadata, Publication publication) {
+    private void addPublication(MZTabParserContext context, Metadata metadata,
+        Publication publication) {
         context.addPublication(metadata, publication);
     }
 
-    private void addMsRun(Metadata metadata, MetadataProperty property,
+    private void addMsRun(MZTabParserContext context, Metadata metadata,
+        MetadataProperty property,
         Integer id,
         String defineLabel, String valueLabel) throws MZTabException {
         MsRun msRun = null;
@@ -1029,10 +1052,6 @@ public class MTDLineParser extends MZTabLineParser {
                 name(valueLabel));
         } else {
             switch (property) {
-                case MS_RUN_FORMAT:
-                    msRun = context.addMsRunFormat(metadata, id, checkParameter(
-                        defineLabel, valueLabel));
-                    break;
                 case MS_RUN_LOCATION:
                     msRun = context.addMsRunLocation(metadata, id, checkURI(
                         defineLabel, valueLabel, true));
@@ -1056,6 +1075,10 @@ public class MTDLineParser extends MZTabLineParser {
                             instrument);
                     }
                     break;
+                case MS_RUN_FORMAT:
+                    msRun = context.addMsRunFormat(metadata, id, checkParameter(
+                        defineLabel, valueLabel));
+                    break;
                 case MS_RUN_ID_FORMAT:
                     msRun = context.addMsRunIdFormat(metadata, id,
                         checkParameter(defineLabel, valueLabel));
@@ -1064,15 +1087,15 @@ public class MTDLineParser extends MZTabLineParser {
                     msRun = context.addMsRunFragmentationMethod(metadata, id,
                         checkParameter(defineLabel, valueLabel));
                     break;
+                case MS_RUN_SCAN_POLARITY:
+                    msRun = context.addMsRunScanPolarity(metadata, id,
+                        checkParameter(defineLabel, valueLabel));
+                    break;
                 case MS_RUN_HASH:
                     msRun = context.addMsRunHash(metadata, id, valueLabel);
                     break;
                 case MS_RUN_HASH_METHOD:
                     msRun = context.addMsRunHashMethod(metadata, id,
-                        checkParameter(defineLabel, valueLabel));
-                    break;
-                case MS_RUN_SCAN_POLARITY:
-                    msRun = context.addMsRunScanPolarity(metadata, id,
                         checkParameter(defineLabel, valueLabel));
                     break;
                 default:
@@ -1088,7 +1111,8 @@ public class MTDLineParser extends MZTabLineParser {
         }
     }
 
-    private void addDatabase(Metadata metadata, MetadataProperty property,
+    private void addDatabase(MZTabParserContext context, Metadata metadata,
+        MetadataProperty property,
         Integer id,
         String defineLabel, String valueLabel) throws MZTabException {
         Database database = null;
@@ -1123,7 +1147,8 @@ public class MTDLineParser extends MZTabLineParser {
         }
     }
 
-    private void addSample(Metadata metadata, MetadataProperty property,
+    private void addSample(MZTabParserContext context, Metadata metadata,
+        MetadataProperty property,
         Integer id,
         String defineLabel, String valueLabel) throws MZTabException {
         if (property == null) {
@@ -1163,7 +1188,8 @@ public class MTDLineParser extends MZTabLineParser {
         }
     }
 
-    private void addAssay(Metadata metadata, MetadataProperty property,
+    private void addAssay(MZTabParserContext context, Metadata metadata,
+        MetadataProperty property,
         String defineLabel,
         String valueLabel, Integer id) throws MZTabException {
         IndexedElement indexedElement;
@@ -1172,6 +1198,15 @@ public class MTDLineParser extends MZTabLineParser {
                 name(valueLabel));
         } else {
             switch (property) {
+                case ASSAY_CUSTOM:
+                    context.addAssayCustom(metadata, id, checkParameter(
+                        defineLabel, valueLabel));
+                    break;
+                case ASSAY_EXTERNAL_URI:
+                    context.addAssayExternalUri(metadata, id, checkURI(
+                        defineLabel,
+                        valueLabel, false));
+                    break;
                 case ASSAY_SAMPLE_REF:
                     indexedElement = checkIndexedElement(defineLabel, valueLabel,
                         MetadataElement.SAMPLE);
@@ -1210,7 +1245,8 @@ public class MTDLineParser extends MZTabLineParser {
         }
     }
 
-    private void addStudyVariable(Metadata metadata, MetadataProperty property,
+    private void addStudyVariable(MZTabParserContext context, Metadata metadata,
+        MetadataProperty property,
         String defineLabel,
         String valueLabel, Integer id) throws MZTabErrorOverflowException, MZTabException {
         List<IndexedElement> indexedElementList;
@@ -1248,16 +1284,20 @@ public class MTDLineParser extends MZTabLineParser {
                             get(e.getId()));
                     }
                     break;
-                case STUDY_VARIABLE_DESCRIPTION:
-                    context.
-                        addStudyVariableDescription(metadata, id, valueLabel);
-                    break;
                 case STUDY_VARIABLE_AVERAGE_FUNCTION:
                     context.addStudyVariableAverageFunction(metadata, id,
                         checkParameter(defineLabel, valueLabel));
                     break;
                 case STUDY_VARIABLE_VARIATION_FUNCTION:
                     context.addStudyVariableVariationFunction(metadata, id,
+                        checkParameter(defineLabel, valueLabel));
+                    break;
+                case STUDY_VARIABLE_DESCRIPTION:
+                    context.
+                        addStudyVariableDescription(metadata, id, valueLabel);
+                    break;
+                case STUDY_VARIABLE_FACTORS:
+                    context.addStudyVariableFactors(metadata, id,
                         checkParameter(defineLabel, valueLabel));
                     break;
                 default:
@@ -1269,7 +1309,8 @@ public class MTDLineParser extends MZTabLineParser {
         }
     }
 
-    private void addCv(Metadata metadata, MetadataProperty property, Integer id,
+    private void addCv(MZTabParserContext context, Metadata metadata,
+        MetadataProperty property, Integer id,
         String valueLabel) throws MZTabException {
         if (property == null) {
             context.addCV(metadata, new CV().id(id));

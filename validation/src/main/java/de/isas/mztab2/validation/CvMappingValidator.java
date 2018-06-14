@@ -200,7 +200,7 @@ public class CvMappingValidator implements Validator<MzTab> {
                         toString(CvMappingRule.CvTermsCombinationLogic.
                             values()));
         }
-        messages.addAll(sharedHandler.handleParameters(result, errorOnTermNotInRule));
+//        messages.addAll(sharedHandler.handleParameters(result, errorOnTermNotInRule));
         messages.addAll(extraHandler.handleParameters(result, errorOnTermNotInRule));
         return messages.isEmpty() ? Collections.emptyList() : messages;
     }

@@ -101,13 +101,13 @@ public class SMLLineParser extends MZTabDataLineParser<SmallMoleculeSummary> {
                             smallMoleculeSummary.reliability(checkString(column, target));
                             break;
                         case SMF_ID_REFS:
-                            smallMoleculeSummary.smfIdRefs(checkStringList(column, target, MZTabConstants.BAR));
+                            smallMoleculeSummary.smfIdRefs(checkIntegerList(column, target, MZTabConstants.BAR));
                             break;
                         case SMILES:
                             smallMoleculeSummary.smiles(checkSmiles(column, target));
                             break;
                         case SML_ID:
-                            smallMoleculeSummary.smlId(checkString(column, target));
+                            smallMoleculeSummary.smlId(checkInteger(column, target));
                             break;
                         case THEOR_NEUTRAL_MASS:
                             smallMoleculeSummary.theoreticalNeutralMass(

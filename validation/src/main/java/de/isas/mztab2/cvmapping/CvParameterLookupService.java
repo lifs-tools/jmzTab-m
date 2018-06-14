@@ -76,7 +76,7 @@ public class CvParameterLookupService {
                 "Parameter must provide cvAccession and cvLabel!");
         }
         if(parentCache.containsKey(parameter)) {
-            log.info("Cache hit for parameter "+parameter+" in parent cache!");
+            log.debug("Cache hit for parameter "+parameter+" in parent cache!");
             return parentCache.get(parameter);
         }
         Identifier ident = new Identifier(parameter.getCvAccession(),
@@ -95,7 +95,7 @@ public class CvParameterLookupService {
                 "Parameter must provide cvAccession and cvLabel!");
         }
         if(childCache.containsKey(parameter)) {
-            log.info("Cache hit for parameter "+parameter+" in child cache!");
+            log.debug("Cache hit for parameter "+parameter+" in child cache!");
             return childCache.get(parameter);
         }
         Identifier ident = new Identifier(parameter.getCvAccession(),

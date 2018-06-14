@@ -21,11 +21,13 @@ import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
 /**
+ * Base interface for parameter validation with default validation method.
  *
- * @author Leibniz-Institut für Analytische Wissenschaften – ISAS – e.V.
+ * @author nilshoffmann
  */
 public interface ParameterValidator extends ConstraintValidator<CheckParameter, Parameter> {
 
+    @Override
     default boolean isValid(Parameter parameter,
         ConstraintValidatorContext context) {
         if (parameter == null) {

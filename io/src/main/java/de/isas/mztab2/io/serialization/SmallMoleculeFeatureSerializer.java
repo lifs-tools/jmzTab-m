@@ -19,7 +19,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
-import static de.isas.mztab2.io.serialization.Serializers.writeAsStringArray;
+import static de.isas.mztab2.io.serialization.Serializers.writeAsNumberArray;
 import static de.isas.mztab2.io.serialization.Serializers.writeNumber;
 import static de.isas.mztab2.io.serialization.Serializers.writeObject;
 import static de.isas.mztab2.io.serialization.Serializers.writeString;
@@ -27,6 +27,7 @@ import de.isas.mztab2.model.SmallMoleculeFeature;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import uk.ac.ebi.pride.jmztab2.model.AbundanceColumn;
 import uk.ac.ebi.pride.jmztab2.model.SmallMoleculeFeatureColumn;
@@ -58,7 +59,7 @@ public class SmallMoleculeFeatureSerializer extends StdSerializer<SmallMoleculeF
     public SmallMoleculeFeatureSerializer(Class<SmallMoleculeFeature> t) {
         super(t);
     }
-
+    
     @Override
     public void serializeWithType(SmallMoleculeFeature value, JsonGenerator gen,
         SerializerProvider serializers, TypeSerializer typeSer) throws IOException {
@@ -79,11 +80,10 @@ public class SmallMoleculeFeatureSerializer extends StdSerializer<SmallMoleculeF
             writeString(SmallMoleculeFeature.HeaderPrefixEnum.SFH.getValue(), jg,
                 SmallMoleculeFeature.PrefixEnum.SMF.
                     getValue());
-            writeString(SmallMoleculeFeatureColumn.Stable.SMF_ID, jg,
+            writeNumber(SmallMoleculeFeatureColumn.Stable.SMF_ID, jg,
                 smallMoleculeFeature.getSmfId());
-            writeAsStringArray(SmallMoleculeFeatureColumn.Stable.SME_ID_REFS, jg,
-                Optional.ofNullable(smallMoleculeFeature.
-                    getSmeIdRefs()).
+            writeAsNumberArray(SmallMoleculeFeatureColumn.Stable.SME_ID_REFS, jg,
+                Optional.ofNullable(smallMoleculeFeature.getSmeIdRefs()).
                     orElse(Collections.emptyList()));
             writeNumber(
                 SmallMoleculeFeatureColumn.Stable.SME_ID_REF_AMBIGUITY_CODE, jg,

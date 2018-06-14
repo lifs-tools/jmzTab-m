@@ -115,7 +115,7 @@ public class SMELineParser extends MZTabDataLineParser<SmallMoleculeEvidence> {
                             smallMoleculeEvidence.rank(checkInteger(column, target));
                             break;
                         case SME_ID:
-                            smallMoleculeEvidence.smeId(checkString(column, target));
+                            smallMoleculeEvidence.smeId(checkInteger(column, target));
                             break;
                         case SMILES:
                             smallMoleculeEvidence.smiles(checkString(column, target));

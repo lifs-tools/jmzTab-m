@@ -24,7 +24,7 @@ import java.util.List;
  * Validator interface.</p>
  *
  * @author nilshoffmann
- * @param <T>
+ * @param <T> the return type of the validator's validate methods.
  *
  */
 public interface Validator<T> {

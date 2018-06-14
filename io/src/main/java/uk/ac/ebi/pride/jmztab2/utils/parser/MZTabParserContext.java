@@ -64,6 +64,7 @@ public class MZTabParserContext {
     private Parameter smallMoleculeQuantificationUnit;
     private SortedMap<Integer, MsRun> msRunMap = new TreeMap<>();
     private SortedMap<Integer, Parameter> customItemMap = new TreeMap<>(); 
+    private SortedMap<Integer, Parameter> derivatizationItemMap = new TreeMap<>();
     private SortedMap<Integer, Parameter> idConfidenceMeasureMap = new TreeMap<>(); 
     
     private SortedMap<Integer, Sample> sampleMap = new TreeMap<>();
@@ -783,10 +784,6 @@ public class MZTabParserContext {
         if (id <= 0) {
             throw new IllegalArgumentException("ms_run id should be greater than 0!");
         }
-//        The ms_run[id]-location needs to be created even if it is null because it is mandatory.
-//        if (location == null) {
-//            throw new IllegalArgumentException("ms_run location must not be null!");
-//        }
 
         MsRun msRun = msRunMap.get(id);
         if (msRun == null) {
@@ -996,6 +993,63 @@ public class MZTabParserContext {
         metadata.addAssayItem(assay);
         return assay;
     }
+    
+    /**
+     * Add a assay[id]-custom[i] into metadata. The application of a measurement about the sample (in this case through MS) -
+     * producing values about small molecules, peptides or proteins. One assay is typically mapped to one MS run
+     * in the case of label-free MS analysis or multiple assays are mapped to one MS run for multiplexed techniques,
+     * along with a description of the label or tag applied.
+     *
+     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
+     * @param id SHOULD NOT set null.
+     * @param param the parameter.
+     * @return a {@link de.isas.mztab2.model.Assay} object.
+     */
+    public Assay addAssayCustom(Metadata metadata, Integer id, Parameter param) {
+        if (id <= 0) {
+            throw new IllegalArgumentException("assay id should be greater than 0!");
+        }
+        
+        Assay assay = assayMap.get(id);
+        if (assay == null) {
+            assay = new Assay();
+            assay.id(id);
+            assay.addCustomItem(param);
+            assayMap.put(id, assay);
+            metadata.addAssayItem(assay);
+        } else {
+            assay.addCustomItem(param);
+        }
+        return assay;
+    }
+    
+        /**
+     * Add a assay[id]-external_uri into metadata. The application of a measurement about the sample (in this case through MS) -
+     * producing values about small molecules, peptides or proteins. One assay is typically mapped to one MS run
+     * in the case of label-free MS analysis or multiple assays are mapped to one MS run for multiplexed techniques,
+     * along with a description of the label or tag applied.
+     *
+     * @param assay SHOULD NOT set null.
+     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
+     * @return a {@link de.isas.mztab2.model.Assay} object.
+     */
+    public Assay addAssayExternalUri(Metadata metadata, Integer id, URI location) {
+        if (id <= 0) {
+            throw new IllegalArgumentException("assay id should be greater than 0!");
+        }
+
+        Assay assay = assayMap.get(id);
+        if (assay == null) {
+            assay = new Assay();
+            assay.id(id);
+            assay.setExternalUri(location==null?null:location.toASCIIString());
+            assayMap.put(id, assay);
+            metadata.addAssayItem(assay);
+        } else {
+            assay.setExternalUri(location.toString());
+        }
+        return assay;
+    }
 
     /**
      * Add assay[id]-sample_ref into metadata. An association from a given assay to the sample analysed.
@@ -1114,9 +1168,9 @@ public class MZTabParserContext {
     /**
      * Add a study_variable[id]-description. A textual description of the study variable.
      *
+     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
      * @param id SHOULD be positive integer.
      * @param description if empty ignore operation.
-     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
      * @return a {@link de.isas.mztab2.model.StudyVariable} object.
      */
     public StudyVariable addStudyVariableDescription(Metadata metadata, Integer id, String description) {
@@ -1135,6 +1189,34 @@ public class MZTabParserContext {
         }
 
         studyVariable.setDescription(description);
+        studyVariableMap.put(id, studyVariable);
+        return studyVariable;
+    }
+    
+    /**
+     * Add a study_variable[id]-factor. A Parameter further refining what is known about the study design.
+     * 
+     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
+     * @param id id SHOULD be positive integer.
+     * @param checkParameter the study variable factor Parameter to add.
+     * @return a {@link de.isas.mztab2.model.StudyVariable} object.
+     */
+    public StudyVariable addStudyVariableFactors(Metadata metadata, Integer id, Parameter checkParameter) {
+        if (id <= 0) {
+            throw new IllegalArgumentException("study variable id should be greater than 0!");
+        }
+        StudyVariable studyVariable = studyVariableMap.get(id);
+        if (checkParameter == null) {
+            return studyVariable;
+        }
+
+        if (studyVariable == null) {
+            studyVariable = new StudyVariable();
+            studyVariable.id(id);
+            metadata.addStudyVariableItem(studyVariable);
+        }
+
+        studyVariable.addFactorsItem(checkParameter);
         studyVariableMap.put(id, studyVariable);
         return studyVariable;
     }
@@ -1406,6 +1488,25 @@ public class MZTabParserContext {
         this.customItemMap.put(id, custom);
         metadata.addCustomItem(custom);
         return custom;
+    }
+    
+    /**
+     * Add a derivatization agent parameter.
+     * @param metadata
+     * @param id
+     * @param derivatizationAgent
+     * @return 
+     */
+    Parameter addDerivatizationAgentItem(Metadata metadata, Integer id, Parameter derivatizationAgent) {
+        if (derivatizationAgent == null) {
+            return null;
+        }
+        if(derivatizationAgent.getId()==null) {
+            derivatizationAgent.setId(id);
+        }
+        this.derivatizationItemMap.put(id, derivatizationAgent);
+        metadata.addDerivatizationAgentItem(derivatizationAgent);
+        return derivatizationAgent;
     }
 
     /**

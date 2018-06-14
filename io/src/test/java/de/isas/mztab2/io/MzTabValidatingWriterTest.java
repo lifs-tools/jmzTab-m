@@ -30,9 +30,6 @@ import org.junit.Test;
  * @author nilshoffmann
  */
 public class MzTabValidatingWriterTest {
-    
-    public MzTabValidatingWriterTest() {
-    }
 
     /**
      * Test of write method, of class MzTabValidatingWriter.
@@ -42,8 +39,8 @@ public class MzTabValidatingWriterTest {
         MzTabValidatingWriter writer = new MzTabValidatingWriter();
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         Optional<List<ValidationMessage>> messages = writer.write(new OutputStreamWriter(baos), MzTabTestData.create2_0TestFile());
-        Assert.assertEquals(1, messages.get().size());
-        String baosString = baos.toString("UTF-8");
+        System.out.println("Validation messages: "+messages.get().toString());
+        Assert.assertEquals(messages.get().toString(), 6, messages.get().size());
     }
 
     /**
@@ -54,14 +51,8 @@ public class MzTabValidatingWriterTest {
         MzTabValidatingWriter writer = new MzTabValidatingWriter();
         File f = File.createTempFile(UUID.randomUUID().toString(), ".mztab");
         Optional<List<ValidationMessage>> messages = writer.write(f.toPath(), MzTabTestData.create2_0TestFile());
-        Assert.assertEquals(1, messages.get().size());
+        System.out.println("Validation messages: "+messages.get().toString());
+        Assert.assertEquals(messages.get().toString(), 6, messages.get().size());
     }
 
-    /**
-     * Test of getValidationMessagesForLevel method, of class MzTabValidatingWriter.
-     */
-    @Test
-    public void testGetValidationMessagesForLevel() {
-    }
-    
 }
