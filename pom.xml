@@ -436,7 +436,7 @@
     <profile>
       <id>ossrh-release</id>
       <properties>
-        <gpg.executable>gpg</gpg.executable>
+	<gpg.executable>${gpg.executable}</gpg.executable>
         <gpg.keyname>${gpg.keyname}</gpg.keyname>
         <gpg.passphrase>${gpg.passphrase}</gpg.passphrase>
         <gpg.defaultKeyring>false</gpg.defaultKeyring>
