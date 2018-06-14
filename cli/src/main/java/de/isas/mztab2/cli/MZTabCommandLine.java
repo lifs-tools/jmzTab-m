@@ -141,13 +141,12 @@ public class MZTabCommandLine {
             hasOptionalArgs(2).
             withValueSeparator('=').
             withDescription(
-                "Example: -checkSemantic mappingFile=/path/to/mappingFile.xml. Use the provided mapping file for semantic validation. This parameter may be null.").
+                "Example: -checkSemantic mappingFile=/path/to/mappingFile.xml. Use the provided mapping file for semantic validation. This parameter may be null. Requires an active internet connection!").
             create(checkSemanticOpt);
         options.addOption(mappingFileOption);
-        
+
         //TODO add option to set whether extra terms not defined in mapping file create a warning or error
 //        options.addOption()
-
         // Parse command line
         CommandLine line = parser.parse(options, args);
         if (line.getOptions().length == 0 || line.hasOption(helpOpt)) {
@@ -170,14 +169,17 @@ public class MZTabCommandLine {
             File outFile = null;
             if (line.hasOption(outOpt)) {
                 outFile = new File(line.getOptionValue(outOpt));
+                System.out.println("Redirecting output to file " + outFile);
             }
 
+            System.out.println(getAppInfo());
             MZTabErrorType.Level level = MZTabErrorType.Level.Error;
             if (line.hasOption(levelOpt)) {
                 level = MZTabErrorType.findLevel(line.getOptionValue(levelOpt));
                 System.out.println("Validator set to level '" + level + "'");
+            } else {
+                System.out.println("Validator set to default level '" + level + "'");
             }
-
             handleValidation(line, checkOpt, outFile, level, checkSemanticOpt);
 
             System.out.println();
@@ -209,8 +211,9 @@ public class MZTabCommandLine {
             } catch (IOException e) {
                 System.out.println(
                     "Caught an IO Exception: " + e.getMessage());
+            } finally {
+                System.out.println("Finished validation!");
             }
-            System.out.println("Finished validation!");
         }
     }
 
@@ -220,21 +223,27 @@ public class MZTabCommandLine {
             String[] semValues = line.getOptionValues(
                 checkSemanticOpt);
             URI mappingFile;
-            if (semValues!=null && semValues.length == 2) {
+            if (semValues != null && semValues.length == 2) {
                 // read file from path
-                mappingFile = new File(semValues[1].trim()).getAbsoluteFile().toURI();
+                mappingFile = new File(semValues[1].trim()).getAbsoluteFile().
+                    toURI();
             } else {
-                System.out.println("Using default mapping file from classpath: /mappings/mzTab-M-mapping.xml");
+                System.out.println(
+                    "Using default mapping file from classpath: /mappings/mzTab-M-mapping.xml");
                 // read default file
-                mappingFile = CvMappingValidator.class.getResource("/mappings/mzTab-M-mapping.xml").toURI();
+                mappingFile = CvMappingValidator.class.getResource(
+                    "/mappings/mzTab-M-mapping.xml").
+                    toURI();
             }
             System.out.println(
                 "Beginning semantic validation of mztab file: " + inFile.
-                    getAbsolutePath() + " with mapping file: " +mappingFile.toASCIIString());
-            CvMappingValidator cvMappingValidator = CvMappingValidator.of(mappingFile.toURL(), true);
+                    getAbsolutePath() + " with mapping file: " + mappingFile.
+                    toASCIIString());
+            CvMappingValidator cvMappingValidator = CvMappingValidator.of(
+                mappingFile.toURL(), true);
             List<ValidationMessage> validationMessages = cvMappingValidator.
                 validate(mzTabParser.getMZTabFile());
-            for(ValidationMessage message:validationMessages) {
+            for (ValidationMessage message : validationMessages) {
                 System.err.println(message);
             }
             if (!validationMessages.isEmpty()) {
