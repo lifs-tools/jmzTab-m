@@ -437,11 +437,11 @@
       <id>ossrh-release</id>
       <properties>
         <gpg.executable>gpg</gpg.executable>
-        <gpg.keyname>${env.GPG_KEYNAME}</gpg.keyname>
-        <gpg.passphrase>${env.GPG_PASSPHRASE}</gpg.passphrase>
+        <gpg.keyname>${gpg.keyname}</gpg.keyname>
+        <gpg.passphrase>${gpg.passphrase}</gpg.passphrase>
         <gpg.defaultKeyring>false</gpg.defaultKeyring>
-        <gpg.publicKeyring>${env.GPG_DIR}/pubring.gpg</gpg.publicKeyring>
-        <gpg.secretKeyring>${env.GPG_DIR}/secring.gpg</gpg.secretKeyring>
+        <gpg.publicKeyring>${gpg.dir}/pubring.gpg</gpg.publicKeyring>
+        <gpg.secretKeyring>${gpg.dir}/secring.gpg</gpg.secretKeyring>
       </properties>
       <activation>
         <property>
