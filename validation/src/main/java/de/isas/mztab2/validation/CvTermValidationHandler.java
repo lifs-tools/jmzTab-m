@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2018 Leibniz-Institut für Analytische Wissenschaften – ISAS – e.V..
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,20 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.isas.mztab2.cvmapping;
+package de.isas.mztab2.validation;
+
+import de.isas.mztab2.cvmapping.RuleEvaluationResult;
+import de.isas.mztab2.model.ValidationMessage;
+import java.util.List;
 
 /**
- * <p>
- * Result of a comparison of a CvTerm T defined in a CvRule against the parameter P
- * found via JXPath.</p>
- * <p>
- * The comparison can yield three different results: 
- *  P == T => P is identical to T: IDENTICAL,
- *  P -> T => P is a child of T: CHILD_OF,
- *  P != T => P is neither a child nor identical to T, they are: NOT_RELATED;
- *</p>
+ *
  * @author nilshoffmann
  */
-public enum ParameterComparisonResult {
-    IDENTICAL, CHILD_OF, NOT_RELATED;
+public interface CvTermValidationHandler {
+    List<ValidationMessage> handleParameters(RuleEvaluationResult result,
+        boolean errorOnTermNotInRule);
 }

@@ -15,11 +15,12 @@
  */
 package de.isas.mztab2.io;
 
+import de.isas.lipidomics.mztab2.validation.MzTabValidator;
 import de.isas.lipidomics.mztab2.validation.Validator;
 import de.isas.mztab2.model.MzTab;
 import de.isas.mztab2.model.ValidationMessage;
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -121,7 +122,7 @@ public class MzTabValidatingWriter implements MzTabWriter<List<ValidationMessage
                     toString(), ".mztab");
                 mzTabFile.getAbsoluteFile();
                 writer.
-                    write(new FileWriter(mzTabFile), mzTab);
+                    write(new OutputStreamWriter(new FileOutputStream(mzTabFile), "UTF-8"), mzTab);
 
                 MZTabFileParser parser = new MZTabFileParser(mzTabFile);
                 parser.parse(outputStream, level, maxErrorCount);

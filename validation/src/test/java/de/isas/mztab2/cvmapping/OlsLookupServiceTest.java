@@ -28,7 +28,7 @@ import uk.ac.ebi.pride.utilities.ols.web.service.client.OLSClient;
 import uk.ac.ebi.pride.utilities.ols.web.service.config.OLSWsConfig;
 import uk.ac.ebi.pride.utilities.ols.web.service.model.Identifier;
 import uk.ac.ebi.pride.utilities.ols.web.service.model.Term;
-import static de.isas.mztab2.cvmapping.Terms.isEqualTo;
+import static de.isas.mztab2.cvmapping.CvMappingUtils.isEqualTo;
 
 /**
  *

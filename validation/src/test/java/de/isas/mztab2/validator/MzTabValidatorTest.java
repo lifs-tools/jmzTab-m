@@ -77,6 +77,11 @@ public class MzTabValidatorTest {
                     cvLabel("MS").
                     cvAccession("MS:1000129").
                     name("negative scan")
+            ).addScanPolarityItem(
+                new Parameter().id(1).
+                    cvLabel("MS").
+                    cvAccession("MS:1000130").
+                    name("positive scan")
             );
         final MzTab mztabfile = new MzTab().metadata(
             new de.isas.mztab2.model.Metadata().mzTabVersion(

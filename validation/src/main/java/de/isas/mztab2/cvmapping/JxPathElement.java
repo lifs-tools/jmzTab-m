@@ -29,6 +29,8 @@ import org.apache.commons.jxpath.Pointer;
 import org.apache.commons.lang3.tuple.Pair;
 
 /**
+ * Utility methods for simpler Java 8 compatible handling of JXPath selections
+ * and pointers.
  *
  * @author nilshoffmann
  */
@@ -37,7 +39,8 @@ public final class JxPathElement {
     public static <T> Stream<Pair<Pointer, ? extends T>> toStream(
         Pointer pointer, Class<? extends T> type) {
         if (pointer.getValue() instanceof Collection) {
-            Collection<Pair<Pointer, ? extends T>> coll = JxPathElement.toList(pointer,
+            Collection<Pair<Pointer, ? extends T>> coll = JxPathElement.toList(
+                pointer,
                 type);
             return coll.stream();
         }

@@ -45,4 +45,7 @@ public final class CrossCheckErrorType extends MZTabErrorType {
 
     /** Constant <code>CvTermXor</code> */
     public static MZTabErrorType CvTermXor = createError(Category.CrossCheck, "CvTermXor");
+    
+    /** Constant <code>CvTermMalformed</code> */
+    public static MZTabErrorType CvTermMalformed = createError(Category.CrossCheck, "CvTermMalformed");
 }

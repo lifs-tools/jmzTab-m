@@ -83,7 +83,7 @@ public class CvParameterLookupService {
             Identifier.IdentifierType.OBO);
         List<Parameter> parents = client.getTermParents(ident, parameter.getCvLabel(), levels).
             stream().
-            map(Terms::asParameter).
+            map(CvMappingUtils::asParameter).
             collect(Collectors.toList());
         parentCache.put(parameter, parents);
         return parents;
@@ -102,7 +102,7 @@ public class CvParameterLookupService {
             Identifier.IdentifierType.OBO);
         List<Parameter> children = client.getTermChildren(ident, parameter.getCvLabel(), levels).
             stream().
-            map(Terms::asParameter).
+            map(CvMappingUtils::asParameter).
             collect(Collectors.toList());
         childCache.put(parameter, children);
         return children;
@@ -125,7 +125,7 @@ public class CvParameterLookupService {
         boolean result = parentsOf.stream().
             anyMatch((potentialParent) ->
             {
-                return Parameters.isEqualTo(potentialParent, parent);
+                return CvMappingUtils.isEqualTo(potentialParent, parent);
             });
         if (result) {
             return ParameterComparisonResult.CHILD_OF;

@@ -15,16 +15,36 @@
  */
 package de.isas.mztab2.cvmapping;
 
+import de.isas.mztab2.model.Parameter;
 import info.psidev.cvmapping.CvMappingRule;
 import info.psidev.cvmapping.CvTerm;
 import java.util.List;
 import java.util.stream.Collectors;
+import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorType;
+import uk.ac.ebi.pride.utilities.ols.web.service.model.Term;
 
 /**
+ * Utility methods for conversion between the mapping file domain and the mzTab
+ * domain.
  *
  * @author nilshoffmann
  */
 public class CvMappingUtils {
+
+    public static MZTabErrorType.Level toErrorLevel(
+        CvMappingRule.RequirementLevel requirementLevel) {
+        switch (requirementLevel) {
+            case MAY:
+                return MZTabErrorType.Level.Info;
+            case SHOULD:
+                return MZTabErrorType.Level.Warn;
+            case MUST:
+                return MZTabErrorType.Level.Error;
+            default:
+                throw new IllegalArgumentException(
+                    "Unhandled case: " + requirementLevel);
+        }
+    }
 
     public static String niceToString(CvMappingRule rule) {
         StringBuilder sb = new StringBuilder();
@@ -77,7 +97,8 @@ public class CvMappingUtils {
                         termString.append(
                             " including itself or any of its children.");
                     } else {
-                        termString.append(" excluding itself but including any children.");
+                        termString.append(
+                            " excluding itself but including any children.");
                     }
                 } else {
                     if (term.isUseTerm()) {
@@ -147,5 +168,60 @@ public class CvMappingUtils {
                 append("'}");
         });
         return sb.toString();
+    }
+
+    public static boolean isEqualTo(Term term, Parameter param) {
+        if (param.getCvLabel().
+            equals(term.getOntologyPrefix())) {
+            if (param.getCvAccession().
+                equals(term.getOboId().
+                    getIdentifier())) {
+                if (param.getName().
+                    equals(term.getLabel())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public static Parameter asParameter(Term term) {
+        return new Parameter().cvLabel(term.getOntologyPrefix()).
+            cvAccession(term.getOboId().
+                getIdentifier()).
+            name(term.getLabel());
+    }
+
+    public static boolean isEqualTo(Parameter one, Parameter two) {
+        if (one.getCvLabel().
+            toUpperCase().
+            equals(two.getCvLabel().
+                toUpperCase())) {
+            if (one.getCvAccession().
+                toUpperCase().
+                equals(two.getCvAccession().
+                    toUpperCase())) {
+                if (one.getName() != null && two.getName() != null) {
+                    return one.getName().
+                        toUpperCase().
+                        equals(two.getName().
+                            toUpperCase());
+                } else { // equal if one or both names are null
+                    return true;
+                }
+            } else {
+                return false;
+            }
+
+        } else {
+            return false;
+        }
+    }
+
+    public static Parameter asParameter(CvTerm term) {
+        return new Parameter().cvAccession(term.getTermAccession()).
+            cvLabel(term.getCvIdentifierRef().
+                getCvIdentifier()).
+            name(term.getTermName());
     }
 }

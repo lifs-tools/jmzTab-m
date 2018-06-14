@@ -15,9 +15,6 @@
  */
 package de.isas.mztab2.cvmapping;
 
-import de.isas.mztab2.cvmapping.ParameterComparisonResult;
-import de.isas.mztab2.cvmapping.Parameters;
-import de.isas.mztab2.cvmapping.CvParameterLookupService;
 import de.isas.mztab2.model.Parameter;
 import java.util.List;
 import static org.hamcrest.CoreMatchers.allOf;
@@ -55,7 +52,7 @@ public class CvParameterLookupServiceTest {
         CvParameterLookupService service = new CvParameterLookupService();
         List<Parameter> parents = service.resolveParents(new Parameter().cvLabel("MS").cvAccession("MS:1000564"), 1);
         Assert.assertThat(parents.size(), is(1));
-        assertTrue("Retrieved parent term equals reference", Parameters.isEqualTo(parents.get(0), new Parameter().cvAccession(
+        assertTrue("Retrieved parent term equals reference", CvMappingUtils.isEqualTo(parents.get(0), new Parameter().cvAccession(
             "MS:1000560").
             cvLabel("MS").
             name("mass spectrometer file format")));

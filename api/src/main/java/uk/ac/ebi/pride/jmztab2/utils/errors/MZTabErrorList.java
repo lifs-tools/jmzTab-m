@@ -102,11 +102,18 @@ public class MZTabErrorList {
         if (error == null) {
             throw new NullPointerException("Can not add a null error into list.");
         }
-
-        if (error.getType().
-            getLevel().
-            ordinal() < level.ordinal()) {
-            return false;
+        
+        switch(error.getType().getLevel()) {
+            case Info:
+                if(level==MZTabErrorType.Level.Warn || level==MZTabErrorType.Level.Error) {
+                    return false;
+                }
+                break;
+            case Warn:
+                if(level==MZTabErrorType.Level.Error) {
+                    return false;
+                }
+            //ERROR is always being reported
         }
 
         if (errorList.size() >= maxErrorCount) {

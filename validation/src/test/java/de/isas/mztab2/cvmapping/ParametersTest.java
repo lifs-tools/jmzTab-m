@@ -15,7 +15,6 @@
  */
 package de.isas.mztab2.cvmapping;
 
-import de.isas.mztab2.cvmapping.Parameters;
 import de.isas.mztab2.model.Parameter;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -42,7 +41,7 @@ public class ParametersTest {
             cvAccession("879123").
             name("jklajsd").
             value("klhasd");
-        assertTrue("Parameters should be equal", Parameters.isEqualTo(parameter1, parameter2));
+        assertTrue("Parameters should be equal", CvMappingUtils.isEqualTo(parameter1, parameter2));
     }
     
     @Test
@@ -58,15 +57,15 @@ public class ParametersTest {
             name("jklajsd").
             value("klhasd");
         //differences in cvAccession should violate equality
-        assertFalse("Parameters should NOT be equal", Parameters.isEqualTo(parameter1, parameter2));
+        assertFalse("Parameters should NOT be equal", CvMappingUtils.isEqualTo(parameter1, parameter2));
         
         //differences in cvLabel should violate equality
         parameter2.cvLabel("CLI").cvAccession("214873");
-        assertFalse("Parameters should NOT be equal", Parameters.isEqualTo(parameter1, parameter2));
+        assertFalse("Parameters should NOT be equal", CvMappingUtils.isEqualTo(parameter1, parameter2));
         
         //differences in name should violate equality
         parameter2.cvLabel("MS").name("lklakshd");
-        assertFalse("Parameters should NOT be equal", Parameters.isEqualTo(parameter1, parameter2));
+        assertFalse("Parameters should NOT be equal", CvMappingUtils.isEqualTo(parameter1, parameter2));
     }
     
     @Test
@@ -83,7 +82,7 @@ public class ParametersTest {
             value("klhasd");
         //ignore differences in value
         parameter2.value("pouiopzuqwe");
-        assertTrue("Parameters should be equal", Parameters.isEqualTo(parameter1, parameter2));
+        assertTrue("Parameters should be equal", CvMappingUtils.isEqualTo(parameter1, parameter2));
     }
         
     
