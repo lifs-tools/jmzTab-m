@@ -42,20 +42,22 @@ import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabException;
 import uk.ac.ebi.pride.jmztab2.utils.parser.MZTabParserContext;
 
 /**
- * Provide a couple of functions for translate, parse and print formatted string defined in the mzTab specification.
+ * Provide a couple of functions for translate, parse and print formatted string
+ * defined in the mzTab specification.
  *
  * @author qingwei
  * @since 30/01/13
- * 
+ *
  */
 public class MZTabUtils {
 
-    private static final Logger logger = LoggerFactory.getLogger(MZTabUtils.class);
+    private static final Logger logger = LoggerFactory.getLogger(
+        MZTabUtils.class);
 
     /**
-     * If ratios are included and the denominator is zero, the "INF" value MUST be used.
-     * If the result leads to calculation errors (for example 0/0), this MUST be reported
-     * as "not a number" ("NaN").
+     * If ratios are included and the denominator is zero, the "INF" value MUST
+     * be used. If the result leads to calculation errors (for example 0/0),
+     * this MUST be reported as "not a number" ("NaN").
      *
      * @see #parseDouble(String)
      * @param value a {@link java.lang.Double} object.
@@ -74,7 +76,8 @@ public class MZTabUtils {
     }
 
     /**
-     * Parse the target string, and check is obey the email format or not. If not, return null.
+     * Parse the target string, and check is obey the email format or not. If
+     * not, return null.
      *
      * @param target a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
@@ -91,10 +94,11 @@ public class MZTabUtils {
 
         return matcher.find() ? target : null;
     }
-    
+
     /**
-     * Parse the target string, and check it follows the mzTab Version format. If not, return null.
-     * 
+     * Parse the target string, and check it follows the mzTab Version format.
+     * If not, return null.
+     *
      * @param target a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
      */
@@ -106,14 +110,14 @@ public class MZTabUtils {
 
         Pattern versionPattern = Pattern.compile(MZTabConstants.REGEX_MZTAB_M);
         Matcher m = versionPattern.matcher(target);
-        if(m.matches()) {
+        if (m.matches()) {
             Integer major = Integer.parseInt(m.group("major"));
             Integer minor = Integer.parseInt(m.group("minor"));
             Integer micro = Integer.parseInt(m.group("micro"));
-            if(major!=2) {
+            if (major != 2) {
                 return null;
             }
-            if(!"M".equals(m.group("profile"))) {
+            if (!"M".equals(m.group("profile"))) {
                 return null;
             }
             return target;
@@ -122,10 +126,11 @@ public class MZTabUtils {
     }
 
     /**
-     * Parameters are always reported as [CV label, accession, name, value].
-     * Any field that is not available MUST be left empty.
+     * Parameters are always reported as [CV label, accession, name, value]. Any
+     * field that is not available MUST be left empty.
      *
-     * If the name or value of param contains comma, quotes MUST be added to avoid problems. Nested double quotes are not supported.
+     * If the name or value of param contains comma, quotes MUST be added to
+     * avoid problems. Nested double quotes are not supported.
      *
      * Notice: name cell never set null.
      *
@@ -139,7 +144,8 @@ public class MZTabUtils {
         }
 
         try {
-            target = target.substring(target.indexOf("[") + 1, target.lastIndexOf("]"));
+            target = target.substring(target.indexOf("[") + 1, target.
+                lastIndexOf("]"));
             String[] tokens = target.split(REGEX_PARAM_SPLIT, -1);
 
             if (tokens.length == 4) {
@@ -148,7 +154,7 @@ public class MZTabUtils {
                 String accession = tokens[1].trim();
 
                 String name = tokens[2].trim();
-                if(name.contains("\"")) {  //We remove the escaping because it will be written back in the writer
+                if (name.contains("\"")) {  //We remove the escaping because it will be written back in the writer
                     name = removeDoubleQuotes(name);
                 }
 
@@ -157,7 +163,7 @@ public class MZTabUtils {
                 }
 
                 String value = tokens[3].trim();
-                if(value.contains("\"")) {  //We remove the escaping because it will be written back in the writer
+                if (value.contains("\"")) {  //We remove the escaping because it will be written back in the writer
                     value = removeDoubleQuotes(value);
                 }
                 if (isEmpty(value)) {
@@ -165,9 +171,13 @@ public class MZTabUtils {
                 }
 
                 if (isEmpty(cvLabel) && isEmpty(accession)) {
-                    return new Parameter().name(name).value(value);
+                    return new Parameter().name(name).
+                        value(value);
                 } else {
-                    return new Parameter().cvLabel(cvLabel).cvAccession(accession).name(name).value(value);
+                    return new Parameter().cvLabel(cvLabel).
+                        cvAccession(accession).
+                        name(name).
+                        value(value);
                 }
             }
         } catch (IndexOutOfBoundsException e) {
@@ -196,21 +206,22 @@ public class MZTabUtils {
         // regular express reserved keywords escape
         StringBuilder sb = new StringBuilder();
         switch (splitChar) {
-            case '.' :
-            case '$' :
-            case '^' :
-            case '{' :
-            case '}' :
-            case '[' :
-            case ']' :
-            case '(' :
-            case ')' :
-            case '|' :
-            case '*' :
-            case '+' :
-            case '?' :
-            case '\\' :
-                sb.append("\\").append(splitChar);
+            case '.':
+            case '$':
+            case '^':
+            case '{':
+            case '}':
+            case '[':
+            case ']':
+            case '(':
+            case ')':
+            case '|':
+            case '*':
+            case '+':
+            case '?':
+            case '\\':
+                sb.append("\\").
+                    append(splitChar);
                 break;
             default:
                 sb.append(splitChar);
@@ -223,13 +234,16 @@ public class MZTabUtils {
     }
 
     /**
-     * parse the target into a {@link de.isas.mztab2.model.IndexedElement} object.
+     * parse the target into a {@link de.isas.mztab2.model.IndexedElement}
+     * object.
      *
      * @param target a {@link java.lang.String} object.
-     * @param element a {@link uk.ac.ebi.pride.jmztab2.model.MetadataElement} object.
+     * @param element a {@link uk.ac.ebi.pride.jmztab2.model.MetadataElement}
+     * object.
      * @return a {@link de.isas.mztab2.model.IndexedElement} object.
      */
-    public static IndexedElement parseIndexedElement(String target, MetadataElement element) {
+    public static IndexedElement parseIndexedElement(String target,
+        MetadataElement element) {
         target = parseString(target);
         if (target == null) {
             return null;
@@ -251,10 +265,12 @@ public class MZTabUtils {
      * Parse the target into a {@link de.isas.mztab2.model.IndexedElement} list.
      *
      * @param target a {@link java.lang.String} object.
-     * @param element a {@link uk.ac.ebi.pride.jmztab2.model.MetadataElement} object.
+     * @param element a {@link uk.ac.ebi.pride.jmztab2.model.MetadataElement}
+     * object.
      * @return a {@link java.util.List} object.
      */
-    public static List<IndexedElement> parseRefList(String target, MetadataElement element) {
+    public static List<IndexedElement> parseRefList(String target,
+        MetadataElement element) {
         List<String> list = parseStringList(MZTabConstants.COMMA, target);
 
         List<IndexedElement> indexedElementList = new ArrayList<>();
@@ -318,7 +334,8 @@ public class MZTabUtils {
     }
 
     /**
-     * <p>parseInteger.</p>
+     * <p>
+     * parseInteger.</p>
      *
      * @param target a {@link java.lang.String} object.
      * @return a {@link java.lang.Integer} object.
@@ -341,8 +358,9 @@ public class MZTabUtils {
     }
 
     /**
-     * NOTICE: If ratios are included and the denominator is zero, the "INF" value MUST be used. If the result leads
-     * to calculation errors (for example 0/0), this MUST be reported as "not a number" ("NaN").
+     * NOTICE: If ratios are included and the denominator is zero, the "INF"
+     * value MUST be used. If the result leads to calculation errors (for
+     * example 0/0), this MUST be reported as "not a number" ("NaN").
      *
      * @param target a {@link java.lang.String} object.
      * @return a {@link java.lang.Double} object.
@@ -372,9 +390,10 @@ public class MZTabUtils {
 
         return value;
     }
-    
+
     /**
-     * <p>parseLong.</p>
+     * <p>
+     * parseLong.</p>
      *
      * @param target a {@link java.lang.String} object.
      * @return a {@link java.lang.Long} object.
@@ -393,7 +412,8 @@ public class MZTabUtils {
     }
 
     /**
-     * <p>parseDoubleList.</p>
+     * <p>
+     * parseDoubleList.</p>
      *
      * @param target a {@link java.lang.String} object.
      * @return a {@link java.util.List} object.
@@ -415,9 +435,10 @@ public class MZTabUtils {
 
         return valueList;
     }
-    
+
     /**
-     * <p>parseIntegerList.</p>
+     * <p>
+     * parseIntegerList.</p>
      *
      * @param target a {@link java.lang.String} object.
      * @return a {@link java.util.List} object.
@@ -441,7 +462,8 @@ public class MZTabUtils {
     }
 
     /**
-     * <p>parseURL.</p>
+     * <p>
+     * parseURL.</p>
      *
      * @param target a {@link java.lang.String} object.
      * @return a {@link java.net.URL} object.
@@ -464,7 +486,8 @@ public class MZTabUtils {
     }
 
     /**
-     * <p>parseURI.</p>
+     * <p>
+     * parseURI.</p>
      *
      * @param target a {@link java.lang.String} object.
      * @return a {@link java.net.URI} object.
@@ -494,30 +517,38 @@ public class MZTabUtils {
      * @param lineNumber the line number while parsing.
      * @param target a {@link java.lang.String} object.
      * @return a {@link de.isas.mztab2.model.Publication} object.
+     * @throws uk.ac.ebi.pride.jmztab2.utils.errors.MZTabException in case of
+     * parsing or formatting issues of the publication string.
      */
-    public static Publication parsePublicationItems(Publication publication, int lineNumber, String target) throws MZTabException {
+    public static Publication parsePublicationItems(Publication publication,
+        int lineNumber, String target) throws MZTabException {
         List<String> list = parseStringList(BAR, target);
 
         PublicationItem.TypeEnum type;
         String accession;
         PublicationItem item;
         for (String pub : list) {
-            pub = parseString(pub).toLowerCase();
+            pub = parseString(pub).
+                toLowerCase();
             if (pub == null) {
-                publication.getPublicationItems().clear();
+                publication.getPublicationItems().
+                    clear();
                 return publication;
             }
-            String[] items = pub.split(""+COLON);
+            String[] items = pub.split("" + COLON);
             if (items.length == 2) {
                 type = PublicationItem.TypeEnum.fromValue(items[0]);
-                if(type == null) {
-                    throw new MZTabException(new MZTabError(FormatErrorType.Publication, lineNumber, target, pub));
+                if (type == null) {
+                    throw new MZTabException(new MZTabError(
+                        FormatErrorType.Publication, lineNumber, target, pub));
                 }
                 accession = items[1].trim();
-                item = new PublicationItem().type(type).accession(accession);
+                item = new PublicationItem().type(type).
+                    accession(accession);
                 publication.addPublicationItemsItem(item);
-            }  else {
-                throw new MZTabException(new MZTabError(FormatErrorType.Publication, lineNumber, target, pub));
+            } else {
+                throw new MZTabException(new MZTabError(
+                    FormatErrorType.Publication, lineNumber, target, pub));
             }
 
         }
@@ -528,12 +559,14 @@ public class MZTabUtils {
     /**
      * Parse a {@link de.isas.mztab2.model.SpectraRef} list.
      *
-     * @param context a {@link uk.ac.ebi.pride.jmztab2.utils.parser.MZTabParserContext} object.
+     * @param context a
+     * {@link uk.ac.ebi.pride.jmztab2.utils.parser.MZTabParserContext} object.
      * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
      * @param target a {@link java.lang.String} object.
      * @return a {@link java.util.List} object.
      */
-    public static List<SpectraRef> parseSpectraRefList(MZTabParserContext context, Metadata metadata, String target) {
+    public static List<SpectraRef> parseSpectraRefList(
+        MZTabParserContext context, Metadata metadata, String target) {
         List<String> list = parseStringList(BAR, target);
         List<SpectraRef> refList = new ArrayList<>();
 
@@ -548,11 +581,13 @@ public class MZTabUtils {
                 ms_file_id = new Integer(matcher.group(1));
                 reference = matcher.group(2);
 
-                MsRun msRun = context.getMsRunMap().get(ms_file_id);
+                MsRun msRun = context.getMsRunMap().
+                    get(ms_file_id);
                 if (msRun == null) {
                     ref = null;
                 } else {
-                    ref = new SpectraRef().msRun(msRun).reference(reference);
+                    ref = new SpectraRef().msRun(msRun).
+                        reference(reference);
                 }
 
                 if (ref == null) {
@@ -584,10 +619,9 @@ public class MZTabUtils {
 //            }
 //        }
 //    }
-
     /**
-     *  Solve the conflict about minus char between modification position and CHEMMOD charge.
-     *  For example: 13-CHEMMOD:-159
+     * Solve the conflict about minus char between modification position and
+     * CHEMMOD charge. For example: 13-CHEMMOD:-159
      *
      * @param target a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
@@ -608,12 +642,13 @@ public class MZTabUtils {
     }
 
     /**
-     * <p>translateMinusInCVtoUnicode.</p>
+     * <p>
+     * translateMinusInCVtoUnicode.</p>
      *
      * @param target a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
      */
-    public static String translateMinusInCVtoUnicode(String target){
+    public static String translateMinusInCVtoUnicode(String target) {
         Pattern pattern = Pattern.compile("\\[([^\\[\\]]+)\\]");
         Matcher matcher = pattern.matcher(target);
 
@@ -624,7 +659,8 @@ public class MZTabUtils {
         while (matcher.find()) {
             end = matcher.start(1);
             sb.append(target.substring(start, end));
-            sb.append(matcher.group(1).replaceAll("-", "&minus;"));
+            sb.append(matcher.group(1).
+                replaceAll("-", "&minus;"));
             start = matcher.end(1);
         }
         sb.append(target.substring(start, target.length()));
@@ -633,19 +669,19 @@ public class MZTabUtils {
     }
 
     /**
-     * <p>translateUnicodeCVTermMinus.</p>
+     * <p>
+     * translateUnicodeCVTermMinus.</p>
      *
      * @param target a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
      */
-    public static String translateUnicodeCVTermMinus(String target){
+    public static String translateUnicodeCVTermMinus(String target) {
         return target.replaceAll("&minus;", "-");
     }
 
-
     /**
-     *  Solve the conflict about minus char between modification position and CHEMMOD charge.
-     *  For example: 13-CHEMMOD:-159
+     * Solve the conflict about minus char between modification position and
+     * CHEMMOD charge. For example: 13-CHEMMOD:-159
      *
      * @param target a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
@@ -736,7 +772,6 @@ public class MZTabUtils {
 //
 //        return modification;
 //    }
-
     /**
      * locate param label [label, accession, name, value], translate ',' to '\t'
      *
@@ -754,7 +789,8 @@ public class MZTabUtils {
         while (matcher.find()) {
             end = matcher.start(1);
             sb.append(target.substring(start, end));
-            sb.append(matcher.group(1).replaceAll(",", "\t"));
+            sb.append(matcher.group(1).
+                replaceAll(",", "\t"));
             start = matcher.end(1);
         }
         sb.append(target.substring(start, target.length()));
@@ -763,7 +799,8 @@ public class MZTabUtils {
     }
 
     /**
-     * solve the conflict about comma char which used in split modification and split cv param components.
+     * solve the conflict about comma char which used in split modification and
+     * split cv param components.
      *
      * @param target a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
@@ -779,7 +816,8 @@ public class MZTabUtils {
         while (matcher.find()) {
             end = matcher.start(1);
             sb.append(target.substring(start, end));
-            sb.append(matcher.group(1).replaceAll("\t", ","));
+            sb.append(matcher.group(1).
+                replaceAll("\t", ","));
             start = matcher.end(1);
         }
         sb.append(target.substring(start, target.length()));
@@ -788,14 +826,14 @@ public class MZTabUtils {
     }
 
     //Solve the problem for Neutral losses in CvTerm format
-
     /**
-     * <p>translateMinusToTab.</p>
+     * <p>
+     * translateMinusToTab.</p>
      *
      * @param target a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
      */
-    public static String translateMinusToTab(String target){
+    public static String translateMinusToTab(String target) {
         Pattern pattern = Pattern.compile("\\[([^\\[\\]]+)\\]");
         Matcher matcher = pattern.matcher(target);
 
@@ -806,7 +844,8 @@ public class MZTabUtils {
         while (matcher.find()) {
             end = matcher.start(1);
             sb.append(target.substring(start, end));
-            sb.append(matcher.group(1).replaceAll("-", "\t"));
+            sb.append(matcher.group(1).
+                replaceAll("-", "\t"));
             start = matcher.end(1);
         }
         sb.append(target.substring(start, target.length()));
@@ -815,25 +854,25 @@ public class MZTabUtils {
 
     }
 
-
-    private static String replaceLast(String string, String toReplace, String replacement){
+    private static String replaceLast(String string, String toReplace,
+        String replacement) {
         int pos = string.lastIndexOf(toReplace);
         if (pos > -1) {
             return string.substring(0, pos)
-                    + replacement
-                    + string.substring(pos + toReplace.length(), string.length());
+                + replacement
+                + string.substring(pos + toReplace.length(), string.length());
         }
         return string;
     }
 
-
     /**
-     * <p>translateLastToTab.</p>
+     * <p>
+     * translateLastToTab.</p>
      *
      * @param target a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
      */
-    public static String translateLastToTab(String target){
+    public static String translateLastToTab(String target) {
         Pattern pattern = Pattern.compile("\\[([^\\[\\]]+)\\]");
         Matcher matcher = pattern.matcher(target);
 
@@ -844,7 +883,7 @@ public class MZTabUtils {
         while (matcher.find()) {
             end = matcher.start(1);
             sb.append(target.substring(start, end));
-            sb.append(replaceLast(matcher.group(1),"-", "\t"));
+            sb.append(replaceLast(matcher.group(1), "-", "\t"));
             start = matcher.end(1);
         }
         sb.append(target.substring(start, target.length()));
@@ -854,7 +893,8 @@ public class MZTabUtils {
     }
 
     /**
-     * solve the conflict about comma char which used in split modification and split cv param components.
+     * solve the conflict about comma char which used in split modification and
+     * split cv param components.
      *
      * @param target a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
@@ -870,7 +910,8 @@ public class MZTabUtils {
         while (matcher.find()) {
             end = matcher.start(1);
             sb.append(target.substring(start, end));
-            sb.append(matcher.group(1).replaceAll("\t", "-"));
+            sb.append(matcher.group(1).
+                replaceAll("\t", "-"));
             start = matcher.end(1);
         }
         sb.append(target.substring(start, target.length()));
@@ -879,7 +920,8 @@ public class MZTabUtils {
     }
 
     /**
-     * Parse the target string to a {@link Modification} list, which split by comma character.
+     * Parse the target string to a {@link Modification} list, which split by
+     * comma character.
      */
 //    public static SplitList<Modification> parseModificationList(Section section, String target) {
 //        target = parseString(target);
@@ -910,10 +952,10 @@ public class MZTabUtils {
 //
 //        return modList;
 //    }
-
     /**
-     * If there exists reserved characters in value, like comma, the string need to be escape. However the escaping char
-     * is not store because it will be write back in the writer. Nested double quotes are not supported.
+     * If there exists reserved characters in value, like comma, the string need
+     * to be escape. However the escaping char is not store because it will be
+     * write back in the writer. Nested double quotes are not supported.
      *
      * @param value a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
@@ -930,12 +972,13 @@ public class MZTabUtils {
             value = value.replace("\"", "");
             count = length - value.length();
 
-            if(isEmpty(value)){
+            if (isEmpty(value)) {
                 value = null;
             }
 
             if (count > 2) {
-                logger.warn("Nested double quotes in value, " + count + " occurrences have been replaced.");
+                logger.warn(
+                    "Nested double quotes in value, " + count + " occurrences have been replaced.");
             }
         }
 

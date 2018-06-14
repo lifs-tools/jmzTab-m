@@ -124,12 +124,11 @@ public class SMHLineParser extends MZTabHeaderLineParser {
      * The following optional columns are mandatory:
      * 1. abundance_assay[1-n]
      * 2. abundance_study_variable[1-m]
-     * 3. abundance_coeffvar_study_variable[1-m]
+     * 3. abundance_variation_study_variable[1-m]
      * 
      * NOTICE: this method will be called at end of parse() function.
      * @see MZTabHeaderLineParser#parse(int, String, MZTabErrorList)
      * @see MZTabHeaderLineParser#parse(int, String, MZTabErrorList)
-     * @see #refineOptionalColumn(java.lang.String)
      */
     @Override
     protected void refine() throws MZTabException {

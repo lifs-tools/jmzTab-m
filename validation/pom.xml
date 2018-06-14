@@ -46,6 +46,15 @@
           <locale>en</locale>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <configuration>
+          <excludePackageNames>
+            info.psidev.*
+          </excludePackageNames>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
   <dependencies>

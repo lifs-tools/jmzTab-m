@@ -51,8 +51,7 @@ public class MZTabColumn implements IMZTabColumn {
      * the same value with order.
      *
      * @param name define a stable name for column. For optional column, only set stable part for name.
-     * @param dataType define the data type for column. When {@link uk.ac.ebi.pride.jmztab2.model.MZTabRecord#setValue(String, Object)} for this column,
-     *                 system will check the data type is compatible or not, firstly.
+     * @param dataType define the data type for column.
      * @param optional if false the column is stable type, otherwise is optional column.
      * @param order internal order. Every non {@link uk.ac.ebi.pride.jmztab2.model.OptionColumn} has stable order. Column order is used to maintain the
      *              logical position in {@link uk.ac.ebi.pride.jmztab2.model.MZTabColumnFactory}
@@ -66,8 +65,7 @@ public class MZTabColumn implements IMZTabColumn {
      * the same value with order.
      *
      * @param name define a stable name for column. For optional column, only set stable part for name.
-     * @param dataType define the data type for column. When {@link uk.ac.ebi.pride.jmztab2.model.MZTabRecord#setValue(String, Object)} for this column,
-     *                 system will check the data type is compatible or not, firstly.
+     * @param dataType define the data type for column.
      * @param optional if false the column is stable type, otherwise is optional column.
      * @param order internal order. Every non {@link uk.ac.ebi.pride.jmztab2.model.OptionColumn} has stable order. Column order is used to maintain the
      *              logical position in {@link uk.ac.ebi.pride.jmztab2.model.MZTabColumnFactory}

@@ -43,7 +43,7 @@ import static uk.ac.ebi.pride.jmztab2.model.MZTabConstants.*;
 import static uk.ac.ebi.pride.jmztab2.model.MZTabUtils.*;
 
 /**
- * This class allows the validation and loading of the data into the {@link uk.ac.ebi.pride.jmztab2.model.MZTabRecord}.
+ * This class allows the validation and loading of the data into mzTab domain objects.
  *
  * NOTICE: {@link uk.ac.ebi.pride.jmztab2.model.MZTabColumnFactory} maintain a couple of {@link uk.ac.ebi.pride.jmztab2.model.IMZTabColumn} which have internal logical
  * position and order. In physical mzTab file, we allow user not obey this logical position organized way,
@@ -154,9 +154,9 @@ public abstract class MZTabDataLineParser<T> extends MZTabLineParser {
     }
 
     /**
-     * Retrieve the data line to a {@link uk.ac.ebi.pride.jmztab2.model.MZTabRecord}.
+     * Retrieve the data line to a type mzTab domain object.
      *
-     * @return a T object.
+     * @return a typed mzTab domain object.
      */
     public abstract T getRecord();
 

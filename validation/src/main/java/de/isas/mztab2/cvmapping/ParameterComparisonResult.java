@@ -21,9 +21,9 @@ package de.isas.mztab2.cvmapping;
  * found via JXPath.</p>
  * <p>
  * The comparison can yield three different results: 
- *  P == T => P is identical to T: IDENTICAL,
- *  P -> T => P is a child of T: CHILD_OF,
- *  P != T => P is neither a child nor identical to T, they are: NOT_RELATED;
+ *  P == T : P is identical to T: IDENTICAL,
+ *  P -- T : P is a child of T: CHILD_OF,
+ *  P != T : P is neither a child nor identical to T, they are: NOT_RELATED;
  *</p>
  * @author nilshoffmann
  */

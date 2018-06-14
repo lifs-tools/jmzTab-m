@@ -42,7 +42,7 @@ MTD	sample[1]-species[2]	[NCBITaxon, NCBITaxon:573824, Human rhinovirus 1, ]
 MTD	sample[1]-tissue[1]	[BTO, BTO:0000759, liver, ]
 MTD	sample[1]-cell_type[1]	[CL, CL:0000182, hepatocyte, ]
 MTD	sample[1]-disease[1]	[DOID, DOID:684, hepatocellular carcinoma, ]
-MTD	sample[1]-disease[2]	[DOID, DOID:9451, alcoholic fatty liver, ]
+MTD	sample[1]-disease[2]	[DOID, DOID:9452, fatty liver disease, ]
 MTD	sample[1]-description	Hepatocellular carcinoma samples.
 MTD	sample[1]-custom[1]	[, , Extraction date, 2011-12-21]
 MTD	sample[1]-custom[2]	[, , Extraction reason, liver biopsy]
@@ -69,6 +69,6 @@ MTD	database[1]	[, , "no database", null]
 MTD	database[1]-prefix	null
 MTD	database[1]-version	Unknown
 MTD	database[1]-url	null
-MTD	small_molecule-quantification_unit	[PSI-MS, MS:1002887, Progenesis QI normalised abundance, ]
-MTD	small_molecule_feature-quantification_unit	[PSI-MS, MS:1002887, Progenesis QI normalised abundance, ]
+MTD	small_molecule-quantification_unit	[MS, MS:1002887, Progenesis QI normalised abundance, ]
+MTD	small_molecule_feature-quantification_unit	[MS, MS:1002887, Progenesis QI normalised abundance, ]
 MTD	id_confidence_measure[1]	[MS,MS:1002889,Progenesis MetaScope Score,]

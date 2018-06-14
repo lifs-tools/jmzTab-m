@@ -125,7 +125,6 @@ public class SFHLineParser extends MZTabHeaderLineParser {
      * NOTICE: this method will be called at end of parse() function.
      * @see MZTabHeaderLineParser#parse(int, String, MZTabErrorList)
      * @see MZTabHeaderLineParser#parse(int, String, MZTabErrorList)
-     * @see #refineOptionalColumn(java.lang.String)
      */
     @Override
     protected void refine() throws MZTabException {

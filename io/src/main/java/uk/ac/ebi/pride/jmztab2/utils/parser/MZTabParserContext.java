@@ -80,7 +80,7 @@ public class MZTabParserContext {
      * Add a sample to metadata. Samples are NOT MANDATORY in mzTab, since many software packages cannot determine what
      * type of sample was analysed (e.g. whether biological or technical replication was performed).
      *
-     * @param sample SHOULD NOT set null.
+     * @param sample SHOULD NOT be null.
      * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
      * @return a {@link de.isas.mztab2.model.Sample} object.
      */
@@ -328,7 +328,7 @@ public class MZTabParserContext {
     /**
      * Add a instrument[id] to metadata.
      *
-     * @param instrument SHOULD NOT set null.
+     * @param instrument SHOULD NOT be null.
      * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
      * @return a {@link de.isas.mztab2.model.Instrument} object.
      */
@@ -461,7 +461,7 @@ public class MZTabParserContext {
     /**
      * Add a software to metadata, which used to analyze the data and obtain the reported results.
      *
-     * @param software SHOULD NOT set null
+     * @param software SHOULD NOT be null
      * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
      * @return a {@link de.isas.mztab2.model.Software} object.
      */
@@ -541,7 +541,7 @@ public class MZTabParserContext {
      * indicating the number in the square brackets after "publication". PubMed ids must be prefixed by "pubmed:",
      * DOIs by "doi:". Multiple identifiers MUST be separated by "|".
      *
-     * @param publication SHOULD NOT set null.
+     * @param publication SHOULD NOT be null.
      * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
      * @return a {@link de.isas.mztab2.model.Publication} object.
      */
@@ -559,7 +559,7 @@ public class MZTabParserContext {
      * Multiple identifiers MUST be separated by "|".
      *
      * @param id SHOULD be positive integer.
-     * @param type SHOULD NOT set null.
+     * @param type SHOULD NOT be null.
      * @param accession SHOULD NOT set empty.
      * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
      * @return a {@link de.isas.mztab2.model.Publication} object.
@@ -594,7 +594,7 @@ public class MZTabParserContext {
      * DOIs by "doi:". Multiple identifiers MUST be separated by "|".
      *
      * @param id SHOULD be positive integer.
-     * @param items SHOULD NOT set null.
+     * @param items SHOULD NOT be null.
      * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
      * @return a {@link de.isas.mztab2.model.Publication} object.
      */
@@ -622,7 +622,7 @@ public class MZTabParserContext {
     /**
      * Add a contact into metadata.
      *
-     * @param contact SHOULD NOT set null.
+     * @param contact SHOULD NOT be null.
      * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
      * @return a {@link de.isas.mztab2.model.Contact} object.
      */
@@ -728,7 +728,7 @@ public class MZTabParserContext {
      * Add a ms_run[id] into metadata. An MS run is effectively one run (or set of runs on pre-fractionated samples)
      * on an MS instrument, and is referenced from assay in different contexts.
      *
-     * @param msRun SHOULD NOT set null.
+     * @param msRun SHOULD NOT be null.
      * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
      * @return a {@link de.isas.mztab2.model.MsRun} object.
      */
@@ -980,7 +980,7 @@ public class MZTabParserContext {
      * in the case of label-free MS analysis or multiple assays are mapped to one MS run for multiplexed techniques,
      * along with a description of the label or tag applied.
      *
-     * @param assay SHOULD NOT set null.
+     * @param assay SHOULD NOT be null.
      * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
      * @return a {@link de.isas.mztab2.model.Assay} object.
      */
@@ -1001,7 +1001,7 @@ public class MZTabParserContext {
      * along with a description of the label or tag applied.
      *
      * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
-     * @param id SHOULD NOT set null.
+     * @param id SHOULD NOT be null.
      * @param param the parameter.
      * @return a {@link de.isas.mztab2.model.Assay} object.
      */
@@ -1029,8 +1029,9 @@ public class MZTabParserContext {
      * in the case of label-free MS analysis or multiple assays are mapped to one MS run for multiplexed techniques,
      * along with a description of the label or tag applied.
      *
-     * @param assay SHOULD NOT set null.
      * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
+     * @param id the id of the assay element.
+     * @param location SHOULD NOT be null.
      * @return a {@link de.isas.mztab2.model.Assay} object.
      */
     public Assay addAssayExternalUri(Metadata metadata, Integer id, URI location) {
@@ -1055,7 +1056,7 @@ public class MZTabParserContext {
      * Add assay[id]-sample_ref into metadata. An association from a given assay to the sample analysed.
      *
      * @param id SHOULD be positive integer.
-     * @param sample SHOULD NOT set null, and SHOULD be defined in metadata first.
+     * @param sample SHOULD NOT be null, and SHOULD be defined in metadata first.
      * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
      * @return a {@link de.isas.mztab2.model.Assay} object.
      */
@@ -1087,7 +1088,7 @@ public class MZTabParserContext {
      * Add assay[id]-ms_run_ref into metadata. An association from a given assay to the source MS run.
      *
      * @param id SHOULD be positive integer.
-     * @param msRun SHOULD NOT set null, and SHOULD be defined in metadata first.
+     * @param msRun SHOULD NOT be null, and SHOULD be defined in metadata first.
      * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
      * @return a {@link de.isas.mztab2.model.Assay} object.
      */
@@ -1120,7 +1121,7 @@ public class MZTabParserContext {
      * may have been derived following averaging across a group of replicate measurements (assays). In files where assays
      * are reported, study variables have references to assays. The same concept has been defined by others as "experimental factor".
      *
-     * @param studyVariable SHOULD NOT set null.
+     * @param studyVariable SHOULD NOT be null.
      * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
      * @return a {@link de.isas.mztab2.model.StudyVariable} object.
      */
@@ -1137,7 +1138,7 @@ public class MZTabParserContext {
      * Add a study_variable[id]-assay_refs. Comma-separated references to the IDs of assays grouped in the study variable.
      *
      * @param id SHOULD be positive integer.
-     * @param assay SHOULD NOT set null, and should be defined in metadata first.
+     * @param assay SHOULD NOT be null, and should be defined in metadata first.
      * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
      * @return a {@link de.isas.mztab2.model.StudyVariable} object.
      */
@@ -1285,7 +1286,7 @@ public class MZTabParserContext {
      * Add a controlled vocabularies/ontologies into metadata. Define the controlled vocabularies/ontologies
      * used in the mzTab file.
      *
-     * @param cv SHOULD NOT set null.
+     * @param cv SHOULD NOT be null.
      * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
      * @return a {@link de.isas.mztab2.model.CV} object.
      */
@@ -1405,8 +1406,8 @@ public class MZTabParserContext {
      * values MUST be set in small_molecule-quantification_unit.
      *
      * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
-     * @param column SHOULD NOT set null
-     * @param param SHOULD NOT set null
+     * @param column SHOULD NOT be null
+     * @param param SHOULD NOT be null
      */
     public void addSmallMoleculeColUnit(Metadata metadata, MZTabColumn column, Parameter param) {
         ColumnParameterMapping cpm = new ColumnParameterMapping();
@@ -1422,8 +1423,8 @@ public class MZTabParserContext {
      * values MUST be set in small_molecule-quantification_unit.
      *
      * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
-     * @param column SHOULD NOT set null
-     * @param param SHOULD NOT set null
+     * @param column SHOULD NOT be null
+     * @param param SHOULD NOT be null
      */
     public void addSmallMoleculeFeatureColUnit(Metadata metadata, MZTabColumn column, Parameter param) {
         ColumnParameterMapping cpm = new ColumnParameterMapping();
@@ -1439,8 +1440,8 @@ public class MZTabParserContext {
      * values MUST be set in small_molecule-quantification_unit.
      *
      * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
-     * @param column SHOULD NOT set null
-     * @param param SHOULD NOT set null
+     * @param column SHOULD NOT be null
+     * @param param SHOULD NOT be null
      */
     public void addSmallMoleculeEvidenceColUnit(Metadata metadata, MZTabColumn column, Parameter param) {
         ColumnParameterMapping cpm = new ColumnParameterMapping();
@@ -1460,8 +1461,8 @@ public class MZTabParserContext {
 
     /**
      * Add a confidence measure id parameter.
-     * @param id SHOULD NOT set null
-     * @param parameter SHOULD NOT set null
+     * @param id SHOULD NOT be null
+     * @param parameter SHOULD NOT be null
      */
     void addIdConfidenceMeasure(Metadata metadata, Integer id, Parameter parameter) {
         if(parameter.getId()==null) {

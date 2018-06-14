@@ -17,7 +17,8 @@ package de.isas.mztab2.io.serialization;
 
 /**
  * <p>
- * ElementNameMappingException should be thrown to indicate that the state of the passed in element did not allow mapping to a proper mzTab name.</p>
+ * ElementNameMappingException should be thrown to indicate that the state of
+ * the passed in element did not allow mapping to a proper mzTab name.</p>
  *
  * @author nilshoffmann
  *
@@ -28,7 +29,9 @@ public final class ElementNameMappingException extends RuntimeException {
      * <p>
      * Constructor for ElementNameMappingException.</p>
      *
+     * @param property the property name for the given element.
      * @param element a {@link java.lang.Object} object.
+     *
      */
     public ElementNameMappingException(String property, Object element) {
         super(

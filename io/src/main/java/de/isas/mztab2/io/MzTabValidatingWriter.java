@@ -56,8 +56,9 @@ import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorType.Level;
  */
 public class MzTabValidatingWriter implements MzTabWriter<List<ValidationMessage>> {
 
-    private static final Logger logger = LoggerFactory.getLogger(MzTabValidatingWriter.class);
-    
+    private static final Logger logger = LoggerFactory.getLogger(
+        MzTabValidatingWriter.class);
+
     private final Validator<MzTab> validator;
     private final boolean skipWriteOnValidationFailure;
     private final MzTabWriterDefaults writerDefaults;
@@ -69,15 +70,17 @@ public class MzTabValidatingWriter implements MzTabWriter<List<ValidationMessage
      * written, if any validation failures occur.
      */
     public MzTabValidatingWriter() {
-        this(new WriteAndParseValidator(System.out, Level.Info, 100), new MzTabWriterDefaults(), true);
+        this(new WriteAndParseValidator(System.out, Level.Info, 100),
+            new MzTabWriterDefaults(), true);
     }
 
     /**
      * Uses the provided validator and default writer configuration. The output
      * file will not be written, if any validation failures occur.
      *
-     * @param validator
-     * @param skipWriteOnValidationFailure
+     * @param validator the validator instance.
+     * @param skipWriteOnValidationFailure if true, skips writing of the file if
+     * validation fails.
      */
     public MzTabValidatingWriter(Validator<MzTab> validator,
         boolean skipWriteOnValidationFailure) {
@@ -87,8 +90,8 @@ public class MzTabValidatingWriter implements MzTabWriter<List<ValidationMessage
     /**
      * Uses the provided validator and writerDefaults.
      *
-     * @param validator
-     * @param writerDefaults
+     * @param validator the validator instance.
+     * @param writerDefaults the default writer settings.
      * @param skipWriteOnValidationFailure if true, skips writing of the file if
      * validation fails.
      */
@@ -99,20 +102,34 @@ public class MzTabValidatingWriter implements MzTabWriter<List<ValidationMessage
         this.skipWriteOnValidationFailure = skipWriteOnValidationFailure;
     }
 
+    /**
+     * A default validator implemenation that first writes and then parses the
+     * created temporary file, performing the parser checks.
+     */
     public static class WriteAndParseValidator implements Validator<MzTab> {
-        
-        private static final Logger logger = LoggerFactory.getLogger(WriteAndParseValidator.class);
+
+        private static final Logger logger = LoggerFactory.getLogger(
+            WriteAndParseValidator.class);
 
         private final OutputStream outputStream;
         private final Level level;
         private final int maxErrorCount;
-        
-        public WriteAndParseValidator(OutputStream outputStream, Level level, int maxErrorCount) {
+
+        /**
+         * Create a new instance of this validator.
+         *
+         * @param outputStream the output stream to write to.
+         * @param level the error level for validation.
+         * @param maxErrorCount the maximum number of errors before an overflow
+         * exception while stop further processing.
+         */
+        public WriteAndParseValidator(OutputStream outputStream, Level level,
+            int maxErrorCount) {
             this.outputStream = outputStream;
             this.level = level;
             this.maxErrorCount = maxErrorCount;
         }
-        
+
         @Override
         public List<ValidationMessage> validate(MzTab mzTab) {
             MzTabNonValidatingWriter writer = new MzTabNonValidatingWriter();
@@ -122,13 +139,17 @@ public class MzTabValidatingWriter implements MzTabWriter<List<ValidationMessage
                     toString(), ".mztab");
                 mzTabFile.getAbsoluteFile();
                 writer.
-                    write(new OutputStreamWriter(new FileOutputStream(mzTabFile), "UTF-8"), mzTab);
+                    write(
+                        new OutputStreamWriter(new FileOutputStream(mzTabFile),
+                            "UTF-8"), mzTab);
 
                 MZTabFileParser parser = new MZTabFileParser(mzTabFile);
                 parser.parse(outputStream, level, maxErrorCount);
-                return parser.getErrorList().convertToValidationMessages();
+                return parser.getErrorList().
+                    convertToValidationMessages();
             } catch (IOException ex) {
-                logger.error("Caught exception while trying to parse "+mzTabFile, ex);
+                logger.error(
+                    "Caught exception while trying to parse " + mzTabFile, ex);
             } finally {
                 if (mzTabFile != null && mzTabFile.exists()) {
                     mzTabFile.delete();
@@ -166,6 +187,7 @@ public class MzTabValidatingWriter implements MzTabWriter<List<ValidationMessage
      * provide Info, you will ONLY receive Info messages, even if Warn or Error
      * messages have been produced!
      *
+     * @param validationMessages the messages to apply the filter on.
      * @param level the message level.
      * @return the list of validation messages matching the provided level.
      */

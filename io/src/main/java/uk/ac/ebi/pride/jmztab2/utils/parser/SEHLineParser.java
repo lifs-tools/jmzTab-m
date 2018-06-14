@@ -136,10 +136,12 @@ public class SEHLineParser extends MZTabHeaderLineParser {
     /**
      * {@inheritDoc}
      *
+     * The following optional columns are mandatory:
+     * 1. id_confidence_measure[1-n]
+     * 
      * NOTICE: this method will be called at end of parse() function.
      * @see MZTabHeaderLineParser#parse(int, String, MZTabErrorList)
      * @see MZTabHeaderLineParser#parse(int, String, MZTabErrorList)
-     * @see #refineOptionalColumn(java.lang.String)
      */
     @Override
     protected void refine() throws MZTabException {

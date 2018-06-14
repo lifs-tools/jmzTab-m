@@ -158,9 +158,10 @@ public class Serializers {
 
     /**
      * <p>
-     * addIndexedLine.</p>
+     * addIndexedLine for elements like assay[1] that have an id and one
+     * additional property element</p>
      *
-     * @param <T>
+     * @param <T> the type of {@link IndexedElement}.
      * @param jg a {@link com.fasterxml.jackson.core.JsonGenerator} object.
      * @param sp a {@link com.fasterxml.jackson.databind.SerializerProvider}
      * object.
@@ -176,9 +177,10 @@ public class Serializers {
 
     /**
      * <p>
-     * addIndexedLine.</p>
+     * addIndexedLine for elements like assay[1] that have an id and a list of
+     * additional property elements</p>
      *
-     * @param <T>
+     * @param <T> the type of {@link IndexedElement}.
      * @param jg a {@link com.fasterxml.jackson.core.JsonGenerator} object.
      * @param sp a {@link com.fasterxml.jackson.databind.SerializerProvider}
      * object.
@@ -640,7 +642,7 @@ public class Serializers {
      * @param columnName a {@link java.lang.String} object.
      * @param jg a {@link com.fasterxml.jackson.core.JsonGenerator} object.
      * @param value a {@link java.lang.String} object.
-     * @throws java.io.IOException if any.
+     * @throws java.io.IOException if an operation on the JsonGenerator object fails.
      */
     public static void writeString(String columnName, JsonGenerator jg,
         String value) throws IOException {
@@ -659,7 +661,7 @@ public class Serializers {
      * object.
      * @param jg a {@link com.fasterxml.jackson.core.JsonGenerator} object.
      * @param value a {@link java.lang.String} object.
-     * @throws java.io.IOException if any.
+     * @throws java.io.IOException if an operation on the JsonGenerator object fails.
      */
     public static void writeString(IMZTabColumn column, JsonGenerator jg,
         String value) throws IOException {
@@ -675,7 +677,7 @@ public class Serializers {
      * @param sp a {@link com.fasterxml.jackson.databind.SerializerProvider}
      * object.
      * @param value a {@link java.lang.Object} object.
-     * @throws java.io.IOException if any.
+     * @throws java.io.IOException if an operation on the JsonGenerator object fails.
      */
     public static void writeObject(String columnName, JsonGenerator jg,
         SerializerProvider sp,
@@ -707,7 +709,7 @@ public class Serializers {
      * @param sp a {@link com.fasterxml.jackson.databind.SerializerProvider}
      * object.
      * @param value a {@link java.lang.Object} object.
-     * @throws java.io.IOException if any.
+     * @throws java.io.IOException if an operation on the JsonGenerator object fails.
      */
     public static void writeObject(IMZTabColumn column, JsonGenerator jg,
         SerializerProvider sp, Object value) throws IOException {
@@ -845,7 +847,7 @@ public class Serializers {
      * @param columnName a {@link java.lang.String} object.
      * @param jg a {@link com.fasterxml.jackson.core.JsonGenerator} object.
      * @param value a {@link java.lang.Integer} object.
-     * @throws java.io.IOException if any.
+     * @throws java.io.IOException if an operation on the JsonGenerator object fails.
      */
     public static void writeNumber(String columnName, JsonGenerator jg,
         Integer value) throws IOException {
@@ -864,7 +866,7 @@ public class Serializers {
      * object.
      * @param jg a {@link com.fasterxml.jackson.core.JsonGenerator} object.
      * @param value a {@link java.lang.Integer} object.
-     * @throws java.io.IOException if any.
+     * @throws java.io.IOException if an operation on the JsonGenerator object fails.
      */
     public static void writeNumber(IMZTabColumn column, JsonGenerator jg,
         Integer value) throws IOException {
@@ -878,7 +880,7 @@ public class Serializers {
      * @param columnName a {@link java.lang.String} object.
      * @param jg a {@link com.fasterxml.jackson.core.JsonGenerator} object.
      * @param value a {@link java.lang.Double} object.
-     * @throws java.io.IOException if any.
+     * @throws java.io.IOException if an operation on the JsonGenerator object fails.
      */
     public static void writeNumber(String columnName, JsonGenerator jg,
         Double value) throws IOException {
@@ -903,7 +905,7 @@ public class Serializers {
      * object.
      * @param jg a {@link com.fasterxml.jackson.core.JsonGenerator} object.
      * @param value a {@link java.lang.Double} object.
-     * @throws java.io.IOException if any.
+     * @throws java.io.IOException if an operation on the JsonGenerator object fails.
      */
     public static void writeNumber(IMZTabColumn column, JsonGenerator jg,
         Double value) throws IOException {
@@ -916,7 +918,7 @@ public class Serializers {
      *
      * @param jg a {@link com.fasterxml.jackson.core.JsonGenerator} object.
      * @param value a {@link java.lang.Integer} object.
-     * @throws java.io.IOException if any.
+     * @throws java.io.IOException if an operation on the JsonGenerator object fails.
      */
     public static void writeNumber(JsonGenerator jg, Integer value) throws IOException {
         if (value == null) {
@@ -932,7 +934,7 @@ public class Serializers {
      *
      * @param jg a {@link com.fasterxml.jackson.core.JsonGenerator} object.
      * @param value a {@link java.lang.Double} object.
-     * @throws java.io.IOException if any.
+     * @throws java.io.IOException if an operation on the JsonGenerator object fails.
      */
     public static void writeNumber(JsonGenerator jg, Double value) throws IOException {
         if (value == null) {
@@ -948,8 +950,8 @@ public class Serializers {
      *
      * @param optColumnMappings a {@link java.util.List} object.
      * @param jg a {@link com.fasterxml.jackson.core.JsonGenerator} object.
-     * @param sp
-     * @throws java.io.IOException if any.
+     * @param sp the serialization provider.
+     * @throws java.io.IOException if an operation on the JsonGenerator object fails.
      */
     public static void writeOptColumnMappings(
         List<OptColumnMapping> optColumnMappings,
