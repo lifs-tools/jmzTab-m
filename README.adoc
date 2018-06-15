@@ -29,33 +29,57 @@ The generated JAVA code is available in a jar archive below the `api/target` dir
 . jmztabm-api-<VERSION>.jar
 
 The generated client libraries only contain the basic domain object code. Parsing from mzTab and writing to mzTab still need to be 
-implemented separately. 
+implemented separately. The library provides this functionality for JAVA in the `io` sub-project.
 
 == Running a validation with the command-line interface
 The `cli` sub-project provides a command line interface for validation of files using the mzTab 2.0 draft validator. 
 
 NOTE: Currently, we do not plan to provide a CLI-based validator for mzTab 1.0, since that is still being provided by the original https://github.com/PRIDE-Utilities/jmzTab[jmzTab project].
 
-After building the project as mentioned above with `./mvnw install`, the `cli/target` folder will contain the `cli-<version>-jmztabm-deployment.zip` file.
+After building the project as mentioned above with `./mvnw install`, the `cli/target` folder will contain the `cli-<version>-jmztabm-deployment.zip` file. Alternatively, you can download the latest 
+cli zip file from Maven central: https://search.maven.org/#search%7Cga%7C1%7Cg%3A%22de.isas.mztab%22%20AND%20a%3A%22jmztabm-cli%22%20[Search for latest cli artefact] and click on "bin.zip" to download.
 
-In order to run the validator, unzip that file, change into the unzipped `cli` folder and run
+In order to run the validator, unzip that file, change into the unzipped folder and run
 
-  java -jar mzTabCLI.jar
+  java -jar jmztabm-cli-<VERSION>.jar
 
 to see the available options.
 
 To validate a particular file with a given level (one of: Info, Warn, Error, where Info includes Warn and Error), run
 
-  java -jar mzTabCLI.jar -check inFile=/path/to/your/file.mztab -level Warn
+  java -jar jmztabm-cli-<VERSION>.jar -check inFile=examples/MTBLS263.mztab -level Info
 
 == Running the Web Application for Validation
 
-The validator web application has been moved into a separate project: https://github.com/nilshoffmann/jmzTab-m-webapp
+The validator web application code has been moved into a separate project: https://github.com/nilshoffmann/jmzTab-m-webapp
+The application is available at: https://apps.lifs.isas.de/mztabvalidator
 
-== Using the project code via Maven Central
+== Using the project code releases via Maven Central
 
-The library artifacts are available as SNAPSHOT (development versions) from Sonatype's OSSRH repository. 
-If you want to use them, add the following to your own Maven pom file:
+The library release artifacts are available from Maven Central.
+If you want to use them, add the following lines to your own Maven pom file (replacing the version with the latest one you want to use):
+
+To use the IO libraries (reading, writing and structural and logical validation) in your own Maven projects, use the following dependency:
+
+  <dependency>
+    <groupId>de.isas.mztab</groupId>
+    <artifactId>jmztabm-io</artifactId>
+    <version>0.9.5</version>
+  </dependency>
+
+
+To use the semantic validation with the mapping file in your own Maven project, use the following dependency:
+
+  <dependency>
+    <groupId>de.isas.mztab</groupId>
+    <artifactId>jmztabm-validation</artifactId>
+    <version>0.9.5</version>
+  </dependency>
+
+== Using development snapshots
+
+The library development artifacts are available as SNAPSHOT (development versions) from Sonatype's OSSRH repository. 
+If you want to use them, add the following lines to your own Maven pom file:
 
   <repositories>
     <repository>
@@ -96,6 +120,48 @@ for the io module, where `jmztab.version` is the version of jmztabm you wish to 
 as defined in the properties section of your pom file.
 
 The SNAPSHOTS are also available from https://oss.sonatype.org/content/repositories/snapshots/de/isas/mztab/.
+
+== Using the API programmatically
+
+=== Reading mzTab 2.0 with structural and logical validation
+
+The following snippet will parse an mzTabFile from a 
+
+  File mzTabFile = new File("/path/to/my/file.mztab");
+  MZTabFileParser parser = new MZTabFileParser(mzTabFile);
+  //will report a maxmimum of 500 errors on Error, Warn and Info levels
+  //will output errors to System.err (onto your terminal)
+  parser.parse(System.err, MZTabErrorType.Level.Info, 500);
+  //inspect the output of the parse and errors
+  MZTabErrorList errors = parser.getErrorList();
+  //access the file after parsing
+  MzTab mzTab = parser.getMZTabFile();
+
+=== Writing mzTab 2.0 with validation
+
+The following code writes an mzTab object structure to the provided file path,
+performing structural and logical validation before:
+
+  MzTabValidatingWriter writer = new MzTabValidatingWriter();
+  File f = File.createTempFile(UUID.randomUUID().toString(), ".mztab");
+  Optional<List<ValidationMessage>> messages = writer.write(f.toPath(), mzTab);
+
+You can also pass in an OutputStreamWriter to the `write` method.
+
+=== Writing mzTab 2.0 without validation
+
+The following code writes an mzTab object structure to the provided output stream:
+
+  MzTabNonValidatingWriter writer = new MzTabNonValidatingWriter();
+  try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+      try (OutputStreamWriter osw = new OutputStreamWriter(
+          baos, Charset.forName("UTF8"))) {
+          writer.write(osw, mzTab);
+          osw.flush();
+      }
+  }
+
+Alternatively, you can also provide a File path to the `write` method.
 
 == Editing the Swagger Spec
 This project defines the structure of an mzTab document based on JSON-Schema
