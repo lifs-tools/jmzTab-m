@@ -125,7 +125,7 @@ The SNAPSHOTS are also available from https://oss.sonatype.org/content/repositor
 
 === Reading mzTab 2.0 with structural and logical validation
 
-The following snippet will parse an mzTabFile from a 
+The following snippet will parse an mzTabFile from a file on disk:
 
   File mzTabFile = new File("/path/to/my/file.mztab");
   MZTabFileParser parser = new MZTabFileParser(mzTabFile);
@@ -146,7 +146,7 @@ performing structural and logical validation before:
   File f = File.createTempFile(UUID.randomUUID().toString(), ".mztab");
   Optional<List<ValidationMessage>> messages = writer.write(f.toPath(), mzTab);
 
-You can also pass in an OutputStreamWriter to the `write` method.
+You can also pass an OutputStreamWriter to the `write` method.
 
 === Writing mzTab 2.0 without validation
 
