@@ -133,8 +133,7 @@ public class SmallMoleculeEvidenceSerializer extends StdSerializer<SmallMolecule
                 Optional.ofNullable(smallMoleculeEvidence.
                     getIdConfidenceMeasure()).
                     orElse(Collections.emptyList()));
-            writeNumber(SmallMoleculeEvidenceColumn.Stable.RANK, jg,
-                smallMoleculeEvidence.getRank());
+            writeNumber(SmallMoleculeEvidenceColumn.Stable.RANK, jg, smallMoleculeEvidence.getRank());
             Serializers.writeOptColumnMappings(smallMoleculeEvidence.getOpt(),
                 jg, sp);
             jg.writeEndObject();

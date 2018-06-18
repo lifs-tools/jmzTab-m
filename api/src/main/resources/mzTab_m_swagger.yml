@@ -8,7 +8,7 @@ info:
   license:
     name: Apache 2.0
     url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
-host: lifs.isas.de
+host: apps.lifs.isas.de
 basePath: /mztabvalidator/rest/v2/
 schemes:
   - http
@@ -24,7 +24,6 @@ paths:
       description: >
         Validates an mzTab file in plain text representation and reports
         syntactic, structural, and semantic
-
         errors.
       operationId: validatePlainMzTabFile
       tags:
@@ -96,7 +95,6 @@ paths:
       description: >
         Validates an mzTab file in XML or JSON representation and reports
         syntactic, structural, and semantic
-
         errors.
       operationId: validateMzTabFile
       tags:
@@ -612,6 +610,8 @@ definitions:
       rank:
         type: integer
         format: int32
+        min: 1
+        default: 1
       opt:
         type: array
         default: []

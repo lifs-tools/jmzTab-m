@@ -164,4 +164,9 @@ public final class FormatErrorType extends MZTabErrorType {
      * Constant <code>IntegerList</code>
      */
     public static MZTabErrorType IntegerList = createError(Format, "IntegerList");
+
+    /**
+     * Constant <code>RegexMismatch</code>
+     */
+    public static MZTabErrorType RegexMismatch = createError(Format, "RegexMismatch");
 }

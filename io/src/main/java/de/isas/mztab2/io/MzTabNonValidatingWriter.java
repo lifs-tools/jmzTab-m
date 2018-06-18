@@ -19,6 +19,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import de.isas.mztab2.model.MzTab;
+import de.isas.mztab2.model.SmallMoleculeEvidence;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -28,6 +29,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.Optional;
+import lombok.extern.slf4j.Slf4j;
 
 import uk.ac.ebi.pride.jmztab2.model.MZTabConstants;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabException;
@@ -50,6 +52,7 @@ import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabException;
  * @author nilshoffmann
  * @see MzTabValidatingWriter
  */
+@Slf4j
 public class MzTabNonValidatingWriter implements MzTabWriter<Void> {
 
     private final MzTabWriterDefaults writerDefaults;
@@ -162,6 +165,12 @@ public class MzTabNonValidatingWriter implements MzTabWriter<Void> {
     void writeSmallMoleculeEvidenceWithJackson(MzTab mztabfile, Writer writer) throws IOException {
         CsvMapper mapper = writerDefaults.smallMoleculeEvidenceMapper();
         try {
+            for(SmallMoleculeEvidence sme:mztabfile.getSmallMoleculeEvidence()) {
+                if(sme.getRank()==null) {
+                    log.debug("Setting default rank to 1 on SME item "+sme.getSmeId());
+                    sme.setRank(1);
+                }
+            }
             CsvSchema schema = writerDefaults.
                 smallMoleculeEvidenceSchema(mapper,
                     mztabfile);

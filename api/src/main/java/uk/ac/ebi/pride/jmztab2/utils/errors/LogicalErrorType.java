@@ -122,5 +122,8 @@ public final class LogicalErrorType extends MZTabErrorType {
     
     /** Constant <code>NoDatabaseMustHaveNullPrefix</code> */
     public static MZTabErrorType NoDatabaseMustHaveNullPrefix = createError(Category.Logical, "NoDatabaseMustHaveNullPrefix");
+    
+    /** Constant <code>ItemNumberMismatch</code> */
+    public static MZTabErrorType ItemNumberMismatch = createError(Category.Logical, "ItemNumberMismatch");
 
 }

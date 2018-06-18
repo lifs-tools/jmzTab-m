@@ -747,7 +747,9 @@ public class Serializers {
                 String arrayElements = elements.stream().
                     map((number) ->
                     {
-                        if (number instanceof Short) {
+                        if (number == null) {
+                            return MZTabConstants.NULL;
+                        } else if (number instanceof Short) {
                             return "" + number.shortValue();
                         } else if (number instanceof Integer) {
                             return "" + number.intValue();
@@ -800,7 +802,13 @@ public class Serializers {
             if (elements == null) {
                 jg.writeNull();
             } else {
-                String arrayElements = elements.stream().
+                String arrayElements = elements.stream().map((t) ->
+                    {
+                        if(t==null) {
+                            return MZTabConstants.NULL;
+                        }
+                        return t;
+                    }).
                     collect(Collectors.joining("" + MZTabConstants.BAR));
                 if (arrayElements.isEmpty()) {
                     jg.writeNull();
@@ -827,7 +835,13 @@ public class Serializers {
             if (elements == null) {
                 jg.writeNullField(columnName);
             } else {
-                String arrayElements = elements.stream().
+                String arrayElements = elements.stream().map((t) ->
+                    {
+                        if(t==null) {
+                            return MZTabConstants.NULL;
+                        }
+                        return t;
+                    }).
                     collect(Collectors.joining("" + MZTabConstants.BAR));
                 if (arrayElements.isEmpty()) {
                     jg.writeNullField(columnName);

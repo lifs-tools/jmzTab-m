@@ -45,8 +45,11 @@ import java.net.URI;
 import java.net.URL;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
 import static uk.ac.ebi.pride.jmztab2.model.MZTabConstants.NEW_LINE;
+import static uk.ac.ebi.pride.jmztab2.model.MZTabConstants.REGEX_DEFAULT_RELIABILITY;
 import static uk.ac.ebi.pride.jmztab2.model.MZTabConstants.TAB;
 import uk.ac.ebi.pride.jmztab2.model.MZTabStringUtils;
 import uk.ac.ebi.pride.jmztab2.model.Section;
@@ -466,6 +469,25 @@ public class MZTabFileParser {
                     mzTabFile.addSmallMoleculeSummaryItem(
                         smallMoleculeSummaryMap.get(
                             id));
+                }
+                //check that reliability values are correct
+                if (mzTabFile.getMetadata().
+                    getSmallMoleculeIdentificationReliability() == null) {
+                    Pattern p = Pattern.compile(REGEX_DEFAULT_RELIABILITY);
+                    for (SmallMoleculeSummary smi : mzTabFile.
+                        getSmallMoleculeSummary()) {
+                        String reliability = smi.getReliability();
+                        Matcher matcher = p.matcher(reliability);
+                        if (!matcher.matches()) {
+                            errorList.add(new MZTabError(
+                                FormatErrorType.RegexMismatch, -1,
+                                SmallMoleculeSummary.Properties.reliability.
+                                    getPropertyName(), reliability,
+                                MzTab.Properties.smallMoleculeSummary.
+                                    getPropertyName(), "" + smi.getSmlId(),
+                                REGEX_DEFAULT_RELIABILITY));
+                        }
+                    }
                 }
             }
 

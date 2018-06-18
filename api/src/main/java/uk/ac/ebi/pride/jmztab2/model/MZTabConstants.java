@@ -65,5 +65,7 @@ public final class MZTabConstants {
     public static String REGEX_MZTAB_M = "(?<major>[2]{1})\\.(?<minor>\\d{1})\\.(?<micro>\\d{1})-(?<profile>[M]{1})";
     /** Constant <code>REGEX_PARAM_SPLIT=",(?=([^\"]*\"[^\"]*\")*[^\"]*$)"</code> */
     public static String REGEX_PARAM_SPLIT = ",(?=([^\"]*\"[^\"]*\")*[^\"]*$)";
+    /** Constant <code>REGEX_DEFAULT_RELIABILITY="[1234]{1}"</code> */
+    public static String REGEX_DEFAULT_RELIABILITY = "[1234]{1}";
     
 }
