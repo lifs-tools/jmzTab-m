@@ -20,6 +20,8 @@ import java.util.regex.Pattern;
 import org.junit.Assert;
 import org.junit.Test;
 import uk.ac.ebi.pride.jmztab2.model.MZTabColumn;
+import uk.ac.ebi.pride.jmztab2.model.MZTabConstants;
+import static uk.ac.ebi.pride.jmztab2.model.MZTabConstants.REGEX_DEFAULT_RELIABILITY;
 import uk.ac.ebi.pride.jmztab2.model.MZTabUtils;
 
 /**
@@ -38,16 +40,14 @@ public class ParsingPrimitivesTest {
 
     @Test
     public void testAdductRegexp() {
-        Pattern adductPattern = Pattern.compile(
-            "^\\[\\d*M([+-][\\w]*)\\]\\d*[+-]$");
+        Pattern adductPattern = Pattern.compile(MZTabConstants.REGEX_ADDUCT);
         Assert.assertTrue(adductPattern.matcher("[M+H]1+").
             matches());
     }
 
     @Test
     public void testVersionRegexp() {
-        Pattern versionPattern = Pattern.compile(
-            "(?<major>\\d{1})\\.(?<minor>\\d{1})\\.(?<micro>\\d{1})-(?<profile>[A-Z]{1})");
+        Pattern versionPattern = Pattern.compile(MZTabConstants.REGEX_MZTAB_M);
         Matcher m = versionPattern.matcher("2.0.1-M");
         Assert.assertTrue(m.matches());
         Assert.assertEquals("2", m.group("major"));
@@ -57,25 +57,45 @@ public class ParsingPrimitivesTest {
     }
 
     @Test
+    public void testIdentificationReliability() {
+        Pattern p = Pattern.compile(REGEX_DEFAULT_RELIABILITY);
+        Matcher m = p.matcher("1");
+        Assert.assertTrue(m.matches());
+        m = p.matcher("2");
+        Assert.assertTrue(m.matches());
+        m = p.matcher("3");
+        Assert.assertTrue(m.matches());
+        m = p.matcher("4");
+        Assert.assertTrue(m.matches());
+
+        m = p.matcher("0");
+        Assert.assertFalse(m.matches());
+        m = p.matcher("5");
+        Assert.assertFalse(m.matches());
+        m = p.matcher("-1");
+        Assert.assertFalse(m.matches());
+    }
+
+    @Test
     public void testParserVersionRegexp() {
         String result = MZTabUtils.parseMzTabVersion("2.0.0-M");
         Assert.assertEquals("2.0.0-M", result);
-        
+
         result = MZTabUtils.parseMzTabVersion("2.0.4-M");
         Assert.assertEquals("2.0.4-M", result);
-        
+
         result = MZTabUtils.parseMzTabVersion("2.1.9-M");
         Assert.assertEquals("2.1.9-M", result);
-        
+
         result = MZTabUtils.parseMzTabVersion("3.1.9-M");
         Assert.assertNull(result);
-        
+
         result = MZTabUtils.parseMzTabVersion("1.0.0");
         Assert.assertNull(result);
-        
+
         result = MZTabUtils.parseMzTabVersion("1.0.0-M");
         Assert.assertNull(result);
-        
+
         result = MZTabUtils.parseMzTabVersion("1.1.0-M");
         Assert.assertNull(result);
     }
