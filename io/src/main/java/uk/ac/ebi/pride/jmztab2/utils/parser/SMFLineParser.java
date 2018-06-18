@@ -81,11 +81,11 @@ public class SMFLineParser extends MZTabDataLineParser<SmallMoleculeFeature> {
                             break;
                         case CHARGE:
                             smallMoleculeFeature.charge(checkInteger(column,
-                                target));
+                                checkData(column, target, false)));
                             break;
                         case EXP_MASS_TO_CHARGE:
                             smallMoleculeFeature.expMassToCharge(
-                                checkDouble(column, target));
+                                checkDouble(column, checkData(column, target, false)));
                             break;
                         case ISOTOPOMER:
                             smallMoleculeFeature.isotopomer(checkParameter(
@@ -113,7 +113,7 @@ public class SMFLineParser extends MZTabDataLineParser<SmallMoleculeFeature> {
                             break;
                         case SMF_ID:
                             smallMoleculeFeature.smfId(checkInteger(
-                                column, target));
+                                column, checkData(column, target, false)));
                             break;
                     }
 

@@ -21,8 +21,10 @@ tags:
 paths:
   /validatePlain:
     post:
-      description: |
-        Validates an mzTab file in plain text representation and reports syntactic, structural, and semantic
+      description: >
+        Validates an mzTab file in plain text representation and reports
+        syntactic, structural, and semantic
+
         errors.
       operationId: validatePlainMzTabFile
       tags:
@@ -33,43 +35,41 @@ paths:
       produces:
         - application/json
       parameters:
-        - name: mztabfile
-          in: body
+        - in: body
+          name: mztabfile
           description: mzTab file that should be validated.
           required: true
           schema:
             type: string
         - name: level
           in: query
-          description: The level of errors that should be reported, one of ERROR, WARN, INFO.
+          description: >-
+            The level of errors that should be reported, one of ERROR, WARN,
+            INFO.
           required: false
-          schema:
-            type: string
-            enum:
-              - info
-              - warn
-              - error
-            default: info
-          example: info
+          type: string
+          enum:
+            - info
+            - warn
+            - error
+          default: info
         - name: maxErrors
           in: query
           description: The maximum number of errors to return.
           required: false
-          schema:
-            type: integer
-            format: int32
-            minimum: 0
-            maximum: 500
-            default: 100
-          example: 100
+          type: integer
+          format: int32
+          minimum: 0
+          maximum: 500
+          default: 100
         - name: semanticValidation
           in: query
-          description: Whether a semantic validation against the default rule set should be performed.
+          description: >-
+            Whether a semantic validation against the default rule set should be
+            performed.
           required: false
-          schema:
-            type: boolean
-            default: false
-          example: true
+          type: boolean
+          default: false
       responses:
         '200':
           description: Validation Okay
@@ -78,6 +78,8 @@ paths:
             default: []
             items:
               $ref: '#/definitions/ValidationMessage'
+        '415':
+          description: Unsupported content type
         '422':
           description: Invalid input
           schema:
@@ -85,16 +87,16 @@ paths:
             default: []
             items:
               $ref: '#/definitions/ValidationMessage'
-        '415':
-          description: Unsupported content type
         default:
           description: Unexpected error
           schema:
             $ref: '#/definitions/Error'
   /validate:
     post:
-      description: |
-        Validates an mzTab file in XML or JSON representation and reports syntactic, structural, and semantic
+      description: >
+        Validates an mzTab file in XML or JSON representation and reports
+        syntactic, structural, and semantic
+
         errors.
       operationId: validateMzTabFile
       tags:
@@ -113,35 +115,33 @@ paths:
             $ref: '#/definitions/MzTab'
         - name: level
           in: query
-          description: The level of errors that should be reported, one of ERROR, WARN, INFO.
+          description: >-
+            The level of errors that should be reported, one of ERROR, WARN,
+            INFO.
           required: false
-          schema:
-            type: string
-            enum:
-              - info
-              - warn
-              - error
-            default: info
-          example: info
+          type: string
+          enum:
+            - info
+            - warn
+            - error
+          default: info
         - name: maxErrors
           in: query
           description: The maximum number of errors to return.
           required: false
-          schema:
-            type: integer
-            format: int32
-            minimum: 0
-            maximum: 500
-            default: 100
-          example: 100
+          type: integer
+          format: int32
+          minimum: 0
+          maximum: 500
+          default: 100
         - name: semanticValidation
           in: query
-          description: Whether a semantic validation against the default rule set should be performed.
+          description: >-
+            Whether a semantic validation against the default rule set should be
+            performed.
           required: false
-          schema:
-            type: boolean
-            default: false
-          example: true
+          type: boolean
+          default: false
       responses:
         '200':
           description: Validation Okay
@@ -150,6 +150,8 @@ paths:
             default: []
             items:
               $ref: '#/definitions/ValidationMessage'
+        '415':
+          description: Unsupported content type
         '422':
           description: Invalid input
           schema:
@@ -157,8 +159,6 @@ paths:
             default: []
             items:
               $ref: '#/definitions/ValidationMessage'
-        '415':
-          description: Unsupported content type
         default:
           description: Unexpected error
           schema:
@@ -173,7 +173,6 @@ definitions:
       - smallMoleculeEvidence
     properties:
       metadata:
-        description: The metadata block of an mzTab file.
         $ref: '#/definitions/Metadata'
       smallMoleculeSummary:
         type: array
@@ -228,6 +227,7 @@ definitions:
         default: element_type
   Metadata:
     type: object
+    description: The metadata block of an mzTab file.
     required:
       - prefix
       - fileDescription
@@ -252,20 +252,16 @@ definitions:
       mzTab-version:
         type: string
         pattern: '^\\d{1}\.\\d{1}\.\\d{1}-[A-Z]{1}$'
-        example: >-
-          MTD mzTab-version 1.1.0-M
+        example: MTD mzTab-version 2.0.0-M
       mzTab-ID:
         type: string
-        example: >-
-          MTD mzTab-ID PRIDE_1234
+        example: MTD mzTab-ID MTBLS214
       title:
         type: string
-        example: >-
-          MTD title My first test experiment
+        example: MTD title My first test experiment
       description:
         type: string
-        example: >-
-          MTD description An experiment investigating the effects of Il-6.
+        example: MTD description An experiment investigating the effects of Il-6.
       sample_processing:
         type: array
         default: []
@@ -372,10 +368,7 @@ definitions:
   SmallMoleculeSummary:
     type: object
     required:
-      - prefix
-      - header_prefix
       - sml_id
-      - smf_id_refs
     properties:
       prefix:
         type: string
@@ -479,10 +472,9 @@ definitions:
   SmallMoleculeFeature:
     type: object
     required:
-      - prefix
-      - header_prefix
       - smf_id
-      - sme_id_refs
+      - exp_mass_to_charge
+      - charge
     properties:
       prefix:
         type: string
@@ -547,8 +539,16 @@ definitions:
   SmallMoleculeEvidence:
     type: object
     required:
-      - prefix
-      - header_prefix
+      - sme_id
+      - evidence_input_id
+      - database_identifier
+      - exp_mass_to_charge
+      - charge
+      - theoretical_mass_to_charge
+      - spectra_ref
+      - identification_method
+      - ms_level
+      - rank
     properties:
       prefix:
         type: string
@@ -624,116 +624,117 @@ definitions:
           $ref: '#/definitions/Comment'
   Parameter:
     allOf:
-    - $ref: '#/definitions/IndexedElement'
-    - type: object
-      required:
-        - name
-        - value
-      properties:
-        cv_label:
-          type: string
-          default: ''
-        cv_accession:
-          type: string
-          default: ''
-        name:
-          type: string
-        value:
-          type: string
-          default: ''
+      - $ref: '#/definitions/IndexedElement'
+      - type: object
+        required:
+          - name
+          - value
+        properties:
+          cv_label:
+            type: string
+            default: ''
+          cv_accession:
+            type: string
+            default: ''
+          name:
+            type: string
+          value:
+            type: string
+            default: ''
   Instrument:
     allOf:
-    - $ref: '#/definitions/IndexedElement'
-    - type: object
-      properties:
-        name:
-          $ref: '#/definitions/Parameter'
-          example:
-            - >-
-              MTD instrument[1]-name [MS, MS:1000449, LTQ Orbitrap,]
-            - >-
-              MTD instrument[2]-name [MS, MS:1000031, Instrument model, name of the instrument not included in the CV]
-        source:
-          $ref: '#/definitions/Parameter'
-        analyzer:
-          type: array
-          default: []
-          items:
+      - $ref: '#/definitions/IndexedElement'
+      - type: object
+        properties:
+          name:
             $ref: '#/definitions/Parameter'
-        detector:
-          x-customValidation:
-            validator: 'CheckParameter'
-            message: 'contact.fail'
-            code: 16257
-          $ref: '#/definitions/Parameter'
+            example:
+              - 'MTD instrument[1]-name [MS, MS:1000449, LTQ Orbitrap,]'
+              - >-
+                MTD instrument[2]-name [MS, MS:1000031, Instrument model, name
+                of the instrument not included in the CV]
+          source:
+            $ref: '#/definitions/Parameter'
+          analyzer:
+            type: array
+            default: []
+            items:
+              $ref: '#/definitions/Parameter'
+          detector:
+            x-customValidation:
+              validator: CheckParameter
+              message: contact.fail
+              code: 16257
+            $ref: '#/definitions/Parameter'
   SampleProcessing:
     allOf:
-    - $ref: '#/definitions/IndexedElement'
-    - type: object
-      properties:
-        sampleProcessing:
-          type: array
-          default: []
-          items:
-            $ref: '#/definitions/Parameter'
+      - $ref: '#/definitions/IndexedElement'
+      - type: object
+        properties:
+          sampleProcessing:
+            type: array
+            default: []
+            items:
+              $ref: '#/definitions/Parameter'
     example: >-
-      MTD sample_processing[1] [SEP, SEP:00173, SDS PAGE,] \
-      MTD sample_processing[2] [SEP, SEP:00142, enzyme digestion,]|[MS, … MS:1001251, Trypsin, ]
+      MTD sample_processing[1] [SEP, SEP:00173, SDS PAGE,] \ MTD
+      sample_processing[2] [SEP, SEP:00142, enzyme digestion,]|[MS, …
+      MS:1001251, Trypsin, ]
   Software:
     allOf:
-    - $ref: '#/definitions/IndexedElement'
-    - type: object
-      description: >-
-        Software used to analyze the data and obtain the reported results. The
-        parameter’s value SHOULD contain the software’s version. The order
-        (numbering) should reflect the order in which the tools were used.
-      example:
-        - >-
-          MTD\tsoftware[1]\t[MS, MS:1001207, Mascot, 2.3]
-          MTD\tsoftware[2]\t[MS, MS:1001561, Scaffold, 1.0]
-      properties:
-        parameter:
-          $ref: '#/definitions/Parameter'
-        setting:
-          type: array
-          default: []
-          description: >-
-            A software setting used. This field MAY occur multiple times for a
-            single software. The value of this field is deliberately set as a
-            String, since there currently do not exist cvParams for every
-            possible setting.
-          items:
-            type: string
-          example:
-            - >-
-              MTD software[1]-setting Fragment tolerance = 0.1 Da … MTD
-              software[2]-setting Parent tolerance = 0.5 Da
+      - $ref: '#/definitions/IndexedElement'
+      - type: object
+        description: >-
+          Software used to analyze the data and obtain the reported results. The
+          parameter’s value SHOULD contain the software’s version. The order
+          (numbering) should reflect the order in which the tools were used.
+        example:
+          - >-
+            MTD\tsoftware[1]\t[MS, MS:1001207, Mascot, 2.3]
+            MTD\tsoftware[2]\t[MS, MS:1001561, Scaffold, 1.0]
+        properties:
+          parameter:
+            $ref: '#/definitions/Parameter'
+          setting:
+            type: array
+            default: []
+            description: >-
+              A software setting used. This field MAY occur multiple times for a
+              single software. The value of this field is deliberately set as a
+              String, since there currently do not exist cvParams for every
+              possible setting.
+            items:
+              type: string
+            example:
+              - >-
+                MTD software[1]-setting Fragment tolerance = 0.1 Da … MTD
+                software[2]-setting Parent tolerance = 0.5 Da
   Publication:
     allOf:
-    - $ref: '#/definitions/IndexedElement'
-    - type: object
-      description: >-
-        A publication associated with this file. Several publication items can be
-        given by indicating the number in the square brackets after
-        “publication”. PubMed ids must be prefixed by “pubmed:”, DOIs by “doi:”.
-        Multiple identifiers MUST be separated by “|”.
-      example:
-        - >-
-          MTD publication[1] pubmed:21063943|doi:10.1007/978-1-60761-987-1_6
-          MTD publication[2] pubmed:20615486|doi:10.1016/j.jprot.2010.06.008
-      required:
-        - publicationItems
-      properties:
-        publicationItems:
-          type: array
-          default: []
-          items:
-            $ref: '#/definitions/PublicationItem'
+      - $ref: '#/definitions/IndexedElement'
+      - type: object
+        description: >-
+          A publication associated with this file. Several publication items can
+          be given by indicating the number in the square brackets after
+          “publication”. PubMed ids must be prefixed by “pubmed:”, DOIs by
+          “doi:”. Multiple identifiers MUST be separated by “|”.
+        example:
+          - >-
+            MTD publication[1] pubmed:21063943|doi:10.1007/978-1-60761-987-1_6
+            MTD publication[2] pubmed:20615486|doi:10.1016/j.jprot.2010.06.008
+        required:
+          - publicationItems
+        properties:
+          publicationItems:
+            type: array
+            default: []
+            items:
+              $ref: '#/definitions/PublicationItem'
   PublicationItem:
     type: object
     required:
       - type
-      - accession  
+      - accession
     properties:
       type:
         type: string
@@ -761,181 +762,182 @@ definitions:
       type: string
   Contact:
     allOf:
-    - $ref: '#/definitions/IndexedElement'
-    - type: object
-      properties:
-        name:
-          type: string
-        affiliation:
-          type: string
-        email:
-          type: string
-          pattern: '^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$'
+      - $ref: '#/definitions/IndexedElement'
+      - type: object
+        properties:
+          name:
+            type: string
+          affiliation:
+            type: string
+          email:
+            type: string
+            pattern: '^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$'
   Uri:
     allOf:
-    - $ref: '#/definitions/IndexedElement'
-    - type: object
-      properties:
-        value:
-          type: string
-          format: uri
+      - $ref: '#/definitions/IndexedElement'
+      - type: object
+        properties:
+          value:
+            type: string
+            format: uri
   Sample:
     allOf:
-    - $ref: '#/definitions/IndexedElement'
-    - type: object
-      properties:
-        name:
-          type: string
-        custom:
-          type: array
-          default: []
-          items:
-            $ref: '#/definitions/Parameter'
-        species:
-          type: array
-          default: []
-          items:
-            $ref: '#/definitions/Parameter'
-        tissue:
-          type: array
-          default: []
-          items:
-            $ref: '#/definitions/Parameter'
-        cell_type:
-          type: array
-          default: []
-          items:
-            $ref: '#/definitions/Parameter'
-        disease:
-          type: array
-          default: []
-          items:
-            $ref: '#/definitions/Parameter'
-        description:
-          type: string
+      - $ref: '#/definitions/IndexedElement'
+      - type: object
+        properties:
+          name:
+            type: string
+          custom:
+            type: array
+            default: []
+            items:
+              $ref: '#/definitions/Parameter'
+          species:
+            type: array
+            default: []
+            items:
+              $ref: '#/definitions/Parameter'
+          tissue:
+            type: array
+            default: []
+            items:
+              $ref: '#/definitions/Parameter'
+          cell_type:
+            type: array
+            default: []
+            items:
+              $ref: '#/definitions/Parameter'
+          disease:
+            type: array
+            default: []
+            items:
+              $ref: '#/definitions/Parameter'
+          description:
+            type: string
   MsRun:
     allOf:
-    - $ref: '#/definitions/IndexedElement'
-    - type: object
-      required:
-        - id
-        - location
-        - name
-      properties:
-        name:
-          type: string
-        location:
-          type: string
-        instrument_ref:
-          $ref: '#/definitions/Instrument'
-        format:
-          $ref: '#/definitions/Parameter'
-        id_format:
-          $ref: '#/definitions/Parameter'
-        fragmentation_method:
-          type: array
-          default: []
-          items:
+      - $ref: '#/definitions/IndexedElement'
+      - type: object
+        required:
+          - id
+          - location
+          - name
+        properties:
+          name:
+            type: string
+          location:
+            type: string
+          instrument_ref:
+            $ref: '#/definitions/Instrument'
+          format:
             $ref: '#/definitions/Parameter'
-        scan_polarity:
-          type: array
-          default: []
-          items:
+          id_format:
             $ref: '#/definitions/Parameter'
-        hash:
-          type: string
-        hash_method:
-          $ref: '#/definitions/Parameter'
+          fragmentation_method:
+            type: array
+            default: []
+            items:
+              $ref: '#/definitions/Parameter'
+          scan_polarity:
+            type: array
+            default: []
+            items:
+              $ref: '#/definitions/Parameter'
+          hash:
+            type: string
+          hash_method:
+            $ref: '#/definitions/Parameter'
   StudyVariable:
     allOf:
-    - $ref: '#/definitions/IndexedElement'
-    - type: object
-      required:
-        - id
-        - name
-      properties:
-        name:
-          type: string
-        assay_refs:
-          type: array
-          default: []
-          items:
-            $ref: '#/definitions/Assay'
-        average_function:
-          $ref: '#/definitions/Parameter'
-        variation_function:
-          $ref: '#/definitions/Parameter'
-        description:
-          type: string
-        factors:
-          type: array
-          default: []
-          items:
+      - $ref: '#/definitions/IndexedElement'
+      - type: object
+        required:
+          - id
+          - name
+        properties:
+          name:
+            type: string
+          assay_refs:
+            type: array
+            default: []
+            items:
+              $ref: '#/definitions/Assay'
+          average_function:
             $ref: '#/definitions/Parameter'
+          variation_function:
+            $ref: '#/definitions/Parameter'
+          description:
+            type: string
+          factors:
+            type: array
+            default: []
+            items:
+              $ref: '#/definitions/Parameter'
   Assay:
     allOf:
-    - $ref: '#/definitions/IndexedElement'
-    - type: object
-      required:
-      - name
-      - ms_run_ref
-      properties:
-        name:
-          type: string
-        custom:
-          type: array
-          default: []
-          items:
-            $ref: '#/definitions/Parameter'
-        external_uri:
-          type: string
-          format: uri
-        sample_ref:
-          default: []
-          $ref: '#/definitions/Sample'
-        ms_run_ref:
-          type: array
-          default: []
-          minItems: 1
-          items:
-            $ref: '#/definitions/MsRun'
+      - $ref: '#/definitions/IndexedElement'
+      - type: object
+        required:
+          - name
+          - ms_run_ref
+        properties:
+          name:
+            type: string
+          custom:
+            type: array
+            default: []
+            items:
+              $ref: '#/definitions/Parameter'
+          external_uri:
+            type: string
+            format: uri
+          sample_ref:
+            default: []
+            $ref: '#/definitions/Sample'
+          ms_run_ref:
+            type: array
+            default: []
+            minItems: 1
+            items:
+              $ref: '#/definitions/MsRun'
   CV:
     allOf:
-    - $ref: '#/definitions/IndexedElement'
-    - type: object
-      required:
-        - label
-        - full_name
-        - version
-        - url
-      properties:
-        label:
-          type: string
-        full_name:
-          type: string
-        version:
-          type: string
-        url:
-          type: string
-          pattern: '(http|ftp|https)://[\w-]+(\.[\w-]+)+([\w.,@?^=%&amp;:/~+#-]*[\w@?^=%&amp;/~+#-])?'
+      - $ref: '#/definitions/IndexedElement'
+      - type: object
+        required:
+          - label
+          - full_name
+          - version
+          - url
+        properties:
+          label:
+            type: string
+          full_name:
+            type: string
+          version:
+            type: string
+          url:
+            type: string
+            pattern: >-
+              (http|ftp|https)://[\w-]+(\.[\w-]+)+([\w.,@?^=%&amp;:/~+#-]*[\w@?^=%&amp;/~+#-])?
   Database:
     allOf:
-    - $ref: '#/definitions/IndexedElement'
-    - type: object
-      required:
-        - param
-        - prefix
-        - version
-        - url
-      properties:
-        param:
-          $ref: '#/definitions/Parameter'
-        prefix:
-          type: string
-        version:
-          type: string
-        url:
-          type: string
+      - $ref: '#/definitions/IndexedElement'
+      - type: object
+        required:
+          - param
+          - prefix
+          - version
+          - url
+        properties:
+          param:
+            $ref: '#/definitions/Parameter'
+          prefix:
+            type: string
+          version:
+            type: string
+          url:
+            type: string
   ColumnParameterMapping:
     type: object
     required:

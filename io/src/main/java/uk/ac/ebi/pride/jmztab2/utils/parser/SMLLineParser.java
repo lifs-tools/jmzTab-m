@@ -107,7 +107,7 @@ public class SMLLineParser extends MZTabDataLineParser<SmallMoleculeSummary> {
                             smallMoleculeSummary.smiles(checkSmiles(column, target));
                             break;
                         case SML_ID:
-                            smallMoleculeSummary.smlId(checkInteger(column, target));
+                            smallMoleculeSummary.smlId(checkInteger(column, checkData(column, target, false)));
                             break;
                         case THEOR_NEUTRAL_MASS:
                             smallMoleculeSummary.theoreticalNeutralMass(

@@ -38,9 +38,59 @@ public class MzTabValidatingWriterTest {
     public void testWrite_OutputStreamWriter_MzTab() throws Exception {
         MzTabValidatingWriter writer = new MzTabValidatingWriter();
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        Optional<List<ValidationMessage>> messages = writer.write(new OutputStreamWriter(baos), MzTabTestData.create2_0TestFile());
-        System.out.println("Validation messages: "+messages.get().toString());
-        Assert.assertEquals(messages.get().toString(), 7, messages.get().size());
+        Optional<List<ValidationMessage>> messages = writer.write(
+            new OutputStreamWriter(baos), MzTabTestData.create2_0TestFile());
+        assertValidationMessages(messages);
+    }
+    
+    private void assertValidationMessages(Optional<List<ValidationMessage>> messages) {
+        System.out.println("Validation messages: " + messages.get().
+            toString());
+        Assert.assertEquals(messages.get().
+            toString(), 6, messages.get().
+                size());
+        Assert.assertEquals(messages.get().
+            get(0).
+            getMessageType(), ValidationMessage.MessageTypeEnum.ERROR);
+        Assert.assertTrue(messages.get().
+            get(0).
+            getMessage().
+            contains("quantification_method"));
+        Assert.assertEquals(messages.get().
+            get(1).
+            getMessageType(), ValidationMessage.MessageTypeEnum.ERROR);
+        Assert.assertTrue(messages.get().
+            get(1).
+            getMessage().
+            contains("study_variable[1]"));
+        Assert.assertEquals(messages.get().
+            get(2).
+            getMessageType(), ValidationMessage.MessageTypeEnum.ERROR);
+        Assert.assertTrue(messages.get().
+            get(2).
+            getMessage().
+            contains("study_variable[2]"));
+        Assert.assertEquals(messages.get().
+            get(3).
+            getMessageType(), ValidationMessage.MessageTypeEnum.ERROR);
+        Assert.assertTrue(messages.get().
+            get(3).
+            getMessage().
+            contains("ms_run[1]-scan_polarity"));
+        Assert.assertEquals(messages.get().
+            get(4).
+            getMessageType(), ValidationMessage.MessageTypeEnum.ERROR);
+        Assert.assertTrue(messages.get().
+            get(4).
+            getMessage().
+            contains("ms_run[2]-scan_polarity"));
+        Assert.assertEquals(messages.get().
+            get(5).
+            getMessageType(), ValidationMessage.MessageTypeEnum.ERROR);
+        Assert.assertTrue(messages.get().
+            get(5).
+            getMessage().
+            contains("database"));
     }
 
     /**
@@ -49,10 +99,11 @@ public class MzTabValidatingWriterTest {
     @Test
     public void testWrite_Path_MzTab() throws Exception {
         MzTabValidatingWriter writer = new MzTabValidatingWriter();
-        File f = File.createTempFile(UUID.randomUUID().toString(), ".mztab");
-        Optional<List<ValidationMessage>> messages = writer.write(f.toPath(), MzTabTestData.create2_0TestFile());
-        System.out.println("Validation messages: "+messages.get().toString());
-        Assert.assertEquals(messages.get().toString(), 7, messages.get().size());
+        File f = File.createTempFile(UUID.randomUUID().
+            toString(), ".mztab");
+        Optional<List<ValidationMessage>> messages = writer.write(f.toPath(),
+            MzTabTestData.create2_0TestFile());
+        assertValidationMessages(messages);
     }
 
 }

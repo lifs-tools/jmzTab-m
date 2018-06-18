@@ -257,7 +257,7 @@ public class MzTabWriterTest {
             MZTabErrorType.Level.Info, 500);
         //we expect errors here, since our test file has neither summary, feature nor evidence sections.
         Assert.assertFalse(errors.isEmpty());
-        Assert.assertEquals(errors.toString(), 7, errors.size());
+        Assert.assertEquals(errors.toString(), 6, errors.size());
 //        MzTab mzTabReRead = parser.getMZTabFile();
 //        Assert.assertEquals(mzTabFile, mzTabReRead);
     }

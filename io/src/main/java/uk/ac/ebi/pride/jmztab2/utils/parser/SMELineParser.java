@@ -81,7 +81,7 @@ public class SMELineParser extends MZTabDataLineParser<SmallMoleculeEvidence> {
                             break;
                         case CHARGE:
                             smallMoleculeEvidence.charge(checkInteger(column,
-                                target));
+                                checkData(column, target, false)));
                             break;
                         case CHEMICAL_FORMULA:
                             smallMoleculeEvidence.chemicalFormula(
@@ -91,16 +91,16 @@ public class SMELineParser extends MZTabDataLineParser<SmallMoleculeEvidence> {
                             smallMoleculeEvidence.chemicalName(checkString(column, target));
                             break;
                         case DATABASE_IDENTIFIER:
-                            smallMoleculeEvidence.databaseIdentifier(checkString(column, target));
+                            smallMoleculeEvidence.databaseIdentifier(checkString(column, checkData(column, target, false)));
                             break;
                         case DERIVATIZED_FORM:
                             smallMoleculeEvidence.derivatizedForm(checkParameter(column, target, true));
                             break;
                         case EVIDENCE_INPUT_ID:
-                            smallMoleculeEvidence.evidenceInputId(checkString(column, target));
+                            smallMoleculeEvidence.evidenceInputId(checkString(column, checkData(column, target, false)));
                             break;
                         case EXP_MASS_TO_CHARGE:
-                            smallMoleculeEvidence.expMassToCharge(checkDouble(column, target));
+                            smallMoleculeEvidence.expMassToCharge(checkDouble(column, checkData(column, target, false)));
                             break;
                         case IDENTIFICATION_METHOD:
                             smallMoleculeEvidence.identificationMethod(checkParameter(column, target, false));
@@ -112,19 +112,19 @@ public class SMELineParser extends MZTabDataLineParser<SmallMoleculeEvidence> {
                             smallMoleculeEvidence.msLevel(checkParameter(column, target, false));
                             break;
                         case RANK:
-                            smallMoleculeEvidence.rank(checkInteger(column, target));
+                            smallMoleculeEvidence.rank(checkInteger(column, checkData(column, target, false)));
                             break;
                         case SME_ID:
-                            smallMoleculeEvidence.smeId(checkInteger(column, target));
+                            smallMoleculeEvidence.smeId(checkInteger(column, checkData(column, target, false)));
                             break;
                         case SMILES:
                             smallMoleculeEvidence.smiles(checkString(column, target));
                             break;
                         case SPECTRA_REF:
-                            smallMoleculeEvidence.spectraRef(checkSpectraRef(context, column, target));
+                            smallMoleculeEvidence.spectraRef(checkSpectraRef(context, column, checkData(column, target, false)));
                             break;
                         case THEORETICAL_MASS_TO_CHARGE:
-                            smallMoleculeEvidence.theoreticalMassToCharge(checkDouble(column, target));
+                            smallMoleculeEvidence.theoreticalMassToCharge(checkDouble(column, checkData(column, target, false)));
                             break;
                         case URI:
                             smallMoleculeEvidence.uri(checkURI(column, target));
