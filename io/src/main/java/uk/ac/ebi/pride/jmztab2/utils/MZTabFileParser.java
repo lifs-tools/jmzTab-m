@@ -59,7 +59,7 @@ import static uk.ac.ebi.pride.jmztab2.utils.MZTabProperties.*;
  *
  * @author qingwei
  * @since 21/02/13
- * 
+ *
  */
 public class MZTabFileParser {
 
@@ -73,7 +73,8 @@ public class MZTabFileParser {
      * Create a new {@code MZTabFileParser} for the given file.
      *
      * @param tabFile the MZTab file. The file SHOULD not be null and MUST exist
-     * @throws java.lang.IllegalArgumentException if the provided argument in invalid.
+     * @throws java.lang.IllegalArgumentException if the provided argument in
+     * invalid.
      */
     public MZTabFileParser(File tabFile) throws IllegalArgumentException {
         this(tabFile.toURI());
@@ -83,34 +84,41 @@ public class MZTabFileParser {
      * Create a new {@code MZTabFileParser} for the given file URI.
      *
      * @param tabFileUri the MZTab file URI. The file SHOULD not be null and
-     * MUST exist
-     * {@link uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorList} return by {@link uk.ac.ebi.pride.jmztab2.utils.MZTabFileParser#getErrorList()}
-     * @throws java.lang.IllegalArgumentException if the provided argument in invalid.
+     * MUST exist {@link uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorList}
+     * return by
+     * {@link uk.ac.ebi.pride.jmztab2.utils.MZTabFileParser#getErrorList()}
+     * @throws java.lang.IllegalArgumentException if the provided argument in
+     * invalid.
      */
     public MZTabFileParser(URI tabFileUri) throws IllegalArgumentException {
         if (tabFileUri == null) {
-            throw new IllegalArgumentException("MZTab file uri must not be null!");
+            throw new IllegalArgumentException(
+                "MZTab file uri must not be null!");
         }
-        if(("file".equals(tabFileUri.getScheme()) && !new File(tabFileUri).exists())) {
-            throw new IllegalArgumentException("MZTab File URI "+tabFileUri.toASCIIString()+" does not exist!");
+        if (("file".equals(tabFileUri.getScheme()) && !new File(tabFileUri).
+            exists())) {
+            throw new IllegalArgumentException("MZTab File URI " + tabFileUri.
+                toASCIIString() + " does not exist!");
         }
 
         this.tabFile = tabFileUri;
     }
 
     /**
-     * Create a new {@code MZTabParserContext} and {@code MZTabErrorList} for the given file URI.
-     * Parsing output and errors are written to the provided
+     * Create a new {@code MZTabParserContext} and {@code MZTabErrorList} for
+     * the given file URI. Parsing output and errors are written to the provided
      * {@link java.io.OutputStream}.
      *
      * @param out the output stream for parsing messages
      * @param level the minimum error level to report errors for
      * @param maxErrorCount the maximum number of errors to report in the
-     * {@link uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorList} return by {@link uk.ac.ebi.pride.jmztab2.utils.MZTabFileParser#getErrorList()}
+     * {@link uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorList} return by
+     * {@link uk.ac.ebi.pride.jmztab2.utils.MZTabFileParser#getErrorList()}
      * @return the error list
      * @throws java.io.IOException if any io related errors occur.
      */
-    public MZTabErrorList parse(OutputStream out, MZTabErrorType.Level level, int maxErrorCount) throws IOException {
+    public MZTabErrorList parse(OutputStream out, MZTabErrorType.Level level,
+        int maxErrorCount) throws IOException {
         try {
             context = new MZTabParserContext();
             errorList = new MZTabErrorList(level, maxErrorCount);
@@ -118,29 +126,32 @@ public class MZTabFileParser {
             refine();
         } catch (MZTabException e) {
             out.write(MZTabExceptionMessage.getBytes());
-            try(PrintStream ps = new PrintStream(out)) {
+            try (PrintStream ps = new PrintStream(out)) {
                 e.printStackTrace(ps);
             }
             errorList.add(e.getError());
         } catch (MZTabErrorOverflowException e) {
-            try(PrintStream ps = new PrintStream(out)) {
+            try (PrintStream ps = new PrintStream(out)) {
                 e.printStackTrace(ps);
             }
             out.write(MZTabErrorOverflowExceptionMessage.getBytes());
         }
 
         errorList.print(out);
-        if (mzTabFile!=null && errorList.isEmpty()) {
-            out.write(("No structural or logical errors in " + tabFile + " file!" + NEW_LINE).
-                getBytes());
+        if (mzTabFile != null && errorList.isEmpty()) {
+            out.write(
+                ("No structural or logical errors in " + tabFile + " file!" + NEW_LINE).
+                    getBytes());
         }
         return errorList;
     }
-    
+
     /**
-     * Create a new {@code MZTabParserContext} and {@code MZTabErrorList} for the given file URI.
-     * Parsing output and errors are written to the provided
-     * {@link java.io.OutputStream}. Reports up to {@link uk.ac.ebi.pride.jmztab2.utils.MZTabProperties#MAX_ERROR_COUNT} errors.
+     * Create a new {@code MZTabParserContext} and {@code MZTabErrorList} for
+     * the given file URI. Parsing output and errors are written to the provided
+     * {@link java.io.OutputStream}. Reports up to
+     * {@link uk.ac.ebi.pride.jmztab2.utils.MZTabProperties#MAX_ERROR_COUNT}
+     * errors.
      *
      * @param out the output stream for parsing messages
      * @param level the minimum error level to report errors for
@@ -152,10 +163,12 @@ public class MZTabFileParser {
     }
 
     /**
-     * Create a new {@code MZTabParserContext} and {@code MZTabErrorList} for the given file URI.
-     * Parsing output and errors are written to the provided
-     * {@link java.io.OutputStream}. Reports up to {@link uk.ac.ebi.pride.jmztab2.utils.MZTabProperties#MAX_ERROR_COUNT} errors
-     * on level {@link uk.ac.ebi.pride.jmztab2.utils.MZTabProperties#LEVEL}.
+     * Create a new {@code MZTabParserContext} and {@code MZTabErrorList} for
+     * the given file URI. Parsing output and errors are written to the provided
+     * {@link java.io.OutputStream}. Reports up to
+     * {@link uk.ac.ebi.pride.jmztab2.utils.MZTabProperties#MAX_ERROR_COUNT}
+     * errors on level
+     * {@link uk.ac.ebi.pride.jmztab2.utils.MZTabProperties#LEVEL}.
      *
      * @param out the output stream for parsing messages
      * @return the error list
@@ -166,9 +179,11 @@ public class MZTabFileParser {
     }
 
     /**
-     * <p>Getter for the field <code>errorList</code>.</p>
+     * <p>
+     * Getter for the field <code>errorList</code>.</p>
      *
-     * @return a {@link uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorList} object.
+     * @return a {@link uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorList}
+     * object.
      */
     public MZTabErrorList getErrorList() {
         return errorList;
@@ -238,9 +253,13 @@ public class MZTabFileParser {
      * Query {@link MZTabErrorList} to check exist errors or not.
      *
      * @throws java.io.IOException
-     * @throws uk.ac.ebi.pride.jmztab.utils.errors.MZTabException during parsing of
-     * metadata, protein/peptide/small_molecule/small_molecule_feature/small_molecule_evidence header lines, if there exist any errors.
-     * @throws uk.ac.ebi.pride.jmztab.utils.errors.MZTabErrorOverflowException when too many errors are detected, as defined by the mztab.properties file mztab.max_error_count parameter.
+     * @throws uk.ac.ebi.pride.jmztab.utils.errors.MZTabException during parsing
+     * of metadata,
+     * protein/peptide/small_molecule/small_molecule_feature/small_molecule_evidence
+     * header lines, if there exist any errors.
+     * @throws uk.ac.ebi.pride.jmztab.utils.errors.MZTabErrorOverflowException
+     * when too many errors are detected, as defined by the mztab.properties
+     * file mztab.max_error_count parameter.
      */
     private void check() throws IOException, MZTabException, MZTabErrorOverflowException {
         COMLineParser comParser = new COMLineParser(context);
@@ -265,7 +284,7 @@ public class MZTabFileParser {
         int highWaterMark = 1;
         int lineNumber = 0;
         Section section;
-        try(BufferedReader reader = readFile(tabFile)) {
+        try (BufferedReader reader = readFile(tabFile)) {
             while ((line = reader.readLine()) != null) {
                 try {
                     lineNumber++;
@@ -288,7 +307,8 @@ public class MZTabFileParser {
                         throw new MZTabException(sectionNullError);
                     }
                     if (section.getLevel() < highWaterMark) {
-                        Section currentSection = Section.findSection(highWaterMark);
+                        Section currentSection = Section.findSection(
+                            highWaterMark);
                         MZTabError sectionLineOrderError = new MZTabError(
                             LogicalErrorType.LineOrder, lineNumber,
                             currentSection.getName(), section.getName());
@@ -296,7 +316,7 @@ public class MZTabFileParser {
                     }
 
                     highWaterMark = section.getLevel();
-                    
+
                     switch (highWaterMark) {
                         case 1:
                             // metadata section.
@@ -330,8 +350,9 @@ public class MZTabFileParser {
                             }
 
                             if (smlParser == null) {
-                                smlParser = new SMLLineParser(context, smhParser.
-                                    getFactory(),
+                                smlParser = new SMLLineParser(context,
+                                    smhParser.
+                                        getFactory(),
                                     smlPositionMapping, mtdParser.getMetadata(),
                                     errorList);
                             }
@@ -367,8 +388,9 @@ public class MZTabFileParser {
                             }
 
                             if (smfParser == null) {
-                                smfParser = new SMFLineParser(context, sfhParser.
-                                    getFactory(),
+                                smfParser = new SMFLineParser(context,
+                                    sfhParser.
+                                        getFactory(),
                                     smfPositionMapping, mtdParser.getMetadata(),
                                     errorList);
                             }
@@ -404,8 +426,9 @@ public class MZTabFileParser {
                             }
 
                             if (smeParser == null) {
-                                smeParser = new SMELineParser(context, sehParser.
-                                    getFactory(),
+                                smeParser = new SMELineParser(context,
+                                    sehParser.
+                                        getFactory(),
                                     smePositionMapping, mtdParser.getMetadata(),
                                     errorList);
                             }
@@ -416,15 +439,16 @@ public class MZTabFileParser {
                             break;
                     }
                 } catch (NullPointerException npe) {
-                    throw new MZTabException(new MZTabError(LogicalErrorType.NULL,
+                    throw new MZTabException(new MZTabError(
+                        LogicalErrorType.NULL,
                         lineNumber, subString(line)), npe);
                 }
             }
 
         }
-        
+
         mtdParser.refineNormalMetadata();
-        //TODO implement post hoc checks for SML, SMF and SME
+
         if (errorList.isEmpty()) {
             mzTabFile = new MzTab();
             mzTabFile.metadata(mtdParser.getMetadata());
@@ -456,9 +480,12 @@ public class MZTabFileParser {
                         smallMoleculeFeatureMap.get(
                             id));
                 }
-                if(smallMoleculeFeatureMap.size()>0 && mzTabFile.getMetadata().getSmallMoleculeFeatureQuantificationUnit()==null) {
+                if (smallMoleculeFeatureMap.size() > 0 && mzTabFile.
+                    getMetadata().
+                    getSmallMoleculeFeatureQuantificationUnit() == null) {
                     errorList.add(new MZTabError(
-                    LogicalErrorType.NoSmallMoleculeFeatureQuantificationUnit, -1));
+                        LogicalErrorType.NoSmallMoleculeFeatureQuantificationUnit,
+                        -1));
                 }
             }
             if (smallMoleculeEvidenceMap.isEmpty() && !smallMoleculeSummaryMap.
@@ -478,7 +505,8 @@ public class MZTabFileParser {
     }
 
     /**
-     * <p>getMZTabFile.</p>
+     * <p>
+     * getMZTabFile.</p>
      *
      * @return a {@link de.isas.mztab2.model.MzTab} object.
      */

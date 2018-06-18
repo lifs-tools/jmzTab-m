@@ -40,7 +40,7 @@ public class MzTabValidatingWriterTest {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         Optional<List<ValidationMessage>> messages = writer.write(new OutputStreamWriter(baos), MzTabTestData.create2_0TestFile());
         System.out.println("Validation messages: "+messages.get().toString());
-        Assert.assertEquals(messages.get().toString(), 6, messages.get().size());
+        Assert.assertEquals(messages.get().toString(), 7, messages.get().size());
     }
 
     /**
@@ -52,7 +52,7 @@ public class MzTabValidatingWriterTest {
         File f = File.createTempFile(UUID.randomUUID().toString(), ".mztab");
         Optional<List<ValidationMessage>> messages = writer.write(f.toPath(), MzTabTestData.create2_0TestFile());
         System.out.println("Validation messages: "+messages.get().toString());
-        Assert.assertEquals(messages.get().toString(), 6, messages.get().size());
+        Assert.assertEquals(messages.get().toString(), 7, messages.get().size());
     }
 
 }

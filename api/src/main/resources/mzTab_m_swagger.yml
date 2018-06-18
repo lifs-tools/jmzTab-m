@@ -39,6 +39,37 @@ paths:
           required: true
           schema:
             type: string
+        - name: level
+          in: query
+          description: The level of errors that should be reported, one of ERROR, WARN, INFO.
+          required: false
+          schema:
+            type: string
+            enum:
+              - info
+              - warn
+              - error
+            default: info
+          example: info
+        - name: maxErrors
+          in: query
+          description: The maximum number of errors to return.
+          required: false
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+            maximum: 500
+            default: 100
+          example: 100
+        - name: semanticValidation
+          in: query
+          description: Whether a semantic validation against the default rule set should be performed.
+          required: false
+          schema:
+            type: boolean
+            default: false
+          example: true
       responses:
         '200':
           description: Validation Okay
@@ -47,7 +78,7 @@ paths:
             default: []
             items:
               $ref: '#/definitions/ValidationMessage'
-        '405':
+        '422':
           description: Invalid input
           schema:
             type: array
@@ -80,6 +111,37 @@ paths:
           required: true
           schema:
             $ref: '#/definitions/MzTab'
+        - name: level
+          in: query
+          description: The level of errors that should be reported, one of ERROR, WARN, INFO.
+          required: false
+          schema:
+            type: string
+            enum:
+              - info
+              - warn
+              - error
+            default: info
+          example: info
+        - name: maxErrors
+          in: query
+          description: The maximum number of errors to return.
+          required: false
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+            maximum: 500
+            default: 100
+          example: 100
+        - name: semanticValidation
+          in: query
+          description: Whether a semantic validation against the default rule set should be performed.
+          required: false
+          schema:
+            type: boolean
+            default: false
+          example: true
       responses:
         '200':
           description: Validation Okay
@@ -88,7 +150,7 @@ paths:
             default: []
             items:
               $ref: '#/definitions/ValidationMessage'
-        '405':
+        '422':
           description: Invalid input
           schema:
             type: array
