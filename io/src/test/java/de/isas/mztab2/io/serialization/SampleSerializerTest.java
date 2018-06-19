@@ -32,7 +32,7 @@ import static uk.ac.ebi.pride.jmztab2.model.MZTabConstants.TAB_STRING;
 public class SampleSerializerTest extends AbstractSerializerTest {
 
     /**
-     * Test of serialize method, of class SampleSerializer.
+     * Test of serializeSingle method, of class SampleSerializer.
      */
     @Test
     public void testSerialize() throws Exception {
@@ -84,8 +84,7 @@ public class SampleSerializerTest extends AbstractSerializerTest {
         mtd.addSampleItem(sample2);
 
         ObjectWriter writer = metaDataWriter();
-        assertEqSentry(
-            MTD + TAB_STRING + Metadata.Properties.sample + "[1]" + TAB_STRING + sample1.
+        assertEqSentry(MTD + TAB_STRING + Metadata.Properties.sample + "[1]" + TAB_STRING + sample1.
                 getName()
             + NEW_LINE
             + MTD + TAB_STRING + Metadata.Properties.sample.
@@ -164,7 +163,7 @@ public class SampleSerializerTest extends AbstractSerializerTest {
                 convert(sample2.getCustom().
                     get(1))
             + NEW_LINE,
-             serialize(writer, mtd));
+             serializeSingle(writer, mtd));
     }
 
 }

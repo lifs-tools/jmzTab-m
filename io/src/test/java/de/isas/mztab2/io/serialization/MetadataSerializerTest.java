@@ -34,7 +34,7 @@ import static uk.ac.ebi.pride.jmztab2.model.MZTabConstants.TAB_STRING;
 public class MetadataSerializerTest extends AbstractSerializerTest {
 
     /**
-     * Test of serialize method, of class MetadataSerializer.
+     * Test of serializeSingle method, of class MetadataSerializer.
      */
     @Test
     public void testSerialize() throws Exception {
@@ -61,8 +61,7 @@ public class MetadataSerializerTest extends AbstractSerializerTest {
                     )
             );
         ObjectWriter writer = metaDataWriter();
-        assertEqSentry(
-            MTD + TAB_STRING + Metadata.Properties.mzTabVersion + TAB_STRING + "2.0.0-M" + NEW_LINE
+        assertEqSentry(MTD + TAB_STRING + Metadata.Properties.mzTabVersion + TAB_STRING + "2.0.0-M" + NEW_LINE
             + MTD + TAB_STRING + Metadata.Properties.mzTabID + TAB_STRING + "ISAS_2017_M_11451" + NEW_LINE
             + MTD + TAB_STRING + Metadata.Properties.title + TAB_STRING + "A minimal test file" + NEW_LINE
             + MTD + TAB_STRING + Metadata.Properties.description + TAB_STRING + "A description of an mzTab file." + NEW_LINE
@@ -71,7 +70,7 @@ public class MetadataSerializerTest extends AbstractSerializerTest {
             + MTD + TAB_STRING + Metadata.Properties.contact + "[1]-affiliation" + TAB_STRING + "ISAS e.V. Dortmund, Germany" + NEW_LINE
             + MTD + TAB_STRING + Metadata.Properties.msRun + "[1]-location" + TAB_STRING + "file:///path/to/file1.mzML" + NEW_LINE
             + MTD + TAB_STRING + Metadata.Properties.msRun + "[1]-format" + TAB_STRING + "[MS, MS:1000584, mzML file, ]" + NEW_LINE,
-            serialize(writer, metadata));
+            serializeSingle(writer, metadata));
     }
 
 }

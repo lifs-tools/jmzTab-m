@@ -43,10 +43,13 @@ import de.isas.mztab2.model.SmallMoleculeSummary;
 import java.io.*;
 import java.net.URI;
 import java.net.URL;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
 import static uk.ac.ebi.pride.jmztab2.model.MZTabConstants.NEW_LINE;
 import static uk.ac.ebi.pride.jmztab2.model.MZTabConstants.REGEX_DEFAULT_RELIABILITY;
@@ -463,7 +466,7 @@ public class MZTabFileParser {
                 errorList.add(new MZTabError(
                     LogicalErrorType.NoSmallMoleculeSummarySection, -1));
             }
-            if (smhParser != null) {
+            if (smlParser != null) {
 
                 for (Integer id : smallMoleculeSummaryMap.keySet()) {
                     mzTabFile.addSmallMoleculeSummaryItem(
@@ -498,9 +501,10 @@ public class MZTabFileParser {
             }
             if (smfParser != null) {
                 for (Integer id : smallMoleculeFeatureMap.keySet()) {
-                    mzTabFile.addSmallMoleculeFeatureItem(
-                        smallMoleculeFeatureMap.get(
-                            id));
+                    SmallMoleculeFeature smf
+                        = smallMoleculeFeatureMap.get(
+                            id);
+                    mzTabFile.addSmallMoleculeFeatureItem(smf);
                 }
                 if (smallMoleculeFeatureMap.size() > 0 && mzTabFile.
                     getMetadata().
@@ -520,6 +524,60 @@ public class MZTabFileParser {
                     mzTabFile.addSmallMoleculeEvidenceItem(
                         smallMoleculeEvidenceMap.get(
                             id));
+                }
+            }
+            //check ID refs, starting at SML level
+            if (smlParser != null && smfParser != null) {
+                for (Integer id : smallMoleculeSummaryMap.keySet()) {
+                    SmallMoleculeSummary sms = smallMoleculeSummaryMap.get(id);
+                    Set<Integer> smfIdRefs = new HashSet<>(sms.getSmfIdRefs());
+                    Set<Integer> definedIds = smallMoleculeFeatureMap.values().stream().map((t) ->
+                        {
+                            return t.getSmfId();
+                        }).collect(Collectors.toSet());
+                    smfIdRefs.removeAll(definedIds);
+                    if (!smfIdRefs.isEmpty()) {
+                        for (Integer smfRefId : smfIdRefs) {
+                            //raise a warning about unmatched SMF id
+                            //Reference id "{0}" for column "{1}" from element "{2}" in section "{3}" to section "{4}" must have a matching element defined.
+                            errorList.add(new MZTabError(
+                                LogicalErrorType.UnknownRefId, -1, "" + smfRefId,
+                                SmallMoleculeSummary.Properties.smfIdRefs.
+                                    getPropertyName(), "" + sms.getSmlId(),
+                                MzTab.Properties.smallMoleculeSummary.
+                                    getPropertyName(),
+                                MzTab.Properties.smallMoleculeFeature.
+                                    getPropertyName()));
+                        }
+                    }
+                }
+                if (smeParser != null) {
+                    for (Integer id : smallMoleculeFeatureMap.keySet()) {
+                        SmallMoleculeFeature smf = smallMoleculeFeatureMap.get(
+                            id);
+                        Set<Integer> smeIdRefs = new HashSet<>(smf.
+                            getSmeIdRefs());
+                        Set<Integer> definedIds = smallMoleculeEvidenceMap.values().stream().map((t) ->
+                        {
+                            return t.getSmeId();
+                        }).collect(Collectors.toSet());
+                        smeIdRefs.removeAll(definedIds);
+                        if (!smeIdRefs.isEmpty()) {
+                            for (Integer smeRefId : smeIdRefs) {
+                                //raise a warning about unmatched SMF id
+                                //Reference id "{0}" for column "{1}" from element "{2}" in section "{3}" to section "{4}" must have a matching element defined.
+                                errorList.add(new MZTabError(
+                                    LogicalErrorType.UnknownRefId, -1,
+                                    "" + smeRefId,
+                                    SmallMoleculeFeature.Properties.smeIdRefs.
+                                        getPropertyName(), "" + smf.getSmfId(),
+                                    MzTab.Properties.smallMoleculeFeature.
+                                        getPropertyName(),
+                                    MzTab.Properties.smallMoleculeEvidence.
+                                        getPropertyName()));
+                            }
+                        }
+                    }
                 }
             }
         }

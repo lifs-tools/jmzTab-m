@@ -26,7 +26,6 @@ import uk.ac.ebi.pride.jmztab2.model.AbundanceColumn;
 import de.isas.mztab2.model.Metadata;
 import de.isas.mztab2.model.OptColumnMapping;
 import de.isas.mztab2.model.SmallMoleculeSummary;
-import static de.isas.mztab2.model.SpectraRef.Properties.reference;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

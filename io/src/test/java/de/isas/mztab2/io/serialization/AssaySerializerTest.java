@@ -35,7 +35,7 @@ import static uk.ac.ebi.pride.jmztab2.model.MZTabConstants.TAB_STRING;
 public class AssaySerializerTest extends AbstractSerializerTest {
 
     /**
-     * Test of serialize method, of class AssaySerializer.
+     * Test of serializeSingle method, of class AssaySerializer.
      */
     @Test
     public void testAssay() throws Exception {
@@ -49,12 +49,12 @@ public class AssaySerializerTest extends AbstractSerializerTest {
 
         assertEqSentry(MTD + TAB_STRING + Metadata.Properties.assay + "[1]" + TAB_STRING + "assay 1" + NEW_LINE
             + MTD + TAB_STRING + Metadata.Properties.assay + "[1]-external_uri" + TAB_STRING + "http://jus.tf.for.testing.de/really" + NEW_LINE,
-            serialize(writer, metadata));
+            serializeSingle(writer, metadata));
 
     }
 
     /**
-     * Test of serialize method, of class AssaySerializer.
+     * Test of serializeSingle method, of class AssaySerializer.
      */
     @Test
     public void testAssayWithSampleRef() throws Exception {
@@ -72,11 +72,11 @@ public class AssaySerializerTest extends AbstractSerializerTest {
         assertEqSentry(MTD + TAB_STRING + Metadata.Properties.assay + "[" + assay.getId() + "]" + TAB_STRING + "assay 1" + NEW_LINE
             + MTD + TAB_STRING + Metadata.Properties.assay + "[" + assay.getId() + "]-" + Assay.Properties.externalUri + TAB_STRING + "http://jus.tf.for.testing.de/really" + NEW_LINE
             + MTD + TAB_STRING + Metadata.Properties.assay + "[" + assay.getId() + "]-" + Assay.Properties.sampleRef + TAB_STRING + "sample[1]" + NEW_LINE,
-            serialize(writer, metadata));
+            serializeSingle(writer, metadata));
     }
 
     /**
-     * Test of serialize method, of class AssaySerializer.
+     * Test of serializeSingle method, of class AssaySerializer.
      */
     @Test
     public void testAssayWithMsRunRef() throws Exception {
@@ -95,11 +95,11 @@ public class AssaySerializerTest extends AbstractSerializerTest {
             + MTD + TAB_STRING + Metadata.Properties.assay + "[" + assay.getId() + "]-" + Assay.Properties.externalUri + TAB_STRING + "http://jus.tf.for.testing.de/really" + NEW_LINE
             + MTD + TAB_STRING + Metadata.Properties.assay + "[" + assay.getId() + "]-" + Assay.Properties.msRunRef + TAB_STRING + Metadata.Properties.msRun + "[" + msRun.
             getId() + "]" + NEW_LINE,
-            serialize(writer, metadata));
+            serializeSingle(writer, metadata));
     }
 
     /**
-     * Test of serialize method, of class AssaySerializer.
+     * Test of serializeSingle method, of class AssaySerializer.
      */
     @Test
     public void testAssayWithCustom() throws Exception {
@@ -116,11 +116,10 @@ public class AssaySerializerTest extends AbstractSerializerTest {
             addCustomItem(customParam).addCustomItem(customParam2);
         metadata.addAssayItem(assay);
 
-        assertEqSentry(
-            MTD + TAB_STRING + Metadata.Properties.assay + "[" + assay.getId() + "]" + TAB_STRING + "assay 1" + NEW_LINE +
+        assertEqSentry(MTD + TAB_STRING + Metadata.Properties.assay + "[" + assay.getId() + "]" + TAB_STRING + "assay 1" + NEW_LINE +
             MTD + TAB_STRING + Metadata.Properties.assay + "[" + assay.getId() + "]-" + Assay.Properties.custom+"["+customParam.getId()+"]" + TAB_STRING + new ParameterConverter().convert(customParam)+ NEW_LINE +
             MTD + TAB_STRING + Metadata.Properties.assay + "[" + assay.getId() + "]-" + Assay.Properties.custom+"["+customParam2.getId()+"]" + TAB_STRING + new ParameterConverter().convert(customParam2)+ NEW_LINE,
-            serialize(writer, metadata));
+            serializeSingle(writer, metadata));
     }
 
 }

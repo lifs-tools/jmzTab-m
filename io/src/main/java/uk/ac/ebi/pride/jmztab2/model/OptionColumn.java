@@ -46,7 +46,7 @@ public class OptionColumn extends MZTabColumn {
             throw new IllegalArgumentException("Optional column's value should not be empty.");
         }
 
-        return OPT + "_" + (element == null ? GLOBAL : Serializers.getReference(element, element.getId())) +
+        return OPT + "_" + (element == null ? GLOBAL : Serializers.getElementName(element).get()) +
                 "_" + value.replaceAll(" ", "_");
     }
 

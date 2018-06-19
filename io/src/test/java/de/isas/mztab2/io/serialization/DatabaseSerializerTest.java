@@ -32,7 +32,7 @@ import static uk.ac.ebi.pride.jmztab2.model.MZTabConstants.TAB_STRING;
 public class DatabaseSerializerTest extends AbstractSerializerTest {
 
     /**
-     * Test of serialize method, of class ContactSerializer.
+     * Test of serializeSingle method, of class ContactSerializer.
      */
     @Test
     public void testSerialize() throws Exception {
@@ -55,8 +55,7 @@ public class DatabaseSerializerTest extends AbstractSerializerTest {
             url("http://www.hmdb.ca/"));
 
         //param prefix url version
-        assertEqSentry(
-            MTD + TAB_STRING + Metadata.Properties.database + "[1]" + TAB_STRING + "[, , no database, null]" + NEW_LINE
+        assertEqSentry(MTD + TAB_STRING + Metadata.Properties.database + "[1]" + TAB_STRING + "[, , no database, null]" + NEW_LINE
             + MTD + TAB_STRING + Metadata.Properties.database + "[1]-prefix" + TAB_STRING + "null" + NEW_LINE
             + MTD + TAB_STRING + Metadata.Properties.database + "[1]-url" + TAB_STRING + "null" + NEW_LINE
             + MTD + TAB_STRING + Metadata.Properties.database + "[1]-version" + TAB_STRING + "Unknown" + NEW_LINE
@@ -64,6 +63,6 @@ public class DatabaseSerializerTest extends AbstractSerializerTest {
             + MTD + TAB_STRING + Metadata.Properties.database + "[2]-prefix" + TAB_STRING + "hmdb" + NEW_LINE
             + MTD + TAB_STRING + Metadata.Properties.database + "[2]-url" + TAB_STRING + "http://www.hmdb.ca/" + NEW_LINE
             + MTD + TAB_STRING + Metadata.Properties.database + "[2]-version" + TAB_STRING + "3.6" + NEW_LINE,
-            serialize(writer, mtd));
+            serializeSingle(writer, mtd));
     }
 }

@@ -15,13 +15,14 @@
  */
 package de.isas.mztab2.io;
 
-import de.isas.mztab2.io.MzTabWriterDefaults;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.databind.SequenceWriter;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import de.isas.mztab2.model.MzTab;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.Collection;
 import org.junit.Assert;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabException;
 
@@ -51,7 +52,14 @@ public abstract class AbstractSerializerTest {
         return writer(smallMoleculeEvidenceMapper, smallMoleculeEvidenceSchema);
     }
 
-    public String serialize(ObjectWriter writer, Object object) throws IOException {
+    public String serializeSequence(ObjectWriter writer, Collection<?> elements) throws IOException {
+        StringWriter sw = new StringWriter();
+        SequenceWriter sequenceWriter = writer.writeValues(sw);
+        sequenceWriter.writeAll(elements);
+        return sw.toString();
+    }
+    
+    public String serializeSingle(ObjectWriter writer, Object object) throws IOException {
         StringWriter sw = new StringWriter();
         writer.writeValue(sw, object);
         return sw.toString();

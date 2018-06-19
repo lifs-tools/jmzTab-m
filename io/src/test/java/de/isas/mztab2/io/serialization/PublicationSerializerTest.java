@@ -34,7 +34,7 @@ import static uk.ac.ebi.pride.jmztab2.model.MZTabConstants.TAB_STRING;
 public class PublicationSerializerTest extends AbstractSerializerTest {
 
     /**
-     * Test of serialize method, of class PublicationSerializer.
+     * Test of serializeSingle method, of class PublicationSerializer.
      */
     @Test
     public void testSerialize() throws Exception {
@@ -60,12 +60,11 @@ public class PublicationSerializerTest extends AbstractSerializerTest {
         mtd.addPublicationItem(publication1).
             addPublicationItem(publication2);
         ObjectWriter writer = metaDataWriter();
-        assertEqSentry(
-            MTD + TAB_STRING + Metadata.Properties.publication.
+        assertEqSentry(MTD + TAB_STRING + Metadata.Properties.publication.
                 getPropertyName() + "[1]" + TAB_STRING + "pubmed:21063943" + BAR + "doi:10.1007/978-1-60761-987-1_6" + NEW_LINE
             + MTD + TAB_STRING + Metadata.Properties.publication.
                 getPropertyName() + "[2]" + TAB_STRING + "pubmed:20615486" + BAR + "doi:10.1016/j.jprot.2010.06.008"
-            + NEW_LINE, serialize(writer, mtd));
+            + NEW_LINE, serializeSingle(writer, mtd));
     }
 
 }

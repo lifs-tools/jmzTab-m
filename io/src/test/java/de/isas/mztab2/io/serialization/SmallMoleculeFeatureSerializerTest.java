@@ -19,39 +19,92 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import de.isas.mztab2.io.AbstractSerializerTest;
 import static de.isas.mztab2.io.MzTabTestData.create2_0TestFile;
 import de.isas.mztab2.model.MzTab;
+import de.isas.mztab2.model.OptColumnMapping;
 import de.isas.mztab2.model.SmallMoleculeFeature;
+import java.util.Arrays;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.Ignore;
+import uk.ac.ebi.pride.jmztab2.model.MZTabConstants;
 
 /**
- * 
+ *
  * @author nilshoffmann
  */
 public class SmallMoleculeFeatureSerializerTest extends AbstractSerializerTest {
-    
+
     public SmallMoleculeFeatureSerializerTest() {
     }
 
     /**
-     * Test of serialize method, of class SmallMoleculeFeatureSerializer.
+     * Test of serializeSingle method, of class SmallMoleculeFeatureSerializer.
      */
-    @Ignore
     @Test
     public void testSerialize() throws Exception {
         MzTab mzTabFile = create2_0TestFile();
-        SmallMoleculeFeature smf1 = new SmallMoleculeFeature();
-    /*
-        COM	MS feature rows , used to report m/z and individual abundance information for quantification																				
-SFH	SMF_ID	SME_ID_REFS	SME_ID_REF_ambiguity_code	adduct_ion	isotopomer	exp_mass_to_charge	charge	retention_time_in_seconds	retention_time_in_seconds_start	retention_time_in_seconds_end	abundance_assay[1]	opt_global_quantifiers_SMF_ID_REFS									
-SMF	1	1	null	[M+H]1+	null	650.6432	1	821.2341	756.0000	954.0000	4.448784E-05	3									
-SMF	2	2	null	null	null	252.2677	1	821.2341	756.0000	954.0000	6.673176E-06	null									
-SMF	3	3	null	null	null	264.2689	1	821.2341	756.0000	954.0000	1.3346352E-05	null									
-SMF	4	4	null	null	null	282.2788	1	821.2341	756.0000	954.0000	9.831813E-06	null									
-        */
-    
-        mzTabFile.addSmallMoleculeFeatureItem(smf1);
+        String optColumnQualifiers = "global_quantifiers_SMF_ID_REFS";
+        mzTabFile.addSmallMoleculeFeatureItem(new SmallMoleculeFeature().
+            smfId(1).
+            smeIdRefs(Arrays.asList(1)).
+            adductIon("[M+H]1+").
+            expMassToCharge(650.6432).
+            charge(1).
+            retentionTimeInSeconds(821.2341).
+            retentionTimeInSecondsStart(756.0000).
+            retentionTimeInSecondsEnd(954.0000).
+            abundanceAssay(Arrays.asList(4.448784E-05)).
+            opt(Arrays.asList(new OptColumnMapping().identifier(
+                optColumnQualifiers).
+                value("3"))));
+        mzTabFile.addSmallMoleculeFeatureItem(new SmallMoleculeFeature().
+            smfId(2).
+            smeIdRefs(Arrays.asList(2)).
+            expMassToCharge(252.2677).
+            charge(1).
+            retentionTimeInSeconds(821.2341).
+            retentionTimeInSecondsStart(756.0000).
+            retentionTimeInSecondsEnd(954.0000).
+            abundanceAssay(Arrays.asList(6.673176E-06)).
+            opt(Arrays.asList(new OptColumnMapping().identifier(
+                optColumnQualifiers))));
+        mzTabFile.addSmallMoleculeFeatureItem(new SmallMoleculeFeature().
+            smfId(3).
+            smeIdRefs(Arrays.asList(3)).
+            expMassToCharge(264.2689).
+            charge(1).
+            retentionTimeInSeconds(821.2341).
+            retentionTimeInSecondsStart(756.0000).
+            retentionTimeInSecondsEnd(954.0000).
+            abundanceAssay(Arrays.asList(1.3346352E-05)).
+            opt(Arrays.asList(new OptColumnMapping().identifier(
+                optColumnQualifiers))));
+        mzTabFile.addSmallMoleculeFeatureItem(new SmallMoleculeFeature().
+            smfId(4).
+            smeIdRefs(Arrays.asList(3)).
+            expMassToCharge(282.2788).
+            charge(1).
+            retentionTimeInSeconds(821.2341).
+            retentionTimeInSecondsStart(756.0000).
+            retentionTimeInSecondsEnd(954.0000).
+            abundanceAssay(Arrays.asList(9.831813E-06)).
+            opt(Arrays.asList(new OptColumnMapping().identifier(
+                optColumnQualifiers))));
+
         ObjectWriter writer = smallMoleculeFeatureWriter(mzTabFile);
-        serialize(writer, mzTabFile);
+        String serializedString = serializeSequence(writer, mzTabFile.
+            getSmallMoleculeFeature());
+        Assert.assertFalse(serializedString.isEmpty());
+        System.out.println(serializedString);
+        //check for exactly one header line + 4 entry lines
+        Assert.assertEquals(5,
+            serializedString.split(MZTabConstants.NEW_LINE).length);
+
+        String reference = "SFH	SMF_ID	SME_ID_REFS	SME_ID_REF_ambiguity_code	adduct_ion	isotopomer	exp_mass_to_charge	charge	retention_time_in_seconds	retention_time_in_seconds_start	retention_time_in_seconds_end	abundance_assay[1]	abundance_assay[2]	opt_global_quantifiers_SMF_ID_REFS"+MZTabConstants.NEW_LINE
+            + "SMF	1	1	null	[M+H]1+	null	650.6432	1	821.2341	756.0	954.0	4.448784E-5		3"+MZTabConstants.NEW_LINE
+            + "SMF	2	2	null	null	null	252.2677	1	821.2341	756.0	954.0	6.673176E-6		null"+MZTabConstants.NEW_LINE
+            + "SMF	3	3	null	null	null	264.2689	1	821.2341	756.0	954.0	1.3346352E-5		null"+MZTabConstants.NEW_LINE
+            + "SMF	4	3	null	null	null	282.2788	1	821.2341	756.0	954.0	9.831813E-6		null"+MZTabConstants.NEW_LINE;
+        assertEqSentry(reference, serializedString);
     }
-    
+
 }

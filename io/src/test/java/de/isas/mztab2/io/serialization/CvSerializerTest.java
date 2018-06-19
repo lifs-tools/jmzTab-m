@@ -31,7 +31,7 @@ import static uk.ac.ebi.pride.jmztab2.model.MZTabConstants.TAB_STRING;
 public class CvSerializerTest extends AbstractSerializerTest {
 
     /**
-     * Test of serialize method, of class ContactSerializer.
+     * Test of serializeSingle method, of class ContactSerializer.
      */
     @Test
     public void testSerialize() throws Exception {
@@ -50,8 +50,7 @@ public class CvSerializerTest extends AbstractSerializerTest {
             version("164").
             url("ftp://ftp.ebi.ac.uk/pub/databases/chebi/ontology/chebi.obo"));
 
-        assertEqSentry(
-            MTD + TAB_STRING + Metadata.Properties.cv + "[1]-label" + TAB_STRING + "MS" + NEW_LINE
+        assertEqSentry(MTD + TAB_STRING + Metadata.Properties.cv + "[1]-label" + TAB_STRING + "MS" + NEW_LINE
             + MTD + TAB_STRING + Metadata.Properties.cv + "[1]-url" + TAB_STRING + "https://raw.githubusercontent.com/HUPO-PSI/psi-ms-CV/master/psi-ms.obo" + NEW_LINE
             + MTD + TAB_STRING + Metadata.Properties.cv + "[1]-version" + TAB_STRING + "3.54.0" + NEW_LINE
             + MTD + TAB_STRING + Metadata.Properties.cv + "[1]-full_name" + TAB_STRING + "PSI-MS ontology" + NEW_LINE
@@ -59,7 +58,7 @@ public class CvSerializerTest extends AbstractSerializerTest {
             + MTD + TAB_STRING + Metadata.Properties.cv + "[2]-url" + TAB_STRING + "ftp://ftp.ebi.ac.uk/pub/databases/chebi/ontology/chebi.obo" + NEW_LINE
             + MTD + TAB_STRING + Metadata.Properties.cv + "[2]-version" + TAB_STRING + "164" + NEW_LINE
             + MTD + TAB_STRING + Metadata.Properties.cv + "[2]-full_name" + TAB_STRING + "Chebi ontology" + NEW_LINE,
-            serialize(writer, mtd));
+            serializeSingle(writer, mtd));
     }
 
 }

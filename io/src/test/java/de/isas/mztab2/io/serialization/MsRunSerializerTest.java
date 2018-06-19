@@ -34,7 +34,7 @@ import static uk.ac.ebi.pride.jmztab2.model.MZTabConstants.TAB_STRING;
 public class MsRunSerializerTest extends AbstractSerializerTest {
 
     /**
-     * Test of serialize method, of class MsRunSerializer.
+     * Test of serializeSingle method, of class MsRunSerializer.
      */
     @Test
     public void testSerialize() throws Exception {
@@ -67,8 +67,7 @@ public class MsRunSerializerTest extends AbstractSerializerTest {
         mtd.addMsRunItem(msRun1);
 
         ObjectWriter writer = metaDataWriter();
-        assertEqSentry(
-            MTD + TAB_STRING + Metadata.Properties.msRun + "[1]-location" + TAB_STRING + msRun1.
+        assertEqSentry(MTD + TAB_STRING + Metadata.Properties.msRun + "[1]-location" + TAB_STRING + msRun1.
                 getLocation() + NEW_LINE
             + MTD + TAB_STRING + Metadata.Properties.msRun + "[1]-instrument_ref" + TAB_STRING + "instrument[" + instrument1.
                 getId() + "]" + NEW_LINE
@@ -89,7 +88,7 @@ public class MsRunSerializerTest extends AbstractSerializerTest {
                     get(1)) + NEW_LINE
             + MTD + TAB_STRING + Metadata.Properties.msRun + "[1]-id_format" + TAB_STRING + new ParameterConverter().
                 convert(msRun1.getIdFormat()) + NEW_LINE,
-            serialize(writer, mtd));
+            serializeSingle(writer, mtd));
     }
 
 }

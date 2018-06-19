@@ -32,23 +32,23 @@ import uk.ac.ebi.pride.jmztab2.model.MetadataElement;
 import static de.isas.mztab2.io.MzTabTestData.create2_0TestFile;
 import org.junit.Assert;
 import org.junit.Ignore;
+import uk.ac.ebi.pride.jmztab2.model.MZTabConstants;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabException;
 
 /**
  * @author nilshoffmann
  */
 public class SmallMoleculeSummarySerializerTest extends AbstractSerializerTest {
-    
+
     public SmallMoleculeSummarySerializerTest() {
     }
 
-    @Ignore
     @Test
     public void testSerialize() throws IOException, MZTabException {
         MzTab mzTabFile = create2_0TestFile();
         SmallMoleculeSummary smsi = new SmallMoleculeSummary();
         smsi.smlId(1).
-            smfIdRefs(Arrays.asList(1, 2, 3, 4, 5)).
+            smfIdRefs(Arrays.asList(1, 2, null, 4, 5)). // null serialization is possible
             chemicalName(Arrays.asList("Cer(d18:1/24:0)",
                 "N-(tetracosanoyl)-sphing-4-enine", "C24 Cer")).
             addOptItem(new OptColumnMapping().identifier("global").
@@ -92,18 +92,16 @@ public class SmallMoleculeSummarySerializerTest extends AbstractSerializerTest {
         mzTabFile.addSmallMoleculeSummaryItem(smsi);
         ObjectWriter writer = smallMoleculeSummaryWriter(mzTabFile);
 
-        String serialized = serialize(writer, mzTabFile);
-        serialized = serialized.substring(serialized.indexOf("SMH"));
-        Assert.assertTrue(serialized.startsWith("SMH"));
-        assertEqSentry(
-            SMH + TAB_STRING + MetadataElement.DATABASE + "[1]" + TAB_STRING + "[, , no database, null]" + NEW_LINE
-            + SMH + TAB_STRING + MetadataElement.DATABASE + "[1]-prefix" + TAB_STRING + "null" + NEW_LINE
-            + MTD + TAB_STRING + MetadataElement.DATABASE + "[1]-version" + TAB_STRING + "Unknown" + NEW_LINE
-            + MTD + TAB_STRING + MetadataElement.DATABASE + "[2]" + TAB_STRING + "[MIRIAM, MIR:00100079, HMDB, ]" + NEW_LINE
-            + MTD + TAB_STRING + MetadataElement.DATABASE + "[2]-prefix" + TAB_STRING + "hmdb" + NEW_LINE
-            + MTD + TAB_STRING + MetadataElement.DATABASE + "[2]-url" + TAB_STRING + "http://www.hmdb.ca/" + NEW_LINE
-            + MTD + TAB_STRING + MetadataElement.DATABASE + "[2]-version" + TAB_STRING + "3.6" + NEW_LINE,
-            serialized);
+        String serializedString = serializeSequence(writer, mzTabFile.
+            getSmallMoleculeSummary());
+        Assert.assertFalse(serializedString.isEmpty());
+        System.out.println(serializedString);
+        //check for exactly one header line + 1 entry lines
+        Assert.assertEquals(2,
+            serializedString.split(MZTabConstants.NEW_LINE).length);
+        String expected = "SMH	SML_ID	SMF_ID_REFS	database_identifier	chemical_formula	smiles	inchi	chemical_name	uri	theoretical_neutral_mass	adduct_ions	reliability	best_id_confidence_measure	best_id_confidence_value	abundance_assay[1]	abundance_assay[2]	abundance_study_variable[1]	abundance_study_variable[2]	abundance_variation_study_variable[1]	abundance_variation_study_variable[2]	opt_global_cv_LM:SP_Category	opt_global_cv_LH:XXXXX_Species	opt_global_cv_LH:XXXXX_Sub_Species" + MZTabConstants.NEW_LINE
+            + "SML	1	1|2|null|4|5	LM:LMSP02010012	C42H83NO3	CCCCCCCCCCCCCCCCCCCCCCCC(=O)N[C@@H](CO)[C@H](O)/C=C/CCCCCCCCCCCCC	InChI=1S/C42H83NO3/c1-3-5-7-9-11-13-15-17-18-19-20-21-22-23-24-26-28-30-32-34-36-38-42(46)43-40(39-44)41(45)37-35-33-31-29-27-25-16-14-12-10-8-6-4-2/h35,37,40-41,44-45H,3-34,36,38-39H2,1-2H3,(H,43,46)/b37-35+/t40-,41+/m0/s1	Cer(d18:1/24:0)|N-(tetracosanoyl)-sphing-4-enine|C24 Cer	http://www.lipidmaps.org/data/LMSDRecord.php?LM_ID=LMSP02010012	649.6373	[M+H]1+	1	[, , qualifier ions exact mass, ]	0.958	4.448784E-5	5.448784E-5	4.448784E-5	5.448784E-5	0.0	1.0E-5	[LM, LM:SP, Category, Sphingolipids]	[LH, LH:XXXXX, Species, Cer 42:1]	[LH, LH:XXXXX, Sub Species, Cer d18:1/24:0]" + MZTabConstants.NEW_LINE;
+        assertEqSentry(expected, serializedString);
     }
-    
+
 }

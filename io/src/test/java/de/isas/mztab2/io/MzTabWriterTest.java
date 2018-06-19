@@ -218,22 +218,7 @@ public class MzTabWriterTest {
         }
     }
 
-    @Test
-    public void testWriteSmallMoleculeEvidenceToTsvWithJackson() throws IOException {
-        MzTab mzTabFile = create2_0TestFile();
-        try (StringWriter sw = new StringWriter()) {
-            new MzTabNonValidatingWriter().
-                writeSmallMoleculeEvidenceWithJackson(mzTabFile, sw);
-            sw.flush();
-            String smallMoleculeEvidences = sw.toString();
-            System.out.println("Serialized SmallMoleculeEvidence: ");
-            System.out.println(smallMoleculeEvidences);
-            Assert.assertFalse(smallMoleculeEvidences.isEmpty());
-            //check for exactly one header line
-            Assert.assertEquals(1,
-                smallMoleculeEvidences.split("\r\n|\r|\n").length);
-        }
-    }
+   
 
     @Test
     public void testWriteMzTabToTsvWithJackson() throws IOException {

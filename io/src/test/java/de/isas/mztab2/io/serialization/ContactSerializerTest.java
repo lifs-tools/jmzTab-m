@@ -31,7 +31,7 @@ import static uk.ac.ebi.pride.jmztab2.model.MZTabConstants.TAB_STRING;
 public class ContactSerializerTest extends AbstractSerializerTest {
 
     /**
-     * Test of serialize method, of class ContactSerializer.
+     * Test of serializeSingle method, of class ContactSerializer.
      */
     @Test
     public void testSerialize() throws Exception {
@@ -48,14 +48,13 @@ public class ContactSerializerTest extends AbstractSerializerTest {
             affiliation("Cambridge University, UK").
             email("crick@cam.ac.uk"));
         
-        assertEqSentry(
-            MTD + TAB_STRING + Metadata.Properties.contact + "[1]-name" + TAB_STRING + "James D. Watson" + NEW_LINE +
+        assertEqSentry(MTD + TAB_STRING + Metadata.Properties.contact + "[1]-name" + TAB_STRING + "James D. Watson" + NEW_LINE +
             MTD + TAB_STRING + Metadata.Properties.contact + "[1]-email" + TAB_STRING + "watson@cam.ac.uk" + NEW_LINE +
             MTD + TAB_STRING + Metadata.Properties.contact + "[1]-affiliation" + TAB_STRING + "Cambridge University, UK" + NEW_LINE +
             MTD + TAB_STRING + Metadata.Properties.contact + "[2]-name" + TAB_STRING + "Francis Crick" + NEW_LINE +
             MTD + TAB_STRING + Metadata.Properties.contact + "[2]-email" + TAB_STRING + "crick@cam.ac.uk" + NEW_LINE +
             MTD + TAB_STRING + Metadata.Properties.contact + "[2]-affiliation" + TAB_STRING + "Cambridge University, UK" + NEW_LINE,
-            serialize(writer, mtd));
+            serializeSingle(writer, mtd));
     }
     
 }

@@ -32,7 +32,7 @@ import static uk.ac.ebi.pride.jmztab2.model.MZTabConstants.TAB_STRING;
 public class SampleProcessingSerializerTest extends AbstractSerializerTest {
 
     /**
-     * Test of serialize method, of class SampleProcessingSerializer.
+     * Test of serializeSingle method, of class SampleProcessingSerializer.
      */
     @Test
     public void testSerialize() throws Exception {
@@ -44,12 +44,11 @@ public class SampleProcessingSerializerTest extends AbstractSerializerTest {
             name("liquid chromatography"));
         mtd.addSampleProcessingItem(sp);
         ObjectWriter writer = metaDataWriter();
-        assertEqSentry(
-            MTD + TAB_STRING + Metadata.Properties.sampleProcessing.
+        assertEqSentry(MTD + TAB_STRING + Metadata.Properties.sampleProcessing.
                 getPropertyName() + "[1]" + TAB_STRING + new ParameterConverter().
                 convert(sp.getSampleProcessing().
                     get(0))
-            + NEW_LINE, serialize(writer, mtd));
+            + NEW_LINE, serializeSingle(writer, mtd));
     }
 
 }

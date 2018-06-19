@@ -39,7 +39,7 @@ public class StudyVariableSerializerTest extends AbstractSerializerTest {
     }
 
     /**
-     * Test of serialize method, of class StudyVariableSerializer.
+     * Test of serializeSingle method, of class StudyVariableSerializer.
      */
     @Test
     public void testSerialize() throws Exception {
@@ -81,8 +81,7 @@ public class StudyVariableSerializerTest extends AbstractSerializerTest {
         mtd.addStudyVariableItem(studyVariable2);
 
         ObjectWriter writer = metaDataWriter();
-        assertEqSentry(
-            MTD + TAB_STRING + Metadata.Properties.studyVariable + "[1]" + TAB_STRING + studyVariable1.
+        assertEqSentry(MTD + TAB_STRING + Metadata.Properties.studyVariable + "[1]" + TAB_STRING + studyVariable1.
                 getName()
             + NEW_LINE
             + MTD + TAB_STRING + Metadata.Properties.studyVariable + "[1]-" + StudyVariable.Properties.description + TAB_STRING + studyVariable1.
@@ -126,7 +125,7 @@ public class StudyVariableSerializerTest extends AbstractSerializerTest {
             + NEW_LINE
             + MTD + TAB_STRING + Metadata.Properties.studyVariable + "[2]-" + StudyVariable.Properties.assayRefs + TAB_STRING + Metadata.Properties.assay + "[1]" + BAR + Metadata.Properties.assay + "[2]"
             + NEW_LINE,
-            serialize(writer, mtd));
+            serializeSingle(writer, mtd));
     }
 
 }

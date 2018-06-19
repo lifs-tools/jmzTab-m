@@ -37,7 +37,7 @@ public class SoftwareSerializerTest extends AbstractSerializerTest {
     }
 
     /**
-     * Test of serialize method, of class SoftwareSerializer.
+     * Test of serializeSingle method, of class SoftwareSerializer.
      */
     @Test
     public void testSerialize() throws Exception {
@@ -53,8 +53,7 @@ public class SoftwareSerializerTest extends AbstractSerializerTest {
         mtd.addSoftwareItem(software1);
 
         ObjectWriter writer = metaDataWriter();
-        assertEqSentry(
-            MTD + TAB_STRING + Metadata.Properties.software + "[1]" + TAB_STRING + new ParameterConverter().
+        assertEqSentry(MTD + TAB_STRING + Metadata.Properties.software + "[1]" + TAB_STRING + new ParameterConverter().
                 convert(software1.
                     getParameter())
             + NEW_LINE
@@ -66,7 +65,7 @@ public class SoftwareSerializerTest extends AbstractSerializerTest {
                 getSetting().
                 get(1)
             + NEW_LINE,
-            serialize(writer, mtd));
+            serializeSingle(writer, mtd));
     }
 
 }

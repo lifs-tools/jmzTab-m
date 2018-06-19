@@ -126,4 +126,7 @@ public final class LogicalErrorType extends MZTabErrorType {
     /** Constant <code>ItemNumberMismatch</code> */
     public static MZTabErrorType ItemNumberMismatch = createError(Category.Logical, "ItemNumberMismatch");
 
+    /** Constant <code>UnknownRefId</code> */
+    public static MZTabErrorType UnknownRefId = createError(Category.Logical, "UnknownRefId");
+
 }

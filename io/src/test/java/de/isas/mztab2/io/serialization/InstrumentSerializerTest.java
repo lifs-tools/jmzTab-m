@@ -34,7 +34,7 @@ import static uk.ac.ebi.pride.jmztab2.model.MZTabConstants.TAB_STRING;
 public class InstrumentSerializerTest extends AbstractSerializerTest {
 
     /**
-     * Test of serialize method, of class AssaySerializer.
+     * Test of serializeSingle method, of class AssaySerializer.
      */
     @Test
     public void testInstrument() throws Exception {
@@ -65,13 +65,12 @@ public class InstrumentSerializerTest extends AbstractSerializerTest {
             );
         metadata.addInstrumentItem(instrument1);
 
-        assertEqSentry(
-            MTD + TAB_STRING + Metadata.Properties.instrument + "[1]-name" + TAB_STRING + new ParameterConverter().convert(instrument1.getName()) + NEW_LINE +
+        assertEqSentry(MTD + TAB_STRING + Metadata.Properties.instrument + "[1]-name" + TAB_STRING + new ParameterConverter().convert(instrument1.getName()) + NEW_LINE +
             MTD + TAB_STRING + Metadata.Properties.instrument + "[1]-source" + TAB_STRING + new ParameterConverter().convert(instrument1.getSource()) + NEW_LINE +
             MTD + TAB_STRING + Metadata.Properties.instrument + "[1]-analyzer[1]" + TAB_STRING + new ParameterConverter().convert(instrument1.getAnalyzer().get(0)) + NEW_LINE +
             MTD + TAB_STRING + Metadata.Properties.instrument + "[1]-analyzer[2]" + TAB_STRING + new ParameterConverter().convert(instrument1.getAnalyzer().get(1)) + NEW_LINE +
             MTD + TAB_STRING + Metadata.Properties.instrument + "[1]-detector" + TAB_STRING + new ParameterConverter().convert(instrument1.getDetector()) + NEW_LINE,
-            serialize(writer, metadata));
+            serializeSingle(writer, metadata));
 
     }
 
