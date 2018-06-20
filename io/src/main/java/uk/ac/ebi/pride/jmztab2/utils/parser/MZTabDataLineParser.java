@@ -15,6 +15,7 @@
  */
 package uk.ac.ebi.pride.jmztab2.utils.parser;
 
+import de.isas.mztab2.io.serialization.ParameterConverter;
 import uk.ac.ebi.pride.jmztab2.model.MZTabColumnFactory;
 import uk.ac.ebi.pride.jmztab2.model.MZTabConstants;
 import uk.ac.ebi.pride.jmztab2.model.MZBoolean;
@@ -305,7 +306,7 @@ public abstract class MZTabDataLineParser<T> extends MZTabLineParser {
     protected Integer checkInteger(IMZTabColumn column, String target) {
         return checkInteger(column, target, true);
     }
-    
+
     /**
      * Check and translate target string into Integer. If parse incorrect, raise
      * {@link uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType#Integer}
@@ -317,7 +318,8 @@ public abstract class MZTabDataLineParser<T> extends MZTabLineParser {
      * false, the check will raise an error in the error list.
      * @return a {@link java.lang.Integer} object.
      */
-    protected Integer checkInteger(IMZTabColumn column, String target, boolean allowNull) {
+    protected Integer checkInteger(IMZTabColumn column, String target,
+        boolean allowNull) {
         String result = checkData(column, target, allowNull);
 
         if (result == null || result.equalsIgnoreCase(NULL)) {
@@ -349,7 +351,7 @@ public abstract class MZTabDataLineParser<T> extends MZTabLineParser {
     protected Double checkDouble(IMZTabColumn column, String target) {
         return checkDouble(column, target, true);
     }
-    
+
     /**
      * Check and translate target string into Double. If parse incorrect, raise
      * {@link uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType#Double}
@@ -365,7 +367,8 @@ public abstract class MZTabDataLineParser<T> extends MZTabLineParser {
      * false, the check will raise an error in the error list.
      * @return a {@link java.lang.Double} object.
      */
-    protected Double checkDouble(IMZTabColumn column, String target, boolean allowNull) {
+    protected Double checkDouble(IMZTabColumn column, String target,
+        boolean allowNull) {
         String result = checkData(column, target, allowNull);
 
         if (result == null || result.equalsIgnoreCase(NULL)) {
@@ -408,6 +411,16 @@ public abstract class MZTabDataLineParser<T> extends MZTabLineParser {
             this.errorList.add(new MZTabError(FormatErrorType.ParamList,
                 lineNumber, "Column " + column.getHeader(), target));
         }
+        for (Parameter param : paramList) {
+            if (param!=null && param.getCvAccession() != null && !param.getCvAccession().isEmpty()) {
+                if (!param.getCvAccession().
+                    contains(":")) {
+                    this.errorList.add(new MZTabError(
+                        FormatErrorType.ParamAccessionNotNamespaced, lineNumber,
+                        column.getHeader(), param.getCvAccession(), new ParameterConverter().convert(param)));
+                }
+            }
+        }
 
         return paramList;
     }
@@ -429,7 +442,16 @@ public abstract class MZTabDataLineParser<T> extends MZTabLineParser {
             this.errorList.add(new MZTabError(FormatErrorType.Param, lineNumber,
                 "Column " + column.getHeader(), target));
         }
-        return MZTabUtils.parseParam(target);
+        Parameter param = MZTabUtils.parseParam(target);
+        if (param!=null && param.getCvAccession() != null && !param.getCvAccession().isEmpty()) {
+            if (!param.getCvAccession().
+                contains(":")) {
+                this.errorList.add(new MZTabError(
+                    FormatErrorType.ParamAccessionNotNamespaced, lineNumber,
+                    column.getHeader(), param.getCvAccession(),  new ParameterConverter().convert(param)));
+            }
+        }
+        return param;
     }
 
     /**
@@ -475,7 +497,7 @@ public abstract class MZTabDataLineParser<T> extends MZTabLineParser {
         char splitChar) {
         return checkIntegerList(column, target, splitChar, true);
     }
-    
+
     /**
      * Check and translate target string into integer list which split by
      * splitChar character.. If parse incorrect, raise
@@ -776,7 +798,7 @@ public abstract class MZTabDataLineParser<T> extends MZTabLineParser {
         IMZTabColumn column, String spectraRef) {
         return checkSpectraRef(context, column, spectraRef, false);
     }
-    
+
     /**
      * Check and translate spectraRef string into
      * {@link de.isas.mztab2.model.SpectraRef} list. If parse incorrect, or

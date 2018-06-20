@@ -169,4 +169,9 @@ public final class FormatErrorType extends MZTabErrorType {
      * Constant <code>RegexMismatch</code>
      */
     public static MZTabErrorType RegexMismatch = createError(Format, "RegexMismatch");
+    
+    /**
+     * Constant <code>ParamAccessionNotNamespaced</code>
+     */
+    public static MZTabErrorType ParamAccessionNotNamespaced = createWarn(Format, "ParamAccessionNotNamespaced");
 }
