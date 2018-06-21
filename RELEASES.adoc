@@ -1,0 +1,31 @@
+= Release Management for jmzTab-m
+Nils Hoffmann <nils.hoffmann@isas.de>
+
+== Read the docs
+
+. https://central.sonatype.org/pages/ossrh-guide.html[Sonatype Guide]
+. https://central.sonatype.org/pages/apache-maven.html#performing-a-release-deployment[Release deployment with Maven]
+. Prepare your PGP environment
+
+== Publishing a snapshot
+
+  ./mvnw -Possrh-snapshot deploy
+ 
+== Publishing a release 
+
+Set the release version, commit and tag:
+
+  ./mvnw versions:set -D<RELEASE_VERSION>
+  git commit -m "Release <RELEASE_VERSION>"
+  git tag release-<RELEASE_VERSION>
+  git push --tags
+
+Build the release and deploy to OSSRH staging 
+
+  ./mvnw -Possrh-release deploy
+
+Again, follow the Guides from above. If everything looks good, publish the release to central:
+
+  ./mvnw -Possrh-release nexus-staging:release
+
+Finally, create a release from the tag at https://github.com/nilshoffmann/jmzTab-m/releases[GitHub].
