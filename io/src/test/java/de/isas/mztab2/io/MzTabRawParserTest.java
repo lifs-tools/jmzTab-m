@@ -58,6 +58,21 @@ public class MzTabRawParserTest {
     public void testLda2Example() throws MZTabException {
         testExample("metabolomics/lda2-lipidomics.mztab", MZTabErrorType.Level.Warn, 0);
     }
+    
+    @Test
+    public void testLda2StdMixExample() throws MZTabException {
+        testExample("metabolomics/lda2-standardmix_positive.mztab", MZTabErrorType.Level.Warn, 0);
+    }
+    
+    @Test
+    public void testLda2MouseLiverNegativeExample() throws MZTabException {
+        testExample("metabolomics/lda2-mouse-liver_negative.mztab", MZTabErrorType.Level.Warn, 0);
+    }
+    
+    @Test
+    public void testLda2MouseLiverNegativeNullColunitExample() throws MZTabException {
+        testExample("metabolomics/lda2-mouse-liver_negative_null-colunit.mztab", MZTabErrorType.Level.Error, 1);
+    }
 
     @Test
     public void testMetadataOnlyExampleError() throws MZTabException {

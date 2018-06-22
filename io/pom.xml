@@ -4,7 +4,7 @@
   <parent>
     <groupId>de.isas.mztab</groupId>
     <artifactId>jmztabm</artifactId>
-    <version>0.9.6</version>
+    <version>0.9.7-SNAPSHOT</version>
   </parent>
   <artifactId>jmztabm-io</artifactId>
   <packaging>jar</packaging>
@@ -23,8 +23,6 @@
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
-      <version>${slf4j.version}</version>
-      <type>jar</type>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
@@ -35,13 +33,13 @@
     <dependency>
       <groupId>com.github.wumpz</groupId>
       <artifactId>diffutils</artifactId>
-      <version>2.2</version>
+      <version>${diffutils.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>de.danielbechler</groupId>
       <artifactId>java-object-diff</artifactId>
-      <version>0.95</version>
+      <version>${javaobjectdiff.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

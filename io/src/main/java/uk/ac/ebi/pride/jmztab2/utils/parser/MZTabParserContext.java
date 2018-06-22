@@ -1406,12 +1406,12 @@ public class MZTabParserContext {
      * values MUST be set in small_molecule-quantification_unit.
      *
      * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
-     * @param column SHOULD NOT be null
+     * @param columnName SHOULD NOT be null
      * @param param SHOULD NOT be null
      */
-    public void addSmallMoleculeColUnit(Metadata metadata, MZTabColumn column, Parameter param) {
+    public void addSmallMoleculeColUnit(Metadata metadata, String columnName, Parameter param) {
         ColumnParameterMapping cpm = new ColumnParameterMapping();
-        cpm.columnName(column.getName()).param(param);
+        cpm.columnName(columnName).param(param);
         this.smallMoleculeColUnitList.add(cpm);
         metadata.addColunitSmallMoleculeItem(cpm);
     }
@@ -1423,12 +1423,12 @@ public class MZTabParserContext {
      * values MUST be set in small_molecule-quantification_unit.
      *
      * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
-     * @param column SHOULD NOT be null
+     * @param columnName SHOULD NOT be null
      * @param param SHOULD NOT be null
      */
-    public void addSmallMoleculeFeatureColUnit(Metadata metadata, MZTabColumn column, Parameter param) {
+    public void addSmallMoleculeFeatureColUnit(Metadata metadata, String columnName, Parameter param) {
         ColumnParameterMapping cpm = new ColumnParameterMapping();
-        cpm.columnName(column.getName()).param(param);
+        cpm.columnName(columnName).param(param);
         this.smallMoleculeFeatureColUnitList.add(cpm);
         metadata.addColunitSmallMoleculeFeatureItem(cpm);
     }
@@ -1440,12 +1440,12 @@ public class MZTabParserContext {
      * values MUST be set in small_molecule-quantification_unit.
      *
      * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
-     * @param column SHOULD NOT be null
+     * @param columnName SHOULD NOT be null
      * @param param SHOULD NOT be null
      */
-    public void addSmallMoleculeEvidenceColUnit(Metadata metadata, MZTabColumn column, Parameter param) {
+    public void addSmallMoleculeEvidenceColUnit(Metadata metadata, String columnName, Parameter param) {
         ColumnParameterMapping cpm = new ColumnParameterMapping();
-        cpm.columnName(column.getName()).param(param);
+        cpm.columnName(columnName).param(param);
         this.smallMoleculeEvidenceColUnitList.add(cpm);
         metadata.addColunitSmallMoleculeEvidenceItem(cpm);
     }

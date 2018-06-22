@@ -16,7 +16,6 @@
 package de.isas.mztab2.validation;
 
 import de.isas.lipidomics.mztab2.validation.Validator;
-import de.isas.mztab2.cvmapping.CvMappingUtils;
 import de.isas.mztab2.cvmapping.CvParameterLookupService;
 import de.isas.mztab2.cvmapping.JxPathElement;
 import de.isas.mztab2.cvmapping.RemoveUserParams;
@@ -25,6 +24,7 @@ import de.isas.mztab2.model.MzTab;
 import de.isas.mztab2.model.Parameter;
 import de.isas.mztab2.model.ValidationMessage;
 import de.isas.mztab2.validation.handlers.AndValidationHandler;
+import de.isas.mztab2.validation.handlers.EmptyRuleHandler;
 import de.isas.mztab2.validation.handlers.ExtraParametersValidationHandler;
 import de.isas.mztab2.validation.handlers.OrValidationHandler;
 import de.isas.mztab2.validation.handlers.ResolvingCvRuleHandler;
@@ -34,7 +34,6 @@ import info.psidev.cvmapping.CvMapping;
 import info.psidev.cvmapping.CvMappingRule;
 import java.io.File;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -46,8 +45,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.jxpath.JXPathContext;
 import org.apache.commons.jxpath.Pointer;
 import org.apache.commons.lang3.tuple.Pair;
-import uk.ac.ebi.pride.jmztab2.utils.errors.CrossCheckErrorType;
-import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabError;
 import uk.ac.ebi.pride.utilities.ols.web.service.client.OLSClient;
 import uk.ac.ebi.pride.utilities.ols.web.service.config.OLSWsConfig;
 
@@ -59,6 +56,7 @@ import uk.ac.ebi.pride.utilities.ols.web.service.config.OLSWsConfig;
  * @author nilshoffmann
  */
 @Slf4j
+@lombok.Builder()
 public class CvMappingValidator implements Validator<MzTab> {
 
     private final CvMapping mapping;
@@ -69,6 +67,7 @@ public class CvMappingValidator implements Validator<MzTab> {
     private final CvTermValidationHandler xorHandler;
     private final CvTermValidationHandler extraHandler;
     private final CvTermValidationHandler sharedHandler;
+    private final EmptyRuleHandler emptyRuleHandler;
     private final RemoveUserParams cvTermSelectionHandler;
 
     public static CvMappingValidator of(File mappingFile,
@@ -85,7 +84,18 @@ public class CvMappingValidator implements Validator<MzTab> {
         JAXBContext jaxbContext = JAXBContext.newInstance(CvMapping.class);
         Unmarshaller u = jaxbContext.createUnmarshaller();
         CvMapping mapping = (CvMapping) u.unmarshal(mappingFile);
-        return new CvMappingValidator(mapping, client, errorIfTermNotInRule);
+        return new CvMappingValidator.CvMappingValidatorBuilder().mapping(
+            mapping).
+            ruleHandler(new ResolvingCvRuleHandler(client)).
+            errorIfTermNotInRule(errorIfTermNotInRule).
+            andHandler(new AndValidationHandler()).
+            orHandler(new OrValidationHandler()).
+            xorHandler(new XorValidationHandler()).
+            extraHandler(new ExtraParametersValidationHandler()).
+            sharedHandler(new SharedParametersValidationHandler()).
+            cvTermSelectionHandler(new RemoveUserParams()).
+            emptyRuleHandler(new EmptyRuleHandler()).
+            build();
     }
 
     public static CvMappingValidator of(URL mappingFile,
@@ -101,25 +111,35 @@ public class CvMappingValidator implements Validator<MzTab> {
         JAXBContext jaxbContext = JAXBContext.newInstance(CvMapping.class);
         Unmarshaller u = jaxbContext.createUnmarshaller();
         CvMapping mapping = (CvMapping) u.unmarshal(mappingFile);
-        return new CvMappingValidator(mapping, client, errorIfTermNotInRule);
+        return new CvMappingValidator.CvMappingValidatorBuilder().mapping(
+            mapping).
+            ruleHandler(new ResolvingCvRuleHandler(client)).
+            errorIfTermNotInRule(errorIfTermNotInRule).
+            andHandler(new AndValidationHandler()).
+            orHandler(new OrValidationHandler()).
+            xorHandler(new XorValidationHandler()).
+            extraHandler(new ExtraParametersValidationHandler()).
+            sharedHandler(new SharedParametersValidationHandler()).
+            cvTermSelectionHandler(new RemoveUserParams()).
+            emptyRuleHandler(new EmptyRuleHandler()).
+            build();
     }
 
-    public CvMappingValidator(CvMapping mapping, CvParameterLookupService client,
+    public static CvMappingValidator of(CvMapping mapping,
+        CvParameterLookupService client,
         boolean errorIfTermNotInRule) {
-        this(mapping, new ResolvingCvRuleHandler(client), errorIfTermNotInRule);
-    }
-    
-    public CvMappingValidator(CvMapping mapping, CvRuleHandler ruleHandler,
-        boolean errorIfTermNotInRule) {
-        this.mapping = mapping;
-        this.ruleHandler = ruleHandler;
-        this.errorIfTermNotInRule = errorIfTermNotInRule;
-        this.andHandler = new AndValidationHandler();
-        this.orHandler = new OrValidationHandler();
-        this.xorHandler = new XorValidationHandler();
-        this.extraHandler = new ExtraParametersValidationHandler();
-        this.sharedHandler = new SharedParametersValidationHandler();
-        this.cvTermSelectionHandler = new RemoveUserParams();
+        return new CvMappingValidator.CvMappingValidatorBuilder().mapping(
+            mapping).
+            ruleHandler(new ResolvingCvRuleHandler(client)).
+            errorIfTermNotInRule(errorIfTermNotInRule).
+            andHandler(new AndValidationHandler()).
+            orHandler(new OrValidationHandler()).
+            xorHandler(new XorValidationHandler()).
+            extraHandler(new ExtraParametersValidationHandler()).
+            sharedHandler(new SharedParametersValidationHandler()).
+            cvTermSelectionHandler(new RemoveUserParams()).
+            emptyRuleHandler(new EmptyRuleHandler()).
+            build();
     }
 
     @Override
@@ -140,58 +160,34 @@ public class CvMappingValidator implements Validator<MzTab> {
         String path = rule.getCvElementPath();
         List<Pair<Pointer, ? extends Parameter>> selection = JxPathElement.
             toList(context, path, Parameter.class);
-        if (selection.isEmpty()) {
-            log.debug(
-                "Evaluating rule " + rule.getId() + " on " + rule.
-                getCvElementPath() + " did not yield any selected elements!");
-            switch (rule.getRequirementLevel()) {
-                case MAY:
-                    return Arrays.asList(new MZTabError(
-                        CrossCheckErrorType.RulePointerObjectNullOptional, -1,
-                        rule.getCvElementPath(), rule.getId(), "optional",
-                        CvMappingUtils.niceToString(rule)).
-                        toValidationMessage());
-                case SHOULD:
-                    return Arrays.asList(new MZTabError(
-                        CrossCheckErrorType.RulePointerObjectNullRecommended, -1,
-                        rule.getCvElementPath(), rule.getId(), "recommended",
-                        CvMappingUtils.niceToString(rule)).
-                        toValidationMessage());
-                case MUST:
-                    //The object "{0}" accessed by {1} is {2}, but was null or empty. Allowed terms are defined in {3}
-                    return Arrays.asList(new MZTabError(
-                        CrossCheckErrorType.RulePointerObjectNullRequired, -1,
-                        rule.getCvElementPath(), rule.getId(), "required",
-                        CvMappingUtils.niceToString(rule)).
-                        toValidationMessage());
-                default:
-                    throw new IllegalArgumentException(
-                    "Unknown requirement level value: " + rule.
-                        getRequirementLevel()+ "! Supported are: " + Arrays.
-                        toString(CvMappingRule.RequirementLevel.
-                            values()));
 
-            }
+        final List<ValidationMessage> messages = emptyRuleHandler.handleRule(
+            rule, selection);
+        if (!messages.isEmpty()) {
+            return messages;
         }
 
-        List<Pair<Pointer, ? extends Parameter>> filteredSelection = cvTermSelectionHandler.handleSelection(selection);
+        final List<Pair<Pointer, ? extends Parameter>> filteredSelection = cvTermSelectionHandler.
+            handleSelection(selection);
 
         // and logic means that ALL of the defined terms or their children MUST appear
         // we only compare valid CVParameters here, user Params (no cv accession), are not compared!
         // if combination logic is AND, child expansion needs to be disabled to avoid nonsensical combinations
-        final List<ValidationMessage> messages = new ArrayList<>();
-        
-        RuleEvaluationResult result = ruleHandler.handleRule(rule, filteredSelection);
+        RuleEvaluationResult result = ruleHandler.handleRule(rule,
+            filteredSelection);
 
         switch (rule.getCvTermsCombinationLogic()) {
             case AND:
-                messages.addAll(andHandler.handleParameters(result, errorOnTermNotInRule));
+                messages.addAll(andHandler.handleParameters(result,
+                    errorOnTermNotInRule));
                 break;
             case OR: // any of the terms or their children need to appear
-                messages.addAll(orHandler.handleParameters(result, errorOnTermNotInRule));
+                messages.addAll(orHandler.handleParameters(result,
+                    errorOnTermNotInRule));
                 break;
             case XOR:
-                messages.addAll(xorHandler.handleParameters(result, errorOnTermNotInRule));
+                messages.addAll(xorHandler.handleParameters(result,
+                    errorOnTermNotInRule));
                 break;
             default:
                 throw new IllegalArgumentException(
@@ -201,7 +197,8 @@ public class CvMappingValidator implements Validator<MzTab> {
                             values()));
         }
 //        messages.addAll(sharedHandler.handleParameters(result, errorOnTermNotInRule));
-        messages.addAll(extraHandler.handleParameters(result, errorOnTermNotInRule));
+        messages.addAll(extraHandler.handleParameters(result,
+            errorOnTermNotInRule));
         return messages.isEmpty() ? Collections.emptyList() : messages;
     }
 

@@ -17,6 +17,7 @@ package de.isas.mztab2.validator;
 
 import de.isas.mztab2.cvmapping.JxPathElement;
 import static de.isas.mztab2.cvmapping.JxPathElement.toStream;
+import de.isas.mztab2.model.Instrument;
 import static de.isas.mztab2.validator.MzTabValidatorTest.createTestFile;
 import de.isas.mztab2.model.MzTab;
 import de.isas.mztab2.model.Parameter;
@@ -36,12 +37,12 @@ import static org.junit.Assert.*;
  * @author nilshoffmann
  */
 public class JxPathTest {
-
+    
     @Test
     public void testMsRunParameterSelection() {
         MzTab mzTab = createTestFile();
         JXPathContext context = JXPathContext.newContext(mzTab);
-
+        
         List<?> msRuns = (List<?>) context.getValue("/metadata/msRun",
             List.class);
         assertFalse(msRuns.isEmpty());
@@ -73,14 +74,14 @@ public class JxPathTest {
         assertEquals("MS:1000584", pair.
             getValue().
             getCvAccession());
-
+        
         Stream<? extends Parameter> formatParameters = toStream(context.iterate(
             "/metadata/msRun/@format"), Parameter.class);
         assertEquals("MS:1000584", formatParameters.findFirst().
             get().
             getCvAccession());
     }
-
+    
     @Test
     public void testSampleCustomMultipleElementSelection() {
         MzTab mzTab = createTestFile();
@@ -101,7 +102,7 @@ public class JxPathTest {
             get().
             getLeft().
             asPath());
-
+        
         assertEquals("Extraction date", customParameters.get(0).
             getRight().
             getName());
@@ -115,5 +116,57 @@ public class JxPathTest {
             getKey().
             asPath());
     }
-
+    
+    @Test    
+    public void testInstrumentSelection() {
+        MzTab mzTab = createTestFile();
+        JXPathContext context = JXPathContext.newContext(mzTab);
+        /*
+        MTD	instrument[1]-name	[MS, MS:1001742, LTQ Orbitrap Velos, ]
+MTD	instrument[1]-source	[MS, MS:1000073, Electrospray Ionization, ]
+MTD	instrument[1]-analyzer[1]	[MS, MS:1000484, orbitrap, ]
+MTD	instrument[1]-analyzer[2]	[MS, MS:1000084, time-of-flight, ] <- just for testing
+MTD	instrument[1]-detector	[MS, MS:1000112, Faraday Cup, ]
+         */
+        Instrument instrument = new Instrument().id(1).
+            name(new Parameter().cvLabel("MS").
+                cvAccession("MS:1001742").
+                name("LTQ Orbitrap Velos")).
+            source(new Parameter().cvLabel("MS").
+                cvAccession("MS:1000073").
+                name("Electrospray Ionization")).
+            addAnalyzerItem(new Parameter().cvLabel("MS").
+                cvAccession("MS:1000484").
+                name("orbitrap")).
+            addAnalyzerItem(new Parameter().cvLabel("MS").
+                cvAccession("MS:1000084").
+                name("time-of-flight")).
+            detector(new Parameter().cvLabel("MS").
+                cvAccession("MS:1000112").
+                name("Faraday Cup"));
+        mzTab.getMetadata().addInstrumentItem(instrument);
+        
+        List<Pair<Pointer, ? extends Parameter>> instrumentName = JxPathElement.
+            toList(context,
+                "/metadata/instrument/@name", Parameter.class);
+        
+        assertEquals(1, instrumentName.size());
+        
+        List<Pair<Pointer, ? extends Parameter>> instrumentSource = JxPathElement.
+            toList(context,
+                "/metadata/instrument/@source", Parameter.class);
+        assertEquals(1, instrumentSource.size());
+        
+        List<Pair<Pointer, ? extends Parameter>> instrumentAnalyzer = JxPathElement.
+            toList(context,
+                "/metadata/instrument/@analyzer", Parameter.class);
+        assertEquals(2, instrumentAnalyzer.size());
+        
+        List<Pair<Pointer, ? extends Parameter>> instrumentDetector = JxPathElement.
+            toList(context,
+                "/metadata/instrument/@detector", Parameter.class);
+        assertEquals(1, instrumentDetector.size());
+        
+    }
+    
 }

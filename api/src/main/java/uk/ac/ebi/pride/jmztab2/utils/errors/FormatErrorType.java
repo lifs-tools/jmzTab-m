@@ -174,4 +174,9 @@ public final class FormatErrorType extends MZTabErrorType {
      * Constant <code>ParamAccessionNotNamespaced</code>
      */
     public static MZTabErrorType ParamAccessionNotNamespaced = createWarn(Format, "ParamAccessionNotNamespaced");
+    
+    /**
+     * Constant <code>InvalidColunitFormat</code>
+     */
+    public static MZTabErrorType InvalidColunitFormat = createError(Format, "InvalidColunitFormat");
 }

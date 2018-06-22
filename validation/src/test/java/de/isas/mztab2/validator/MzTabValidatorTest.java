@@ -49,7 +49,7 @@ public class MzTabValidatorTest {
     @Rule
     public LogMethodName methodNameLogger = new LogMethodName();
 
-    static MzTab createTestFile() {
+    public static MzTab createTestFile() {
         Contact contact1 = new Contact().
             name("Nils Hoffmann").
             email("nils.hoffmann@isas.de").

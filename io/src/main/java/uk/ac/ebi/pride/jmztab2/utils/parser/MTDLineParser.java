@@ -48,6 +48,7 @@ import java.util.stream.Collectors;
 import uk.ac.ebi.pride.jmztab2.model.MZTabConstants;
 import static uk.ac.ebi.pride.jmztab2.model.MZTabUtils.*;
 import static uk.ac.ebi.pride.jmztab2.model.MZTabStringUtils.*;
+import uk.ac.ebi.pride.jmztab2.model.SmallMoleculeColumn;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorType;
 
 /**
@@ -191,7 +192,7 @@ public class MTDLineParser extends MZTabLineParser {
                     new MZTabError(FormatErrorType.Publication, lineNumber,
                         Error_Header + defineLabel, valueLabel));
             }
-        } catch(MZTabException ex) {
+        } catch (MZTabException ex) {
             errorList.add(ex.getError());
         }
 
@@ -434,8 +435,36 @@ public class MTDLineParser extends MZTabLineParser {
                 FormatErrorType.MTDDefineLabel, lineNumber,
                 defineLabel));
         } else {
-            context.getColUnitMap().
-                put(defineLabel, valueLabel);
+            String[] colunitDef = valueLabel.split("=");
+            if (colunitDef.length != 2) {
+                errorList.add(new MZTabError(
+                    FormatErrorType.InvalidColunitFormat, lineNumber, valueLabel));
+            }
+            Parameter p = checkParameter(defineLabel, colunitDef[1]);
+            String columnName = colunitDef[0];
+            if (columnName == null) {
+                errorList.add(new MZTabError(
+                    FormatErrorType.InvalidColunitFormat, lineNumber, valueLabel));
+            } else {
+                if (defineLabel.equals(
+                    Metadata.Properties.colunitSmallMolecule.getPropertyName())) {
+                    context.addSmallMoleculeColUnit(metadata, columnName, p);
+                } else if (defineLabel.equals(
+                    Metadata.Properties.colunitSmallMoleculeFeature.
+                        getPropertyName())) {
+                    context.addSmallMoleculeFeatureColUnit(metadata, columnName,
+                        p);
+                } else if (defineLabel.equals(
+                    Metadata.Properties.colunitSmallMoleculeEvidence.
+                        getPropertyName())) {
+                    context.
+                        addSmallMoleculeEvidenceColUnit(metadata, columnName, p);
+                } else {
+                    errorList.add(new MZTabError(
+                        FormatErrorType.MTDDefineLabel, lineNumber,
+                        defineLabel));
+                }
+            }
         }
     }
 
@@ -498,7 +527,7 @@ public class MTDLineParser extends MZTabLineParser {
         context.addCustomItem(metadata, id, checkParameter(
             defineLabel, valueLabel));
     }
-    
+
     protected void handleDerivatizationAgent(String defineLabel, Matcher matcher,
         String valueLabel) throws MZTabException {
         Integer id;

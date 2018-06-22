@@ -15,6 +15,7 @@
  */
 package uk.ac.ebi.pride.jmztab2.utils;
 
+import de.isas.mztab2.model.ColumnParameterMapping;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabError;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabException;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorList;
@@ -43,7 +44,10 @@ import de.isas.mztab2.model.SmallMoleculeSummary;
 import java.io.*;
 import java.net.URI;
 import java.net.URL;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -51,6 +55,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
+import uk.ac.ebi.pride.jmztab2.model.IMZTabColumn;
+import uk.ac.ebi.pride.jmztab2.model.MZTabColumnFactory;
 import static uk.ac.ebi.pride.jmztab2.model.MZTabConstants.NEW_LINE;
 import static uk.ac.ebi.pride.jmztab2.model.MZTabConstants.REGEX_DEFAULT_RELIABILITY;
 import static uk.ac.ebi.pride.jmztab2.model.MZTabConstants.TAB;
@@ -492,6 +498,12 @@ public class MZTabFileParser {
                         }
                     }
                 }
+                checkColunitMapping(smhParser.getFactory(), Optional.ofNullable(
+                    mzTabFile.
+                        getMetadata().
+                        getColunitSmallMolecule()),
+                    Metadata.Properties.colunitSmallMolecule,
+                    MzTab.Properties.smallMoleculeSummary);
             }
 
             if (smallMoleculeFeatureMap.isEmpty() && !smallMoleculeSummaryMap.
@@ -513,6 +525,12 @@ public class MZTabFileParser {
                         LogicalErrorType.NoSmallMoleculeFeatureQuantificationUnit,
                         -1));
                 }
+                checkColunitMapping(sfhParser.getFactory(), Optional.ofNullable(
+                    mzTabFile.
+                        getMetadata().
+                        getColunitSmallMoleculeFeature()),
+                    Metadata.Properties.colunitSmallMoleculeFeature,
+                    MzTab.Properties.smallMoleculeFeature);
             }
             if (smallMoleculeEvidenceMap.isEmpty() && !smallMoleculeSummaryMap.
                 isEmpty()) {
@@ -525,16 +543,26 @@ public class MZTabFileParser {
                         smallMoleculeEvidenceMap.get(
                             id));
                 }
+                checkColunitMapping(sehParser.getFactory(), Optional.ofNullable(
+                    mzTabFile.
+                        getMetadata().
+                        getColunitSmallMoleculeEvidence()),
+                    Metadata.Properties.colunitSmallMoleculeEvidence,
+                    MzTab.Properties.smallMoleculeEvidence
+                );
             }
             //check ID refs, starting at SML level
             if (smlParser != null && smfParser != null) {
                 for (Integer id : smallMoleculeSummaryMap.keySet()) {
                     SmallMoleculeSummary sms = smallMoleculeSummaryMap.get(id);
                     Set<Integer> smfIdRefs = new HashSet<>(sms.getSmfIdRefs());
-                    Set<Integer> definedIds = smallMoleculeFeatureMap.values().stream().map((t) ->
+                    Set<Integer> definedIds = smallMoleculeFeatureMap.values().
+                        stream().
+                        map((t) ->
                         {
                             return t.getSmfId();
-                        }).collect(Collectors.toSet());
+                        }).
+                        collect(Collectors.toSet());
                     smfIdRefs.removeAll(definedIds);
                     if (!smfIdRefs.isEmpty()) {
                         for (Integer smfRefId : smfIdRefs) {
@@ -557,10 +585,14 @@ public class MZTabFileParser {
                             id);
                         Set<Integer> smeIdRefs = new HashSet<>(smf.
                             getSmeIdRefs());
-                        Set<Integer> definedIds = smallMoleculeEvidenceMap.values().stream().map((t) ->
-                        {
-                            return t.getSmeId();
-                        }).collect(Collectors.toSet());
+                        Set<Integer> definedIds = smallMoleculeEvidenceMap.
+                            values().
+                            stream().
+                            map((t) ->
+                            {
+                                return t.getSmeId();
+                            }).
+                            collect(Collectors.toSet());
                         smeIdRefs.removeAll(definedIds);
                         if (!smeIdRefs.isEmpty()) {
                             for (Integer smeRefId : smeIdRefs) {
@@ -582,6 +614,26 @@ public class MZTabFileParser {
             }
         }
 
+    }
+
+    protected void checkColunitMapping(MZTabColumnFactory columnFactory,
+        Optional<Collection<ColumnParameterMapping>> columnParameterMapping,
+        Metadata.Properties colUnitProperty, MzTab.Properties mzTabSection) {
+        columnParameterMapping.orElse(Collections.emptyList()).
+            forEach((colUnit) ->
+            {
+                String columnName = colUnit.getColumnName();
+                IMZTabColumn column = columnFactory.findColumnByHeader(
+                    columnName);
+                if (column == null) {
+                    errorList.add(new MZTabError(
+                        FormatErrorType.ColUnit, -1,
+                        colUnitProperty.
+                            getPropertyName(), columnName,
+                        mzTabSection.
+                            getPropertyName()));
+                }
+            });
     }
 
     /**
