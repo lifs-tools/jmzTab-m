@@ -1,7 +1,7 @@
 = mzTab 2.0 for Metabolomics Reader, Writer and Validator
 Nils Hoffmann <nils.hoffmann@isas.de>
 
-image:https://travis-ci.org/nilshoffmann/jmzTab-m.svg?branch=master["Build Status", link="https://travis-ci.org/nilshoffmann/jmzTab-m"] image:https://img.shields.io/maven-central/v/de.isas.mztab/jmztabm-cli.svg["Maven Central", link="https://search.maven.org/remotecontent?filepath=de/isas/mztab/jmztabm-cli/0.9.5/jmztabm-cli-0.9.5-bin.zip"]
+image:https://travis-ci.org/nilshoffmann/jmzTab-m.svg?branch=master["Build Status", link="https://travis-ci.org/nilshoffmann/jmzTab-m"] image:https://img.shields.io/maven-central/v/de.isas.mztab/jmztabm-cli.svg["Maven Central", link="https://search.maven.org/remotecontent?filepath=de/isas/mztab/jmztabm-cli/0.9.7/jmztabm-cli-0.9.7-bin.zip"]
 
 This project is the reference reader, writer and validator implementation for mzTab 2.0+, based on the https://github.com/PRIDE-Utilities/jmztab[jmztab project].
 
