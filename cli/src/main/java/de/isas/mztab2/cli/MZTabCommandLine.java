@@ -15,6 +15,8 @@
  */
 package de.isas.mztab2.cli;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import de.isas.mztab2.validation.CvMappingValidator;
 import de.isas.mztab2.model.ValidationMessage;
 import org.apache.commons.cli.*;
@@ -134,6 +136,9 @@ public class MZTabCommandLine {
         String levelOpt = "level";
         options.addOption(levelOpt, true,
             "Choose validate level(Info, Warn, Error), default level is Error!");
+        
+        String serializeOpt = "toJson";
+        options.addOption(serializeOpt, false, "Example: -toJson. Will write a json representation of inFile to disk. Requires validation to be successful!");
 
         String checkSemanticOpt = "checkSemantic";
         String mappingFileOpt = "mappingFile";
@@ -173,21 +178,25 @@ public class MZTabCommandLine {
             }
 
             System.out.println(getAppInfo());
-            MZTabErrorType.Level level = MZTabErrorType.Level.Error;
+            MZTabErrorType.Level level = MZTabErrorType.Level.Info;
             if (line.hasOption(levelOpt)) {
                 level = MZTabErrorType.findLevel(line.getOptionValue(levelOpt));
                 System.out.println("Validator set to level '" + level + "'");
             } else {
                 System.out.println("Validator set to default level '" + level + "'");
             }
-            handleValidation(line, checkOpt, outFile, level, checkSemanticOpt);
+            boolean serializeToJson = false;
+            if (line.hasOption(serializeOpt)) {
+                 serializeToJson = true;
+            }
+            handleValidation(line, checkOpt, outFile, level, checkSemanticOpt, serializeToJson);
 
             System.out.println();
         }
     }
 
     protected static void handleValidation(CommandLine line, String checkOpt,
-        File outFile, MZTabErrorType.Level level, String checkSemanticOpt) throws URISyntaxException, JAXBException, IllegalArgumentException {
+        File outFile, MZTabErrorType.Level level, String checkSemanticOpt, boolean toJson) throws URISyntaxException, JAXBException, IllegalArgumentException {
         if (line.hasOption(checkOpt)) {
             String[] values = line.getOptionValues(checkOpt);
             if (values.length != 2) {
@@ -205,6 +214,12 @@ public class MZTabCommandLine {
                     //these are reported to std.err already.
                     System.out.println(
                         "There were errors while processing your file, please check the output for details!");
+                }
+                if( toJson) {
+                    File jsonFile = new File(inFile.getName()+".json");
+                    System.out.println("Writing mzTab object as json to "+jsonFile.getAbsolutePath());
+                    ObjectMapper objectMapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
+                    objectMapper.writeValue(jsonFile, mzTabParser.getMZTabFile());
                 }
                 handleSemanticValidation(line, checkSemanticOpt, inFile,
                     mzTabParser);

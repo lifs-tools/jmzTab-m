@@ -707,6 +707,7 @@ public class MTDLineParser extends MZTabLineParser {
                         FormatErrorType.MZTabVersion, lineNumber,
                         defineLabel, valueLabel));
                 }
+                
                 metadata.mzTabVersion(valueLabel);
                 break;
             case MZTAB_ID:

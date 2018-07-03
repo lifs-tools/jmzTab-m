@@ -37,19 +37,20 @@ MTD	sample[1]	QEx-1273-prm-sp1
 MTD	sample[1]-description	Sphingolipids with concentration reported as picomolar per mg of protein, abundances are reported after calibration correction.																			
 MTD	ms_run[1]-location	file:///C:/data/QEx-1273-prm-sp1.mzML																			
 MTD	ms_run[1]-format	[MS, MS:1000584, mzML file, ]																			
-MTD	ms_run[1]-id_format	[MS, MS:1000530, mzML unique identifier, ]																			
+MTD	ms_run[1]-id_format	[MS, MS:1000768, Thermo nativeID format, ]																			
 MTD	ms_run[1]-scan_polarity[1]	[MS, MS:1000130, positive scan, ]																			
+MTD	ms_run[1]-instrument_ref	instrument[1]																			
 MTD	assay[1]	Description of assay 1																			
 MTD	assay[1]-sample_ref	sample[1]																			
 MTD	assay[1]-ms_run_ref	ms_run[1]																			
 MTD	study_variable[1]	Sphingolipid SRM Quantitation																			
 MTD	study_variable[1]-assay_refs	assay[1]																			
 MTD	study_variable[1]-description	sphingolipid srm quantitation																			
-MTD	study_variable[1]-average_function	[MS, MS:XXXXX, Arithmetic Mean, ]																			
-MTD	study_variable[1]-variation_function	[MS, MS:XXXXX, Std Error, ]																			
+MTD	study_variable[1]-average_function	[MS, MS:1002883, median, ]																			
+MTD	study_variable[1]-variation_function	[MS, MS:1002885, standard error, ]																			
 MTD	small_molecule-quantification_unit	[UO, UO:0000072, picomolal, ]																			
 MTD	small_molecule_feature-quantification_unit	[UO, UO:0000072, picomolal, ]																			
-MTD	small_molecule-identification_reliability	[MS, MS:XXXXX, MSI-2007-numeric, ]																			
+MTD	small_molecule-identification_reliability	[MS, MS:1002896, compound identification confidence level, ]																			
 MTD	database[1]	[,, Pubchem, ]																			
 MTD	database[1]-prefix	PUBCHEM-CPD																			
 MTD	database[1]-version	02.12.2017																			

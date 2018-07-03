@@ -199,7 +199,7 @@ public class Serializers {
         if (indexedElementList == null || indexedElementList.isEmpty()) {
 
             log.debug(
-                "Skipping null or empty indexed element list values for {0}",
+                "Skipping null or empty indexed element list values for {}",
                 getElementName(
                     element));
             return;
@@ -299,7 +299,7 @@ public class Serializers {
         List<Parameter> value) {
         if (value == null || value.isEmpty()) {
 
-            log.debug("Skipping null or empty values for {0}",
+            log.debug("Skipping null or empty values for {}",
                 getElementName(
                     element));
             return;
@@ -381,14 +381,14 @@ public class Serializers {
         Object... value) {
         if (value == null || value.length == 0) {
 
-            log.debug("Skipping null or empty values for {0}",
+            log.debug("Skipping null or empty values for {}",
                 getElementName(
                     element));
             return;
         }
         if (value.length == 1 && (value[0] == null)) {
 
-            log.debug("Skipping empty value for {0}", getElementName(
+            log.debug("Skipping empty value for {}", getElementName(
                 element));
             return;
         }
@@ -574,7 +574,7 @@ public class Serializers {
             String elementName = Serializers.getElementName(element).
                 get();
 
-            log.debug("''{0}-{1}'' is null or empty!", new Object[]{
+            log.debug("''{}-{}'' is null or empty!", new Object[]{
                 elementName,
                 subElementName});
             return;
@@ -608,7 +608,7 @@ public class Serializers {
                         return new ParameterConverter().convert(parameter);
                     } catch (IllegalArgumentException npe) {
 
-                        log.debug("parameter is null for {0}",
+                        log.debug("parameter is null for {}",
                             subElementName);
                         return "null";
                     }
@@ -631,7 +631,7 @@ public class Serializers {
             get();
         if (subElements == null || subElements.isEmpty()) {
 
-            log.debug("''{0}-{1}'' is null or empty!", new Object[]{
+            log.debug("''{}-{}'' is null or empty!", new Object[]{
                 elementName,
                 subElementName});
             return true;
