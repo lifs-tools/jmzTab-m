@@ -137,16 +137,18 @@ public class MzTabValidatingWriter implements MzTabWriter<List<ValidationMessage
             try {
                 mzTabFile = File.createTempFile(UUID.randomUUID().
                     toString(), ".mztab");
-                mzTabFile.getAbsoluteFile();
-                writer.
-                    write(
-                        new OutputStreamWriter(new FileOutputStream(mzTabFile),
-                            "UTF-8"), mzTab);
+                try (OutputStreamWriter osw = new OutputStreamWriter(
+                    new FileOutputStream(mzTabFile),
+                    "UTF-8")) {
+                    writer.
+                        write(
+                            osw, mzTab);
 
-                MZTabFileParser parser = new MZTabFileParser(mzTabFile);
-                parser.parse(outputStream, level, maxErrorCount);
-                return parser.getErrorList().
-                    convertToValidationMessages();
+                    MZTabFileParser parser = new MZTabFileParser(mzTabFile);
+                    parser.parse(outputStream, level, maxErrorCount);
+                    return parser.getErrorList().
+                        convertToValidationMessages();
+                }
             } catch (IOException ex) {
                 logger.error(
                     "Caught exception while trying to parse " + mzTabFile, ex);

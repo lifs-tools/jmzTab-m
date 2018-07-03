@@ -45,10 +45,10 @@ public class ResolvingCvRuleHandler implements CvRuleHandler {
 
     @Override
     public RuleEvaluationResult handleRule(CvMappingRule rule,
-        List<Pair<Pointer, ? extends Parameter>> filteredSelection) {
+        List<Pair<Pointer, Parameter>> filteredSelection) {
 
         final Map<String, Parameter> allowedParameters = new LinkedHashMap<>();
-        final Map<String, Pair<Pointer, ? extends Parameter>> foundParameters = new LinkedHashMap<>();
+        final Map<String, Pair<Pointer, Parameter>> foundParameters = new LinkedHashMap<>();
 
         log.debug("Evaluating rule " + rule.getId() + " on " + rule.
             getCvElementPath());
@@ -66,7 +66,7 @@ public class ResolvingCvRuleHandler implements CvRuleHandler {
         rule.getCvTerm().
             forEach((cvTerm) ->
             {
-                for (Pair<Pointer, ? extends Parameter> pair : filteredSelection) {
+                for (Pair<Pointer, Parameter> pair : filteredSelection) {
                     if (cvTerm.isAllowChildren()) {
                         log.debug("Resolving children of " + cvTerm.
                             getTermAccession() + " against " + pair.getValue().

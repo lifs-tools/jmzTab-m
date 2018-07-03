@@ -17,6 +17,7 @@ package de.isas.lipidomics.mztab2.validation.validators;
 
 import de.isas.lipidomics.mztab2.validation.constraints.CheckParameter;
 import de.isas.mztab2.model.Parameter;
+import java.util.Optional;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
@@ -30,11 +31,20 @@ public interface ParameterValidator extends ConstraintValidator<CheckParameter, 
     @Override
     default boolean isValid(Parameter parameter,
         ConstraintValidatorContext context) {
-        if (parameter==null || (parameter.getCvLabel() != null && parameter.getCvAccession() != null && parameter.
-            getName() != null) || (parameter.getName() != null && parameter.
-            getValue() != null)) {
-            return true;
+        Optional<Parameter> optional = Optional.ofNullable(parameter);
+        if (optional.isPresent()) {
+            Parameter p = optional.get();
+            if (p.getName() != null) {
+                if (p.getCvLabel() != null && p.getCvAccession() != null) {
+                    return true;
+                } else if (p.getCvLabel() == null && p.getCvAccession() == null) {
+                    return true;
+                }
+                return false;
+            }
         }
-        return false;
+        //parameter may be optional
+        return true;
+
     }
 }

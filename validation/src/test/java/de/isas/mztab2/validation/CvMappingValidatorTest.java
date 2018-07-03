@@ -80,7 +80,7 @@ public class CvMappingValidatorTest {
             handleParameters(result, true);
         assertEquals(0, messages.size());
         JXPathContext context = JXPathContext.newContext(mzTab);
-        List<Pair<Pointer, ? extends Parameter>> selection = JxPathElement.
+        List<Pair<Pointer, Parameter>> selection = JxPathElement.
             toList(context, instrumentNameMay.getCvElementPath(),
                 Parameter.class);
         //check that we get a message on the empty selection
@@ -127,7 +127,7 @@ public class CvMappingValidatorTest {
     protected RuleEvaluationResult applyRule(MzTab mzTab,
         ResolvingCvRuleHandler ruleHandler, CvMappingRule rule) {
         JXPathContext context = JXPathContext.newContext(mzTab);
-        List<Pair<Pointer, ? extends Parameter>> instrumentName = JxPathElement.
+        List<Pair<Pointer, Parameter>> instrumentName = JxPathElement.
             toList(context, rule.getCvElementPath(), Parameter.class);
         RuleEvaluationResult result = ruleHandler.handleRule(rule,
             instrumentName);

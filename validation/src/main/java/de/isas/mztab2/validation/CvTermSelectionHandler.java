@@ -26,6 +26,6 @@ import org.apache.commons.lang3.tuple.Pair;
  */
 public interface CvTermSelectionHandler {
 
-    List<Pair<Pointer, ? extends Parameter>> handleSelection(
-        List<Pair<Pointer, ? extends Parameter>> selection);
+    List<Pair<Pointer, Parameter>> handleSelection(
+        List<Pair<Pointer, Parameter>> selection);
 }

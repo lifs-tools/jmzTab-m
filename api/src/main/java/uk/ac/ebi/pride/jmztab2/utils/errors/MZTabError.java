@@ -1,6 +1,7 @@
 package uk.ac.ebi.pride.jmztab2.utils.errors;
 
 import de.isas.mztab2.model.ValidationMessage;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -29,7 +30,7 @@ import static uk.ac.ebi.pride.jmztab2.model.MZTabConstants.NEW_LINE;
  * @since 06/02/13
  * 
  */
-public class MZTabError {
+public class MZTabError implements Serializable {
 
     private int lineNumber;
     private MZTabErrorType type;

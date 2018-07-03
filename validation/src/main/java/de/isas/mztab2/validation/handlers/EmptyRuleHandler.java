@@ -37,7 +37,7 @@ public class EmptyRuleHandler {
 
     
     public List<ValidationMessage> handleRule(CvMappingRule rule,
-        List<Pair<Pointer, ? extends Parameter>> selection) {
+        List<Pair<Pointer, Parameter>> selection) {
         if (selection.isEmpty()) {
             log.debug(
                 "Evaluating rule " + rule.getId() + " on " + rule.

@@ -63,10 +63,10 @@ public class JxPathTest {
             get());
 
         //scopePath /metadata/msrun
-        Stream<Pair<Pointer, ? extends Parameter>> pointerFormatParameters = toStream(
+        Stream<Pair<Pointer, Parameter>> pointerFormatParameters = toStream(
             context.getPointer(
                 "/metadata/msRun/@format"), Parameter.class);
-        Pair<Pointer, ? extends Parameter> pair = pointerFormatParameters.
+        Pair<Pointer, Parameter> pair = pointerFormatParameters.
             findFirst().
             get();
         assertEquals("/metadata/msRun[1]/@format", pair.getKey().
@@ -75,7 +75,7 @@ public class JxPathTest {
             getValue().
             getCvAccession());
         
-        Stream<? extends Parameter> formatParameters = toStream(context.iterate(
+        Stream<Parameter> formatParameters = toStream(context.iterate(
             "/metadata/msRun/@format"), Parameter.class);
         assertEquals("MS:1000584", formatParameters.findFirst().
             get().
@@ -88,7 +88,7 @@ public class JxPathTest {
         JXPathContext context = JXPathContext.newContext(mzTab);
 
         //retrieve multiple children with complete paths
-        List<Pair<Pointer, ? extends Parameter>> customParameters = JxPathElement.
+        List<Pair<Pointer, Parameter>> customParameters = JxPathElement.
             toList(context,
                 "/metadata/sample/@custom", Parameter.class);
         assertEquals(2, customParameters.size());
@@ -146,23 +146,23 @@ MTD	instrument[1]-detector	[MS, MS:1000112, Faraday Cup, ]
                 name("Faraday Cup"));
         mzTab.getMetadata().addInstrumentItem(instrument);
         
-        List<Pair<Pointer, ? extends Parameter>> instrumentName = JxPathElement.
+        List<Pair<Pointer, Parameter>> instrumentName = JxPathElement.
             toList(context,
                 "/metadata/instrument/@name", Parameter.class);
         
         assertEquals(1, instrumentName.size());
         
-        List<Pair<Pointer, ? extends Parameter>> instrumentSource = JxPathElement.
+        List<Pair<Pointer, Parameter>> instrumentSource = JxPathElement.
             toList(context,
                 "/metadata/instrument/@source", Parameter.class);
         assertEquals(1, instrumentSource.size());
         
-        List<Pair<Pointer, ? extends Parameter>> instrumentAnalyzer = JxPathElement.
+        List<Pair<Pointer, Parameter>> instrumentAnalyzer = JxPathElement.
             toList(context,
                 "/metadata/instrument/@analyzer", Parameter.class);
         assertEquals(2, instrumentAnalyzer.size());
         
-        List<Pair<Pointer, ? extends Parameter>> instrumentDetector = JxPathElement.
+        List<Pair<Pointer, Parameter>> instrumentDetector = JxPathElement.
             toList(context,
                 "/metadata/instrument/@detector", Parameter.class);
         assertEquals(1, instrumentDetector.size());

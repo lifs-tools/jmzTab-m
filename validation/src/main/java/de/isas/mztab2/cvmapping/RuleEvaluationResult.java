@@ -31,14 +31,14 @@ import org.apache.commons.lang3.tuple.Pair;
 public class RuleEvaluationResult {
 
     private final CvMappingRule rule;
-    private final List<Pair<Pointer, ? extends Parameter>> filteredSelection;
+    private final List<Pair<Pointer, Parameter>> filteredSelection;
     private final Map<String, Parameter> allowedParameters;
-    private final Map<String, Pair<Pointer, ? extends Parameter>> foundParameters;
+    private final Map<String, Pair<Pointer, Parameter>> foundParameters;
 
     public RuleEvaluationResult(CvMappingRule rule,
-        List<Pair<Pointer, ? extends Parameter>> filteredSelection,
+        List<Pair<Pointer, Parameter>> filteredSelection,
         Map<String, Parameter> allowedParameters,
-        Map<String, Pair<Pointer, ? extends Parameter>> foundParameters) {
+        Map<String, Pair<Pointer, Parameter>> foundParameters) {
         this.rule = rule;
         this.filteredSelection = filteredSelection;
         this.allowedParameters = allowedParameters;
@@ -49,7 +49,7 @@ public class RuleEvaluationResult {
         return rule;
     }
 
-    public List<Pair<Pointer, ? extends Parameter>> getFilteredSelection() {
+    public List<Pair<Pointer, Parameter>> getFilteredSelection() {
         return filteredSelection;
     }
 
@@ -57,7 +57,7 @@ public class RuleEvaluationResult {
         return allowedParameters;
     }
 
-    public Map<String, Pair<Pointer, ? extends Parameter>> getFoundParameters() {
+    public Map<String, Pair<Pointer, Parameter>> getFoundParameters() {
         return foundParameters;
     }
 

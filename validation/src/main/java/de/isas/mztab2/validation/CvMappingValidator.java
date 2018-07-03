@@ -158,7 +158,7 @@ public class CvMappingValidator implements Validator<MzTab> {
     private List<ValidationMessage> handleRule(JXPathContext context,
         CvMappingRule rule, boolean errorOnTermNotInRule) {
         String path = rule.getCvElementPath();
-        List<Pair<Pointer, ? extends Parameter>> selection = JxPathElement.
+        List<Pair<Pointer, Parameter>> selection = JxPathElement.
             toList(context, path, Parameter.class);
 
         final List<ValidationMessage> messages = emptyRuleHandler.handleRule(
@@ -167,7 +167,7 @@ public class CvMappingValidator implements Validator<MzTab> {
             return messages;
         }
 
-        final List<Pair<Pointer, ? extends Parameter>> filteredSelection = cvTermSelectionHandler.
+        final List<Pair<Pointer, Parameter>> filteredSelection = cvTermSelectionHandler.
             handleSelection(selection);
 
         // and logic means that ALL of the defined terms or their children MUST appear

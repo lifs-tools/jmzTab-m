@@ -36,10 +36,10 @@ import org.apache.commons.lang3.tuple.Pair;
  */
 public final class JxPathElement {
 
-    public static <T> Stream<Pair<Pointer, ? extends T>> toStream(
+    public static <T> Stream<Pair<Pointer, T>> toStream(
         Pointer pointer, Class<? extends T> type) {
         if (pointer.getValue() instanceof Collection) {
-            Collection<Pair<Pointer, ? extends T>> coll = JxPathElement.toList(
+            Collection<Pair<Pointer, T>> coll = JxPathElement.toList(
                 pointer,
                 type);
             return coll.stream();
@@ -47,7 +47,7 @@ public final class JxPathElement {
         return Stream.of(Pair.of(pointer, type.cast(pointer.getValue())));
     }
 
-    public static <T> List<Pair<Pointer, ? extends T>> toList(
+    public static <T> List<Pair<Pointer, T>> toList(
         Pointer pointer,
         Class<? extends T> type) {
         if (pointer.getValue() instanceof Collection) {
@@ -64,7 +64,7 @@ public final class JxPathElement {
         }
     }
 
-    public static <T> List<Pair<Pointer, ? extends T>> toList(
+    public static <T> List<Pair<Pointer, T>> toList(
         JXPathContext context, String xpath, Class<? extends T> type) {
         return toStream(context.iteratePointers(xpath), Pointer.class).
             map((pointer) ->
@@ -74,7 +74,7 @@ public final class JxPathElement {
             collect(Collectors.toList());
     }
 
-    public static <T> Iterator<? extends T> typedIter(final Iterator iter,
+    public static <T> Iterator<T> typedIter(final Iterator iter,
         Class<? extends T> type) {
         return new Iterator<T>() {
             @Override
@@ -89,12 +89,12 @@ public final class JxPathElement {
         };
     }
 
-    public static <T> Stream<? extends T> toStream(Iterator iter,
+    public static <T> Stream<T> toStream(Iterator iter,
         Class<? extends T> type) {
         return toStream(typedIter(iter, type));
     }
 
-    public static <T> Stream<? extends T> toStream(Iterator<? extends T> iter) {
+    public static <T> Stream<T> toStream(Iterator<? extends T> iter) {
         return StreamSupport.stream(
             Spliterators.spliteratorUnknownSize(iter, Spliterator.ORDERED),
             false);

@@ -28,5 +28,5 @@ import org.apache.commons.lang3.tuple.Pair;
  */
 public interface CvRuleHandler {
     RuleEvaluationResult handleRule(CvMappingRule rule,
-        List<Pair<Pointer, ? extends Parameter>> filteredSelection);
+        List<Pair<Pointer, Parameter>> filteredSelection);
 }

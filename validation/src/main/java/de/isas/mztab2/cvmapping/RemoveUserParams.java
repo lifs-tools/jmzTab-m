@@ -32,9 +32,9 @@ import org.apache.commons.lang3.tuple.Pair;
 public class RemoveUserParams implements CvTermSelectionHandler {
 
     @Override
-    public List<Pair<Pointer, ? extends Parameter>> handleSelection(
-        List<Pair<Pointer, ? extends Parameter>> selection) {
-        List<Pair<Pointer, ? extends Parameter>> filteredSelection = selection.
+    public List<Pair<Pointer, Parameter>> handleSelection(
+        List<Pair<Pointer, Parameter>> selection) {
+        List<Pair<Pointer, Parameter>> filteredSelection = selection.
             stream().
             filter((pair) ->
             {
