@@ -391,6 +391,7 @@ public class MTDLineParser extends MZTabLineParser {
                     break;
                 case DERIVATIZATION_AGENT:
                     handleDerivatizationAgent(defineLabel, matcher, valueLabel);
+		    break;
                 case COLUNIT:
                 case COLUNIT_SMALL_MOLECULE:
                 case COLUNIT_SMALL_MOLECULE_FEATURE:

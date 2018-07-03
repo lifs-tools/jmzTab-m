@@ -30,10 +30,7 @@ public interface ParameterValidator extends ConstraintValidator<CheckParameter, 
     @Override
     default boolean isValid(Parameter parameter,
         ConstraintValidatorContext context) {
-        if (parameter == null) {
-            return true;
-        }
-        if ((parameter.getCvLabel() != null && parameter.getCvAccession() != null && parameter.
+        if (parameter==null || (parameter.getCvLabel() != null && parameter.getCvAccession() != null && parameter.
             getName() != null) || (parameter.getName() != null && parameter.
             getValue() != null)) {
             return true;
