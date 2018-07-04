@@ -73,6 +73,11 @@ public class MzTabRawParserTest {
     public void testLda2MouseLiverNegativeNullColunitExample() throws MZTabException {
         testExample("metabolomics/lda2-mouse-liver_negative_null-colunit.mztab", MZTabErrorType.Level.Error, 1);
     }
+    
+    @Test
+    public void testGcGcMsExample() throws MZTabException {
+        testExample("metabolomics/gcxgc-ms-example.mztab", MZTabErrorType.Level.Warn, 0);
+    }
 
     @Test
     public void testMetadataOnlyExampleError() throws MZTabException {

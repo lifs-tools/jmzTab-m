@@ -94,6 +94,12 @@ public class MTDLineParserTest {
         assertTrue(metadata.getUri().
             size() == 2);
     }
+    
+    @Test
+    public void testDerivatizationAgent() throws MZTabException {
+        parser.parse(1, "MTD\tderivatization_agent[1]\t[,,something,]", errorList);
+        assertTrue(metadata.getDerivatizationAgent().size()==1);
+    }
 
     @Test
     public void testContact() throws MZTabException {
