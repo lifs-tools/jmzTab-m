@@ -449,6 +449,8 @@ public class MZTabFileParser {
                                 getRecord());
 
                             break;
+                        default:
+                            throw new IllegalArgumentException("Unknown section level "+highWaterMark);
                     }
                 } catch (NullPointerException npe) {
                     throw new MZTabException(new MZTabError(

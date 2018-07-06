@@ -85,7 +85,7 @@ public class SEHLineParser extends MZTabHeaderLineParser {
                 checkOptColumnName(header);
             } else {
                 try {
-                    column = SmallMoleculeEvidenceColumn.Stable.forName(header);
+                    column = SmallMoleculeEvidenceColumn.Stable.columnFor(header);
                 } catch(IllegalArgumentException ex) {
                     throw new MZTabException(new MZTabError(LogicalErrorType.ColumnNotValid,lineNumber,header,section.getName()));    
                 }
@@ -147,7 +147,7 @@ public class SEHLineParser extends MZTabHeaderLineParser {
     protected void refine() throws MZTabException {
         //mandatory columns
         List<String> mandatoryColumnHeaders = new ArrayList<>();
-        for(ISmallMoleculeColumn col:SmallMoleculeEvidenceColumn.Stable.values()) {
+        for(ISmallMoleculeColumn col:SmallMoleculeEvidenceColumn.Stable.columns()) {
             mandatoryColumnHeaders.add(col.getName());
         }
 

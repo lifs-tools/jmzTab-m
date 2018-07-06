@@ -19,6 +19,7 @@ package uk.ac.ebi.pride.jmztab2.model;
  * Define all elements used in metadata.
  *
  * @author qingwei
+ * @author nilshoffmann
  * @since 23/05/13
  * 
  */
@@ -29,21 +30,12 @@ public enum MetadataElement {
     SAMPLE_PROCESSING                 ("sample_processing"),
     INSTRUMENT                        ("instrument"),
     SOFTWARE                          ("software"),
-//    PROTEIN_SEARCH_ENGINE_SCORE       ("protein_search_engine_score"),
-//    PEPTIDE_SEARCH_ENGINE_SCORE       ("peptide_search_engine_score"),
-//    PSM_SEARCH_ENGINE_SCORE           ("psm_search_engine_score"),
-//    SMALLMOLECULE_SEARCH_ENGINE_SCORE ("smallmolecule_search_engine_score"),
-//    FALSE_DISCOVERY_RATE              ("false_discovery_rate"),
     PUBLICATION                       ("publication"),
     CONTACT                           ("contact"),
     URI                               ("uri"),
     EXTERNAL_STUDY_URI                ("external_study_uri"),
-//    FIXED_MOD                         ("fixed_mod"),
-//    VARIABLE_MOD                      ("variable_mod"),
     DERIVATIZATION_AGENT              ("derivatization_agent"),
     QUANTIFICATION_METHOD             ("quantification_method"),
-//    PROTEIN                           ("protein"),
-//    PEPTIDE                           ("peptide"),
     SMALL_MOLECULE                    ("small_molecule"),
     SMALL_MOLECULE_FEATURE            ("small_molecule_feature"),
     MS_RUN                            ("ms_run"),

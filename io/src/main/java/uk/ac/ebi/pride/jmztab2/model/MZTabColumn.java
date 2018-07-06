@@ -32,6 +32,7 @@ import de.isas.mztab2.model.IndexedElement;
  * @see ParameterOptionColumn
  * @see AbundanceColumn
  * @author qingwei
+ * @author nilshoffmann
  * @since 23/05/13
  * 
  */

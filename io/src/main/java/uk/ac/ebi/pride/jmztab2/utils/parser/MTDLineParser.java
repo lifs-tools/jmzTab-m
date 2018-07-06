@@ -16,7 +16,6 @@
 package uk.ac.ebi.pride.jmztab2.utils.parser;
 
 import uk.ac.ebi.pride.jmztab2.model.MetadataProperty;
-import uk.ac.ebi.pride.jmztab2.model.MetadataSubElement;
 import uk.ac.ebi.pride.jmztab2.model.MetadataElement;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabError;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabException;
@@ -48,7 +47,6 @@ import java.util.stream.Collectors;
 import uk.ac.ebi.pride.jmztab2.model.MZTabConstants;
 import static uk.ac.ebi.pride.jmztab2.model.MZTabUtils.*;
 import static uk.ac.ebi.pride.jmztab2.model.MZTabStringUtils.*;
-import uk.ac.ebi.pride.jmztab2.model.SmallMoleculeColumn;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorType;
 
 /**
@@ -60,6 +58,7 @@ import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorType;
  * @see MetadataSubElement
  * @see MetadataProperty
  * @author qingwei
+ * @author nilshoffmann
  * @since 08/02/13
  *
  */

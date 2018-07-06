@@ -21,6 +21,7 @@ import java.util.ArrayList;
  * This is list which each item split by a split char.
  *
  * @author qingwei
+ * @param <E> the generic element type of the list.
  * @since 31/01/13
  * 
  */

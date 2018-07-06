@@ -19,6 +19,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import de.isas.mztab2.validation.CvMappingValidator;
 import de.isas.mztab2.model.ValidationMessage;
+import static de.isas.mztab2.model.ValidationMessage.MessageTypeEnum.ERROR;
+import static de.isas.mztab2.model.ValidationMessage.MessageTypeEnum.WARN;
 import org.apache.commons.cli.*;
 
 import java.io.BufferedOutputStream;
@@ -32,6 +34,7 @@ import java.net.URISyntaxException;
 import java.time.Instant;
 import java.util.List;
 import java.util.Properties;
+import java.util.stream.Collectors;
 import javax.xml.bind.JAXBException;
 import uk.ac.ebi.pride.jmztab2.utils.MZTabFileParser;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorList;
@@ -48,7 +51,7 @@ import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorTypeMap;
  *
  */
 public class MZTabCommandLine {
-
+    
     private static String getAppInfo() throws IOException {
         Properties p = new Properties();
         p.load(MZTabCommandLine.class.getResourceAsStream(
@@ -102,13 +105,13 @@ public class MZTabCommandLine {
         // Definite command line
         CommandLineParser parser = new PosixParser();
         Options options = new Options();
-
+        
         String helpOpt = "help";
         options.addOption("h", helpOpt, false, "Print help message.");
-
+        
         String versionOpt = "version";
         options.addOption("v", versionOpt, false, "Print version information.");
-
+        
         String msgOpt = "message";
         String codeOpt = "code";
         Option msgOption = OptionBuilder.withArgName(codeOpt).
@@ -118,11 +121,11 @@ public class MZTabCommandLine {
                 "Example: -message code=1002. Print Error/Warn detail message based on code number.").
             create(msgOpt);
         options.addOption(msgOption);
-
+        
         String outOpt = "outFile";
         options.addOption(outOpt, true,
             "Record error/warn messages into outfile. If not set, print message on the screen.");
-
+        
         String checkOpt = "check";
         String inFileOpt = "inFile";
         Option checkOption = OptionBuilder.withArgName(inFileOpt).
@@ -132,14 +135,15 @@ public class MZTabCommandLine {
                 "Example: -check inFile=/path/to/file.mztab. Choose a file from input directory. This parameter should not be null!").
             create(checkOpt);
         options.addOption(checkOption);
-
+        
         String levelOpt = "level";
         options.addOption(levelOpt, true,
             "Choose validate level(Info, Warn, Error), default level is Error!");
         
         String serializeOpt = "toJson";
-        options.addOption(serializeOpt, false, "Example: -toJson. Will write a json representation of inFile to disk. Requires validation to be successful!");
-
+        options.addOption(serializeOpt, false,
+            "Example: -toJson. Will write a json representation of inFile to disk. Requires validation to be successful!");
+        
         String checkSemanticOpt = "checkSemantic";
         String mappingFileOpt = "mappingFile";
         Option mappingFileOption = OptionBuilder.withArgName(mappingFileOpt).
@@ -161,7 +165,7 @@ public class MZTabCommandLine {
             String[] values = line.getOptionValues(msgOpt);
             Integer code = new Integer(values[1]);
             MZTabErrorType type = typeMap.getType(code);
-
+            
             if (type == null) {
                 System.out.println(
                     "Not found MZTabErrorType, the code is :" + code);
@@ -176,27 +180,30 @@ public class MZTabCommandLine {
                 outFile = new File(line.getOptionValue(outOpt));
                 System.out.println("Redirecting output to file " + outFile);
             }
-
+            
             System.out.println(getAppInfo());
             MZTabErrorType.Level level = MZTabErrorType.Level.Info;
             if (line.hasOption(levelOpt)) {
                 level = MZTabErrorType.findLevel(line.getOptionValue(levelOpt));
                 System.out.println("Validator set to level '" + level + "'");
             } else {
-                System.out.println("Validator set to default level '" + level + "'");
+                System.out.println(
+                    "Validator set to default level '" + level + "'");
             }
             boolean serializeToJson = false;
             if (line.hasOption(serializeOpt)) {
-                 serializeToJson = true;
+                serializeToJson = true;
             }
-            handleValidation(line, checkOpt, outFile, level, checkSemanticOpt, serializeToJson);
-
+            handleValidation(line, checkOpt, outFile, level, checkSemanticOpt,
+                serializeToJson);
+            
             System.out.println();
         }
     }
-
+    
     protected static void handleValidation(CommandLine line, String checkOpt,
-        File outFile, MZTabErrorType.Level level, String checkSemanticOpt, boolean toJson) throws URISyntaxException, JAXBException, IllegalArgumentException {
+        File outFile, MZTabErrorType.Level level, String checkSemanticOpt,
+        boolean toJson) throws URISyntaxException, JAXBException, IllegalArgumentException {
         if (line.hasOption(checkOpt)) {
             String[] values = line.getOptionValues(checkOpt);
             if (values.length != 2) {
@@ -214,15 +221,19 @@ public class MZTabCommandLine {
                     //these are reported to std.err already.
                     System.out.println(
                         "There were errors while processing your file, please check the output for details!");
-                }
-                if( toJson) {
-                    File jsonFile = new File(inFile.getName()+".json");
-                    System.out.println("Writing mzTab object as json to "+jsonFile.getAbsolutePath());
-                    ObjectMapper objectMapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
-                    objectMapper.writeValue(jsonFile, mzTabParser.getMZTabFile());
+                } 
+                if (toJson) {
+                    File jsonFile = new File(inFile.getName() + ".json");
+                    System.out.println(
+                        "Writing mzTab object as json to " + jsonFile.
+                            getAbsolutePath());
+                    ObjectMapper objectMapper = new ObjectMapper().enable(
+                        SerializationFeature.INDENT_OUTPUT);
+                    objectMapper.
+                        writeValue(jsonFile, mzTabParser.getMZTabFile());
                 }
                 handleSemanticValidation(line, checkSemanticOpt, inFile,
-                    mzTabParser);
+                    mzTabParser, level);
             } catch (IOException e) {
                 System.out.println(
                     "Caught an IO Exception: " + e.getMessage());
@@ -231,9 +242,10 @@ public class MZTabCommandLine {
             }
         }
     }
-
+    
     protected static void handleSemanticValidation(CommandLine line,
-        String checkSemanticOpt, File inFile, MZTabFileParser mzTabParser) throws JAXBException, MalformedURLException, URISyntaxException {
+        String checkSemanticOpt, File inFile, MZTabFileParser mzTabParser,
+        MZTabErrorType.Level level) throws JAXBException, MalformedURLException, URISyntaxException {
         if (line.hasOption(checkSemanticOpt)) {
             String[] semValues = line.getOptionValues(
                 checkSemanticOpt);
@@ -257,15 +269,32 @@ public class MZTabCommandLine {
             CvMappingValidator cvMappingValidator = CvMappingValidator.of(
                 mappingFile.toURL(), true);
             List<ValidationMessage> validationMessages = cvMappingValidator.
-                validate(mzTabParser.getMZTabFile());
+                validate(mzTabParser.getMZTabFile()).
+                stream().
+                filter((message) ->
+                {
+                    switch (level) {
+                        case Error:
+                            return message.getMessageType() == ERROR ? true : false;
+                        case Warn:
+                            return message.getMessageType() == ERROR || message.
+                                getMessageType() == WARN ? true : false;
+                        case Info:
+                            return true;
+                    }
+                    return false;
+                }).
+                collect(Collectors.toList());
             for (ValidationMessage message : validationMessages) {
                 System.err.println(message);
             }
             if (!validationMessages.isEmpty()) {
                 System.out.println(
                     "There were errors during semantic validation of your file, please check the output for details!");
+            } else {
+                System.out.println("No errors found for semantic validation on level "+level);
             }
         }
     }
-
+    
 }

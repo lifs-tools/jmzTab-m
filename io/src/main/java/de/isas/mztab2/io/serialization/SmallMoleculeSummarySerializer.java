@@ -33,6 +33,7 @@ import static de.isas.mztab2.io.serialization.Serializers.writeObject;
 import java.util.Collections;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
+import static uk.ac.ebi.pride.jmztab2.model.SmallMoleculeColumn.Stable.columnFor;
 
 /**
  * <p>
@@ -82,37 +83,45 @@ public class SmallMoleculeSummarySerializer extends StdSerializer<SmallMoleculeS
             writeString(SmallMoleculeSummary.HeaderPrefixEnum.SMH.getValue(), jg,
                 SmallMoleculeSummary.PrefixEnum.SML.
                     getValue());
-            writeNumber(SmallMoleculeColumn.Stable.SML_ID, jg,
+            writeNumber(columnFor(SmallMoleculeColumn.Stable.SML_ID), jg,
                 smallMoleculeSummary.getSmlId());
-            writeAsNumberArray(SmallMoleculeColumn.Stable.SMF_ID_REFS, jg,
+            writeAsNumberArray(columnFor(SmallMoleculeColumn.Stable.SMF_ID_REFS),
+                jg,
                 Optional.ofNullable(smallMoleculeSummary.
                     getSmfIdRefs()).
                     orElse(Collections.emptyList()));
-            writeAsStringArray(SmallMoleculeColumn.Stable.DATABASE_IDENTIFIER,
+            writeAsStringArray(columnFor(
+                SmallMoleculeColumn.Stable.DATABASE_IDENTIFIER),
                 jg, smallMoleculeSummary.getDatabaseIdentifier());
-            writeAsStringArray(SmallMoleculeColumn.Stable.CHEMICAL_FORMULA, jg,
+            writeAsStringArray(columnFor(
+                SmallMoleculeColumn.Stable.CHEMICAL_FORMULA), jg,
                 smallMoleculeSummary.getChemicalFormula());
-            writeAsStringArray(SmallMoleculeColumn.Stable.SMILES, jg,
+            writeAsStringArray(columnFor(SmallMoleculeColumn.Stable.SMILES), jg,
                 smallMoleculeSummary.getSmiles());
-            writeAsStringArray(SmallMoleculeColumn.Stable.INCHI, jg,
+            writeAsStringArray(columnFor(SmallMoleculeColumn.Stable.INCHI), jg,
                 smallMoleculeSummary.getInchi());
-            writeAsStringArray(SmallMoleculeColumn.Stable.CHEMICAL_NAME, jg,
+            writeAsStringArray(columnFor(
+                SmallMoleculeColumn.Stable.CHEMICAL_NAME), jg,
                 smallMoleculeSummary.getChemicalName());
-            writeAsStringArray(SmallMoleculeColumn.Stable.URI, jg,
+            writeAsStringArray(columnFor(SmallMoleculeColumn.Stable.URI), jg,
                 smallMoleculeSummary.getUri());
-            writeAsNumberArray(SmallMoleculeColumn.Stable.THEOR_NEUTRAL_MASS, jg,
+            writeAsNumberArray(columnFor(
+                SmallMoleculeColumn.Stable.THEOR_NEUTRAL_MASS), jg,
                 smallMoleculeSummary.
                     getTheoreticalNeutralMass());
-            writeAsStringArray(SmallMoleculeColumn.Stable.ADDUCT_IONS, jg,
+            writeAsStringArray(columnFor(SmallMoleculeColumn.Stable.ADDUCT_IONS),
+                jg,
                 smallMoleculeSummary.getAdductIons());
-            writeString(SmallMoleculeColumn.Stable.RELIABILITY, jg,
+            writeString(columnFor(SmallMoleculeColumn.Stable.RELIABILITY), jg,
                 smallMoleculeSummary.getReliability());
             writeObject(
-                SmallMoleculeColumn.Stable.BEST_ID_CONFIDENCE_MEASURE, jg, sp,
+                columnFor(SmallMoleculeColumn.Stable.BEST_ID_CONFIDENCE_MEASURE),
+                jg, sp,
                 smallMoleculeSummary.
                     getBestIdConfidenceMeasure());
             writeNumber(
-                SmallMoleculeColumn.Stable.BEST_ID_CONFIDENCE_VALUE, jg,
+                columnFor(SmallMoleculeColumn.Stable.BEST_ID_CONFIDENCE_VALUE),
+                jg,
                 smallMoleculeSummary.
                     getBestIdConfidenceValue());
             writeIndexedDoubles(AbundanceColumn.Field.ABUNDANCE_ASSAY.toString(),

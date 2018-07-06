@@ -30,6 +30,7 @@ import java.util.TreeMap;
  * thus depend on the used analysis pipeline and quantitation method and is not expected to be comparable across multiple mzTab files.
  *
  * @author qingwei
+ * @author nilshoffmann
  * @since 23/05/13
  * 
  */

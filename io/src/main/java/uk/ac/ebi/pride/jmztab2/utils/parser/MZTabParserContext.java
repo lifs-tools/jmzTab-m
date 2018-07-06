@@ -40,7 +40,6 @@ import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import lombok.Data;
-import uk.ac.ebi.pride.jmztab2.model.MZTabColumn;
 import static uk.ac.ebi.pride.jmztab2.model.MZTabStringUtils.isEmpty;
 
 /**

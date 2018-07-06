@@ -22,7 +22,9 @@ import de.isas.mztab2.model.SmallMoleculeEvidence;
 import static de.isas.mztab2.model.SmallMoleculeEvidence.Properties.*;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Define the stable columns and optional columns which have stable order in
@@ -30,7 +32,7 @@ import java.util.Map;
  *
  * @author nilshoffmann
  * @since 11/09/17
- * 
+ *
  */
 public class SmallMoleculeEvidenceColumn implements ISmallMoleculeEvidenceColumn {
 
@@ -46,7 +48,7 @@ public class SmallMoleculeEvidenceColumn implements ISmallMoleculeEvidenceColumn
         this.column = new MZTabColumn(name, dataType, optional, order, id);
     }
 
-    public static enum Stable implements ISmallMoleculeEvidenceColumn {
+    public static enum Stable {
         SME_ID(smeId.toUpper(), Integer.class, false, "01"),
         EVIDENCE_INPUT_ID(evidenceInputId, Integer.class, false, "02"),
         DATABASE_IDENTIFIER(databaseIdentifier, String.class, false, "03"),
@@ -78,18 +80,22 @@ public class SmallMoleculeEvidenceColumn implements ISmallMoleculeEvidenceColumn
 
         private final ISmallMoleculeEvidenceColumn column;
 
-        private Stable(SmallMoleculeEvidence.Properties property, Class columnType, boolean optional,
+        private Stable(SmallMoleculeEvidence.Properties property,
+            Class columnType, boolean optional,
             String order, Integer id) {
-            this.column = new SmallMoleculeEvidenceColumn(property.getPropertyName(), columnType, optional,
+            this.column = new SmallMoleculeEvidenceColumn(property.
+                getPropertyName(), columnType, optional,
                 order, id);
         }
-        
-        private Stable(SmallMoleculeEvidence.Properties property, Class columnType, boolean optional,
+
+        private Stable(SmallMoleculeEvidence.Properties property,
+            Class columnType, boolean optional,
             String order) {
-            this.column = new SmallMoleculeEvidenceColumn(property.getPropertyName(), columnType, optional,
+            this.column = new SmallMoleculeEvidenceColumn(property.
+                getPropertyName(), columnType, optional,
                 order);
         }
-        
+
         private Stable(String name, Class columnType, boolean optional,
             String order) {
             this.column = new SmallMoleculeEvidenceColumn(name, columnType,
@@ -104,88 +110,55 @@ public class SmallMoleculeEvidenceColumn implements ISmallMoleculeEvidenceColumn
                 order, id);
         }
 
-        public ISmallMoleculeColumn getColumn() {
-            return this.column;
-        }
-
-        @Override
-        public Class<?> getDataType() {
-            return this.column.getDataType();
-        }
-
-        @Override
-        public IndexedElement getElement() {
-            return this.column.getElement();
-        }
-
-        @Override
-        public String getHeader() {
-            return this.column.getHeader();
-        }
-
-        @Override
-        public String getLogicPosition() {
-            return this.column.getLogicPosition();
-        }
-
-        @Override
-        public String getName() {
-            return this.column.getName();
-        }
-
-        @Override
-        public String getOrder() {
-            return this.column.getOrder();
-        }
-
-        @Override
-        public boolean isOptional() {
-            return this.column.isOptional();
-        }
-
-        @Override
-        public void setHeader(String header) {
-            this.column.setHeader(header);
-        }
-
-        @Override
-        public void setLogicPosition(String logicPosition) {
-            this.column.setLogicPosition(logicPosition);
-        }
-
-        @Override
-        public void setOrder(String order) {
-            this.column.setOrder(order);
-        }
-
-        public static Stable forName(String name) {
-            return Arrays.stream(SmallMoleculeEvidenceColumn.Stable.values()).
+        public static SmallMoleculeEvidenceColumn.Stable forName(String name) throws IllegalArgumentException {
+            SmallMoleculeEvidenceColumn.Stable s = Arrays.stream(
+                SmallMoleculeEvidenceColumn.Stable.values()).
                 filter((v) ->
-                    v.getColumn().
+                    v.column.
                         getName().
                         equals(name)).
                 findFirst().
                 orElseThrow(() ->
                     new IllegalArgumentException("Unknown key:" + name));
+            return s;
         }
 
-        @Override
-        public void setElement(IndexedElement element) {
-            this.column.setElement(element);
+        public static ISmallMoleculeEvidenceColumn columnFor(
+            SmallMoleculeEvidenceColumn.Stable s) {
+            return new SmallMoleculeEvidenceColumn(s.column.getName(), s.column.
+                getDataType(), s.column.isOptional(), s.column.getOrder());
+        }
+
+        public static ISmallMoleculeEvidenceColumn columnFor(String name) throws IllegalArgumentException {
+            return columnFor(forName(name));
+        }
+
+        public static List<SmallMoleculeEvidenceColumn> columns() {
+            return Arrays.stream(SmallMoleculeEvidenceColumn.Stable.values()).
+                map((s) ->
+                {
+                    return new SmallMoleculeEvidenceColumn(s.column.getName(),
+                        s.column.getDataType(), s.column.isOptional(), s.column.
+                        getOrder());
+                }).
+                collect(Collectors.toList());
         }
     };
 
     private static Map<String, ISmallMoleculeEvidenceColumn> optionalColumns = new LinkedHashMap<>();
 
     /**
-     * <p>optional.</p>
+     * <p>
+     * optional.</p>
      *
      * @param name a {@link java.lang.String} object.
      * @param columnType a {@link java.lang.Class} object.
      * @param optional a boolean.
      * @param order a {@link java.lang.String} object.
      * @param id a {@link java.lang.Integer} object.
-     * @return a {@link uk.ac.ebi.pride.jmztab2.model.ISmallMoleculeEvidenceColumn} object.
+     * @return a
+     * {@link uk.ac.ebi.pride.jmztab2.model.ISmallMoleculeEvidenceColumn}
+     * object.
      */
     public static ISmallMoleculeEvidenceColumn optional(String name,
         Class columnType,
@@ -201,67 +174,89 @@ public class SmallMoleculeEvidenceColumn implements ISmallMoleculeEvidenceColumn
         return c;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Class<?> getDataType() {
         return this.column.getDataType();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public IndexedElement getElement() {
         return this.column.getElement();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getHeader() {
         return this.column.getHeader();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getLogicPosition() {
         return this.column.getLogicPosition();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getName() {
         return this.column.getName();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getOrder() {
         return this.column.getOrder();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isOptional() {
         return this.column.isOptional();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setHeader(String header) {
         this.column.setHeader(header);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setLogicPosition(String logicPosition) {
         this.column.setLogicPosition(logicPosition);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setOrder(String order) {
         this.column.setOrder(order);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setElement(IndexedElement element) {
         this.column.setElement(element);

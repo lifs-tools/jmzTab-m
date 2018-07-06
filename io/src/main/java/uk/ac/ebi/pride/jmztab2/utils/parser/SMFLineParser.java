@@ -26,6 +26,7 @@ import uk.ac.ebi.pride.jmztab2.model.AbundanceColumn;
 import de.isas.mztab2.model.Metadata;
 import de.isas.mztab2.model.OptColumnMapping;
 import de.isas.mztab2.model.SmallMoleculeFeature;
+import uk.ac.ebi.pride.jmztab2.model.SmallMoleculeFeatureColumn.Stable;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorList;
 
 
@@ -73,7 +74,7 @@ public class SMFLineParser extends MZTabDataLineParser<SmallMoleculeFeature> {
                 columnName = column.getName();
                 target = items[physicalPosition];
                 if (column instanceof ISmallMoleculeFeatureColumn) {
-                    SmallMoleculeFeatureColumn.Stable stableColumn = SmallMoleculeFeatureColumn.Stable.forName(columnName);
+                    Stable stableColumn = SmallMoleculeFeatureColumn.Stable.forName(columnName);
                     switch(stableColumn) {
                         case ADDUCT_ION:
                             smallMoleculeFeature.adductIon(checkString(column,

@@ -46,6 +46,7 @@ import uk.ac.ebi.pride.jmztab2.utils.parser.MZTabParserContext;
  * defined in the mzTab specification.
  *
  * @author qingwei
+ * @author nilshoffmann
  * @since 30/01/13
  *
  */
@@ -602,23 +603,6 @@ public class MZTabUtils {
         return refList;
     }
 
-//    public static void parseModificationPosition(String target, Modification modification) {
-//        target = translateTabToComma(target);
-//        SplitList<String> list = parseStringList(BAR, target);
-//
-//        Pattern pattern = Pattern.compile("(\\d+)(\\[([^,]+)?,([^,]+)?,([^,]+),([^,]*)\\])?");
-//        Matcher matcher;
-//        Integer id;
-//        CVParam param;
-//        for (String item : list) {
-//            matcher = pattern.matcher(item.trim());
-//            if (matcher.find()) {
-//                id = new Integer(matcher.group(1));
-//                param = matcher.group(5) == null ? null : new CVParam(matcher.group(3), matcher.group(4), matcher.group(5), matcher.group(6));
-//                modification.addPosition(id, param);
-//            }
-//        }
-//    }
     /**
      * Solve the conflict about minus char between modification position and
      * CHEMMOD charge. For example: 13-CHEMMOD:-159
@@ -702,76 +686,6 @@ public class MZTabUtils {
         }
     }
 
-    /**
-     * Parse the target to {@link Modification}
-     */
-//    public static Modification parseModification(Section section, String target) {
-//        target = parseString(target);
-//        if (target == null) {
-//            return null;
-//        }
-//
-//        // no modification
-//        if (target.equals("0")) {
-//            return Modification.createNoModification(section);
-//        }
-//
-//        target = translateMinusToUnicode(target);
-//        target = translateMinusInCVtoUnicode(target);
-//        if (target.isEmpty()) {
-//            return null;
-//        }
-//
-//        target = translateTabToComma(target);
-//        target = translateMinusToTab(target);
-//        String[] items = target.split("\\-");
-//        String modLabel;
-//        String positionLabel;
-//        if (items.length > 2) {
-//            // error
-//            return null;
-//        } if (items.length == 2) {
-//            positionLabel = items[0];
-//            modLabel = items[1];
-//        } else {
-//            positionLabel = null;
-//            modLabel = items[0];
-//        }
-//
-//        Modification modification = null;
-//        Modification.Type type;
-//        String accession;
-//        CVParam neutralLoss;
-//
-//        modLabel = translateUnicodeToMinus(modLabel);
-//        modLabel = translateUnicodeCVTermMinus(modLabel);
-//        modLabel = translateTabToMinus(modLabel);
-//        Pattern pattern = Pattern.compile("(MOD|UNIMOD|CHEMMOD|SUBST):([^\\|]+)(\\|\\[([^,]+)?,([^,]+)?,([^,]+),([^,]*)\\])?");
-//        Matcher matcher = pattern.matcher(modLabel);
-//        if (matcher.find()) {
-//            type = Modification.findType(matcher.group(1));
-//            accession = matcher.group(2);
-//            modification = new Modification(section, type, accession);
-//            if (positionLabel != null) {
-//                positionLabel =  translateUnicodeCVTermMinus(positionLabel);
-//                parseModificationPosition(positionLabel, modification);
-//            }
-//
-//            neutralLoss = matcher.group(6) == null ? null : new CVParam(matcher.group(4), matcher.group(5), matcher.group(6), matcher.group(7));
-//            modification.setNeutralLoss(neutralLoss);
-//        } else if(parseParam(modLabel) != null){
-//           // Check if is a Neutral Loss
-//            CVParam param = (CVParam) parseParam(modLabel);
-//            modification = new Modification(section, Modification.Type.NEUTRAL_LOSS, param != null ? param.getAccession() : null);
-//            modification.setNeutralLoss(param);
-//            if (positionLabel != null) {
-//                parseModificationPosition(positionLabel, modification);
-//            }
-//
-//        }
-//
-//        return modification;
-//    }
     /**
      * locate param label [label, accession, name, value], translate ',' to '\t'
      *
@@ -919,39 +833,6 @@ public class MZTabUtils {
         return sb.toString();
     }
 
-    /**
-     * Parse the target string to a {@link Modification} list, which split by
-     * comma character.
-     */
-//    public static SplitList<Modification> parseModificationList(Section section, String target) {
-//        target = parseString(target);
-//        SplitList<Modification> modList = new SplitList<Modification>(COMMA);
-//
-//        if (target == null) {
-//            return modList;
-//        }
-//
-//        if (target.equals("0")) {
-//            modList.add(Modification.createNoModification(section));
-//            return modList;
-//        }
-//
-//        target = translateCommaToTab(target);
-//        SplitList<String> list = parseStringList(COMMA, target);
-//
-//        Modification mod;
-//        for (String item : list) {
-//            mod = parseModification(section,  item.trim());
-//            if (mod == null) {
-//                modList.clear();
-//                break;
-//            } else {
-//                modList.add(mod);
-//            }
-//        }
-//
-//        return modList;
-//    }
     /**
      * If there exists reserved characters in value, like comma, the string need
      * to be escape. However the escaping char is not store because it will be
