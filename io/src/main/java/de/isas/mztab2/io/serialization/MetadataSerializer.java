@@ -144,7 +144,7 @@ public class MetadataSerializer extends StdSerializer<Metadata> {
                 log.debug(
                     "Serializing element " + Serializers.
                         getElementName(object).
-                        get());
+                        orElse("undefined"));
             sp.findValueSerializer(object.getClass()).
                 serialize(object, jg, sp);
         } catch (IOException ex) {

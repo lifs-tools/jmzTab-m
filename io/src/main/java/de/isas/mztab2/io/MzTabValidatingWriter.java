@@ -196,7 +196,7 @@ public class MzTabValidatingWriter implements MzTabWriter<List<ValidationMessage
     public static List<ValidationMessage> getValidationMessagesForLevel(
         Optional<List<ValidationMessage>> validationMessages,
         ValidationMessage.MessageTypeEnum level) {
-        return validationMessages.get().
+        return validationMessages.orElse(Collections.emptyList()).
             stream().
             filter((message) ->
             {
