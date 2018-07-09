@@ -296,7 +296,7 @@ public abstract class MZTabDataLineParser<T> extends MZTabLineParser {
     }
 
     /**
-     * Check and translate target string into Integer. If parse incorrect, raise
+     * Check and translate target string into Integer. If parse is incorrect, throws
      * {@link uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType#Integer}
      * error.
      *
@@ -309,7 +309,7 @@ public abstract class MZTabDataLineParser<T> extends MZTabLineParser {
     }
 
     /**
-     * Check and translate target string into Integer. If parse incorrect, raise
+     * Check and translate target string into Integer. If parse is incorrect, throws
      * {@link uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType#Integer}
      * error.
      *
@@ -337,7 +337,7 @@ public abstract class MZTabDataLineParser<T> extends MZTabLineParser {
     }
 
     /**
-     * Check and translate target string into Double. If parse incorrect, raise
+     * Check and translate target string into Double. If parse is incorrect, throws
      * {@link uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType#Double}
      * error.
      *
@@ -354,7 +354,7 @@ public abstract class MZTabDataLineParser<T> extends MZTabLineParser {
     }
 
     /**
-     * Check and translate target string into Double. If parse incorrect, raise
+     * Check and translate target string into Double. If parse is incorrect, throws
      * {@link uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType#Double}
      * error.
      *
@@ -392,7 +392,7 @@ public abstract class MZTabDataLineParser<T> extends MZTabLineParser {
 
     /**
      * Check and translate target string into parameter list which split by '|'
-     * character.. If parse incorrect, raise
+     * character.. If parse is incorrect, throws
      * {@link uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType#ParamList}
      * error.
      *
@@ -463,7 +463,7 @@ public abstract class MZTabDataLineParser<T> extends MZTabLineParser {
 
     /**
      * Check and translate target string into parameter list which split by
-     * splitChar character.. If parse incorrect, raise
+     * splitChar character.. If parse is incorrect, throws
      * {@link uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType#StringList}
      * error.
      *
@@ -491,7 +491,7 @@ public abstract class MZTabDataLineParser<T> extends MZTabLineParser {
 
     /**
      * Check and translate target string into integer list which split by
-     * splitChar character.. If parse incorrect, raise
+     * splitChar character.. If parse is incorrect, throws
      * {@link uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType#StringList}
      * error.
      *
@@ -507,7 +507,7 @@ public abstract class MZTabDataLineParser<T> extends MZTabLineParser {
 
     /**
      * Check and translate target string into integer list which split by
-     * splitChar character.. If parse incorrect, raise
+     * splitChar character.. If parse is incorrect, throws
      * {@link uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType#StringList}
      * error.
      *
@@ -537,7 +537,7 @@ public abstract class MZTabDataLineParser<T> extends MZTabLineParser {
 
     /**
      * Check and translate target string into parameter list which split by
-     * splitChar character.. If parse incorrect, raise
+     * splitChar character.. If parse is incorrect, throws
      * {@link uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType#StringList}
      * error.
      *
@@ -564,7 +564,7 @@ public abstract class MZTabDataLineParser<T> extends MZTabLineParser {
     /**
      * Check and translate target to
      * {@link uk.ac.ebi.pride.jmztab2.model.MZBoolean}. Only "0" and "1" allow
-     * used in express Boolean (0/1). If parse incorrect, raise
+     * used in express Boolean (0/1). If parse is incorrect, throws
      * {@link uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType#MZBoolean}
      * error.
      *
@@ -658,7 +658,7 @@ public abstract class MZTabDataLineParser<T> extends MZTabLineParser {
 
     /**
      * Check and translate searchEngine string into parameter list which split
-     * by '|' character.. If parse incorrect, raise
+     * by '|' character.. If parse is incorrect, throws
      * {@link uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType#ParamList}
      * error. Normally, searchEngine may be set to "null"; in
      * general "null" values SHOULD not be given.
@@ -750,7 +750,7 @@ public abstract class MZTabDataLineParser<T> extends MZTabLineParser {
 
     /**
      * Check and translate target string into parameter list which split by ','
-     * character.. If parse incorrect, raise
+     * character.. If parse is incorrect, throws
      * {@link uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType#StringList}
      * error. Normally, ambiguityMembers may be set to "null";
      * in general "null" values SHOULD not be given.
@@ -906,7 +906,7 @@ public abstract class MZTabDataLineParser<T> extends MZTabLineParser {
 
     /**
      * Check and translate target string into string list which split by ','
-     * character.. If parse incorrect, raise
+     * character.. If parse is incorrect, throws
      * {@link uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType#StringList}
      * error. Besides, each item in list should be start with "GO:", otherwise
      * system raise
@@ -936,7 +936,7 @@ public abstract class MZTabDataLineParser<T> extends MZTabLineParser {
 
     /**
      * Check and translate protein_coverage string into Double. If parse
-     * incorrect, raise
+     * is incorrect, throws
      * {@link uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType#Double}
      * error. protein_coverage range should be in the [0, 1), otherwise raise
      * {@link uk.ac.ebi.pride.jmztab2.utils.errors.LogicalErrorType#ProteinCoverage}
@@ -1015,7 +1015,7 @@ public abstract class MZTabDataLineParser<T> extends MZTabLineParser {
     /**
      * Check and translate unique to
      * {@link uk.ac.ebi.pride.jmztab2.model.MZBoolean}. Only "0" and "1" allow
-     * used in express Boolean (0/1). If parse incorrect, raise
+     * used in express Boolean (0/1). If parse is incorrect, throws
      * {@link uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType#MZBoolean}
      * error.
      *
@@ -1044,7 +1044,7 @@ public abstract class MZTabDataLineParser<T> extends MZTabLineParser {
 
     /**
      * Check and translate mass_to_charge string into Double. If parse
-     * incorrect, raise
+     * is incorrect, throws
      * {@link uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType#Double}
      * error.
      *
@@ -1063,7 +1063,7 @@ public abstract class MZTabDataLineParser<T> extends MZTabLineParser {
 
     /**
      * Check and translate exp_mass_to_charge string into Double. If parse
-     * incorrect, raise
+     * is incorrect, throws
      * {@link uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType#Double}
      * error.
      *
@@ -1082,7 +1082,7 @@ public abstract class MZTabDataLineParser<T> extends MZTabLineParser {
 
     /**
      * Check and translate calc_mass_to_charge string into Double. If parse
-     * incorrect, raise
+     * is incorrect, throws
      * {@link uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType#Double}
      * error.
      *
@@ -1101,7 +1101,7 @@ public abstract class MZTabDataLineParser<T> extends MZTabLineParser {
 
     /**
      * Check and translate identifier string into string list which split by '|'
-     * character.. If parse incorrect, raise
+     * character.. If parse is incorrect, throws
      * {@link uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType#StringList}
      * error. Normally, identifier may be set to "null"; in
      * general "null" values SHOULD not be given.
@@ -1131,7 +1131,7 @@ public abstract class MZTabDataLineParser<T> extends MZTabLineParser {
 
     /**
      * Check and translate smiles string into parameter list which split by '|'
-     * character.. If parse incorrect, raise
+     * character.. If parse is incorrect, throws
      * {@link uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType#StringList}
      * error. Normally, smiles may be set to "null"; in
      * general "null" values SHOULD not be given.
@@ -1146,7 +1146,7 @@ public abstract class MZTabDataLineParser<T> extends MZTabLineParser {
 
     /**
      * Check and translate inchi_key string into parameter list which split by
-     * '|' character.. If parse incorrect, raise
+     * '|' character.. If parse is incorrect, throws
      * {@link uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType#StringList}
      * error. Normally, inchi_key may be set to "null"; in
      * general "null" values SHOULD not be given.
@@ -1161,7 +1161,7 @@ public abstract class MZTabDataLineParser<T> extends MZTabLineParser {
 
     /**
      * Check and translate retention_time string into Double list which split by
-     * '|' character.. If parse incorrect, raise
+     * '|' character.. If parse is incorrect, throws
      * {@link uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType#DoubleList}
      * error. Normally, retention_time may be set to "null";
      * in general "null" values SHOULD not be given.
@@ -1189,7 +1189,7 @@ public abstract class MZTabDataLineParser<T> extends MZTabLineParser {
 
     /**
      * Check and translate retention_time_window string into Double list which
-     * split by '|' character.. If parse incorrect, raise
+     * split by '|' character.. If parse is incorrect, throws
      * {@link uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType#DoubleList}
      * error. Normally, retention_time_window can set "null", but in "Complete"
      * file, in general "null" values SHOULD not be given.

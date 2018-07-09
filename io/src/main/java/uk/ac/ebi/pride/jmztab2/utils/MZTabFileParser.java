@@ -15,6 +15,7 @@
  */
 package uk.ac.ebi.pride.jmztab2.utils;
 
+import de.isas.mztab2.model.CV;
 import de.isas.mztab2.model.ColumnParameterMapping;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabError;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabException;
@@ -47,6 +48,7 @@ import java.net.URL;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.SortedMap;

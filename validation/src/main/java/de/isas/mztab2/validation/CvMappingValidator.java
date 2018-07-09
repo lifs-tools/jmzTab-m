@@ -145,6 +145,7 @@ public class CvMappingValidator implements Validator<MzTab> {
     @Override
     public List<ValidationMessage> validate(MzTab mzTab) {
         final List<ValidationMessage> messages = new LinkedList<>();
+        messages.addAll(new CvDefinitionValidationHandler().validate(mzTab));
         JXPathContext context = JXPathContext.newContext(mzTab);
         mapping.getCvMappingRuleList().
             getCvMappingRule().

@@ -48,4 +48,11 @@ public final class CrossCheckErrorType extends MZTabErrorType {
     
     /** Constant <code>CvTermMalformed</code> */
     public static MZTabErrorType CvTermMalformed = createError(Category.CrossCheck, "CvTermMalformed");
+
+    /** Constant <code>CvUndefinedInMetadata</code> */
+    public static MZTabErrorType CvUndefinedInMetadata = createError(Category.CrossCheck, "CvUndefinedInMetadata");
+    
+    /** Constant <code>CvUnused</code> */
+    public static MZTabErrorType CvUnused = createWarn(Category.CrossCheck, "CvUnused");
+
 }

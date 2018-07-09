@@ -18,6 +18,7 @@ package de.isas.mztab2.validation;
 import de.isas.mztab2.cvmapping.CvParameterLookupService;
 import de.isas.mztab2.cvmapping.JxPathElement;
 import de.isas.mztab2.cvmapping.RuleEvaluationResult;
+import de.isas.mztab2.model.CV;
 import de.isas.mztab2.model.Instrument;
 import de.isas.mztab2.model.MzTab;
 import de.isas.mztab2.model.Parameter;
@@ -28,10 +29,12 @@ import de.isas.mztab2.validator.MzTabValidatorTest;
 import info.psidev.cvmapping.CvMappingRule;
 import info.psidev.cvmapping.CvReference;
 import info.psidev.cvmapping.CvTerm;
+import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.jxpath.JXPathContext;
 import org.apache.commons.jxpath.Pointer;
 import org.apache.commons.lang3.tuple.Pair;
+import org.junit.Assert;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -92,6 +95,71 @@ public class CvMappingValidatorTest {
         assertEquals(ValidationMessage.CategoryEnum.CROSS_CHECK,
             messages.get(0).
                 getCategory());
+    }
+
+    @Test
+    public void testCheckCvDefinitions() {
+        MzTab mzTabFile = createTestData();
+        mzTabFile.getMetadata().
+            setCv(new ArrayList());
+        CvDefinitionValidationHandler handler = new CvDefinitionValidationHandler();
+        List<ValidationMessage> messages = handler.validate(mzTabFile);
+        Assert.assertEquals(0, mzTabFile.getMetadata().
+            getCv().
+            size());
+        Assert.assertEquals(15, messages.size());
+
+        mzTabFile.getMetadata().
+            addCvItem(new CV().id(1).
+                fullName(
+                    "Mass spectrometer output files and spectra interpretation").
+                label("MS").
+                version("4.1.11").
+                url("https://raw.githubusercontent.com/HUPO-PSI/psi-ms-CV/master/psi-ms.obo"));
+
+        Assert.assertEquals(1, mzTabFile.getMetadata().
+            getCv().
+            size());
+        messages = handler.validate(mzTabFile);
+        Assert.assertEquals(6, messages.size());
+
+        mzTabFile.getMetadata().
+            addCvItem(
+                new CV().id(2).
+                    fullName("Human Disease Ontology").
+                    label("DOID").
+                    version("2018-07-05").
+                    url("https://www.ebi.ac.uk/ols/ontologies/doid")
+            ).
+            addCvItem(
+                new CV().id(3).
+                    fullName("Cell Ontology").
+                    label("CL").
+                    version("2017-12-11").
+                    url("https://www.ebi.ac.uk/ols/ontologies/cl")).
+            addCvItem(new CV().id(4).
+                fullName("BRENDA tissue / enzyme source").
+                label("BTO").
+                version("2016-05-05").
+                url("https://www.ebi.ac.uk/ols/ontologies/bto")).
+            addCvItem(new CV().id(5).
+                fullName("NCBI organismal classification").
+                label("NCBITaxon").
+                version("2018-03-02").
+                url("https://www.ebi.ac.uk/ols/ontologies/ncbitaxon"));
+        messages = handler.validate(mzTabFile);
+        Assert.assertEquals(0, messages.size());
+        mzTabFile.getMetadata().
+            addCvItem(
+                new CV().id(6).
+                    fullName("Units of measurement").
+                    label("UO").
+                    version("2018-03-24").
+                    url("https://www.ebi.ac.uk/ols/ontologies/uo")
+            );
+        messages = handler.validate(mzTabFile);
+        Assert.assertEquals(1, messages.size());
+        Assert.assertTrue(messages.get(0).getMessageType()==ValidationMessage.MessageTypeEnum.WARN);
     }
 
     protected MzTab createTestData() {
