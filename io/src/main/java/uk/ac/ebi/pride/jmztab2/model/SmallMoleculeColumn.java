@@ -20,14 +20,15 @@ import de.isas.mztab2.model.Parameter;
 import de.isas.mztab2.model.SmallMoleculeSummary;
 import static de.isas.mztab2.model.SmallMoleculeSummary.Properties.*;
 import java.util.Arrays;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * Define the stable columns and optional columns which have stable order in
- * small molecule header line. Refactored to be an enum.
+ * Define the stable columns which have stable order in the small molecule header
+ * line.
+ *
+ *  * To create optional column mappings, see
+ * {@link uk.ac.ebi.pride.jmztab2.model.OptColumnMappingBuilder}.
  *
  * @author qingwei
  * @author Nils Hoffmann
@@ -48,6 +49,9 @@ public class SmallMoleculeColumn implements ISmallMoleculeColumn {
         this.column = new MZTabColumn(name, dataType, optional, order, id);
     }
 
+    /**
+     * Stable {@link SmallMoleculeColumn} definition templates.
+     */
     public static enum Stable {
         SML_ID(smlId.toUpper(), String.class, false, "01"),
         SMF_ID_REFS(smfIdRefs.toUpper(), SplitList.class, false, "02"),
@@ -102,6 +106,13 @@ public class SmallMoleculeColumn implements ISmallMoleculeColumn {
                 order, id);
         }
 
+        /**
+         * Returns a stable column instance template.
+         *
+         * @param name the column name (lower case).
+         * @return the stable column instance template.
+         * @throws IllegalArgumentException for unknown column names.
+         */
         public static SmallMoleculeColumn.Stable forName(String name) throws IllegalArgumentException {
             SmallMoleculeColumn.Stable s = Arrays.stream(
                 SmallMoleculeColumn.Stable.values()).
@@ -115,15 +126,38 @@ public class SmallMoleculeColumn implements ISmallMoleculeColumn {
             return s;
         }
 
+        /**
+         * Returns a new {@link ISmallMoleculeColumn} instance for the
+         * given stable column template.
+         *
+         * @param s the small molecule stable column template.
+         * @return a new small molecule column instance
+         * {@link SmallMoleculeColumn}.
+         */
         public static ISmallMoleculeColumn columnFor(Stable s) {
-            return new SmallMoleculeFeatureColumn(s.column.getName(), s.column.
+            return new SmallMoleculeColumn(s.column.getName(), s.column.
                 getDataType(), s.column.isOptional(), s.column.getOrder());
         }
 
+        /**
+         * Returns a new {@link ISmallMoleculeColumn} instance for the
+         * given stable column name.
+         *
+         * @param name the small molecule stable column template name (lower
+         * case).
+         * @return a new small molecule column instance
+         * {@link SmallMoleculeColumn}.
+         * @throws IllegalArgumentException for unknown column names.
+         */
         public static ISmallMoleculeColumn columnFor(String name) throws IllegalArgumentException {
             return columnFor(forName(name));
         }
 
+        /**
+         * Returns all stable {@link ISmallMoleculeColumn} templates.
+         *
+         * @return the stable small molecule columns templates.
+         */
         public static List<ISmallMoleculeColumn> columns() {
             return Arrays.stream(SmallMoleculeColumn.Stable.values()).
                 map((s) ->
@@ -136,34 +170,6 @@ public class SmallMoleculeColumn implements ISmallMoleculeColumn {
         }
 
     };
-
-    private static Map<String, ISmallMoleculeColumn> columns = new LinkedHashMap<>();
-
-    private static Map<String, ISmallMoleculeColumn> optionalColumns = new LinkedHashMap<>();
-
-    /**
-     * <p>
-     * optional.</p>
-     *
-     * @param name a {@link java.lang.String} object.
-     * @param columnType a {@link java.lang.Class} object.
-     * @param optional a boolean.
-     * @param order a {@link java.lang.String} object.
-     * @param id a {@link java.lang.Integer} object.
-     * @return a {@link uk.ac.ebi.pride.jmztab2.model.ISmallMoleculeColumn}
-     * object.
-     */
-    public static ISmallMoleculeColumn optional(String name, Class columnType,
-        boolean optional,
-        String order, Integer id) {
-        if (optionalColumns.containsKey(name)) {
-            return optionalColumns.get(name);
-        }
-        ISmallMoleculeColumn c = new SmallMoleculeColumn(name, columnType,
-            optional, order, id);
-        optionalColumns.put(name, c);
-        return c;
-    }
 
     /**
      * {@inheritDoc}

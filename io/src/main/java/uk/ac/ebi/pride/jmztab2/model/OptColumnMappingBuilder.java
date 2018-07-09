@@ -21,7 +21,7 @@ import de.isas.mztab2.model.Parameter;
 
 /**
  * Builder for reusable {@link OptColumnMapping} creation for multiple rows.
- * 
+ *
  * @author nilshoffmann
  */
 public class OptColumnMappingBuilder {
@@ -31,6 +31,12 @@ public class OptColumnMappingBuilder {
     private IndexedElement indexedElement;
     private boolean global;
 
+    /**
+     * Configure the builder for a global type column. Mutually exclusive with {@link #withParameter(de.isas.mztab2.model.Parameter)
+     * }.
+     *
+     * @return the builder instance.
+     */
     public OptColumnMappingBuilder forGlobal() {
         if (this.param != null) {
             throw new IllegalStateException(
@@ -40,6 +46,14 @@ public class OptColumnMappingBuilder {
         return this;
     }
 
+    /**
+     * Configure this builder to create an optional column mapping with the
+     * provided name. Mutually exclusive with {@link #withParameter(de.isas.mztab2.model.Parameter)
+     * }.
+     *
+     * @param name the name of this optional column.
+     * @return the builder instance.
+     */
     public OptColumnMappingBuilder withName(String name) {
         if (this.param != null) {
             throw new IllegalStateException(
@@ -49,8 +63,19 @@ public class OptColumnMappingBuilder {
         return this;
     }
 
+    /**
+     * Configure this builder to create optional column mapping for an indexed
+     * element, such as
+     * {@link de.isas.mztab2.model.Assay}, {@link de.isas.mztab2.model.StudyVariable},
+     * or {@link de.isas.mztab2.model.MsRun}. Mutually exclusive with
+     * {@link #withName(java.lang.String)}.
+     *
+     * @param <T> The generic type of the indexed element.
+     * @param element the indexed element to reference in this optional column.
+     * @return the builder instance.
+     */
     public <T extends IndexedElement> OptColumnMappingBuilder forIndexedElement(
-        IndexedElement element) {
+        T element) {
         if (global) {
             throw new IllegalStateException(
                 "Can not set indexed element for global opt column!");
@@ -59,6 +84,12 @@ public class OptColumnMappingBuilder {
         return this;
     }
 
+    /**
+     * Configure this builder to create cv parameter optional columns.
+     *
+     * @param parameter the cv parameter for this mapping.
+     * @return the builder instance.
+     */
     public OptColumnMappingBuilder withParameter(Parameter parameter) {
         if (this.name != null) {
             throw new IllegalStateException(
@@ -83,6 +114,13 @@ public class OptColumnMappingBuilder {
         return this;
     }
 
+    /**
+     * Use the current builder state to create an OptColumnMapping with the
+     * provided value for e.g. a particular feature (row).
+     *
+     * @param value the value for the mapping.
+     * @return the optional column mapping built from this builder instance.
+     */
     public OptColumnMapping build(String value) {
 
         if (this.param != null) {

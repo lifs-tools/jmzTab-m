@@ -21,14 +21,12 @@ import de.isas.mztab2.model.StringList;
 import de.isas.mztab2.model.SmallMoleculeEvidence;
 import static de.isas.mztab2.model.SmallMoleculeEvidence.Properties.*;
 import java.util.Arrays;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * Define the stable columns and optional columns which have stable order in
- * small molecule feature header line.
+ * Define the stable columns which have stable order in the small molecule
+ * evidence header line. Refactored to contain an enum for stable columns.
  *
  * @author nilshoffmann
  * @since 11/09/17
@@ -48,6 +46,9 @@ public class SmallMoleculeEvidenceColumn implements ISmallMoleculeEvidenceColumn
         this.column = new MZTabColumn(name, dataType, optional, order, id);
     }
 
+    /**
+     * Stable {@link SmallMoleculeEvidenceColumn} definition templates.
+     */
     public static enum Stable {
         SME_ID(smeId.toUpper(), Integer.class, false, "01"),
         EVIDENCE_INPUT_ID(evidenceInputId, Integer.class, false, "02"),
@@ -75,8 +76,6 @@ public class SmallMoleculeEvidenceColumn implements ISmallMoleculeEvidenceColumn
             "15"),
         MS_LEVEL(msLevel, Parameter.class, false, "16"),
         RANK(rank, Integer.class, false, "17");
-        // FIXME check whether this works (indexed columns), may require custom serializer
-//        ID_CONFIDENCE_MEASURE("id_confidence_measure", StringList.class, true, "18");
 
         private final ISmallMoleculeEvidenceColumn column;
 
@@ -110,6 +109,13 @@ public class SmallMoleculeEvidenceColumn implements ISmallMoleculeEvidenceColumn
                 order, id);
         }
 
+        /**
+         * Returns a stable column instance template.
+         *
+         * @param name the column name (lower case).
+         * @return the stable column instance template.
+         * @throws IllegalArgumentException for unknown column names.
+         */
         public static SmallMoleculeEvidenceColumn.Stable forName(String name) throws IllegalArgumentException {
             SmallMoleculeEvidenceColumn.Stable s = Arrays.stream(
                 SmallMoleculeEvidenceColumn.Stable.values()).
@@ -123,17 +129,40 @@ public class SmallMoleculeEvidenceColumn implements ISmallMoleculeEvidenceColumn
             return s;
         }
 
+        /**
+         * Returns a new {@link ISmallMoleculeEvidenceColumn} instance for the
+         * given stable column template.
+         *
+         * @param s the small molecule evidence stable column template.
+         * @return a new small molecule column instance
+         * {@link SmallMoleculeEvidenceColumn}.
+         */
         public static ISmallMoleculeEvidenceColumn columnFor(
             SmallMoleculeEvidenceColumn.Stable s) {
             return new SmallMoleculeEvidenceColumn(s.column.getName(), s.column.
                 getDataType(), s.column.isOptional(), s.column.getOrder());
         }
 
+       /**
+         * Returns a new {@link ISmallMoleculeEvidenceColumn} instance for the
+         * given stable column name.
+         *
+         * @param name the small molecule stable column template name (lower
+         * case).
+         * @return a new small molecule column instance
+         * {@link SmallMoleculeEvidenceColumn}.
+         * @throws IllegalArgumentException for unknown column names.
+         */
         public static ISmallMoleculeEvidenceColumn columnFor(String name) throws IllegalArgumentException {
             return columnFor(forName(name));
         }
 
-        public static List<SmallMoleculeEvidenceColumn> columns() {
+        /**
+         * Returns all stable {@link SmallMoleculeEvidenceColumn} templates.
+         *
+         * @return the stable small molecule columns templates.
+         */
+        public static List<ISmallMoleculeEvidenceColumn> columns() {
             return Arrays.stream(SmallMoleculeEvidenceColumn.Stable.values()).
                 map((s) ->
                 {
@@ -144,35 +173,6 @@ public class SmallMoleculeEvidenceColumn implements ISmallMoleculeEvidenceColumn
                 collect(Collectors.toList());
         }
     };
-
-    private static Map<String, ISmallMoleculeEvidenceColumn> optionalColumns = new LinkedHashMap<>();
-
-    /**
-     * <p>
-     * optional.</p>
-     *
-     * @param name a {@link java.lang.String} object.
-     * @param columnType a {@link java.lang.Class} object.
-     * @param optional a boolean.
-     * @param order a {@link java.lang.String} object.
-     * @param id a {@link java.lang.Integer} object.
-     * @return a
-     * {@link uk.ac.ebi.pride.jmztab2.model.ISmallMoleculeEvidenceColumn}
-     * object.
-     */
-    public static ISmallMoleculeEvidenceColumn optional(String name,
-        Class columnType,
-        boolean optional,
-        String order, Integer id) {
-        if (optionalColumns.containsKey(name)) {
-            return optionalColumns.get(name);
-        }
-        ISmallMoleculeEvidenceColumn c = new SmallMoleculeEvidenceColumn(name,
-            columnType,
-            optional, order, id);
-        optionalColumns.put(name, c);
-        return c;
-    }
 
     /**
      * {@inheritDoc}

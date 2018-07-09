@@ -52,10 +52,9 @@ import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorType;
 /**
  * Parse a metadata line into a element. Metadata Element start with MTD, its
  * structure like: MTD
- * {@link uk.ac.ebi.pride.jmztab2.model.MetadataElement}([id])(-{@link uk.ac.ebi.pride.jmztab2.model.MetadataSubElement}[pid])(-{@link uk.ac.ebi.pride.jmztab2.model.MetadataProperty})    {Element Value}
+ * {@link uk.ac.ebi.pride.jmztab2.model.MetadataElement}([id])(-{@link uk.ac.ebi.pride.jmztab2.model.MetadataProperty})    {Element Value}
  *
  * @see MetadataElement
- * @see MetadataSubElement
  * @see MetadataProperty
  * @author qingwei
  * @author nilshoffmann

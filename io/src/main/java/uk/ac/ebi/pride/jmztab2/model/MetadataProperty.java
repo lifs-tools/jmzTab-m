@@ -16,7 +16,7 @@
 package uk.ac.ebi.pride.jmztab2.model;
 
 /**
- * Define a property in metadata, which depend on the {@link uk.ac.ebi.pride.jmztab2.model.MetadataElement} or {@link uk.ac.ebi.pride.jmztab2.model.MetadataSubElement}
+ * Define a property in metadata, which depend on the {@link uk.ac.ebi.pride.jmztab2.model.MetadataElement}.
  *
  * @author qingwei
  * @author nilshoffmann
