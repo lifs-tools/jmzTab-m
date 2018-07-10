@@ -4,10 +4,10 @@
   <parent>
     <artifactId>jmztabm</artifactId>
     <groupId>de.isas.mztab</groupId>
-    <version>0.9.8</version>
+    <version>0.9.9-SNAPSHOT</version>
   </parent>
   <artifactId>jmztabm-api</artifactId>
-  <version>0.9.8</version>
+  <version>0.9.9-SNAPSHOT</version>
   <packaging>jar</packaging>
   <build>
     <plugins>
