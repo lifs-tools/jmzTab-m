@@ -31,7 +31,6 @@ import de.isas.mztab2.model.SampleProcessing;
 import de.isas.mztab2.model.Software;
 import de.isas.mztab2.model.StudyVariable;
 import java.net.URI;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -1374,15 +1373,15 @@ public class MZTabParserContext {
     }
 
     /**
-     * Add a cv[id]-url. A string containing the URLs of the controlled vocabularies/ontologies used in the
+     * Add a cv[id]-uri. A string containing the URIs of the controlled vocabularies/ontologies used in the
      * mzTab file
      *
      * @param id SHOULD be positive integer.
      * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
-     * @param url a {@link java.lang.String} object.
+     * @param uri a {@link java.lang.String} object.
      * @return a {@link de.isas.mztab2.model.CV} object.
      */
-    public CV addCVURL(Metadata metadata, Integer id, String url) {
+    public CV addCVURI(Metadata metadata, Integer id, String uri) {
         if (id <= 0) {
             throw new IllegalArgumentException("controlled vocabularies id should be greater than 0!");
         }
@@ -1394,7 +1393,7 @@ public class MZTabParserContext {
             metadata.addCvItem(cv);
         }
 
-        cv.setUrl(url);
+        cv.setUri(uri);
         return cvMap.put(id, cv);
     }
 
@@ -1582,10 +1581,10 @@ public class MZTabParserContext {
      *
      * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
      * @param id a {@link java.lang.Integer} object.
-     * @param checkURL a {@link java.net.URL} object.
+     * @param checkURI a {@link java.net.URI} object.
      * @return a {@link de.isas.mztab2.model.Database} object.
      */
-    public Database addDatabaseUrl(Metadata metadata, Integer id, URL checkURL) {
+    public Database addDatabaseUri(Metadata metadata, Integer id, URI checkURI) {
         if (id <= 0) {
             throw new IllegalArgumentException("database id should be greater than 0!");
         }
@@ -1594,11 +1593,11 @@ public class MZTabParserContext {
         if (database == null) {
             database = new Database();
             database.id(id);
-            database.setUrl(checkURL==null?null:checkURL.toString());
+            database.setUri(checkURI==null?null:checkURI.toString());
             databaseMap.put(id, database);
             metadata.addDatabaseItem(database);
         } else {
-            database.setUrl(checkURL==null?null:checkURL.toString());
+            database.setUri(checkURI==null?null:checkURI.toString());
         }
         return database;
     }

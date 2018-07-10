@@ -69,6 +69,8 @@ public class CvMappingValidator implements Validator<MzTab> {
     private final CvTermValidationHandler sharedHandler;
     private final EmptyRuleHandler emptyRuleHandler;
     private final RemoveUserParams cvTermSelectionHandler;
+    private final List<Validator<MzTab>> preValidators = new LinkedList<>();
+    private final List<Validator<MzTab>> postValidators = new LinkedList<>();
 
     public static CvMappingValidator of(File mappingFile,
         boolean errorIfTermNotInRule) throws JAXBException {
@@ -95,7 +97,18 @@ public class CvMappingValidator implements Validator<MzTab> {
             sharedHandler(new SharedParametersValidationHandler()).
             cvTermSelectionHandler(new RemoveUserParams()).
             emptyRuleHandler(new EmptyRuleHandler()).
-            build();
+            build().
+            withPreValidator(new CvDefinitionValidationHandler());
+    }
+
+    public CvMappingValidator withPreValidator(Validator<MzTab> preValidator) {
+        preValidators.add(preValidator);
+        return this;
+    }
+
+    public CvMappingValidator withPostValidator(Validator<MzTab> postValidator) {
+        postValidators.add(postValidator);
+        return this;
     }
 
     public static CvMappingValidator of(URL mappingFile,
@@ -122,7 +135,8 @@ public class CvMappingValidator implements Validator<MzTab> {
             sharedHandler(new SharedParametersValidationHandler()).
             cvTermSelectionHandler(new RemoveUserParams()).
             emptyRuleHandler(new EmptyRuleHandler()).
-            build();
+            build().
+            withPreValidator(new CvDefinitionValidationHandler());
     }
 
     public static CvMappingValidator of(CvMapping mapping,
@@ -139,19 +153,36 @@ public class CvMappingValidator implements Validator<MzTab> {
             sharedHandler(new SharedParametersValidationHandler()).
             cvTermSelectionHandler(new RemoveUserParams()).
             emptyRuleHandler(new EmptyRuleHandler()).
-            build();
+            build().
+            withPreValidator(new CvDefinitionValidationHandler());
     }
 
     @Override
     public List<ValidationMessage> validate(MzTab mzTab) {
         final List<ValidationMessage> messages = new LinkedList<>();
+        log.debug("Applying {} pre validation steps.", preValidators.size());
+        preValidators.stream().
+            forEach((validator) ->
+            {
+                messages.addAll(validator.validate(mzTab));
+            });
         messages.addAll(new CvDefinitionValidationHandler().validate(mzTab));
         JXPathContext context = JXPathContext.newContext(mzTab);
+        log.debug("Applying {} cv rule mapping steps.", mapping.
+            getCvMappingRuleList().
+            getCvMappingRule().
+            size());
         mapping.getCvMappingRuleList().
             getCvMappingRule().
             forEach((rule) ->
             {
                 messages.addAll(handleRule(context, rule, errorIfTermNotInRule));
+            });
+        log.debug("Applying {} post validation steps.", preValidators.size());
+        postValidators.stream().
+            forEach((validator) ->
+            {
+                messages.addAll(validator.validate(mzTab));
             });
         return messages;
     }

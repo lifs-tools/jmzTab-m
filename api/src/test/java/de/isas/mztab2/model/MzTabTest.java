@@ -308,7 +308,7 @@ MTD	id_confidence_measure[3]	[,,Isotopic fit Score,]
             label("MS").
             fullName("PSI-MS ontology").
             version("3.54.0").
-            url("https://raw.githubusercontent.com/HUPO-PSI/psi-ms-CV/master/psi-ms.obo"));
+            uri("https://raw.githubusercontent.com/HUPO-PSI/psi-ms-CV/master/psi-ms.obo"));
         mtd.addIdConfidenceMeasureItem(new Parameter().id(1).
             name("some confidence measure term"));
         

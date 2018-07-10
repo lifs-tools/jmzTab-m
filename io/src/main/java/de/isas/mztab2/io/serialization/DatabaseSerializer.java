@@ -80,7 +80,7 @@ public class DatabaseSerializer extends StdSerializer<Database> {
                 addLineWithNullProperty(jg, Section.Metadata.getPrefix(),
                     Database.Properties.prefix.getPropertyName(), database);
                 addLineWithProperty(jg, Section.Metadata.getPrefix(),
-                    Database.Properties.url.getPropertyName(), database,
+                    Database.Properties.uri.getPropertyName(), database,
                     "null");
             } else {
                 addLineWithProperty(jg, Section.Metadata.getPrefix(),
@@ -88,8 +88,8 @@ public class DatabaseSerializer extends StdSerializer<Database> {
                     database.
                         getPrefix());
                 addLineWithProperty(jg, Section.Metadata.getPrefix(),
-                    Database.Properties.url.getPropertyName(), database,
-                    database.getUrl());
+                    Database.Properties.uri.getPropertyName(), database,
+                    database.getUri());
             }
             addLineWithProperty(jg, Section.Metadata.getPrefix(),
                 Database.Properties.version.getPropertyName(), database,

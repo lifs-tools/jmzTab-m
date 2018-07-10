@@ -62,13 +62,13 @@ MTD	study_variable[2]-assay_refs	assay[1], assay[2]
 MTD	cv[1]-label	MS
 MTD	cv[1]-full_name	MS
 MTD	cv[1]-version	3.54.0
-MTD	cv[1]-url	http://psidev.cvs.sourceforge.net/viewvc/psidev/psi/psi-ms/mzML/controlledVocabulary/psi-ms.obo
+MTD	cv[1]-uri	http://psidev.cvs.sourceforge.net/viewvc/psidev/psi/psi-ms/mzML/controlledVocabulary/psi-ms.obo
 MTD	colunit-small_molecule	retention_time=[UO, UO:0000031, minute, ]
 MTD	custom[1]	[, , MS operator, Florian]
 MTD	database[1]	[, , "no database", null]
 MTD	database[1]-prefix	null
 MTD	database[1]-version	Unknown
-MTD	database[1]-url	null
+MTD	database[1]-uri	null
 MTD	small_molecule-quantification_unit	[PSI-MS, MS:1002887, Progenesis QI normalised abundance, ]
 MTD	small_molecule_feature-quantification_unit	[PSI-MS, MS:1002887, Progenesis QI normalised abundance, ]
 MTD	id_confidence_measure[1]	[MS,MS:1002889,Progenesis MetaScope Score,]

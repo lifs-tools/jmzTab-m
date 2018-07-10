@@ -590,12 +590,12 @@ public class MzTabWriterTest {
             addStudyVariableItem(sv2);
         mtd.addCvItem(new CV().id(1).
             label("MS").
-            url("https://raw.githubusercontent.com/HUPO-PSI/psi-ms-CV/master/psi-ms.obo").
+            uri("https://raw.githubusercontent.com/HUPO-PSI/psi-ms-CV/master/psi-ms.obo").
             version("4.0.9").
             fullName("PSI-MS controlled vocabulary"));
         mtd.addDatabaseItem(new Database().id(1).
             prefix(null).
-            url(null).
+            uri(null).
             version("Undefined").
             param(new Parameter().name("no database").
                 value(null)));

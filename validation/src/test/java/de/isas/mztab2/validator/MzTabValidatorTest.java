@@ -147,7 +147,7 @@ public class MzTabValidatorTest {
         CV cv1 = new CV().label("MS").
             fullName("PSI-MS").
             version("4.0.18").
-            url("https://github.com/HUPO-PSI/psi-ms-CV/blob/master/psi-ms.obo");
+            uri("https://github.com/HUPO-PSI/psi-ms-CV/blob/master/psi-ms.obo");
         cv1.id(1);
         mztabfile.getMetadata().
             addCvItem(cv1);

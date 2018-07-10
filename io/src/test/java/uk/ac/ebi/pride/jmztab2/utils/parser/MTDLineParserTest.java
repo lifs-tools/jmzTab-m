@@ -15,8 +15,6 @@
  */
 package uk.ac.ebi.pride.jmztab2.utils.parser;
 
-import uk.ac.ebi.pride.jmztab2.utils.parser.MTDLineParser;
-import uk.ac.ebi.pride.jmztab2.utils.parser.MZTabParserContext;
 import de.isas.mztab2.model.Assay;
 import de.isas.mztab2.model.Metadata;
 import de.isas.mztab2.model.MsRun;
@@ -39,7 +37,6 @@ import org.junit.Rule;
 import de.isas.mztab2.test.utils.LogMethodName;
 import org.junit.Assert;
 import uk.ac.ebi.pride.jmztab2.model.MZTabStringUtils;
-import uk.ac.ebi.pride.jmztab2.model.MZTabUtils;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorList;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorType;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabException;
@@ -69,15 +66,6 @@ public class MTDLineParserTest {
 
     @Test
     public void testQuantMethod() throws MZTabException {
-        //        parser.parse(1, "MTD\tfixed_mod[11]\t[UNIMOD, UNIMOD:4, Carbamidomethyl, ]", errorList);
-//        parser.parse(1, "MTD\tfixed_mod[11]-site\tM", errorList);
-//        parser.parse(1, "MTD\tfixed_mod[2]\t[UNIMOD, UNIMOD:35, Oxidation, ]", errorList);
-//        parser.parse(1, "MTD\tfixed_mod[2]-site\tN-term", errorList);
-//        parser.parse(1, "MTD\tfixed_mod[3]\t[UNIMOD, UNIMOD:1, Acetyl, ]", errorList);
-//        parser.parse(1, "MTD\tfixed_mod[3]-position\tProtein C-term", errorList);
-//        assertTrue(metadata.getFixedModMap().size() == 3);
-//        assertTrue(metadata.getFixedModMap().get(11).getSite().equals("M"));
-//        assertTrue(metadata.getVariableModMap().size() == 0);
         parser.parse(1, "MTD\tquantification_method\t[MS, MS:1001837, iTraq, ]",
             errorList);
         assertTrue(metadata.getQuantificationMethod() != null);
@@ -117,14 +105,6 @@ public class MTDLineParserTest {
 
     @Test
     public void testPublication() throws MZTabException {
-        //        parser.parse(1, "MTD\tprotein_search_engine_score[1]\t[MS, MS:1001171, Mascot:score,]", errorList);
-//        parser.parse(1, "MTD\tpsm_search_engine_score[2]\t[MS, MS:1001330, X!Tandem:expect,]", errorList);
-//        parser.parse(1, "MTD\tpsm_search_engine_score[3]\t[MS, MS:1001331, X!Tandem:hyperscore,]", errorList);
-//        assertTrue(metadata.getProteinSearchEngineScoreMap().size() == 1);
-//        param = metadata.getProteinSearchEngineScoreMap().get(1).getParam();
-//        assertTrue(param.toString().contains("score"));
-//        parser.parse(1, "MTD\tfalse_discovery_rate\t[MS, MS:1234, pep-fdr, 0.5]|[MS, MS:1001364, pep:global FDR, 0.01]|[MS, MS:1001214, pep:global FDR, 0.08]", errorList);
-//        assertTrue(metadata.getFalseDiscoveryRate().size() == 3);
         parser.parse(1,
             "MTD\tpublication[1]\tpubmed:21063943|doi:10.1007/978-1-60761-987-1_6",
             errorList);
@@ -247,18 +227,6 @@ public class MTDLineParserTest {
         } catch (MZTabException ex) {
 
         }
-
-//        parser.parse(1, "MTD\tmzTab-mode\tComplete", errorList);
-//        assertTrue(metadata.getTabDescription().getMode() == MZTabDescription.Mode.Complete);
-//
-//        parser.parse(1, "MTD\tmzTab-mode\tSummary", errorList);
-//        assertTrue(metadata.getTabDescription().getMode() == MZTabDescription.Mode.Summary);
-//
-//        parser.parse(1, "MTD\tmzTab-type\tQuantification", errorList);
-//        assertTrue(metadata.getTabDescription().getType() == MZTabDescription.Type.Quantification);
-//
-//        parser.parse(1, "MTD\tmzTab-type\tIdentification", errorList);
-//        assertTrue(metadata.getTabDescription().getType() == MZTabDescription.Type.Identification);
         parser.parse(1, "MTD\tmzTab-ID\tPRIDE_1234", errorList);
         assertTrue(metadata.getMzTabID().
             equals("PRIDE_1234"));
@@ -280,7 +248,7 @@ public class MTDLineParserTest {
             errorList);
         parser.parse(1, "MTD\tdatabase[1]-prefix\thmdb", errorList);
         parser.parse(1, "MTD\tdatabase[1]-version\t3.6", errorList);
-        parser.parse(1, "MTD\tdatabase[1]-url\thttp://www.hmdb.ca/", errorList);
+        parser.parse(1, "MTD\tdatabase[1]-uri\thttp://www.hmdb.ca/", errorList);
         assertFalse(context.getDatabaseMap().
             isEmpty());
         assertNotNull(context.getDatabaseMap().
@@ -293,7 +261,7 @@ public class MTDLineParserTest {
             getVersion());
         assertEquals("http://www.hmdb.ca/", context.getDatabaseMap().
             get(1).
-            getUrl());
+            getUri());
         assertEquals(new Parameter().cvLabel("MIRIAM").
             cvAccession("MIR:00100079").
             name("“HMDB”").
@@ -315,7 +283,7 @@ public class MTDLineParserTest {
         parser.parse(1, "MTD\tcv[12]-full_name\tMS", errorList);
         parser.parse(1, "MTD\tcv[1]-version\t3.54.0", errorList);
         parser.parse(1,
-            "MTD\tcv[12]-url\thttp://psidev.cvs.sourceforge.net/viewvc/psidev/psi/psi-ms/mzML/controlledVocabulary/psi-ms.obo",
+            "MTD\tcv[12]-uri\thttp://psidev.cvs.sourceforge.net/viewvc/psidev/psi/psi-ms/mzML/controlledVocabulary/psi-ms.obo",
             errorList);
         assertTrue(context.getCvMap().
             size() == 2);
@@ -325,7 +293,7 @@ public class MTDLineParserTest {
             equals("3.54.0"));
         assertTrue(context.getCvMap().
             get(12).
-            getUrl().
+            getUri().
             equals(
                 "http://psidev.cvs.sourceforge.net/viewvc/psidev/psi/psi-ms/mzML/controlledVocabulary/psi-ms.obo"));
     }
@@ -573,18 +541,6 @@ public class MTDLineParserTest {
             get(2).
             getMsRunRef().get(0).
             equals(msRun2));
-
-//        parser.parse(1, "MTD\tassay[2]-quantification_mod[1]\t[UNIMOD, UNIMOD:188, Label:13C(6), ]", errorList);
-//        parser.parse(1, "MTD\tassay[2]-quantification_mod[1]-site\tR", errorList);
-//        parser.parse(1, "MTD\tassay[2]-quantification_mod[1]-position\tAnywhere", errorList);
-//        parser.parse(1, "MTD\tassay[2]-quantification_mod[2]\t[UNIMOD, UNIMOD:188, Label:13C(6), ]", errorList);
-//        parser.parse(1, "MTD\tassay[2]-quantification_mod[2]-site\tK", errorList);
-//        parser.parse(1, "MTD\tassay[2]-quantification_mod[2]-position\tAnywhere", errorList);
-//        assertTrue(context.getAssayMap().get(2).getQuantificationModMap().size() == 2);
-//        AssayQuantificationMod quantificationMod = metadata.getAssayMap().get(2).getQuantificationModMap().get(1);
-//        assertTrue(quantificationMod.getSite().equals("R"));
-//        quantificationMod = metadata.getAssayMap().get(2).getQuantificationModMap().get(2);
-//        assertTrue(quantificationMod.getPosition().equals("Anywhere"));
     }
 
     @Test
@@ -667,14 +623,6 @@ public class MTDLineParserTest {
 
     @Test
     public void testSmQuantUnit() throws MZTabException {
-        //        parser.parse(1, "MTD\tprotein-quantification_unit\t[PRIDE, PRIDE:0000395, Ratio, ]", errorList);
-        //        parser.parse(1, "MTD\tpeptide-quantification_unit\t[PRIDE, PRIDE:0000395, Ratio, ]", errorList);
-        //        parser.parse(1,
-        //            "MTD\tsmall_molecule-quantification_unit\t[PRIDE, PRIDE:0000395, Ratio, ]",
-        //            errorList);
-        //        assertTrue(metadata.getProteinQuantificationUnit() != null);
-        //        assertTrue(metadata.getPeptideQuantificationUnit() != null);
-//        assertTrue(metadata.getSmallMoleculeQuantificationUnit() != null);
         String toParse = "MTD\tsmall_molecule-quantification_unit\t[PSI-MS, MS:000XXXX, Progenesis QI Normalised Abundance, ]";
         errorList = new MZTabErrorList(MZTabErrorType.Level.Warn);
         parser.parse(1, toParse, errorList);

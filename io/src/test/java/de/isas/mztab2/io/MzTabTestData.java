@@ -362,7 +362,7 @@ public class MzTabTestData {
             label("MS").
             fullName("PSI-MS ontology").
             version("3.54.0").
-            url("https://raw.githubusercontent.com/HUPO-PSI/psi-ms-CV/master/psi-ms.obo"));
+            uri("https://raw.githubusercontent.com/HUPO-PSI/psi-ms-CV/master/psi-ms.obo"));
 //
 //        mtd.addQuantificationMethodItem(new Parameter().cvLabel("MS").
 //            cvAccession("MS:1001837").

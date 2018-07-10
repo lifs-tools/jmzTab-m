@@ -741,7 +741,7 @@ definitions:
         enum:
           - doi
           - pubmed
-          - url
+          - uri
         default: doi
       accession:
         type: string
@@ -827,6 +827,7 @@ definitions:
             type: string
           location:
             type: string
+            format: uri
           instrument_ref:
             $ref: '#/definitions/Instrument'
           format:
@@ -908,7 +909,7 @@ definitions:
           - label
           - full_name
           - version
-          - url
+          - uri
         properties:
           label:
             type: string
@@ -916,10 +917,9 @@ definitions:
             type: string
           version:
             type: string
-          url:
+          uri:
             type: string
-            pattern: >-
-              (http|ftp|https)://[\w-]+(\.[\w-]+)+([\w.,@?^=%&amp;:/~+#-]*[\w@?^=%&amp;/~+#-])?
+            format: uri
   Database:
     allOf:
       - $ref: '#/definitions/IndexedElement'
@@ -928,7 +928,7 @@ definitions:
           - param
           - prefix
           - version
-          - url
+          - uri
         properties:
           param:
             $ref: '#/definitions/Parameter'
@@ -936,8 +936,9 @@ definitions:
             type: string
           version:
             type: string
-          url:
+          uri:
             type: string
+            format: uri
   ColumnParameterMapping:
     type: object
     required:

@@ -464,30 +464,6 @@ public class MZTabUtils {
 
     /**
      * <p>
-     * parseURL.</p>
-     *
-     * @param target a {@link java.lang.String} object.
-     * @return a {@link java.net.URL} object.
-     */
-    public static URL parseURL(String target) {
-        target = parseString(target);
-        if (target == null) {
-            return null;
-        }
-
-        URL url;
-
-        try {
-            url = new URL(target);
-        } catch (MalformedURLException e) {
-            url = null;
-        }
-
-        return url;
-    }
-
-    /**
-     * <p>
      * parseURI.</p>
      *
      * @param target a {@link java.lang.String} object.

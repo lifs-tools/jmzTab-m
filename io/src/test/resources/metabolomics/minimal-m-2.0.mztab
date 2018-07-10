@@ -24,7 +24,7 @@ MTD	contact[1]-email	watson@cam.ac.uk
 MTD	contact[2]-name	Francis Crick
 MTD	contact[2]-affiliation	Cambridge University, UK
 MTD	contact[2]-email	crick@cam.ac.uk
-MTD	uri[1]	http://www.ebi.ac.uk/pride/url/to/experiment
+MTD	uri[1]	http://www.ebi.ac.uk/pride/uri/to/experiment
 MTD	uri[2]	http://proteomecentral.proteomexchange.org/cgi/GetDataset
 MTD	quantification_method	[MS, MS:1001834, LC-MS label-free quantitation analysis, ]
 MTD	ms_run[1]-format	[MS, MS:1000584, mzML file, ]
@@ -62,13 +62,13 @@ MTD	study_variable[2]-assay_refs	assay[1], assay[2]
 MTD	cv[1]-label	MS
 MTD	cv[1]-full_name	MS
 MTD	cv[1]-version	3.54.0
-MTD	cv[1]-url	http://psidev.cvs.sourceforge.net/viewvc/psidev/psi/psi-ms/mzML/controlledVocabulary/psi-ms.obo
+MTD	cv[1]-uri	http://psidev.cvs.sourceforge.net/viewvc/psidev/psi/psi-ms/mzML/controlledVocabulary/psi-ms.obo
 MTD	colunit-small_molecule	retention_time=[UO, UO:0000031, minute, ]
 MTD	custom[1]	[, , MS operator, Florian]
 MTD	database[1]	[, , "no database", null]
 MTD	database[1]-prefix	null
 MTD	database[1]-version	Unknown
-MTD	database[1]-url	null
+MTD	database[1]-uri	null
 MTD	small_molecule-quantification_unit	[MS, MS:1002887, Progenesis QI normalised abundance, ]
 MTD	small_molecule_feature-quantification_unit	[MS, MS:1002887, Progenesis QI normalised abundance, ]
 MTD	id_confidence_measure[1]	[MS,MS:1002889,Progenesis MetaScope Score,]

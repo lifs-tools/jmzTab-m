@@ -52,16 +52,16 @@ public class DatabaseSerializerTest extends AbstractSerializerTest {
                 name("HMDB")).
             version("3.6").
             prefix("hmdb").
-            url("http://www.hmdb.ca/"));
+            uri("http://www.hmdb.ca/"));
 
-        //param prefix url version
+        //param prefix uri version
         assertEqSentry(MTD + TAB_STRING + Metadata.Properties.database + "[1]" + TAB_STRING + "[, , no database, null]" + NEW_LINE
             + MTD + TAB_STRING + Metadata.Properties.database + "[1]-prefix" + TAB_STRING + "null" + NEW_LINE
-            + MTD + TAB_STRING + Metadata.Properties.database + "[1]-url" + TAB_STRING + "null" + NEW_LINE
+            + MTD + TAB_STRING + Metadata.Properties.database + "[1]-uri" + TAB_STRING + "null" + NEW_LINE
             + MTD + TAB_STRING + Metadata.Properties.database + "[1]-version" + TAB_STRING + "Unknown" + NEW_LINE
             + MTD + TAB_STRING + Metadata.Properties.database + "[2]" + TAB_STRING + "[MIRIAM, MIR:00100079, HMDB, ]" + NEW_LINE
             + MTD + TAB_STRING + Metadata.Properties.database + "[2]-prefix" + TAB_STRING + "hmdb" + NEW_LINE
-            + MTD + TAB_STRING + Metadata.Properties.database + "[2]-url" + TAB_STRING + "http://www.hmdb.ca/" + NEW_LINE
+            + MTD + TAB_STRING + Metadata.Properties.database + "[2]-uri" + TAB_STRING + "http://www.hmdb.ca/" + NEW_LINE
             + MTD + TAB_STRING + Metadata.Properties.database + "[2]-version" + TAB_STRING + "3.6" + NEW_LINE,
             serializeSingle(writer, mtd));
     }

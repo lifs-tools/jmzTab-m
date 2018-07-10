@@ -137,6 +137,10 @@ The following snippet will parse an mzTabFile from a file on disk:
   //access the file after parsing
   MzTab mzTab = parser.getMZTabFile();
 
+=== Creating an mzTab 2.0 object model
+
+
+
 === Writing mzTab 2.0 with validation
 
 The following code writes an mzTab object structure to the provided file path,

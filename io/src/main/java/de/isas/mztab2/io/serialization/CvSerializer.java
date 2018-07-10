@@ -74,9 +74,9 @@ public class CvSerializer extends StdSerializer<CV> {
                 cv.
                     getLabel());
             addLineWithProperty(jg, Section.Metadata.getPrefix(),
-                CV.Properties.url.getPropertyName(), cv,
+                CV.Properties.uri.getPropertyName(), cv,
                 cv.
-                    getUrl());
+                    getUri());
             addLineWithProperty(jg, Section.Metadata.getPrefix(),
                 CV.Properties.version.getPropertyName(), cv,
                 cv.getVersion());

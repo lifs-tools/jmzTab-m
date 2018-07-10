@@ -72,11 +72,11 @@ public enum MetadataProperty {
     CV_LABEL                              (MetadataElement.CV,                                  "label"),
     CV_FULL_NAME                          (MetadataElement.CV,                                  "full_name"),
     CV_VERSION                            (MetadataElement.CV,                                  "version"),
-    CV_URL                                (MetadataElement.CV,                                  "url"),
+    CV_URI                                (MetadataElement.CV,                                  "uri"),
     
     DATABASE_PREFIX                       (MetadataElement.DATABASE,                             "prefix"),
     DATABASE_VERSION                      (MetadataElement.DATABASE,                             "version"),
-    DATABASE_URL                          (MetadataElement.DATABASE,                             "url");
+    DATABASE_URI                          (MetadataElement.DATABASE,                             "uri");
     
     private String name;
     private MetadataElement element;
