@@ -126,7 +126,7 @@ MTD	cv[5]-uri	https://www.ebi.ac.uk/ols/ontologies/bto
 MTD	cv[6]-label	SEP																			
 MTD	cv[6]-full_name	Sample Processing and Separation Techniques Ontology																			
 MTD	cv[6]-version	1.070708																			
-MTD	cv[6]-uri	http://puri.bioontology.org/ontology/SEP	
+MTD	cv[6]-uri	http://purl.bioontology.org/ontology/SEP	
 MTD	small_molecule-quantification_unit	[PRIDE, PRIDE:0000330, Arbitrary quantification unit, ]
 MTD	small_molecule_feature-quantification_unit	[PRIDE, PRIDE:0000330, Arbitrary quantification unit, ]
 MTD	small_molecule-identification_reliability	[MS, MS:XXXXX, MSI-2007-numeric, ]
