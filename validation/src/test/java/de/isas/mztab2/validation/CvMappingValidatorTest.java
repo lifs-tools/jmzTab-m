@@ -25,7 +25,6 @@ import de.isas.mztab2.model.Parameter;
 import de.isas.mztab2.model.ValidationMessage;
 import de.isas.mztab2.validation.handlers.EmptyRuleHandler;
 import de.isas.mztab2.validation.handlers.ResolvingCvRuleHandler;
-import de.isas.mztab2.validator.MzTabValidatorTest;
 import info.psidev.cvmapping.CvMappingRule;
 import info.psidev.cvmapping.CvReference;
 import info.psidev.cvmapping.CvTerm;

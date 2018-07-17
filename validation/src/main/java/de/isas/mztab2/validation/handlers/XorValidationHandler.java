@@ -21,7 +21,9 @@ import de.isas.mztab2.cvmapping.RuleEvaluationResult;
 import de.isas.mztab2.io.serialization.ParameterConverter;
 import de.isas.mztab2.model.ValidationMessage;
 import de.isas.mztab2.validation.CvTermValidationHandler;
+import info.psidev.cvmapping.CvMappingRule;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -43,12 +45,16 @@ public class XorValidationHandler implements CvTermValidationHandler {
         final List<ValidationMessage> messages = new ArrayList<>();
         // all defined terms or children thereof need to appear
         Set<String> matchedParameters = new HashSet<String>();
-        matchedParameters.addAll(result.getAllowedParameters().keySet());
-        matchedParameters.retainAll(result.getFoundParameters().keySet());
+        matchedParameters.addAll(result.getAllowedParameters().
+            keySet());
+        matchedParameters.retainAll(result.getFoundParameters().
+            keySet());
         if (matchedParameters.isEmpty()) {
-            for (String s : result.getAllowedParameters().keySet()) {
+            for (String s : result.getAllowedParameters().
+                keySet()) {
                 MZTabErrorType errorType = null;
-                switch (result.getRule().getRequirementLevel()) {
+                switch (result.getRule().
+                    getRequirementLevel()) {
                     case MAY:
                         errorType = CrossCheckErrorType.CvTermOptional;
                         break;
@@ -58,12 +64,22 @@ public class XorValidationHandler implements CvTermValidationHandler {
                     case MUST:
                         errorType = CrossCheckErrorType.CvTermRequired;
                         break;
+                    default:
+                        throw new IllegalArgumentException(
+                            "Unknown requirement level value: " + result.
+                                getRule().
+                                getRequirementLevel() + "! Supported are: " + Arrays.
+                                toString(CvMappingRule.RequirementLevel.
+                                    values()));
                 }
                 MZTabError error = new MZTabError(errorType, -1,
-                    new ParameterConverter().convert(result.getAllowedParameters().get(
-                        s)), result.getRule().getCvElementPath(), CvMappingUtils.
-                    niceToString(
-                        result.getRule()));
+                    new ParameterConverter().convert(result.
+                        getAllowedParameters().
+                        get(
+                            s)), result.getRule().
+                        getCvElementPath(), CvMappingUtils.
+                        niceToString(
+                            result.getRule()));
                 messages.add(error.toValidationMessage());
             }
         } else if (matchedParameters.size() > 1) {
@@ -72,10 +88,13 @@ public class XorValidationHandler implements CvTermValidationHandler {
                 collect(Collectors.joining(", "));
             MZTabErrorType xorErrorType = MZTabErrorType.forLevel(
                 MZTabErrorType.Category.CrossCheck,
-                toErrorLevel(result.getRule().getRequirementLevel()), "CvTermXor");
-            MZTabError error = new MZTabError(xorErrorType, -1, result.getRule().
-                getRequirementLevel().
-                value(), result.getRule().getCvElementPath(), definedParameters,
+                toErrorLevel(result.getRule().
+                    getRequirementLevel()), "CvTermXor");
+            MZTabError error = new MZTabError(xorErrorType, -1,
+                result.getRule().
+                    getRequirementLevel().
+                    value(), result.getRule().
+                    getCvElementPath(), definedParameters,
                 CvMappingUtils.niceToString(result.getRule()));
             messages.add(error.toValidationMessage());
         }

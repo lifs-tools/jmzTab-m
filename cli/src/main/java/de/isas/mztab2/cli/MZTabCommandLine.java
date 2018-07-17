@@ -17,7 +17,9 @@ package de.isas.mztab2.cli;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import de.isas.mztab2.io.MzTabNonValidatingWriter;
 import de.isas.mztab2.validation.CvMappingValidator;
+import de.isas.mztab2.model.MzTab;
 import de.isas.mztab2.model.ValidationMessage;
 import static de.isas.mztab2.model.ValidationMessage.MessageTypeEnum.ERROR;
 import static de.isas.mztab2.model.ValidationMessage.MessageTypeEnum.WARN;
@@ -27,7 +29,7 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
+import java.io.PrintStream;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -185,70 +187,92 @@ public class MZTabCommandLine {
                 System.out.println("Redirecting output to file " + outFile);
             }
 
-            System.out.println(getAppInfo());
-            MZTabErrorType.Level level = MZTabErrorType.Level.Info;
-            if (line.hasOption(levelOpt)) {
-                level = MZTabErrorType.findLevel(line.getOptionValue(levelOpt));
-                System.out.println("Validator set to level '" + level + "'");
-            } else {
-                System.out.println(
-                    "Validator set to default level '" + level + "'");
-            }
-            boolean serializeToJson = false;
-            if (line.hasOption(serializeOpt)) {
-                serializeToJson = true;
-            }
-            handleValidation(line, checkOpt, outFile, level, checkSemanticOpt,
-                serializeToJson);
+            try (PrintStream out = outFile == null ? System.out : new PrintStream(
+                new BufferedOutputStream(
+                    new FileOutputStream(outFile, false)), true, "UTF8")) {
+                System.setOut(out);
+                System.setErr(out);
+                System.out.println(getAppInfo());
+                MZTabErrorType.Level level = MZTabErrorType.Level.Info;
+                if (line.hasOption(levelOpt)) {
+                    level = MZTabErrorType.findLevel(line.getOptionValue(
+                        levelOpt));
+                    System.out.println("Validator set to level '" + level + "'");
+                } else {
+                    System.out.println(
+                        "Validator set to default level '" + level + "'");
+                }
+                boolean serializeToJson = false;
+                if (line.hasOption(serializeOpt)) {
+                    serializeToJson = true;
+                }
 
-            System.out.println();
+                boolean deserializeFromJson = false;
+                if (line.hasOption(deserializeOpt)) {
+                    deserializeFromJson = true;
+                }
+                handleValidation(line, checkOpt, outFile, level,
+                    checkSemanticOpt,
+                    serializeToJson, deserializeFromJson);
+
+                System.out.println();
+            } catch (IOException ex) {
+                System.err.println(
+                    "Caught an IO Exception: " + ex.getMessage());
+                ex.printStackTrace(System.err);
+            }
         }
     }
 
     protected static void handleValidation(CommandLine line, String checkOpt,
         File outFile, MZTabErrorType.Level level, String checkSemanticOpt,
-        boolean toJson) throws URISyntaxException, JAXBException, IllegalArgumentException {
+        boolean toJson, boolean fromJson) throws URISyntaxException, JAXBException, IllegalArgumentException, IOException {
         if (line.hasOption(checkOpt)) {
             String[] values = line.getOptionValues(checkOpt);
             if (values.length != 2) {
                 throw new IllegalArgumentException("Not setting input file!");
             }
             File inFile = new File(values[1].trim());
+            if (fromJson) {
+                File tmpFile = new File(inFile.getParentFile(),
+                    inFile.getName() + ".mztab");
+                MzTabNonValidatingWriter w = new MzTabNonValidatingWriter();
+                ObjectMapper mapper = new ObjectMapper();
+                MzTab mzTab = mapper.readValue(inFile, MzTab.class);
+                System.out.println("Writing JSON as mzTab to file: " + tmpFile.
+                    getAbsolutePath());
+                w.write(tmpFile.toPath(), mzTab);
+                inFile = tmpFile;
+            }
             System.out.println(
                 "Beginning validation of mztab file: " + inFile.
                     getAbsolutePath());
-            try (OutputStream out = outFile == null ? System.out : new BufferedOutputStream(
-                new FileOutputStream(outFile))) {
-                MZTabFileParser mzTabParser = new MZTabFileParser(inFile);
-                MZTabErrorList errorList = mzTabParser.parse(out, level);
-                if (!errorList.isEmpty()) {
-                    //these are reported to std.err already.
-                    System.out.println(
-                        "There were errors while processing your file, please check the output for details!");
-                }
-                if (toJson) {
-                    File jsonFile = new File(inFile.getName() + ".json");
-                    System.out.println(
-                        "Writing mzTab object as json to " + jsonFile.
-                            getAbsolutePath());
-                    ObjectMapper objectMapper = new ObjectMapper().enable(
-                        SerializationFeature.INDENT_OUTPUT);
-                    objectMapper.
-                        writeValue(jsonFile, mzTabParser.getMZTabFile());
-                }
-                handleSemanticValidation(line, checkSemanticOpt, inFile,
-                    mzTabParser, level);
-            } catch (IOException e) {
-                System.out.println(
-                    "Caught an IO Exception: " + e.getMessage());
-            } finally {
-                System.out.println("Finished validation!");
+            MZTabFileParser mzTabParser = new MZTabFileParser(inFile);
+            MZTabErrorList errorList = mzTabParser.parse(System.out, level);
+            if (!errorList.isEmpty()) {
+                //these are reported to std.err already.
+                System.err.println(
+                    "There were errors while processing your file, please check the output for details!");
             }
+            if (toJson) {
+                File jsonFile = new File(inFile.getName() + ".json");
+                System.out.println(
+                    "Writing mzTab object as json to " + jsonFile.
+                        getAbsolutePath());
+                ObjectMapper objectMapper = new ObjectMapper().enable(
+                    SerializationFeature.INDENT_OUTPUT);
+                objectMapper.
+                    writeValue(jsonFile, mzTabParser.getMZTabFile());
+            }
+            handleSemanticValidation(line, checkSemanticOpt, inFile, outFile,
+                mzTabParser, level);
+            System.out.println("Finished validation!");
         }
     }
 
     protected static void handleSemanticValidation(CommandLine line,
-        String checkSemanticOpt, File inFile, MZTabFileParser mzTabParser,
+        String checkSemanticOpt, File inFile, File outFile,
+        MZTabFileParser mzTabParser,
         MZTabErrorType.Level level) throws JAXBException, MalformedURLException, URISyntaxException {
         if (line.hasOption(checkSemanticOpt)) {
             String[] semValues = line.getOptionValues(
@@ -256,7 +280,8 @@ public class MZTabCommandLine {
             URI mappingFile;
             if (semValues != null && semValues.length == 2) {
                 // read file from path
-                mappingFile = new File(semValues[1].trim()).getAbsoluteFile().
+                mappingFile = new File(semValues[1].trim()).
+                    getAbsoluteFile().
                     toURI();
             } else {
                 System.out.println(
@@ -293,7 +318,7 @@ public class MZTabCommandLine {
                 System.err.println(message);
             }
             if (!validationMessages.isEmpty()) {
-                System.out.println(
+                System.err.println(
                     "There were errors during semantic validation of your file, please check the output for details!");
             } else {
                 System.out.println(

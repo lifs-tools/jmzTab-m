@@ -16,10 +16,12 @@
 package de.isas.mztab2.validation;
 
 import de.isas.lipidomics.mztab2.validation.Validator;
+import de.isas.mztab2.cvmapping.CvMappingUtils;
 import de.isas.mztab2.cvmapping.CvParameterLookupService;
 import de.isas.mztab2.cvmapping.JxPathElement;
 import de.isas.mztab2.cvmapping.RemoveUserParams;
 import de.isas.mztab2.cvmapping.RuleEvaluationResult;
+import de.isas.mztab2.io.serialization.ParameterConverter;
 import de.isas.mztab2.model.MzTab;
 import de.isas.mztab2.model.Parameter;
 import de.isas.mztab2.model.ValidationMessage;
@@ -45,6 +47,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.jxpath.JXPathContext;
 import org.apache.commons.jxpath.Pointer;
 import org.apache.commons.lang3.tuple.Pair;
+import uk.ac.ebi.pride.jmztab2.utils.errors.CrossCheckErrorType;
+import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabError;
 import uk.ac.ebi.pride.utilities.ols.web.service.client.OLSClient;
 import uk.ac.ebi.pride.utilities.ols.web.service.config.OLSWsConfig;
 
@@ -205,32 +209,44 @@ public class CvMappingValidator implements Validator<MzTab> {
         // and logic means that ALL of the defined terms or their children MUST appear
         // we only compare valid CVParameters here, user Params (no cv accession), are not compared!
         // if combination logic is AND, child expansion needs to be disabled to avoid nonsensical combinations
-        RuleEvaluationResult result = ruleHandler.handleRule(rule,
-            filteredSelection);
+        try {
+            RuleEvaluationResult result = ruleHandler.handleRule(rule,
+                filteredSelection);
 
-        switch (rule.getCvTermsCombinationLogic()) {
-            case AND:
-                messages.addAll(andHandler.handleParameters(result,
-                    errorOnTermNotInRule));
-                break;
-            case OR: // any of the terms or their children need to appear
-                messages.addAll(orHandler.handleParameters(result,
-                    errorOnTermNotInRule));
-                break;
-            case XOR:
-                messages.addAll(xorHandler.handleParameters(result,
-                    errorOnTermNotInRule));
-                break;
-            default:
-                throw new IllegalArgumentException(
-                    "Unknown combination logic value: " + rule.
-                        getCvTermsCombinationLogic() + "! Supported are: " + Arrays.
+            switch (rule.getCvTermsCombinationLogic()) {
+                case AND:
+                    messages.addAll(andHandler.handleParameters(result,
+                        errorOnTermNotInRule));
+                    break;
+                case OR: // any of the terms or their children need to appear
+                    messages.addAll(orHandler.handleParameters(result,
+                        errorOnTermNotInRule));
+                    break;
+                case XOR:
+                    messages.addAll(xorHandler.handleParameters(result,
+                        errorOnTermNotInRule));
+                    break;
+                default:
+                    throw new IllegalArgumentException(
+                        "Unknown combination logic value: " + rule.
+                            getCvTermsCombinationLogic() + " on rule " + CvMappingUtils.
+                            niceToString(rule) + "! Supported are: " + Arrays.
                         toString(CvMappingRule.CvTermsCombinationLogic.
                             values()));
+            }
+            //        messages.addAll(sharedHandler.handleParameters(result, errorOnTermNotInRule));
+            messages.addAll(extraHandler.handleParameters(result,
+                errorOnTermNotInRule));
+        } catch (RuntimeException re) {
+            log.error(
+                "Caught exception while running semantic validation on rule " + CvMappingUtils.
+                    niceToString(rule) + " with selection " + filteredSelection,
+                re);
+            MZTabError error = new MZTabError(
+                CrossCheckErrorType.SemanticValidationException, -1, re.
+                    getMessage());
+            messages.add(error.toValidationMessage());
         }
-//        messages.addAll(sharedHandler.handleParameters(result, errorOnTermNotInRule));
-        messages.addAll(extraHandler.handleParameters(result,
-            errorOnTermNotInRule));
         return messages.isEmpty() ? Collections.emptyList() : messages;
     }
 

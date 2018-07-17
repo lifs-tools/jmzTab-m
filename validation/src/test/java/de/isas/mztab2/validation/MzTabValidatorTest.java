@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.isas.mztab2.validator;
+package de.isas.mztab2.validation;
 
 import de.isas.mztab2.validation.MzTabBeanValidator;
 import de.isas.lipidomics.mztab2.validation.MzTabValidator;

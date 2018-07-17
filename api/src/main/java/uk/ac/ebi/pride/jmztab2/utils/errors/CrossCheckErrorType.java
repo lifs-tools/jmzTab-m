@@ -54,5 +54,8 @@ public final class CrossCheckErrorType extends MZTabErrorType {
     
     /** Constant <code>CvUnused</code> */
     public static MZTabErrorType CvUnused = createWarn(Category.CrossCheck, "CvUnused");
+    
+    /** Constant <code>SemanticValidationException</code> */
+    public static MZTabErrorType SemanticValidationException = createError(Category.CrossCheck, "SemanticValidationException");
 
 }

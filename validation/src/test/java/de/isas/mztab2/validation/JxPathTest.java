@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.isas.mztab2.validator;
+package de.isas.mztab2.validation;
 
 import de.isas.mztab2.cvmapping.JxPathElement;
 import static de.isas.mztab2.cvmapping.JxPathElement.toStream;
 import de.isas.mztab2.model.Instrument;
-import static de.isas.mztab2.validator.MzTabValidatorTest.createTestFile;
+import static de.isas.mztab2.validation.MzTabValidatorTest.createTestFile;
 import de.isas.mztab2.model.MzTab;
 import de.isas.mztab2.model.Parameter;
 import java.util.List;

@@ -208,6 +208,11 @@ public class MZTabFileParser {
         return Section.findSection(section);
     }
 
+    private BufferedReader readStream(InputStream stream) throws IOException {
+        return new BufferedReader(new InputStreamReader(
+            stream, ENCODE));
+    }
+
     private BufferedReader readFile(URI tabFile) throws IOException {
         BufferedReader reader;
 
@@ -451,7 +456,8 @@ public class MZTabFileParser {
 
                             break;
                         default:
-                            throw new IllegalArgumentException("Unknown section level "+highWaterMark);
+                            throw new IllegalArgumentException(
+                                "Unknown section level " + highWaterMark);
                     }
                 } catch (NullPointerException npe) {
                     throw new MZTabException(new MZTabError(

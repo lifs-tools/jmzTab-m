@@ -128,12 +128,19 @@ public class ResolvingCvRuleHandler implements CvRuleHandler {
                                     getValue().
                                     getCvLabel() + "' and term accession '" + pair.
                                     getValue().
-                                    getCvAccession() + "'! Please check, whether the cv label and term accession is correct!",
+                                    getCvAccession() + "' at path " + pair.
+                                    getKey().
+                                    asPath() + "! Please check, whether the cv label and term accession in your file contain a typo or use lowercase/uppercase! Check https://www.ebi.ac.uk/ols/search?q=" + pair.
+                                    getValue().
+                                    getCvAccession() + " for details on the term!",
                                 ex);
                         }
                     } else if (cvTerm.isUseTermName()) {
                         throw new IllegalArgumentException(
-                            "isUseTermName on cvTerm is not supported!");
+                            "isUseTermName on cvTerm " + cvTerm + " is not supported for rule " + CvMappingUtils.
+                                niceToString(rule) + " at path " + pair.
+                            getKey().
+                            asPath() + "!");
                     } else {
                         if (cvTerm.getTermAccession().
                             toUpperCase().

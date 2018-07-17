@@ -21,7 +21,9 @@ import de.isas.mztab2.cvmapping.SetOperations;
 import de.isas.mztab2.io.serialization.ParameterConverter;
 import de.isas.mztab2.model.ValidationMessage;
 import de.isas.mztab2.validation.CvTermValidationHandler;
+import info.psidev.cvmapping.CvMappingRule;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import uk.ac.ebi.pride.jmztab2.utils.errors.CrossCheckErrorType;
@@ -59,6 +61,13 @@ public class OrValidationHandler implements CvTermValidationHandler {
                     case MUST:
                         errorType = CrossCheckErrorType.CvTermRequired;
                         break;
+                    default:
+                        throw new IllegalArgumentException(
+                            "Unknown requirement level value: " + result.
+                                getRule().
+                                getRequirementLevel() + "! Supported are: " + Arrays.
+                                toString(CvMappingRule.RequirementLevel.
+                                    values()));
                 }
                 MZTabError error = new MZTabError(errorType, -1,
                     new ParameterConverter().convert(result.

@@ -60,6 +60,9 @@ import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorList;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorType;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabException;
 import static de.isas.mztab2.io.MzTabTestData.create2_0TestFile;
+import de.isas.mztab2.test.utils.ExtractClassPathFiles;
+import org.junit.ClassRule;
+import org.junit.rules.TemporaryFolder;
 import static uk.ac.ebi.pride.jmztab2.model.MZTabConstants.NEW_LINE;
 
 /**
@@ -71,6 +74,21 @@ public class MzTabWriterTest {
 
     @Rule
     public LogMethodName methodNameLogger = new LogMethodName();
+
+    @ClassRule
+    public static TemporaryFolder tf = new TemporaryFolder();
+
+    @ClassRule
+    public static ExtractClassPathFiles extractTestFiles = new ExtractClassPathFiles(
+        tf,
+        "/metabolomics/lipidomics-example.mzTab",
+        "/metabolomics/MTBLS263.mztab",
+        "/metabolomics/lda2-lipidomics.mztab",
+        "/metabolomics/lda2-standardmix_positive.mztab",
+        "/metabolomics/lda2-mouse-liver_negative.mztab",
+        "/metabolomics/lda2-mouse-liver_negative_null-colunit.mztab",
+        "/metabolomics/gcxgc-ms-example.mztab",
+        "/metabolomics/minimal-m-2.0.mztab");
 
     @Test
     public void testWriteDefaultToString() {
@@ -218,8 +236,6 @@ public class MzTabWriterTest {
         }
     }
 
-   
-
     @Test
     public void testWriteMzTabToTsvWithJackson() throws IOException {
         MzTab mzTabFile = create2_0TestFile();
@@ -257,8 +273,8 @@ public class MzTabWriterTest {
 
     @Test
     public void testReadWriteRoundtripWithJacksonLipidomicsExample() throws IOException, URISyntaxException, MZTabException {
-        MzTab mzTabFile = MzTabRawParserTest.parseResource(
-            "metabolomics/lipidomics-example.mzTab", MZTabErrorType.Level.Info,
+        MzTab mzTabFile = TestResources.parseResource(tf,
+            "lipidomics-example.mzTab", MZTabErrorType.Level.Info,
             0);
         File tempFile = File.createTempFile("testReadWriteRoundtripWithJackson",
             ".mztab");
@@ -268,17 +284,30 @@ public class MzTabWriterTest {
         MZTabErrorList errors = parser.parse(System.out,
             MZTabErrorType.Level.Info, 500);
         Assert.assertTrue(errors.toString(), errors.isEmpty());
-        Assert.assertNotNull(parser.getMZTabFile().getMetadata().getColunitSmallMoleculeEvidence().get(0));
+        Assert.assertNotNull(parser.getMZTabFile().
+            getMetadata().
+            getColunitSmallMoleculeEvidence().
+            get(0));
         //colunit-small_molecule_evidence	opt_global_mass_error=[UO, UO:0000169, parts per million, ]
-        Assert.assertEquals("opt_global_mass_error", parser.getMZTabFile().getMetadata().getColunitSmallMoleculeEvidence().get(0).getColumnName());
-        Assert.assertEquals("UO:0000169", parser.getMZTabFile().getMetadata().getColunitSmallMoleculeEvidence().get(0).getParam().getCvAccession());
+        Assert.assertEquals("opt_global_mass_error", parser.getMZTabFile().
+            getMetadata().
+            getColunitSmallMoleculeEvidence().
+            get(0).
+            getColumnName());
+        Assert.assertEquals("UO:0000169", parser.getMZTabFile().
+            getMetadata().
+            getColunitSmallMoleculeEvidence().
+            get(0).
+            getParam().
+            getCvAccession());
         compareMzTabModels(mzTabFile, parser.getMZTabFile());
     }
-    
+
     @Test
     public void testReadWriteRoundtripWithJacksonLda2StdMix() throws IOException, URISyntaxException, MZTabException {
-        MzTab mzTabFile = MzTabRawParserTest.parseResource(
-            "metabolomics/lda2-standardmix_positive.mztab", MZTabErrorType.Level.Info,
+        MzTab mzTabFile = TestResources.parseResource(tf,
+            "lda2-standardmix_positive.mztab",
+            MZTabErrorType.Level.Info,
             0);
         File tempFile = File.createTempFile(
             "testReadWriteRoundtripWithJacksonLipidomicsStdMix",
@@ -291,11 +320,12 @@ public class MzTabWriterTest {
         Assert.assertTrue(errors.toString(), errors.isEmpty());
         compareMzTabModels(mzTabFile, parser.getMZTabFile());
     }
-    
+
     @Test
     public void testReadWriteRoundtripWithJacksonLda2MouseLiver() throws IOException, URISyntaxException, MZTabException {
-        MzTab mzTabFile = MzTabRawParserTest.parseResource(
-            "metabolomics/lda2-mouse-liver_negative.mztab", MZTabErrorType.Level.Info,
+        MzTab mzTabFile = TestResources.parseResource(tf,
+            "lda2-mouse-liver_negative.mztab",
+            MZTabErrorType.Level.Info,
             0);
         File tempFile = File.createTempFile(
             "testReadWriteRoundtripWithJacksonLipidomicsMouseLiver",
@@ -311,8 +341,8 @@ public class MzTabWriterTest {
 
     @Test
     public void testReadWriteRoundtripWithJacksonMTBLS263() throws IOException, URISyntaxException, MZTabException {
-        MzTab mzTabFile = MzTabRawParserTest.parseResource(
-            "metabolomics/MTBLS263.mztab", MZTabErrorType.Level.Info,
+        MzTab mzTabFile = TestResources.parseResource(tf,
+            "MTBLS263.mztab", MZTabErrorType.Level.Info,
             0);
         File tempFile = File.createTempFile(
             "testReadWriteRoundtripWithJacksonMTBLS263",
@@ -415,8 +445,8 @@ public class MzTabWriterTest {
 
     @Test
     public void testLargeNumberOfFeaturesFromMTBLS263() throws URISyntaxException, IOException, MZTabException {
-        MzTab mzTabFile = MzTabRawParserTest.parseResource(
-            "metabolomics/MTBLS263.mztab", MZTabErrorType.Level.Info,
+        MzTab mzTabFile = TestResources.parseResource(tf,
+            "MTBLS263.mztab", MZTabErrorType.Level.Info,
             0);
         final int expFactor = 100;
         List<SmallMoleculeSummary> sms = mzTabFile.getSmallMoleculeSummary();

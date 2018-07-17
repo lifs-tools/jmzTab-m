@@ -17,16 +17,17 @@ package uk.ac.ebi.pride.jmztab2.utils.parser;
 
 import de.isas.mztab2.model.Assay;
 import de.isas.mztab2.model.Metadata;
+import static de.isas.mztab2.model.Metadata.Properties.uri;
 import de.isas.mztab2.model.MsRun;
 import de.isas.mztab2.model.Parameter;
 import de.isas.mztab2.model.Sample;
+import de.isas.mztab2.test.utils.ExtractClassPathFiles;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.net.URL;
 import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -35,7 +36,10 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import org.junit.Rule;
 import de.isas.mztab2.test.utils.LogMethodName;
+import java.io.File;
 import org.junit.Assert;
+import org.junit.ClassRule;
+import org.junit.rules.TemporaryFolder;
 import uk.ac.ebi.pride.jmztab2.model.MZTabStringUtils;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorList;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorType;
@@ -50,6 +54,14 @@ public class MTDLineParserTest {
 
     @Rule
     public LogMethodName methodNameLogger = new LogMethodName();
+
+    @ClassRule
+    public static final TemporaryFolder TF = new TemporaryFolder();
+
+    @ClassRule
+    public static final ExtractClassPathFiles EXTRACT_FILES = new ExtractClassPathFiles(
+        TF,
+        "/testset/mtdFile.txt");
 
     private MTDLineParser parser;
     private Metadata metadata;
@@ -82,11 +94,13 @@ public class MTDLineParserTest {
         assertTrue(metadata.getUri().
             size() == 2);
     }
-    
+
     @Test
     public void testDerivatizationAgent() throws MZTabException {
-        parser.parse(1, "MTD\tderivatization_agent[1]\t[,,something,]", errorList);
-        assertTrue(metadata.getDerivatizationAgent().size()==1);
+        parser.parse(1, "MTD\tderivatization_agent[1]\t[,,something,]",
+            errorList);
+        assertTrue(metadata.getDerivatizationAgent().
+            size() == 1);
     }
 
     @Test
@@ -441,8 +455,10 @@ public class MTDLineParserTest {
             get(0).
             getCvAccession().
             equals("MS:1000133"));
-        assertTrue(msRun2.getInstrumentRef().equals(context.getInstrumentMap().get(1)));
-        
+        assertTrue(msRun2.getInstrumentRef().
+            equals(context.getInstrumentMap().
+                get(1)));
+
     }
 
     @Test
@@ -535,11 +551,13 @@ public class MTDLineParserTest {
         parser.parse(1, "MTD\tassay[2]-ms_run_ref\tms_run[2]", errorList);
         assertTrue(context.getAssayMap().
             get(1).
-            getMsRunRef().get(0).
+            getMsRunRef().
+            get(0).
             equals(msRun1));
         assertTrue(context.getAssayMap().
             get(2).
-            getMsRunRef().get(0).
+            getMsRunRef().
+            get(0).
             equals(msRun2));
     }
 
@@ -573,7 +591,7 @@ public class MTDLineParserTest {
             get(0) == assay1);
     }
 
-    public Metadata parseMetadata(String mtdFile) throws Exception {
+    public Metadata parseMetadata(File mtdFile) throws Exception {
         BufferedReader reader = new BufferedReader(new FileReader(mtdFile));
         MTDLineParser parser = new MTDLineParser(context);
 
@@ -598,11 +616,10 @@ public class MTDLineParserTest {
     @Test
     public void testCreateMetadata() throws Exception {
         String fileName = "testset/mtdFile.txt";
-
-        URL uri = MTDLineParserTest.class.getClassLoader().
-            getResource(fileName);
+        File mtdFile = new File(TF.getRoot(), "mtdFile.txt");
+        assertTrue(mtdFile.exists());
         if (uri != null) {
-            parseMetadata(uri.getFile());
+            parseMetadata(mtdFile);
             assertTrue(errorList.isEmpty());
         } else {
             throw new FileNotFoundException(fileName);
