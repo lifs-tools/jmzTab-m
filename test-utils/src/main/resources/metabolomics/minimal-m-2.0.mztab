@@ -2,8 +2,8 @@ MTD	mzTab-version	2.0.0-M
 MTD	mzTab-ID	PRIDE_1234
 MTD	title	My first test experiment
 MTD	description	An experiment investigating the effects of Il-6.
-MTD	sample_processing[1]	[SEP, SEP:00173, SDS PAGE, ]
-MTD	sample_processing[2]	[SEP, SEP:00142, enzyme digestion, ]|[MS, MS:1001251, Trypsin, ]
+MTD	sample_processing[1]	[SEP, sep:00173, SDS PAGE, ]
+MTD	sample_processing[2]	[SEP, sep:00142, enzyme digestion, ]|[MS, MS:1001251, Trypsin, ]
 MTD	instrument[1]-name	[MS, MS:100049, LTQ Orbitrap, ]
 MTD	instrument[1]-source	[MS, MS:1000073, ESI, ]
 MTD	instrument[1]-analyzer[1]	[MS, MS:1000291, linear ion trap, ]

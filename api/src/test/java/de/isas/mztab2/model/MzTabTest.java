@@ -1,5 +1,17 @@
-/*
+/* 
+ * Copyright 2018 Leibniz-Institut für Analytische Wissenschaften – ISAS – e.V..
  *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package de.isas.mztab2.model;
 
@@ -43,74 +55,60 @@ import org.junit.Test;
  */
 public class MzTabTest {
 
-    /*
-    MTD	mzTab-version	1.1.0
-MTD	mzTab-ID	JetBike Test
-MTD	ms_run[1]	3injections_inj1_POS
-MTD	ms_run[1]-location	D:\Data Sets\Metabolomics\MTBLS263\3injections_inj1_POS.mzML
-MTD	ms_run[2]	3injections_inj2_POS
-MTD	ms_run[2]-location	D:\Data Sets\Metabolomics\MTBLS263\3injections_inj2_POS.mzML
-MTD	ms_run[3]	3injections_inj3_POS
-MTD	ms_run[3]-location	D:\Data Sets\Metabolomics\MTBLS263\3injections_inj3_POS.mzML
-MTD	ms_run[4]	3samples_sampl1_POS
-MTD	ms_run[4]-location	D:\Data Sets\Metabolomics\MTBLS263\3samples_sampl1_POS.mzML
-MTD	ms_run[5]	3samples_sampl2_POS
-MTD	ms_run[5]-location	D:\Data Sets\Metabolomics\MTBLS263\3samples_sampl2_POS.mzML
-MTD	ms_run[6]	3samples_sampl3_POS
-MTD	ms_run[6]-location	D:\Data Sets\Metabolomics\MTBLS263\3samples_sampl3_POS.mzML
-MTD	assay[1]-ms_run_ref	ms_run[1]
-MTD	assay[2]-ms_run_ref	ms_run[2]
-MTD	assay[3]-ms_run_ref	ms_run[3]
-MTD	assay[4]-ms_run_ref	ms_run[4]
-MTD	assay[5]-ms_run_ref	ms_run[5]
-MTD	assay[6]-ms_run_ref	ms_run[6]
-MTD	software[1]	[,,Progenesis QI,2.4.6479.46580]
-MTD	study_variable[1]	Replicates
-MTD	study_variable[1]-description	Replicates
-MTD	study_variable[1]-assay_refs	assay[1] | assay[2] | assay[3]
-MTD	study_variable[2]	Samples
-MTD	study_variable[2]-description	Samples
-MTD	study_variable[2]-assay_refs	assay[4] | assay[5] | assay[6]
-MTD	cv[1]-label	MS
-MTD	cv[1]-full_name	PSI-MS controlled vocabulary
-MTD	cv[1]-version	4.0.9
-MTD	cv[1]-url	https://raw.githubusercontent.com/HUPO-PSI/psi-ms-CV/master/psi-ms.obo
-MTD	database[1]	[,,No database,]
-MTD	database[1]-prefix	nd
-MTD	database[1]-version	Unknown
-MTD	database[2]	[,,D:\Databases\HMDB\hmdb+analgesic.sdf,]
-MTD	database[2]-prefix	hmdb
-MTD	database[2]-version	Unknown
-MTD	small_molecule-quantification_unit	[,,Progenesis QI Normalised Abundance,]
-MTD	small_molecule_feature-quantification_unit	[,,Progenesis QI Normalised Abundance,]
-MTD	id_confidence_measure[1]	[,,Progenesis MetaScope Score,]
-MTD	id_confidence_measure[2]	[,,Fragmentation Score,]
-MTD	id_confidence_measure[3]	[,,Isotopic fit Score,]
-     */
     @Test
     public void testMzTabObjectCreation() {
+        MzTab mztab = createTestMzTab();
+        Assert.assertEquals("SomeId 1234", mztab.getMetadata().
+            getMzTabID());
+        Assert.assertEquals("2.0.0-M", mztab.getMetadata().
+            getMzTabVersion());
+        Assert.assertEquals("My first test experiment", mztab.getMetadata().
+            getTitle());
+        Assert.assertEquals("An experiment investigating interesting effects.",
+            mztab.getMetadata().
+                getDescription());
+        Assert.assertEquals((long) 1, (long) mztab.getMetadata().
+            getSampleProcessing().
+            get(0).
+            getId());
+        Assert.assertEquals("sep:00210", mztab.getMetadata().
+            getSampleProcessing().
+            get(0).
+            getSampleProcessing().
+            get(0).
+            getCvAccession());
+        Assert.assertEquals(2, mztab.getMetadata().getInstrument().size());
+        Assert.assertEquals(1, mztab.getMetadata().getSoftware().size());
+        Assert.assertEquals(2, mztab.getMetadata().getPublication().size());
+        Assert.assertEquals(2, mztab.getMetadata().getUri().size());
+        Assert.assertEquals(1, mztab.getMetadata().getExternalStudyUri().size());
+        Assert.assertEquals(2, mztab.getMetadata().getMsRun().size());
+        Assert.assertEquals(1, mztab.getMetadata().getCustom().size());
+        Assert.assertEquals(2, mztab.getMetadata().getSample().size());
+        Assert.assertEquals(2, mztab.getMetadata().getAssay().size());
+        Assert.assertEquals(2, mztab.getMetadata().getStudyVariable().size());
+        Assert.assertEquals(2, mztab.getMetadata().getCv().size());
         
-        System.out.println(createTestMzTab());
+        Assert.assertEquals(1, mztab.getMetadata().getIdConfidenceMeasure().size());
+        Assert.assertEquals(1, mztab.getMetadata().getDatabase().size());
+        
+        Assert.assertEquals(1, mztab.getSmallMoleculeSummary().size());
+        Assert.assertEquals(1, mztab.getSmallMoleculeFeature().size());
+        Assert.assertEquals(1, mztab.getSmallMoleculeEvidence().size());
     }
-    
+
     private MzTab createTestMzTab() {
         de.isas.mztab2.model.Metadata mtd = new de.isas.mztab2.model.Metadata();
         mtd.mzTabID("SomeId 1234").
             mzTabVersion("2.0.0-M").
             title("My first test experiment").
-            description("An experiment investigating the effects of Il-6.");
+            description("An experiment investigating interesting effects.");
         SampleProcessing sp = new SampleProcessing().id(1).
             addSampleProcessingItem(new Parameter().cvLabel("SEP").
-                cvAccession("SEP:00142").
-                name("enzyme digestion")).
-            addSampleProcessingItem(new Parameter().cvLabel("MS").
-                cvAccession("MS:1001251").
-                name("Trypsin")).
-            addSampleProcessingItem(new Parameter().cvLabel("SEP").
-                cvAccession("SEP:00173").
-                name("SDS PAGE"));
+                cvAccession("sep:00210").
+                name("High Perfomance Liquid Chromatography"));
         mtd.sampleProcessing(Arrays.asList(sp));
-        
+
         Instrument instrument1 = new Instrument().id(1).
             name(
                 new Parameter().cvLabel("MS").
@@ -156,7 +154,7 @@ MTD	id_confidence_measure[3]	[,,Isotopic fit Score,]
             setting(Arrays.asList("Fragment tolerance = 0.1Da",
                 "Parent tolerance = 0.5Da"));
         mtd.addSoftwareItem(software1);
-        
+
         PublicationItem item1_1 = new PublicationItem().type(
             PublicationItem.TypeEnum.PUBMED).
             accession("21063943");
@@ -165,7 +163,7 @@ MTD	id_confidence_measure[3]	[,,Isotopic fit Score,]
             accession("10.1007/978-1-60761-987-1_6");
         Publication publication1 = new Publication().id(1);
         publication1.setPublicationItems(Arrays.asList(item1_1, item1_2));
-        
+
         PublicationItem item2_1 = new PublicationItem().type(
             PublicationItem.TypeEnum.PUBMED).
             accession("20615486");
@@ -174,10 +172,10 @@ MTD	id_confidence_measure[3]	[,,Isotopic fit Score,]
             accession("10.1016/j.jprot.2010.06.008");
         Publication publication2 = new Publication().id(2);
         publication2.setPublicationItems(Arrays.asList(item2_1, item2_2));
-        
+
         mtd.addPublicationItem(publication1).
             addPublicationItem(publication2);
-        
+
         mtd.addContactItem(new Contact().id(1).
             name("James D. Watson").
             affiliation("Cambridge University, UK").
@@ -226,7 +224,7 @@ MTD	id_confidence_measure[3]	[,,Isotopic fit Score,]
         mtd.addCustomItem(new Parameter().id(1).
             name("MS operator").
             value("Florian"));
-        
+
         Sample sample1 = new Sample().id(1).
             description("Hepatocellular carcinoma samples.").
             addSpeciesItem(new Parameter().cvLabel("NEWT").
@@ -274,7 +272,7 @@ MTD	id_confidence_measure[3]	[,,Isotopic fit Score,]
             addCustomItem(new Parameter().name("Extraction reason").
                 value("liver biopsy"));
         mtd.addSampleItem(sample2);
-        
+
         Assay assay1 = new Assay().id(1).
             name("Assay 1").
             addMsRunRefItem(msRun1).
@@ -285,7 +283,7 @@ MTD	id_confidence_measure[3]	[,,Isotopic fit Score,]
             addMsRunRefItem(msRun2).
             sampleRef(sample2);
         mtd.addAssayItem(assay2);
-        
+
         StudyVariable studyVariable1 = new StudyVariable().
             id(1).
             description(
@@ -309,12 +307,18 @@ MTD	id_confidence_measure[3]	[,,Isotopic fit Score,]
             fullName("PSI-MS ontology").
             version("3.54.0").
             uri("https://raw.githubusercontent.com/HUPO-PSI/psi-ms-CV/master/psi-ms.obo"));
+        mtd.addCvItem(new CV().id(2).
+            label("SEP").
+            fullName("Sample Processing and Separation Techniques Ontology").
+            version("1.070708").
+            uri("http://purl.bioontology.org/ontology/SEP"));
+        
         mtd.addIdConfidenceMeasureItem(new Parameter().id(1).
             name("some confidence measure term"));
-        
+
         mtd.addDatabaseItem(new Database().id(1).
             param(new Parameter().name("nd")));
-        
+
         MzTab mzTab = new MzTab();
         mzTab.metadata(mtd);
         SmallMoleculeEvidence sme = new SmallMoleculeEvidence().smeId(1).
@@ -397,7 +401,7 @@ MTD	id_confidence_measure[3]	[,,Isotopic fit Score,]
         mzTab.addSmallMoleculeSummaryItem(smsi);
         return mzTab;
     }
-    
+
     @Test
     public void testWriteReadViaJsonMapper() throws IOException {
         File testFile = File.createTempFile(

@@ -41,6 +41,7 @@ import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabException;
 
 /**
  * Tests for MZTabFileParser
+ *
  * @author nilshoffmann
  */
 @RunWith(Parameterized.class)
@@ -53,54 +54,62 @@ public class MZTabFileParserTest {
     public static final TemporaryFolder TF = new TemporaryFolder();
 
     @ClassRule
-    public static final ExtractClassPathFiles EXTRACT_FILES = new ExtractClassPathFiles(TF,
-        "/metabolomics/lipidomics-example.mzTab",
+    public static final ExtractClassPathFiles EXTRACT_FILES = new ExtractClassPathFiles(
+        TF,
         "/metabolomics/MTBLS263.mztab",
-        "/metabolomics/lda2-lipidomics.mztab",
-        "/metabolomics/lda2-standardmix_positive.mztab",
-        "/metabolomics/lda2-mouse-liver_negative.mztab",
-        "/metabolomics/lda2-mouse-liver_negative_null-colunit.mztab",
+        "/metabolomics/MouseLiver_negative_mztab.txt",
+        "/metabolomics/MouseLiver_negative_mztab_null-colunit.txt",
+        "/metabolomics/StandardMix_negative_exportPositionLevel.mztab.txt",
+        "/metabolomics/StandardMix_negative_exportSpeciesLevel.mztab.txt",
+        "/metabolomics/StandardMix_positive_exportPositionLevel.mztab.txt",
+        "/metabolomics/StandardMix_positive_exportSpeciesLevel.mztab.txt",
         "/metabolomics/gcxgc-ms-example.mztab",
+        "/metabolomics/lipidomics-example.mzTab",
         "/metabolomics/minimal-m-2.0.mztab");
 
-     @Parameterized.Parameters(
+    @Parameterized.Parameters(
         name = "{index}: semantic validation of '{0}' on level '{1}' expecting '{2}' structural/logical errors")
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][]{
+            {"MTBLS263.mztab", MZTabErrorType.Level.Warn, 0},
+            {"MouseLiver_negative_mztab.txt", MZTabErrorType.Level.Warn, 0},
+            {"MouseLiver_negative_mztab_null-colunit.txt",
+                MZTabErrorType.Level.Error, 1},
+            {"StandardMix_negative_exportPositionLevel.mztab.txt",
+                MZTabErrorType.Level.Warn, 0},
+            {"StandardMix_negative_exportSpeciesLevel.mztab.txt",
+                MZTabErrorType.Level.Warn, 0},
+            {"StandardMix_positive_exportPositionLevel.mztab.txt",
+                MZTabErrorType.Level.Warn, 0},
+            {"StandardMix_positive_exportSpeciesLevel.mztab.txt",
+                MZTabErrorType.Level.Warn, 0},
             {"lipidomics-example.mzTab", MZTabErrorType.Level.Warn,
                 0},
-            {"MTBLS263.mztab", MZTabErrorType.Level.Warn, 0},
-            {"lda2-lipidomics.mztab", MZTabErrorType.Level.Warn, 0},
-            {"lda2-standardmix_positive.mztab",
-                MZTabErrorType.Level.Warn, 0},
-            {"lda2-mouse-liver_negative.mztab",
-                MZTabErrorType.Level.Warn, 0},
-            {"lda2-mouse-liver_negative_null-colunit.mztab",
-                MZTabErrorType.Level.Error, 1},
             {"gcxgc-ms-example.mztab", MZTabErrorType.Level.Warn, 0},
             {"minimal-m-2.0.mztab", MZTabErrorType.Level.Error, 1},
             {"minimal-m-2.0.mztab", MZTabErrorType.Level.Warn, 1},
-            {"minimal-m-2.0.mztab", MZTabErrorType.Level.Info, 1},
-        });
+            {"minimal-m-2.0.mztab", MZTabErrorType.Level.Info, 1},});
     }
-    
+
     @Parameterized.Parameter(0)
     public String resource;
     @Parameterized.Parameter(1)
     public MZTabErrorType.Level validationLevel;
     @Parameterized.Parameter(2)
     public int expectedStructuralLogicalErrors;
-    
+
     @Test
     public void testExamples() throws MZTabException, JAXBException {
         testExample(TF, resource,
             validationLevel, expectedStructuralLogicalErrors);
     }
 
-    void testExample(TemporaryFolder tf, String resource, MZTabErrorType.Level level,
+    void testExample(TemporaryFolder tf, String resource,
+        MZTabErrorType.Level level,
         Integer expectedErrors) throws MZTabException {
         try {
-            MzTab mzTab = TestResources.parseResource(tf, resource, level, expectedErrors);
+            MzTab mzTab = TestResources.parseResource(tf, resource, level,
+                expectedErrors);
             Assert.assertNotNull(mzTab);
             Assert.assertNotNull(mzTab.getMetadata());
             MzTabNonValidatingWriter writer = new MzTabNonValidatingWriter();

@@ -43,6 +43,7 @@ import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabException;
 
 /**
  * Integration test for semantic validation.
+ *
  * @author nilshoffmann
  */
 @RunWith(Parameterized.class)
@@ -57,30 +58,36 @@ public class ExampleFilesValidationTestIT {
     @ClassRule
     public static final ExtractClassPathFiles EXTRACT_FILES = new ExtractClassPathFiles(
         TF,
-        "/metabolomics/lipidomics-example.mzTab",
         "/metabolomics/MTBLS263.mztab",
-        "/metabolomics/lda2-lipidomics.mztab",
-        "/metabolomics/lda2-standardmix_positive.mztab",
-        "/metabolomics/lda2-mouse-liver_negative.mztab",
-        "/metabolomics/lda2-mouse-liver_negative_null-colunit.mztab",
+        "/metabolomics/MouseLiver_negative_mztab.txt",
+        "/metabolomics/MouseLiver_negative_mztab_null-colunit.txt",
+        "/metabolomics/StandardMix_negative_exportPositionLevel.mztab.txt",
+        "/metabolomics/StandardMix_negative_exportSpeciesLevel.mztab.txt",
+        "/metabolomics/StandardMix_positive_exportPositionLevel.mztab.txt",
+        "/metabolomics/StandardMix_positive_exportSpeciesLevel.mztab.txt",
         "/metabolomics/gcxgc-ms-example.mztab",
+        "/metabolomics/lipidomics-example.mzTab",
         "/metabolomics/minimal-m-2.0.mztab");
 
     @Parameters(
-        name = "{index}: semantic validation of '{0}' on level '{1}' expecting '{2}' structural/logical errors and '{3}' cross check/semantic errors.")
+        name = "{index}: semantic validation of ''{0}'' on level ''{1}'' expecting ''{2}'' structural/logical errors and ''{3}'' cross check/semantic errors.")
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][]{
-            {"lipidomics-example.mzTab", MZTabErrorType.Level.Info,
-                0, 0},
-            {"MTBLS263.mztab", MZTabErrorType.Level.Info, 0, 0},
-            {"lda2-lipidomics.mztab", MZTabErrorType.Level.Info, 0,
-                0},
-            {"lda2-standardmix_positive.mztab",
-                MZTabErrorType.Level.Info, 0, 0},
-            {"lda2-mouse-liver_negative.mztab",
-                MZTabErrorType.Level.Info, 0, 0},
-            {"gcxgc-ms-example.mztab", MZTabErrorType.Level.Info, 0,
-                0}
+//            {"lipidomics-example.mzTab", MZTabErrorType.Level.Info,
+//                0, 7},
+//            {"MTBLS263.mztab", MZTabErrorType.Level.Info, 0, 15},
+//                        {"MouseLiver_negative_mztab.txt", MZTabErrorType.Level.Info, 0, 1},
+                        {"MouseLiver_negative_mztab_null-colunit.txt", MZTabErrorType.Level.Info, 1, 1},
+//            {"StandardMix_negative_exportPositionLevel.mztab.txt",
+//                MZTabErrorType.Level.Info, 0, 4},
+//            {"StandardMix_negative_exportSpeciesLevel.mztab.txt",
+//                MZTabErrorType.Level.Info, 0, 4},
+//            {"StandardMix_positive_exportPositionLevel.mztab.txt",
+//                MZTabErrorType.Level.Info, 0, 4},
+//            {"StandardMix_positive_exportSpeciesLevel.mztab.txt",
+//                MZTabErrorType.Level.Info, 0, 4},
+//            {"gcxgc-ms-example.mztab", MZTabErrorType.Level.Info, 0, 5},
+//            {"lipidomics-example.mzTab", MZTabErrorType.Level.Info, 0, 7}
         });
     }
 
@@ -109,12 +116,16 @@ public class ExampleFilesValidationTestIT {
                 level, expectedErrors);
             Assert.assertNotNull(mzTab);
             Assert.assertNotNull(mzTab.getMetadata());
-            CvMappingValidator validator = CvMappingValidator.of(ExampleFilesValidationTestIT.class.getResource(
+            CvMappingValidator validator = CvMappingValidator.of(
+                ExampleFilesValidationTestIT.class.getResource(
                     "/mappings/mzTab-M-mapping.xml"),
                 true);
             List<ValidationMessage> messages = validator.validate(mzTab);
             if (messages.size() != expectedSemanticErrors) {
-                Assert.fail(messages.toString());
+                Assert.assertEquals(String.format(
+                    "Expected %d semantic errors, found %d! ValidationMessages: %s",
+                    expectedSemanticErrors, messages.size(), messages),
+                    (long) expectedSemanticErrors, (long) messages.size());
             }
             return messages;
         } catch (URISyntaxException ex) {

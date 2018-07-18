@@ -16,7 +16,7 @@ In order to build the client code and run the unit tests, execute the following 
 	./mvnw install
 
 This generates the necessary domain specific code for a number of different languages, e.g. for Python, JAVA and R.
-In general, any language and framework for which swagger-codegen has templates available may be used. For details, please 
+In general, any language and framework for which swagger-codegen has templates available may be used. For details, please
 look at the `api/pom.xml` file and at the https://github.com/swagger-api/swagger-codegen[swagger-codegen repository and documentation].
 
 The generated code is available in the zip archives below the `api/target` directory:
@@ -28,15 +28,15 @@ The generated JAVA code is available in a jar archive below the `api/target` dir
 
 . jmztabm-api-<VERSION>.jar
 
-The generated client libraries only contain the basic domain object code. Parsing from mzTab and writing to mzTab still need to be 
+The generated client libraries only contain the basic domain object code. Parsing from mzTab and writing to mzTab still need to be
 implemented separately. The library provides this functionality for JAVA in the `io` sub-project.
 
 == Running a validation with the command-line interface
-The `cli` sub-project provides a command line interface for validation of files using the mzTab 2.0 draft validator. 
+The `cli` sub-project provides a command line interface for validation of files using the mzTab 2.0 draft validator.
 
 NOTE: Currently, we do not plan to provide a CLI-based validator for mzTab 1.0, since that is still being provided by the original https://github.com/PRIDE-Utilities/jmzTab[jmzTab project].
 
-After building the project as mentioned above with `./mvnw install`, the `cli/target` folder will contain the `cli-<version>-jmztabm-deployment.zip` file. Alternatively, you can download the latest 
+After building the project as mentioned above with `./mvnw install`, the `cli/target` folder will contain the `cli-<version>-jmztabm-deployment.zip` file. Alternatively, you can download the latest
 cli zip file from Maven central: https://search.maven.org/#search%7Cga%7C1%7Cg%3A%22de.isas.mztab%22%20AND%20a%3A%22jmztabm-cli%22%20[Search for latest cli artefact] and click on "bin.zip" to download.
 
 In order to run the validator, unzip that file, change into the unzipped folder and run
@@ -57,14 +57,14 @@ The application is available at: https://apps.lifs.isas.de/mztabvalidator
 == Using the project code releases via Maven Central
 
 The library release artifacts are available from Maven Central.
-If you want to use them, add the following lines to your own Maven pom file (replacing the version with the latest one you want to use):
+If you want to use them, add the following lines to your own Maven pom file :
 
 To use the IO libraries (reading, writing and structural and logical validation) in your own Maven projects, use the following dependency:
 
   <dependency>
     <groupId>de.isas.mztab</groupId>
     <artifactId>jmztabm-io</artifactId>
-    <version>0.9.5</version>
+    <version>${jmztabm.version}</version>
   </dependency>
 
 
@@ -73,12 +73,20 @@ To use the semantic validation with the mapping file in your own Maven project, 
   <dependency>
     <groupId>de.isas.mztab</groupId>
     <artifactId>jmztabm-validation</artifactId>
-    <version>0.9.5</version>
+    <version>${jmztabm.version}</version>
   </dependency>
+
+where `jmztab.version` is the version of jmztabm you wish to use, e.g. for a release version:
+
+	  <properties>
+	    <jmztabm.version>0.9.9</jmztabm.version>
+	  </properties>
+
+as defined in the properties section of your pom file.
 
 == Using development snapshots
 
-The library development artifacts are available as SNAPSHOT (development versions) from Sonatype's OSSRH repository. 
+The library development artifacts are available as SNAPSHOT (development versions) from Sonatype's OSSRH repository.
 If you want to use them, add the following lines to your own Maven pom file:
 
   <repositories>
@@ -93,7 +101,7 @@ If you want to use them, add the following lines to your own Maven pom file:
    ...
   </repositories>
 
-The project coordinates for the api module are 
+The project coordinates for the api module are
 
     <dependency>
       <groupId>de.isas.mztab</groupId>
@@ -114,7 +122,7 @@ and
 for the io module, where `jmztab.version` is the version of jmztabm you wish to use, e.g. for a SNAPSHOT version:
 
   <properties>
-    <jmztabm.version>0.9.5-SNAPSHOT</jmztabm.version>
+    <jmztabm.version>0.9.9-SNAPSHOT</jmztabm.version>
   </properties>
 
 as defined in the properties section of your pom file.
@@ -134,27 +142,50 @@ The following snippet will parse an mzTabFile from a file on disk:
   parser.parse(System.err, MZTabErrorType.Level.Info, 500);
   //inspect the output of the parse and errors
   MZTabErrorList errors = parser.getErrorList();
+  //converting the MZTabErrorList into a list ValidationMessage
+  List<ValidationMessage> messages = errors.toValidationMessages()
   //access the file after parsing
   MzTab mzTab = parser.getMZTabFile();
 
 === Creating an mzTab 2.0 object model
 
+The mzTab domain model uses a _builder_ pattern, but also conforms to the usual JAVA _bean style_ pattern. The _builder_ pattern allows for a more fluent definition of your object structure. However, especially for cross references with the file, you will need to define e.g. MsRun objects separately since inline referencing within the builder code will not work.
 
+The following code will create the first parts of an mzTab-M file programmatically:
+
+  MzTab mztab = new MzTab();
+  Metadata mtd = new Metadata();
+  mtd.mzTabVersion("2.0.0-M");
+  mtd.mzTabID("1");
+  mtd.addSoftwareItem(new Software().id(1).
+      parameter(new Parameter().id(1).
+          name("LipidDataAnalyzer").
+          value("2.6.3_nightly")));
+  MsRun msrun1 = new MsRun().id(1).
+      location(
+          "file://D:/Experiment1/Orbitrap_CID/negative/50/014_Ex1_Orbitrap_CID_neg_50.chrom");
+  mtd.addMsRunItem(msrun1);
+  Assay a1 = new Assay().id(1).
+      addMsRunRefItem(msrun1);
+  Assay a2 = new Assay().id(2).
+      addMsRunRefItem(msrun2);
+  mtd.addAssayItem(a1).addAssayItem(a2);
+  ...
 
 === Writing mzTab 2.0 with validation
 
 The following code writes an mzTab object structure to the provided file path,
-performing structural and logical validation before:
+performing structural and logical validation:
 
   MzTabValidatingWriter writer = new MzTabValidatingWriter();
   File f = File.createTempFile(UUID.randomUUID().toString(), ".mztab");
   Optional<List<ValidationMessage>> messages = writer.write(f.toPath(), mzTab);
 
-You can also pass an OutputStreamWriter to the `write` method.
+You can also pass an `OutputStreamWriter` to the `write` method.
 
 === Writing mzTab 2.0 without validation
 
-The following code writes an mzTab object structure to the provided output stream:
+The following code writes an mzTab object structure to the provided output stream _without_ any validation (use at your own risk):
 
   MzTabNonValidatingWriter writer = new MzTabNonValidatingWriter();
   try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
@@ -162,10 +193,22 @@ The following code writes an mzTab object structure to the provided output strea
           baos, Charset.forName("UTF8"))) {
           writer.write(osw, mzTab);
           osw.flush();
+	  String mzTabFileAsAString = osw.toString();
       }
   }
 
 Alternatively, you can also provide a File path to the `write` method.
+
+== Exploring the test suite
+
+The use-cases that were described in the previous sections are also covered in the unit tests. Particularly, the following classes are of interest:
+
+* https://github.com/nilshoffmann/jmzTab-m/blob/master/api/src/test/java/de/isas/mztab2/model/MzTabTest.java[MzTabTest] - creation and serialization of MzTab object trees using the Jackson JSON serializer.
+* https://github.com/nilshoffmann/jmzTab-m/blob/master/io/src/test/java/de/isas/mztab2/io/MZTabFileParserTest.java[MZTabFileParserTest] - test for reading of mzTab-m files.
+* https://github.com/nilshoffmann/jmzTab-m/blob/master/io/src/test/java/de/isas/mztab2/io/MzTabValidatingWriterTest.java[MzTabValidatingWriterTest] - writing with structural and syntactic validation.
+* https://github.com/nilshoffmann/jmzTab-m/blob/master/io/src/test/java/de/isas/mztab2/io/MzTabWriterTest.java[MzTabWriterTest] - plain writing of MzTab and roundtrip read/write/read testing.
+* https://github.com/nilshoffmann/jmzTab-m/blob/master/validation/src/test/java/de/isas/mztab2/validation/ExampleFilesValidationTestIT.java[ExampleFilesValidationTestIT] - semantic validation using a mapping file and parameter validation rules.
+* https://github.com/nilshoffmann/jmzTab-m/blob/master/validation/src/test/java/de/isas/mztab2/validation/JxPathTest.java[JxPathTest] - Object selection in MzTab models via the JxPath library.
 
 == Editing the Swagger Spec
 This project defines the structure of an mzTab document based on JSON-Schema
@@ -178,7 +221,7 @@ This mechanism can be used to generate the domain-specific model classes in
 any of the supported languages, omitting the web-specific parts.
 
 The https://editor.swagger.io/[Swagger editor] can be used to import the file,
-edit it with assistance and preview, and export it after editing. It additionally 
+edit it with assistance and preview, and export it after editing. It additionally
 supports the generation of server and client code to represent the mzTab object structure.
 
 To launch the editor via https://www.docker.com/[Docker] on Unix, use the script
@@ -195,4 +238,3 @@ You can create server and client code in a multitude of languages from the Gener
 This project is based on and uses code that was developed for the https://github.com/PRIDE-Utilities/jmzTab[original jmzTab project]:
 
 http://onlinelibrary.wiley.com/doi/10.1002/pmic.201300560/abstract[Qing-Wei Xu et al., Proteomics 2014; Jun;14(11):1328-32.] http://onlinelibrary.wiley.com/doi/10.1002/pmic.201300560/pdf[PDF File.] https://www.ncbi.nlm.nih.gov/pubmed/24659499[PubMed record.]
-

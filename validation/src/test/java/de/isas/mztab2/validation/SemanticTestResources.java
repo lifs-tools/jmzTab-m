@@ -43,15 +43,16 @@ public class SemanticTestResources {
         Assert.assertTrue(testFile.exists() && testFile.isFile());
         MZTabFileParser parser = new MZTabFileParser(testFile);
         parser.parse(System.err, level, 500);
-        if (parser.getErrorList().
-            size() != expectedErrors) {
-            Assert.fail(parser.getErrorList().
-                toString());
-        }
-        if (parser.getMZTabFile() == null) {
-            Assert.fail(parser.getErrorList().
-                toString());
-        }
+        Assert.assertEquals(String.format(
+            "Expected %d structural or logical errors, found %d! Errors: %s",
+            expectedErrors, parser.getErrorList().
+                size(), parser.getErrorList().
+                convertToValidationMessages()),
+            (long) expectedErrors, (long) parser.getErrorList().
+                size());
+        Assert.assertNotNull(
+            "Expected parser.getMZTabFile() to return a non null MzTab object",
+            parser.getMZTabFile());
         return parser.getMZTabFile();
     }
 }
