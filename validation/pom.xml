@@ -55,6 +55,11 @@
           </excludePackageNames>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <version>2.20.1</version>
+      </plugin>
     </plugins>
   </build>
   <dependencies>

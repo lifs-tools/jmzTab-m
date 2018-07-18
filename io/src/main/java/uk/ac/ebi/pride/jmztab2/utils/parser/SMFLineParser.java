@@ -26,36 +26,51 @@ import uk.ac.ebi.pride.jmztab2.model.AbundanceColumn;
 import de.isas.mztab2.model.Metadata;
 import de.isas.mztab2.model.OptColumnMapping;
 import de.isas.mztab2.model.SmallMoleculeFeature;
+import de.isas.mztab2.model.SmallMoleculeSummary;
+import java.util.Arrays;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import uk.ac.ebi.pride.jmztab2.model.SmallMoleculeFeatureColumn.Stable;
+import uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType;
+import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabError;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorList;
 
-
 /**
- * <p>SMFLineParser class.</p>
+ * <p>
+ * SMFLineParser class.</p>
  *
  * @author nilshoffmann
  * @since 11/09/17
- * 
+ *
  */
 public class SMFLineParser extends MZTabDataLineParser<SmallMoleculeFeature> {
 
     private SmallMoleculeFeature smallMoleculeFeature;
 
     /**
-     * <p>Constructor for SMFLineParser.</p>
+     * <p>
+     * Constructor for SMFLineParser.</p>
      *
-     * @param context a {@link uk.ac.ebi.pride.jmztab2.utils.parser.MZTabParserContext} object.
-     * @param factory a {@link uk.ac.ebi.pride.jmztab2.model.MZTabColumnFactory} object.
-     * @param positionMapping a {@link uk.ac.ebi.pride.jmztab2.utils.parser.PositionMapping} object.
+     * @param context a
+     * {@link uk.ac.ebi.pride.jmztab2.utils.parser.MZTabParserContext} object.
+     * @param factory a {@link uk.ac.ebi.pride.jmztab2.model.MZTabColumnFactory}
+     * object.
+     * @param positionMapping a
+     * {@link uk.ac.ebi.pride.jmztab2.utils.parser.PositionMapping} object.
      * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
-     * @param errorList a {@link uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorList} object.
+     * @param errorList a
+     * {@link uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorList} object.
      */
-    public SMFLineParser(MZTabParserContext context, MZTabColumnFactory factory, PositionMapping positionMapping,
-                         Metadata metadata, MZTabErrorList errorList) {
+    public SMFLineParser(MZTabParserContext context, MZTabColumnFactory factory,
+        PositionMapping positionMapping,
+        Metadata metadata, MZTabErrorList errorList) {
         super(context, factory, positionMapping, metadata, errorList);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected int checkData() {
 
@@ -68,17 +83,24 @@ public class SMFLineParser extends MZTabDataLineParser<SmallMoleculeFeature> {
 
         for (physicalPosition = 1; physicalPosition < items.length; physicalPosition++) {
             logicalPosition = positionMapping.get(physicalPosition);
-            column = factory.getColumnMapping().get(logicalPosition);
+            column = factory.getColumnMapping().
+                get(logicalPosition);
 
             if (column != null) {
                 columnName = column.getName();
                 target = items[physicalPosition];
                 if (column instanceof ISmallMoleculeFeatureColumn) {
-                    Stable stableColumn = SmallMoleculeFeatureColumn.Stable.forName(columnName);
-                    switch(stableColumn) {
+                    Stable stableColumn = SmallMoleculeFeatureColumn.Stable.
+                        forName(columnName);
+                    switch (stableColumn) {
                         case ADDUCT_ION:
-                            smallMoleculeFeature.adductIon(checkString(column,
-                                target));
+                            String adductIon = checkString(column,
+                                target);
+                            checkRegexMatches(errorList, lineNumber,
+                                SmallMoleculeFeature.Properties.adductIon,
+                                MZTabConstants.REGEX_ADDUCT, Arrays.asList(
+                                    adductIon));
+                            smallMoleculeFeature.adductIon(adductIon);
                             break;
                         case CHARGE:
                             smallMoleculeFeature.charge(checkInteger(column,
@@ -86,31 +108,36 @@ public class SMFLineParser extends MZTabDataLineParser<SmallMoleculeFeature> {
                             break;
                         case EXP_MASS_TO_CHARGE:
                             smallMoleculeFeature.expMassToCharge(
-                                checkDouble(column, checkData(column, target, false)));
+                                checkDouble(column, checkData(column, target,
+                                    false)));
                             break;
                         case ISOTOPOMER:
                             smallMoleculeFeature.isotopomer(checkParameter(
                                 column, target, true));
                             break;
                         case RETENTION_TIME_IN_SECONDS:
-                            smallMoleculeFeature.retentionTimeInSeconds(checkDouble(
-                                column, target));
+                            smallMoleculeFeature.retentionTimeInSeconds(
+                                checkDouble(
+                                    column, target));
                             break;
                         case RETENTION_TIME_IN_SECONDS_END:
-                            smallMoleculeFeature.retentionTimeInSecondsEnd(checkDouble(
-                                column, target));
+                            smallMoleculeFeature.retentionTimeInSecondsEnd(
+                                checkDouble(
+                                    column, target));
                             break;
                         case RETENTION_TIME_IN_SECONDS_START:
-                            smallMoleculeFeature.retentionTimeInSecondsStart(checkDouble(
-                                column, target));
+                            smallMoleculeFeature.retentionTimeInSecondsStart(
+                                checkDouble(
+                                    column, target));
                             break;
                         case SME_ID_REFS:
                             smallMoleculeFeature.smeIdRefs(checkIntegerList(
                                 column, target, MZTabConstants.BAR));
                             break;
                         case SME_ID_REF_AMBIGUITY_CODE:
-                            smallMoleculeFeature.smeIdRefAmbiguityCode(checkInteger(
-                                column, target));
+                            smallMoleculeFeature.smeIdRefAmbiguityCode(
+                                checkInteger(
+                                    column, target));
                             break;
                         case SMF_ID:
                             smallMoleculeFeature.smfId(checkInteger(
@@ -119,20 +146,27 @@ public class SMFLineParser extends MZTabDataLineParser<SmallMoleculeFeature> {
                     }
 
                 } else if (column instanceof AbundanceColumn) {
-                    if (columnName.startsWith(SmallMoleculeFeature.Properties.abundanceAssay.getPropertyName())) {
-                        smallMoleculeFeature.addAbundanceAssayItem(checkDouble(column, target));
+                    if (columnName.startsWith(
+                        SmallMoleculeFeature.Properties.abundanceAssay.
+                            getPropertyName())) {
+                        smallMoleculeFeature.addAbundanceAssayItem(checkDouble(
+                            column, target));
                     }
                 } else if (column instanceof OptionColumn) {
-                   if (columnName.startsWith(MZTabConstants.OPT_PREFIX)) {
+                    if (columnName.startsWith(MZTabConstants.OPT_PREFIX)) {
                         Class dataType = column.getDataType();
                         OptColumnMapping optColMapping = new OptColumnMapping();
-                        optColMapping.identifier(columnName.substring(MZTabConstants.OPT_PREFIX.length()));
+                        optColMapping.identifier(columnName.substring(
+                            MZTabConstants.OPT_PREFIX.length()));
                         if (dataType.equals(String.class)) {
                             optColMapping.value(checkString(column, target));
                         } else if (dataType.equals(Double.class)) {
-                            optColMapping.value(Double.toString(checkDouble(column, target)));
+                            optColMapping.value(Double.toString(checkDouble(
+                                column, target)));
                         } else if (dataType.equals(MZBoolean.class)) {
-                            optColMapping.value(Boolean.toString(checkMZBoolean(column, target).toBoolean()));
+                            optColMapping.value(Boolean.toString(checkMZBoolean(
+                                column, target).
+                                toBoolean()));
                         }
                         smallMoleculeFeature.addOptItem(optColMapping);
                     }
@@ -143,11 +177,35 @@ public class SMFLineParser extends MZTabDataLineParser<SmallMoleculeFeature> {
         return physicalPosition;
     }
 
-    /** {@inheritDoc} */
+    protected void checkRegexMatches(MZTabErrorList errorList, int lineNumber,
+        SmallMoleculeFeature.Properties elementProperty,
+        String regularExpression, List<String> elements) {
+        if (!elements.isEmpty()) {
+            Pattern p = Pattern.compile(regularExpression);
+            for (int i = 0; i < elements.size(); i++) {
+                String element = elements.get(i);
+                if (!"null".equals(element)) {
+                    Matcher m = p.matcher(element);
+                    if (!m.matches()) {
+                        errorList.add(new MZTabError(
+                            FormatErrorType.RegexMismatch,
+                            lineNumber, elementProperty.getPropertyName(),
+                            element,
+                            "" + (i + 1), regularExpression));
+                    }
+                }
+            }
+        }
+
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public SmallMoleculeFeature getRecord() {
 
-        if(smallMoleculeFeature == null){
+        if (smallMoleculeFeature == null) {
             smallMoleculeFeature = new SmallMoleculeFeature();//(factory, metadata);
         }
         return smallMoleculeFeature;

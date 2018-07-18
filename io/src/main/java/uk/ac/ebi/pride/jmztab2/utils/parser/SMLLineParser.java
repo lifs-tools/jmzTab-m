@@ -94,8 +94,12 @@ public class SMLLineParser extends MZTabDataLineParser<SmallMoleculeSummary> {
                         forName(columnName);
                     switch (stableColumn) {
                         case ADDUCT_IONS:
-                            smallMoleculeSummary.adductIons(checkStringList(
-                                column, target, MZTabConstants.BAR));
+                            List<String> adductIons = checkStringList(
+                                column, target, MZTabConstants.BAR);
+                            checkRegexMatches(errorList, lineNumber,
+                                SmallMoleculeSummary.Properties.adductIons,
+                                MZTabConstants.REGEX_ADDUCT, adductIons);
+                            smallMoleculeSummary.adductIons(adductIons);
                             break;
                         case BEST_ID_CONFIDENCE_MEASURE:
                             smallMoleculeSummary.bestIdConfidenceMeasure(
@@ -228,14 +232,16 @@ public class SMLLineParser extends MZTabDataLineParser<SmallMoleculeSummary> {
         SmallMoleculeSummary.Properties elementProperty,
         String regularExpression, List<String> elements) {
         if (!elements.isEmpty()) {
+            Pattern p = Pattern.compile(regularExpression);
             for (int i = 0; i < elements.size(); i++) {
                 String element = elements.get(i);
-                Pattern p = Pattern.compile(regularExpression);
-                Matcher m = p.matcher(element);
-                if (!m.matches()) {
-                    errorList.add(new MZTabError(FormatErrorType.RegexMismatch,
-                        lineNumber, elementProperty.getPropertyName(), element,
-                        "" + (i + 1), regularExpression));
+                if(!"null".equals(element)) {
+                    Matcher m = p.matcher(element);
+                    if (!m.matches()) {
+                        errorList.add(new MZTabError(FormatErrorType.RegexMismatch,
+                            lineNumber, elementProperty.getPropertyName(), element,
+                            "" + (i + 1), regularExpression));
+                    }
                 }
             }
         }

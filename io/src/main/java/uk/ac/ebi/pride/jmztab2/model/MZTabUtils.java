@@ -34,6 +34,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import static uk.ac.ebi.pride.jmztab2.model.MZTabConstants.*;
 import static uk.ac.ebi.pride.jmztab2.model.MZTabStringUtils.*;
 import uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType;
@@ -51,7 +52,7 @@ import uk.ac.ebi.pride.jmztab2.utils.parser.MZTabParserContext;
  *
  */
 public class MZTabUtils {
-
+    
     private static final Logger logger = LoggerFactory.getLogger(
         MZTabUtils.class);
 
@@ -88,11 +89,11 @@ public class MZTabUtils {
         if (target == null) {
             return null;
         }
-
+        
         String regexp = REGEX_EMAIL;
         Pattern pattern = Pattern.compile(regexp);
         Matcher matcher = pattern.matcher(target);
-
+        
         return matcher.find() ? target : null;
     }
 
@@ -108,7 +109,7 @@ public class MZTabUtils {
         if (target == null) {
             return null;
         }
-
+        
         Pattern versionPattern = Pattern.compile(MZTabConstants.REGEX_MZTAB_M);
         Matcher m = versionPattern.matcher(target);
         if (m.matches()) {
@@ -143,26 +144,26 @@ public class MZTabUtils {
         if (target == null) {
             return null;
         }
-
+        
         try {
             target = target.substring(target.indexOf("[") + 1, target.
                 lastIndexOf("]"));
             String[] tokens = target.split(REGEX_PARAM_SPLIT, -1);
-
+            
             if (tokens.length == 4) {
                 String cvLabel = tokens[0].trim();
-
+                
                 String accession = tokens[1].trim();
-
+                
                 String name = tokens[2].trim();
                 if (name.contains("\"")) {  //We remove the escaping because it will be written back in the writer
                     name = removeDoubleQuotes(name);
                 }
-
+                
                 if (isEmpty(name)) {
                     return null;
                 }
-
+                
                 String value = tokens[3].trim();
                 if (value.contains("\"")) {  //We remove the escaping because it will be written back in the writer
                     value = removeDoubleQuotes(value);
@@ -170,7 +171,7 @@ public class MZTabUtils {
                 if (isEmpty(value)) {
                     value = null;
                 }
-
+                
                 if (isEmpty(cvLabel) && isEmpty(accession)) {
                     return new Parameter().name(name).
                         value(value);
@@ -184,9 +185,9 @@ public class MZTabUtils {
         } catch (IndexOutOfBoundsException e) {
             return null;
         }
-
+        
         return null;
-
+        
     }
 
     /**
@@ -198,7 +199,7 @@ public class MZTabUtils {
      */
     public static List<String> parseStringList(char splitChar, String target) {
         List<String> list = new ArrayList<>(splitChar);
-
+        
         target = parseString(target);
         if (target == null) {
             return list;
@@ -227,11 +228,14 @@ public class MZTabUtils {
             default:
                 sb.append(splitChar);
         }
-
+        
         String[] items = target.split(sb.toString());
         Collections.addAll(list, items);
-
-        return list;
+        
+        return list.stream().
+            map(value ->
+                value.trim()).
+            collect(Collectors.toList());
     }
 
     /**
@@ -249,7 +253,7 @@ public class MZTabUtils {
         if (target == null) {
             return null;
         }
-
+        
         Pattern pattern = Pattern.compile(element + "\\[(\\d+)\\]");
         Matcher matcher = pattern.matcher(target);
         if (matcher.find()) {
@@ -273,7 +277,7 @@ public class MZTabUtils {
     public static List<IndexedElement> parseRefList(String target,
         MetadataElement element) {
         List<String> list = parseStringList(MZTabConstants.COMMA, target);
-
+        
         List<IndexedElement> indexedElementList = new ArrayList<>();
         IndexedElement indexedElement;
         for (String item : list) {
@@ -295,7 +299,7 @@ public class MZTabUtils {
      */
     public static List<Parameter> parseParamList(String target) {
         List<String> list = parseStringList(BAR, target);
-
+        
         Parameter param;
         SplitList<Parameter> paramList = new SplitList<>(BAR);
         for (String item : list) {
@@ -307,7 +311,7 @@ public class MZTabUtils {
                 paramList.add(param);
             }
         }
-
+        
         return paramList;
     }
 
@@ -319,7 +323,7 @@ public class MZTabUtils {
      */
     public static List<String> parseGOTermList(String target) {
         List<String> list = parseStringList(COMMA, target);
-
+        
         List<String> goList = new SplitList<>(COMMA);
         for (String item : list) {
             item = parseString(item);
@@ -330,7 +334,7 @@ public class MZTabUtils {
                 break;
             }
         }
-
+        
         return goList;
     }
 
@@ -346,15 +350,15 @@ public class MZTabUtils {
         if (target == null) {
             return null;
         }
-
+        
         Integer integer;
-
+        
         try {
             integer = new Integer(target);
         } catch (NumberFormatException e) {
             integer = null;
         }
-
+        
         return integer;
     }
 
@@ -371,7 +375,7 @@ public class MZTabUtils {
         if (target == null) {
             return null;
         }
-
+        
         Double value;
         try {
             value = new Double(target);
@@ -388,7 +392,7 @@ public class MZTabUtils {
                     break;
             }
         }
-
+        
         return value;
     }
 
@@ -404,7 +408,7 @@ public class MZTabUtils {
         if (target == null) {
             return null;
         }
-
+        
         try {
             return new Long(target);
         } catch (NumberFormatException e) {
@@ -421,7 +425,7 @@ public class MZTabUtils {
      */
     public static List<Double> parseDoubleList(String target) {
         List<String> list = parseStringList(BAR, target);
-
+        
         Double value;
         List<Double> valueList = new ArrayList<>(BAR);
         for (String item : list) {
@@ -433,7 +437,7 @@ public class MZTabUtils {
                 valueList.add(value);
             }
         }
-
+        
         return valueList;
     }
 
@@ -446,7 +450,7 @@ public class MZTabUtils {
      */
     public static List<Integer> parseIntegerList(String target) {
         List<String> list = parseStringList(BAR, target);
-
+        
         Integer value;
         List<Integer> valueList = new ArrayList<>(BAR);
         for (String item : list) {
@@ -458,7 +462,7 @@ public class MZTabUtils {
                 valueList.add(value);
             }
         }
-
+        
         return valueList;
     }
 
@@ -474,15 +478,15 @@ public class MZTabUtils {
         if (target == null) {
             return null;
         }
-
+        
         URI uri;
-
+        
         try {
             uri = new URI(target);
         } catch (URISyntaxException e) {
             uri = null;
         }
-
+        
         return uri;
     }
 
@@ -500,7 +504,7 @@ public class MZTabUtils {
     public static Publication parsePublicationItems(Publication publication,
         int lineNumber, String target) throws MZTabException {
         List<String> list = parseStringList(BAR, target);
-
+        
         PublicationItem.TypeEnum type;
         String accession;
         PublicationItem item;
@@ -527,9 +531,9 @@ public class MZTabUtils {
                 throw new MZTabException(new MZTabError(
                     FormatErrorType.Publication, lineNumber, target, pub));
             }
-
+            
         }
-
+        
         return publication;
     }
 
@@ -546,7 +550,7 @@ public class MZTabUtils {
         MZTabParserContext context, Metadata metadata, String target) {
         List<String> list = parseStringList(BAR, target);
         List<SpectraRef> refList = new ArrayList<>();
-
+        
         Pattern pattern = Pattern.compile("ms_run\\[(\\d+)\\]:(.*)");
         Matcher matcher;
         Integer ms_file_id;
@@ -557,7 +561,7 @@ public class MZTabUtils {
             if (matcher.find()) {
                 ms_file_id = new Integer(matcher.group(1));
                 reference = matcher.group(2);
-
+                
                 MsRun msRun = context.getMsRunMap().
                     get(ms_file_id);
                 if (msRun == null) {
@@ -566,7 +570,7 @@ public class MZTabUtils {
                     ref = new SpectraRef().msRun(msRun).
                         reference(reference);
                 }
-
+                
                 if (ref == null) {
                     refList.clear();
                     break;
@@ -575,7 +579,7 @@ public class MZTabUtils {
                 }
             }
         }
-
+        
         return refList;
     }
 
@@ -594,7 +598,7 @@ public class MZTabUtils {
             sb.append(matcher.group(1));
             sb.append("&minus;");
             sb.append(matcher.group(3));
-
+            
         } else {
             sb.append(target);
         }
@@ -611,9 +615,9 @@ public class MZTabUtils {
     public static String translateMinusInCVtoUnicode(String target) {
         Pattern pattern = Pattern.compile("\\[([^\\[\\]]+)\\]");
         Matcher matcher = pattern.matcher(target);
-
+        
         StringBuilder sb = new StringBuilder();
-
+        
         int start = 0;
         int end;
         while (matcher.find()) {
@@ -624,7 +628,7 @@ public class MZTabUtils {
             start = matcher.end(1);
         }
         sb.append(target.substring(start, target.length()));
-
+        
         return sb.toString();
     }
 
@@ -651,11 +655,11 @@ public class MZTabUtils {
         Matcher matcher = pattern.matcher(target);
         if (matcher.find()) {
             StringBuilder sb = new StringBuilder();
-
+            
             sb.append(matcher.group(1));
             sb.append("-");
             sb.append(matcher.group(3));
-
+            
             return sb.toString();
         } else {
             return target;
@@ -671,9 +675,9 @@ public class MZTabUtils {
     public static String translateCommaToTab(String target) {
         Pattern pattern = Pattern.compile("\\[([^\\[\\]]+)\\]");
         Matcher matcher = pattern.matcher(target);
-
+        
         StringBuilder sb = new StringBuilder();
-
+        
         int start = 0;
         int end;
         while (matcher.find()) {
@@ -684,7 +688,7 @@ public class MZTabUtils {
             start = matcher.end(1);
         }
         sb.append(target.substring(start, target.length()));
-
+        
         return sb.toString();
     }
 
@@ -698,9 +702,9 @@ public class MZTabUtils {
     public static String translateTabToComma(String target) {
         Pattern pattern = Pattern.compile("\\[([^\\[\\]]+)\\]");
         Matcher matcher = pattern.matcher(target);
-
+        
         StringBuilder sb = new StringBuilder();
-
+        
         int start = 0;
         int end;
         while (matcher.find()) {
@@ -711,7 +715,7 @@ public class MZTabUtils {
             start = matcher.end(1);
         }
         sb.append(target.substring(start, target.length()));
-
+        
         return sb.toString();
     }
 
@@ -726,9 +730,9 @@ public class MZTabUtils {
     public static String translateMinusToTab(String target) {
         Pattern pattern = Pattern.compile("\\[([^\\[\\]]+)\\]");
         Matcher matcher = pattern.matcher(target);
-
+        
         StringBuilder sb = new StringBuilder();
-
+        
         int start = 0;
         int end;
         while (matcher.find()) {
@@ -739,11 +743,11 @@ public class MZTabUtils {
             start = matcher.end(1);
         }
         sb.append(target.substring(start, target.length()));
-
+        
         return sb.toString();
-
+        
     }
-
+    
     private static String replaceLast(String string, String toReplace,
         String replacement) {
         int pos = string.lastIndexOf(toReplace);
@@ -765,9 +769,9 @@ public class MZTabUtils {
     public static String translateLastToTab(String target) {
         Pattern pattern = Pattern.compile("\\[([^\\[\\]]+)\\]");
         Matcher matcher = pattern.matcher(target);
-
+        
         StringBuilder sb = new StringBuilder();
-
+        
         int start = 0;
         int end;
         while (matcher.find()) {
@@ -777,9 +781,9 @@ public class MZTabUtils {
             start = matcher.end(1);
         }
         sb.append(target.substring(start, target.length()));
-
+        
         return sb.toString();
-
+        
     }
 
     /**
@@ -792,9 +796,9 @@ public class MZTabUtils {
     public static String translateTabToMinus(String target) {
         Pattern pattern = Pattern.compile("\\[([^\\[\\]]+)\\]");
         Matcher matcher = pattern.matcher(target);
-
+        
         StringBuilder sb = new StringBuilder();
-
+        
         int start = 0;
         int end;
         while (matcher.find()) {
@@ -805,7 +809,7 @@ public class MZTabUtils {
             start = matcher.end(1);
         }
         sb.append(target.substring(start, target.length()));
-
+        
         return sb.toString();
     }
 
@@ -818,28 +822,28 @@ public class MZTabUtils {
      * @return a {@link java.lang.String} object.
      */
     public static String removeDoubleQuotes(String value) {
-
+        
         if (value != null) {
             int length;
             int count;
-
+            
             value = value.trim();
             length = value.length();
-
+            
             value = value.replace("\"", "");
             count = length - value.length();
-
+            
             if (isEmpty(value)) {
                 value = null;
             }
-
+            
             if (count > 2) {
                 logger.warn(
                     "Nested double quotes in value, " + count + " occurrences have been replaced.");
             }
         }
-
+        
         return value;
     }
-
+    
 }

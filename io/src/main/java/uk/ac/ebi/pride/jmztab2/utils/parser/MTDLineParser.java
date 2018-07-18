@@ -38,6 +38,7 @@ import de.isas.mztab2.model.SampleProcessing;
 import de.isas.mztab2.model.Software;
 import de.isas.mztab2.model.StudyVariable;
 import de.isas.mztab2.model.Uri;
+import java.net.URI;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -205,9 +206,10 @@ public class MTDLineParser extends MZTabLineParser {
     private java.net.URI checkURI(String defineLabel, String valueLabel,
         boolean mandatory) {
         if (null == parseString(valueLabel)) {
-            if(mandatory) {
+            if (mandatory) {
                 // "null" value is supported when the ms_run[1-n]-location is unknown
-                errorList.add(new MZTabError(LogicalErrorType.NotNULL, lineNumber,
+                errorList.add(new MZTabError(LogicalErrorType.NotNULL,
+                    lineNumber,
                     Error_Header + defineLabel, valueLabel));
             }
             return null;
@@ -364,7 +366,7 @@ public class MTDLineParser extends MZTabLineParser {
                     break;
                 case DERIVATIZATION_AGENT:
                     handleDerivatizationAgent(defineLabel, matcher, valueLabel);
-		    break;
+                    break;
                 case COLUNIT:
                 case COLUNIT_SMALL_MOLECULE:
                 case COLUNIT_SMALL_MOLECULE_FEATURE:
@@ -523,22 +525,21 @@ public class MTDLineParser extends MZTabLineParser {
         Matcher matcher, String defineLabel, String valueLabel) throws MZTabException {
         MetadataProperty property;
         property = checkProperty(element, matcher.group(5));
-        switch (property != null ? property : null) {
-            case SMALL_MOLECULE_FEATURE_QUANTIFICATION_UNIT:
-                if (metadata.
-                    getSmallMoleculeFeatureQuantificationUnit() != null) {
-                    throw new MZTabException(new MZTabError(
-                        LogicalErrorType.DuplicationDefine,
-                        lineNumber, defineLabel));
-                }
-                metadata.setSmallMoleculeFeatureQuantificationUnit(
-                    checkParameter(defineLabel, valueLabel));
-                break;
-            default:
-                MZTabError error = new MZTabError(
-                    FormatErrorType.MTDDefineLabel,
-                    lineNumber, defineLabel + "-" + valueLabel);
-                throw new MZTabException(error);
+        if (property == null) {
+            MZTabError error = new MZTabError(
+                FormatErrorType.MTDDefineLabel,
+                lineNumber, defineLabel + "-" + valueLabel);
+            throw new MZTabException(error);
+        }
+        if (property == MetadataProperty.SMALL_MOLECULE_FEATURE_QUANTIFICATION_UNIT) {
+            if (metadata.
+                getSmallMoleculeFeatureQuantificationUnit() != null) {
+                throw new MZTabException(new MZTabError(
+                    LogicalErrorType.DuplicationDefine,
+                    lineNumber, defineLabel));
+            }
+            metadata.setSmallMoleculeFeatureQuantificationUnit(
+                checkParameter(defineLabel, valueLabel));
         }
     }
 
@@ -546,31 +547,29 @@ public class MTDLineParser extends MZTabLineParser {
         String defineLabel, String valueLabel) throws MZTabException {
         MetadataProperty property;
         property = checkProperty(element, matcher.group(5));
-        switch (property != null ? property : null) {
-            case SMALL_MOLECULE_QUANTIFICATION_UNIT:
-                if (metadata.getSmallMoleculeQuantificationUnit() != null) {
-                    throw new MZTabException(new MZTabError(
-                        LogicalErrorType.DuplicationDefine,
-                        lineNumber, defineLabel));
-                }
-                metadata.setSmallMoleculeQuantificationUnit(
-                    checkParameter(defineLabel, valueLabel));
-                break;
-            case SMALL_MOLECULE_IDENTIFICATION_RELIABILITY:
-                if (metadata.
-                    getSmallMoleculeIdentificationReliability() != null) {
-                    throw new MZTabException(new MZTabError(
-                        LogicalErrorType.DuplicationDefine,
-                        lineNumber, defineLabel));
-                }
-                metadata.setSmallMoleculeIdentificationReliability(
-                    checkParameter(defineLabel, valueLabel));
-                break;
-            default:
-                MZTabError error = new MZTabError(
-                    FormatErrorType.MTDDefineLabel,
-                    lineNumber, defineLabel + "-" + valueLabel);
-                throw new MZTabException(error);
+        if (property == null) {
+            MZTabError error = new MZTabError(
+                FormatErrorType.MTDDefineLabel,
+                lineNumber, defineLabel + "-" + valueLabel);
+            throw new MZTabException(error);
+        }
+        if (property == MetadataProperty.SMALL_MOLECULE_QUANTIFICATION_UNIT) {
+            if (metadata.getSmallMoleculeQuantificationUnit() != null) {
+                throw new MZTabException(new MZTabError(
+                    LogicalErrorType.DuplicationDefine,
+                    lineNumber, defineLabel));
+            }
+            metadata.setSmallMoleculeQuantificationUnit(
+                checkParameter(defineLabel, valueLabel));
+        } else if (property == MetadataProperty.SMALL_MOLECULE_IDENTIFICATION_RELIABILITY) {
+            if (metadata.
+                getSmallMoleculeIdentificationReliability() != null) {
+                throw new MZTabException(new MZTabError(
+                    LogicalErrorType.DuplicationDefine,
+                    lineNumber, defineLabel));
+            }
+            metadata.setSmallMoleculeIdentificationReliability(
+                checkParameter(defineLabel, valueLabel));
         }
     }
 
@@ -589,18 +588,18 @@ public class MTDLineParser extends MZTabLineParser {
         String valueLabel) throws MZTabException {
         Integer id;
         id = checkIndex(defineLabel, matcher.group(3));
+        URI uri = checkURI(defineLabel, valueLabel, false);
         metadata.addExternalStudyUriItem(new Uri().id(id).
-            value(checkURI(defineLabel, valueLabel, false).
-                toASCIIString()));
+            value(uri == null ? MZTabConstants.NULL : uri.toASCIIString()));
     }
 
     protected void handleUri(String defineLabel, Matcher matcher,
         String valueLabel, boolean mandatory) throws MZTabException {
         Integer id;
         id = checkIndex(defineLabel, matcher.group(3));
+        URI uri = checkURI(defineLabel, valueLabel, mandatory);
         metadata.addUriItem(new Uri().id(id).
-            value(checkURI(defineLabel, valueLabel, mandatory).
-                toASCIIString()));
+            value(uri == null ? MZTabConstants.NULL : uri.toASCIIString()));
     }
 
     protected void handleContact(String defineLabel, Matcher matcher,
@@ -669,6 +668,12 @@ public class MTDLineParser extends MZTabLineParser {
         String defineLabel, String valueLabel) throws MZTabException {
         MetadataProperty property;
         property = checkProperty(element, matcher.group(5));
+        if (property == null) {
+            MZTabError error = new MZTabError(
+                FormatErrorType.MTDDefineLabel,
+                lineNumber, defineLabel + "-" + valueLabel);
+            throw new MZTabException(error);
+        }
         switch (property) {
             case MZTAB_VERSION:
                 if (metadata.getMzTabVersion() != null) {
@@ -681,7 +686,7 @@ public class MTDLineParser extends MZTabLineParser {
                         FormatErrorType.MZTabVersion, lineNumber,
                         defineLabel, valueLabel));
                 }
-                
+
                 metadata.mzTabVersion(valueLabel);
                 break;
             case MZTAB_ID:
@@ -951,7 +956,15 @@ public class MTDLineParser extends MZTabLineParser {
         Parameter param) throws MZTabException {
         Instrument instrument = null;
 
-        switch (property != null ? property : null) {
+        if (property == null) {
+            MZTabError error = new MZTabError(
+                FormatErrorType.MTDDefineLabel,
+                lineNumber,
+                Metadata.Properties.instrument + "[" + id + "]" + "-" + property);
+            throw new MZTabException(error);
+        }
+
+        switch (property) {
             case INSTRUMENT_NAME:
                 instrument = context.addInstrumentName(metadata, id, param);
                 break;
@@ -1017,7 +1030,13 @@ public class MTDLineParser extends MZTabLineParser {
         Integer id,
         String valueLabel, String defineLabel) throws MZTabException {
         Contact contact = null;
-        switch (property != null ? property : null) {
+        if (property == null) {
+            MZTabError error = new MZTabError(
+                FormatErrorType.MTDDefineLabel,
+                lineNumber, defineLabel + "-" + valueLabel);
+            throw new MZTabException(error);
+        }
+        switch (property) {
             case CONTACT_NAME:
                 contact = context.addContactName(metadata, id, valueLabel);
                 break;

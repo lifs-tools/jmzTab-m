@@ -78,7 +78,7 @@ public class MZTabError implements Serializable {
                         getSimpleName() + " " + type.toString());
             }
             value = values.get(count);
-            message = matcher.replaceFirst(value);
+            message = matcher.replaceFirst(Matcher.quoteReplacement(value));
             return fill(count + 1, values, message);
         } else {
             return message;

@@ -43,6 +43,14 @@ public class ParsingPrimitivesTest {
         Pattern adductPattern = Pattern.compile(MZTabConstants.REGEX_ADDUCT);
         Assert.assertTrue(adductPattern.matcher("[M+H]1+").
             matches());
+        Assert.assertTrue(adductPattern.matcher("[M+H]+").
+            matches());
+        Assert.assertTrue(adductPattern.matcher("[M-H]1-").
+            matches());
+        Assert.assertTrue(adductPattern.matcher("[M+Na]+").
+            matches());
+        Assert.assertFalse(adductPattern.matcher("[M8H2-H]1-").
+            matches());
     }
 
     @Test

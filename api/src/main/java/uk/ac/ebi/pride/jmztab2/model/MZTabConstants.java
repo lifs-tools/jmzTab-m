@@ -67,7 +67,7 @@ public final class MZTabConstants {
     public static String REGEX_PARAM_SPLIT = ",(?=([^\"]*\"[^\"]*\")*[^\"]*$)";
     /** Constant <code>REGEX_DEFAULT_RELIABILITY="[1234]{1}"</code> */
     public static String REGEX_DEFAULT_RELIABILITY = "[1234]{1}";
-    /** Constant <code>REGEX_ADDUCT="^\[\d*M([+-][\w]*)\]\d*[+-]$"</code> */
-    public static String REGEX_ADDUCT = "^\\[\\d*M([+-][\\w]*)\\]\\d*[+-]$";
+    /** Constant <code>REGEX_ADDUCT="^\[\d*M([+-][\w\d]+)*\]\d*[+-]$"</code> */
+    public static String REGEX_ADDUCT = "^\\[\\d*M([+-][\\w\\d]+)*\\]\\d*[+-]$";
     
 }
