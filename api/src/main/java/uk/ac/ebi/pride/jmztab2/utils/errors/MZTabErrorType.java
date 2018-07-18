@@ -1,6 +1,7 @@
 package uk.ac.ebi.pride.jmztab2.utils.errors;
 
 //import uk.ac.ebi.pride.jmztab2.model.MZTabUtils;
+import java.io.Serializable;
 import uk.ac.ebi.pride.jmztab2.model.MZTabStringUtils;
 import uk.ac.ebi.pride.jmztab2.utils.MZTabProperties;
 
@@ -11,7 +12,7 @@ import uk.ac.ebi.pride.jmztab2.utils.MZTabProperties;
  * @since 28/01/13
  * 
  */
-public class MZTabErrorType {
+public class MZTabErrorType implements Serializable {
     public enum Category {
         Format,                // single field format error
         Logical,               // exists logical error among fields value.

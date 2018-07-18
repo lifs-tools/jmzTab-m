@@ -17,16 +17,20 @@ package de.isas.mztab2.test.utils;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.junit.rules.ExternalResource;
 import org.junit.rules.TemporaryFolder;
 
 /**
- * <p>ExtractClassPathFiles class.</p>
+ * <p>
+ * ExtractClassPathFiles class.</p>
  *
  * @author Nils Hoffmann
- * 
+ *
  */
 public class ExtractClassPathFiles extends ExternalResource {
 
@@ -36,7 +40,8 @@ public class ExtractClassPathFiles extends ExternalResource {
     private File baseFolder;
 
     /**
-     * <p>Constructor for ExtractClassPathFiles.</p>
+     * <p>
+     * Constructor for ExtractClassPathFiles.</p>
      *
      * @param tf a {@link org.junit.rules.TemporaryFolder} object.
      * @param resourcePaths a {@link java.lang.String} object.
@@ -46,7 +51,9 @@ public class ExtractClassPathFiles extends ExternalResource {
         this.resourcePaths = resourcePaths;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void before() throws Throwable {
         try {
@@ -58,23 +65,33 @@ public class ExtractClassPathFiles extends ExternalResource {
         int i = 0;
         for (String resource : resourcePaths) {
             File file = ZipResourceExtractor.extract(
-                    resource, baseFolder);
+                resource, baseFolder);
             files.add(file);
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void after() {
         for (File f : files) {
-            if(f!=null && f.exists()) {
-                f.delete();
+            if (f != null && f.exists()) {
+                try {
+                    Files.deleteIfExists(f.toPath());
+                } catch (IOException ioex) {
+                    Logger.getLogger(ExtractClassPathFiles.class.getName()).
+                        log(Level.SEVERE,
+                            "Caught an IOException while trying to delete file " + f.
+                                getAbsolutePath(), ioex);
+                }
             }
         }
     }
 
     /**
-     * <p>Getter for the field <code>files</code>.</p>
+     * <p>
+     * Getter for the field <code>files</code>.</p>
      *
      * @return a {@link java.util.List} object.
      */
@@ -83,7 +100,8 @@ public class ExtractClassPathFiles extends ExternalResource {
     }
 
     /**
-     * <p>getBaseDir.</p>
+     * <p>
+     * getBaseDir.</p>
      *
      * @return a {@link java.io.File} object.
      */

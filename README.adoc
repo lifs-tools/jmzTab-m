@@ -49,6 +49,30 @@ To validate a particular file with a given level (one of: Info, Warn, Error, whe
 
   java -jar jmztabm-cli-<VERSION>.jar -check inFile=examples/MTBLS263.mztab -level Info
 
+To run a semantic validation based on a controlled vocabulary term mapping file, run
+
+  java -jar jmztabm-cli-<VERSION>.jar -check inFile=examples/MTBLS263.mztab -level Info -checkSemantic mappingFile=cv-mapping/mzTab-M-mapping.xml
+
+=== Converting to JSON
+
+If you want to exchange your mzTab-M model in JSON format, you can transcode your mzTab-M TSV file into JSON as follows:
+
+  java -jar jmztabm-cli-<VERSION>.jar -check inFile=examples/gcxgc-ms-example.mztab -toJson -checkSemantic mappingFile=cv-mapping/mzTab-M-mapping.xml
+
+This will create a new file on successful validation, named <inFile>.json (inFile without any paths) that contains your mzTab-M data serialized as JSON.
+
+NOTE: Comments are retained within the comments part of the JSON document but not at their original locations.
+
+=== Converting from JSON
+
+If you only have a JSON model of your mzTab-M file available, you can convert it using the command line as follows:
+
+  java -jar jmztabm-cli-<VERSION>.jar -check inFile=examples/gcxgc-ms-example.mztab.json -fromJson -checkSemantic mappingFile=cv-mapping/mzTab-M-mapping.xml
+
+This will create a new file on successful validation, named <inFile>.mztab (inFile without any paths) that contains your mzTab-M data serialized in TSV format.
+
+NOTE: Comment objects are currently discarded by the mzTab-M TSV serializer.
+
 == Running the Web Application for Validation
 
 The validator web application code has been moved into a separate project: https://github.com/nilshoffmann/jmzTab-m-webapp
@@ -142,7 +166,7 @@ The following snippet will parse an mzTabFile from a file on disk:
   parser.parse(System.err, MZTabErrorType.Level.Info, 500);
   //inspect the output of the parse and errors
   MZTabErrorList errors = parser.getErrorList();
-  //converting the MZTabErrorList into a list ValidationMessage
+  //converting the MZTabErrorList into a list of ValidationMessage
   List<ValidationMessage> messages = errors.toValidationMessages()
   //access the file after parsing
   MzTab mzTab = parser.getMZTabFile();

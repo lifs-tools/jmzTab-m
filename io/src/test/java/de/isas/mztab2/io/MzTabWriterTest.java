@@ -81,13 +81,15 @@ public class MzTabWriterTest {
     @ClassRule
     public static ExtractClassPathFiles extractTestFiles = new ExtractClassPathFiles(
         tf,
-        "/metabolomics/lipidomics-example.mzTab",
         "/metabolomics/MTBLS263.mztab",
-        "/metabolomics/lda2-lipidomics.mztab",
-        "/metabolomics/lda2-standardmix_positive.mztab",
-        "/metabolomics/lda2-mouse-liver_negative.mztab",
-        "/metabolomics/lda2-mouse-liver_negative_null-colunit.mztab",
+        "/metabolomics/MouseLiver_negative_mztab.txt",
+        "/metabolomics/MouseLiver_negative_mztab_null-colunit.txt",
+        "/metabolomics/StandardMix_negative_exportPositionLevel.mztab.txt",
+        "/metabolomics/StandardMix_negative_exportSpeciesLevel.mztab.txt",
+        "/metabolomics/StandardMix_positive_exportPositionLevel.mztab.txt",
+        "/metabolomics/StandardMix_positive_exportSpeciesLevel.mztab.txt",
         "/metabolomics/gcxgc-ms-example.mztab",
+        "/metabolomics/lipidomics-example.mzTab",
         "/metabolomics/minimal-m-2.0.mztab");
 
     @Test
@@ -306,7 +308,7 @@ public class MzTabWriterTest {
     @Test
     public void testReadWriteRoundtripWithJacksonLda2StdMix() throws IOException, URISyntaxException, MZTabException {
         MzTab mzTabFile = TestResources.parseResource(tf,
-            "lda2-standardmix_positive.mztab",
+            "StandardMix_positive_exportPositionLevel.mztab.txt",
             MZTabErrorType.Level.Info,
             0);
         File tempFile = File.createTempFile(
@@ -324,7 +326,7 @@ public class MzTabWriterTest {
     @Test
     public void testReadWriteRoundtripWithJacksonLda2MouseLiver() throws IOException, URISyntaxException, MZTabException {
         MzTab mzTabFile = TestResources.parseResource(tf,
-            "lda2-mouse-liver_negative.mztab",
+            "MouseLiver_negative_mztab.txt",
             MZTabErrorType.Level.Info,
             0);
         File tempFile = File.createTempFile(

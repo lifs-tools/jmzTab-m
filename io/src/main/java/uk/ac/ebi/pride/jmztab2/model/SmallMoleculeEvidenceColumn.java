@@ -81,14 +81,6 @@ public class SmallMoleculeEvidenceColumn implements ISmallMoleculeEvidenceColumn
 
         private Stable(SmallMoleculeEvidence.Properties property,
             Class columnType, boolean optional,
-            String order, Integer id) {
-            this.column = new SmallMoleculeEvidenceColumn(property.
-                getPropertyName(), columnType, optional,
-                order, id);
-        }
-
-        private Stable(SmallMoleculeEvidence.Properties property,
-            Class columnType, boolean optional,
             String order) {
             this.column = new SmallMoleculeEvidenceColumn(property.
                 getPropertyName(), columnType, optional,

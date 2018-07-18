@@ -6,20 +6,15 @@
 
   <includeBaseDirectory>false</includeBaseDirectory>
 
-  <!--    <dependencySets>
-      <dependencySet>
-          <outputDirectory>${assembly.dir}/lib</outputDirectory>
-          <unpack>false</unpack>
-          <scope>runtime</scope>
-      </dependencySet>
-  </dependencySets>-->
-
   <fileSets>
     <fileSet>
       <directory>${project.basedir}/target</directory>
       <includes>
         <include>jmztabm-cli-*.jar</include>
       </includes>
+      <excludes>
+        <exclude>jmztabm-cli-*-javadoc.jar</exclude>
+      </excludes>
       <outputDirectory>${assembly.dir}</outputDirectory>
     </fileSet>
     <fileSet>
@@ -28,22 +23,18 @@
         <include>*.adoc</include>
         <include>LICENSE</include>
       </includes>
+      <excludes>
+        <exclude>RELEASES.adoc</exclude>
+      </excludes>
       <outputDirectory>${assembly.dir}</outputDirectory>
       <filtered>true</filtered>
-    </fileSet>
-    <fileSet>
-      <directory>${project.basedir}</directory>
-      <outputDirectory>${assembly.dir}/logs</outputDirectory>
-      <excludes>
-        <exclude>**/*</exclude>
-      </excludes>
     </fileSet>
     <fileSet>
       <directory>${project.basedir}/conf</directory>
       <outputDirectory>${assembly.dir}/conf</outputDirectory>
     </fileSet>
     <fileSet>
-      <directory>${project.basedir}/../io/src/test/resources/metabolomics/</directory>
+      <directory>${project.basedir}/../test-utils/src/main/resources/metabolomics/</directory>
       <outputDirectory>${assembly.dir}/examples</outputDirectory>
       <includes>
         <include>*.*</include>

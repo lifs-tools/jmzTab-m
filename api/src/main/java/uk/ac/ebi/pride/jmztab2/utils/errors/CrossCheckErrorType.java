@@ -17,45 +17,45 @@ public final class CrossCheckErrorType extends MZTabErrorType {
     }
     
     /** Constant <code>Species</code> */
-    public static MZTabErrorType Species = createWarn(Category.CrossCheck, "Species");
+    public static final MZTabErrorType Species = createWarn(Category.CrossCheck, "Species");
 
     /** Constant <code>CvTermNotAllowed</code> */
-    public static MZTabErrorType CvTermNotAllowed = createWarn(Category.CrossCheck, "CvTermNotAllowed");
+    public static final MZTabErrorType CvTermNotAllowed = createWarn(Category.CrossCheck, "CvTermNotAllowed");
     
     /** Constant <code>CvTermRequired</code> */
-    public static MZTabErrorType CvTermRequired = createError(Category.CrossCheck, "CvTermRequired");
+    public static final MZTabErrorType CvTermRequired = createError(Category.CrossCheck, "CvTermRequired");
     
     /** Constant <code>CvTermRecommended</code> */
-    public static MZTabErrorType CvTermRecommended = createWarn(Category.CrossCheck, "CvTermRecommended");
+    public static final MZTabErrorType CvTermRecommended = createWarn(Category.CrossCheck, "CvTermRecommended");
     
     /** Constant <code>CvTermOptional</code> */
-    public static MZTabErrorType CvTermOptional = createInfo(Category.CrossCheck, "CvTermOptional");
+    public static final MZTabErrorType CvTermOptional = createInfo(Category.CrossCheck, "CvTermOptional");
     
     /** Constant <code>CvTermNotInRule</code> */
-    public static MZTabErrorType CvTermNotInRule = createWarn(Category.CrossCheck, "CvTermNotInRule");
+    public static final MZTabErrorType CvTermNotInRule = createWarn(Category.CrossCheck, "CvTermNotInRule");
     
     /** *  Constant <code>RulePointerObjectNullRequired</code> */
-    public static MZTabErrorType RulePointerObjectNullRequired = createError(Category.CrossCheck, "RulePointerObjectNull");
+    public static final MZTabErrorType RulePointerObjectNullRequired = createError(Category.CrossCheck, "RulePointerObjectNull");
     
     /** *  Constant <code>RulePointerObjectNullRecommended</code> */
-    public static MZTabErrorType RulePointerObjectNullRecommended = createWarn(Category.CrossCheck, "RulePointerObjectNull");
+    public static final MZTabErrorType RulePointerObjectNullRecommended = createWarn(Category.CrossCheck, "RulePointerObjectNull");
     
     /** *  Constant <code>RulePointerObjectNullOptional</code> */
-    public static MZTabErrorType RulePointerObjectNullOptional = createInfo(Category.CrossCheck, "RulePointerObjectNull");
+    public static final MZTabErrorType RulePointerObjectNullOptional = createInfo(Category.CrossCheck, "RulePointerObjectNull");
 
     /** Constant <code>CvTermXor</code> */
-    public static MZTabErrorType CvTermXor = createError(Category.CrossCheck, "CvTermXor");
+    public static final MZTabErrorType CvTermXor = createError(Category.CrossCheck, "CvTermXor");
     
     /** Constant <code>CvTermMalformed</code> */
-    public static MZTabErrorType CvTermMalformed = createError(Category.CrossCheck, "CvTermMalformed");
+    public static final MZTabErrorType CvTermMalformed = createError(Category.CrossCheck, "CvTermMalformed");
 
     /** Constant <code>CvUndefinedInMetadata</code> */
-    public static MZTabErrorType CvUndefinedInMetadata = createError(Category.CrossCheck, "CvUndefinedInMetadata");
+    public static final MZTabErrorType CvUndefinedInMetadata = createError(Category.CrossCheck, "CvUndefinedInMetadata");
     
     /** Constant <code>CvUnused</code> */
-    public static MZTabErrorType CvUnused = createWarn(Category.CrossCheck, "CvUnused");
+    public static final MZTabErrorType CvUnused = createWarn(Category.CrossCheck, "CvUnused");
     
     /** Constant <code>SemanticValidationException</code> */
-    public static MZTabErrorType SemanticValidationException = createError(Category.CrossCheck, "SemanticValidationException");
+    public static final MZTabErrorType SemanticValidationException = createError(Category.CrossCheck, "SemanticValidationException");
 
 }

@@ -73,14 +73,6 @@ public class SmallMoleculeFeatureColumn implements ISmallMoleculeFeatureColumn {
 
         private Stable(SmallMoleculeFeature.Properties property,
             Class columnType, boolean optional,
-            String order, Integer id) {
-            this.column = new SmallMoleculeFeatureColumn(property.
-                getPropertyName(), columnType, optional,
-                order, id);
-        }
-
-        private Stable(SmallMoleculeFeature.Properties property,
-            Class columnType, boolean optional,
             String order) {
             this.column = new SmallMoleculeFeatureColumn(property.
                 getPropertyName(), columnType, optional,

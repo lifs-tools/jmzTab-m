@@ -208,11 +208,6 @@ public class MZTabFileParser {
         return Section.findSection(section);
     }
 
-    private BufferedReader readStream(InputStream stream) throws IOException {
-        return new BufferedReader(new InputStreamReader(
-            stream, ENCODE));
-    }
-
     private BufferedReader readFile(URI tabFile) throws IOException {
         BufferedReader reader;
 

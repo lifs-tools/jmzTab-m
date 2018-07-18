@@ -19,164 +19,164 @@ public final class FormatErrorType extends MZTabErrorType {
     /**
      * Constant <code>LinePrefix</code>
      */
-    public static MZTabErrorType LinePrefix = createError(Format, "LinePrefix");
+    public static final MZTabErrorType LinePrefix = createError(Format, "LinePrefix");
     /**
      * Constant <code>CountMatch</code>
      */
-    public static MZTabErrorType CountMatch = createError(Format, "CountMatch");
+    public static final MZTabErrorType CountMatch = createError(Format, "CountMatch");
 
     /**
      * Constant <code>IndexedElement</code>
      */
-    public static MZTabErrorType IndexedElement = createError(Format,
+    public static final MZTabErrorType IndexedElement = createError(Format,
         "IndexedElement");
     /**
      * Constant <code>AbundanceColumn</code>
      */
-    public static MZTabErrorType AbundanceColumn = createError(Format,
+    public static final MZTabErrorType AbundanceColumn = createError(Format,
         "AbundanceColumn");
     /**
      * Constant <code>MsRunOptionalColumn</code>
      */
-    public static MZTabErrorType MsRunOptionalColumn = createError(Format,
+    public static final MZTabErrorType MsRunOptionalColumn = createError(Format,
         "MsRunOptionalColumn");
     /**
      * Constant <code>OptionalCVParamColumn</code>
      */
-    public static MZTabErrorType OptionalCVParamColumn = createError(Format,
+    public static final MZTabErrorType OptionalCVParamColumn = createError(Format,
         "OptionalCVParamColumn");
     /**
      * Constant <code>StableColumn</code>
      */
-    public static MZTabErrorType StableColumn = createError(Format,
+    public static final MZTabErrorType StableColumn = createError(Format,
         "StableColumn");
 
     /**
      * Constant <code>MTDLine</code>
      */
-    public static MZTabErrorType MTDLine = createError(Format, "MTDLine");
+    public static final MZTabErrorType MTDLine = createError(Format, "MTDLine");
     /**
      * Constant <code>MTDDefineLabel</code>
      */
-    public static MZTabErrorType MTDDefineLabel = createError(Format,
+    public static final MZTabErrorType MTDDefineLabel = createError(Format,
         "MTDDefineLabel");
     /**
      * Constant <code>MZTabMode</code>
      */
-    public static MZTabErrorType MZTabMode = createError(Format, "MZTabMode");
+    public static final MZTabErrorType MZTabMode = createError(Format, "MZTabMode");
     /**
      * Constant <code>MZTabType</code>
      */
-    public static MZTabErrorType MZTabType = createError(Format, "MZTabType");
+    public static final MZTabErrorType MZTabType = createError(Format, "MZTabType");
     /**
      * Constant <code>MZTabType</code>
      */
-    public static MZTabErrorType MZTabId = createError(Format, "MZTabId");
+    public static final MZTabErrorType MZTabId = createError(Format, "MZTabId");
     /**
      * Constant <code>MZTabVersion</code>
      */
-    public static MZTabErrorType MZTabVersion = createError(Format,
+    public static final MZTabErrorType MZTabVersion = createError(Format,
         "MZTabVersion");
     /**
      * Constant <code>Param</code>
      */
-    public static MZTabErrorType Param = createError(Format, "Param");
+    public static final MZTabErrorType Param = createError(Format, "Param");
     /**
      * Constant <code>ParamList</code>
      */
-    public static MZTabErrorType ParamList = createError(Format, "ParamList");
+    public static final MZTabErrorType ParamList = createError(Format, "ParamList");
     /**
      * Constant <code>Publication</code>
      */
-    public static MZTabErrorType Publication = createError(Format, "Publication");
+    public static final MZTabErrorType Publication = createError(Format, "Publication");
     /**
      * Constant <code>URI</code>
      */
-    public static MZTabErrorType URI = createError(Format, "URI");
+    public static final MZTabErrorType URI = createError(Format, "URI");
     /**
      * Constant <code>URL</code>
      */
-    public static MZTabErrorType URL = createError(Format, "URL");
+    public static final MZTabErrorType URL = createError(Format, "URL");
     /**
      * Constant <code>Email</code>
      */
-    public static MZTabErrorType Email = createError(Format, "Email");
+    public static final MZTabErrorType Email = createError(Format, "Email");
 
     /**
      * Constant <code>Integer</code>
      */
-    public static MZTabErrorType Integer = createError(Format, "Integer");
+    public static final MZTabErrorType Integer = createError(Format, "Integer");
     /**
      * Constant <code>Double</code>
      */
-    public static MZTabErrorType Double = createError(Format, "Double");
+    public static final MZTabErrorType Double = createError(Format, "Double");
     /**
      * Constant <code>Reliability</code>
      */
-    public static MZTabErrorType Reliability = createError(Format, "Reliability");
+    public static final MZTabErrorType Reliability = createError(Format, "Reliability");
     /**
      * Constant <code>StringList</code>
      */
-    public static MZTabErrorType StringList = createError(Format, "StringList");
+    public static final MZTabErrorType StringList = createError(Format, "StringList");
     /**
      * Constant <code>DoubleList</code>
      */
-    public static MZTabErrorType DoubleList = createError(Format, "DoubleList");
+    public static final MZTabErrorType DoubleList = createError(Format, "DoubleList");
     /**
      * Constant <code>ModificationList</code>
      */
-    public static MZTabErrorType ModificationList = createError(Format,
+    public static final MZTabErrorType ModificationList = createError(Format,
         "ModificationList");
     /**
      * Constant <code>GOTermList</code>
      */
-    public static MZTabErrorType GOTermList = createError(Format, "GOTermList");
+    public static final MZTabErrorType GOTermList = createError(Format, "GOTermList");
     /**
      * Constant <code>MZBoolean</code>
      */
-    public static MZTabErrorType MZBoolean = createError(Format, "MZBoolean");
+    public static final MZTabErrorType MZBoolean = createError(Format, "MZBoolean");
     /**
      * Constant <code>SpectraRef</code>
      */
-    public static MZTabErrorType SpectraRef = createError(Format, "SpectraRef");
+    public static final MZTabErrorType SpectraRef = createError(Format, "SpectraRef");
     /**
      * Constant <code>CHEMMODSAccession</code>
      */
-    public static MZTabErrorType CHEMMODSAccession = createError(Format,
+    public static final MZTabErrorType CHEMMODSAccession = createError(Format,
         "CHEMMODSAccession");
     /**
      * Constant <code>SearchEngineScore</code>
      */
-    public static MZTabErrorType SearchEngineScore = createWarn(Format,
+    public static final MZTabErrorType SearchEngineScore = createWarn(Format,
         "SearchEngineScore");
     /**
      * Constant <code>Sequence</code>
      */
-    public static MZTabErrorType Sequence = createWarn(Format,
+    public static final MZTabErrorType Sequence = createWarn(Format,
         "SearchEngineScore");
 
     /**
      * Constant <code>ColUnit</code>
      */
-    public static MZTabErrorType ColUnit = createError(Format, "ColUnit");
+    public static final MZTabErrorType ColUnit = createError(Format, "ColUnit");
 
     /**
      * Constant <code>IntegerList</code>
      */
-    public static MZTabErrorType IntegerList = createError(Format, "IntegerList");
+    public static final MZTabErrorType IntegerList = createError(Format, "IntegerList");
 
     /**
      * Constant <code>RegexMismatch</code>
      */
-    public static MZTabErrorType RegexMismatch = createError(Format, "RegexMismatch");
+    public static final MZTabErrorType RegexMismatch = createError(Format, "RegexMismatch");
     
     /**
      * Constant <code>ParamAccessionNotNamespaced</code>
      */
-    public static MZTabErrorType ParamAccessionNotNamespaced = createWarn(Format, "ParamAccessionNotNamespaced");
+    public static final MZTabErrorType ParamAccessionNotNamespaced = createWarn(Format, "ParamAccessionNotNamespaced");
     
     /**
      * Constant <code>InvalidColunitFormat</code>
      */
-    public static MZTabErrorType InvalidColunitFormat = createError(Format, "InvalidColunitFormat");
+    public static final MZTabErrorType InvalidColunitFormat = createError(Format, "InvalidColunitFormat");
 }

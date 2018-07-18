@@ -38,6 +38,10 @@ import java.util.zip.ZipInputStream;
  */
 public class ZipResourceExtractor {
 
+    private ZipResourceExtractor() {
+        
+    }
+    
     /**
      * <p>
      * Extract a JAR resource into the provided destination directory and return
@@ -63,7 +67,7 @@ public class ZipResourceExtractor {
             outname = outname.replaceAll("%20", " ");
             if (resourcePath.endsWith("zip")) {
                 outname = outname.substring(0, outname.lastIndexOf(
-                    "."));
+                    '.'));
                 return extractZipArchive(resourceInputStream, destDir);
             } else if (resourcePath.endsWith("gz")) {
                 try (InputStream in = new GZIPInputStream(
@@ -71,7 +75,7 @@ public class ZipResourceExtractor {
                         resourceInputStream))) {
 
                     outname = outname.substring(0, outname.lastIndexOf(
-                        "."));
+                        '.'));
                     writeTo(destDir, outname, in);
                 }
             } else {
@@ -146,7 +150,7 @@ public class ZipResourceExtractor {
             istream.close();
             return outDir;
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new ZipResourceExtractionException(e);
         }
     }
 }
