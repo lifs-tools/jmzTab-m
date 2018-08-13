@@ -21,6 +21,7 @@ import static de.isas.mztab2.model.Metadata.Properties.uri;
 import de.isas.mztab2.model.MsRun;
 import de.isas.mztab2.model.Parameter;
 import de.isas.mztab2.model.Sample;
+import static de.isas.mztab2.test.utils.ClassPathFile.MTDFILE;
 import de.isas.mztab2.test.utils.ExtractClassPathFiles;
 import org.junit.Before;
 import org.junit.Test;
@@ -61,7 +62,7 @@ public class MTDLineParserTest {
     @ClassRule
     public static final ExtractClassPathFiles EXTRACT_FILES = new ExtractClassPathFiles(
         TF,
-        "/testset/mtdFile.txt");
+        MTDFILE);
 
     private MTDLineParser parser;
     private Metadata metadata;

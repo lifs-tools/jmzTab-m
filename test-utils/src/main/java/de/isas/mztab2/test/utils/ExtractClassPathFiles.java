@@ -35,7 +35,7 @@ import org.junit.rules.TemporaryFolder;
 public class ExtractClassPathFiles extends ExternalResource {
 
     private final TemporaryFolder tf;
-    private final String[] resourcePaths;
+    private final ClassPathFile[] classPathFiles;
     private final List<File> files = new LinkedList<>();
     private File baseFolder;
 
@@ -46,9 +46,9 @@ public class ExtractClassPathFiles extends ExternalResource {
      * @param tf a {@link org.junit.rules.TemporaryFolder} object.
      * @param resourcePaths a {@link java.lang.String} object.
      */
-    public ExtractClassPathFiles(TemporaryFolder tf, String... resourcePaths) {
+    public ExtractClassPathFiles(TemporaryFolder tf, ClassPathFile... classPathFiles) {
         this.tf = tf;
-        this.resourcePaths = resourcePaths;
+        this.classPathFiles = classPathFiles;
     }
 
     /**
@@ -63,9 +63,9 @@ public class ExtractClassPathFiles extends ExternalResource {
         }
         baseFolder = tf.getRoot();
         int i = 0;
-        for (String resource : resourcePaths) {
+        for (ClassPathFile resource : classPathFiles) {
             File file = ZipResourceExtractor.extract(
-                resource, baseFolder);
+                resource.resourcePath(), baseFolder);
             files.add(file);
         }
     }

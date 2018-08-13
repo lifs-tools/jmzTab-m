@@ -18,6 +18,17 @@ package de.isas.mztab2.validation;
 import de.isas.mztab2.cvmapping.CvParameterLookupService;
 import de.isas.mztab2.model.MzTab;
 import de.isas.mztab2.model.ValidationMessage;
+import de.isas.mztab2.test.utils.ClassPathFile;
+import static de.isas.mztab2.test.utils.ClassPathFile.GCXGC_MS_EXAMPLE;
+import static de.isas.mztab2.test.utils.ClassPathFile.LIPIDOMICS_EXAMPLE;
+import static de.isas.mztab2.test.utils.ClassPathFile.MINIMAL_EXAMPLE;
+import static de.isas.mztab2.test.utils.ClassPathFile.MOUSELIVER_NEGATIVE;
+import static de.isas.mztab2.test.utils.ClassPathFile.MOUSELIVER_NEGATIVE_MZTAB_NULL_COLUNIT;
+import static de.isas.mztab2.test.utils.ClassPathFile.MTBLS263;
+import static de.isas.mztab2.test.utils.ClassPathFile.STANDARDMIX_NEGATIVE_EXPORTPOSITIONLEVEL;
+import static de.isas.mztab2.test.utils.ClassPathFile.STANDARDMIX_NEGATIVE_EXPORTSPECIESLEVEL;
+import static de.isas.mztab2.test.utils.ClassPathFile.STANDARDMIX_POSITIVE_EXPORTPOSITIONLEVEL;
+import static de.isas.mztab2.test.utils.ClassPathFile.STANDARDMIX_POSITIVE_EXPORTSPECIESLEVEL;
 import de.isas.mztab2.test.utils.ExtractClassPathFiles;
 import de.isas.mztab2.test.utils.LogMethodName;
 import java.io.IOException;
@@ -30,7 +41,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.bind.JAXBException;
 import org.junit.Assert;
-import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -62,42 +72,42 @@ public class ExampleFilesValidationTestIT {
     @ClassRule
     public static final ExtractClassPathFiles EXTRACT_FILES = new ExtractClassPathFiles(
         TF,
-        "/metabolomics/MTBLS263.mztab",
-        "/metabolomics/MouseLiver_negative_mztab.txt",
-        "/metabolomics/MouseLiver_negative_mztab_null-colunit.txt",
-        "/metabolomics/StandardMix_negative_exportPositionLevel.mztab.txt",
-        "/metabolomics/StandardMix_negative_exportSpeciesLevel.mztab.txt",
-        "/metabolomics/StandardMix_positive_exportPositionLevel.mztab.txt",
-        "/metabolomics/StandardMix_positive_exportSpeciesLevel.mztab.txt",
-        "/metabolomics/gcxgc-ms-example.mztab",
-        "/metabolomics/lipidomics-example.mzTab",
-        "/metabolomics/minimal-m-2.0.mztab");
+        MTBLS263,
+        MOUSELIVER_NEGATIVE,
+        MOUSELIVER_NEGATIVE_MZTAB_NULL_COLUNIT,
+        STANDARDMIX_NEGATIVE_EXPORTPOSITIONLEVEL,
+        STANDARDMIX_NEGATIVE_EXPORTSPECIESLEVEL,
+        STANDARDMIX_POSITIVE_EXPORTPOSITIONLEVEL,
+        STANDARDMIX_POSITIVE_EXPORTSPECIESLEVEL,
+        GCXGC_MS_EXAMPLE,
+        LIPIDOMICS_EXAMPLE,
+        MINIMAL_EXAMPLE);
 
     @Parameters(
         name = "{index}: semantic validation of ''{0}'' on level ''{1}'' expecting ''{2}'' structural/logical errors and ''{3}'' cross check/semantic errors.")
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][]{
-            {"lipidomics-example.mzTab", MZTabErrorType.Level.Info,
+            {LIPIDOMICS_EXAMPLE, MZTabErrorType.Level.Info,
                 0, 7},
-            {"MTBLS263.mztab", MZTabErrorType.Level.Info, 0, 15},
-//            {"MouseLiver_negative_mztab.txt", MZTabErrorType.Level.Info, 0, 1},
-//            {"MouseLiver_negative_mztab_null-colunit.txt",
-//                MZTabErrorType.Level.Info, 1, 3},
-            {"StandardMix_negative_exportPositionLevel.mztab.txt",
+            {MTBLS263, MZTabErrorType.Level.Info, 0, 15},
+            //            {MOUSELIVER_NEGATIVE, MZTabErrorType.Level.Info, 0, 1},
+            //            {MOUSELIVER_NEGATIVE_MZTAB_NULL_COLUNIT,
+            //                MZTabErrorType.Level.Info, 1, 3},
+            {STANDARDMIX_NEGATIVE_EXPORTPOSITIONLEVEL,
                 MZTabErrorType.Level.Info, 0, 4},
-            {"StandardMix_negative_exportSpeciesLevel.mztab.txt",
+            {STANDARDMIX_NEGATIVE_EXPORTSPECIESLEVEL,
                 MZTabErrorType.Level.Info, 0, 4},
-            {"StandardMix_positive_exportPositionLevel.mztab.txt",
+            {STANDARDMIX_POSITIVE_EXPORTPOSITIONLEVEL,
                 MZTabErrorType.Level.Info, 0, 4},
-            {"StandardMix_positive_exportSpeciesLevel.mztab.txt",
+            {STANDARDMIX_POSITIVE_EXPORTSPECIESLEVEL,
                 MZTabErrorType.Level.Info, 0, 4},
-            {"gcxgc-ms-example.mztab", MZTabErrorType.Level.Info, 0, 5},
-            {"lipidomics-example.mzTab", MZTabErrorType.Level.Info, 0, 7}
+            {GCXGC_MS_EXAMPLE, MZTabErrorType.Level.Info, 0, 5},
+            {LIPIDOMICS_EXAMPLE, MZTabErrorType.Level.Info, 0, 7}
         });
     }
 
     @Parameter(0)
-    public String resource;
+    public ClassPathFile resource;
     @Parameter(1)
     public MZTabErrorType.Level validationLevel;
     @Parameter(2)
@@ -113,16 +123,18 @@ public class ExampleFilesValidationTestIT {
     }
 
     List<ValidationMessage> testSemanticValidation(TemporaryFolder tf,
-        String resource,
+        ClassPathFile resource,
         MZTabErrorType.Level level,
         Integer expectedErrors, Integer expectedSemanticErrors) throws MZTabException, JAXBException {
         try {
-            MzTab mzTab = SemanticTestResources.parseResource(tf, resource,
+            MzTab mzTab = SemanticTestResources.parseResource(tf, resource.
+                fileName(),
                 level, expectedErrors);
             Assert.assertNotNull(mzTab);
             Assert.assertNotNull(mzTab.getMetadata());
-            CvMappingValidator validator = CvMappingValidator.of(ExampleFilesValidationTestIT.class.getResource(
-                    "/mappings/mzTab-M-mapping.xml"), LOOKUP_SERVICE, 
+            CvMappingValidator validator = CvMappingValidator.of(
+                ExampleFilesValidationTestIT.class.getResource(
+                    "/mappings/mzTab-M-mapping.xml"), LOOKUP_SERVICE,
                 true);
             List<ValidationMessage> messages = validator.validate(mzTab);
             if (messages.size() != expectedSemanticErrors) {

@@ -60,6 +60,16 @@ import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorList;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorType;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabException;
 import static de.isas.mztab2.io.MzTabTestData.create2_0TestFile;
+import static de.isas.mztab2.test.utils.ClassPathFile.GCXGC_MS_EXAMPLE;
+import static de.isas.mztab2.test.utils.ClassPathFile.LIPIDOMICS_EXAMPLE;
+import static de.isas.mztab2.test.utils.ClassPathFile.MINIMAL_EXAMPLE;
+import static de.isas.mztab2.test.utils.ClassPathFile.MOUSELIVER_NEGATIVE;
+import static de.isas.mztab2.test.utils.ClassPathFile.MOUSELIVER_NEGATIVE_MZTAB_NULL_COLUNIT;
+import static de.isas.mztab2.test.utils.ClassPathFile.MTBLS263;
+import static de.isas.mztab2.test.utils.ClassPathFile.STANDARDMIX_NEGATIVE_EXPORTPOSITIONLEVEL;
+import static de.isas.mztab2.test.utils.ClassPathFile.STANDARDMIX_NEGATIVE_EXPORTSPECIESLEVEL;
+import static de.isas.mztab2.test.utils.ClassPathFile.STANDARDMIX_POSITIVE_EXPORTPOSITIONLEVEL;
+import static de.isas.mztab2.test.utils.ClassPathFile.STANDARDMIX_POSITIVE_EXPORTSPECIESLEVEL;
 import de.isas.mztab2.test.utils.ExtractClassPathFiles;
 import org.junit.ClassRule;
 import org.junit.rules.TemporaryFolder;
@@ -81,16 +91,16 @@ public class MzTabWriterTest {
     @ClassRule
     public static ExtractClassPathFiles extractTestFiles = new ExtractClassPathFiles(
         tf,
-        "/metabolomics/MTBLS263.mztab",
-        "/metabolomics/MouseLiver_negative_mztab.txt",
-        "/metabolomics/MouseLiver_negative_mztab_null-colunit.txt",
-        "/metabolomics/StandardMix_negative_exportPositionLevel.mztab.txt",
-        "/metabolomics/StandardMix_negative_exportSpeciesLevel.mztab.txt",
-        "/metabolomics/StandardMix_positive_exportPositionLevel.mztab.txt",
-        "/metabolomics/StandardMix_positive_exportSpeciesLevel.mztab.txt",
-        "/metabolomics/gcxgc-ms-example.mztab",
-        "/metabolomics/lipidomics-example.mzTab",
-        "/metabolomics/minimal-m-2.0.mztab");
+        MTBLS263,
+        MOUSELIVER_NEGATIVE,
+        MOUSELIVER_NEGATIVE_MZTAB_NULL_COLUNIT,
+        STANDARDMIX_NEGATIVE_EXPORTPOSITIONLEVEL,
+        STANDARDMIX_NEGATIVE_EXPORTSPECIESLEVEL,
+        STANDARDMIX_POSITIVE_EXPORTPOSITIONLEVEL,
+        STANDARDMIX_POSITIVE_EXPORTSPECIESLEVEL,
+        GCXGC_MS_EXAMPLE,
+        LIPIDOMICS_EXAMPLE,
+        MINIMAL_EXAMPLE);
 
     @Test
     public void testWriteDefaultToString() {
@@ -308,7 +318,7 @@ public class MzTabWriterTest {
     @Test
     public void testReadWriteRoundtripWithJacksonLda2StdMix() throws IOException, URISyntaxException, MZTabException {
         MzTab mzTabFile = TestResources.parseResource(tf,
-            "StandardMix_positive_exportPositionLevel.mztab.txt",
+            "StandardMix_positive_exportPositionLevel.mzTab",
             MZTabErrorType.Level.Info,
             0);
         File tempFile = File.createTempFile(
@@ -326,7 +336,7 @@ public class MzTabWriterTest {
     @Test
     public void testReadWriteRoundtripWithJacksonLda2MouseLiver() throws IOException, URISyntaxException, MZTabException {
         MzTab mzTabFile = TestResources.parseResource(tf,
-            "MouseLiver_negative_mztab.txt",
+            "MouseLiver_negative.mzTab",
             MZTabErrorType.Level.Info,
             0);
         File tempFile = File.createTempFile(
