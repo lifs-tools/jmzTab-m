@@ -154,7 +154,9 @@ public class MzTabValidatingWriter implements MzTabWriter<List<ValidationMessage
                     "Caught exception while trying to parse " + mzTabFile, ex);
             } finally {
                 if (mzTabFile != null && mzTabFile.exists()) {
-                    mzTabFile.delete();
+                    if(!mzTabFile.delete()) {
+                        logger.warn("Deletion of "+mzTabFile+" failed!");
+                    }
                 };
             }
             return Collections.emptyList();

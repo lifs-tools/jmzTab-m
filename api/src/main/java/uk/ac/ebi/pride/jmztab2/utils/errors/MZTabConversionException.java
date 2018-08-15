@@ -8,7 +8,7 @@ package uk.ac.ebi.pride.jmztab2.utils.errors;
 public class MZTabConversionException extends RuntimeException {
 
     /** Constant <code>ERROR_AMBIGUITY="mzTab do not support one protein in mor"{trunked}</code> */
-    public static String ERROR_AMBIGUITY = "mzTab do not support one protein in more than one ambiguity groups.";
+    public static final String ERROR_AMBIGUITY = "mzTab do not support one protein in more than one ambiguity groups.";
 
     /**
      * <p>Constructor for MZTabConversionException.</p>
