@@ -10,10 +10,11 @@
     <fileSet>
       <directory>${project.basedir}/target</directory>
       <includes>
-        <include>jmztabm-cli-*.jar</include>
+	<include>jmztabm-cli-${project.version}.jar</include>
       </includes>
       <excludes>
         <exclude>jmztabm-cli-*-javadoc.jar</exclude>
+        <exclude>jmztabm-cli-*-src.jar</exclude>
       </excludes>
       <outputDirectory>${assembly.dir}</outputDirectory>
     </fileSet>
