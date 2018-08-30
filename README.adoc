@@ -1,7 +1,7 @@
 = mzTab 2.0 for Metabolomics Reader, Writer and Validator
 Nils Hoffmann <nils.hoffmann@isas.de>
 
-image:https://travis-ci.org/nilshoffmann/jmzTab-m.svg?branch=master["Build Status", link="https://travis-ci.org/nilshoffmann/jmzTab-m"] image:https://img.shields.io/maven-central/v/de.isas.mztab/jmztabm-cli.svg["Maven Central", link="https://search.maven.org/remotecontent?filepath=de/isas/mztab/jmztabm-cli/1.0.0/jmztabm-cli-1.0.0-bin.zip"]
+image:https://travis-ci.org/nilshoffmann/jmzTab-m.svg?branch=master["Build Status", link="https://travis-ci.org/nilshoffmann/jmzTab-m"] image:https://img.shields.io/maven-central/v/de.isas.mztab/jmztabm-cli.svg["Maven Central", link="https://search.maven.org/remotecontent?filepath=de/isas/mztab/jmztabm-cli/1.0.1/jmztabm-cli-1.0.1-bin.zip"]
 
 This project is the reference reader, writer and validator implementation for mzTab 2.0+, based on the https://github.com/PRIDE-Utilities/jmztab[jmztab project].
 
@@ -103,7 +103,7 @@ To use the semantic validation with the mapping file in your own Maven project, 
 where `jmztab.version` is the version of jmztabm you wish to use, e.g. for a release version:
 
   <properties>
-    <jmztabm.version>1.0.0</jmztabm.version>
+    <jmztabm.version>1.0.1</jmztabm.version>
   </properties>
 
 as defined in the properties section of your pom file.
