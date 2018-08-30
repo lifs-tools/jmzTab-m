@@ -19,14 +19,16 @@ import org.junit.rules.TestWatcher;
 import org.junit.runner.Description;
 
 /**
+ * JUnit TestWatcher to log the executed test method name.
  *
  * @author nilshoffmann
  */
 public class LogMethodName extends TestWatcher {
 
     /**
+     * Called when JUnit is about to execute the provided method.
      *
-     * @param method
+     * @param method the method being executed by JUnit.
      */
     @Override
     public void starting(Description method) {
@@ -34,7 +36,10 @@ public class LogMethodName extends TestWatcher {
         for (int i = 0; i < 80; i++) {
             sb.append("#");
         }
-        sb.append("\n").append("# ").append(method.getMethodName()).append("\n");
+        sb.append("\n").
+            append("# ").
+            append(method.getMethodName()).
+            append("\n");
         for (int i = 0; i < 80; i++) {
             sb.append("#");
         }

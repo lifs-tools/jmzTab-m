@@ -44,7 +44,7 @@ public class ExtractClassPathFiles extends ExternalResource {
      * Constructor for ExtractClassPathFiles.</p>
      *
      * @param tf a {@link org.junit.rules.TemporaryFolder} object.
-     * @param resourcePaths a {@link java.lang.String} object.
+     * @param classPathFiles an array of {@link ClassPathFile} objects to extract.
      */
     public ExtractClassPathFiles(TemporaryFolder tf, ClassPathFile... classPathFiles) {
         this.tf = tf;
