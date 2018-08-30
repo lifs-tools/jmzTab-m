@@ -24,8 +24,9 @@ Build the release and deploy to OSSRH staging
 
   ./mvnw -Possrh-release deploy
 
-Again, follow the Guides from above. If everything looks good, publish the release to central:
+Copy the ID of the staging repository, something like deisasmztab-<NUMBER>.
+Again, follow the Guides from above. If everything looks good, publish the release to central (subsitute the stagingRepositoryId with the proper one):
 
-  ./mvnw -Possrh-release nexus-staging:release
+  ./mvnw -Possrh-release nexus-staging:release -DstagingRepositoryId=deisasmztab-<NUMBER>
 
 Finally, create a release from the tag at https://github.com/nilshoffmann/jmzTab-m/releases[GitHub].
