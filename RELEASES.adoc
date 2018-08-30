@@ -13,6 +13,11 @@ Nils Hoffmann <nils.hoffmann@isas.de>
  
 == Publishing a release 
 
+Create a release branch:
+  
+  git branch <RELEASE_VERSION>
+  git checkout <RELEASE_VERSION>
+
 Set the release version, commit and tag:
 
   ./mvnw versions:set -D<RELEASE_VERSION>
