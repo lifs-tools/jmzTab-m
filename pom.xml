@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>de.isas.mztab</groupId>
   <artifactId>jmztabm</artifactId>
-  <version>1.0.1</version>
+  <version>1.0.2-SNAPSHOT</version>
   <packaging>pom</packaging>
   <description>A reader, writer and validator reference implementation for the mzTab format for metabolomics from version 2.0 onwards.</description>
   <name>MzTab-M 2.0 reference implementation.</name>	
