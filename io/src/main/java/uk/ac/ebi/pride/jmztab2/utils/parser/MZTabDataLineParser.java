@@ -296,7 +296,8 @@ public abstract class MZTabDataLineParser<T> extends MZTabLineParser {
     }
 
     /**
-     * Check and translate target string into Integer. If parse is incorrect, throws
+     * Check and translate target string into Integer. If parse is incorrect,
+     * throws
      * {@link uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType#Integer}
      * error.
      *
@@ -309,7 +310,8 @@ public abstract class MZTabDataLineParser<T> extends MZTabLineParser {
     }
 
     /**
-     * Check and translate target string into Integer. If parse is incorrect, throws
+     * Check and translate target string into Integer. If parse is incorrect,
+     * throws
      * {@link uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType#Integer}
      * error.
      *
@@ -337,7 +339,8 @@ public abstract class MZTabDataLineParser<T> extends MZTabLineParser {
     }
 
     /**
-     * Check and translate target string into Double. If parse is incorrect, throws
+     * Check and translate target string into Double. If parse is incorrect,
+     * throws
      * {@link uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType#Double}
      * error.
      *
@@ -354,7 +357,8 @@ public abstract class MZTabDataLineParser<T> extends MZTabLineParser {
     }
 
     /**
-     * Check and translate target string into Double. If parse is incorrect, throws
+     * Check and translate target string into Double. If parse is incorrect,
+     * throws
      * {@link uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType#Double}
      * error.
      *
@@ -457,6 +461,10 @@ public abstract class MZTabDataLineParser<T> extends MZTabLineParser {
                     column.getHeader(), param.getCvAccession(),
                     new ParameterConverter().convert(param)));
             }
+        } else if (param == null && result != null && !result.isEmpty() && !(result.
+            equalsIgnoreCase(NULL))) {
+            this.errorList.add(new MZTabError(FormatErrorType.Param, lineNumber,
+                "Column " + column.getHeader(), target));
         }
         return param;
     }
@@ -605,8 +613,8 @@ public abstract class MZTabDataLineParser<T> extends MZTabLineParser {
      * Check and translate taxid string into Integer. If exists error during
      * parse, raise
      * {@link uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType#Integer}
-     * error. Normally, taxid may be set to "null"; in general
-     * "null" values SHOULD not be given.
+     * error. Normally, taxid may be set to "null"; in general "null" values
+     * SHOULD not be given.
      *
      * @param column SHOULD NOT be set to null
      * @param taxid SHOULD NOT be empty.
@@ -660,8 +668,8 @@ public abstract class MZTabDataLineParser<T> extends MZTabLineParser {
      * Check and translate searchEngine string into parameter list which split
      * by '|' character.. If parse is incorrect, throws
      * {@link uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType#ParamList}
-     * error. Normally, searchEngine may be set to "null"; in
-     * general "null" values SHOULD not be given.
+     * error. Normally, searchEngine may be set to "null"; in general "null"
+     * values SHOULD not be given.
      *
      * @param column SHOULD NOT be set to null
      * @param searchEngine SHOULD NOT be empty.
@@ -705,8 +713,8 @@ public abstract class MZTabDataLineParser<T> extends MZTabLineParser {
      * Check and translate numPSMs string into Integer. If exists error during
      * parse, raise
      * {@link uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType#Integer}
-     * error. Normally, numPSMs may be set to "null"; in
-     * general "null" values SHOULD not be given.
+     * error. Normally, numPSMs may be set to "null"; in general "null" values
+     * SHOULD not be given.
      *
      * @param column SHOULD NOT be set to null
      * @param numPSMs SHOULD NOT be empty.
@@ -752,8 +760,8 @@ public abstract class MZTabDataLineParser<T> extends MZTabLineParser {
      * Check and translate target string into parameter list which split by ','
      * character.. If parse is incorrect, throws
      * {@link uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType#StringList}
-     * error. Normally, ambiguityMembers may be set to "null";
-     * in general "null" values SHOULD not be given.
+     * error. Normally, ambiguityMembers may be set to "null"; in general "null"
+     * values SHOULD not be given.
      *
      * @param column SHOULD NOT be set to null
      * @param ambiguityMembers SHOULD NOT be empty.
@@ -793,8 +801,8 @@ public abstract class MZTabDataLineParser<T> extends MZTabLineParser {
      * {@link de.isas.mztab2.model.SpectraRef} list. If parse incorrect, or
      * ms_run not defined in metadata raise
      * {@link uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType#SpectraRef}
-     * error. Normally, spectraRef may be set to "null"; in
-     * general "null" values SHOULD not be given.
+     * error. Normally, spectraRef may be set to "null"; in general "null"
+     * values SHOULD not be given.
      *
      * @param column SHOULD NOT be set to null
      * @param spectraRef SHOULD NOT be empty.
@@ -812,8 +820,8 @@ public abstract class MZTabDataLineParser<T> extends MZTabLineParser {
      * {@link de.isas.mztab2.model.SpectraRef} list. If parse incorrect, or
      * ms_run not defined in metadata raise
      * {@link uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType#SpectraRef}
-     * error. Normally, spectraRef may be set to "null"; in
-     * general "null" values SHOULD not be given.
+     * error. Normally, spectraRef may be set to "null"; in general "null"
+     * values SHOULD not be given.
      *
      * @param column SHOULD NOT be set to null
      * @param spectraRef SHOULD NOT be empty.
@@ -854,7 +862,9 @@ public abstract class MZTabDataLineParser<T> extends MZTabLineParser {
     }
 
     /**
-     * Check target string. Normally, pre can set "null". "null" values should only be given, if no value is available and where the specification allows for "null" explicitly."
+     * Check target string. Normally, pre can set "null". "null" values should
+     * only be given, if no value is available and where the specification
+     * allows for "null" explicitly."
      *
      * @see #checkData(IMZTabColumn, String, boolean)
      * @param column SHOULD NOT be set to null
@@ -911,8 +921,8 @@ public abstract class MZTabDataLineParser<T> extends MZTabLineParser {
      * error. Besides, each item in list should be start with "GO:", otherwise
      * system raise
      * {@link uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType#GOTermList}
-     * error. Normally, go_terms may be set to "null"; in
-     * general "null" values SHOULD not be given.
+     * error. Normally, go_terms may be set to "null"; in general "null" values
+     * SHOULD not be given.
      *
      * @param column SHOULD NOT be set to null
      * @param go_terms SHOULD NOT be empty.
@@ -935,8 +945,8 @@ public abstract class MZTabDataLineParser<T> extends MZTabLineParser {
     }
 
     /**
-     * Check and translate protein_coverage string into Double. If parse
-     * is incorrect, throws
+     * Check and translate protein_coverage string into Double. If parse is
+     * incorrect, throws
      * {@link uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType#Double}
      * error. protein_coverage range should be in the [0, 1), otherwise raise
      * {@link uk.ac.ebi.pride.jmztab2.utils.errors.LogicalErrorType#ProteinCoverage}
@@ -1001,8 +1011,8 @@ public abstract class MZTabDataLineParser<T> extends MZTabLineParser {
      * Check and translate psm_id string into Integer. If exists error during
      * parse, raise
      * {@link uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType#Integer}
-     * error. Normally, psm_id may be set to "null"; in
-     * general "null" values SHOULD not be given.
+     * error. Normally, psm_id may be set to "null"; in general "null" values
+     * SHOULD not be given.
      *
      * @param column SHOULD NOT be set to null
      * @param psm_id SHOULD NOT be empty.
@@ -1031,8 +1041,8 @@ public abstract class MZTabDataLineParser<T> extends MZTabLineParser {
      * Check and translate charge string into Integer. If exists error during
      * parse, raise
      * {@link uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType#Integer}
-     * error. Normally, charge may be set to "null"; in
-     * general "null" values SHOULD not be given.
+     * error. Normally, charge may be set to "null"; in general "null" values
+     * SHOULD not be given.
      *
      * @param column SHOULD NOT be set to null
      * @param charge SHOULD NOT be empty.
@@ -1043,8 +1053,8 @@ public abstract class MZTabDataLineParser<T> extends MZTabLineParser {
     }
 
     /**
-     * Check and translate mass_to_charge string into Double. If parse
-     * is incorrect, throws
+     * Check and translate mass_to_charge string into Double. If parse is
+     * incorrect, throws
      * {@link uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType#Double}
      * error.
      *
@@ -1062,8 +1072,8 @@ public abstract class MZTabDataLineParser<T> extends MZTabLineParser {
     }
 
     /**
-     * Check and translate exp_mass_to_charge string into Double. If parse
-     * is incorrect, throws
+     * Check and translate exp_mass_to_charge string into Double. If parse is
+     * incorrect, throws
      * {@link uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType#Double}
      * error.
      *
@@ -1081,8 +1091,8 @@ public abstract class MZTabDataLineParser<T> extends MZTabLineParser {
     }
 
     /**
-     * Check and translate calc_mass_to_charge string into Double. If parse
-     * is incorrect, throws
+     * Check and translate calc_mass_to_charge string into Double. If parse is
+     * incorrect, throws
      * {@link uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType#Double}
      * error.
      *
@@ -1103,8 +1113,8 @@ public abstract class MZTabDataLineParser<T> extends MZTabLineParser {
      * Check and translate identifier string into string list which split by '|'
      * character.. If parse is incorrect, throws
      * {@link uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType#StringList}
-     * error. Normally, identifier may be set to "null"; in
-     * general "null" values SHOULD not be given.
+     * error. Normally, identifier may be set to "null"; in general "null"
+     * values SHOULD not be given.
      *
      * @param column SHOULD NOT be set to null
      * @param identifier SHOULD NOT be empty.
@@ -1133,8 +1143,8 @@ public abstract class MZTabDataLineParser<T> extends MZTabLineParser {
      * Check and translate smiles string into parameter list which split by '|'
      * character.. If parse is incorrect, throws
      * {@link uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType#StringList}
-     * error. Normally, smiles may be set to "null"; in
-     * general "null" values SHOULD not be given.
+     * error. Normally, smiles may be set to "null"; in general "null" values
+     * SHOULD not be given.
      *
      * @param column SHOULD NOT be set to null
      * @param smiles SHOULD NOT be empty.
@@ -1148,8 +1158,8 @@ public abstract class MZTabDataLineParser<T> extends MZTabLineParser {
      * Check and translate inchi_key string into parameter list which split by
      * '|' character.. If parse is incorrect, throws
      * {@link uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType#StringList}
-     * error. Normally, inchi_key may be set to "null"; in
-     * general "null" values SHOULD not be given.
+     * error. Normally, inchi_key may be set to "null"; in general "null" values
+     * SHOULD not be given.
      *
      * @param column SHOULD NOT be set to null
      * @param inchi_key SHOULD NOT be empty.
@@ -1163,8 +1173,8 @@ public abstract class MZTabDataLineParser<T> extends MZTabLineParser {
      * Check and translate retention_time string into Double list which split by
      * '|' character.. If parse is incorrect, throws
      * {@link uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType#DoubleList}
-     * error. Normally, retention_time may be set to "null";
-     * in general "null" values SHOULD not be given.
+     * error. Normally, retention_time may be set to "null"; in general "null"
+     * values SHOULD not be given.
      *
      * @param column SHOULD NOT be set to null
      * @param retention_time SHOULD NOT be empty.

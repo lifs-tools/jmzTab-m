@@ -41,6 +41,7 @@ import javax.xml.bind.JAXBException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.ebi.pride.jmztab2.utils.MZTabFileParser;
+import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabError;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorList;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorType;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorTypeMap;
@@ -132,8 +133,12 @@ public class MZTabCommandLine {
         } else if (line.hasOption(versionOpt)) {
             logger.info(getAppInfo());
         } else {
-            handleValidationOptions(line, outOpt, levelOpt, serializeOpt,
+            boolean hadErrorsOrWarnings = handleValidationOptions(line, outOpt,
+                levelOpt, serializeOpt,
                 deserializeOpt, checkOpt, checkSemanticOpt);
+            if (hadErrorsOrWarnings) {
+                System.exit(1);
+            }
         }
     }
 
@@ -216,7 +221,7 @@ public class MZTabCommandLine {
         return msgOpt;
     }
 
-    protected static void handleValidationOptions(CommandLine line,
+    protected static boolean handleValidationOptions(CommandLine line,
         String outOpt, String levelOpt, String serializeOpt,
         String deserializeOpt, String checkOpt, String checkSemanticOpt) throws JAXBException, IllegalArgumentException, URISyntaxException {
         File outFile = null;
@@ -249,12 +254,13 @@ public class MZTabCommandLine {
             if (line.hasOption(deserializeOpt)) {
                 deserializeFromJson = true;
             }
-            handleValidation(line, checkOpt, out, level,
+            return handleValidation(line, checkOpt, out, level,
                 checkSemanticOpt,
                 serializeToJson, deserializeFromJson);
         } catch (IOException ex) {
             logger.error(
                 "Caught an IO Exception: ", ex);
+            return false;
         }
     }
 
@@ -272,9 +278,10 @@ public class MZTabCommandLine {
         }
     }
 
-    protected static void handleValidation(CommandLine line, String checkOpt,
+    protected static boolean handleValidation(CommandLine line, String checkOpt,
         PrintStream outFile, MZTabErrorType.Level level, String checkSemanticOpt,
         boolean toJson, boolean fromJson) throws URISyntaxException, JAXBException, IllegalArgumentException, IOException {
+        boolean errorsOrWarnings = false;
         if (line.hasOption(checkOpt)) {
             String[] values = line.getOptionValues(checkOpt);
             if (values.length != 2) {
@@ -297,9 +304,24 @@ public class MZTabCommandLine {
             MZTabFileParser mzTabParser = new MZTabFileParser(inFile);
             MZTabErrorList errorList = mzTabParser.parse(outFile, level);
             if (!errorList.isEmpty()) {
+                long nErrorsOrWarnings = errorList.getErrorList().
+                    stream().
+                    filter((error) ->
+                    {
+                        MZTabError e = error;
+                        if (e.getType().
+                            getLevel() == MZTabErrorType.Level.Error || e.
+                                getType().
+                                getLevel() == MZTabErrorType.Level.Warn) {
+                            return true;
+                        }
+                        return false;
+                    }).
+                    count();
+                errorsOrWarnings = nErrorsOrWarnings > 0;
                 //these are reported to std.err already.
                 logger.error(
-                    "There were errors while processing your file, please check the output for details!");
+                    "There were " + errorList.size() + " validation messages including " + nErrorsOrWarnings + " warnings or errors during validation your file, please check the output for details!");
             }
             if (toJson) {
                 File jsonFile = new File(inFile.getName() + ".json");
@@ -311,16 +333,19 @@ public class MZTabCommandLine {
                 objectMapper.
                     writeValue(jsonFile, mzTabParser.getMZTabFile());
             }
-            handleSemanticValidation(line, checkSemanticOpt, inFile, outFile,
+            errorsOrWarnings = errorsOrWarnings || handleSemanticValidation(line,
+                checkSemanticOpt, inFile, outFile,
                 mzTabParser, level);
             logger.info("Finished validation!");
         }
+        return errorsOrWarnings;
     }
 
-    protected static void handleSemanticValidation(CommandLine line,
+    protected static boolean handleSemanticValidation(CommandLine line,
         String checkSemanticOpt, File inFile, PrintStream outFile,
         MZTabFileParser mzTabParser,
         MZTabErrorType.Level level) throws JAXBException, MalformedURLException, URISyntaxException {
+        boolean errorsOrWarnings = false;
         if (line.hasOption(checkSemanticOpt)) {
             String[] semValues = line.getOptionValues(
                 checkSemanticOpt);
@@ -361,6 +386,14 @@ public class MZTabCommandLine {
                     return false;
                 }).
                 collect(Collectors.toList());
+            long nErrorsOrWarnings = validationMessages.stream().
+                filter((validationMessage) ->
+                {
+                    return validationMessage.getMessageType() == ValidationMessage.MessageTypeEnum.ERROR || validationMessage.
+                        getMessageType() == ValidationMessage.MessageTypeEnum.WARN;
+                }).
+                count();
+            errorsOrWarnings = nErrorsOrWarnings > 0;
             if (outFile != null) {
                 for (ValidationMessage message : validationMessages) {
                     outFile.print(message);
@@ -373,12 +406,13 @@ public class MZTabCommandLine {
             }
             if (!validationMessages.isEmpty()) {
                 logger.error(
-                    "There were errors during semantic validation of your file, please check the output for details!");
+                    "There were " + validationMessages.size() + " validation messages including " + nErrorsOrWarnings + " warnings or errors during semantic validation of your file, please check the output for details!");
             } else {
                 logger.info(
                     "No errors found for semantic validation on level " + level);
             }
         }
+        return errorsOrWarnings;
     }
 
 }
