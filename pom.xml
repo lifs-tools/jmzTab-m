@@ -32,9 +32,9 @@
     <url>https://www.isas.de</url>
   </organization>
   <scm>
-    <connection>scm:git:git://github.com/nilshoffmann/jmztab-m.git</connection>
-    <developerConnection>scm:git:ssh://github.com:nilshoffmann/jmztab-m.git</developerConnection>
-    <url>http://github.com/nilshoffmann/jmztab-m/tree/master</url>
+    <connection>scm:git:git://github.com/lifs-tools/jmztab-m.git</connection>
+    <developerConnection>scm:git:ssh://github.com:lifs-tools/jmztab-m.git</developerConnection>
+    <url>http://github.com/lifs-tools/jmztab-m/tree/master</url>
   </scm>
   <build>
     <plugins>
