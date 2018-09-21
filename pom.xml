@@ -7,7 +7,7 @@
   <packaging>pom</packaging>
   <description>A reader, writer and validator reference implementation for the mzTab format for metabolomics from version 2.0 onwards.</description>
   <name>MzTab-M 2.0 reference implementation.</name>	
-  <url>https://github.com/nilshoffmann/jmzTab-m</url>	
+  <url>https://github.com/lifs-tools/jmzTab-m</url>	
   <licenses>
     <license>
       <name>The Apache License, Version 2.0</name>
