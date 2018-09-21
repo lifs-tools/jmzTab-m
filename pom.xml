@@ -248,6 +248,30 @@
             </systemPropertyVariables>
           </configuration>
         </plugin>
+        <plugin>
+          <groupId>com.spotify</groupId>
+          <artifactId>dockerfile-maven-plugin</artifactId>
+          <version>${dockerfile.plugin.version}</version>
+          <configuration>
+            <repository>${docker.image.prefix}/${project.artifactId}</repository>
+            <tag>${project.version}</tag>
+            <buildArgs>
+              <APP_NAME>${project.artifactId}</APP_NAME>
+	      <JAR_FILE>${project.build.finalName}.jar</JAR_FILE>
+	      <APP_VERSION>${project.version}</APP_VERSION>
+            </buildArgs>
+          </configuration>
+          <executions>
+              <execution>
+                <id>default</id>
+                <phase>install</phase>
+                <goals>
+                  <goal>build</goal>
+                  <goal>tag</goal>
+                </goals>
+              </execution>
+           </executions>
+        </plugin>
       </plugins>
     </pluginManagement>
   </build>
@@ -423,6 +447,7 @@
     <spring.version>4.3.17.RELEASE</spring.version>
     <diffutils.version>2.2</diffutils.version>
     <javaobjectdiff.version>0.95</javaobjectdiff.version>
+    <dockerfile.plugin.version>1.3.7</dockerfile.plugin.version>
     <assembly.dir>${project.artifactId}</assembly.dir>
   </properties>
 
