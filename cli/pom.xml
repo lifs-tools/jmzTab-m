@@ -8,7 +8,7 @@
   </parent>
   <artifactId>jmztabm-cli</artifactId>
   <properties>
-    <docker.image.prefix>do1-aps-feris.isas.de:5000/lifs</docker.image.prefix>
+    <docker.image.prefix>lifs</docker.image.prefix>
   </properties>
   
   <dependencies>

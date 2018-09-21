@@ -78,6 +78,32 @@ NOTE: Comment objects are currently discarded by the mzTab-M TSV serializer.
 The validator web application code has been moved into a separate project: https://github.com/nilshoffmann/jmzTab-m-webapp
 The application is available at: https://apps.lifs.isas.de/mztabvalidator
 
+== Building the Docker Image
+
+In order to build a Docker image of the command line interface application, run 
+
+  ./mvnw -Pdocker install
+
+from your commandline (mvnw.bat on Windows).
+This will build and tag a Docker image lifs/jmztabm-cli with a corresponding version and make it available to your local Docker installation.
+To the coordinates of the image, call
+
+  docker image ls | grep "jmztabm-cli"
+
+== Running the Docker Image
+
+NOTE: The Docker image is currently not available from DockerHub or Biocontainers. We plan to make it available once the mzTab-M standard has been finalized
+
+If you have not done so, please build the Docker image of the validator cli (see previous section).
+Then, run the following command, replaceing <VERSION> with the current version, e.g. 1.0.2) and <DATA_DIR> with the **local** directory containing your mzTab-M files:
+
+  docker run -v <YOUR_DATA_DIR>:/home/data:rw lifs/jmztabm-cli:<VERSION>
+
+This will only invoke the default entrypoint of the container, which is a shell script wrapper calling the jmztab-m-cli Jar. It passes all arguments to the validator, so that all
+arguments that you would pass normally will work in the same way (please replace <YOUR_MZTABM_FILE> with the actual file's name in <YOUR_DATA_DIR>:
+
+  docker run -v <YOUR_DATA_DIR>:/hom/data:rw lifs/jmztabm-cli:<VERSION> -validate inFile=<YOUR_MZTABM_FILE>
+
 == Using the project code releases via Maven Central
 
 The library release artifacts are available from Maven Central.
