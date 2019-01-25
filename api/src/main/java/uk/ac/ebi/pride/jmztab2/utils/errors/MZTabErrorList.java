@@ -195,7 +195,7 @@ public class MZTabErrorList {
     }
 
     /**
-     * Returns <tt>true</tt> if this list contains no elements.
+     * Returns {@code true} if this list contains no elements.
      *
      * @return a boolean.
      */
