@@ -78,8 +78,7 @@
         </dependency>
         <dependency>
             <groupId>com.sun.xml.bind</groupId>
-            <artifactId>jaxb-impl</artifactId>
-            <scope>runtime</scope>
+            <artifactId>jaxb-core</artifactId>
         </dependency>
         <dependency>
             <groupId>com.sun.activation</groupId>
