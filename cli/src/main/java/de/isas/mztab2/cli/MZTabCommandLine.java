@@ -286,6 +286,11 @@ public class MZTabCommandLine {
             String[] values = line.getOptionValues(checkOpt);
             if (values.length != 2) {
                 throw new IllegalArgumentException("Not setting input file!");
+            } else {
+                if (!"inFile".equals(values[0])) {
+                    logger.error("Please use the check option as follows, if you want to supply an mzTab file for basic validation: '-check inFile=<path/to/mzTabMfile.mzTab>'");
+                    return true;
+                }
             }
             File inFile = new File(values[1].trim());
             if (fromJson) {
@@ -309,13 +314,10 @@ public class MZTabCommandLine {
                     filter((error) ->
                     {
                         MZTabError e = error;
-                        if (e.getType().
-                            getLevel() == MZTabErrorType.Level.Error || e.
-                                getType().
-                                getLevel() == MZTabErrorType.Level.Warn) {
-                            return true;
-                        }
-                        return false;
+                        return e.getType().
+                                getLevel() == MZTabErrorType.Level.Error || e.
+                                        getType().
+                                        getLevel() == MZTabErrorType.Level.Warn;
                     }).
                     count();
                 errorsOrWarnings = nErrorsOrWarnings > 0;
@@ -351,6 +353,10 @@ public class MZTabCommandLine {
                 checkSemanticOpt);
             URI mappingFile;
             if (semValues != null && semValues.length == 2) {
+                if (!"mappingFile".equals(semValues[0])) {
+                    logger.error("Please use the checkSemantic option as follows, if you want to supply a custom mapping file: '-checkSemantic mappingFile=<path/to/mappingfile.xml>'");
+                    return true;
+                }
                 // read file from path
                 mappingFile = new File(semValues[1].trim()).
                     getAbsoluteFile().
@@ -376,10 +382,10 @@ public class MZTabCommandLine {
                 {
                     switch (level) {
                         case Error:
-                            return message.getMessageType() == ERROR ? true : false;
+                            return message.getMessageType() == ERROR;
                         case Warn:
                             return message.getMessageType() == ERROR || message.
-                                getMessageType() == WARN ? true : false;
+                                getMessageType() == WARN;
                         case Info:
                             return true;
                     }
