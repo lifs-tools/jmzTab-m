@@ -5,9 +5,9 @@ image:https://travis-ci.org/lifs-tools/jmzTab-m.svg?branch=master["Build Status"
 
 This project is the reference reader, writer and validator implementation for mzTab for metabolomics 2.0+, based on the https://github.com/PRIDE-Utilities/jmztab[jmztab project].
 
-The latest draft version of the mzTab spec is available https://github.com/HUPO-PSI/mzTab/blob/master/specification_document-developments/2_0-Metabolomics-Draft/mzTab_format_specification_2_0-M_draft.adoc[here].
+The latest draft version of the mzTab spec is available https://github.com/HUPO-PSI/mzTab[here].
 
-The web-based validator application is available https://github.com/nilshoffmann/jmzTab-m-webapp[here].
+The web-based validator application is available https://github.com/lifs-tools/jmzTab-m-webapp[here].
 
 == Building the project and generating client code from the command-line
 
