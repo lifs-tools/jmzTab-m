@@ -1,5 +1,12 @@
 /**
- * {{#description}}{{.}}{{/description}}{{^description}}{{classname}}{{/description}}
+ * {{#unescapedDescription}}
+ * {{{.}}}
+ * {{/unescapedDescription}}{{^unescapedDescription}}{{classname}}{{/unescapedDescription}}
+ *
+ * {{#vendorExtensions.x-mztab-example}}<p>mzTab-M specification example(s):</p>
+ * <pre><code>{{{.}}}</code></pre>
+ * {{/vendorExtensions.x-mztab-example}}
+ *
  */{{#description}}
 @ApiModel(description = "{{{description}}}"){{/description}}
 {{>generatedAnnotation}}{{#discriminator}}{{>typeInfoAnnotation}}{{/discriminator}}{{>xmlAnnotation}}
@@ -115,12 +122,27 @@ public class {{classname}} {{#parent}}extends {{{parent}}} {{/parent}}{{#parcela
   {{#vars}}
   {{^isReadOnly}}
 
+ /**
+   * Builder method for {{name}}.
+   *
+   * @see {{classname}}#{{setter}} {{classname}}#{{setter}} for specification examples
+   * @see {{classname}}#{{getter}} {{classname}}#{{getter}} for validation constraints
+   * @param {{name}}
+   * @return {{classname}}
+  **/
   public {{classname}} {{name}}({{{datatypeWithEnum}}} {{name}}) {
    this.{{name}} = {{name}};
    return this;
   }
   {{#isListContainer}}
 
+  /**
+   * Add a single {{name}}Item to the {{name}} collection.
+   *
+   * @see {{classname}}#{{getter}} {{classname}}#{{getter}} for validation constraints
+   * @param {{name}}Item
+   * @return {{classname}}
+   */
   public {{classname}} add{{nameInCamelCase}}Item({{{items.datatypeWithEnum}}} {{name}}Item) {
     {{^required}}
     if (this.{{name}} == null) {
@@ -133,6 +155,14 @@ public class {{classname}} {{#parent}}extends {{{parent}}} {{/parent}}{{#parcela
   {{/isListContainer}}
   {{#isMapContainer}}
 
+  /**
+   * Put a single {{name}}Item with key to the {{name}} collection.
+   *
+   * @see {{classname}}#{{getter}} {{classname}}#{{getter}} for validation constraints
+   * @param key
+   * @param {{name}}Item
+   * @return {{classname}}
+   */
   public {{classname}} put{{nameInCamelCase}}Item(String key, {{{items.datatypeWithEnum}}} {{name}}Item) {
     {{^required}}
     if (this.{{name}} == null) {
@@ -146,17 +176,18 @@ public class {{classname}} {{#parent}}extends {{{parent}}} {{/parent}}{{#parcela
 
   {{/isReadOnly}}
    /**
-  {{#description}}
-   * {{description}}
-  {{/description}}
-  {{^description}}
-   * Get {{name}}
-  {{/description}}
+  {{#unescapedDescription}}
+   * {{unescapedDescription}}
+  {{/unescapedDescription}}
+  {{^unescapedDescription}}
+   * <p>Get {{name}}.</p>
+  {{/unescapedDescription}}
+   *
   {{#minimum}}
-   * minimum: {{minimum}}
+   * <p>Minimum: {{minimum}}</p>
   {{/minimum}}
   {{#maximum}}
-   * maximum: {{maximum}}
+   * <p>Maximum: {{maximum}}</p>
   {{/maximum}}
    * @return {{name}}
   **/
@@ -172,6 +203,16 @@ public class {{classname}} {{#parent}}extends {{{parent}}} {{/parent}}{{#parcela
   }
   {{^isReadOnly}}
 
+ /**
+   * Set {{name}}.
+   *
+   * {{#vendorExtensions.x-mztab-example}}<p>mzTab-M specification example(s):</p>
+   * <pre><code>{{{.}}}</code></pre>
+   * {{/vendorExtensions.x-mztab-example}}
+   * 
+   * @see #{{getter}} {{classname}}#{{getter}} for validation constraints
+   * @param {{name}}
+  **/
   public void {{setter}}({{{datatypeWithEnum}}} {{name}}) {
     this.{{name}} = {{name}};
   }

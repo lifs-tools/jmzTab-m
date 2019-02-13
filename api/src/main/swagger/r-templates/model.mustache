@@ -3,10 +3,20 @@
 {{>partial_header}}
 
 #' {{classname}} Class
+{{#description}}
 #'
+#' {{description}}
+#'
+{{/description}}
 {{#vars}}
 #' @field {{baseName}} {{title}}
 {{/vars}}
+#'
+#' {{#vendorExtensions.x-mztab-example}}mzTab-M specification example(s)
+#' \preformatted{
+#' {{{.}}}
+#' }
+#' {{/vendorExtensions.x-mztab-example}}
 #'
 #' @importFrom R6 R6Class
 #' @importFrom jsonlite fromJSON toJSON

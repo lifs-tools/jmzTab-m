@@ -1,5 +1,5 @@
   /**
-   * {{^description}}Gets or Sets {{{name}}}{{/description}}{{#description}}{{description}}{{/description}}
+   * {{^unescapedDescription}}Gets or Sets {{{name}}}{{/unescapedDescription}}{{#unescapedDescription}}{{unescapedDescription}}{{/unescapedDescription}}
    */
 {{#gson}}
   @JsonAdapter({{#datatypeWithEnum}}{{{.}}}{{/datatypeWithEnum}}{{^datatypeWithEnum}}{{classname}}{{/datatypeWithEnum}}.Adapter.class)
