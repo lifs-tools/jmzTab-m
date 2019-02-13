@@ -59,30 +59,30 @@ public final class MZTabProperties {
 
     /**
      * Constant
-     * <code>MZTabExceptionMessage="There exist errors in the metadata sect"{trunked}</code>
+     * <code>MZTAB_EXCEPTION_MESSAGE="There exist errors in the metadata sect"{trunked}</code>
      */
-    public final static String MZTabExceptionMessage = "There exist errors in the metadata section or "
+    public static final String MZTAB_EXCEPTION_MESSAGE = "There exist errors in the metadata section or "
         + "protein/peptide/small_molecule/small_molecule_feature/small_molecule_evidence header section! Validation will stop, and ignore data table check!" + NEW_LINE;
     /**
      * Constant
-     * <code>MZTabErrorOverflowExceptionMessage="System error queue overflow! + NEW_LINE"</code>
+     * <code>MZTAB_ERROR_OVERFLOW_EXCEPTION_MESSAGE="System error queue overflow! + NEW_LINE"</code>
      */
-    public final static String MZTabErrorOverflowExceptionMessage = "System error queue overflow!" + NEW_LINE;
+    public static final String MZTAB_ERROR_OVERFLOW_EXCEPTION_MESSAGE = "System error queue overflow!" + NEW_LINE;
 
     /**
      * Constant <code>ENCODE="getProperty(mztab.encode)"</code>
      */
-    public final static String ENCODE = getProperty("mztab.encode");
+    public static final String ENCODE = getProperty("mztab.encode");
     /**
      * Constant
      * <code>MAX_ERROR_COUNT=Integer.parseInt(getProperty("mztab.max_error_count"))</code>
      */
-    public final static int MAX_ERROR_COUNT = Integer.parseInt(getProperty(
+    public static final int MAX_ERROR_COUNT = Integer.parseInt(getProperty(
         "mztab.max_error_count"));
     /**
      * Constant <code>LEVEL</code>
      */
-    public final static LogicalErrorType.Level LEVEL = MZTabErrorType.findLevel(
+    public static final LogicalErrorType.Level LEVEL = MZTabErrorType.findLevel(
         getProperty("mztab.level"));
 
 }

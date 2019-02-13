@@ -2,8 +2,7 @@ MTD	mzTab-version	2.0.0-M
 MTD	mzTab-ID	PRIDE_1234
 MTD	title	My first test experiment
 MTD	description	An experiment investigating the effects of Il-6.
-MTD	sample_processing[1]	[SEP, SEP:00173, SDS PAGE, ]
-MTD	sample_processing[2]	[SEP, SEP:00142, enzyme digestion, ]|[MS, MS:1001251, Trypsin, ]
+MTD	sample_processing[1]	[MSIO, MSIO:0000148, high performance liquid chromatography, ]
 MTD	instrument[1]-name	[MS, MS:100049, LTQ Orbitrap, ]
 MTD	instrument[1]-source	[MS, MS:1000073, ESI, ]
 MTD	instrument[1]-analyzer[1]	[MS, MS:1000291, linear ion trap, ]
@@ -63,6 +62,10 @@ MTD	cv[1]-label	MS
 MTD	cv[1]-full_name	MS
 MTD	cv[1]-version	3.54.0
 MTD	cv[1]-uri	http://psidev.cvs.sourceforge.net/viewvc/psidev/psi/psi-ms/mzML/controlledVocabulary/psi-ms.obo
+MTD	cv[2]-label	MSIO
+MTD	cv[2]-uri	https://www.ebi.ac.uk/ols/ontologies/msio
+MTD	cv[2]-version	1.0.1
+MTD	cv[2]-full_name	Metabolomics Standards Initiative Ontology (MSIO)
 MTD	colunit-small_molecule	retention_time=[UO, UO:0000031, minute, ]
 MTD	custom[1]	[, , MS operator, Florian]
 MTD	database[1]	[, , "no database", null]

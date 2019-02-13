@@ -1,8 +1,5 @@
 package uk.ac.ebi.pride.jmztab2.model;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import static uk.ac.ebi.pride.jmztab2.model.MZTabConstants.*;
 
 /**
@@ -14,8 +11,11 @@ import static uk.ac.ebi.pride.jmztab2.model.MZTabConstants.*;
  */
 public final class MZTabStringUtils {
 
-    private static final Logger logger = LoggerFactory.getLogger(MZTabStringUtils.class);
-
+    /**
+     * Private constructor.
+     */
+    private MZTabStringUtils() {}
+    
     /**
      * Check the string is null or blank.
      *

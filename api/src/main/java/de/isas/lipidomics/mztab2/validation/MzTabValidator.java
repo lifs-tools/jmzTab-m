@@ -42,9 +42,9 @@ public class MzTabValidator implements Validator<MzTab> {
     @Override
     public List<ValidationMessage> validate(MzTab mzTab) {
         return validators.stream().
-            map((validator) ->
+            map(validator ->
             {
-                return (List<ValidationMessage>) validator.validate(mzTab);
+                return validator.validate(mzTab);
             }).
             flatMap(Collection::stream).
             collect(Collectors.toList());
@@ -69,7 +69,7 @@ public class MzTabValidator implements Validator<MzTab> {
         MzTabValidator validator = new MzTabValidator(validators);
         return validator.validate(mzTab).
             stream().
-            filter((validationMessage) ->
+            filter(validationMessage ->
             {
                 switch (validationMessage.getMessageType()) {
                     // do not trust the ordinal values here

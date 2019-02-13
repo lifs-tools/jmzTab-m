@@ -89,20 +89,20 @@ public class ExampleFilesValidationTestIT {
         return Arrays.asList(new Object[][]{
             {LIPIDOMICS_EXAMPLE, MZTabErrorType.Level.Info,
                 0, 7},
-            {MTBLS263, MZTabErrorType.Level.Info, 0, 15},
+            {MTBLS263, MZTabErrorType.Level.Info, 0, 16},
             //            {MOUSELIVER_NEGATIVE, MZTabErrorType.Level.Info, 0, 1},
             //            {MOUSELIVER_NEGATIVE_MZTAB_NULL_COLUNIT,
             //                MZTabErrorType.Level.Info, 1, 3},
             {STANDARDMIX_NEGATIVE_EXPORTPOSITIONLEVEL,
-                MZTabErrorType.Level.Info, 0, 4},
+                MZTabErrorType.Level.Info, 0, 5},
             {STANDARDMIX_NEGATIVE_EXPORTSPECIESLEVEL,
-                MZTabErrorType.Level.Info, 0, 4},
+                MZTabErrorType.Level.Info, 0, 5},
             {STANDARDMIX_POSITIVE_EXPORTPOSITIONLEVEL,
-                MZTabErrorType.Level.Info, 0, 4},
+                MZTabErrorType.Level.Info, 0, 5},
             {STANDARDMIX_POSITIVE_EXPORTSPECIESLEVEL,
-                MZTabErrorType.Level.Info, 0, 4},
-            {GCXGC_MS_EXAMPLE, MZTabErrorType.Level.Info, 0, 5},
-            {LIPIDOMICS_EXAMPLE, MZTabErrorType.Level.Info, 0, 7}
+                MZTabErrorType.Level.Info, 0, 5},
+            {GCXGC_MS_EXAMPLE, MZTabErrorType.Level.Info, 0, 6},
+            {LIPIDOMICS_EXAMPLE, MZTabErrorType.Level.Info, 0, 8}
         });
     }
 
