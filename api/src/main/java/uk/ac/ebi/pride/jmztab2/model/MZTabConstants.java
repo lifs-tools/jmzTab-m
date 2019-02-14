@@ -1,9 +1,10 @@
 package uk.ac.ebi.pride.jmztab2.model;
 
 /**
- * Define a couple constants used in the jmzTab API.
+ * Define a couple of constants used in the jmzTab API.
  *
  * @author qingwei
+ * @author Nils Hoffmann
  * @since 08/03/13
  * 
  */

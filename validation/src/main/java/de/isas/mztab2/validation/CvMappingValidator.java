@@ -56,6 +56,9 @@ import uk.ac.ebi.pride.utilities.ols.web.service.config.OLSWsConfig;
  * Validator implementation that uses a provided xml mapping file with rules for
  * required, recommended and optional CV parameters to assert that an mzTab
  * follows these rules.
+ * 
+ * First, all preValidators are run, then, the cv parameter validation is executed, before finally, 
+ * the postValidators are run. Each validator can add validation messages to the output.
  *
  * @author nilshoffmann
  */
@@ -76,6 +79,16 @@ public class CvMappingValidator implements Validator<MzTab> {
     private final List<Validator<MzTab>> preValidators = new LinkedList<>();
     private final List<Validator<MzTab>> postValidators = new LinkedList<>();
 
+    /**
+     * Create a new instance of CvMappingValidator. 
+     * 
+     * Uses a default instance of the {@link CvParameterLookupService}.
+     * 
+     * @param mappingFile the mapping file to use
+     * @param errorIfTermNotInRule raise an error if a term is not defined within an otherwise matching rule for the element
+     * @return a new CvMappingValidator instance
+     * @throws JAXBException 
+     */
     public static CvMappingValidator of(File mappingFile,
         boolean errorIfTermNotInRule) throws JAXBException {
         OLSWsConfig config = new OLSWsConfig();
@@ -84,6 +97,17 @@ public class CvMappingValidator implements Validator<MzTab> {
         return of(mappingFile, service, errorIfTermNotInRule);
     }
 
+    /**
+     * Create a new instance of CvMappingValidator. 
+     * 
+     * Uses the provided {@link CvParameterLookupService}.
+     * 
+     * @param mappingFile the mapping file to use
+     * @param client the ontology lookup service client
+     * @param errorIfTermNotInRule raise an error if a term is not defined within an otherwise matching rule for the element
+     * @return a new CvMappingValidator instance
+     * @throws JAXBException 
+     */
     public static CvMappingValidator of(File mappingFile,
         CvParameterLookupService client, boolean errorIfTermNotInRule) throws JAXBException {
 
@@ -105,16 +129,36 @@ public class CvMappingValidator implements Validator<MzTab> {
             withPreValidator(new CvDefinitionValidationHandler());
     }
 
+    /**
+     * Add the provided validator implementation to the list of validators that run <b>first</b>.
+     * @param preValidator the validator
+     * @return an instance of this object
+     */
     public CvMappingValidator withPreValidator(Validator<MzTab> preValidator) {
         preValidators.add(preValidator);
         return this;
     }
 
+    /**
+     * Add the provided validator implementation to the list of validators that run <b>last</b>.
+     * @param postValidator the validator
+     * @return an instance of this object
+     */
     public CvMappingValidator withPostValidator(Validator<MzTab> postValidator) {
         postValidators.add(postValidator);
         return this;
     }
 
+    /**
+     * Create a new instance of CvMappingValidator. 
+     * 
+     * Uses a default instance of the {@link CvParameterLookupService}.
+     * 
+     * @param mappingFile the mapping file URL to use
+     * @param errorIfTermNotInRule raise an error if a term is not defined within an otherwise matching rule for the element
+     * @return a new CvMappingValidator instance
+     * @throws JAXBException 
+     */
     public static CvMappingValidator of(URL mappingFile,
         boolean errorIfTermNotInRule) throws JAXBException {
         OLSWsConfig config = new OLSWsConfig();
@@ -123,6 +167,17 @@ public class CvMappingValidator implements Validator<MzTab> {
         return of(mappingFile, service, errorIfTermNotInRule);
     }
 
+    /**
+     * Create a new instance of CvMappingValidator. 
+     * 
+     * Uses the provided {@link CvParameterLookupService}.
+     * 
+     * @param mappingFile the mapping file URL to use
+     * @param client the ontology lookup service client
+     * @param errorIfTermNotInRule raise an error if a term is not defined within an otherwise matching rule for the element
+     * @return a new CvMappingValidator instance
+     * @throws JAXBException 
+     */
     public static CvMappingValidator of(URL mappingFile,
         CvParameterLookupService client, boolean errorIfTermNotInRule) throws JAXBException {
         JAXBContext jaxbContext = JAXBContext.newInstance(CvMapping.class);
@@ -143,6 +198,16 @@ public class CvMappingValidator implements Validator<MzTab> {
             withPreValidator(new CvDefinitionValidationHandler());
     }
 
+    /**
+     * Create a new instance of CvMappingValidator. 
+     * 
+     * Uses the provided {@link CvParameterLookupService}.
+     * 
+     * @param mapping the cv mapping to use
+     * @param client the ontology lookup service client
+     * @param errorIfTermNotInRule raise an error if a term is not defined within an otherwise matching rule for the element
+     * @return a new CvMappingValidator instance
+     */
     public static CvMappingValidator of(CvMapping mapping,
         CvParameterLookupService client,
         boolean errorIfTermNotInRule) {

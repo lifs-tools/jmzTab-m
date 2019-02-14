@@ -29,51 +29,53 @@ import uk.ac.ebi.pride.jmztab2.utils.errors.CrossCheckErrorType;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabError;
 
 /**
+ * Implements handling of rules that have no cv parameter match. Depending on
+ * the requirement level, this may raise an Info, Warning or Error level
+ * message.
  *
  * @author nilshoffmann
  */
 @Slf4j
 public class EmptyRuleHandler {
 
-    
     public List<ValidationMessage> handleRule(CvMappingRule rule,
-        List<Pair<Pointer, Parameter>> selection) {
+            List<Pair<Pointer, Parameter>> selection) {
         if (selection.isEmpty()) {
             log.debug(
-                "Evaluating rule " + rule.getId() + " on " + rule.
-                getCvElementPath() + " did not yield any selected elements!");
+                    "Evaluating rule " + rule.getId() + " on " + rule.
+                    getCvElementPath() + " did not yield any selected elements!");
             switch (rule.getRequirementLevel()) {
                 case MAY:
                     return Arrays.asList(new MZTabError(
-                        CrossCheckErrorType.RulePointerObjectNullOptional, -1,
-                        rule.getCvElementPath(), rule.getId(), "optional",
-                        CvMappingUtils.niceToString(rule)).
-                        toValidationMessage());
+                            CrossCheckErrorType.RulePointerObjectNullOptional, -1,
+                            rule.getCvElementPath(), rule.getId(), "optional",
+                            CvMappingUtils.niceToString(rule)).
+                            toValidationMessage());
                 case SHOULD:
                     return Arrays.asList(new MZTabError(
-                        CrossCheckErrorType.RulePointerObjectNullRecommended, -1,
-                        rule.getCvElementPath(), rule.getId(), "recommended",
-                        CvMappingUtils.niceToString(rule)).
-                        toValidationMessage());
+                            CrossCheckErrorType.RulePointerObjectNullRecommended, -1,
+                            rule.getCvElementPath(), rule.getId(), "recommended",
+                            CvMappingUtils.niceToString(rule)).
+                            toValidationMessage());
                 case MUST:
                     //The object "{0}" accessed by {1} is {2}, but was null or empty. Allowed terms are defined in {3}
                     return Arrays.asList(new MZTabError(
-                        CrossCheckErrorType.RulePointerObjectNullRequired, -1,
-                        rule.getCvElementPath(), rule.getId(), "required",
-                        CvMappingUtils.niceToString(rule)).
-                        toValidationMessage());
+                            CrossCheckErrorType.RulePointerObjectNullRequired, -1,
+                            rule.getCvElementPath(), rule.getId(), "required",
+                            CvMappingUtils.niceToString(rule)).
+                            toValidationMessage());
                 default:
                     throw new IllegalArgumentException(
-                    "Unknown requirement level value: " + rule.
-                        getRequirementLevel()+ "! Supported are: " + Arrays.
-                        toString(CvMappingRule.RequirementLevel.
-                            values()));
+                            "Unknown requirement level value: " + rule.
+                                    getRequirementLevel() + "! Supported are: " + Arrays.
+                                    toString(CvMappingRule.RequirementLevel.
+                                            values()));
 
             }
         } else {
             return new ArrayList<>();
         }
-        
+
     }
 
 }

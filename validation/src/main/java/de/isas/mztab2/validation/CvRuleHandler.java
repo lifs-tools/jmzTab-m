@@ -23,10 +23,17 @@ import org.apache.commons.jxpath.Pointer;
 import org.apache.commons.lang3.tuple.Pair;
 
 /**
- *
+ * Interface for rule logic handling implementations. 
  * @author nilshoffmann
  */
 public interface CvRuleHandler {
+    /**
+     * Handle the provided rule according to the implementor's logic. The rule is applied to all elements 
+     * within the filtered selection where it is applicable.
+     * @param rule the rule to apply
+     * @param filteredSelection the selection of pointer,paramter pairs to apply the rule on
+     * @return the rule evaluation result
+     */
     RuleEvaluationResult handleRule(CvMappingRule rule,
         List<Pair<Pointer, Parameter>> filteredSelection);
 }

@@ -21,11 +21,23 @@ import org.apache.commons.jxpath.Pointer;
 import org.apache.commons.lang3.tuple.Pair;
 
 /**
+ * Interface for JxPath subtree selection handling. The argument is the valid
+ * JxPath selection consisting of pairs of pointers into the object hierarchy
+ * and the corresponding Parameter. Implementations of this interface can act as
+ * filters, removing pairs from the collection before returning it.
  *
  * @author nilshoffmann
  */
 public interface CvTermSelectionHandler {
 
+    /**
+     * Handle the provided selection, e.g. by filtering it or by modifying
+     * elements therein.
+     *
+     * @param selection the selection to handle.
+     * @return the selection or any processed variant of it. Should never be
+     * null.
+     */
     List<Pair<Pointer, Parameter>> handleSelection(
-        List<Pair<Pointer, Parameter>> selection);
+            List<Pair<Pointer, Parameter>> selection);
 }

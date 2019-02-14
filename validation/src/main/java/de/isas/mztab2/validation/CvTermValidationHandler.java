@@ -20,10 +20,17 @@ import de.isas.mztab2.model.ValidationMessage;
 import java.util.List;
 
 /**
- *
+ * Interface for handling of rule evaluation results.
  * @author nilshoffmann
  */
 public interface CvTermValidationHandler {
+    /**
+     * Implementations of this method should take care that they always return a list,
+     * even if it is empty.
+     * @param result the validation messages produced by this handler.
+     * @param errorOnTermNotInRule flag to signal, whether unknown terms should yield an error.
+     * @return 
+     */
     List<ValidationMessage> handleParameters(RuleEvaluationResult result,
         boolean errorOnTermNotInRule);
 }

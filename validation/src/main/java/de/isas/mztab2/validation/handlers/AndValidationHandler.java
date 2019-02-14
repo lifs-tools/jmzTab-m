@@ -31,7 +31,8 @@ import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabError;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorType;
 
 /**
- *
+ * Implements 'AND' logic, meaning all alternative possible terms or term roots for
+ * an object must occur.
  * @author nilshoffmann
  */
 public class AndValidationHandler implements CvTermValidationHandler {

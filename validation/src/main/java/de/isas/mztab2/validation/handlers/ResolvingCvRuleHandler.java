@@ -31,7 +31,7 @@ import org.apache.commons.jxpath.Pointer;
 import org.apache.commons.lang3.tuple.Pair;
 
 /**
- *
+ * Implements resolution of cv parameters using the provided lookup service.
  * @author nilshoffmann
  */
 @Slf4j

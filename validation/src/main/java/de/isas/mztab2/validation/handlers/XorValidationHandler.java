@@ -33,7 +33,8 @@ import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabError;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorType;
 
 /**
- *
+ * Implements 'XOR' logic, meaning mutually exclusive alternative possible terms or term roots for
+ * an object are allowed.
  * @author nilshoffmann
  */
 public class XorValidationHandler implements CvTermValidationHandler {

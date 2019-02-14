@@ -32,6 +32,8 @@ import uk.ac.ebi.pride.jmztab2.utils.errors.CrossCheckErrorType;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabError;
 
 /**
+ * Implements support for validating multiple parameters and the intersection
+ * between terms as described by the rule and the actually found ones.
  *
  * @author nilshoffmann
  */
@@ -39,61 +41,61 @@ public class SharedParametersValidationHandler implements CvTermValidationHandle
 
     @Override
     public List<ValidationMessage> handleParameters(
-        RuleEvaluationResult result,
-        boolean errorOnTermNotInRule) {
+            RuleEvaluationResult result,
+            boolean errorOnTermNotInRule) {
         final List<ValidationMessage> messages = new ArrayList<>();
         Set<String> sharedParameters = SetOperations.intersection(
-            result.getAllowedParameters().
-                keySet(), result.getFoundParameters().
-                keySet());
+                result.getAllowedParameters().
+                        keySet(), result.getFoundParameters().
+                        keySet());
         for (String paramKey : sharedParameters) {
             Pair<Pointer, ? extends Parameter> p = result.getFoundParameters().
-                get(paramKey);
+                    get(paramKey);
             Parameter allowedParameter = result.getAllowedParameters().
-                get(paramKey);
+                    get(paramKey);
             //The cv parameter field "{0}" for parameter "{1}" is "{2}" but should be "{3}", as defined in {4}.
             if (!Optional.ofNullable(p.getValue().
-                getCvLabel()).
-                orElse("").
-                equals(allowedParameter.getCvLabel())) {
+                    getCvLabel()).
+                    orElse("").
+                    equals(allowedParameter.getCvLabel())) {
                 MZTabError error = new MZTabError(
-                    CrossCheckErrorType.CvTermMalformed,
-                    -1,
-                    Parameter.Properties.cvLabel.getPropertyName(),
-                    new ParameterConverter().convert(p.
-                        getValue()), p.getValue().
-                        getCvLabel(), allowedParameter.getCvLabel(),
-                    CvMappingUtils.niceToString(result.getRule()));
+                        CrossCheckErrorType.CvTermMalformed,
+                        -1,
+                        Parameter.Properties.cvLabel.getPropertyName(),
+                        new ParameterConverter().convert(p.
+                                getValue()), p.getValue().
+                                getCvLabel(), allowedParameter.getCvLabel(),
+                        CvMappingUtils.niceToString(result.getRule()));
 
                 messages.add(error.toValidationMessage());
             }
             if (!Optional.ofNullable(p.getValue().
-                getCvAccession()).
-                orElse("").
-                equals(allowedParameter.getCvAccession())) {
+                    getCvAccession()).
+                    orElse("").
+                    equals(allowedParameter.getCvAccession())) {
                 MZTabError error = new MZTabError(
-                    CrossCheckErrorType.CvTermMalformed,
-                    -1,
-                    Parameter.Properties.cvAccession.getPropertyName(),
-                    new ParameterConverter().convert(p.
-                        getValue()), p.getValue().
-                        getCvAccession(), allowedParameter.getCvAccession(),
-                    CvMappingUtils.niceToString(result.getRule()));
+                        CrossCheckErrorType.CvTermMalformed,
+                        -1,
+                        Parameter.Properties.cvAccession.getPropertyName(),
+                        new ParameterConverter().convert(p.
+                                getValue()), p.getValue().
+                                getCvAccession(), allowedParameter.getCvAccession(),
+                        CvMappingUtils.niceToString(result.getRule()));
 
                 messages.add(error.toValidationMessage());
             }
             if (!Optional.ofNullable(p.getValue().
-                getName()).
-                orElse("").
-                equals(allowedParameter.getName())) {
+                    getName()).
+                    orElse("").
+                    equals(allowedParameter.getName())) {
                 MZTabError error = new MZTabError(
-                    CrossCheckErrorType.CvTermMalformed,
-                    -1,
-                    Parameter.Properties.name.getPropertyName(),
-                    new ParameterConverter().convert(p.
-                        getValue()), p.getValue().
-                        getName(), allowedParameter.getName(),
-                    CvMappingUtils.niceToString(result.getRule()));
+                        CrossCheckErrorType.CvTermMalformed,
+                        -1,
+                        Parameter.Properties.name.getPropertyName(),
+                        new ParameterConverter().convert(p.
+                                getValue()), p.getValue().
+                                getName(), allowedParameter.getName(),
+                        CvMappingUtils.niceToString(result.getRule()));
 
                 messages.add(error.toValidationMessage());
             }

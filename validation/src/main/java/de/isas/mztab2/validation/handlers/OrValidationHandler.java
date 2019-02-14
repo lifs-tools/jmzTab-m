@@ -31,7 +31,8 @@ import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabError;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorType;
 
 /**
- *
+ * Implements 'OR' logic, meaning alternative possible terms or term roots for
+ * an object may be present.
  * @author nilshoffmann
  */
 public class OrValidationHandler implements CvTermValidationHandler {

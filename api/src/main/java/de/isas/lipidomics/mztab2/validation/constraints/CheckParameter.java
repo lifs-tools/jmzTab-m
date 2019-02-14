@@ -26,7 +26,7 @@ import javax.validation.Constraint;
 import javax.validation.Payload;
 
 /**
- *
+ * JAVAX validation compliant annotation. Currently unused.
  * @author nilshoffmann
  */
 @Target({ TYPE, ANNOTATION_TYPE })

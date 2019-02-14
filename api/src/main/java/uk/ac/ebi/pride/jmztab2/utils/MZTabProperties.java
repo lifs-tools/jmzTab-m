@@ -11,7 +11,7 @@ import static uk.ac.ebi.pride.jmztab2.model.MZTabConstants.NEW_LINE;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorType;
 
 /**
- * This Class will load the properties used by the mzTab library
+ * This class will load the properties used by the mzTab library for message formatting during validation.
  *
  * @author qingwei
  * @author nilshoffmann

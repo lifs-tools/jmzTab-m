@@ -31,7 +31,7 @@ import uk.ac.ebi.pride.jmztab2.utils.errors.CrossCheckErrorType;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabError;
 
 /**
- *
+ * Implements handling of cv parameters (not user params) that are found at the object.
  * @author nilshoffmann
  */
 public class ExtraParametersValidationHandler implements CvTermValidationHandler {
