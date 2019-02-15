@@ -26,8 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 import uk.ac.ebi.pride.jmztab2.model.Section;
 
 /**
- * <p>
- * CvSerializer class.</p>
+ * <p>CvSerializer implementation for {@link de.isas.mztab2.model.CV}.</p>
  *
  * @author nilshoffmann
  *

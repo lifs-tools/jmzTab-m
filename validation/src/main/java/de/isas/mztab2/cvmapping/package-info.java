@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 /**
- * This package contains class for controlled vocabulary term access, comparison, results and external cv parameter resolution.
+ * This package contains classes for controlled vocabulary term access, comparison, results and external cv parameter resolution.
  */
 package de.isas.mztab2.cvmapping;

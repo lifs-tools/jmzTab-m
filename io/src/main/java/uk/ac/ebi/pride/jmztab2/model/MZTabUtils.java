@@ -43,7 +43,7 @@ import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabException;
 import uk.ac.ebi.pride.jmztab2.utils.parser.MZTabParserContext;
 
 /**
- * Provide a couple of functions for translate, parse and print formatted string
+ * Provide a couple of functions for translating, parsing and printing formatted strings
  * defined in the mzTab specification.
  *
  * @author qingwei

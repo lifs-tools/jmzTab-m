@@ -16,6 +16,8 @@
 package de.isas.mztab2.test.utils;
 
 /**
+ * This runtime exception is thrown when IO exceptions are encountered within
+ * the {@link ZipResourceExtractor} test rule.
  *
  * @author nilshoffmann
  */
@@ -37,8 +39,8 @@ public class ZipResourceExtractionException extends RuntimeException {
     }
 
     public ZipResourceExtractionException(String message, Throwable cause,
-        boolean enableSuppression, boolean writableStackTrace) {
+            boolean enableSuppression, boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
-    
+
 }

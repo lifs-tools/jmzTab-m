@@ -28,8 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 import uk.ac.ebi.pride.jmztab2.model.Section;
 
 /**
- * <p>
- * DatabaseSerializer class.</p>
+ * <p>DatabaseSerializer implementation for {@link de.isas.mztab2.model.Database}.</p>
  *
  * @author nilshoffmann
  *

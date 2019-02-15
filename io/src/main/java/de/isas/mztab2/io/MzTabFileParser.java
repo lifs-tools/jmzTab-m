@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.ac.ebi.pride.jmztab2.utils;
+package de.isas.mztab2.io;
 
 import de.isas.mztab2.model.CV;
 import de.isas.mztab2.model.ColumnParameterMapping;
@@ -71,10 +71,12 @@ import static uk.ac.ebi.pride.jmztab2.utils.MZTabProperties.*;
  * parsing process, minimal integrity checks are preformed.
  *
  * @author qingwei
+ * @author nilshoffmann
+ * 
  * @since 21/02/13
  *
  */
-public class MZTabFileParser {
+public class MzTabFileParser {
 
     private MzTab mzTabFile;
     private URI tabFile;
@@ -89,7 +91,7 @@ public class MZTabFileParser {
      * @throws java.lang.IllegalArgumentException if the provided argument in
      * invalid.
      */
-    public MZTabFileParser(File tabFile) throws IllegalArgumentException {
+    public MzTabFileParser(File tabFile) throws IllegalArgumentException {
         this(tabFile.toURI());
     }
 
@@ -103,7 +105,7 @@ public class MZTabFileParser {
      * @throws java.lang.IllegalArgumentException if the provided argument in
      * invalid.
      */
-    public MZTabFileParser(URI tabFileUri) throws IllegalArgumentException {
+    public MzTabFileParser(URI tabFileUri) throws IllegalArgumentException {
         if (tabFileUri == null) {
             throw new IllegalArgumentException(
                 "MZTab file uri must not be null!");

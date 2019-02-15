@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
  * {@link uk.ac.ebi.pride.jmztab2.model.OptColumnMappingBuilder}.
  *
  * @author qingwei
- * @author Nils Hoffmann
+ * @author nilshoffmann
  * @since 23/05/13
  *
  */

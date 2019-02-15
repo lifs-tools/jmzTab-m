@@ -19,7 +19,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import de.isas.mztab2.io.serialization.SoftwareSerializer;
 
 /**
- * <p>Abstract SoftwareFormat class.</p>
+ * Format specification for {@link de.isas.mztab2.model.Software}.
  *
  * @author nilshoffmann
  * 

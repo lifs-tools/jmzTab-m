@@ -48,7 +48,7 @@ import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabException;
 
 /**
  * @author qingwei
- * @author Nils Hoffmann
+ * @author nilshoffmann
  * @since 11/02/13
  */
 public class MTDLineParserTest {

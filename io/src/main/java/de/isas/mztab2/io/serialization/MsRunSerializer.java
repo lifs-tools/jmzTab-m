@@ -29,8 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 import uk.ac.ebi.pride.jmztab2.model.Section;
 
 /**
- * <p>
- * MsRunSerializer class.</p>
+ * <p>MsRunSerializer implementation for {@link de.isas.mztab2.model.MsRun}.</p>
  *
  * @author nilshoffmann
  *

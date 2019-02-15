@@ -48,7 +48,7 @@ import uk.ac.ebi.pride.jmztab2.model.Section;
 
 /**
  * <p>
- * MetadataSerializer class. Implements a custom, partially delegating serializer for MzTab objects 
+ * MetadataSerializer class. Implements a custom, partially delegating serializer for {@link de.isas.mztab2.model.Metadata} objects 
  * based on Jackson CSV.</p>
  *
  * @author nilshoffmann

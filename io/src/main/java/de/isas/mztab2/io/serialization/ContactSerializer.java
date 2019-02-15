@@ -28,8 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 import uk.ac.ebi.pride.jmztab2.model.Section;
 
 /**
- * <p>
- * ContactSerializer class.</p>
+ * <p>ContactSerializer implementation for {@link de.isas.mztab2.model.Contact}.</p>
  *
  * @author nilshoffmann
  *

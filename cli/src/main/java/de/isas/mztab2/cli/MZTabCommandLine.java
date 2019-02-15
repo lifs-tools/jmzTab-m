@@ -40,7 +40,7 @@ import java.util.stream.Collectors;
 import javax.xml.bind.JAXBException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.ac.ebi.pride.jmztab2.utils.MZTabFileParser;
+import de.isas.mztab2.io.MzTabFileParser;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabError;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorList;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorType;
@@ -306,7 +306,7 @@ public class MZTabCommandLine {
             }
             logger.info("Beginning validation of mztab file: {}", inFile.
                 getAbsolutePath());
-            MZTabFileParser mzTabParser = new MZTabFileParser(inFile);
+            MzTabFileParser mzTabParser = new MzTabFileParser(inFile);
             MZTabErrorList errorList = mzTabParser.parse(outFile, level);
             if (!errorList.isEmpty()) {
                 long nErrorsOrWarnings = errorList.getErrorList().
@@ -345,7 +345,7 @@ public class MZTabCommandLine {
 
     protected static boolean handleSemanticValidation(CommandLine line,
         String checkSemanticOpt, File inFile, PrintStream outFile,
-        MZTabFileParser mzTabParser,
+        MzTabFileParser mzTabParser,
         MZTabErrorType.Level level) throws JAXBException, MalformedURLException, URISyntaxException {
         boolean errorsOrWarnings = false;
         if (line.hasOption(checkSemanticOpt)) {

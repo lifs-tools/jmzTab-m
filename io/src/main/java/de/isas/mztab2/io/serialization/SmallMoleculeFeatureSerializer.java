@@ -33,8 +33,7 @@ import static uk.ac.ebi.pride.jmztab2.model.SmallMoleculeFeatureColumn.Stable.co
 import uk.ac.ebi.pride.jmztab2.model.SmallMoleculeFeatureColumn;
 
 /**
- * <p>
- * SmallMoleculeFeatureSerializer class.</p>
+ * <p>SmallMoleculeFeatureSerializer implementation for {@link de.isas.mztab2.model.SmallMoleculeFeature}.</p>
  *
  * @author nilshoffmann
  *

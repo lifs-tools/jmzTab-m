@@ -24,7 +24,7 @@ import java.util.TreeMap;
 /**
  * If the data exporter wishes to report only final results for 'Summary' files (i.e. following averaging over replicates),
  * then these MUST be reported as quantitative values in the columns associated with the study_variable[1-n] (e.g.
- * protein_abundance_study_variable[1]). mzTab allows the reporting of abundance, standard deviation, and standard error
+ * abundance_study_variable[1]). mzTab allows the reporting of abundance, standard deviation, and standard error
  * for any study_variable. The unit of values in the abundance column MUST be specified in the metadata section of the mzTab file.
  * The reported values SHOULD represent the final result of the performed data analysis. The exact meaning of the values will
  * thus depend on the used analysis pipeline and quantitation method and is not expected to be comparable across multiple mzTab files.

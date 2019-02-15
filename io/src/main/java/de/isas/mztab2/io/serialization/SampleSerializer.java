@@ -27,7 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 import uk.ac.ebi.pride.jmztab2.model.Section;
 
 /**
- * <p>SampleSerializer class.</p>
+ * <p>SampleSerializer implementation for {@link de.isas.mztab2.model.Sample}.</p>
  *
  * @author nilshoffmann
  * 

@@ -1,5 +1,5 @@
-/* 
- * Copyright 2018 Leibniz-Institut für Analytische Wissenschaften – ISAS – e.V..
+/*
+ * Copyright 2019 Leibniz-Institut für Analytische Wissenschaften – ISAS – e.V..
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,18 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.isas.mztab2.io.formats;
-
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import de.isas.mztab2.io.serialization.StudyVariableSerializer;
-
 /**
- * Format specification for {@link de.isas.mztab2.model.StudyVariable}.
- *
- * @author nilshoffmann
- * 
+ * This package contains model classes for mzTab-M structural features like mandatory and optional columns.
  */
-@JsonSerialize(using = StudyVariableSerializer.class)
-public abstract class StudyVariableFormat {
-
-}
+package uk.ac.ebi.pride.jmztab2.model;

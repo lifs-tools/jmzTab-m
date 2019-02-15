@@ -22,6 +22,9 @@ import java.util.List;
 import static uk.ac.ebi.pride.jmztab2.model.MZTabConstants.NULL;
 
 /**
+ * <p>
+ * Parameter to String converter implementation for
+ * {@link de.isas.mztab2.model.Parameter}.</p>
  *
  * @author nilshoffmann
  */
@@ -55,8 +58,8 @@ public class ParameterConverter extends StdConverter<Parameter, String> {
 
         if (containReserveChar) {
             sb.append("\"").
-                append(name).
-                append("\"");
+                    append(name).
+                    append("\"");
         } else {
             sb.append(name);
         }

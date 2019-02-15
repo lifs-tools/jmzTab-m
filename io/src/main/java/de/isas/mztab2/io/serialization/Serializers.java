@@ -46,7 +46,7 @@ import uk.ac.ebi.pride.jmztab2.model.MetadataProperty;
 
 /**
  * <p>
- * Serializers class.</p>
+ * Utility class providing helper methods for other serializers.</p>
  *
  * @author nilshoffmann
  * @since 11/30/17
@@ -65,19 +65,19 @@ public class Serializers {
      */
     public static String getReference(Object element, Integer idx) {
         StringBuilder sb = new StringBuilder();
-        
+
         sb.append(getElementName(element).
-            orElseThrow(() ->
-            {
-                return new IllegalArgumentException(
-                    "No mzTab element name mapping available for " + element.
-                        getClass().
-                        getName());
-            })).
-            append("[").
-            append(idx).
-            append("]");
-        
+                orElseThrow(()
+                        -> {
+                    return new IllegalArgumentException(
+                            "No mzTab element name mapping available for " + element.
+                                    getClass().
+                                    getName());
+                })).
+                append("[").
+                append(idx).
+                append("]");
+
         return sb.toString();
     }
 
@@ -91,9 +91,9 @@ public class Serializers {
     public static String printAbundanceAssay(Assay a) {
         StringBuilder sb = new StringBuilder();
         return sb.append("abundance_assay[").
-            append(a.getId()).
-            append("]").
-            toString();
+                append(a.getId()).
+                append("]").
+                toString();
     }
 
     /**
@@ -106,9 +106,9 @@ public class Serializers {
     public static String printAbundanceStudyVar(StudyVariable sv) {
         StringBuilder sb = new StringBuilder();
         return sb.append("abundance_study_variable[").
-            append(sv.getId()).
-            append("]").
-            toString();
+                append(sv.getId()).
+                append("]").
+                toString();
     }
 
     /**
@@ -121,9 +121,9 @@ public class Serializers {
     public static String printAbundanceCoeffVarStudyVar(StudyVariable sv) {
         StringBuilder sb = new StringBuilder();
         return sb.append("abundance_coeffvar_study_variable[").
-            append(sv.getId()).
-            append("]").
-            toString();
+                append(sv.getId()).
+                append("]").
+                toString();
     }
 
     /**
@@ -136,18 +136,18 @@ public class Serializers {
     public static String printOptColumnMapping(OptColumnMapping ocm) {
         StringBuilder sb = new StringBuilder();
         if (!ocm.getIdentifier().
-            startsWith("opt_")) {
+                startsWith("opt_")) {
             sb.append("opt_");
         }
         sb.append(ocm.getIdentifier());
         if (ocm.getParam() != null) {
             sb.append("_cv_").
-                append(ocm.getParam().
-                    getCvAccession()).
-                append("_").
-                append(ocm.getParam().
-                    getName().
-                    replaceAll(" ", "_"));
+                    append(ocm.getParam().
+                            getCvAccession()).
+                    append("_").
+                    append(ocm.getParam().
+                            getName().
+                            replaceAll(" ", "_"));
         }
         //TODO: check for valid characters in definition
         //valid characters: ‘A’-‘Z’, ‘a’-‘z’, ‘0’-‘9’, ‘’, ‘-’, ‘[’, ‘]’, and ‘:’.
@@ -169,8 +169,8 @@ public class Serializers {
      * @param indexedElement a {@link de.isas.mztab2.model.Parameter} object.
      */
     public static <T extends IndexedElement> void addIndexedLine(
-        JsonGenerator jg, SerializerProvider sp, String prefix,
-        Object element, T indexedElement) {
+            JsonGenerator jg, SerializerProvider sp, String prefix,
+            Object element, T indexedElement) {
         addIndexedLine(jg, sp, prefix, element, Arrays.asList(indexedElement));
     }
 
@@ -188,15 +188,15 @@ public class Serializers {
      * @param indexedElementList a {@link java.util.List} object.
      */
     public static <T extends IndexedElement> void addIndexedLine(
-        JsonGenerator jg, SerializerProvider sp, String prefix,
-        Object element,
-        List<T> indexedElementList) {
+            JsonGenerator jg, SerializerProvider sp, String prefix,
+            Object element,
+            List<T> indexedElementList) {
         if (indexedElementList == null || indexedElementList.isEmpty()) {
-            
+
             log.debug(
-                "Skipping null or empty indexed element list values for {}",
-                getElementName(
-                    element));
+                    "Skipping null or empty indexed element list values for {}",
+                    getElementName(
+                            element));
             return;
         }
         try {
@@ -205,31 +205,31 @@ public class Serializers {
             jg.writeString(prefix);
             //key
             jg.writeString(new StringBuilder().append(getElementName(element).
-                orElseThrow(() ->
-                {
-                    return new ElementNameMappingException("unknown", element);
-                })).
-                toString());
+                    orElseThrow(()
+                            -> {
+                        return new ElementNameMappingException("unknown", element);
+                    })).
+                    toString());
             //value
             jg.writeString(indexedElementList.stream().
-                map((indexedElement) ->
-                {
-                    if (indexedElement instanceof Parameter) {
-                        return new ParameterConverter().convert(
-                            (Parameter) indexedElement);
-                    } else if (indexedElement instanceof Uri) {
-                        return new UriConverter().convert((Uri) indexedElement);
-                    } else {
-                        throw new IllegalArgumentException(
-                            "Serialization of type " + indexedElement.getClass() + " currently not supported!");
-                    }
-                }).
-                collect(Collectors.joining("|")));
+                    map((indexedElement)
+                            -> {
+                        if (indexedElement instanceof Parameter) {
+                            return new ParameterConverter().convert(
+                                    (Parameter) indexedElement);
+                        } else if (indexedElement instanceof Uri) {
+                            return new UriConverter().convert((Uri) indexedElement);
+                        } else {
+                            throw new IllegalArgumentException(
+                                    "Serialization of type " + indexedElement.getClass() + " currently not supported!");
+                        }
+                    }).
+                    collect(Collectors.joining("|")));
             jg.writeEndArray();
         } catch (IOException ex) {
-            
+
             log.error("Caught IO Exception while trying to write indexed line:",
-                ex);
+                    ex);
         }
     }
 
@@ -243,13 +243,13 @@ public class Serializers {
      * @param parameterList a {@link java.util.List} object.
      */
     public static void addLineWithParameters(JsonGenerator jg, String prefix,
-        Object element,
-        List<Parameter> parameterList) {
+            Object element,
+            List<Parameter> parameterList) {
         if (parameterList == null || parameterList.isEmpty()) {
-            
+
             log.debug(
-                "Skipping null or empty parameter list values for " + getElementName(
-                    element));
+                    "Skipping null or empty parameter list values for " + getElementName(
+                            element));
             return;
         }
         try {
@@ -258,23 +258,23 @@ public class Serializers {
             jg.writeString(prefix);
             //key
             jg.writeString(new StringBuilder().append(getElementName(element).
-                orElseThrow(() ->
-                {
-                    return new ElementNameMappingException("unknown", element);
-                })).
-                toString());
+                    orElseThrow(()
+                            -> {
+                        return new ElementNameMappingException("unknown", element);
+                    })).
+                    toString());
             //value
             jg.writeString(parameterList.stream().
-                map((parameter) ->
-                {
-                    return new ParameterConverter().convert(parameter);
-                }).
-                collect(Collectors.joining("|")));
+                    map((parameter)
+                            -> {
+                        return new ParameterConverter().convert(parameter);
+                    }).
+                    collect(Collectors.joining("|")));
             jg.writeEndArray();
         } catch (IOException ex) {
             log.error(
-                "Caught IO Exception while trying to write line with parameters:",
-                ex);
+                    "Caught IO Exception while trying to write line with parameters:",
+                    ex);
         }
     }
 
@@ -289,22 +289,22 @@ public class Serializers {
      * @param value a {@link java.util.List} object.
      */
     public static void addLineWithPropertyParameters(JsonGenerator jg,
-        String prefix,
-        String propertyName, Object element,
-        List<Parameter> value) {
+            String prefix,
+            String propertyName, Object element,
+            List<Parameter> value) {
         if (value == null || value.isEmpty()) {
-            
+
             log.debug("Skipping null or empty values for {}",
-                getElementName(
-                    element));
+                    getElementName(
+                            element));
             return;
         }
         addLineWithProperty(jg, prefix, propertyName, element, value.stream().
-            map((parameter) ->
-            {
-                return new ParameterConverter().convert(parameter);
-            }).
-            collect(Collectors.joining("|")));
+                map((parameter)
+                        -> {
+                    return new ParameterConverter().convert(parameter);
+                }).
+                collect(Collectors.joining("|")));
     }
 
     /**
@@ -319,8 +319,8 @@ public class Serializers {
      * @param value a {@link java.lang.Object} object.
      */
     public static void addLineWithMetadataProperty(JsonGenerator jg,
-        String prefix, MetadataProperty property, Object element,
-        Object... value) {
+            String prefix, MetadataProperty property, Object element,
+            Object... value) {
         addLineWithProperty(jg, prefix, property.getName(), element, value);
     }
 
@@ -334,17 +334,17 @@ public class Serializers {
      * @param element a {@link java.lang.Object} object.
      */
     public static void addLineWithNullProperty(JsonGenerator jg, String prefix,
-        String propertyName, Object element) {
+            String propertyName, Object element) {
         try {
             jg.writeStartArray();
             //prefix
             jg.writeString(prefix);
             //key
             String key = getElementName(element).
-                orElseThrow(() ->
-                {
-                    return new ElementNameMappingException(propertyName, element);
-                });
+                    orElseThrow(()
+                            -> {
+                        return new ElementNameMappingException(propertyName, element);
+                    });
             if (propertyName == null) {
                 jg.writeString(key);
             } else {
@@ -354,10 +354,10 @@ public class Serializers {
             jg.writeString(NULL);
             jg.writeEndArray();
         } catch (IOException ex) {
-            
+
             log.error(
-                "Caught exception while trying to write line with null property:",
-                ex);
+                    "Caught exception while trying to write line with null property:",
+                    ex);
         }
     }
 
@@ -372,19 +372,19 @@ public class Serializers {
      * @param value a {@link java.lang.Object} object.
      */
     public static void addLineWithProperty(JsonGenerator jg, String prefix,
-        String propertyName, Object element,
-        Object... value) {
+            String propertyName, Object element,
+            Object... value) {
         if (value == null || value.length == 0) {
-            
+
             log.debug("Skipping null or empty values for {}",
-                getElementName(
-                    element));
+                    getElementName(
+                            element));
             return;
         }
         if (value.length == 1 && (value[0] == null)) {
-            
+
             log.debug("Skipping empty value for {}", getElementName(
-                element));
+                    element));
             return;
         }
         try {
@@ -393,10 +393,10 @@ public class Serializers {
             jg.writeString(prefix);
             //key
             String key = getElementName(element).
-                orElseThrow(() ->
-                {
-                    return new ElementNameMappingException(propertyName, element);
-                });
+                    orElseThrow(()
+                            -> {
+                        return new ElementNameMappingException(propertyName, element);
+                    });
             if (propertyName == null) {
                 jg.writeString(key);
             } else {
@@ -408,10 +408,10 @@ public class Serializers {
             }
             jg.writeEndArray();
         } catch (IOException ex) {
-            
+
             log.error(
-                "Caught IO exception while trying to write line with property:",
-                ex);
+                    "Caught IO exception while trying to write line with property:",
+                    ex);
         }
     }
 
@@ -425,7 +425,7 @@ public class Serializers {
      * @param value a {@link java.lang.Object} object.
      */
     public static void addLine(JsonGenerator jg, String prefix, Object element,
-        Object... value) {
+            Object... value) {
         addLineWithProperty(jg, prefix, null, element, value);
     }
 
@@ -444,17 +444,17 @@ public class Serializers {
             return Optional.ofNullable(((MetadataElement) element).getName());
         }
         JacksonXmlRootElement rootElement = element.getClass().
-            getAnnotation(JacksonXmlRootElement.class);
+                getAnnotation(JacksonXmlRootElement.class);
         if (rootElement != null) {
             String underscoreName = camelCaseToUnderscoreLowerCase(
-                rootElement.localName());
+                    rootElement.localName());
             if (element instanceof IndexedElement) {
                 if (((IndexedElement) element).getId() == null) {
                     throw new NullPointerException(
-                        "Field 'id' must not be null for element '" + underscoreName + "'!");
+                            "Field 'id' must not be null for element '" + underscoreName + "'!");
                 }
                 return Optional.of(
-                    underscoreName + "[" + ((IndexedElement) element).getId() + "]");
+                        underscoreName + "[" + ((IndexedElement) element).getId() + "]");
             }
             return Optional.ofNullable(underscoreName);
         }
@@ -470,13 +470,13 @@ public class Serializers {
      */
     public static List<String> getPropertyNames(Object element) {
         return Arrays.asList(element.getClass().
-            getAnnotationsByType(JsonProperty.class)).
-            stream().
-            map((jsonProperty) ->
-            {
-                return jsonProperty.value();
-            }).
-            collect(Collectors.toList());
+                getAnnotationsByType(JsonProperty.class)).
+                stream().
+                map((jsonProperty)
+                        -> {
+                    return jsonProperty.value();
+                }).
+                collect(Collectors.toList());
     }
 
     /**
@@ -500,16 +500,16 @@ public class Serializers {
      */
     public static String camelCaseToUnderscoreLowerCase(String camelCase) {
         Matcher m = Pattern.compile("(?<=[a-z])[A-Z]").
-            matcher(camelCase);
-        
+                matcher(camelCase);
+
         StringBuffer sb = new StringBuffer();
         while (m.find()) {
             m.appendReplacement(sb, "_" + m.group().
-                toLowerCase());
+                    toLowerCase());
         }
         m.appendTail(sb);
         return sb.toString().
-            toLowerCase();
+                toLowerCase();
     }
 
     /**
@@ -524,36 +524,36 @@ public class Serializers {
      * @param oneLine a boolean.
      */
     public static void addSubElementStrings(JsonGenerator jg, String prefix,
-        Object element, String subElementName, List<?> subElements,
-        boolean oneLine) {
+            Object element, String subElementName, List<?> subElements,
+            boolean oneLine) {
         if (checkForNull(element, subElements, subElementName)) {
             return;
         }
         Serializers.getElementName(element).
-            ifPresent((elementName) ->
-            {
-                if (oneLine) {
-                    addLine(jg, prefix,
-                        elementName + "-" + subElementName,
-                        subElements.stream().
-                            map((t) ->
-                            {
-                                return t.toString();
-                            }).
-                            collect(Collectors.joining("" + MZTabConstants.BAR)));
-                } else {
-                    IntStream.range(0, subElements.
-                        size()).
-                        forEachOrdered(i ->
-                        {
-                            addLine(jg, prefix,
-                                elementName + "-" + subElementName + "[" + (i + 1) + "]",
-                                subElements.
-                                    get(i));
-                        });
-                }
-            });
-        
+                ifPresent((elementName)
+                        -> {
+                    if (oneLine) {
+                        addLine(jg, prefix,
+                                elementName + "-" + subElementName,
+                                subElements.stream().
+                                        map((t)
+                                                -> {
+                                            return t.toString();
+                                        }).
+                                        collect(Collectors.joining("" + MZTabConstants.BAR)));
+                    } else {
+                        IntStream.range(0, subElements.
+                                size()).
+                                forEachOrdered(i
+                                        -> {
+                                    addLine(jg, prefix,
+                                            elementName + "-" + subElementName + "[" + (i + 1) + "]",
+                                            subElements.
+                                                    get(i));
+                                });
+                    }
+                });
+
     }
 
     /**
@@ -567,18 +567,18 @@ public class Serializers {
      * @param subElement a {@link de.isas.mztab2.model.Parameter} object.
      */
     public static void addSubElementParameter(JsonGenerator jg, String prefix,
-        Object element, String subElementName, Parameter subElement) {
+            Object element, String subElementName, Parameter subElement) {
         if (subElement == null) {
             String elementName = Serializers.getElementName(element).
-                orElse("undefined");
-            
+                    orElse("undefined");
+
             log.debug("''{}-{}'' is null or empty!", new Object[]{
                 elementName,
                 subElementName});
             return;
         }
         addSubElementStrings(jg, prefix, element, subElementName, Arrays.asList(
-            new ParameterConverter().convert(subElement)), true);
+                new ParameterConverter().convert(subElement)), true);
     }
 
     /**
@@ -593,25 +593,25 @@ public class Serializers {
      * @param oneLine a boolean.
      */
     public static void addSubElementParameters(JsonGenerator jg, String prefix,
-        Object element, String subElementName, List<Parameter> subElements,
-        boolean oneLine) {
+            Object element, String subElementName, List<Parameter> subElements,
+            boolean oneLine) {
         if (checkForNull(element, subElements, subElementName)) {
             return;
         }
         addSubElementStrings(jg, prefix, element, subElementName,
-            subElements.stream().
-                map((parameter) ->
-                {
-                    try {
-                        return new ParameterConverter().convert(parameter);
-                    } catch (IllegalArgumentException npe) {
-                        
-                        log.debug("parameter is null for {}",
-                            subElementName);
-                        return "null";
-                    }
-                }).
-                collect(Collectors.toList()), oneLine);
+                subElements.stream().
+                        map((parameter)
+                                -> {
+                            try {
+                                return new ParameterConverter().convert(parameter);
+                            } catch (IllegalArgumentException npe) {
+
+                                log.debug("parameter is null for {}",
+                                        subElementName);
+                                return "null";
+                            }
+                        }).
+                        collect(Collectors.toList()), oneLine);
     }
 
     /**
@@ -624,11 +624,11 @@ public class Serializers {
      * @return a boolean.
      */
     public static boolean checkForNull(Object element, List<?> subElements,
-        String subElementName) {
+            String subElementName) {
         String elementName = Serializers.getElementName(element).
-            orElse("undefined");
+                orElse("undefined");
         if (subElements == null || subElements.isEmpty()) {
-            
+
             log.debug("''{}-{}'' is null or empty!", new Object[]{
                 elementName,
                 subElementName});
@@ -648,7 +648,7 @@ public class Serializers {
      * fails.
      */
     public static void writeString(String columnName, JsonGenerator jg,
-        String value) throws IOException {
+            String value) throws IOException {
         if (value == null) {
             jg.writeNullField(columnName);
         } else {
@@ -668,7 +668,7 @@ public class Serializers {
      * fails.
      */
     public static void writeString(IMZTabColumn column, JsonGenerator jg,
-        String value) throws IOException {
+            String value) throws IOException {
         writeString(column.getHeader(), jg, value);
     }
 
@@ -685,22 +685,22 @@ public class Serializers {
      * fails.
      */
     public static void writeObject(String columnName, JsonGenerator jg,
-        SerializerProvider sp,
-        Object value) throws IOException {
+            SerializerProvider sp,
+            Object value) throws IOException {
         if (value == null) {
             jg.writeNullField(columnName);
         } else {
             if (value instanceof Parameter) {
                 jg.writeStringField(columnName, new ParameterConverter().
-                    convert((Parameter) value));
+                        convert((Parameter) value));
             } else if (value instanceof String) {
                 jg.writeStringField(columnName, (String) value);
             } else {
                 throw new IllegalArgumentException(
-                    "Serialization of objects of type " + value.getClass()
-                    + " currently not supported!");
+                        "Serialization of objects of type " + value.getClass()
+                        + " currently not supported!");
             }
-            
+
         }
     }
 
@@ -718,7 +718,7 @@ public class Serializers {
      * fails.
      */
     public static void writeObject(IMZTabColumn column, JsonGenerator jg,
-        SerializerProvider sp, Object value) throws IOException {
+            SerializerProvider sp, Object value) throws IOException {
         writeObject(column.getHeader(), jg, sp, value);
     }
 
@@ -732,7 +732,7 @@ public class Serializers {
      * @param elements a {@link java.util.List} object.
      */
     public static void writeAsNumberArray(IMZTabColumn column, JsonGenerator jg,
-        List<? extends Number> elements) {
+            List<? extends Number> elements) {
         writeAsNumberArray(column.getHeader(), jg, elements);
     }
 
@@ -745,29 +745,29 @@ public class Serializers {
      * @param elements a {@link java.util.List} object.
      */
     public static void writeAsNumberArray(String columnName, JsonGenerator jg,
-        List<? extends Number> elements) {
+            List<? extends Number> elements) {
         try {
             if (elements == null) {
                 jg.writeNullField(columnName);
             } else {
                 String arrayElements = elements.stream().
-                    map((number) ->
-                    {
-                        if (number == null) {
-                            return MZTabConstants.NULL;
-                        } else if (number instanceof Short) {
-                            return "" + number.shortValue();
-                        } else if (number instanceof Integer) {
-                            return "" + number.intValue();
-                        } else if (number instanceof Long) {
-                            return "" + number.longValue();
-                        } else if (number instanceof Float) {
-                            return "" + number.floatValue();
-                        } else {
-                            return "" + number.doubleValue();
-                        }
-                    }).
-                    collect(Collectors.joining("" + MZTabConstants.BAR));
+                        map((number)
+                                -> {
+                            if (number == null) {
+                                return MZTabConstants.NULL;
+                            } else if (number instanceof Short) {
+                                return "" + number.shortValue();
+                            } else if (number instanceof Integer) {
+                                return "" + number.intValue();
+                            } else if (number instanceof Long) {
+                                return "" + number.longValue();
+                            } else if (number instanceof Float) {
+                                return "" + number.floatValue();
+                            } else {
+                                return "" + number.doubleValue();
+                            }
+                        }).
+                        collect(Collectors.joining("" + MZTabConstants.BAR));
                 if (arrayElements.isEmpty()) {
                     jg.writeNullField(columnName);
                 } else {
@@ -776,8 +776,8 @@ public class Serializers {
             }
         } catch (IOException ex) {
             log.error(
-                "Caught IO exception while trying to write as number array: ",
-                ex);
+                    "Caught IO exception while trying to write as number array: ",
+                    ex);
         }
     }
 
@@ -791,7 +791,7 @@ public class Serializers {
      * @param elements a {@link java.util.List} object.
      */
     public static void writeAsStringArray(IMZTabColumn column, JsonGenerator jg,
-        List<String> elements) {
+            List<String> elements) {
         writeAsStringArray(column.getHeader(), jg, elements);
     }
 
@@ -803,20 +803,20 @@ public class Serializers {
      * @param elements a {@link java.util.List} object.
      */
     public static void writeAsStringArray(JsonGenerator jg,
-        List<String> elements) {
+            List<String> elements) {
         try {
             if (elements == null) {
                 jg.writeNull();
             } else {
                 String arrayElements = elements.stream().
-                    map((t) ->
-                    {
-                        if (t == null) {
-                            return MZTabConstants.NULL;
-                        }
-                        return t;
-                    }).
-                    collect(Collectors.joining("" + MZTabConstants.BAR));
+                        map((t)
+                                -> {
+                            if (t == null) {
+                                return MZTabConstants.NULL;
+                            }
+                            return t;
+                        }).
+                        collect(Collectors.joining("" + MZTabConstants.BAR));
                 if (arrayElements.isEmpty()) {
                     jg.writeNull();
                 } else {
@@ -837,20 +837,20 @@ public class Serializers {
      * @param elements a {@link java.util.List} object.
      */
     public static void writeAsStringArray(String columnName, JsonGenerator jg,
-        List<String> elements) {
+            List<String> elements) {
         try {
             if (elements == null) {
                 jg.writeNullField(columnName);
             } else {
                 String arrayElements = elements.stream().
-                    map((t) ->
-                    {
-                        if (t == null) {
-                            return MZTabConstants.NULL;
-                        }
-                        return t;
-                    }).
-                    collect(Collectors.joining("" + MZTabConstants.BAR));
+                        map((t)
+                                -> {
+                            if (t == null) {
+                                return MZTabConstants.NULL;
+                            }
+                            return t;
+                        }).
+                        collect(Collectors.joining("" + MZTabConstants.BAR));
                 if (arrayElements.isEmpty()) {
                     jg.writeNullField(columnName);
                 } else {
@@ -873,7 +873,7 @@ public class Serializers {
      * fails.
      */
     public static void writeNumber(String columnName, JsonGenerator jg,
-        Integer value) throws IOException {
+            Integer value) throws IOException {
         if (value == null) {
             jg.writeNullField(columnName);
         } else {
@@ -893,7 +893,7 @@ public class Serializers {
      * fails.
      */
     public static void writeNumber(IMZTabColumn column, JsonGenerator jg,
-        Integer value) throws IOException {
+            Integer value) throws IOException {
         writeNumber(column.getHeader(), jg, value);
     }
 
@@ -908,7 +908,7 @@ public class Serializers {
      * fails.
      */
     public static void writeNumber(String columnName, JsonGenerator jg,
-        Double value) throws IOException {
+            Double value) throws IOException {
         if (value == null) {
             jg.writeNullField(columnName);
         } else {
@@ -934,7 +934,7 @@ public class Serializers {
      * fails.
      */
     public static void writeNumber(IMZTabColumn column, JsonGenerator jg,
-        Double value) throws IOException {
+            Double value) throws IOException {
         writeNumber(column.getHeader(), jg, value);
     }
 
@@ -983,17 +983,17 @@ public class Serializers {
      * fails.
      */
     public static void writeOptColumnMappings(
-        List<OptColumnMapping> optColumnMappings,
-        JsonGenerator jg, SerializerProvider sp) throws IOException {
+            List<OptColumnMapping> optColumnMappings,
+            JsonGenerator jg, SerializerProvider sp) throws IOException {
         for (OptColumnMapping ocm : Optional.ofNullable(
-            optColumnMappings).
-            orElse(Collections.emptyList())) {
+                optColumnMappings).
+                orElse(Collections.emptyList())) {
             if (ocm.getParam() != null) {
                 writeObject(Serializers.printOptColumnMapping(ocm), jg, sp, ocm.
-                    getParam() == null ? NULL : ocm.getParam());
+                        getParam() == null ? NULL : ocm.getParam());
             } else {
                 writeObject(Serializers.printOptColumnMapping(ocm), jg, sp, ocm.
-                    getValue() == null ? NULL : ocm.getValue());
+                        getValue() == null ? NULL : ocm.getValue());
             }
         }
     }
@@ -1007,34 +1007,34 @@ public class Serializers {
      * @param values a {@link java.util.List} object.
      */
     public static void writeIndexedDoubles(String prefix,
-        JsonGenerator jg, List<Double> values) {
+            JsonGenerator jg, List<Double> values) {
         IntStream.range(0, values.
-            size()).
-            forEachOrdered(i ->
-            {
-                try {
-                    Serializers.writeNumber(
-                        prefix + "[" + (i + 1) + "]",
-                        jg,
-                        values.
-                            get(i));
-                } catch (IOException ex) {
-                    log.error(
-                        "Caught IO exception while trying to write indexed doubles:",
-                        ex);
-                }
-            });
+                size()).
+                forEachOrdered(i
+                        -> {
+                    try {
+                        Serializers.writeNumber(
+                                prefix + "[" + (i + 1) + "]",
+                                jg,
+                                values.
+                                        get(i));
+                    } catch (IOException ex) {
+                        log.error(
+                                "Caught IO exception while trying to write indexed doubles:",
+                                ex);
+                    }
+                });
     }
-    
+
     public static void checkIndexedElement(IndexedElement element) {
         if (element.getId() == null) {
             throw new ValidationException(
-                "'id' field of " + element.toString() + " must not be null!");
+                    "'id' field of " + element.toString() + " must not be null!");
         }
         if (element.getId() < 1) {
             throw new ValidationException(
-                "'id' field of " + element.toString() + " must have a value greater to equal to 1!");
+                    "'id' field of " + element.toString() + " must have a value greater to equal to 1!");
         }
     }
-    
+
 }

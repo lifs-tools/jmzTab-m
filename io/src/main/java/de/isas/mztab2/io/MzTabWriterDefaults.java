@@ -69,11 +69,16 @@ import uk.ac.ebi.pride.jmztab2.utils.errors.LogicalErrorType;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabError;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabException;
 
+/*
+ TODO Add javadoc
+*/
 /**
  * Default mapper and schema definitions for writing of mzTab files using the
  * Jackson CSV mapper.
  *
  * @author nilshoffmann
+ * 
+ * 
  */
 public class MzTabWriterDefaults {
 

@@ -55,7 +55,6 @@ import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import de.isas.mztab2.test.utils.LogMethodName;
-import uk.ac.ebi.pride.jmztab2.utils.MZTabFileParser;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorList;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorType;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabException;
@@ -265,7 +264,7 @@ public class MzTabWriterTest {
         MzTabNonValidatingWriter writer = new MzTabNonValidatingWriter();
         File tempFile = File.createTempFile("mzTabWriterTest", ".mztab");
         writer.write(tempFile.toPath(), mzTabFile);
-        MZTabFileParser parser = new MZTabFileParser(tempFile);
+        MzTabFileParser parser = new MzTabFileParser(tempFile);
         MZTabErrorList errors = parser.parse(System.out,
             MZTabErrorType.Level.Info, 500);
         //we expect errors here, since our test file has neither summary, feature nor evidence sections.
@@ -292,7 +291,7 @@ public class MzTabWriterTest {
             ".mztab");
         MzTabNonValidatingWriter writer = new MzTabNonValidatingWriter();
         writer.write(tempFile.toPath(), mzTabFile);
-        MZTabFileParser parser = new MZTabFileParser(tempFile);
+        MzTabFileParser parser = new MzTabFileParser(tempFile);
         MZTabErrorList errors = parser.parse(System.out,
             MZTabErrorType.Level.Info, 500);
         Assert.assertTrue(errors.toString(), errors.isEmpty());
@@ -326,7 +325,7 @@ public class MzTabWriterTest {
             ".mztab");
         MzTabNonValidatingWriter writer = new MzTabNonValidatingWriter();
         writer.write(tempFile.toPath(), mzTabFile);
-        MZTabFileParser parser = new MZTabFileParser(tempFile);
+        MzTabFileParser parser = new MzTabFileParser(tempFile);
         MZTabErrorList errors = parser.parse(System.out,
             MZTabErrorType.Level.Info, 500);
         Assert.assertTrue(errors.toString(), errors.isEmpty());
@@ -344,7 +343,7 @@ public class MzTabWriterTest {
             ".mztab");
         MzTabNonValidatingWriter writer = new MzTabNonValidatingWriter();
         writer.write(tempFile.toPath(), mzTabFile);
-        MZTabFileParser parser = new MZTabFileParser(tempFile);
+        MzTabFileParser parser = new MzTabFileParser(tempFile);
         MZTabErrorList errors = parser.parse(System.out,
             MZTabErrorType.Level.Info, 500);
         Assert.assertTrue(errors.toString(), errors.isEmpty());
@@ -361,7 +360,7 @@ public class MzTabWriterTest {
             ".mztab");
         MzTabNonValidatingWriter writer = new MzTabNonValidatingWriter();
         writer.write(tempFile.toPath(), mzTabFile);
-        MZTabFileParser parser = new MZTabFileParser(tempFile);
+        MzTabFileParser parser = new MzTabFileParser(tempFile);
         MZTabErrorList errors = parser.parse(System.out,
             MZTabErrorType.Level.Info, 500);
         Assert.assertTrue(errors.toString(), errors.isEmpty());

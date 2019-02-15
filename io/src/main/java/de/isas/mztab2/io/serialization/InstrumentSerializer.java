@@ -29,8 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 import uk.ac.ebi.pride.jmztab2.model.Section;
 
 /**
- * <p>
- * InstrumentSerializer class.</p>
+ * <p>InstrumentSerializer implementation for {@link de.isas.mztab2.model.Instrument}.</p>
  *
  * @author nilshoffmann
  *

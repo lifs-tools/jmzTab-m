@@ -36,8 +36,7 @@ import lombok.extern.slf4j.Slf4j;
 import static uk.ac.ebi.pride.jmztab2.model.SmallMoleculeColumn.Stable.columnFor;
 
 /**
- * <p>
- * SmallMoleculeSummarySerializer class.</p>
+* <p>SmallMoleculeSummarySerializer implementation for {@link de.isas.mztab2.model.SmallMoleculeSummary}.</p>
  *
  * @author nilshoffmann
  *

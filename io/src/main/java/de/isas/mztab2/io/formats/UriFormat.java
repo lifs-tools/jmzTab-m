@@ -19,7 +19,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import de.isas.mztab2.io.serialization.UriConverter;
 
 /**
- *
+ * Format specification for {@link de.isas.mztab2.model.Uri}.
  * @author nilshoffmann
  */
 @JsonSerialize(converter = UriConverter.class)

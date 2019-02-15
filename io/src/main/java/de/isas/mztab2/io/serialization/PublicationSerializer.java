@@ -30,8 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 import uk.ac.ebi.pride.jmztab2.model.Section;
 
 /**
- * <p>
- * PublicationSerializer class.</p>
+ * <p>PublicationSerializer implementation for {@link de.isas.mztab2.model.Publication}.</p>
  *
  * @author nilshoffmann
  *

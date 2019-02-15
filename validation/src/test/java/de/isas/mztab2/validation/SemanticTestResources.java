@@ -21,7 +21,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import org.junit.Assert;
 import org.junit.rules.TemporaryFolder;
-import uk.ac.ebi.pride.jmztab2.utils.MZTabFileParser;
+import de.isas.mztab2.io.MzTabFileParser;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorOverflowException;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorType;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabException;
@@ -41,7 +41,7 @@ public class SemanticTestResources {
         MZTabErrorType.Level level, Integer expectedErrors) throws URISyntaxException, IOException, MZTabException, MZTabErrorOverflowException {
         File testFile = new File(tf.getRoot(), resource);
         Assert.assertTrue(testFile.exists() && testFile.isFile());
-        MZTabFileParser parser = new MZTabFileParser(testFile);
+        MzTabFileParser parser = new MzTabFileParser(testFile);
         parser.parse(System.err, level, 500);
         Assert.assertEquals(String.format(
             "Expected %d structural or logical errors, found %d! Errors: %s",

@@ -1,5 +1,5 @@
-/* 
- * Copyright 2018 Leibniz-Institut für Analytische Wissenschaften – ISAS – e.V..
+/*
+ * Copyright 2019 Leibniz-Institut für Analytische Wissenschaften – ISAS – e.V..
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,18 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.isas.mztab2.io.formats;
-
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import de.isas.mztab2.io.serialization.StudyVariableSerializer;
-
 /**
- * Format specification for {@link de.isas.mztab2.model.StudyVariable}.
- *
- * @author nilshoffmann
- * 
+ * This package defines formats for Jackson that define, which serializer should be used for a particular object type.
  */
-@JsonSerialize(using = StudyVariableSerializer.class)
-public abstract class StudyVariableFormat {
-
-}
+package de.isas.mztab2.io.formats;

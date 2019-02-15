@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import org.junit.Assert;
 import org.junit.rules.TemporaryFolder;
-import uk.ac.ebi.pride.jmztab2.utils.MZTabFileParser;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorOverflowException;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorType;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabException;
@@ -41,7 +40,7 @@ public class TestResources {
         MZTabErrorType.Level level, Integer expectedErrors) throws URISyntaxException, IOException, MZTabException, MZTabErrorOverflowException {
         File testFile = new File(tf.getRoot(), resource);
         Assert.assertTrue(testFile.exists() && testFile.isFile());
-        MZTabFileParser parser = new MZTabFileParser(testFile);
+        MzTabFileParser parser = new MzTabFileParser(testFile);
         parser.parse(System.err, level, 500);
         if (parser.getErrorList().
             size() != expectedErrors) {

@@ -20,15 +20,18 @@ import de.isas.mztab2.model.Uri;
 import java.util.Optional;
 
 /**
+ * Converter from Uri to String.
  *
  * @author nilshoffmann
  */
 public class UriConverter extends StdConverter<Uri, String> {
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String convert(Uri uri) {
         return Optional.of(uri.getValue()).orElse("null");
     }
-    
+
 }

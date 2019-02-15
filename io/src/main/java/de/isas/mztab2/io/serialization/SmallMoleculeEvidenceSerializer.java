@@ -34,8 +34,7 @@ import uk.ac.ebi.pride.jmztab2.model.SmallMoleculeEvidenceColumn;
 import static uk.ac.ebi.pride.jmztab2.model.SmallMoleculeEvidenceColumn.Stable.columnFor;
 
 /**
- * <p>
- * SmallMoleculeEvidenceSerializer class.</p>
+* <p>SmallMoleculeEvidenceSerializer implementation for {@link de.isas.mztab2.model.SmallMoleculeEvidence}.</p>
  *
  * @author nilshoffmann
  *

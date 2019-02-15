@@ -32,7 +32,6 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.ac.ebi.pride.jmztab2.utils.MZTabFileParser;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorType.Level;
 
 /**
@@ -144,7 +143,7 @@ public class MzTabValidatingWriter implements MzTabWriter<List<ValidationMessage
                         write(
                             osw, mzTab);
 
-                    MZTabFileParser parser = new MZTabFileParser(mzTabFile);
+                    MzTabFileParser parser = new MzTabFileParser(mzTabFile);
                     parser.parse(outputStream, level, maxErrorCount);
                     return parser.getErrorList().
                         convertToValidationMessages();
