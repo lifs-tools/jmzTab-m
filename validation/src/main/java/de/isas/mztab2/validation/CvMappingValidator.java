@@ -87,7 +87,7 @@ public class CvMappingValidator implements Validator<MzTab> {
      * @param mappingFile the mapping file to use
      * @param errorIfTermNotInRule raise an error if a term is not defined within an otherwise matching rule for the element
      * @return a new CvMappingValidator instance
-     * @throws JAXBException 
+     * @throws JAXBException if errors occur during unmarshalling of the mapping xml file.
      */
     public static CvMappingValidator of(File mappingFile,
         boolean errorIfTermNotInRule) throws JAXBException {
@@ -106,7 +106,7 @@ public class CvMappingValidator implements Validator<MzTab> {
      * @param client the ontology lookup service client
      * @param errorIfTermNotInRule raise an error if a term is not defined within an otherwise matching rule for the element
      * @return a new CvMappingValidator instance
-     * @throws JAXBException 
+     * @throws JAXBException if errors occur during unmarshalling of the mapping xml file.
      */
     public static CvMappingValidator of(File mappingFile,
         CvParameterLookupService client, boolean errorIfTermNotInRule) throws JAXBException {
@@ -157,7 +157,7 @@ public class CvMappingValidator implements Validator<MzTab> {
      * @param mappingFile the mapping file URL to use
      * @param errorIfTermNotInRule raise an error if a term is not defined within an otherwise matching rule for the element
      * @return a new CvMappingValidator instance
-     * @throws JAXBException 
+     * @throws JAXBException if errors occur during unmarshalling of the mapping xml file.
      */
     public static CvMappingValidator of(URL mappingFile,
         boolean errorIfTermNotInRule) throws JAXBException {
@@ -176,7 +176,7 @@ public class CvMappingValidator implements Validator<MzTab> {
      * @param client the ontology lookup service client
      * @param errorIfTermNotInRule raise an error if a term is not defined within an otherwise matching rule for the element
      * @return a new CvMappingValidator instance
-     * @throws JAXBException 
+     * @throws JAXBException if errors occur during unmarshalling of the mapping xml file.
      */
     public static CvMappingValidator of(URL mappingFile,
         CvParameterLookupService client, boolean errorIfTermNotInRule) throws JAXBException {
