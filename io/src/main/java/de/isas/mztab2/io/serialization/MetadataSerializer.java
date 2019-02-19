@@ -161,7 +161,7 @@ public class MetadataSerializer extends StdSerializer<Metadata> {
         if (t != null) {
             String prefix = t.getPrefix().
                 name();
-            if(t.getMzTabVersion()==null || t.getMzTabVersion().isBlank()) {
+            if(t.getMzTabVersion()==null || t.getMzTabVersion().isEmpty()) {
                 t.setMzTabVersion(MZTabConstants.VERSION_MZTAB_M);
             }
             addLine(jg, prefix, Metadata.Properties.mzTabVersion.getPropertyName(), t.getMzTabVersion());
