@@ -234,7 +234,7 @@ The following code will create the first parts of an mzTab-M file programmatical
 
 * https://github.com/lifs-tools/jmzTab-m/blob/master/io/src/test/java/uk/ac/ebi/pride/jmztab2/model/OptColumnMappingBuilderTest.java[OptColumnMappingBuilderTest] - shows how to use the custom OptColumnMappingBuilder to create custom optional column definitions.
 * https://github.com/lifs-tools/jmzTab-m/blob/master/io/src/test/java/de/isas/mztab2/io/serialization/SmallMoleculeSummarySerializerTest.java[SmallMoleculeSummarySerializerTest] - shows how to add optional columns to the SmallMoleculeSummarySection _with_ the OptColumnMappingBuilder.
-* https://github.com/lifs-tools/jmzTab-m/blob/master/io/src/test/java/de/isas/mztab2/io/serialization/SmallMoleculeEvidenceSectionSerializerTest.java[SmallMoleculeEvidenceSectionSerializerTest] - shows how to add optional columns to the SmallMoleculeEvidenceSection _with_ the OptColumnMappingBuilder.
+* https://github.com/lifs-tools/jmzTab-m/blob/master/io/src/test/java/de/isas/mztab2/io/serialization/SmallMoleculeEvidenceSerializerTest.java[SmallMoleculeEvidenceSerializerTest] - shows how to add optional columns to the SmallMoleculeEvidenceSection _with_ the OptColumnMappingBuilder.
 * https://github.com/lifs-tools/jmzTab-m/blob/master/io/src/test/java/de/isas/mztab2/io/serialization/SmallMoleculeFeatureSerializerTest.java[SmallMoleculeFeatureSerializerTest] - shows how to add optional columns _without_ the OptColumnMappingBuilder.
 
 === Writing mzTab 2.0 with validation
