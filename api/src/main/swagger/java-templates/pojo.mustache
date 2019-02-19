@@ -140,7 +140,7 @@ public class {{classname}} {{#parent}}extends {{{parent}}} {{/parent}}{{#parcela
    * Add a single {{name}}Item to the {{name}} collection.
    *
    * @see {{classname}}#{{getter}} {{classname}}#{{getter}} for validation constraints
-   * @param {{name}}Item a {{{items.datatypeWithEnum}}} parameter.
+   * @param {{name}}Item a {@code {{{items.datatypeWithEnum}}}} parameter.
    * @return {{classname}}
    */
   public {{classname}} add{{nameInCamelCase}}Item({{{items.datatypeWithEnum}}} {{name}}Item) {
@@ -160,7 +160,7 @@ public class {{classname}} {{#parent}}extends {{{parent}}} {{/parent}}{{#parcela
    *
    * @see {{classname}}#{{getter}} {{classname}}#{{getter}} for validation constraints
    * @param key the key used to identify the {{name}}Item.
-   * @param {{name}}Item a {{{items.datatypeWithEnum}}} parameter.
+   * @param {{name}}Item a {@code {{{items.datatypeWithEnum}}}} parameter.
    * @return {{classname}}
    */
   public {{classname}} put{{nameInCamelCase}}Item(String key, {{{items.datatypeWithEnum}}} {{name}}Item) {
@@ -211,7 +211,7 @@ public class {{classname}} {{#parent}}extends {{{parent}}} {{/parent}}{{#parcela
    * {{/vendorExtensions.x-mztab-example}}
    * 
    * @see #{{getter}} {{classname}}#{{getter}} for validation constraints
-   * @param {{name}} a {{{datatypeWithEnum}}} parameter.
+   * @param {{name}} a {@code {{{datatypeWithEnum}}}} parameter.
   **/
   public void {{setter}}({{{datatypeWithEnum}}} {{name}}) {
     this.{{name}} = {{name}};
