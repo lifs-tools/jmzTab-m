@@ -70,6 +70,7 @@ import static de.isas.mztab2.test.utils.ClassPathFile.STANDARDMIX_NEGATIVE_EXPOR
 import static de.isas.mztab2.test.utils.ClassPathFile.STANDARDMIX_POSITIVE_EXPORTPOSITIONLEVEL;
 import static de.isas.mztab2.test.utils.ClassPathFile.STANDARDMIX_POSITIVE_EXPORTSPECIESLEVEL;
 import de.isas.mztab2.test.utils.ExtractClassPathFiles;
+import java.nio.charset.StandardCharsets;
 import org.junit.ClassRule;
 import org.junit.rules.TemporaryFolder;
 import static uk.ac.ebi.pride.jmztab2.model.MZTabConstants.NEW_LINE;
@@ -105,7 +106,7 @@ public class MzTabWriterTest {
     public void testWriteDefaultToString() {
         try (BufferedWriter bw = Files.newBufferedWriter(File.createTempFile(
             "testWriteDefaultToString", ".txt").
-            toPath(), Charset.forName("UTF-8"), StandardOpenOption.WRITE)) {
+            toPath(), StandardCharsets.UTF_8, StandardOpenOption.WRITE)) {
             bw.write(create2_0TestFile().
                 toString());
         } catch (IOException ex) {
@@ -118,7 +119,7 @@ public class MzTabWriterTest {
     public void testWriteJsonMapper() {
         try (BufferedWriter bw = Files.newBufferedWriter(File.createTempFile(
             "testWriteJson", ".json").
-            toPath(), Charset.forName("UTF-8"), StandardOpenOption.WRITE)) {
+            toPath(), StandardCharsets.UTF_8, StandardOpenOption.WRITE)) {
             ObjectMapper mapper = new ObjectMapper();
             bw.write(mapper.writeValueAsString(create2_0TestFile()));
         } catch (IOException ex) {
@@ -249,8 +250,7 @@ public class MzTabWriterTest {
         MzTab mzTabFile = create2_0TestFile();
         MzTabNonValidatingWriter writer = new MzTabNonValidatingWriter();
         try (OutputStreamWriter osw = new OutputStreamWriter(System.out,
-            Charset.forName(
-                "UTF-8"))) {
+             StandardCharsets.UTF_8)) {
             writer.write(osw, mzTabFile);
         }
     }

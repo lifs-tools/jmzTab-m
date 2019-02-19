@@ -147,11 +147,7 @@ public class Serializers {
         } else {
             log.info("OptColumnMapping: {}", ocm);
             // object reference case, value is now the actual value
-            if (ocm.getParam() != null) {
-                sb.append(ocm.getIdentifier());
-            } else {
-                sb.append(ocm.getIdentifier());
-            }
+            sb.append(ocm.getIdentifier());
         }
         log.debug("asString: {}", sb.toString());
 //        //TODO: check for valid characters in definition

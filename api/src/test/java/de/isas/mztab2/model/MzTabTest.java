@@ -41,6 +41,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
@@ -409,7 +410,7 @@ public class MzTabTest {
         MzTab testMzTab = createTestMzTab();
         ObjectMapper mapper = new ObjectMapper();
         try (BufferedWriter bw = Files.newBufferedWriter(testFile.toPath(),
-            Charset.forName("UTF-8"), StandardOpenOption.WRITE)) {
+            StandardCharsets.UTF_8, StandardOpenOption.WRITE)) {
             bw.write(mapper.writeValueAsString(testMzTab));
         } catch (IOException ex) {
             Logger.getLogger(MzTabTest.class.getName()).

@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
@@ -97,9 +98,7 @@ public class MzTabNonValidatingWriter implements MzTabWriter<Void> {
      */
     @Override
     public Optional<Void> write(Path path, MzTab mzTab) throws IOException {
-        try (BufferedWriter writer = Files.newBufferedWriter(path, Charset.
-            forName(
-                "UTF-8"), StandardOpenOption.CREATE,
+        try (BufferedWriter writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8, StandardOpenOption.CREATE,
             StandardOpenOption.WRITE)) {
             writeMzTab(mzTab, writer);
         }

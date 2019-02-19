@@ -24,6 +24,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
@@ -138,7 +139,7 @@ public class MzTabValidatingWriter implements MzTabWriter<List<ValidationMessage
                     toString(), ".mztab");
                 try (OutputStreamWriter osw = new OutputStreamWriter(
                     new FileOutputStream(mzTabFile),
-                    "UTF-8")) {
+                    StandardCharsets.UTF_8)) {
                     writer.
                         write(
                             osw, mzTab);
