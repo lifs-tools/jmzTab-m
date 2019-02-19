@@ -15,40 +15,43 @@
  */
 package de.isas.mztab2.io.serialization;
 
-import de.isas.mztab2.io.serialization.Serializers;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import de.isas.mztab2.test.utils.LogMethodName;
+import static org.junit.Assert.assertEquals;
+import uk.ac.ebi.pride.jmztab2.model.IOptColumnMappingBuilder;
+import uk.ac.ebi.pride.jmztab2.model.OptColumnMappingBuilderTest;
 
 /**
-  * TODO
+ * TODO
+ *
  * @author nilshoffmann
  */
 public class SerializersTest {
 
     @Rule
     public LogMethodName methodNameLogger = new LogMethodName();
-    
+
     @Test
     public void testMixedCamelCaseToUnderscore() {
         String camelCase1 = "camelCase";
         Assert.assertEquals("camel_case", Serializers.
-            camelCaseToUnderscoreLowerCase(camelCase1));
+                camelCaseToUnderscoreLowerCase(camelCase1));
     }
 
     @Test
     public void testCapitalCamelCaseToUnderscore() {
         String camelCase2 = "CamelCase";
         Assert.assertEquals("camel_case", Serializers.
-            camelCaseToUnderscoreLowerCase(camelCase2));
+                camelCaseToUnderscoreLowerCase(camelCase2));
     }
 
     @Test
     public void testUpperCaseCamelCaseMadnessToUnderscore() {
         String camelCase3 = "CAmelCASE";
         Assert.assertEquals("camel_case", Serializers.
-            camelCaseToUnderscoreLowerCase(camelCase3));
+                camelCaseToUnderscoreLowerCase(camelCase3));
     }
 
     /**
@@ -83,7 +86,31 @@ public class SerializersTest {
      * Test of printOptColumnMapping method, of class Serializers.
      */
     @Test
-    public void testPrintOptColumnMapping() {
+    public void testPrintOptColumnMappingGlobal() {
+        IOptColumnMappingBuilder builder = OptColumnMappingBuilderTest.FIXTURE_GLOBAL;
+        String result = Serializers.printOptColumnMapping(builder.build("1"));
+        assertEquals("opt_global_whatever", result);
+    }
+
+    @Test
+    public void testPrintOptColumnMappingIndexedElement() {
+        IOptColumnMappingBuilder builder = OptColumnMappingBuilderTest.FIXTURE_INDEXED_ELEMENT;
+        String result = Serializers.printOptColumnMapping(builder.build("1"));
+        assertEquals("opt_assay[1]_whatever", result);
+    }
+
+    @Test
+    public void testPrintOptColumnMappingGlobalCvParameter() {
+        IOptColumnMappingBuilder builder = OptColumnMappingBuilderTest.FIXTURE_GLOBAL_PARAM;
+        String result = Serializers.printOptColumnMapping(builder.build("1"));
+        assertEquals("opt_global_cv_MS:128712_made_up_for_testing", result);
+    }
+
+    @Test
+    public void testPrintOptColumnMappingIndexedElementCvParameter() {
+        IOptColumnMappingBuilder builder = OptColumnMappingBuilderTest.FIXTURE_INDEXED_ELEMENT_PARAM;
+        String result = Serializers.printOptColumnMapping(builder.build("1"));
+        assertEquals("opt_assay[1]_cv_MS:128712_made_up_for_testing", result);
     }
 
     /**

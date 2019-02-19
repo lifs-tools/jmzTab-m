@@ -17,6 +17,7 @@ package de.isas.mztab2.io.serialization;
 
 import de.isas.mztab2.io.AbstractSerializerTest;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import de.isas.mztab2.io.TestResources;
 import de.isas.mztab2.model.Contact;
 import de.isas.mztab2.model.Metadata;
 import static de.isas.mztab2.model.Metadata.PrefixEnum.MTD;
@@ -48,7 +49,8 @@ public class ContactSerializerTest extends AbstractSerializerTest {
             affiliation("Cambridge University, UK").
             email("crick@cam.ac.uk"));
         
-        assertEqSentry(MTD + TAB_STRING + Metadata.Properties.contact + "[1]-name" + TAB_STRING + "James D. Watson" + NEW_LINE +
+        assertEqSentry(TestResources.MZTAB_VERSION_HEADER +
+            MTD + TAB_STRING + Metadata.Properties.contact + "[1]-name" + TAB_STRING + "James D. Watson" + NEW_LINE +
             MTD + TAB_STRING + Metadata.Properties.contact + "[1]-email" + TAB_STRING + "watson@cam.ac.uk" + NEW_LINE +
             MTD + TAB_STRING + Metadata.Properties.contact + "[1]-affiliation" + TAB_STRING + "Cambridge University, UK" + NEW_LINE +
             MTD + TAB_STRING + Metadata.Properties.contact + "[2]-name" + TAB_STRING + "Francis Crick" + NEW_LINE +

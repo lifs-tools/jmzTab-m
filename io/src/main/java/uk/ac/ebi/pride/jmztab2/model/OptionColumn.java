@@ -40,28 +40,29 @@ public class OptionColumn extends MZTabColumn {
 
     /**
      * Get the optional column header, which start with the prefix "opt_". the
-     * format: opt_{IndexedElement[id]}_{value}. Spaces within the parameter's
+     * format: opt_{indexedElement[id]}_{name}. Spaces within the parameter's
      * name MUST be replaced by '_'.
      *
-     * @param element if the value relates to all replicates, we use "global" in
-     * header. Here, if user set element is null for define for all replicates.
-     * @param value SHOULD NOT be empty.
+     * @param element if the name relates to all replicates, we use "global" in
+     * header. Here, if user set element to null, the definition applies for all
+     * replicates.
+     * @param name SHOULD NOT be empty.
      * @return a {@link java.lang.String} object.
      */
-    public static String getHeader(IndexedElement element, String value) {
-        if (MZTabStringUtils.isEmpty(value)) {
+    public static String getHeader(IndexedElement element, String name) {
+        if (MZTabStringUtils.isEmpty(name)) {
             throw new IllegalArgumentException(
-                "Optional column's value should not be empty.");
+                    "Optional column's name should not be empty.");
         }
 
         return OPT + "_" + (element == null ? GLOBAL : Serializers.
-            getElementName(element).
-            orElseThrow(() ->
-            {
-                return new IllegalArgumentException(
-                    "Could not retrieve element name for " + element.toString());
-            }))
-            + "_" + value.replaceAll(" ", "_");
+                getElementName(element).
+                orElseThrow(()
+                        -> {
+                    return new IllegalArgumentException(
+                            "Could not retrieve element name for " + element.toString());
+                }))
+                + "_" + name.replaceAll(" ", "_");
     }
 
     /**
@@ -76,7 +77,7 @@ public class OptionColumn extends MZTabColumn {
      * @param offset SHOULD be positive integer.
      */
     public OptionColumn(IndexedElement element, String value, Class columnType,
-        int offset) {
+            int offset) {
         super(getHeader(element, value), columnType, true, offset + 1 + "");
     }
 }

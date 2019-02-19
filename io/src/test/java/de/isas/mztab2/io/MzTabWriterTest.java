@@ -177,23 +177,20 @@ public class MzTabWriterTest {
             chemicalName(Arrays.asList("Cer(d18:1/24:0)",
                 "N-(tetracosanoyl)-sphing-4-enine", "C24 Cer")).
             addOptItem(new OptColumnMapping().identifier("global").
-                value("lipid_category").
                 param(new Parameter().cvLabel("LM").
                     cvAccession("LM:SP").
                     name("Category").
                     value("Sphingolipids"))).
             addOptItem(new OptColumnMapping().identifier("global").
-                value("lipid_species").
                 param(new Parameter().cvLabel("LH").
                     cvAccession("LH:XXXXX").
                     name("Species").
                     value("Cer 42:1"))).
             addOptItem(new OptColumnMapping().identifier("global").
-                value("lipid_best_id_level").
+                value("Cer d18:1/24:0").
                 param(new Parameter().cvLabel("LH").
                     cvAccession("LH:XXXXX").
-                    name("Sub Species").
-                    value("Cer d18:1/24:0"))).
+                    name("Sub Species"))).
             addDatabaseIdentifierItem("LM:LMSP02010012").
             //addChemicalFormulaItem("C42H83NO3").
             //addSmilesItem(
@@ -299,6 +296,7 @@ public class MzTabWriterTest {
             getMetadata().
             getColunitSmallMoleculeEvidence().
             get(0));
+        Assert.assertEquals(2, parser.getMZTabFile().getSmallMoleculeEvidence().get(0).getOpt().size());
         //colunit-small_molecule_evidence	opt_global_mass_error=[UO, UO:0000169, parts per million, ]
         Assert.assertEquals("opt_global_mass_error", parser.getMZTabFile().
             getMetadata().

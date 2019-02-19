@@ -42,6 +42,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
+import uk.ac.ebi.pride.jmztab2.model.MZTabConstants;
 import uk.ac.ebi.pride.jmztab2.model.MetadataElement;
 import uk.ac.ebi.pride.jmztab2.model.MetadataProperty;
 import uk.ac.ebi.pride.jmztab2.model.Section;
@@ -160,6 +161,9 @@ public class MetadataSerializer extends StdSerializer<Metadata> {
         if (t != null) {
             String prefix = t.getPrefix().
                 name();
+            if(t.getMzTabVersion()==null || t.getMzTabVersion().isBlank()) {
+                t.setMzTabVersion(MZTabConstants.VERSION_MZTAB_M);
+            }
             addLine(jg, prefix, Metadata.Properties.mzTabVersion.getPropertyName(), t.getMzTabVersion());
             addLine(jg, prefix, Metadata.Properties.mzTabID.getPropertyName(), t.
                 getMzTabID());

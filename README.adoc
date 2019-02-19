@@ -75,7 +75,7 @@ NOTE: Comment objects are currently discarded by the mzTab-M TSV serializer.
 
 == Running the Web Application for Validation
 
-The validator web application code has been moved into a separate project: https://github.com/nilshoffmann/jmzTab-m-webapp
+The validator web application code has been moved into a separate project: https://github.com/lifs-tools/jmzTab-m-webapp
 The application is available at: https://apps.lifs.isas.de/mztabvalidator
 
 == Building the Docker Image
@@ -185,6 +185,12 @@ The SNAPSHOTS are also available from https://oss.sonatype.org/content/repositor
 
 The following snippet will parse an mzTabFile from a file on disk:
 
+  import uk.ac.ebi.pride.jmztab2.*;
+  import uk.ac.ebi.pride.jmztab2.utils.*;
+  import uk.ac.ebi.pride.jmztab2.utils.errors.*;
+  import de.isas.mztab2.io.*;
+  import de.isas.mztab2.model.*;
+  ...
   File mzTabFile = new File("/path/to/my/file.mztab");
   MZTabFileParser parser = new MZTabFileParser(mzTabFile);
   //will report a maxmimum of 500 errors on Error, Warn and Info levels
@@ -203,6 +209,8 @@ The mzTab domain model uses a _builder_ pattern, but also conforms to the usual 
 
 The following code will create the first parts of an mzTab-M file programmatically:
 
+  import de.isas.mztab2.model.*;
+  ...
   MzTab mztab = new MzTab();
   Metadata mtd = new Metadata();
   mtd.mzTabVersion("2.0.0-M");
@@ -221,6 +229,13 @@ The following code will create the first parts of an mzTab-M file programmatical
       addMsRunRefItem(msrun2);
   mtd.addAssayItem(a1).addAssayItem(a2);
   ...
+
+==== Adding optional columns
+
+* https://github.com/lifs-tools/jmzTab-m/blob/master/io/src/test/java/uk/ac/ebi/pride/jmztab2/model/OptColumnMappingBuilderTest[OptColumnMappingBuilderTest] - shows how to use the custom OptColumnMappingBuilder add create custom optional column definitions.
+* https://github.com/lifs-tools/jmzTab-m/blob/master/io/src/test/java/de/isas/mztab2/io/serialization/SmallMoleculeSummarySerializerTest[SmallMoleculeSummarySerializerTest] - shows how to add optional columns to the SmallMoleculeSummarySection _with_ the OptColumnMappingBuilder.
+* https://github.com/lifs-tools/jmzTab-m/blob/master/io/src/test/java/de/isas/mztab2/io/serialization/SmallMoleculeEvidenceSectionSerializerTest[SmallMoleculeEvidenceSectionSerializerTest] - shows how to add optional columns to the SmallMoleculeEvidenceSection _with_ the OptColumnMappingBuilder.
+* https://github.com/lifs-tools/jmzTab-m/blob/master/io/src/test/java/de/isas/mztab2/io/serialization/SmallMoleculeFeatureSerializerTest[SmallMoleculeFeatureSerializerTest] - shows how to add optional columns _without_ the OptColumnMappingBuilder.
 
 === Writing mzTab 2.0 with validation
 
@@ -253,12 +268,12 @@ Alternatively, you can also provide a File path to the `write` method.
 
 The use-cases that were described in the previous sections are also covered in the unit tests. Particularly, the following classes are of interest:
 
-* https://github.com/nilshoffmann/jmzTab-m/blob/master/api/src/test/java/de/isas/mztab2/model/MzTabTest.java[MzTabTest] - creation and serialization of MzTab object trees using the Jackson JSON serializer.
-* https://github.com/nilshoffmann/jmzTab-m/blob/master/io/src/test/java/de/isas/mztab2/io/MZTabFileParserTest.java[MZTabFileParserTest] - test for reading of mzTab-m files.
-* https://github.com/nilshoffmann/jmzTab-m/blob/master/io/src/test/java/de/isas/mztab2/io/MzTabValidatingWriterTest.java[MzTabValidatingWriterTest] - writing with structural and syntactic validation.
-* https://github.com/nilshoffmann/jmzTab-m/blob/master/io/src/test/java/de/isas/mztab2/io/MzTabWriterTest.java[MzTabWriterTest] - plain writing of MzTab and roundtrip read/write/read testing.
-* https://github.com/nilshoffmann/jmzTab-m/blob/master/validation/src/test/java/de/isas/mztab2/validation/ExampleFilesValidationTestIT.java[ExampleFilesValidationTestIT] - semantic validation using a mapping file and parameter validation rules.
-* https://github.com/nilshoffmann/jmzTab-m/blob/master/validation/src/test/java/de/isas/mztab2/validation/JxPathTest.java[JxPathTest] - Object selection in MzTab models via the JxPath library.
+* https://github.com/lifs-tools/jmzTab-m/blob/master/api/src/test/java/de/isas/mztab2/model/MzTabTest.java[MzTabTest] - creation and serialization of MzTab object trees using the Jackson JSON serializer.
+* https://github.com/lifs-tools/jmzTab-m/blob/master/io/src/test/java/de/isas/mztab2/io/MZTabFileParserTest.java[MZTabFileParserTest] - test for reading of mzTab-m files.
+* https://github.com/lifs-tools/jmzTab-m/blob/master/io/src/test/java/de/isas/mztab2/io/MzTabValidatingWriterTest.java[MzTabValidatingWriterTest] - writing with structural and syntactic validation.
+* https://github.com/lifs-tools/jmzTab-m/blob/master/io/src/test/java/de/isas/mztab2/io/MzTabWriterTest.java[MzTabWriterTest] - plain writing of MzTab and roundtrip read/write/read testing.
+* https://github.com/lifs-tools/jmzTab-m/blob/master/validation/src/test/java/de/isas/mztab2/validation/ExampleFilesValidationTestIT.java[ExampleFilesValidationTestIT] - semantic validation using a mapping file and parameter validation rules.
+* https://github.com/lifs-tools/jmzTab-m/blob/master/validation/src/test/java/de/isas/mztab2/validation/JxPathTest.java[JxPathTest] - Object selection in MzTab models via the JxPath library.
 
 == Editing the Swagger Spec
 This project defines the structure of an mzTab document based on JSON-Schema

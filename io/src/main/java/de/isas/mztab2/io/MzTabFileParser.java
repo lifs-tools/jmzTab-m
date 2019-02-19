@@ -140,7 +140,7 @@ public class MzTabFileParser {
             check();
             refine();
         } catch (MZTabException e) {
-            out.write(MZTabExceptionMessage.getBytes());
+            out.write(e.getMessage().getBytes());
             try (PrintStream ps = new PrintStream(out)) {
                 e.printStackTrace(ps);
             }
@@ -149,7 +149,7 @@ public class MzTabFileParser {
             try (PrintStream ps = new PrintStream(out)) {
                 e.printStackTrace(ps);
             }
-            out.write(MZTabErrorOverflowExceptionMessage.getBytes());
+            out.write(e.getMessage().getBytes());
         }
 
         errorList.print(out);

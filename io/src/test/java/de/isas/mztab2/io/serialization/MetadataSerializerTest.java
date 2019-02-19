@@ -17,6 +17,7 @@ package de.isas.mztab2.io.serialization;
 
 import com.fasterxml.jackson.databind.ObjectWriter;
 import de.isas.mztab2.io.AbstractSerializerTest;
+import de.isas.mztab2.io.TestResources;
 import de.isas.mztab2.model.Contact;
 import de.isas.mztab2.model.Metadata;
 import static de.isas.mztab2.model.Metadata.PrefixEnum.MTD;
@@ -61,7 +62,7 @@ public class MetadataSerializerTest extends AbstractSerializerTest {
                     )
             );
         ObjectWriter writer = metaDataWriter();
-        assertEqSentry(MTD + TAB_STRING + Metadata.Properties.mzTabVersion + TAB_STRING + "2.0.0-M" + NEW_LINE
+        assertEqSentry(TestResources.MZTAB_VERSION_HEADER
             + MTD + TAB_STRING + Metadata.Properties.mzTabID + TAB_STRING + "ISAS_2017_M_11451" + NEW_LINE
             + MTD + TAB_STRING + Metadata.Properties.title + TAB_STRING + "A minimal test file" + NEW_LINE
             + MTD + TAB_STRING + Metadata.Properties.description + TAB_STRING + "A description of an mzTab file." + NEW_LINE

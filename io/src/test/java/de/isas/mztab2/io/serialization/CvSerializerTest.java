@@ -17,6 +17,7 @@ package de.isas.mztab2.io.serialization;
 
 import de.isas.mztab2.io.AbstractSerializerTest;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import de.isas.mztab2.io.TestResources;
 import de.isas.mztab2.model.CV;
 import de.isas.mztab2.model.Metadata;
 import static de.isas.mztab2.model.Metadata.PrefixEnum.MTD;
@@ -50,7 +51,8 @@ public class CvSerializerTest extends AbstractSerializerTest {
             version("164").
             uri("ftp://ftp.ebi.ac.uk/pub/databases/chebi/ontology/chebi.obo"));
 
-        assertEqSentry(MTD + TAB_STRING + Metadata.Properties.cv + "[1]-label" + TAB_STRING + "MS" + NEW_LINE
+        assertEqSentry(TestResources.MZTAB_VERSION_HEADER
+            + MTD + TAB_STRING + Metadata.Properties.cv + "[1]-label" + TAB_STRING + "MS" + NEW_LINE
             + MTD + TAB_STRING + Metadata.Properties.cv + "[1]-uri" + TAB_STRING + "https://raw.githubusercontent.com/HUPO-PSI/psi-ms-CV/master/psi-ms.obo" + NEW_LINE
             + MTD + TAB_STRING + Metadata.Properties.cv + "[1]-version" + TAB_STRING + "3.54.0" + NEW_LINE
             + MTD + TAB_STRING + Metadata.Properties.cv + "[1]-full_name" + TAB_STRING + "PSI-MS ontology" + NEW_LINE

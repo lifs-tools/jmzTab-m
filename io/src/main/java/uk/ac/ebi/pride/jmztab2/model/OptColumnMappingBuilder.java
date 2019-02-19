@@ -24,119 +24,181 @@ import de.isas.mztab2.model.Parameter;
  *
  * @author nilshoffmann
  */
-public class OptColumnMappingBuilder {
+public class OptColumnMappingBuilder implements IOptColumnMappingBuilder {
 
-    private Parameter param;
-    private String name;
-    private IndexedElement indexedElement;
-    private boolean global;
+    private OptColumnMappingBuilder() {
 
-    /**
-     * Configure the builder for a global type column. Mutually exclusive with {@link #withParameter(de.isas.mztab2.model.Parameter)
-     * }.
-     *
-     * @return the builder instance.
-     */
-    public OptColumnMappingBuilder forGlobal() {
-        if (this.param != null) {
-            throw new IllegalStateException(
-                "Can not set name for opt column, parameter already has been set!");
+    }
+
+    private static class NameParamOptColumnMappingBuilder implements IOptColumnMappingBuilder {
+
+        protected Parameter param;
+        protected String name;
+
+        /**
+         * Configure this builder to create an optional column mapping with the
+         * provided name. Mutually exclusive with {@link #withParameter(de.isas.mztab2.model.Parameter)
+         * }.
+         *
+         * @param name the name of this optional column.
+         * @return the builder instance.
+         */
+        IOptColumnMappingBuilder withName(String name) {
+            if (this.param != null) {
+                throw new IllegalStateException(
+                        "Can not set name for opt column, parameter already has been set!");
+            }
+            this.name = name;
+            return this;
         }
-        this.global = true;
-        return this;
+
+        /**
+         * Configure this builder to create cv parameter optional columns.
+         *
+         * @param parameter the cv parameter for this mapping.
+         * @return the builder instance.
+         */
+        IOptColumnMappingBuilder withParameter(Parameter parameter) {
+            if (this.name != null) {
+                throw new IllegalStateException(
+                        "Can not set parameter for opt column, name has been set already!");
+            }
+            if (parameter.getCvAccession() == null || parameter.getCvAccession().
+                    isEmpty()) {
+                throw new IllegalArgumentException(
+                        "Parameter must have cvAccession defined!");
+            }
+            if (parameter.getCvLabel() == null || parameter.getCvLabel().
+                    isEmpty()) {
+                throw new IllegalArgumentException(
+                        "Parameter must have cvLabel defined!");
+            }
+            if (parameter.getName() == null || parameter.getName().
+                    isEmpty()) {
+                throw new IllegalArgumentException(
+                        "Parameter must have name defined!");
+            }
+            this.param = parameter;
+            return this;
+        }
     }
 
     /**
-     * Configure this builder to create an optional column mapping with the
-     * provided name. Mutually exclusive with {@link #withParameter(de.isas.mztab2.model.Parameter)
-     * }.
+     * Create a new {@link OptColumnMappingBuilder} for global optional columns.
+     * Use this to create a global optional column, either with a dedicated
+     * name, or with a parameter. This applies to all replicates.
      *
-     * @param name the name of this optional column.
-     * @return the builder instance.
+     * {@code
+     *  opt_global_someProperty ... opt_global_cv_MS_MS:113123_parameter_name
+     *  <somePropertyValue> ... <parameter_name_value>
+     * }
      */
-    public OptColumnMappingBuilder withName(String name) {
-        if (this.param != null) {
-            throw new IllegalStateException(
-                "Can not set name for opt column, parameter already has been set!");
+    public static class GlobalOptColumnMappingBuilder extends NameParamOptColumnMappingBuilder {
+
+        @Override
+        public GlobalOptColumnMappingBuilder withName(String name) {
+            super.withName(name);
+            return this;
         }
-        this.name = name;
-        return this;
+
+        @Override
+        public GlobalOptColumnMappingBuilder withParameter(Parameter parameter) {
+            super.withParameter(parameter);
+            return this;
+        }
+
+        @Override
+        public OptColumnMapping build(String value) {
+
+            if (this.param != null) {
+                return new OptColumnMapping().param(param).
+                        value(value).
+                        identifier(ParameterOptionColumn.getHeader(null, param));
+            } else {
+                if(name == null) {
+                    throw new IllegalArgumentException("Name must be defined if parameter is not set!");
+                }
+                return new OptColumnMapping().value(value).
+                        identifier(OptionColumn.getHeader(null, name));
+            }
+        }
     }
 
     /**
-     * Configure this builder to create optional column mapping for an indexed
-     * element, such as
-     * {@link de.isas.mztab2.model.Assay}, {@link de.isas.mztab2.model.StudyVariable},
-     * or {@link de.isas.mztab2.model.MsRun}. Mutually exclusive with
-     * {@link #withName(java.lang.String)}.
+     * Create a new {@link OptColumnMappingBuilder} for {@link IndexedElement}.
+     * Either referencing an indexed element property with a dedicated name, or
+     * with a parameter. This applies only to the referenced objects.
      *
-     * @param <T> The generic type of the indexed element.
-     * @param element the indexed element to reference in this optional column.
-     * @return the builder instance.
+     * {@code
+     *  opt_assay[1]_someProperty ... opt_assay[1]_cv_MS_MS:113123_parameter_name
+     *  <somePropertyValue> ... <parameter_name_value>
+     * }
      */
-    public <T extends IndexedElement> OptColumnMappingBuilder forIndexedElement(
-        T element) {
-        if (global) {
-            throw new IllegalStateException(
-                "Can not set indexed element for global opt column!");
+    public static class IndexedElementOptColumnMappingBuilder extends NameParamOptColumnMappingBuilder {
+
+        private final IndexedElement indexedElement;
+
+        @Override
+        public IndexedElementOptColumnMappingBuilder withName(String name) {
+            super.withName(name);
+            return this;
         }
-        this.indexedElement = element;
-        return this;
+
+        @Override
+        public IndexedElementOptColumnMappingBuilder withParameter(Parameter parameter) {
+            super.withParameter(parameter);
+            return this;
+        }
+
+        /**
+         * Configure this builder to create optional column mapping for an
+         * indexed element, such as
+         * {@link de.isas.mztab2.model.Assay}, {@link de.isas.mztab2.model.StudyVariable},
+         * or {@link de.isas.mztab2.model.MsRun}.
+         *
+         * @param indexedElement the indexed element to reference in this
+         * optional column.
+         */
+        public IndexedElementOptColumnMappingBuilder(IndexedElement indexedElement) {
+            this.indexedElement = indexedElement;
+        }
+
+        @Override
+        public OptColumnMapping build(String value) {
+            if (this.indexedElement == null) {
+                throw new IllegalArgumentException("Indexed element must not be null!");
+            }
+            if (this.param != null) {
+                return new OptColumnMapping().param(param).
+                        value(value).
+                        identifier(ParameterOptionColumn.getHeader(indexedElement, param));
+            } else {
+                if(name == null) {
+                    throw new IllegalArgumentException("Name must be defined if parameter is not set!");
+                }
+                return new OptColumnMapping().value(value).
+                        identifier(OptionColumn.getHeader(indexedElement, name));
+            }
+        }
     }
 
     /**
-     * Configure this builder to create cv parameter optional columns.
+     * Configure the builder for a global type column.
      *
-     * @param parameter the cv parameter for this mapping.
-     * @return the builder instance.
+     * @return the builder instance for a global opt column.
      */
-    public OptColumnMappingBuilder withParameter(Parameter parameter) {
-        if (this.name != null) {
-            throw new IllegalStateException(
-                "Can not set parameter for opt column, name already has been set!");
-        }
-        if (parameter.getCvAccession() == null || parameter.getCvAccession().
-            isEmpty()) {
-            throw new IllegalArgumentException(
-                "Parameter must have cvAccession defined!");
-        }
-        if (parameter.getCvLabel() == null || parameter.getCvAccession().
-            isEmpty()) {
-            throw new IllegalArgumentException(
-                "Parameter must have cvLabel defined!");
-        }
-        if (parameter.getName() == null || parameter.getCvAccession().
-            isEmpty()) {
-            throw new IllegalArgumentException(
-                "Parameter must have name defined!");
-        }
-        this.param = parameter;
-        return this;
+    public static GlobalOptColumnMappingBuilder forGlobal() {
+        return new GlobalOptColumnMappingBuilder();
     }
 
     /**
-     * Use the current builder state to create an OptColumnMapping with the
-     * provided value for e.g. a particular feature (row).
+     * Configure the builder for an object reference (indexed element) type
+     * column.
      *
-     * @param value the value for the mapping.
-     * @return the optional column mapping built from this builder instance.
+     * @param indexedElement the object to reference.
+     * @return the builder instance for an indexed element opt column.
      */
-    public OptColumnMapping build(String value) {
-
-        if (this.param != null) {
-            ParameterOptionColumn poc = new ParameterOptionColumn(indexedElement,
-                param,
-                String.class, 0);
-            return new OptColumnMapping().param(param).
-                value(value).
-                identifier(poc.getHeader());
-        } else {
-            OptionColumn oc = new OptionColumn(indexedElement, name,
-                String.class,
-                0);
-            return new OptColumnMapping().value(value).
-                identifier(oc.getHeader());
-        }
-
+    public static IndexedElementOptColumnMappingBuilder forIndexedElement(IndexedElement indexedElement) {
+        return new IndexedElementOptColumnMappingBuilder(indexedElement);
     }
 }

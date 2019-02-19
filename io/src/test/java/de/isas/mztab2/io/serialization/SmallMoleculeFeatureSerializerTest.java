@@ -42,7 +42,7 @@ public class SmallMoleculeFeatureSerializerTest extends AbstractSerializerTest {
     @Test
     public void testSerialize() throws Exception {
         MzTab mzTabFile = create2_0TestFile();
-        String optColumnQualifiers = "global_quantifiers_SMF_ID_REFS";
+        String optColumnQualifiers = "opt_global_quantifiers_SMF_ID_REFS";
         mzTabFile.addSmallMoleculeFeatureItem(new SmallMoleculeFeature().
             smfId(1).
             smeIdRefs(Arrays.asList(1)).

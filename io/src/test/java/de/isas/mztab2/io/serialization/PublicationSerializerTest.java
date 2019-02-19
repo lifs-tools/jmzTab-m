@@ -17,6 +17,7 @@ package de.isas.mztab2.io.serialization;
 
 import com.fasterxml.jackson.databind.ObjectWriter;
 import de.isas.mztab2.io.AbstractSerializerTest;
+import de.isas.mztab2.io.TestResources;
 import de.isas.mztab2.model.Metadata;
 import static de.isas.mztab2.model.Metadata.PrefixEnum.MTD;
 import de.isas.mztab2.model.Publication;
@@ -59,8 +60,10 @@ public class PublicationSerializerTest extends AbstractSerializerTest {
 
         mtd.addPublicationItem(publication1).
             addPublicationItem(publication2);
+
         ObjectWriter writer = metaDataWriter();
-        assertEqSentry(MTD + TAB_STRING + Metadata.Properties.publication.
+        assertEqSentry(TestResources.MZTAB_VERSION_HEADER
+            + MTD + TAB_STRING + Metadata.Properties.publication.
                 getPropertyName() + "[1]" + TAB_STRING + "pubmed:21063943" + BAR + "doi:10.1007/978-1-60761-987-1_6" + NEW_LINE
             + MTD + TAB_STRING + Metadata.Properties.publication.
                 getPropertyName() + "[2]" + TAB_STRING + "pubmed:20615486" + BAR + "doi:10.1016/j.jprot.2010.06.008"

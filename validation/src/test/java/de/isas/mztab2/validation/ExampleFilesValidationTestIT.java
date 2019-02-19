@@ -18,6 +18,7 @@ package de.isas.mztab2.validation;
 import de.isas.mztab2.cvmapping.CvParameterLookupService;
 import de.isas.mztab2.model.MzTab;
 import de.isas.mztab2.model.ValidationMessage;
+import de.isas.mztab2.model.ValidationMessage.MessageTypeEnum;
 import de.isas.mztab2.test.utils.ClassPathFile;
 import static de.isas.mztab2.test.utils.ClassPathFile.GCXGC_MS_EXAMPLE;
 import static de.isas.mztab2.test.utils.ClassPathFile.LIPIDOMICS_EXAMPLE;
@@ -37,9 +38,14 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import javax.xml.bind.JAXBException;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.Assert;
 import org.junit.ClassRule;
 import org.junit.Rule;
@@ -58,6 +64,7 @@ import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabException;
  *
  * @author nilshoffmann
  */
+@Slf4j
 @RunWith(Parameterized.class)
 public class ExampleFilesValidationTestIT {
 
@@ -88,21 +95,22 @@ public class ExampleFilesValidationTestIT {
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][]{
             {LIPIDOMICS_EXAMPLE, MZTabErrorType.Level.Info,
-                0, 7},
-            {MTBLS263, MZTabErrorType.Level.Info, 0, 16},
+                0, 9},
+            {MTBLS263, MZTabErrorType.Level.Info, 0, 17},
             //            {MOUSELIVER_NEGATIVE, MZTabErrorType.Level.Info, 0, 1},
             //            {MOUSELIVER_NEGATIVE_MZTAB_NULL_COLUNIT,
             //                MZTabErrorType.Level.Info, 1, 3},
             {STANDARDMIX_NEGATIVE_EXPORTPOSITIONLEVEL,
-                MZTabErrorType.Level.Info, 0, 5},
+                MZTabErrorType.Level.Info, 0, 6},
             {STANDARDMIX_NEGATIVE_EXPORTSPECIESLEVEL,
-                MZTabErrorType.Level.Info, 0, 5},
+                MZTabErrorType.Level.Info, 0, 6},
             {STANDARDMIX_POSITIVE_EXPORTPOSITIONLEVEL,
-                MZTabErrorType.Level.Info, 0, 5},
+                MZTabErrorType.Level.Info, 0, 6},
             {STANDARDMIX_POSITIVE_EXPORTSPECIESLEVEL,
-                MZTabErrorType.Level.Info, 0, 5},
+                MZTabErrorType.Level.Info, 0, 6},
             {GCXGC_MS_EXAMPLE, MZTabErrorType.Level.Info, 0, 6},
-            {LIPIDOMICS_EXAMPLE, MZTabErrorType.Level.Info, 0, 8}
+            {LIPIDOMICS_EXAMPLE, MZTabErrorType.Level.Warn, 0, 0},
+            {LIPIDOMICS_EXAMPLE, MZTabErrorType.Level.Error, 0, 0},
         });
     }
 
@@ -137,10 +145,14 @@ public class ExampleFilesValidationTestIT {
                     "/mappings/mzTab-M-mapping.xml"), LOOKUP_SERVICE,
                 true);
             List<ValidationMessage> messages = validator.validate(mzTab);
-            if (messages.size() != expectedSemanticErrors) {
+            Map<MessageTypeEnum, List<ValidationMessage>> categorizedMessages = 
+                    messages.stream().collect(Collectors.groupingBy(ValidationMessage::getMessageType));
+            log.debug("CategorizedMessages: {}", categorizedMessages);
+            MessageTypeEnum mt = MessageTypeEnum.fromValue(level.toString().toLowerCase());
+            if (Optional.ofNullable(categorizedMessages.get(mt)).orElse(Collections.emptyList()).size() != expectedSemanticErrors) {
                 Assert.assertEquals(String.format(
-                    "Expected %d semantic errors, found %d! ValidationMessages: %s",
-                    expectedSemanticErrors, messages.size(), messages),
+                    "Expected %d semantic errors for level %s, found %d! ValidationMessages: %s",
+                    expectedSemanticErrors, level, messages.size(), messages),
                     (long) expectedSemanticErrors, (long) messages.size());
             }
             return messages;

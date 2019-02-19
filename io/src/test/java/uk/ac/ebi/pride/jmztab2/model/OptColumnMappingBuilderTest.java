@@ -21,6 +21,8 @@ import de.isas.mztab2.model.Parameter;
 import org.junit.Assert;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import uk.ac.ebi.pride.jmztab2.model.OptColumnMappingBuilder.GlobalOptColumnMappingBuilder;
+import uk.ac.ebi.pride.jmztab2.model.OptColumnMappingBuilder.IndexedElementOptColumnMappingBuilder;
 
 /**
  *
@@ -28,20 +30,29 @@ import static org.junit.Assert.*;
  */
 public class OptColumnMappingBuilderTest {
 
+    public static GlobalOptColumnMappingBuilder FIXTURE_GLOBAL = OptColumnMappingBuilder.forGlobal().withName("whatever");
+    public static IndexedElementOptColumnMappingBuilder FIXTURE_INDEXED_ELEMENT = OptColumnMappingBuilder.forIndexedElement(new Assay().id(1).
+                name("Assay 1")).
+        withName("whatever");
+    public static IndexedElementOptColumnMappingBuilder FIXTURE_INDEXED_ELEMENT_PARAM = OptColumnMappingBuilder.forIndexedElement(new Assay().id(1).
+                name("Assay 1")).
+        withParameter(new Parameter().id(
+            1).cvLabel("MS").cvAccession("MS:128712").name("made up for testing"));
+    public static GlobalOptColumnMappingBuilder FIXTURE_GLOBAL_PARAM = OptColumnMappingBuilder.forGlobal().withParameter(new Parameter().id(
+            1).cvLabel("MS").cvAccession("MS:128712").name("made up for testing"));
+    
     /**
      * Test of forGlobal method, of class OptColumnMappingBuilder.
      */
     @Test
     public void testForGlobal() {
-        OptColumnMappingBuilder builder = new OptColumnMappingBuilder();
-        OptColumnMapping ocm = builder.forGlobal().withName("whatever").
-            build("1");
+        OptColumnMapping ocm = FIXTURE_GLOBAL.build("1");
         assertEquals("1", ocm.getValue());
         assertEquals("opt_global_whatever", ocm.getIdentifier());
         assertNull(ocm.getParam());
         
         try {
-            builder.withParameter(new Parameter());
+            FIXTURE_GLOBAL.withParameter(new Parameter());
             Assert.fail("Should throw IllegalStateException");
         } catch (IllegalStateException ise) {
             
@@ -53,17 +64,14 @@ public class OptColumnMappingBuilderTest {
      */
     @Test
     public void testForIndexedElement() {
-        OptColumnMappingBuilder builder = new OptColumnMappingBuilder();
-        OptColumnMapping ocm = builder.withName("whatever").
-            forIndexedElement(new Assay().id(1).
-                name("Assay 1")).
+        OptColumnMapping ocm = FIXTURE_INDEXED_ELEMENT.
             build("1");
         assertEquals("1", ocm.getValue());
         assertEquals("opt_assay[1]_whatever", ocm.getIdentifier());
         assertNull(ocm.getParam());
         
         try {
-            builder.withParameter(new Parameter());
+            FIXTURE_INDEXED_ELEMENT.withParameter(new Parameter());
             Assert.fail("Should throw IllegalStateException");
         } catch (IllegalStateException ise) {
             
@@ -75,35 +83,56 @@ public class OptColumnMappingBuilderTest {
      * Test of withParameter method, of class OptColumnMappingBuilder.
      */
     @Test
-    public void testWithParameter() {
-        OptColumnMappingBuilder builder = new OptColumnMappingBuilder();
-        OptColumnMapping ocm = builder.withParameter(new Parameter().id(
-            1).cvLabel("MS").cvAccession("MS:128712").name("made up for testing")).
-            forIndexedElement(new Assay().id(1).
-                name("Assay 1")).
+    public void testWithParameterIndexedElement() {
+        OptColumnMapping ocm = FIXTURE_INDEXED_ELEMENT_PARAM.
             build("1");
         assertEquals("1", ocm.getValue());
         assertEquals("opt_assay[1]_cv_MS:128712_made_up_for_testing", ocm.getIdentifier());
         assertNotNull(ocm.getParam());
-        
-        try {
-            builder.forGlobal();
-            Assert.fail("Should throw IllegalStateException");
-        } catch (IllegalStateException ise) {
-            
-        }
     }
     
     /**
-     * Test of withParameter method, of class OptColumnMappingBuilder with non-cv parameters.
+     * Test of withParameter method for global scope, of class OptColumnMappingBuilder.
+     */
+    @Test
+    public void testWithParameterGlobal() {
+        OptColumnMapping ocm = FIXTURE_GLOBAL_PARAM.
+            build("1");
+        assertEquals("1", ocm.getValue());
+        assertEquals("opt_global_cv_MS:128712_made_up_for_testing", ocm.getIdentifier());
+        assertNotNull(ocm.getParam());
+    }
+    
+    /**
+     * Test of withParameter method without cv label, of class OptColumnMappingBuilder with non-cv parameters.
      */
     @Test(expected = IllegalArgumentException.class)
-    public void testWithNonCvParameter() {
-        OptColumnMappingBuilder builder = new OptColumnMappingBuilder();
-        OptColumnMapping ocm = builder.withParameter(new Parameter().id(
-            1).cvLabel("").value("made up for testing")).
-            forIndexedElement(new Assay().id(1).
-                name("Assay 1")).
+    public void testWithCvParameterWithoutCvLabel() {
+        OptColumnMapping ocm = OptColumnMappingBuilder.forIndexedElement(new Assay().id(1).
+                name("Assay 1")).withParameter(new Parameter().id(
+            1).cvAccession("MS").cvLabel("").value("made up for testing")).
+            build("1");
+    }
+    
+    /**
+     * Test of withParameter method without cv accession, of class OptColumnMappingBuilder with non-cv parameters.
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void testWithCvParameterWithoutCvAccession() {
+        OptColumnMapping ocm = OptColumnMappingBuilder.forIndexedElement(new Assay().id(1).
+                name("Assay 1")).withParameter(new Parameter().id(
+            1).cvAccession("").value("made up for testing")).
+            build("1");
+    }
+    
+    /**
+     * Test of withParameter method without parameter name, of class OptColumnMappingBuilder with non-cv parameters.
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void testWithCvParameterWithoutParamName() {
+        OptColumnMappingBuilder.forIndexedElement(new Assay().id(1).
+                name("Assay 1")).withParameter(new Parameter().id(
+            1).cvAccession("MS:19872").cvLabel("MS").name("").value("made up for testing")).
             build("1");
     }
 }

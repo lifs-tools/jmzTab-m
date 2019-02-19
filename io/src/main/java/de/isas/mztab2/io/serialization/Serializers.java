@@ -65,7 +65,6 @@ public class Serializers {
      */
     public static String getReference(Object element, Integer idx) {
         StringBuilder sb = new StringBuilder();
-
         sb.append(getElementName(element).
                 orElseThrow(()
                         -> {
@@ -73,10 +72,7 @@ public class Serializers {
                             "No mzTab element name mapping available for " + element.
                                     getClass().
                                     getName());
-                })).
-                append("[").
-                append(idx).
-                append("]");
+                }));
 
         return sb.toString();
     }
@@ -135,23 +131,32 @@ public class Serializers {
      */
     public static String printOptColumnMapping(OptColumnMapping ocm) {
         StringBuilder sb = new StringBuilder();
-        if (!ocm.getIdentifier().
-                startsWith("opt_")) {
+        log.debug("Identifier={}; OptColumnMapping: {}", ocm.getIdentifier(), ocm);
+        if ("global".equals(ocm.getIdentifier())||ocm.getIdentifier().startsWith("global")) {
             sb.append("opt_");
+            sb.append(ocm.getIdentifier());
+            if (ocm.getParam() != null) {
+                sb.append("_cv_").
+                        append(ocm.getParam().
+                                getCvAccession()).
+                        append("_").
+                        append(ocm.getParam().
+                                getName().
+                                replaceAll(" ", "_"));
+            }
+        } else {
+            log.info("OptColumnMapping: {}", ocm);
+            // object reference case, value is now the actual value
+            if (ocm.getParam() != null) {
+                sb.append(ocm.getIdentifier());
+            } else {
+                sb.append(ocm.getIdentifier());
+            }
         }
-        sb.append(ocm.getIdentifier());
-        if (ocm.getParam() != null) {
-            sb.append("_cv_").
-                    append(ocm.getParam().
-                            getCvAccession()).
-                    append("_").
-                    append(ocm.getParam().
-                            getName().
-                            replaceAll(" ", "_"));
-        }
-        //TODO: check for valid characters in definition
-        //valid characters: ‘A’-‘Z’, ‘a’-‘z’, ‘0’-‘9’, ‘’, ‘-’, ‘[’, ‘]’, and ‘:’.
-        //[A-Za-z0-9\[\]-:]+
+        log.debug("asString: {}", sb.toString());
+//        //TODO: check for valid characters in definition
+//        //valid characters: ‘A’-‘Z’, ‘a’-‘z’, ‘0’-‘9’, ‘’, ‘-’, ‘[’, ‘]’, and ‘:’.
+//        //[A-Za-z0-9\[\]-:]+
         return sb.toString();
     }
 
@@ -988,10 +993,13 @@ public class Serializers {
         for (OptColumnMapping ocm : Optional.ofNullable(
                 optColumnMappings).
                 orElse(Collections.emptyList())) {
+            // write global or indexed element param objects
             if (ocm.getParam() != null) {
                 writeObject(Serializers.printOptColumnMapping(ocm), jg, sp, ocm.
-                        getParam() == null ? NULL : ocm.getParam());
-            } else {
+                        getValue() == null ? 
+                        (ocm.getParam().getValue() == null || ocm.getParam().getValue().isEmpty() ? 
+                                NULL : ocm.getParam().getValue()) : ocm.getValue());
+            } else { // write global opt column objects with the value
                 writeObject(Serializers.printOptColumnMapping(ocm), jg, sp, ocm.
                         getValue() == null ? NULL : ocm.getValue());
             }

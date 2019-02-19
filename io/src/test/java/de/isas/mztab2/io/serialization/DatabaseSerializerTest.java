@@ -17,6 +17,7 @@ package de.isas.mztab2.io.serialization;
 
 import de.isas.mztab2.io.AbstractSerializerTest;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import de.isas.mztab2.io.TestResources;
 import de.isas.mztab2.model.Database;
 import de.isas.mztab2.model.Metadata;
 import static de.isas.mztab2.model.Metadata.PrefixEnum.MTD;
@@ -55,7 +56,8 @@ public class DatabaseSerializerTest extends AbstractSerializerTest {
             uri("http://www.hmdb.ca/"));
 
         //param prefix uri version
-        assertEqSentry(MTD + TAB_STRING + Metadata.Properties.database + "[1]" + TAB_STRING + "[, , no database, null]" + NEW_LINE
+        assertEqSentry(TestResources.MZTAB_VERSION_HEADER
+            + MTD + TAB_STRING + Metadata.Properties.database + "[1]" + TAB_STRING + "[, , no database, null]" + NEW_LINE
             + MTD + TAB_STRING + Metadata.Properties.database + "[1]-prefix" + TAB_STRING + "null" + NEW_LINE
             + MTD + TAB_STRING + Metadata.Properties.database + "[1]-uri" + TAB_STRING + "null" + NEW_LINE
             + MTD + TAB_STRING + Metadata.Properties.database + "[1]-version" + TAB_STRING + "Unknown" + NEW_LINE

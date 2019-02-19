@@ -18,6 +18,7 @@ package de.isas.mztab2.io.serialization;
 import de.isas.mztab2.io.serialization.ParameterConverter;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import de.isas.mztab2.io.AbstractSerializerTest;
+import de.isas.mztab2.io.TestResources;
 import de.isas.mztab2.model.Metadata;
 import static de.isas.mztab2.model.Metadata.PrefixEnum.MTD;
 import de.isas.mztab2.model.Parameter;
@@ -84,7 +85,8 @@ public class SampleSerializerTest extends AbstractSerializerTest {
         mtd.addSampleItem(sample2);
 
         ObjectWriter writer = metaDataWriter();
-        assertEqSentry(MTD + TAB_STRING + Metadata.Properties.sample + "[1]" + TAB_STRING + sample1.
+        assertEqSentry(TestResources.MZTAB_VERSION_HEADER
+            + MTD + TAB_STRING + Metadata.Properties.sample + "[1]" + TAB_STRING + sample1.
                 getName()
             + NEW_LINE
             + MTD + TAB_STRING + Metadata.Properties.sample.

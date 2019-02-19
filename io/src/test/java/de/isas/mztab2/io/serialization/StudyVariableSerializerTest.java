@@ -17,6 +17,7 @@ package de.isas.mztab2.io.serialization;
 
 import com.fasterxml.jackson.databind.ObjectWriter;
 import de.isas.mztab2.io.AbstractSerializerTest;
+import de.isas.mztab2.io.TestResources;
 import de.isas.mztab2.model.Assay;
 import de.isas.mztab2.model.Metadata;
 import static de.isas.mztab2.model.Metadata.PrefixEnum.MTD;
@@ -81,7 +82,8 @@ public class StudyVariableSerializerTest extends AbstractSerializerTest {
         mtd.addStudyVariableItem(studyVariable2);
 
         ObjectWriter writer = metaDataWriter();
-        assertEqSentry(MTD + TAB_STRING + Metadata.Properties.studyVariable + "[1]" + TAB_STRING + studyVariable1.
+        assertEqSentry(TestResources.MZTAB_VERSION_HEADER
+            + MTD + TAB_STRING + Metadata.Properties.studyVariable + "[1]" + TAB_STRING + studyVariable1.
                 getName()
             + NEW_LINE
             + MTD + TAB_STRING + Metadata.Properties.studyVariable + "[1]-" + StudyVariable.Properties.description + TAB_STRING + studyVariable1.

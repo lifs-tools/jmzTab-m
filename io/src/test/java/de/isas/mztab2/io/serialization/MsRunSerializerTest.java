@@ -18,6 +18,7 @@ package de.isas.mztab2.io.serialization;
 import de.isas.mztab2.io.serialization.ParameterConverter;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import de.isas.mztab2.io.AbstractSerializerTest;
+import de.isas.mztab2.io.TestResources;
 import de.isas.mztab2.model.Instrument;
 import de.isas.mztab2.model.Metadata;
 import static de.isas.mztab2.model.Metadata.PrefixEnum.MTD;
@@ -67,7 +68,8 @@ public class MsRunSerializerTest extends AbstractSerializerTest {
         mtd.addMsRunItem(msRun1);
 
         ObjectWriter writer = metaDataWriter();
-        assertEqSentry(MTD + TAB_STRING + Metadata.Properties.msRun + "[1]-location" + TAB_STRING + msRun1.
+        assertEqSentry(TestResources.MZTAB_VERSION_HEADER
+            + MTD + TAB_STRING + Metadata.Properties.msRun + "[1]-location" + TAB_STRING + msRun1.
                 getLocation() + NEW_LINE
             + MTD + TAB_STRING + Metadata.Properties.msRun + "[1]-instrument_ref" + TAB_STRING + "instrument[" + instrument1.
                 getId() + "]" + NEW_LINE
