@@ -86,7 +86,7 @@ In order to build a Docker image of the command line interface application, run
 
 from your commandline (mvnw.bat on Windows).
 This will build and tag a Docker image lifs/jmztabm-cli with a corresponding version and make it available to your local Docker installation.
-To the coordinates of the image, call
+To show the coordinates of the image, call
 
   docker image ls | grep "jmztabm-cli"
 

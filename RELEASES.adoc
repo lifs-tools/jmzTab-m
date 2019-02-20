@@ -20,7 +20,8 @@ Create a release branch:
 
 Set the release version, commit and tag:
 
-  ./mvnw versions:set -D<RELEASE_VERSION>
+  ./mvnw versions:set -DnewVersion<RELEASE_VERSION>
+  git add **/pom.xml pom.xml
   git commit -m "Release <RELEASE_VERSION>"
   git tag release-<RELEASE_VERSION>
   git push --tags
