@@ -275,6 +275,14 @@ The use-cases that were described in the previous sections are also covered in t
 * https://github.com/lifs-tools/jmzTab-m/blob/master/validation/src/test/java/de/isas/mztab2/validation/ExampleFilesValidationTestIT.java[ExampleFilesValidationTestIT] - semantic validation using a mapping file and parameter validation rules.
 * https://github.com/lifs-tools/jmzTab-m/blob/master/validation/src/test/java/de/isas/mztab2/validation/JxPathTest.java[JxPathTest] - Object selection in MzTab models via the JxPath library.
 
+== Validation message templates and IDs
+
+The reference implementation uses message templates and IDs to uniquely identify each validation message. The catalogs of validation messages have been adapted and substantially extended from the previous reference implementation. The message catalogs can be found at the following locations:
+
+* https://github.com/lifs-tools/jmzTab-m/blob/master/api/src/main/resources/conf1_1/mztab_format_error.properties[Format Error Codes and Messages] - Basic mzTab-M structural and format errors, e.g. malformed tab format, invalid version definition, etc.
+* https://github.com/lifs-tools/jmzTab-m/blob/master/api/src/main/resources/conf1_1/mztab_logical_error.properties[Logical Error Codes and Messages] - Logical mzTab-M errors, e.g. missing sections, item number mismatches, etc.
+* https://github.com/lifs-tools/jmzTab-m/blob/master/api/src/main/resources/conf1_1/mztab_crosscheck_error.properties[Semantic Error Codes Messages] - Semantic mzTab-M errors, e.g. required CV params that are missing.
+
 == Editing the Swagger Spec
 This project defines the structure of an mzTab document based on JSON-Schema
 and Swagger https://swagger.io/.

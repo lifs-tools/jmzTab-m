@@ -99,55 +99,56 @@ public class MzTabTest {
     }
 
     private MzTab createTestMzTab() {
+        int paramId = 1;
         de.isas.mztab2.model.Metadata mtd = new de.isas.mztab2.model.Metadata();
         mtd.mzTabID("SomeId 1234").
             mzTabVersion("2.0.0-M").
             title("My first test experiment").
             description("An experiment investigating interesting effects.");
         SampleProcessing sp = new SampleProcessing().id(1).
-            addSampleProcessingItem(new Parameter().cvLabel("SEP").
+            addSampleProcessingItem(new Parameter().id(paramId++).cvLabel("SEP").
                 cvAccession("sep:00210").
                 name("High Perfomance Liquid Chromatography"));
         mtd.sampleProcessing(Arrays.asList(sp));
 
         Instrument instrument1 = new Instrument().id(1).
             name(
-                new Parameter().cvLabel("MS").
+                new Parameter().id(paramId++).cvLabel("MS").
                     cvAccession("MS:100049").
                     name("LTQ Orbitrap")).
             source(
-                new Parameter().cvLabel("MS").
+                new Parameter().id(paramId++).cvLabel("MS").
                     cvAccession("MS:1000073").
                     name("ESI")).
             analyzer(Arrays.asList(
-                new Parameter().cvLabel("MS").
+                new Parameter().id(paramId++).cvLabel("MS").
                     cvAccession("MS:1000291").
                     name("linear ion trap"))
             ).
             detector(
-                new Parameter().cvLabel("MS").
+                new Parameter().id(paramId++).cvLabel("MS").
                     cvAccession("MS:1000253").
                     name("electron multiplier")
             );
         mtd.addInstrumentItem(instrument1);
         Instrument instrument2 = new Instrument().id(2).
             name(
-                new Parameter().cvLabel("MS").
+                new Parameter().id(paramId++).cvLabel("MS").
                     cvAccession("MS:1000031").
                     name("instrument model").
                     value("name of the instrument not included in the CV")).
-            source(new Parameter().cvLabel("MS").
+            source(new Parameter().id(paramId++).cvLabel("MS").
                 cvAccession("MS:1000598").
                 name("ETD")).
-            addAnalyzerItem(new Parameter().cvLabel("MS").
+            addAnalyzerItem(new Parameter().id(paramId++).cvLabel("MS").
                 cvAccession("MS:1000484").
                 name("orbitrap")).
-            detector(new Parameter().cvLabel("MS").
+            detector(new Parameter().id(paramId++).cvLabel("MS").
                 cvAccession("MS:1000348").
                 name("focal plane collector"));
         mtd.addInstrumentItem(instrument2);
         Software software1 = new Software().id(1).
-            parameter(new Parameter().cvLabel(
+            parameter(new Parameter().id(paramId++).cvLabel(
                 "MS").
                 cvAccession("MS:1001207").
                 name("Mascot").
@@ -194,83 +195,83 @@ public class MzTabTest {
         mtd.addExternalStudyUriItem(new Uri().id(1).
             value(
                 "https://www.ebi.ac.uk/metabolights/MTBLS400"));
-        MsRun msRun1 = new MsRun().id(1).
+        MsRun msRun1 = new MsRun().name("file1").id(1).
             location("file://ftp.ebi.ac.uk/path/to/file").
-            idFormat(new Parameter().cvLabel("MS").
+            idFormat(new Parameter().id(paramId++).cvLabel("MS").
                 cvAccession("MS:1001530").
                 name(
                     "mzML unique identifier")).
-            format(new Parameter().cvLabel("MS").
+            format(new Parameter().id(paramId++).cvLabel("MS").
                 cvAccession("MS:1000584").
                 name("mzML file")).
             addFragmentationMethodItem(
-                new Parameter().cvLabel("MS").
+                new Parameter().id(paramId++).cvLabel("MS").
                     cvAccession("MS:1000133").
                     name("CID"));
         mtd.addMsRunItem(msRun1);
-        MsRun msRun2 = new MsRun().id(2).
+        MsRun msRun2 = new MsRun().name("file2").id(2).
             location("ftp://ftp.ebi.ac.uk/path/to/file").
-            format(new Parameter().cvLabel("MS").
+            format(new Parameter().id(paramId++).cvLabel("MS").
                 cvAccession("MS:1001062").
                 name("Mascot MGF file")).
             hash("de9f2c7fd25e1b3afad3e85a0bd17d9b100db4b3").
             hashMethod(
-                new Parameter().cvLabel("MS").
+                new Parameter().id(paramId++).cvLabel("MS").
                     cvAccession("MS:1000569").
                     name("SHA-1")).
-            addFragmentationMethodItem(new Parameter().cvLabel("MS").
+            addFragmentationMethodItem(new Parameter().id(paramId++).cvLabel("MS").
                 cvAccession("MS:1000422").
                 name("HCD"));
         mtd.addMsRunItem(msRun2);
-        mtd.addCustomItem(new Parameter().id(1).
+        mtd.addCustomItem(new Parameter().id(paramId++).
             name("MS operator").
             value("Florian"));
 
         Sample sample1 = new Sample().id(1).
             description("Hepatocellular carcinoma samples.").
-            addSpeciesItem(new Parameter().cvLabel("NEWT").
+            addSpeciesItem(new Parameter().id(paramId++).cvLabel("NEWT").
                 cvAccession("9606").
                 name(
                     "Homo sapiens (Human)")).
-            addSpeciesItem(new Parameter().cvLabel("NEWT").
+            addSpeciesItem(new Parameter().id(paramId++).cvLabel("NEWT").
                 cvAccession("573824").
                 name("Human rhinovirus 1")).
-            addTissueItem(new Parameter().cvLabel("BTO").
+            addTissueItem(new Parameter().id(paramId++).cvLabel("BTO").
                 cvAccession("BTO:0000759").
                 name("liver")).
-            addCellTypeItem(new Parameter().cvLabel("CL").
+            addCellTypeItem(new Parameter().id(paramId++).cvLabel("CL").
                 cvAccession("CL:0000182").
                 name("hepatocyte")).
-            addDiseaseItem(new Parameter().cvLabel("DOID").
+            addDiseaseItem(new Parameter().id(paramId++).cvLabel("DOID").
                 cvAccession("DOID:684").
                 name("hepatocellular carcinoma")).
-            addDiseaseItem(new Parameter().cvLabel("DOID").
+            addDiseaseItem(new Parameter().id(paramId++).cvLabel("DOID").
                 cvAccession("DOID:9451").
                 name("alcoholic fatty liver")).
-            addCustomItem(new Parameter().name("Extraction date").
+            addCustomItem(new Parameter().id(paramId++).name("Extraction date").
                 value("2011-12-21")).
-            addCustomItem(new Parameter().name("Extraction reason").
+            addCustomItem(new Parameter().id(paramId++).name("Extraction reason").
                 value("liver biopsy"));
         mtd.addSampleItem(sample1);
         Sample sample2 = new Sample().id(2).
             name("Sample 2").
             description("Healthy control samples.").
-            addSpeciesItem(new Parameter().cvLabel("NEWT").
+            addSpeciesItem(new Parameter().id(paramId++).cvLabel("NEWT").
                 cvAccession("9606").
                 name(
                     "Homo sapiens (Human)")).
-            addSpeciesItem(new Parameter().cvLabel("NEWT").
+            addSpeciesItem(new Parameter().id(paramId++).cvLabel("NEWT").
                 cvAccession("12130").
                 name("Human rhinovirus 2")).
-            addTissueItem(new Parameter().cvLabel("BTO").
+            addTissueItem(new Parameter().id(paramId++).cvLabel("BTO").
                 cvAccession("BTO:0000759").
                 name("liver")).
-            addCellTypeItem(new Parameter().cvLabel("CL").
+            addCellTypeItem(new Parameter().id(paramId++).cvLabel("CL").
                 cvAccession("CL:0000182").
                 name("hepatocyte")).
-            addCustomItem(new Parameter().name("Extraction date").
+            addCustomItem(new Parameter().id(paramId++).name("Extraction date").
                 value("2011-12-19")).
-            addCustomItem(new Parameter().name("Extraction reason").
+            addCustomItem(new Parameter().id(paramId++).name("Extraction reason").
                 value("liver biopsy"));
         mtd.addSampleItem(sample2);
 
@@ -287,20 +288,22 @@ public class MzTabTest {
 
         StudyVariable studyVariable1 = new StudyVariable().
             id(1).
+            name("Group A name").
             description(
-                "Group A").
+                "Group A description").
             addAssayRefsItem(
                 assay1).
             addAssayRefsItem(assay2).
-            addFactorsItem(new Parameter().name("spike-in").
+            addFactorsItem(new Parameter().id(paramId++).name("spike-in").
                 value("0.74 fmol/uL"));
         mtd.addStudyVariableItem(studyVariable1);
         StudyVariable studyVariable2 = new StudyVariable().
             id(2).
-            description("Group B").
+            name("Grou B name").
+            description("Group B description").
             addAssayRefsItem(assay1).
             addAssayRefsItem(assay2).
-            addFactorsItem(new Parameter().name("spike-in").
+            addFactorsItem(new Parameter().id(paramId++).name("spike-in").
                 value("0.74 fmol/uL"));
         mtd.addStudyVariableItem(studyVariable2);
         mtd.addCvItem(new CV().id(1).
@@ -314,11 +317,12 @@ public class MzTabTest {
             version("1.070708").
             uri("http://purl.bioontology.org/ontology/SEP"));
         
-        mtd.addIdConfidenceMeasureItem(new Parameter().id(1).
+        mtd.addIdConfidenceMeasureItem(new Parameter().id(paramId++).
             name("some confidence measure term"));
 
-        mtd.addDatabaseItem(new Database().id(1).
-            param(new Parameter().name("nd")));
+        mtd.addDatabaseItem(new Database().id(1).//prefix("null").
+            param(new Parameter().id(paramId++).name("nd")));
+        mtd.setQuantificationMethod(new Parameter().id(paramId++).name("test quantification").value("test quant value"));
 
         MzTab mzTab = new MzTab();
         mzTab.metadata(mtd);
@@ -332,7 +336,7 @@ public class MzTabTest {
             databaseIdentifier("nd").
             evidenceInputId("1").
             expMassToCharge(650.6373).
-            msLevel(new Parameter().cvLabel("MS").
+            msLevel(new Parameter().id(paramId++).cvLabel("MS").
                 cvAccession("MS:1000511").
                 name("ms level").
                 value("2")).
@@ -363,19 +367,19 @@ public class MzTabTest {
                 "N-(tetracosanoyl)-sphing-4-enine", "C24 Cer")).
             addOptItem(new OptColumnMapping().identifier("global").
                 value("lipid_category").
-                param(new Parameter().cvLabel("LM").
+                param(new Parameter().id(paramId++).cvLabel("LM").
                     cvAccession("LM:SP").
                     name("Category").
                     value("Sphingolipids"))).
             addOptItem(new OptColumnMapping().identifier("global").
                 value("lipid_species").
-                param(new Parameter().cvLabel("LH").
+                param(new Parameter().id(paramId++).cvLabel("LH").
                     cvAccession("LH:XXXXX").
                     name("Species").
                     value("Cer 42:1"))).
             addOptItem(new OptColumnMapping().identifier("global").
                 value("lipid_best_id_level").
-                param(new Parameter().cvLabel("LH").
+                param(new Parameter().id(paramId++).cvLabel("LH").
                     cvAccession("LH:XXXXX").
                     name("Sub Species").
                     value("Cer d18:1/24:0"))).
@@ -390,7 +394,7 @@ public class MzTabTest {
             addTheoreticalNeutralMassItem(649.6373).
             addAdductIonsItem("[M+H]1+").
             reliability("1").
-            bestIdConfidenceMeasure(new Parameter().name(
+            bestIdConfidenceMeasure(new Parameter().id(paramId++).name(
                 "qualifier ions exact mass")).
             bestIdConfidenceValue(0.958).
             addAbundanceAssayItem(4.448784E-05).

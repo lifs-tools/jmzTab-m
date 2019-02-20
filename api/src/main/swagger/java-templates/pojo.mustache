@@ -17,6 +17,9 @@ public class {{classname}} {{#parent}}extends {{{parent}}} {{/parent}}{{#parcela
 {{/serializableModel}}
 
   {{#vars.0}}
+  /**
+   * Property enumeration for {{classname}}.
+   */
   public static enum Properties {
     {{#vars}}
       {{name}}("{{baseName}}"){{#hasMore}}, {{/hasMore}}{{^hasMore}};{{/hasMore}}

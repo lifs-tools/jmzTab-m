@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 /**
- * Base package for the jmztab-m data model, generated from the mzTab_m_swagger.yml specification.
+ * Base package for the jmztab-m data model, generated from the <a href="https://github.com/lifs-tools/jmzTab-m/blob/master/api/src/main/resources/mzTab_m_swagger.yml" target="_blank">mzTab_m_swagger.yml</a> specification.
  * 
- * @see <a href="https://github.com/lifs-tools/jmzTab-m#creating-an-mztab-20-object-model">On how to use the jmzTab-m object model.</a>
- * 
- * @see <a href="https://github.com/lifs-tools/jmzTab-m">The jmzTab-m reference implementation.</a>
- * @see <a href="https://hupo-psi.github.io/mzTab/">The mzTab-M specification homepage.</a>
+ * <ul>
+ * <li><a href="https://github.com/lifs-tools/jmzTab-m#creating-an-mztab-20-object-model">How to use the jmzTab-m object model.</a></li>
+ * <li><a href="https://github.com/lifs-tools/jmzTab-m">The jmzTab-m reference implementation.</a></li>
+ * <li><a href="https://hupo-psi.github.io/mzTab/">The mzTab-M specification homepage.</a></li>
+ * </ul>
  * 
  * @author nilshoffmann
  * @since 1.0.0
