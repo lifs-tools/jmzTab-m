@@ -109,6 +109,7 @@ public class ExampleFilesValidationTestIT {
             {STANDARDMIX_POSITIVE_EXPORTSPECIESLEVEL,
                 MZTabErrorType.Level.Info, 0, 6},
             {GCXGC_MS_EXAMPLE, MZTabErrorType.Level.Info, 0, 6},
+            {GCXGC_MS_EXAMPLE, MZTabErrorType.Level.Warn, 0, 0},
             {LIPIDOMICS_EXAMPLE, MZTabErrorType.Level.Warn, 0, 0},
             {LIPIDOMICS_EXAMPLE, MZTabErrorType.Level.Error, 0, 0},
         });
