@@ -318,6 +318,10 @@ You can create server and client code in a multitude of languages from the Gener
 
 == References
 
+This project is the reference implementation for the mzTab-M 2.0 standard:
+
+  * **[N. Hoffmann et al., Analytical Chemistry 2019.](https://pubs.acs.org/doi/10.1021/acs.analchem.8b04310). [PubMed record](http://www.ncbi.nlm.nih.gov/pubmed/30688441).**
+
 This project is based on and uses code that was developed for the https://github.com/PRIDE-Utilities/jmzTab[original jmzTab project]:
 
-http://onlinelibrary.wiley.com/doi/10.1002/pmic.201300560/abstract[Qing-Wei Xu et al., Proteomics 2014; Jun;14(11):1328-32.] http://onlinelibrary.wiley.com/doi/10.1002/pmic.201300560/pdf[PDF File.] https://www.ncbi.nlm.nih.gov/pubmed/24659499[PubMed record.]
+* **http://onlinelibrary.wiley.com/doi/10.1002/pmic.201300560/abstract[Qing-Wei Xu et al., Proteomics 2014; Jun;14(11):1328-32.] http://onlinelibrary.wiley.com/doi/10.1002/pmic.201300560/pdf[PDF File.] https://www.ncbi.nlm.nih.gov/pubmed/24659499[PubMed record.]**
