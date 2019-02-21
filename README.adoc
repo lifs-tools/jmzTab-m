@@ -1,5 +1,6 @@
 = mzTab 2.0 for Metabolomics Reader, Writer and Validator
 Nils Hoffmann <nils.hoffmann@isas.de>
+:toc: macro
 
 image:https://travis-ci.org/lifs-tools/jmzTab-m.svg?branch=master["Build Status", link="https://travis-ci.org/lifs-tools/jmzTab-m"] image:https://img.shields.io/maven-central/v/de.isas.mztab/jmztabm-cli.svg["Maven Central", link="https://search.maven.org/search?q=a:jmztabm-cli"] image:https://img.shields.io/github/release/lifs-tools/jmzTab-m.svg["Latest Release", link="https://github.com/lifs-tools/jmzTab-m/releases/latest"]
 
@@ -8,6 +9,14 @@ This project is the reference reader, writer and validator implementation for mz
 The latest draft version of the mzTab spec is available https://github.com/HUPO-PSI/mzTab[here].
 
 The web-based validator application is available https://github.com/lifs-tools/jmzTab-m-webapp[here].
+
+The Swagger definition file is https://github.com/lifs-tools/jmzTab-m/blob/master/api/src/main/resources/mzTab_m_swagger.yml[here].
+
+The CV mapping file bundled with jmzTab-M is https://github.com/lifs-tools/jmzTab-m/blob/master/validation/src/main/resources/mappings/mzTab-M-mapping.xml[here].
+
+Information on validation messages is available in <<validation-message-templates-and-ids>>.
+
+toc::[]
 
 == Building the project and generating client code from the command-line
 
@@ -275,6 +284,7 @@ The use-cases that were described in the previous sections are also covered in t
 * https://github.com/lifs-tools/jmzTab-m/blob/master/validation/src/test/java/de/isas/mztab2/validation/ExampleFilesValidationTestIT.java[ExampleFilesValidationTestIT] - semantic validation using a mapping file and parameter validation rules.
 * https://github.com/lifs-tools/jmzTab-m/blob/master/validation/src/test/java/de/isas/mztab2/validation/JxPathTest.java[JxPathTest] - Object selection in MzTab models via the JxPath library.
 
+[validation-message-templates-and-ids]
 == Validation message templates and IDs
 
 The reference implementation uses message templates and IDs to uniquely identify each validation message. The catalogs of validation messages have been adapted and substantially extended from the previous reference implementation. The message catalogs can be found at the following locations:
