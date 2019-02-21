@@ -192,7 +192,7 @@ The following snippet will parse an mzTabFile from a file on disk:
   import de.isas.mztab2.model.*;
   ...
   File mzTabFile = new File("/path/to/my/file.mztab");
-  MZTabFileParser parser = new MZTabFileParser(mzTabFile);
+  MzTabFileParser parser = new MzTabFileParser(mzTabFile);
   //will report a maxmimum of 500 errors on Error, Warn and Info levels
   //will output errors to System.err (onto your terminal)
   parser.parse(System.err, MZTabErrorType.Level.Info, 500);
