@@ -145,7 +145,7 @@ public class Serializers {
                                 replaceAll(" ", "_"));
             }
         } else {
-            log.info("OptColumnMapping: {}", ocm);
+            log.debug("OptColumnMapping: {}", ocm);
             // object reference case, value is now the actual value
             sb.append(ocm.getIdentifier());
         }

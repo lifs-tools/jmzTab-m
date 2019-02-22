@@ -185,7 +185,7 @@ public class MZTabColumnFactory {
      */
     public String addOptionalColumn(String name, Class columnType) {
         IMZTabColumn column = new OptionColumn(null, name, columnType,
-            new Integer(getColumnOrder(columnMapping.lastKey())));
+            Integer.parseInt(getColumnOrder(columnMapping.lastKey())));
         return addOptionColumn(column);
     }
 
@@ -204,7 +204,7 @@ public class MZTabColumnFactory {
     public <T extends IndexedElement> String addOptionalColumn(T columnEntity,
         String name, Class columnType) {
         IMZTabColumn column = new OptionColumn(columnEntity, name, columnType,
-            new Integer(getColumnOrder(columnMapping.lastKey())));
+            Integer.parseInt(getColumnOrder(columnMapping.lastKey())));
         return addOptionColumn(column);
     }
 
@@ -219,7 +219,7 @@ public class MZTabColumnFactory {
      */
     public String addOptionalColumn(Parameter param, Class columnType) {
         IMZTabColumn column = new ParameterOptionColumn(null, param, columnType,
-            new Integer(getColumnOrder(columnMapping.lastKey())));
+            Integer.parseInt(getColumnOrder(columnMapping.lastKey())));
         return addOptionColumn(column);
     }
 
@@ -239,7 +239,7 @@ public class MZTabColumnFactory {
     public <T extends IndexedElement> String addOptionalColumn(T columnEntity,
         Parameter param, Class columnType) {
         IMZTabColumn column = new ParameterOptionColumn(columnEntity, param,
-            columnType, new Integer(getColumnOrder(columnMapping.lastKey())));
+            columnType, Integer.parseInt(getColumnOrder(columnMapping.lastKey())));
         return addOptionColumn(column);
     }
 
@@ -253,7 +253,7 @@ public class MZTabColumnFactory {
      */
     public String addAbundanceOptionalColumn(Assay assay, String order) {
         IMZTabColumn column = AbundanceColumn.createOptionalColumn(section,
-            assay, new Integer(order));
+            assay, Integer.parseInt(order));
         checkAbundanceOptionalColumn(column);
         return addOptionColumn(column, order);
     }
@@ -306,7 +306,7 @@ public class MZTabColumnFactory {
         SortedMap<String, MZTabColumn> columns = new TreeMap<>();
 
         MZTabColumn column = new MZTabColumn("id_confidence_measure", columnType,
-            false, new Integer(getColumnOrder(columnMapping.lastKey())) + "",
+            false, Integer.parseInt(getColumnOrder(columnMapping.lastKey())) + "",
             index);
 
         columns.put(column.getLogicPosition(), column);

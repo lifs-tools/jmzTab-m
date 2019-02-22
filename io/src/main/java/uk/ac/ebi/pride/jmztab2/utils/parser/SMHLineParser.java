@@ -113,6 +113,9 @@ public class SMHLineParser extends MZTabHeaderLineParser {
         int order = 0;
 
         for (physicalPosition = 1; physicalPosition < items.length; physicalPosition++) {
+            if(physicalPositionToOrder.containsKey(physicalPosition)) {
+                throw new IllegalArgumentException("Physical position "+physicalPosition+" for item "+items[physicalPosition-1]+" is already assigned!");
+            }
             physicalPositionToOrder.put(physicalPosition, fromIndexToOrder(++order));
         }
         return physicalPositionToOrder;
