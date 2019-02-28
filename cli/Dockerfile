@@ -12,9 +12,9 @@ LABEL version="${APP_VERSION}"
 LABEL software="jmztab-m-cli"
 LABEL software.version="${APP_VERSION}"
 LABEL description="A command line interface for the jmztab-m library for mzTab-M >=2.0"
-LABEL website="https://github.com/nilshoffmann/jmzTab-m"
-LABEL documentation="https://github.com/nilshoffmann/jmzTab-m"
-LABEL license="https://github.com/nilshoffmann/jmzTab-m/blob/master/LICENSE"
+LABEL website="https://github.com/lifs-tools/jmzTab-m"
+LABEL documentation="https://github.com/lifs-tools/jmzTab-m"
+LABEL license="https://github.com/lifs-tools/jmzTab-m/blob/master/LICENSE"
 LABEL tags="Metabolomics Lipidomics"
 
 RUN mkdir /home/data && chmod 755 /home/data

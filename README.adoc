@@ -111,7 +111,7 @@ Then, run the following command, replacing `<VERSION>` with the current version,
 This will only invoke the default entrypoint of the container, which is a shell script wrapper calling the jmztab-m-cli Jar. It passes all arguments to the validator, so that all
 arguments that you would pass normally will work in the same way (please replace `<YOUR_MZTABM_FILE>` with the actual file's name in `<YOUR_DATA_DIR>`:
 
-  docker run -v <YOUR_DATA_DIR>:/hom/data:rw lifs/jmztabm-cli:<VERSION> -validate inFile=<YOUR_MZTABM_FILE>
+  docker run -v <YOUR_DATA_DIR>:/home/data:rw lifs/jmztabm-cli:<VERSION> -validate inFile=<YOUR_MZTABM_FILE>
 
 == Using the project code releases via Maven Central
 
