@@ -314,7 +314,7 @@ definitions:
         type: string
         description: |
             The version of the mzTab file. The suffix MUST be "-M" for mzTab for metabolomics (mzTab-M).
-        pattern: '^\\d{1}\.\\d{1}\.\\d{1}-[A-Z]{1}$'
+        pattern: '^\d{1}\.\d{1}\.\d{1}-[A-Z]{1}$'
         x-mztab-example: |
             MTD	mzTab-version	2.0.0-M
             MTD	mzTab-version	2.0.1-M
