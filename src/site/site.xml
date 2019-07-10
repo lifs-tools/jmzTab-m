@@ -1,0 +1,34 @@
+<project name="jmzTab-m Reference">
+    <skin>
+        <groupId>org.apache.maven.skins</groupId>
+        <artifactId>maven-fluido-skin</artifactId>
+        <version>1.7</version>
+    </skin>
+    <custom>
+        <fluidoSkin>
+            <gitHub>
+                <projectId>lifs-tools/jmzTab-m</projectId>
+                <ribbonOrientation>right</ribbonOrientation>
+                <ribbonColor>black</ribbonColor>
+            </gitHub>
+        </fluidoSkin>
+    </custom>
+    <body>
+        <links>
+            <item name="mzTab-M" href="https://github.com/HUPO-PSI/mzTab"/>
+            <item name="mzTab-M Webapp" href="https://github.com/lifs-tools/jmzTab-m-webapp"/>
+        </links>
+        <menu ref="reports" />
+        <menu ref="parent" />
+        <menu ref="modules" />
+<!--        <menu name="Overview">
+            <item name="Summary" href="summary.html"/>
+            
+        </menu>
+        <menu name="Project Documentation">
+            <item name="Information" href="project-info.html"/>
+            <item name="Modules" href="modules.html"/>
+            <item name="Reports" href="project-reports.html"/>
+        </menu>-->
+    </body>
+</project>

@@ -117,6 +117,8 @@ public class MZTabErrorList {
         }
 
         if (errorList.size() >= maxErrorCount) {
+            log.error("Max error count of {} reached!", maxErrorCount);
+            log.error("{}", this.toString());
             throw new MZTabErrorOverflowException();
         }
 

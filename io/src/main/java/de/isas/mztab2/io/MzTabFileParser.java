@@ -101,7 +101,7 @@ public class MzTabFileParser {
      * @param tabFileUri the MZTab file URI. The file SHOULD not be null and
      * MUST exist {@link uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorList}
      * return by
-     * {@link uk.ac.ebi.pride.jmztab2.utils.MZTabFileParser#getErrorList()}
+     * {@link de.isas.mztab2.io.MzTabFileParser#getErrorList()}
      * @throws java.lang.IllegalArgumentException if the provided argument in
      * invalid.
      */
@@ -128,7 +128,7 @@ public class MzTabFileParser {
      * @param level the minimum error level to report errors for
      * @param maxErrorCount the maximum number of errors to report in the
      * {@link uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorList} return by
-     * {@link uk.ac.ebi.pride.jmztab2.utils.MZTabFileParser#getErrorList()}
+     * {@link de.isas.mztab2.io.MzTabFileParser#getErrorList()}
      * @return the error list
      * @throws java.io.IOException if any io related errors occur.
      */

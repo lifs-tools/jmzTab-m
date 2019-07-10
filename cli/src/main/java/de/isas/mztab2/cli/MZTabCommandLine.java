@@ -127,7 +127,7 @@ public class MZTabCommandLine {
         CommandLine line = parser.parse(options, args);
         if (line.getOptions().length == 0 || line.hasOption(helpOpt)) {
             HelpFormatter formatter = new HelpFormatter();
-            formatter.printHelp("jmztab-cli", options);
+            formatter.printHelp("jmztabm-cli", options);
         } else if (line.hasOption(msgOpt)) {
             handleMsgOption(line, msgOpt, typeMap);
         } else if (line.hasOption(versionOpt)) {
@@ -155,68 +155,63 @@ public class MZTabCommandLine {
     }
 
     protected static String addCheckSemanticOption(Options options) throws IllegalArgumentException {
-        String checkSemanticOpt = "checkSemantic";
-        String mappingFileOpt = "mappingFile";
-        Option mappingFileOption = OptionBuilder.withArgName(mappingFileOpt).
-            hasOptionalArgs(2).
-            withValueSeparator('=').
-            withDescription(
-                "Example: -checkSemantic mappingFile=/path/to/mappingFile.xml. Use the provided mapping file for semantic validation. This parameter may be null. Requires an active internet connection!").
+        String checkSemanticOpt = "s";
+        Option checkSemanticOption = OptionBuilder.
+            withLongOpt("checkSemantic").
+            isRequired(false).
+            hasOptionalArgs(1).
+            withDescription("Example: -s /path/to/mappingFile.xml. Use the provided mapping file for semantic validation. If no mapping file is provided, the default one will be used. Requires an active internet connection!").
             create(checkSemanticOpt);
-        options.addOption(mappingFileOption);
+        options.addOption(checkSemanticOption);
         return checkSemanticOpt;
     }
 
     protected static String addDeserializeOption(Options options) {
         String deserializeOpt = "fromJson";
-        options.addOption(deserializeOpt, false,
-            "Example: -fromJson. Will parse inFile as JSON and write mzTab representation to disk. Requires validation to be successful!");
+        options.addOption(null, deserializeOpt, false,
+            "Example: --fromJson. Will parse inFile as JSON and write mzTab representation to disk. Requires validation to be successful!");
         return deserializeOpt;
     }
 
     protected static String addSerializeOption(Options options) {
         String serializeOpt = "toJson";
-        options.addOption(serializeOpt, false,
-            "Example: -toJson. Will write a json representation of inFile to disk. Requires validation to be successful!");
+        options.addOption(null, serializeOpt, false,
+            "Example: --toJson. Will write a json representation of inFile to disk. Requires validation to be successful!");
         return serializeOpt;
     }
 
     protected static String addLevelOption(Options options) {
-        String levelOpt = "level";
-        options.addOption(levelOpt, true,
+        String levelOpt = "l";
+        options.addOption(levelOpt, "level", true,
             "Choose validation level (Info, Warn, Error), default level is Info!");
         return levelOpt;
     }
-
+    
     protected static String addCheckOption(Options options) throws IllegalArgumentException {
-        String checkOpt = "check";
-        String inFileOpt = "inFile";
-        Option checkOption = OptionBuilder.withArgName(inFileOpt).
-            hasArgs(2).
-            withValueSeparator('=').
-            withDescription(
-                "Example: -check inFile=/path/to/file.mztab. Choose a file from input directory. This parameter should not be null!").
+        String checkOpt = "c";
+        Option checkSemanticOption = OptionBuilder.
+            withLongOpt("check").
+            isRequired(false).
+            hasArgs(1).
+            withDescription("Example: -c /path/to/file.mztab. Check and validate the provided a mzTab file.").
             create(checkOpt);
-        options.addOption(checkOption);
+        options.addOption(checkSemanticOption);
         return checkOpt;
     }
 
     protected static String addOutFileOption(Options options) {
-        String outOpt = "outFile";
-        options.addOption(outOpt, true,
-            "Record validation messages into outfile. If not set, print validation messages to stdout/stderr.");
+        String outOpt = "o";
+        options.addOption(outOpt, "outFile", true,
+            "Example: -o \"output.txt\". Record validation messages into outfile. If not set, print validation messages to stdout/stderr.");
         return outOpt;
     }
 
     protected static String addMessageOption(Options options) throws IllegalArgumentException {
         String msgOpt = "message";
-        String codeOpt = "code";
-        Option msgOption = OptionBuilder.withArgName(codeOpt).
-            hasArgs(2).
-            withValueSeparator().
+        Option msgOption = OptionBuilder.withLongOpt("message").hasArgs(1).
             withDescription(
-                "Example: -message code=1002. Print validation message detail information based on error code.").
-            create(msgOpt);
+                "Example: -m 1002. Print validation message detail information based on error code.").
+            create("m");
         options.addOption(msgOption);
         return msgOpt;
     }
@@ -267,7 +262,7 @@ public class MZTabCommandLine {
     protected static void handleMsgOption(CommandLine line, String msgOpt,
         MZTabErrorTypeMap typeMap) throws NumberFormatException {
         String[] values = line.getOptionValues(msgOpt);
-        Integer code = new Integer(values[1]);
+        Integer code = new Integer(values[0]);
         MZTabErrorType type = typeMap.getType(code);
 
         if (type == null) {
@@ -283,16 +278,11 @@ public class MZTabCommandLine {
         boolean toJson, boolean fromJson) throws URISyntaxException, JAXBException, IllegalArgumentException, IOException {
         boolean errorsOrWarnings = false;
         if (line.hasOption(checkOpt)) {
-            String[] values = line.getOptionValues(checkOpt);
-            if (values.length != 2) {
-                throw new IllegalArgumentException("Not setting input file!");
-            } else {
-                if (!"inFile".equals(values[0])) {
-                    logger.error("Please use the check option as follows, if you want to supply an mzTab file for basic validation: '-check inFile=<path/to/mzTabMfile.mzTab>'");
-                    return true;
-                }
+            String value = line.getOptionValue(checkOpt);
+            if (value == null) {
+                throw new IllegalArgumentException("No input file provided for validation!");
             }
-            File inFile = new File(values[1].trim());
+            File inFile = new File(value.trim());
             if (fromJson) {
                 File tmpFile = new File(inFile.getParentFile(),
                     inFile.getName() + ".mztab");
@@ -349,16 +339,16 @@ public class MZTabCommandLine {
         MZTabErrorType.Level level) throws JAXBException, MalformedURLException, URISyntaxException {
         boolean errorsOrWarnings = false;
         if (line.hasOption(checkSemanticOpt)) {
-            String[] semValues = line.getOptionValues(
+            String semValue = line.getOptionValue(
                 checkSemanticOpt);
             URI mappingFile;
-            if (semValues != null && semValues.length == 2) {
-                if (!"mappingFile".equals(semValues[0])) {
-                    logger.error("Please use the checkSemantic option as follows, if you want to supply a custom mapping file: '-checkSemantic mappingFile=<path/to/mappingfile.xml>'");
-                    return true;
-                }
+            if (semValue != null) {
+//                if (!"mappingFile".equals(semValues[0])) {
+//                    logger.error("Please use the checkSemantic option as follows, if you want to supply a custom mapping file: '-checkSemantic mappingFile=<path/to/mappingfile.xml>'");
+//                    return true;
+//                }
                 // read file from path
-                mappingFile = new File(semValues[1].trim()).
+                mappingFile = new File(semValue.trim()).
                     getAbsoluteFile().
                     toURI();
             } else {

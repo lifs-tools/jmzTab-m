@@ -76,12 +76,12 @@ public class ZipResourceExtractor {
 
                     outname = outname.substring(0, outname.lastIndexOf(
                         '.'));
-                    writeTo(destDir, outname, in);
+                    return writeTo(destDir, outname, in);
                 }
             } else {
                 try (InputStream in = new BufferedInputStream(
                     resourceInputStream)) {
-                    writeTo(destDir, outname, in);
+                    return writeTo(destDir, outname, in);
                 }
             }
 
@@ -93,7 +93,7 @@ public class ZipResourceExtractor {
         return outputFile;
     }
 
-    private static void writeTo(File destDir, String outname, InputStream in) throws FileNotFoundException, IOException {
+    private static File writeTo(File destDir, String outname, InputStream in) throws FileNotFoundException, IOException {
         File outputFile = new File(destDir, outname);
         try (BufferedOutputStream out = new BufferedOutputStream(
             new FileOutputStream(outputFile))) {
@@ -105,6 +105,7 @@ public class ZipResourceExtractor {
                 out.write(buf, 0, len);
             }
         }
+        return outputFile;
     }
 
     /**

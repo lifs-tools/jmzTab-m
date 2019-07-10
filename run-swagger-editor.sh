@@ -1,6 +1,6 @@
 #!/bin/bash
 docker pull swaggerapi/swagger-editor
-PORT=8080
+PORT=8900
 docker run -d --name swagger-editor -p $PORT:8080 swaggerapi/swagger-editor
 echo "Started swagger-editor on port $PORT. Press CTRL-C to stop!"
 #trap ctrl_c SIGINT
