@@ -26,6 +26,7 @@ import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabException;
 import uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType;
 import uk.ac.ebi.pride.jmztab2.utils.errors.LogicalErrorType;
 import de.isas.mztab2.model.Metadata;
+import de.isas.mztab2.model.Parameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -138,7 +139,7 @@ public class SFHLineParser extends MZTabHeaderLineParser {
             mandatoryColumnHeaders.add(column.getName());
         }
 
-        Optional.ofNullable(metadata.getSmallMoleculeFeatureQuantificationUnit()).orElseThrow(() -> 
+        Parameter smallMoleculeFeatureQuantificationUnit = Optional.ofNullable(metadata.getSmallMoleculeFeatureQuantificationUnit()).orElseThrow(() -> 
             new MZTabException(new MZTabError(LogicalErrorType.NoSmallMoleculeFeatureQuantificationUnit, lineNumber)));
 
         for (String columnHeader : mandatoryColumnHeaders) {

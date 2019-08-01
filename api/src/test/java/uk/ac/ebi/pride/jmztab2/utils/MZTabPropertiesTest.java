@@ -15,7 +15,7 @@
  */
 package uk.ac.ebi.pride.jmztab2.utils;
 
-import uk.ac.ebi.pride.jmztab2.utils.MZTabProperties;
+import java.util.Optional;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -35,6 +35,13 @@ public class MZTabPropertiesTest {
         Assert.assertEquals("UTF-8", MZTabProperties.getProperty("mztab.encode"));
         Assert.assertEquals("200", MZTabProperties.getProperty("mztab.max_error_count"));
         Assert.assertEquals("Info", MZTabProperties.getProperty("mztab.level"));
+    }
+    
+    @Test(expected = RuntimeException.class)
+    public void testOrElseThrow() {
+        String s = null;
+        String t = Optional.ofNullable(s).orElseThrow(() -> new RuntimeException("Element was null"));
+        Assert.fail("Should not reach this code!");
     }
     
 }

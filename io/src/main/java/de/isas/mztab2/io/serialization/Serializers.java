@@ -451,12 +451,12 @@ public class Serializers {
             String underscoreName = camelCaseToUnderscoreLowerCase(
                     rootElement.localName());
             if (element instanceof IndexedElement) {
-                if (((IndexedElement) element).getId() == null) {
-                    throw new NullPointerException(
-                            "Field 'id' must not be null for element '" + underscoreName + "'!");
-                }
+                Integer id = Optional.ofNullable(((IndexedElement) element).getId()).orElseThrow(() -> 
+                        new NullPointerException(
+                            "Field 'id' must not be null for element '" + underscoreName + "'!")
+                );
                 return Optional.of(
-                        underscoreName + "[" + ((IndexedElement) element).getId() + "]");
+                        underscoreName + "[" + id + "]");
             }
             return Optional.ofNullable(underscoreName);
         }
@@ -1032,10 +1032,10 @@ public class Serializers {
     }
 
     public static void checkIndexedElement(IndexedElement element) {
-        Optional.ofNullable(element.getId()).orElseThrow(() ->
+        Integer id = Optional.ofNullable(element.getId()).orElseThrow(() ->
             new ValidationException(
                     "'id' field of " + element.toString() + " must not be null!"));
-        if (element.getId() < 1) {
+        if (id < 1) {
             throw new ValidationException(
                     "'id' field of " + element.toString() + " must have a value greater to equal to 1!");
         }

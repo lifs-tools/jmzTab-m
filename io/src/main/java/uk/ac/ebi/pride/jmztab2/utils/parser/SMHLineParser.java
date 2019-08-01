@@ -26,6 +26,7 @@ import uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType;
 import uk.ac.ebi.pride.jmztab2.utils.errors.LogicalErrorType;
 import de.isas.mztab2.model.Assay;
 import de.isas.mztab2.model.Metadata;
+import de.isas.mztab2.model.Parameter;
 import de.isas.mztab2.model.StudyVariable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -143,7 +144,7 @@ public class SMHLineParser extends MZTabHeaderLineParser {
             }
         }
 
-        Optional.ofNullable(metadata.getSmallMoleculeQuantificationUnit()).orElseThrow(() ->
+        Parameter smallMoleculeQuantificationUnit = Optional.ofNullable(metadata.getSmallMoleculeQuantificationUnit()).orElseThrow(() ->
             new MZTabException(new MZTabError(LogicalErrorType.NoSmallMoleculeQuantificationUnit, lineNumber)));
 
         if (metadata.getSmallMoleculeIdentificationReliability() == null) {
