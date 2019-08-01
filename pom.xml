@@ -665,6 +665,7 @@
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <configuration>
                     <source>8</source>
+                    <linksource>true</linksource>
                 </configuration>
                 <reportSets>
                     <reportSet>

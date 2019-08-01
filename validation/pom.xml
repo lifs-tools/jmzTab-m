@@ -193,4 +193,5 @@
         </dependency>
     </dependencies>
     <name>jmztabm-validation</name>
+    <description>Semantic validation with rule mapping and controlled vocabular terms</description>
 </project>

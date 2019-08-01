@@ -53,7 +53,7 @@ import uk.ac.ebi.pride.jmztab2.utils.parser.MZTabParserContext;
  */
 public class MZTabUtils {
     
-    private static final Logger logger = LoggerFactory.getLogger(
+    private static final Logger LOGGER = LoggerFactory.getLogger(
         MZTabUtils.class);
 
     /**
@@ -838,7 +838,7 @@ public class MZTabUtils {
             }
             
             if (count > 2) {
-                logger.warn(
+                LOGGER.warn(
                     "Nested double quotes in value, " + count + " occurrences have been replaced.");
             }
         }

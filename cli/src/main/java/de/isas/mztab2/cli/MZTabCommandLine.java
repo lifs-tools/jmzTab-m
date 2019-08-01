@@ -57,7 +57,7 @@ import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorTypeMap;
  */
 public class MZTabCommandLine {
 
-    private static final Logger logger = LoggerFactory.getLogger(
+    private static final Logger LOGGER = LoggerFactory.getLogger(
         MZTabCommandLine.class);
 
     private static String getAppInfo() throws IOException {
@@ -131,7 +131,7 @@ public class MZTabCommandLine {
         } else if (line.hasOption(msgOpt)) {
             handleMsgOption(line, msgOpt, typeMap);
         } else if (line.hasOption(versionOpt)) {
-            logger.info(getAppInfo());
+            LOGGER.info(getAppInfo());
         } else {
             boolean hadErrorsOrWarnings = handleValidationOptions(line, outOpt,
                 levelOpt, serializeOpt,
@@ -222,7 +222,7 @@ public class MZTabCommandLine {
         File outFile = null;
         if (line.hasOption(outOpt)) {
             outFile = new File(line.getOptionValue(outOpt));
-            logger.info("Redirecting validator output to file {}", outFile);
+            LOGGER.info("Redirecting validator output to file {}", outFile);
         }
 
         try (PrintStream out = outFile == null ? System.out : new PrintStream(
@@ -230,14 +230,14 @@ public class MZTabCommandLine {
                 new FileOutputStream(outFile, false)), true, "UTF8")) {
             System.setOut(out);
             System.setErr(out);
-            logger.info(getAppInfo());
+            LOGGER.info(getAppInfo());
             MZTabErrorType.Level level = MZTabErrorType.Level.Info;
             if (line.hasOption(levelOpt)) {
                 level = MZTabErrorType.findLevel(line.getOptionValue(
                     levelOpt));
-                logger.info("Validator set to level '{}'", level);
+                LOGGER.info("Validator set to level '{}'", level);
             } else {
-                logger.info(
+                LOGGER.info(
                     "Validator set to default level '{}'", level);
             }
             boolean serializeToJson = false;
@@ -253,7 +253,7 @@ public class MZTabCommandLine {
                 checkSemanticOpt,
                 serializeToJson, deserializeFromJson);
         } catch (IOException ex) {
-            logger.error(
+            LOGGER.error(
                 "Caught an IO Exception: ", ex);
             return false;
         }
@@ -266,10 +266,10 @@ public class MZTabCommandLine {
         MZTabErrorType type = typeMap.getType(code);
 
         if (type == null) {
-            logger.warn(
+            LOGGER.warn(
                 "Could not find MZTabErrorType for code:" + code);
         } else {
-            logger.info("MZTabErrorType for code {}: {}", code, type);
+            LOGGER.info("MZTabErrorType for code {}: {}", code, type);
         }
     }
 
@@ -289,12 +289,12 @@ public class MZTabCommandLine {
                 MzTabNonValidatingWriter w = new MzTabNonValidatingWriter();
                 ObjectMapper mapper = new ObjectMapper();
                 MzTab mzTab = mapper.readValue(inFile, MzTab.class);
-                logger.info("Writing JSON as mzTab to file: {}", tmpFile.
+                LOGGER.info("Writing JSON as mzTab to file: {}", tmpFile.
                     getAbsolutePath());
                 w.write(tmpFile.toPath(), mzTab);
                 inFile = tmpFile;
             }
-            logger.info("Beginning validation of mztab file: {}", inFile.
+            LOGGER.info("Beginning validation of mztab file: {}", inFile.
                 getAbsolutePath());
             MzTabFileParser mzTabParser = new MzTabFileParser(inFile);
             MZTabErrorList errorList = mzTabParser.parse(outFile, level);
@@ -312,12 +312,12 @@ public class MZTabCommandLine {
                     count();
                 errorsOrWarnings = nErrorsOrWarnings > 0;
                 //these are reported to std.err already.
-                logger.error(
+                LOGGER.error(
                     "There were " + errorList.size() + " validation messages including " + nErrorsOrWarnings + " warnings or errors during validation your file, please check the output for details!");
             }
             if (toJson) {
                 File jsonFile = new File(inFile.getName() + ".json");
-                logger.error(
+                LOGGER.error(
                     "Writing mzTab object as json to " + jsonFile.
                         getAbsolutePath());
                 ObjectMapper objectMapper = new ObjectMapper().enable(
@@ -328,7 +328,7 @@ public class MZTabCommandLine {
             errorsOrWarnings = errorsOrWarnings || handleSemanticValidation(line,
                 checkSemanticOpt, inFile, outFile,
                 mzTabParser, level);
-            logger.info("Finished validation!");
+            LOGGER.info("Finished validation!");
         }
         return errorsOrWarnings;
     }
@@ -344,7 +344,7 @@ public class MZTabCommandLine {
             URI mappingFile;
             if (semValue != null) {
 //                if (!"mappingFile".equals(semValues[0])) {
-//                    logger.error("Please use the checkSemantic option as follows, if you want to supply a custom mapping file: '-checkSemantic mappingFile=<path/to/mappingfile.xml>'");
+//                    LOGGER.error("Please use the checkSemantic option as follows, if you want to supply a custom mapping file: '-checkSemantic mappingFile=<path/to/mappingfile.xml>'");
 //                    return true;
 //                }
                 // read file from path
@@ -352,14 +352,14 @@ public class MZTabCommandLine {
                     getAbsoluteFile().
                     toURI();
             } else {
-                logger.info(
+                LOGGER.info(
                     "Using default mapping file from classpath: /mappings/mzTab-M-mapping.xml");
                 // read default file
                 mappingFile = CvMappingValidator.class.getResource(
                     "/mappings/mzTab-M-mapping.xml").
                     toURI();
             }
-            logger.info(
+            LOGGER.info(
                 "Beginning semantic validation of mztab file: " + inFile.
                     getAbsolutePath() + " with mapping file: " + mappingFile.
                     toASCIIString());
@@ -397,14 +397,14 @@ public class MZTabCommandLine {
                 }
             } else {
                 for (ValidationMessage message : validationMessages) {
-                    logger.error("{}", message);
+                    LOGGER.error("{}", message);
                 }
             }
             if (!validationMessages.isEmpty()) {
-                logger.error(
+                LOGGER.error(
                     "There were " + validationMessages.size() + " validation messages including " + nErrorsOrWarnings + " warnings or errors during semantic validation of your file, please check the output for details!");
             } else {
-                logger.info(
+                LOGGER.info(
                     "No errors found for semantic validation on level " + level);
             }
         }

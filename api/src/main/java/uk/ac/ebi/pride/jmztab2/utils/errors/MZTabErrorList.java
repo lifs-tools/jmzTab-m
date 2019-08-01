@@ -29,7 +29,7 @@ import static uk.ac.ebi.pride.jmztab2.utils.MZTabProperties.MAX_ERROR_COUNT;
  */
 public class MZTabErrorList {
 
-    private static final Logger log = LoggerFactory.getLogger(
+    private static final Logger LOGGER = LoggerFactory.getLogger(
         MZTabErrorList.class);
 
     private int maxErrorCount;
@@ -117,8 +117,8 @@ public class MZTabErrorList {
         }
 
         if (errorList.size() >= maxErrorCount) {
-            log.error("Max error count of {} reached!", maxErrorCount);
-            log.error("{}", this.toString());
+            LOGGER.error("Max error count of {} reached!", maxErrorCount);
+            LOGGER.error("{}", this.toString());
             throw new MZTabErrorOverflowException();
         }
 
@@ -252,7 +252,7 @@ public class MZTabErrorList {
             errorList.size());
         for (MZTabError error : errorList.getErrorList()) {
             ValidationMessage vr = error.toValidationMessage();
-            log.debug(vr.toString());
+            LOGGER.debug(vr.toString());
             validationResults.add(vr);
         }
         return validationResults;

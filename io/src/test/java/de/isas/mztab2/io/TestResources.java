@@ -40,9 +40,9 @@ public class TestResources {
 
     public static final String MZTAB_VERSION_HEADER = Metadata.PrefixEnum.MTD + MZTabConstants.TAB_STRING + Metadata.Properties.mzTabVersion + MZTabConstants.TAB_STRING + MZTabConstants.VERSION_MZTAB_M + MZTabConstants.NEW_LINE;
 
-    public static MzTab parseResource(TemporaryFolder tf, String resource,
+    public static MzTab parseResource(File tf, String resource,
         MZTabErrorType.Level level, Integer expectedErrors) throws URISyntaxException, IOException, MZTabException, MZTabErrorOverflowException {
-        File testFile = new File(tf.getRoot(), resource);
+        File testFile = new File(tf, resource);
         Assert.assertTrue(testFile.exists() && testFile.isFile());
         MzTabFileParser parser = new MzTabFileParser(testFile);
         parser.parse(System.err, level, 500);

@@ -86,11 +86,7 @@ public class MzTabWriterTest {
     public LogMethodName methodNameLogger = new LogMethodName();
 
     @ClassRule
-    public static TemporaryFolder tf = new TemporaryFolder();
-
-    @ClassRule
-    public static ExtractClassPathFiles extractTestFiles = new ExtractClassPathFiles(
-        tf,
+    public static ExtractClassPathFiles EXTRACT_FILES = new ExtractClassPathFiles(
         MTBLS263,
         MOUSELIVER_NEGATIVE,
         MOUSELIVER_NEGATIVE_MZTAB_NULL_COLUNIT,
@@ -281,7 +277,7 @@ public class MzTabWriterTest {
 
     @Test
     public void testReadWriteRoundtripWithJacksonLipidomicsExample() throws IOException, URISyntaxException, MZTabException {
-        MzTab mzTabFile = TestResources.parseResource(tf,
+        MzTab mzTabFile = TestResources.parseResource(EXTRACT_FILES.getBaseDir(),
             "lipidomics-example.mzTab", MZTabErrorType.Level.Info,
             0);
         File tempFile = File.createTempFile("testReadWriteRoundtripWithJackson",
@@ -314,7 +310,7 @@ public class MzTabWriterTest {
 
     @Test
     public void testReadWriteRoundtripWithJacksonLda2StdMix() throws IOException, URISyntaxException, MZTabException {
-        MzTab mzTabFile = TestResources.parseResource(tf,
+        MzTab mzTabFile = TestResources.parseResource(EXTRACT_FILES.getBaseDir(),
             "StandardMix_positive_exportPositionLevel.mzTab",
             MZTabErrorType.Level.Info,
             0);
@@ -332,7 +328,7 @@ public class MzTabWriterTest {
 
     @Test
     public void testReadWriteRoundtripWithJacksonLda2MouseLiver() throws IOException, URISyntaxException, MZTabException {
-        MzTab mzTabFile = TestResources.parseResource(tf,
+        MzTab mzTabFile = TestResources.parseResource(EXTRACT_FILES.getBaseDir(),
             "MouseLiver_negative.mzTab",
             MZTabErrorType.Level.Info,
             0);
@@ -350,7 +346,7 @@ public class MzTabWriterTest {
 
     @Test
     public void testReadWriteRoundtripWithJacksonMTBLS263() throws IOException, URISyntaxException, MZTabException {
-        MzTab mzTabFile = TestResources.parseResource(tf,
+        MzTab mzTabFile = TestResources.parseResource(EXTRACT_FILES.getBaseDir(),
             "MTBLS263.mztab", MZTabErrorType.Level.Info,
             0);
         File tempFile = File.createTempFile(
@@ -454,7 +450,7 @@ public class MzTabWriterTest {
 
     @Test
     public void testLargeNumberOfFeaturesFromMTBLS263() throws URISyntaxException, IOException, MZTabException {
-        MzTab mzTabFile = TestResources.parseResource(tf,
+        MzTab mzTabFile = TestResources.parseResource(EXTRACT_FILES.getBaseDir(),
             "MTBLS263.mztab", MZTabErrorType.Level.Info,
             0);
         final int expFactor = 100;
@@ -648,7 +644,7 @@ public class MzTabWriterTest {
         summary.setInchi(new ArrayList<>());
         summary.setChemicalName(new ArrayList<>());
         summary.setUri(new ArrayList<>());
-        List<String> adducts = new ArrayList<String>();
+        List<String> adducts = new ArrayList<>();
         adducts.add("[M+H]1+");
         summary.setAdductIons(adducts);
         summary.setReliability("2");
@@ -656,14 +652,14 @@ public class MzTabWriterTest {
             cvAccession("PRIDE:0000330").
             name("Arbitrary quantification unit"));
         summary.setBestIdConfidenceValue(0.02d);
-        List<Double> abundanceAssay = new ArrayList<Double>();
+        List<Double> abundanceAssay = new ArrayList<>();
         for (Assay assay : mtd.getAssay()) {
             abundanceAssay.add(assay.getId().
                 doubleValue() + 0.1d);
         }
         summary.setAbundanceAssay(abundanceAssay);
-        List<Double> abundanceStudyVariable = new ArrayList<Double>();
-        List<Double> abundanceCoeffvarStudyVariable = new ArrayList<Double>();
+        List<Double> abundanceStudyVariable = new ArrayList<>();
+        List<Double> abundanceCoeffvarStudyVariable = new ArrayList<>();
         for (StudyVariable sv : mtd.getStudyVariable()) {
             abundanceStudyVariable.add(sv.getId().
                 doubleValue() + 0.2d);

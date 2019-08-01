@@ -47,29 +47,57 @@ public class CvParameterLookupService {
         };
     }
 
+    /**
+     * Create a new instance of the lookup service with default OLS configuration.
+     */
     public CvParameterLookupService() {
         this(new OLSClient(new OLSWsConfig()));
     }
 
+    /**
+     * Create a new instance of the lookup service with a custom OLSClient.
+     * @param client the custom OLS client
+     */
     public CvParameterLookupService(OLSClient client) {
         this.client = client;
         this.childCache = lruCache(4096);
         this.parentCache = lruCache(4096);
     }
 
+    /**
+     * Create a new instance of the lookup service with a custom OLSWsConfig configuration.
+     * @param config the custom configuration
+     */
     public CvParameterLookupService(OLSWsConfig config) {
         this(new OLSClient(config));
     }
     
+    /**
+     * Clears all query result caches (parent and child).
+     */
     public void clearCaches() {
         this.childCache.clear();
         this.parentCache.clear();
     }
 
+    /**
+     * Resolve all parents of parameter up to an arbitrary depth (actually height, since we go from bottom to top).
+     * Use at your own risk, the OLS service may terminate your connection if the response is too large or takes too long.
+     * @param parameter the parameter to start from
+     * @return a list of all parent parameters for the given parameter
+     * @throws org.springframework.web.client.HttpClientErrorException 
+     */
     public List<Parameter> resolveParents(Parameter parameter) throws org.springframework.web.client.HttpClientErrorException {
         return resolveParents(parameter, -1);
     }
 
+    /**
+     * Resolve all parents of a parameter up to a given maximum depth (1 meaning the immediate parents, -1 meaning all).
+     * @param parameter the parameter to start from
+     * @param levels maximum levels to query
+     * @return a list of all parent parameters for the given parameter
+     * @throws org.springframework.web.client.HttpClientErrorException 
+     */
     public List<Parameter> resolveParents(Parameter parameter, int levels) throws org.springframework.web.client.HttpClientErrorException {
         if (parameter.getCvAccession() == null || parameter.getCvLabel() == null) {
             throw new IllegalArgumentException(
@@ -89,6 +117,13 @@ public class CvParameterLookupService {
         return parents;
     }
 
+    /**
+     * Resolve all children of a parameter up to a given maximum depth (1 meaning immediate children, -1 meaning all).
+     * @param parameter the parameter to start from
+     * @param levels maximum levels to query
+     * @return a list of all child parameters for the given parameter
+     * @throws org.springframework.web.client.HttpClientErrorException 
+     */
     public List<Parameter> resolveChildren(Parameter parameter, int levels) throws org.springframework.web.client.HttpClientErrorException {
         if (parameter.getCvAccession() == null || parameter.getCvLabel() == null) {
             throw new IllegalArgumentException(
@@ -108,10 +143,25 @@ public class CvParameterLookupService {
         return children;
     }
 
+    /**
+     * Resolve all children of a parameter up to an arbitrary depth.
+     * Use at your own risk, the OLS service may terminate your connection if the response is too large or takes too long.
+     * @param parameter the parameter to start from
+     * @return a list of all child parameters for the given parameter
+     * @throws org.springframework.web.client.HttpClientErrorException 
+     */
     public List<Parameter> resolveChildren(Parameter parameter) throws org.springframework.web.client.HttpClientErrorException {
         return resolveChildren(parameter, -1);
     }
 
+    /**
+     * Compares two parameters for their parent to child relationship. The result can be one of: IDENTICAL, if parent and potential child are the same node,
+     * CHILD_OF, if potentialChild is a child of parent (at least 1 level away), or NOT_RELATED, if there is no path from child to parent.
+     * @param parent
+     * @param potentialChild
+     * @return the comparison result
+     * @throws org.springframework.web.client.HttpClientErrorException 
+     */
     public ParameterComparisonResult isChildOfOrSame(Parameter parent,
         Parameter potentialChild) throws org.springframework.web.client.HttpClientErrorException {
         if (parent.getCvAccession().
@@ -121,7 +171,6 @@ public class CvParameterLookupService {
             return ParameterComparisonResult.IDENTICAL;
         }
         List<Parameter> parentsOf = resolveParents(potentialChild);
-//        List<Parameter> childrenOf = resolveChildren(parent);
         boolean result = parentsOf.stream().
             anyMatch((potentialParent) ->
             {

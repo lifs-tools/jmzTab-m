@@ -36,6 +36,13 @@ import org.apache.commons.lang3.tuple.Pair;
  */
 public final class JxPathElement {
 
+    /**
+     * Wrap the provided pointer as a stream of the given object type.
+     * @param <T> the generic object type
+     * @param pointer the pointer in the object tree
+     * @param type the object's type
+     * @return a typed stream of pairs of pointer and typed object
+     */
     public static <T> Stream<Pair<Pointer, T>> toStream(
         Pointer pointer, Class<? extends T> type) {
         if (pointer.getValue() instanceof Collection) {
@@ -47,6 +54,13 @@ public final class JxPathElement {
         return Stream.of(Pair.of(pointer, type.cast(pointer.getValue())));
     }
 
+    /**
+     * Wrap the provided pointer as a list of the given object type.
+     * @param <T> the generic object type
+     * @param pointer the pointer in the object tree
+     * @param type the object's type
+     * @return a typed list of pairs of pointer and typed object
+     */
     public static <T> List<Pair<Pointer, T>> toList(
         Pointer pointer,
         Class<? extends T> type) {
@@ -64,6 +78,15 @@ public final class JxPathElement {
         }
     }
 
+    /**
+     * 
+     * Returns the elements selected by the xpath expression from the provided JXPathContext as a list of the given object type.
+     * @param <T> the generic object type
+     * @param context the jxpath object tree context
+     * @param xpath the xpath expression used for subtree / element selection
+     * @param type the object's type
+     * @return a typed list of pairs of pointer and typed object
+     */
     public static <T> List<Pair<Pointer, T>> toList(
         JXPathContext context, String xpath, Class<? extends T> type) {
         return toStream(context.iteratePointers(xpath), Pointer.class).
@@ -74,6 +97,13 @@ public final class JxPathElement {
             collect(Collectors.toList());
     }
 
+    /**
+     * Creates a typed iterator from an untyped (pre Java 6) iterator.
+     * @param <T> the generic object type
+     * @param iter the original iterator
+     * @param type the object's type
+     * @return a typed iterator of the requested type, backed by the provided iterator.
+     */
     public static <T> Iterator<T> typedIter(final Iterator iter,
         Class<? extends T> type) {
         return new Iterator<T>() {
@@ -89,11 +119,25 @@ public final class JxPathElement {
         };
     }
 
+    /**
+     * Creates a typed stream from an untyped (pre Java 6) iterator.
+     * @param <T> the generic object type
+     * @param iter the original iterator
+     * @param type the object's type
+     * @return a typed iterator of the requested type, backed by the provided iterator.
+     * @see typedIter
+     */
     public static <T> Stream<T> toStream(Iterator iter,
         Class<? extends T> type) {
         return toStream(typedIter(iter, type));
     }
 
+    /**
+     * Wraps the provided typed iterator into a stream, based on Spliterators.
+     * @param <T> the generic object type
+     * @param iter the original iterator
+     * @return a typed (unbounded and ordered) stream, backed by the provided iterator.
+     */
     public static <T> Stream<T> toStream(Iterator<? extends T> iter) {
         return StreamSupport.stream(
             Spliterators.spliteratorUnknownSize(iter, Spliterator.ORDERED),

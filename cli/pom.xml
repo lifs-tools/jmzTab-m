@@ -150,4 +150,5 @@
         </build>
     </profile>
   </profiles>
+    <description>The command line interface for reading, validation and conversion of mzTab-M 2.0 JSON and CSV files</description>
 </project>

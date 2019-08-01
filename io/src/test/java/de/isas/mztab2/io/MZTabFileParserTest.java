@@ -39,11 +39,11 @@ import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import de.isas.mztab2.test.utils.LogMethodName;
+import java.io.File;
 import java.util.Arrays;
 import java.util.Collection;
 import javax.xml.bind.JAXBException;
 import org.junit.ClassRule;
-import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorOverflowException;
@@ -62,11 +62,7 @@ public class MZTabFileParserTest {
     public LogMethodName methodNameLogger = new LogMethodName();
 
     @ClassRule
-    public static final TemporaryFolder TF = new TemporaryFolder();
-
-    @ClassRule
     public static final ExtractClassPathFiles EXTRACT_FILES = new ExtractClassPathFiles(
-        TF,
         MTBLS263,
         MOUSELIVER_NEGATIVE,
         MOUSELIVER_NEGATIVE_MZTAB_NULL_COLUNIT,
@@ -111,11 +107,11 @@ public class MZTabFileParserTest {
 
     @Test
     public void testExamples() throws MZTabException, JAXBException {
-        testExample(TF, resource,
+        testExample(EXTRACT_FILES.getBaseDir(), resource,
             validationLevel, expectedStructuralLogicalErrors);
     }
 
-    void testExample(TemporaryFolder tf, ClassPathFile resource,
+    void testExample(File tf, ClassPathFile resource,
         MZTabErrorType.Level level,
         Integer expectedErrors) throws MZTabException {
         try {
@@ -138,19 +134,11 @@ public class MZTabFileParserTest {
             Logger.getLogger(MZTabFileParserTest.class.getName()).
                 log(Level.SEVERE, null, ex);
             Assert.fail(ex.getMessage());
-        } catch (IOException ex) {
+        } catch (IOException | IndexOutOfBoundsException ex) {
             Logger.getLogger(MZTabFileParserTest.class.getName()).
                 log(Level.SEVERE, null, ex);
             Assert.fail(ex.getMessage());
-        } catch (IndexOutOfBoundsException ex) {
-            Logger.getLogger(MZTabFileParserTest.class.getName()).
-                log(Level.SEVERE, null, ex);
-            Assert.fail(ex.getMessage());
-        } catch (MZTabException e) {
-            Logger.getLogger(MZTabFileParserTest.class.getName()).
-                log(Level.SEVERE, null, e);
-            throw e;
-        } catch (MZTabErrorOverflowException e) {
+        } catch (MZTabException | MZTabErrorOverflowException e) {
             Logger.getLogger(MZTabFileParserTest.class.getName()).
                 log(Level.SEVERE, null, e);
             throw e;

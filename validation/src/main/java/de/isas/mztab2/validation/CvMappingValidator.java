@@ -21,7 +21,6 @@ import de.isas.mztab2.cvmapping.CvParameterLookupService;
 import de.isas.mztab2.cvmapping.JxPathElement;
 import de.isas.mztab2.cvmapping.RemoveUserParams;
 import de.isas.mztab2.cvmapping.RuleEvaluationResult;
-import de.isas.mztab2.io.serialization.ParameterConverter;
 import de.isas.mztab2.model.MzTab;
 import de.isas.mztab2.model.Parameter;
 import de.isas.mztab2.model.ValidationMessage;

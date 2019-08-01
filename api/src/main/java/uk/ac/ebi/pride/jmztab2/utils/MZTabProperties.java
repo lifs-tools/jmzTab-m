@@ -11,7 +11,7 @@ import static uk.ac.ebi.pride.jmztab2.model.MZTabConstants.NEW_LINE;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorType;
 
 /**
- * This class will load the properties used by the mzTab library for message formatting during validation.
+ * This class will load the properties used by the mzTab-M library for message formatting during validation.
  *
  * @author qingwei
  * @author nilshoffmann
@@ -20,7 +20,7 @@ import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorType;
  */
 public final class MZTabProperties {
 
-    private static Logger logger = LoggerFactory.
+    private static Logger LOGGER = LoggerFactory.
         getLogger(MZTabProperties.class);
 
     private MZTabProperties() {
@@ -40,7 +40,7 @@ public final class MZTabProperties {
         try {
             properties.load(MZTabProperties.class.getResourceAsStream(path));
         } catch (IOException e) {
-            logger.error(
+            LOGGER.error(
                 "Could not load properties from classpath location: " + path, e.
                     getMessage());
         }

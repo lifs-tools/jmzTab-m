@@ -22,8 +22,10 @@ import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import static de.isas.mztab2.io.serialization.Serializers.addLineWithNullProperty;
 import static de.isas.mztab2.io.serialization.Serializers.addLineWithProperty;
 import de.isas.mztab2.model.Database;
+import de.isas.mztab2.model.Parameter;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import uk.ac.ebi.pride.jmztab2.model.Section;
 
@@ -73,7 +75,8 @@ public class DatabaseSerializer extends StdSerializer<Database> {
             Serializers.addLineWithPropertyParameters(jg, Section.Metadata.
                 getPrefix(),
                 null, database, Arrays.asList(database.getParam()));
-            if (database.getParam() != null && database.getParam().
+            Optional<Parameter> dbParam = Optional.ofNullable(database.getParam());
+            if (dbParam.isPresent() && dbParam.get().
                 getName().
                 equals("no database")) {
                 addLineWithNullProperty(jg, Section.Metadata.getPrefix(),
@@ -92,8 +95,7 @@ public class DatabaseSerializer extends StdSerializer<Database> {
             }
             addLineWithProperty(jg, Section.Metadata.getPrefix(),
                 Database.Properties.version.getPropertyName(), database,
-                database.getVersion() == null ? "Unknown" : database.
-                getVersion());
+                Optional.ofNullable(database.getVersion()).orElse("Unknown"));
 
         } else {
            log.debug(Database.class.getSimpleName() + " is null!");

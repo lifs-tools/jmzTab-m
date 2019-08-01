@@ -46,7 +46,7 @@ import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorList;
  */
 public class SMHLineParser extends MZTabHeaderLineParser {
 
-    private static final Logger logger = LoggerFactory.getLogger(SMHLineParser.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SMHLineParser.class);
     private Map<Integer, String> physPositionToOrder;
 
 
@@ -94,7 +94,7 @@ public class SMHLineParser extends MZTabHeaderLineParser {
             if (column != null) {
                 if (!column.getOrder().equals(physPositionToOrder.get(physicalPosition))) {
                     column.setOrder(physPositionToOrder.get(physicalPosition));
-                    logger.debug(column.toString());
+                    LOGGER.debug(column.toString());
                 }
                 if(column.isOptional()){
                     optionalMapping.put(column.getLogicPosition(), column);
@@ -143,9 +143,8 @@ public class SMHLineParser extends MZTabHeaderLineParser {
             }
         }
 
-        if (metadata.getSmallMoleculeQuantificationUnit() == null) {
-            throw new MZTabException(new MZTabError(LogicalErrorType.NoSmallMoleculeQuantificationUnit, lineNumber));
-        }
+        Optional.ofNullable(metadata.getSmallMoleculeQuantificationUnit()).orElseThrow(() ->
+            new MZTabException(new MZTabError(LogicalErrorType.NoSmallMoleculeQuantificationUnit, lineNumber)));
 
         if (metadata.getSmallMoleculeIdentificationReliability() == null) {
             throw new MZTabException(new MZTabError(LogicalErrorType.NoSmallMoleculeIdentificationReliability, lineNumber));

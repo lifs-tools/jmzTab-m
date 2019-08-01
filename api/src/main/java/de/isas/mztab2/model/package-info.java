@@ -22,6 +22,15 @@
  * <li><a href="https://hupo-psi.github.io/mzTab/">The mzTab-M specification homepage.</a></li>
  * </ul>
  * 
+ * <p>The <a href="MzTab.html">MzTab</a> object is the root of the mzTab-M model hierarchy. It contains the following child sections:
+ * <ul>
+ * <li><a href="Metadata.html">Metadata</a> - The metadata section provides additional information about the dataset(s) reported in the mzTab file</li>
+ * <li><a href="SmallMoleculeSummary.html">SmallMoleculeSummary</a> - Each row of the small molecule summary section is intended to report one final result to be communicated in terms of a molecule that has been quantified.</li>
+ * <li><a href="SmallMoleculeFeature.html">SmallMoleculeFeature</a> - Each row of the small molecule feature section represents individual MS regions (generally considered to be the elution profile for all isotopomers formed from a single charge state of a molecule), that have been measured/quantified. Different adducts or derivatives and different charge states of individual molecules should be reported as separate SMF rows.</li>
+ * <li><a href="SmallMoleculeEvidence.html">SmallMoleculeEvidence</a> - Each row of the small molecule evidence section represents evidence for identifications of small molecules/features, from database search or any other process used to give putative identifications to molecules. In a typical case, each row represents one result from a single search or intepretation of a piece of evidence e.g. a database search with a fragmentation spectrum. Multiple results from a given input data item (e.g. one fragment spectrum) SHOULD share the same value under evidence_input_id.</li> 
+ * </ul>
+ * </p>
+ * 
  * @author nilshoffmann
  * @since 1.0.0
  * @version 1.0.2

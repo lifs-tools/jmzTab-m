@@ -43,6 +43,16 @@ public class ExtractClassPathFiles extends ExternalResource {
      * <p>
      * Constructor for ExtractClassPathFiles.</p>
      *
+     * @param classPathFiles an array of {@link ClassPathFile} objects to extract.
+     */
+    public ExtractClassPathFiles(ClassPathFile... classPathFiles) {
+        this(new TemporaryFolder(), classPathFiles);
+    }
+    
+    /**
+     * <p>
+     * Constructor for ExtractClassPathFiles.</p>
+     *
      * @param tf a {@link org.junit.rules.TemporaryFolder} object.
      * @param classPathFiles an array of {@link ClassPathFile} objects to extract.
      */
@@ -87,6 +97,7 @@ public class ExtractClassPathFiles extends ExternalResource {
                 }
             }
         }
+        tf.delete();
     }
 
     /**

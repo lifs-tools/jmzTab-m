@@ -16,7 +16,6 @@
 package de.isas.mztab2.cli;
 
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *

@@ -288,4 +288,5 @@
             <artifactId>javax.annotation-api</artifactId>
         </dependency>
     </dependencies>
+    <description>The data model for the mzTab-M 2.0 data standard format for metabolomics.</description>
 </project>

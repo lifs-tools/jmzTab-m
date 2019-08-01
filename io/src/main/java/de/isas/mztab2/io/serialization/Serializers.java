@@ -192,7 +192,8 @@ public class Serializers {
             JsonGenerator jg, SerializerProvider sp, String prefix,
             Object element,
             List<T> indexedElementList) {
-        if (indexedElementList == null || indexedElementList.isEmpty()) {
+        Optional<List<T>> iel = Optional.ofNullable(indexedElementList);
+        if (iel.isEmpty() || indexedElementList.isEmpty()) {
 
             log.debug(
                     "Skipping null or empty indexed element list values for {}",
@@ -1031,10 +1032,9 @@ public class Serializers {
     }
 
     public static void checkIndexedElement(IndexedElement element) {
-        if (element.getId() == null) {
-            throw new ValidationException(
-                    "'id' field of " + element.toString() + " must not be null!");
-        }
+        Optional.ofNullable(element.getId()).orElseThrow(() ->
+            new ValidationException(
+                    "'id' field of " + element.toString() + " must not be null!"));
         if (element.getId() < 1) {
             throw new ValidationException(
                     "'id' field of " + element.toString() + " must have a value greater to equal to 1!");

@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 /**
- * This package contains the property file mapping for mzTab-M's validation messages.
+ * This package contains custom validation annotations for the javax.validation framework.
  */
-package uk.ac.ebi.pride.jmztab2.utils;
+package de.isas.lipidomics.mztab2.validation.constraints;

@@ -56,7 +56,7 @@ import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorType.Level;
  */
 public class MzTabValidatingWriter implements MzTabWriter<List<ValidationMessage>> {
 
-    private static final Logger logger = LoggerFactory.getLogger(
+    private static final Logger LOGGER = LoggerFactory.getLogger(
         MzTabValidatingWriter.class);
 
     private final Validator<MzTab> validator;
@@ -108,7 +108,7 @@ public class MzTabValidatingWriter implements MzTabWriter<List<ValidationMessage
      */
     public static class WriteAndParseValidator implements Validator<MzTab> {
 
-        private static final Logger logger = LoggerFactory.getLogger(
+        private static final Logger LOGGER = LoggerFactory.getLogger(
             WriteAndParseValidator.class);
 
         private final OutputStream outputStream;
@@ -150,14 +150,14 @@ public class MzTabValidatingWriter implements MzTabWriter<List<ValidationMessage
                         convertToValidationMessages();
                 }
             } catch (IOException ex) {
-                logger.error(
+                LOGGER.error(
                     "Caught exception while trying to parse " + mzTabFile, ex);
             } finally {
                 if (mzTabFile != null && mzTabFile.exists()) {
                     if(!mzTabFile.delete()) {
-                        logger.warn("Deletion of "+mzTabFile+" failed!");
+                        LOGGER.warn("Deletion of "+mzTabFile+" failed!");
                     }
-                };
+                }
             }
             return Collections.emptyList();
         }

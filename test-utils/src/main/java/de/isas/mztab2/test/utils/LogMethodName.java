@@ -19,7 +19,7 @@ import org.junit.rules.TestWatcher;
 import org.junit.runner.Description;
 
 /**
- * JUnit TestWatcher to log the executed test method name.
+ * JUnit TestWatcher to LOGGER the executed test method name.
  *
  * @author nilshoffmann
  */

@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 /**
- * This package contains the property file mapping for mzTab-M's validation messages.
+ * This package contains the generated Java objects created via XML binding from the <a href="https://github.com/lifs-tools/jmzTab-m/blob/master/validation/src/main/resources/schema/CvMapping.xsd">PSI-MS mapping file schema</a>. 
  */
-package uk.ac.ebi.pride.jmztab2.utils;
+package info.psidev.cvmapping;

@@ -31,6 +31,11 @@ import uk.ac.ebi.pride.utilities.ols.web.service.model.Term;
  */
 public class CvMappingUtils {
 
+    /**
+     * Maps the provided requirement level to the corresponding MZTabErrorType.Level.
+     * @param requirementLevel the requirement level
+     * @return the corresponding error type level
+     */
     public static MZTabErrorType.Level toErrorLevel(
         CvMappingRule.RequirementLevel requirementLevel) {
         switch (requirementLevel) {
@@ -46,6 +51,11 @@ public class CvMappingUtils {
         }
     }
 
+    /**
+     * Creates a user-friendly string of a mapping rule.
+     * @param rule the cv mapping rule
+     * @return the string representation
+     */
     public static String niceToString(CvMappingRule rule) {
         StringBuilder sb = new StringBuilder();
         switch (rule.getRequirementLevel()) {
@@ -113,6 +123,12 @@ public class CvMappingUtils {
         return sb.toString();
     }
 
+    /**
+     * Creates a string representation of a mapping rule.
+     * @param rule the cv mapping rule
+     * @return the string representation
+     * @see niceToString for a nicer string intended for humans
+     */
     public static String toString(CvMappingRule rule) {
         StringBuilder sb = new StringBuilder();
         return sb.append("Rule{").

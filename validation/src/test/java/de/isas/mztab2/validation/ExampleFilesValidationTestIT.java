@@ -40,9 +40,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javax.xml.bind.JAXBException;
 import lombok.extern.slf4j.Slf4j;
@@ -158,29 +155,14 @@ public class ExampleFilesValidationTestIT {
             }
             return messages;
         } catch (URISyntaxException ex) {
-            Logger.getLogger(ExampleFilesValidationTestIT.class.getName()).
-                log(Level.SEVERE, null, ex);
+            log.error("Failed with exception:", ex);
             Assert.fail(ex.getMessage());
-        } catch (IOException ex) {
-            Logger.getLogger(ExampleFilesValidationTestIT.class.getName()).
-                log(Level.SEVERE, null, ex);
+        } catch (IOException | IndexOutOfBoundsException ex) {
+            log.error("Failed with exception:", ex);
             Assert.fail(ex.getMessage());
-        } catch (IndexOutOfBoundsException ex) {
-            Logger.getLogger(ExampleFilesValidationTestIT.class.getName()).
-                log(Level.SEVERE, null, ex);
-            Assert.fail(ex.getMessage());
-        } catch (MZTabException e) {
-            Logger.getLogger(ExampleFilesValidationTestIT.class.getName()).
-                log(Level.SEVERE, null, e);
+        } catch (MZTabException | MZTabErrorOverflowException | JAXBException e) {
+            log.error("Failed with exception:", e);
             throw e;
-        } catch (MZTabErrorOverflowException e) {
-            Logger.getLogger(ExampleFilesValidationTestIT.class.getName()).
-                log(Level.SEVERE, null, e);
-            throw e;
-        } catch (JAXBException ex) {
-            Logger.getLogger(ExampleFilesValidationTestIT.class.getName()).
-                log(Level.SEVERE, null, ex);
-            throw ex;
         }
         return Collections.emptyList();
     }

@@ -46,7 +46,7 @@ import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorList;
  */
 public class SEHLineParser extends MZTabHeaderLineParser {
 
-    private static final Logger logger = LoggerFactory.getLogger(SEHLineParser.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SEHLineParser.class);
     private Map<Integer, String> physPositionToOrder;
 
 
@@ -95,7 +95,7 @@ public class SEHLineParser extends MZTabHeaderLineParser {
             if (column != null) {
                 if (!column.getOrder().equals(physPositionToOrder.get(physicalPosition))) {
                     column.setOrder(physPositionToOrder.get(physicalPosition));
-                    logger.debug(column.toString());
+                    LOGGER.debug(column.toString());
                 }
                 if(column.isOptional()){
                     optionalMapping.put(column.getLogicPosition(), column);

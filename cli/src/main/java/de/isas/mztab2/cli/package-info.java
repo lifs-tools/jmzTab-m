@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 /**
- * This package contains the property file mapping for mzTab-M's validation messages.
+ * This package contains the command line interface for jmzTab-M validation and conversion.
  */
-package uk.ac.ebi.pride.jmztab2.utils;
+package de.isas.mztab2.cli;

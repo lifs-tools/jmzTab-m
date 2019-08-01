@@ -13,4 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/**
+ * This package contains implementations for reading and writing of mzTab-M files.
+ */
 package de.isas.mztab2.io;

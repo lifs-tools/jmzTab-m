@@ -15,7 +15,6 @@
  */
 package de.isas.mztab2.io;
 
-import de.isas.mztab2.model.CV;
 import de.isas.mztab2.model.ColumnParameterMapping;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabError;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabException;

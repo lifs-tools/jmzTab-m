@@ -34,6 +34,7 @@ import de.isas.mztab2.model.SpectraRef;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import java.util.SortedMap;
 import java.util.regex.Matcher;
@@ -42,7 +43,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import static uk.ac.ebi.pride.jmztab2.model.MZTabConstants.*;
 import static uk.ac.ebi.pride.jmztab2.model.MZTabUtils.*;
-import uk.ac.ebi.pride.jmztab2.model.SmallMoleculeEvidenceColumn;
 
 /**
  * This class allows the validation and loading of the data into mzTab domain
@@ -848,7 +848,7 @@ public abstract class MZTabDataLineParser<T> extends MZTabLineParser {
         } else {
             for (SpectraRef ref : refList) {
                 MsRun run = ref.getMsRun();
-                if (run.getLocation() == null) {
+                if (Optional.ofNullable(run.getLocation()).isEmpty()) {
                     //As the location can be null and the field is mandatory, this is not an error, it is a warning
                     this.errorList.add(new MZTabError(
                         LogicalErrorType.SpectraRef, lineNumber, column.

@@ -53,4 +53,5 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+    <description>Reading, writing and basic validation of mzTab-M data files in JSON, CSV or object format.</description>
 </project>

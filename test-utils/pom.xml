@@ -19,4 +19,5 @@
       <scope>compile</scope>
     </dependency>
   </dependencies>
+    <description>Utilities for extracting and testing of mzTab-M test files.</description>
 </project>

@@ -42,7 +42,7 @@ import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorList;
  */
 public class SFHLineParser extends MZTabHeaderLineParser {
 
-    private static final Logger logger = LoggerFactory.getLogger(SFHLineParser.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SFHLineParser.class);
     private Map<Integer, String> physPositionToOrder;
 
 
@@ -92,7 +92,7 @@ public class SFHLineParser extends MZTabHeaderLineParser {
             if (column != null) {
                 if (!column.getOrder().equals(physPositionToOrder.get(physicalPosition))) {
                     column.setOrder(physPositionToOrder.get(physicalPosition));
-                    logger.debug(column.toString());
+                    LOGGER.debug(column.toString());
                 }
                 if(column.isOptional()){
                     optionalMapping.put(column.getLogicPosition(), column);
@@ -138,9 +138,8 @@ public class SFHLineParser extends MZTabHeaderLineParser {
             mandatoryColumnHeaders.add(column.getName());
         }
 
-        if (metadata.getSmallMoleculeFeatureQuantificationUnit() == null) {
-            throw new MZTabException(new MZTabError(LogicalErrorType.NoSmallMoleculeFeatureQuantificationUnit, lineNumber));
-        }
+        Optional.ofNullable(metadata.getSmallMoleculeFeatureQuantificationUnit()).orElseThrow(() -> 
+            new MZTabException(new MZTabError(LogicalErrorType.NoSmallMoleculeFeatureQuantificationUnit, lineNumber)));
 
         for (String columnHeader : mandatoryColumnHeaders) {
             if (factory.findColumnByHeader(columnHeader) == null) {

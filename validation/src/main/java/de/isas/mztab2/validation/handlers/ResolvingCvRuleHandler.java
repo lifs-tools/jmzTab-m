@@ -111,11 +111,6 @@ public class ResolvingCvRuleHandler implements CvRuleHandler {
                                     log.debug(pair.getValue().
                                         getCvAccession() + " is not related to " + cvTerm.
                                             getTermAccession());
-//                                    //add term from rule as is
-//                                    allowedParameters.put(cvTerm.
-//                                        getTermAccession().
-//                                        toUpperCase(), Parameters.asParameter(
-//                                            cvTerm));
                                     //add found parameter as is
                                     foundParameters.put(pair.getValue().
                                         getCvAccession().
@@ -147,7 +142,6 @@ public class ResolvingCvRuleHandler implements CvRuleHandler {
                             equals(pair.getValue().
                                 getCvAccession().
                                 toUpperCase())) {
-                            //TODO repeatable terms
                             allowedParameters.put(pair.getValue().
                                 getCvAccession().
                                 toUpperCase(), CvMappingUtils.

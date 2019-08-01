@@ -45,7 +45,7 @@ public class XorValidationHandler implements CvTermValidationHandler {
         // xor logic means, if one of the defined terms or its children is set, none of the others is allowed
         final List<ValidationMessage> messages = new ArrayList<>();
         // all defined terms or children thereof need to appear
-        Set<String> matchedParameters = new HashSet<String>();
+        Set<String> matchedParameters = new HashSet<>();
         matchedParameters.addAll(result.getAllowedParameters().
             keySet());
         matchedParameters.retainAll(result.getFoundParameters().
