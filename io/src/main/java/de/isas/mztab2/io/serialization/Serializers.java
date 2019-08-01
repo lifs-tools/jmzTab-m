@@ -193,7 +193,7 @@ public class Serializers {
             Object element,
             List<T> indexedElementList) {
         Optional<List<T>> iel = Optional.ofNullable(indexedElementList);
-        if (iel.isEmpty() || indexedElementList.isEmpty()) {
+        if (!iel.isPresent() || indexedElementList.isEmpty()) {
 
             log.debug(
                     "Skipping null or empty indexed element list values for {}",
