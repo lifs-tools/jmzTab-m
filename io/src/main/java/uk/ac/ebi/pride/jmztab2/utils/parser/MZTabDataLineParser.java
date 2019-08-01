@@ -848,7 +848,7 @@ public abstract class MZTabDataLineParser<T> extends MZTabLineParser {
         } else {
             for (SpectraRef ref : refList) {
                 MsRun run = ref.getMsRun();
-                if (Optional.ofNullable(run.getLocation()).isEmpty()) {
+                if (!Optional.ofNullable(run.getLocation()).isPresent()) {
                     //As the location can be null and the field is mandatory, this is not an error, it is a warning
                     this.errorList.add(new MZTabError(
                         LogicalErrorType.SpectraRef, lineNumber, column.
