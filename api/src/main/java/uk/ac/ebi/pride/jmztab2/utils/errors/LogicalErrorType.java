@@ -1,5 +1,7 @@
 package uk.ac.ebi.pride.jmztab2.utils.errors;
 
+import java.util.Arrays;
+
 /**
  * Reporting errors related to the logical relationships among the different
  * sections in a file. Reference:
@@ -225,14 +227,29 @@ public final class LogicalErrorType extends MZTabErrorType {
      * Constant <code>UnknownRefId</code>
      */
     public static final MZTabErrorType UnknownRefId = createError(Category.Logical, "UnknownRefId");
+    
+    /**
+     * Constant <code>SingleStudyVariableName</code>
+     */
+    public static final MZTabErrorType SingleStudyVariableName = createError(Category.Logical, "SingleStudyVariableName");
+    
+    /**
+     * Constant <code>UndefinedStudyVariableNameOnceOnly</code>
+     */
+    public static final MZTabErrorType UndefinedStudyVariableNameOnceOnly = createError(Category.Logical, "UndefinedStudyVariableNameOnceOnly");
+    
 
-    public static final MZTabErrorType[] VALUES = {
+    private static final MZTabErrorType[] VALUES = {
         NULL, NotNULL, LineOrder, HeaderLine, NoHeaderLine,
         MsRunNotDefined, AssayNotDefined, StudyVariableNotDefined, ProteinSearchEngineScoreNotDefined, PeptideSearchEngineScoreNotDefined, PSMSearchEngineScoreNotDefined, SmallMoleculeSearchEngineScoreNotDefined,
         MsRunHashMethodNotDefined, NotDefineInMetadata, NotDefineInHeader, DuplicationDefine, DuplicationAccession, AssayRefs, ProteinCoverage, IdNumber, ModificationPosition, CHEMMODS, SubstituteIdentifier,
         SoftwareVersion, AbundanceColumnTogether, AbundanceColumnSameId, SpectraRef, AmbiguityMod, MsRunLocation, FixedMod, VariableMod, PeptideSection, QuantificationAbundance, DuplicationID, ColumnNotValid,
         HeaderNotValid, NoMetadataSection, NoSmallMoleculeEvidenceSection, NoSmallMoleculeFeatureSection, NoSmallMoleculeSummarySection, NoSmallMoleculeQuantificationUnit, NoSmallMoleculeFeatureQuantificationUnit,
-        NoSmallMoleculeIdentificationReliability, ExternalStudyIdFormatNotDefined, ExternalStudyFormatNotDefined, NoDatabaseMustHaveNullPrefix, ItemNumberMismatch, UnknownRefId
+        NoSmallMoleculeIdentificationReliability, ExternalStudyIdFormatNotDefined, ExternalStudyFormatNotDefined, NoDatabaseMustHaveNullPrefix, ItemNumberMismatch, UnknownRefId, SingleStudyVariableName, UndefinedStudyVariableNameOnceOnly
     };
+    
+    public static MZTabErrorType[] getValues() {
+        return Arrays.copyOf(VALUES, VALUES.length);
+    }
 
 }

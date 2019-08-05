@@ -21,7 +21,7 @@ import static org.junit.Assert.*;
 
 /**
  *
- * @author nils.hoffmann
+ * @author nilshoffmann
  */
 public class MZTabErrorTypeMapTest {
 
@@ -32,13 +32,13 @@ public class MZTabErrorTypeMapTest {
     public void testGetType() {
         MZTabErrorTypeMap instance = new MZTabErrorTypeMap();
         
-        for(MZTabErrorType formatErrorType: FormatErrorType.VALUES) {
+        for(MZTabErrorType formatErrorType: FormatErrorType.getValues()) {
             assertEquals(formatErrorType, instance.getType(formatErrorType.getCode()));
         }
-        for(MZTabErrorType logicalErrorType:LogicalErrorType.VALUES) {
+        for(MZTabErrorType logicalErrorType:LogicalErrorType.getValues()) {
             assertEquals(logicalErrorType, instance.getType(logicalErrorType.getCode()));
         }
-        for(MZTabErrorType crossCheckErrorType:CrossCheckErrorType.VALUES) {
+        for(MZTabErrorType crossCheckErrorType:CrossCheckErrorType.getValues()) {
             assertEquals(crossCheckErrorType, instance.getType(crossCheckErrorType.getCode()));
         }
     }
@@ -50,7 +50,7 @@ public class MZTabErrorTypeMapTest {
     public void testGetTypeMap() {
         MZTabErrorTypeMap instance = new MZTabErrorTypeMap();
         Map<Integer, MZTabErrorType> result = instance.getTypeMap();
-        assertEquals(95, result.size());
+        assertEquals(97, result.size());
     }
     
 }

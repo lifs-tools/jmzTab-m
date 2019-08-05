@@ -23,13 +23,13 @@ public final class MZTabErrorTypeMap {
      * <p>Constructor for MZTabErrorTypeMap.</p>
      */
     public MZTabErrorTypeMap() {
-        Arrays.stream(FormatErrorType.VALUES).forEach((error) -> {
+        Arrays.stream(FormatErrorType.getValues()).forEach((error) -> {
             add(error);
         });
-        Arrays.stream(LogicalErrorType.VALUES).forEach((error) -> {
+        Arrays.stream(LogicalErrorType.getValues()).forEach((error) -> {
             add(error);
         });
-        Arrays.stream(CrossCheckErrorType.VALUES).forEach((error) -> {
+        Arrays.stream(CrossCheckErrorType.getValues()).forEach((error) -> {
             add(error);
         });
     }

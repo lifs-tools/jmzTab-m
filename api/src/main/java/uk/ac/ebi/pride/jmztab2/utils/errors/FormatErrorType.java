@@ -1,5 +1,6 @@
 package uk.ac.ebi.pride.jmztab2.utils.errors;
 
+import java.util.Arrays;
 import static uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorType.Category.Format;
 
 /**
@@ -29,27 +30,27 @@ public final class FormatErrorType extends MZTabErrorType {
      * Constant <code>IndexedElement</code>
      */
     public static final MZTabErrorType IndexedElement = createError(Format,
-        "IndexedElement");
+            "IndexedElement");
     /**
      * Constant <code>AbundanceColumn</code>
      */
     public static final MZTabErrorType AbundanceColumn = createError(Format,
-        "AbundanceColumn");
+            "AbundanceColumn");
     /**
      * Constant <code>MsRunOptionalColumn</code>
      */
     public static final MZTabErrorType MsRunOptionalColumn = createError(Format,
-        "MsRunOptionalColumn");
+            "MsRunOptionalColumn");
     /**
      * Constant <code>OptionalCVParamColumn</code>
      */
     public static final MZTabErrorType OptionalCVParamColumn = createError(Format,
-        "OptionalCVParamColumn");
+            "OptionalCVParamColumn");
     /**
      * Constant <code>StableColumn</code>
      */
     public static final MZTabErrorType StableColumn = createError(Format,
-        "StableColumn");
+            "StableColumn");
 
     /**
      * Constant <code>MTDLine</code>
@@ -59,7 +60,7 @@ public final class FormatErrorType extends MZTabErrorType {
      * Constant <code>MTDDefineLabel</code>
      */
     public static final MZTabErrorType MTDDefineLabel = createError(Format,
-        "MTDDefineLabel");
+            "MTDDefineLabel");
     /**
      * Constant <code>MZTabMode</code>
      */
@@ -76,7 +77,7 @@ public final class FormatErrorType extends MZTabErrorType {
      * Constant <code>MZTabVersion</code>
      */
     public static final MZTabErrorType MZTabVersion = createError(Format,
-        "MZTabVersion");
+            "MZTabVersion");
     /**
      * Constant <code>Param</code>
      */
@@ -126,7 +127,7 @@ public final class FormatErrorType extends MZTabErrorType {
      * Constant <code>ModificationList</code>
      */
     public static final MZTabErrorType ModificationList = createError(Format,
-        "ModificationList");
+            "ModificationList");
     /**
      * Constant <code>GOTermList</code>
      */
@@ -143,17 +144,17 @@ public final class FormatErrorType extends MZTabErrorType {
      * Constant <code>CHEMMODSAccession</code>
      */
     public static final MZTabErrorType CHEMMODSAccession = createError(Format,
-        "CHEMMODSAccession");
+            "CHEMMODSAccession");
     /**
      * Constant <code>SearchEngineScore</code>
      */
     public static final MZTabErrorType SearchEngineScore = createWarn(Format,
-        "SearchEngineScore");
+            "SearchEngineScore");
     /**
      * Constant <code>Sequence</code>
      */
     public static final MZTabErrorType Sequence = createWarn(Format,
-        "SearchEngineScore");
+            "SearchEngineScore");
 
     /**
      * Constant <code>ColUnit</code>
@@ -169,20 +170,24 @@ public final class FormatErrorType extends MZTabErrorType {
      * Constant <code>RegexMismatch</code>
      */
     public static final MZTabErrorType RegexMismatch = createError(Format, "RegexMismatch");
-    
+
     /**
      * Constant <code>ParamAccessionNotNamespaced</code>
      */
     public static final MZTabErrorType ParamAccessionNotNamespaced = createWarn(Format, "ParamAccessionNotNamespaced");
-    
+
     /**
      * Constant <code>InvalidColunitFormat</code>
      */
     public static final MZTabErrorType InvalidColunitFormat = createError(Format, "InvalidColunitFormat");
-    
-    public static final MZTabErrorType[] VALUES = {
+
+    private static final MZTabErrorType[] VALUES = {
         LinePrefix, CountMatch, IndexedElement, AbundanceColumn, MsRunOptionalColumn, OptionalCVParamColumn, StableColumn, MTDLine, MTDDefineLabel, MZTabMode,
         MZTabType, MZTabId, MZTabVersion, Param, ParamList, Publication, URI, URL, Email, Integer, Double, Reliability, StringList, DoubleList, ModificationList, GOTermList,
         MZBoolean, SpectraRef, CHEMMODSAccession, SearchEngineScore, Sequence, ColUnit, IntegerList, RegexMismatch, ParamAccessionNotNamespaced, InvalidColunitFormat
     };
+
+    public static MZTabErrorType[] getValues() {
+        return Arrays.copyOf(VALUES, VALUES.length);
+    }
 }

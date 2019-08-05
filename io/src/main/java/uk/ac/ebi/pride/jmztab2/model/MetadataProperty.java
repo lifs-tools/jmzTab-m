@@ -15,6 +15,8 @@
  */
 package uk.ac.ebi.pride.jmztab2.model;
 
+import java.util.Optional;
+
 /**
  * Define a property in metadata, which depend on the {@link uk.ac.ebi.pride.jmztab2.model.MetadataElement}.
  *
@@ -120,11 +122,11 @@ public enum MetadataProperty {
      *
      * @param element a {@link uk.ac.ebi.pride.jmztab2.model.MetadataElement} object.
      * @param propertyName a {@link java.lang.String} object.
-     * @return a {@link uk.ac.ebi.pride.jmztab2.model.MetadataProperty} object.
+     * @return an optional {@link uk.ac.ebi.pride.jmztab2.model.MetadataProperty} object.
      */
-    public static MetadataProperty findProperty(MetadataElement element, String propertyName) {
+    public static Optional<MetadataProperty> findProperty(MetadataElement element, String propertyName) {
         if (element == null || propertyName == null) {
-            return null;
+            return Optional.empty();
         }
 
         MetadataProperty property;
@@ -134,6 +136,6 @@ public enum MetadataProperty {
             property = null;
         }
 
-        return property;
+        return Optional.ofNullable(property);
     }
 }

@@ -1,5 +1,7 @@
 package uk.ac.ebi.pride.jmztab2.utils.errors;
 
+import java.util.Arrays;
+
 /**
  * Provide crosscheck service, that is parse the consistent between current mztab file and
  * some other resource (eg, database, xml file and so on).
@@ -58,9 +60,13 @@ public final class CrossCheckErrorType extends MZTabErrorType {
     /** Constant <code>SemanticValidationException</code> */
     public static final MZTabErrorType SemanticValidationException = createError(Category.CrossCheck, "SemanticValidationException");
     
-    public static final MZTabErrorType[] VALUES = {
+    private static final MZTabErrorType[] VALUES = {
         Species, CvTermNotAllowed, CvTermRequired, CvTermRecommended, CvTermOptional, CvTermNotInRule, RulePointerObjectNullRequired, RulePointerObjectNullRecommended, RulePointerObjectNullOptional, 
         CvTermXor, CvTermMalformed, CvUndefinedInMetadata, CvUnused, SemanticValidationException
     };
+    
+    public static MZTabErrorType[] getValues() {
+        return Arrays.copyOf(VALUES, VALUES.length);
+    }
 
 }

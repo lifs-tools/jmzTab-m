@@ -29,7 +29,7 @@ import org.junit.rules.TemporaryFolder;
  * <p>
  * ExtractClassPathFiles class.</p>
  *
- * @author Nils Hoffmann
+ * @author nilshoffmann
  *
  */
 public class ExtractClassPathFiles extends ExternalResource {

@@ -15,6 +15,17 @@
  */
 package uk.ac.ebi.pride.jmztab2.utils.parser;
 
+import de.isas.mztab2.io.validators.AssayValidator;
+import de.isas.mztab2.io.validators.CvValidator;
+import de.isas.mztab2.io.validators.DatabaseValidator;
+import de.isas.mztab2.io.validators.MsRunValidator;
+import de.isas.mztab2.io.validators.MzTabIdValidator;
+import de.isas.mztab2.io.validators.MzTabVersionValidator;
+import de.isas.mztab2.io.validators.QuantificationMethodValidator;
+import de.isas.mztab2.io.validators.SmallMoleculeFeatureQuantificationUnitValidator;
+import de.isas.mztab2.io.validators.SmallMoleculeQuantificationUnitValidator;
+import de.isas.mztab2.io.validators.SoftwareValidator;
+import de.isas.mztab2.io.validators.StudyVariableValidator;
 import de.isas.mztab2.model.Assay;
 import de.isas.mztab2.model.CV;
 import de.isas.mztab2.model.Contact;
@@ -48,6 +59,7 @@ import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorList;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorOverflowException;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorType;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabException;
+import de.isas.mztab2.io.validators.MetadataValidator;
 
 /**
  * Parse a metadata line into a element. Metadata Element start with MTD, its
@@ -128,15 +140,15 @@ public class MTDLineParser extends MZTabLineParser {
             return null;
         }
 
-        MetadataProperty property = MetadataProperty.findProperty(element,
+        Optional<MetadataProperty> property = MetadataProperty.findProperty(element,
             propertyName);
-        if (property == null) {
+        if (property.isEmpty()) {
             MZTabError error = new MZTabError(FormatErrorType.MTDDefineLabel,
                 lineNumber, element.getName() + "-" + propertyName);
             throw new MZTabException(error);
         }
 
-        return property;
+        return property.get();
     }
 
     /**
@@ -708,6 +720,12 @@ public class MTDLineParser extends MZTabLineParser {
                 throw new MZTabException(error);
         }
     }
+    
+    private <T> void validate(T t, MetadataValidator<T> validator, MZTabParserContext context, MZTabErrorList errorList) {
+        validator.validateRefine(t, context).forEach((error) -> {
+            errorList.add(error);
+        });
+    }
 
     /**
      * Refine the metadata, and check whether missing some important
@@ -717,187 +735,18 @@ public class MTDLineParser extends MZTabLineParser {
      * @throws uk.ac.ebi.pride.jmztab2.utils.errors.MZTabException if any.
      */
     public void refineNormalMetadata() throws MZTabException {
-        SortedMap<Integer, StudyVariable> svMap = context.getStudyVariableMap();
-        SortedMap<Integer, Assay> assayMap = context.getAssayMap();
-        SortedMap<Integer, MsRun> runMap = context.getMsRunMap();
-
-        if (metadata.getMzTabVersion() == null) {
-
-            errorList.add(new MZTabError(
-                LogicalErrorType.NotDefineInMetadata, -1,
-                Metadata.Properties.mzTabVersion.getPropertyName(),
-                metadata.getMzTabVersion()));
-        }
-
-        if (metadata.getMzTabID() == null) {
-            errorList.add(new MZTabError(
-                LogicalErrorType.NotDefineInMetadata, -1,
-                Metadata.Properties.mzTabID.getPropertyName(),
-                metadata.getMzTabVersion()));
-        }
-
-        if (metadata.getSoftware() == null) {
-            errorList.add(new MZTabError(
-                LogicalErrorType.NotDefineInMetadata, -1,
-                Metadata.Properties.software.getPropertyName(),
-                metadata.getMzTabVersion()));
-        }
-
-        if (metadata.getQuantificationMethod() == null) {
-            errorList.add(new MZTabError(
-                LogicalErrorType.NotDefineInMetadata, -1,
-                Metadata.Properties.quantificationMethod.getPropertyName()));
-        }
-
-        if (assayMap.isEmpty()) {
-            errorList.add(new MZTabError(
-                LogicalErrorType.NotDefineInMetadata, -1,
-                Metadata.Properties.assay + ""));
-        }
-
-        for (Integer id : assayMap.keySet()) {
-            if (assayMap.get(id).
-                getMsRunRef() == null) {
-                errorList.add(new MZTabError(
-                    LogicalErrorType.NotDefineInMetadata, -1,
-                    Metadata.Properties.assay + "[" + id + "]-" + Assay.Properties.msRunRef));
-            }
-        }
-
-        if (svMap.isEmpty()) {
-            errorList.add(new MZTabError(
-                LogicalErrorType.NotDefineInMetadata, -1,
-                Metadata.Properties.studyVariable + ""));
-        } else {
-            for (Integer id : svMap.keySet()) {
-                if (svMap.get(id).
-                    getName() == null) {
-                    errorList.add(new MZTabError(
-                        LogicalErrorType.NotDefineInMetadata, -1,
-                        Metadata.Properties.studyVariable + "[" + id + "]" + "\t" + "<NAME>"));
-                }
-                if (svMap.get(id).
-                    getDescription() == null) {
-                    errorList.add(new MZTabError(
-                        LogicalErrorType.NotDefineInMetadata, -1,
-                        Metadata.Properties.studyVariable + "[" + id + "]-" + StudyVariable.Properties.description + "\t" + "<DESCRIPTION>"));
-                }
-            }
-        }
-
-        if (svMap.size() > 0 && assayMap.size() > 0) {
-            for (Integer id : svMap.keySet()) {
-                if (svMap.get(id).
-                    getAssayRefs().
-                    size() == 0) {
-                    errorList.add(new MZTabError(
-                        LogicalErrorType.AssayRefs, -1,
-                        Metadata.Properties.studyVariable + "[" + id + "]-" + StudyVariable.Properties.assayRefs));
-                }
-            }
-        }
-
-        for (Integer id : runMap.keySet()) {
-            if (runMap.get(id).
-                getLocation() == null) {
-                errorList.add(new MZTabError(
-                    LogicalErrorType.NotDefineInMetadata, -1,
-                    Metadata.Properties.msRun + "[" + id + "]-" + MsRun.Properties.location));
-            }
-            List<Parameter> scanPolarity = runMap.get(id).
-                getScanPolarity();
-            if (scanPolarity == null || scanPolarity.isEmpty()) {
-                errorList.add(new MZTabError(
-                    LogicalErrorType.NotDefineInMetadata, -1,
-                    Metadata.Properties.msRun + "[" + id + "]-" + MsRun.Properties.scanPolarity));
-            }
-
-        }
-
-        if (metadata.getCv() == null || metadata.getCv().
-            isEmpty()) {
-            errorList.add(new MZTabError(
-                LogicalErrorType.NotDefineInMetadata, -1,
-                Metadata.Properties.cv + ""));
-        } else {
-            for (CV cv : metadata.getCv()) {
-                if (cv.getLabel() == null) {
-                    errorList.add(new MZTabError(
-                        LogicalErrorType.NotDefineInMetadata, -1,
-                        Metadata.Properties.cv + "[" + cv.getId() + "]-" + CV.Properties.label));
-                }
-                if (cv.getFullName() == null) {
-                    errorList.add(new MZTabError(
-                        LogicalErrorType.NotDefineInMetadata, -1,
-                        Metadata.Properties.cv + "[" + cv.getId() + "]-" + CV.Properties.fullName));
-                }
-                if (cv.getVersion() == null) {
-                    errorList.add(new MZTabError(
-                        LogicalErrorType.NotDefineInMetadata, -1,
-                        Metadata.Properties.cv + "[" + cv.getId() + "]-" + CV.Properties.version));
-                }
-                if (cv.getUri() == null) {
-                    errorList.add(new MZTabError(
-                        LogicalErrorType.NotDefineInMetadata, -1,
-                        Metadata.Properties.cv + "[" + cv.getId() + "]-" + CV.Properties.uri));
-                }
-            }
-        }
-        if (metadata.getDatabase() == null || metadata.getDatabase().
-            isEmpty()) {
-            errorList.add(new MZTabError(
-                LogicalErrorType.NotDefineInMetadata, -1,
-                Metadata.Properties.database + ""));
-        } else {
-            for (Database db : metadata.getDatabase()) {
-                if (db.getParam().
-                    getName().
-                    equals("no database")) {
-                    if (db.getPrefix() != null && !db.getPrefix().
-                        equals("null")) {
-                        errorList.add(new MZTabError(
-                            LogicalErrorType.NoDatabaseMustHaveNullPrefix,
-                            -1,
-                            db.getId() + "", db.getPrefix()));
-                    }
-                    if (db.getUri() != null && !db.getUri().
-                        equals("null")) {
-                        errorList.add(new MZTabError(
-                            LogicalErrorType.NotDefineInMetadata, -1,
-                            Metadata.Properties.database + "[" + db.getId() + "]-" + Database.Properties.uri));
-                    }
-                } else {
-                    if (db.getUri() == null) {
-                        errorList.add(new MZTabError(
-                            LogicalErrorType.NotDefineInMetadata, -1,
-                            Metadata.Properties.database + "[" + db.getId() + "]-" + Database.Properties.uri));
-                    }
-                }
-                if (db.getVersion() == null) {
-                    errorList.add(new MZTabError(
-                        LogicalErrorType.NotDefineInMetadata, -1,
-                        Metadata.Properties.database + "[" + db.getId() + "]-" + Database.Properties.version));
-                }
-            }
-        }
-
-        if (metadata.getSmallMoleculeQuantificationUnit() == null) {
-            errorList.add(new MZTabError(
-                LogicalErrorType.NotDefineInMetadata, -1,
-                Metadata.Properties.smallMoleculeQuantificationUnit + ""));
-        }
-        if (metadata.getSmallMoleculeFeatureQuantificationUnit() == null) {
-            errorList.add(new MZTabError(
-                LogicalErrorType.NotDefineInMetadata, -1,
-                Metadata.Properties.smallMoleculeFeatureQuantificationUnit + ""));
-        }
-        if (metadata.getIdConfidenceMeasure() == null || metadata.
-            getIdConfidenceMeasure().
-            isEmpty()) {
-            errorList.add(new MZTabError(
-                LogicalErrorType.NotDefineInMetadata, -1,
-                Metadata.Properties.idConfidenceMeasure + ""));
-        }
+        validate(metadata, new MzTabVersionValidator(), context, errorList);
+        validate(metadata, new MzTabIdValidator(), context, errorList);
+        validate(metadata, new SoftwareValidator(), context, errorList);
+        validate(metadata, new QuantificationMethodValidator(), context, errorList);
+        validate(metadata, new AssayValidator(), context, errorList);
+        validate(metadata, new StudyVariableValidator(), context, errorList);
+        validate(metadata, new MsRunValidator(), context, errorList);
+        validate(metadata, new CvValidator(), context, errorList);
+        validate(metadata, new DatabaseValidator(), context, errorList);
+        validate(metadata, new SmallMoleculeQuantificationUnitValidator(), context, errorList);
+        validate(metadata, new SmallMoleculeFeatureQuantificationUnitValidator(), context, errorList);
+        validate(metadata, new SmallMoleculeQuantificationUnitValidator(), context, errorList);
     }
 
     /**

@@ -33,7 +33,7 @@ import java.util.zip.ZipInputStream;
  * <p>
  * ZipResourceExtractor class.</p>
  *
- * @author Nils Hoffmann
+ * @author nilshoffmann
  *
  */
 public class ZipResourceExtractor {

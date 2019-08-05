@@ -26,7 +26,7 @@ import static org.junit.Assert.*;
 
 /**
  *
- * @author nils.hoffmann
+ * @author nilshoffmann
  */
 public class MzTabValidatorTest {
 

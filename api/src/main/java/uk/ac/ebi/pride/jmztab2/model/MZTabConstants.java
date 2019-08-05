@@ -4,7 +4,7 @@ package uk.ac.ebi.pride.jmztab2.model;
  * Define a couple of constants used in the jmzTab API.
  *
  * @author qingwei
- * @author Nils Hoffmann
+ * @author nilshoffmann
  * @since 08/03/13
  * 
  */
