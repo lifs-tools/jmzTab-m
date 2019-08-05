@@ -142,7 +142,7 @@ public class MTDLineParser extends MZTabLineParser {
 
         Optional<MetadataProperty> property = MetadataProperty.findProperty(element,
             propertyName);
-        if (property.isEmpty()) {
+        if (!property.isPresent()) {
             MZTabError error = new MZTabError(FormatErrorType.MTDDefineLabel,
                 lineNumber, element.getName() + "-" + propertyName);
             throw new MZTabException(error);
