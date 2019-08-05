@@ -16,23 +16,22 @@
 package uk.ac.ebi.pride.jmztab2.utils.parser;
 
 import de.isas.mztab2.model.Assay;
-import uk.ac.ebi.pride.jmztab2.model.MZTabColumnFactory;
-import uk.ac.ebi.pride.jmztab2.model.ISmallMoleculeFeatureColumn;
-import uk.ac.ebi.pride.jmztab2.model.IMZTabColumn;
-import uk.ac.ebi.pride.jmztab2.model.SmallMoleculeFeatureColumn;
-import uk.ac.ebi.pride.jmztab2.model.Section;
-import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabError;
-import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabException;
-import uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType;
-import uk.ac.ebi.pride.jmztab2.utils.errors.LogicalErrorType;
 import de.isas.mztab2.model.Metadata;
 import de.isas.mztab2.model.Parameter;
+import java.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.*;
+import uk.ac.ebi.pride.jmztab2.model.IMZTabColumn;
+import uk.ac.ebi.pride.jmztab2.model.ISmallMoleculeFeatureColumn;
+import uk.ac.ebi.pride.jmztab2.model.MZTabColumnFactory;
 import uk.ac.ebi.pride.jmztab2.model.MZTabConstants;
+import uk.ac.ebi.pride.jmztab2.model.Section;
+import uk.ac.ebi.pride.jmztab2.model.SmallMoleculeFeatureColumn;
+import uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType;
+import uk.ac.ebi.pride.jmztab2.utils.errors.LogicalErrorType;
+import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabError;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorList;
+import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabException;
 
 /**
  * Parse and validate Small Molecule Feature header line into a {@link uk.ac.ebi.pride.jmztab2.model.MZTabColumnFactory}.

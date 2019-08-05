@@ -15,20 +15,17 @@
  */
 package uk.ac.ebi.pride.jmztab2.utils.parser;
 
-import uk.ac.ebi.pride.jmztab2.utils.parser.MTDLineParser;
-import uk.ac.ebi.pride.jmztab2.utils.parser.MZTabParserContext;
 import de.isas.mztab2.model.Assay;
 import de.isas.mztab2.model.Metadata;
 import de.isas.mztab2.model.Sample;
-import org.slf4j.Logger;
-import org.junit.Before;
-import org.junit.Test;
-import org.slf4j.LoggerFactory;
-
+import de.isas.mztab2.test.utils.LogMethodName;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import org.junit.Before;
 import org.junit.Rule;
-import de.isas.mztab2.test.utils.LogMethodName;
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType;
 import uk.ac.ebi.pride.jmztab2.utils.errors.LogicalErrorType;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorList;

@@ -1,13 +1,11 @@
 package uk.ac.ebi.pride.jmztab2.utils;
 
-import uk.ac.ebi.pride.jmztab2.utils.errors.LogicalErrorType;
-
 import java.io.IOException;
 import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import static uk.ac.ebi.pride.jmztab2.model.MZTabConstants.NEW_LINE;
+import uk.ac.ebi.pride.jmztab2.utils.errors.LogicalErrorType;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorType;
 
 /**

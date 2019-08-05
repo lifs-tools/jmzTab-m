@@ -15,7 +15,6 @@
  */
 package de.isas.mztab2.io.serialization;
 
-import de.isas.mztab2.io.serialization.ParameterConverter;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import de.isas.mztab2.io.AbstractSerializerTest;
 import de.isas.mztab2.io.TestResources;

@@ -1,6 +1,7 @@
 package uk.ac.ebi.pride.jmztab2.utils.errors;
 
 import java.io.Serializable;
+import java.util.Objects;
 import uk.ac.ebi.pride.jmztab2.model.MZTabStringUtils;
 import uk.ac.ebi.pride.jmztab2.utils.MZTabProperties;
 
@@ -177,6 +178,43 @@ public class MZTabErrorType implements Serializable {
         return cause;
     }
 
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 29 * hash + Objects.hashCode(this.code);
+        hash = 29 * hash + Objects.hashCode(this.category);
+        hash = 29 * hash + Objects.hashCode(this.original);
+        hash = 29 * hash + Objects.hashCode(this.cause);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final MZTabErrorType other = (MZTabErrorType) obj;
+        if (!Objects.equals(this.original, other.original)) {
+            return false;
+        }
+        if (!Objects.equals(this.cause, other.cause)) {
+            return false;
+        }
+        if (!Objects.equals(this.code, other.code)) {
+            return false;
+        }
+        if (this.category != other.category) {
+            return false;
+        }
+        return true;
+    }
+
     /**
      * Code: Unique number for error/warn
      * Category: Currently, there are three types of messages: Format, Logical
@@ -185,6 +223,7 @@ public class MZTabErrorType implements Serializable {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         return  "    Code:\t" + code + "\r\n" +
                 "Category:\t" + category + "\r\n" +

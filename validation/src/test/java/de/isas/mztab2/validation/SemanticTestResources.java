@@ -15,13 +15,13 @@
  */
 package de.isas.mztab2.validation;
 
+import de.isas.mztab2.io.MzTabFileParser;
 import de.isas.mztab2.model.MzTab;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import org.junit.Assert;
 import org.junit.rules.TemporaryFolder;
-import de.isas.mztab2.io.MzTabFileParser;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorOverflowException;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorType;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabException;

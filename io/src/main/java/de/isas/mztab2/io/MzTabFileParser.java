@@ -16,23 +16,6 @@
 package de.isas.mztab2.io;
 
 import de.isas.mztab2.model.ColumnParameterMapping;
-import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabError;
-import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabException;
-import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorList;
-import uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType;
-import uk.ac.ebi.pride.jmztab2.utils.errors.LogicalErrorType;
-import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorType;
-import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorOverflowException;
-import uk.ac.ebi.pride.jmztab2.utils.parser.SFHLineParser;
-import uk.ac.ebi.pride.jmztab2.utils.parser.PositionMapping;
-import uk.ac.ebi.pride.jmztab2.utils.parser.SMFLineParser;
-import uk.ac.ebi.pride.jmztab2.utils.parser.MZTabParserContext;
-import uk.ac.ebi.pride.jmztab2.utils.parser.SEHLineParser;
-import uk.ac.ebi.pride.jmztab2.utils.parser.MTDLineParser;
-import uk.ac.ebi.pride.jmztab2.utils.parser.SMLLineParser;
-import uk.ac.ebi.pride.jmztab2.utils.parser.SMELineParser;
-import uk.ac.ebi.pride.jmztab2.utils.parser.SMHLineParser;
-import uk.ac.ebi.pride.jmztab2.utils.parser.COMLineParser;
 import de.isas.mztab2.model.Comment;
 import de.isas.mztab2.model.Metadata;
 import de.isas.mztab2.model.MsRun;
@@ -40,7 +23,6 @@ import de.isas.mztab2.model.MzTab;
 import de.isas.mztab2.model.SmallMoleculeEvidence;
 import de.isas.mztab2.model.SmallMoleculeFeature;
 import de.isas.mztab2.model.SmallMoleculeSummary;
-
 import java.io.*;
 import java.net.URI;
 import java.net.URL;
@@ -63,6 +45,23 @@ import static uk.ac.ebi.pride.jmztab2.model.MZTabConstants.TAB;
 import uk.ac.ebi.pride.jmztab2.model.MZTabStringUtils;
 import uk.ac.ebi.pride.jmztab2.model.Section;
 import static uk.ac.ebi.pride.jmztab2.utils.MZTabProperties.*;
+import uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType;
+import uk.ac.ebi.pride.jmztab2.utils.errors.LogicalErrorType;
+import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabError;
+import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorList;
+import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorOverflowException;
+import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorType;
+import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabException;
+import uk.ac.ebi.pride.jmztab2.utils.parser.COMLineParser;
+import uk.ac.ebi.pride.jmztab2.utils.parser.MTDLineParser;
+import uk.ac.ebi.pride.jmztab2.utils.parser.MZTabParserContext;
+import uk.ac.ebi.pride.jmztab2.utils.parser.PositionMapping;
+import uk.ac.ebi.pride.jmztab2.utils.parser.SEHLineParser;
+import uk.ac.ebi.pride.jmztab2.utils.parser.SFHLineParser;
+import uk.ac.ebi.pride.jmztab2.utils.parser.SMELineParser;
+import uk.ac.ebi.pride.jmztab2.utils.parser.SMFLineParser;
+import uk.ac.ebi.pride.jmztab2.utils.parser.SMHLineParser;
+import uk.ac.ebi.pride.jmztab2.utils.parser.SMLLineParser;
 
 /**
  *

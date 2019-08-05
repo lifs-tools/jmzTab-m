@@ -179,4 +179,10 @@ public final class FormatErrorType extends MZTabErrorType {
      * Constant <code>InvalidColunitFormat</code>
      */
     public static final MZTabErrorType InvalidColunitFormat = createError(Format, "InvalidColunitFormat");
+    
+    public static final MZTabErrorType[] VALUES = {
+        LinePrefix, CountMatch, IndexedElement, AbundanceColumn, MsRunOptionalColumn, OptionalCVParamColumn, StableColumn, MTDLine, MTDDefineLabel, MZTabMode,
+        MZTabType, MZTabId, MZTabVersion, Param, ParamList, Publication, URI, URL, Email, Integer, Double, Reliability, StringList, DoubleList, ModificationList, GOTermList,
+        MZBoolean, SpectraRef, CHEMMODSAccession, SearchEngineScore, Sequence, ColUnit, IntegerList, RegexMismatch, ParamAccessionNotNamespaced, InvalidColunitFormat
+    };
 }

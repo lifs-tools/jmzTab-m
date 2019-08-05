@@ -15,10 +15,9 @@
  */
 package de.isas.mztab2.io.serialization;
 
-import de.isas.mztab2.io.serialization.ParameterConverter;
 import de.isas.mztab2.model.Parameter;
-import org.junit.Test;
 import static org.junit.Assert.*;
+import org.junit.Test;
 
 /**
  *

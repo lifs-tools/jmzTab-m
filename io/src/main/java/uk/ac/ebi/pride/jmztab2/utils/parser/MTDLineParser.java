@@ -15,14 +15,6 @@
  */
 package uk.ac.ebi.pride.jmztab2.utils.parser;
 
-import uk.ac.ebi.pride.jmztab2.model.MetadataProperty;
-import uk.ac.ebi.pride.jmztab2.model.MetadataElement;
-import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabError;
-import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabException;
-import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorList;
-import uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType;
-import uk.ac.ebi.pride.jmztab2.utils.errors.LogicalErrorType;
-import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorOverflowException;
 import de.isas.mztab2.model.Assay;
 import de.isas.mztab2.model.CV;
 import de.isas.mztab2.model.Contact;
@@ -39,16 +31,23 @@ import de.isas.mztab2.model.Software;
 import de.isas.mztab2.model.StudyVariable;
 import de.isas.mztab2.model.Uri;
 import java.net.URI;
-
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import uk.ac.ebi.pride.jmztab2.model.MZTabConstants;
-import static uk.ac.ebi.pride.jmztab2.model.MZTabUtils.*;
 import static uk.ac.ebi.pride.jmztab2.model.MZTabStringUtils.*;
+import static uk.ac.ebi.pride.jmztab2.model.MZTabUtils.*;
+import uk.ac.ebi.pride.jmztab2.model.MetadataElement;
+import uk.ac.ebi.pride.jmztab2.model.MetadataProperty;
+import uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType;
+import uk.ac.ebi.pride.jmztab2.utils.errors.LogicalErrorType;
+import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabError;
+import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorList;
+import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorOverflowException;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorType;
+import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabException;
 
 /**
  * Parse a metadata line into a element. Metadata Element start with MTD, its

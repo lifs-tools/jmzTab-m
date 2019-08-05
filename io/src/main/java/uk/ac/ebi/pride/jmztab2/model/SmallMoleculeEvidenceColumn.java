@@ -17,9 +17,9 @@ package uk.ac.ebi.pride.jmztab2.model;
 
 import de.isas.mztab2.model.IndexedElement;
 import de.isas.mztab2.model.Parameter;
-import de.isas.mztab2.model.StringList;
 import de.isas.mztab2.model.SmallMoleculeEvidence;
 import static de.isas.mztab2.model.SmallMoleculeEvidence.Properties.*;
+import de.isas.mztab2.model.StringList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;

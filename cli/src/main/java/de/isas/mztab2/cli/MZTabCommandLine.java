@@ -17,14 +17,13 @@ package de.isas.mztab2.cli;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import de.isas.mztab2.io.MzTabFileParser;
 import de.isas.mztab2.io.MzTabNonValidatingWriter;
-import de.isas.mztab2.validation.CvMappingValidator;
 import de.isas.mztab2.model.MzTab;
 import de.isas.mztab2.model.ValidationMessage;
 import static de.isas.mztab2.model.ValidationMessage.MessageTypeEnum.ERROR;
 import static de.isas.mztab2.model.ValidationMessage.MessageTypeEnum.WARN;
-import org.apache.commons.cli.*;
-
+import de.isas.mztab2.validation.CvMappingValidator;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -38,9 +37,9 @@ import java.util.List;
 import java.util.Properties;
 import java.util.stream.Collectors;
 import javax.xml.bind.JAXBException;
+import org.apache.commons.cli.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import de.isas.mztab2.io.MzTabFileParser;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabError;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorList;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorType;

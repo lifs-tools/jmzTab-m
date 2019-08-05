@@ -24,7 +24,6 @@ import de.isas.mztab2.model.SmallMoleculeFeature;
 import java.util.Arrays;
 import org.junit.Assert;
 import org.junit.Test;
-import org.junit.Ignore;
 import uk.ac.ebi.pride.jmztab2.model.MZTabConstants;
 
 /**

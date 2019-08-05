@@ -15,12 +15,11 @@
  */
 package uk.ac.ebi.pride.jmztab2.model;
 
-import uk.ac.ebi.pride.jmztab2.model.Section;
+import de.isas.mztab2.test.utils.LogMethodName;
 import org.junit.Assert;
-import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.Rule;
-import de.isas.mztab2.test.utils.LogMethodName;
+import org.junit.Test;
 import static uk.ac.ebi.pride.jmztab2.model.Section.Comment;
 import static uk.ac.ebi.pride.jmztab2.model.Section.Metadata;
 import static uk.ac.ebi.pride.jmztab2.model.Section.PSM_Header;

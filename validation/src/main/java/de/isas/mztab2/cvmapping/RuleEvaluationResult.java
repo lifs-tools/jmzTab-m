@@ -19,7 +19,6 @@ import de.isas.mztab2.model.Parameter;
 import info.psidev.cvmapping.CvMappingRule;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import lombok.Value;
 import org.apache.commons.jxpath.Pointer;
 import org.apache.commons.lang3.tuple.Pair;

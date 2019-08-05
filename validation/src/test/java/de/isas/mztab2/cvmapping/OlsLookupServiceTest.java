@@ -15,6 +15,7 @@
  */
 package de.isas.mztab2.cvmapping;
 
+import static de.isas.mztab2.cvmapping.CvMappingUtils.isEqualTo;
 import de.isas.mztab2.model.Parameter;
 import java.util.List;
 import static org.hamcrest.CoreMatchers.allOf;
@@ -28,7 +29,6 @@ import uk.ac.ebi.pride.utilities.ols.web.service.client.OLSClient;
 import uk.ac.ebi.pride.utilities.ols.web.service.config.OLSWsConfig;
 import uk.ac.ebi.pride.utilities.ols.web.service.model.Identifier;
 import uk.ac.ebi.pride.utilities.ols.web.service.model.Term;
-import static de.isas.mztab2.cvmapping.CvMappingUtils.isEqualTo;
 
 /**
  *

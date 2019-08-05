@@ -16,17 +16,6 @@
 package uk.ac.ebi.pride.jmztab2.utils.parser;
 
 import de.isas.mztab2.io.serialization.ParameterConverter;
-import uk.ac.ebi.pride.jmztab2.model.MZTabColumnFactory;
-import uk.ac.ebi.pride.jmztab2.model.MZTabConstants;
-import uk.ac.ebi.pride.jmztab2.model.MZBoolean;
-import uk.ac.ebi.pride.jmztab2.model.IMZTabColumn;
-import uk.ac.ebi.pride.jmztab2.model.SplitList;
-import uk.ac.ebi.pride.jmztab2.model.MZTabUtils;
-import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabError;
-import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabException;
-import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorList;
-import uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType;
-import uk.ac.ebi.pride.jmztab2.utils.errors.LogicalErrorType;
 import de.isas.mztab2.model.Metadata;
 import de.isas.mztab2.model.MsRun;
 import de.isas.mztab2.model.Parameter;
@@ -35,14 +24,23 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-
 import java.util.SortedMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import lombok.extern.slf4j.Slf4j;
-
+import uk.ac.ebi.pride.jmztab2.model.IMZTabColumn;
+import uk.ac.ebi.pride.jmztab2.model.MZBoolean;
+import uk.ac.ebi.pride.jmztab2.model.MZTabColumnFactory;
+import uk.ac.ebi.pride.jmztab2.model.MZTabConstants;
 import static uk.ac.ebi.pride.jmztab2.model.MZTabConstants.*;
+import uk.ac.ebi.pride.jmztab2.model.MZTabUtils;
 import static uk.ac.ebi.pride.jmztab2.model.MZTabUtils.*;
+import uk.ac.ebi.pride.jmztab2.model.SplitList;
+import uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType;
+import uk.ac.ebi.pride.jmztab2.utils.errors.LogicalErrorType;
+import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabError;
+import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorList;
+import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabException;
 
 /**
  * This class allows the validation and loading of the data into mzTab domain

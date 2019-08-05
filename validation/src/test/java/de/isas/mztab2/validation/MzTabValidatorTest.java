@@ -15,9 +15,7 @@
  */
 package de.isas.mztab2.validation;
 
-import de.isas.mztab2.validation.MzTabBeanValidator;
 import de.isas.lipidomics.mztab2.validation.MzTabValidator;
-import de.isas.mztab2.test.utils.LogMethodName;
 import de.isas.mztab2.model.CV;
 import de.isas.mztab2.model.Contact;
 import de.isas.mztab2.model.MsRun;
@@ -27,7 +25,7 @@ import de.isas.mztab2.model.Publication;
 import de.isas.mztab2.model.PublicationItem;
 import de.isas.mztab2.model.Sample;
 import de.isas.mztab2.model.ValidationMessage;
-import de.isas.mztab2.validation.CvMappingValidator;
+import de.isas.mztab2.test.utils.LogMethodName;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;

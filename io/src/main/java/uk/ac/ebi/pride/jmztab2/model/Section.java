@@ -15,8 +15,6 @@
  */
 package uk.ac.ebi.pride.jmztab2.model;
 
-import de.isas.mztab2.model.Assay;
-
 /**
  * Every line in an mzTab file MUST start with a three letter code identifying the type of line delimited by
  * a Tab character. The three letter codes are as follows :

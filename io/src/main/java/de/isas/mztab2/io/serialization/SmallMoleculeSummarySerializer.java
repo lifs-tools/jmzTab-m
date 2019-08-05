@@ -21,18 +21,18 @@ import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import static de.isas.mztab2.io.serialization.Serializers.writeAsNumberArray;
 import static de.isas.mztab2.io.serialization.Serializers.writeAsStringArray;
+import static de.isas.mztab2.io.serialization.Serializers.writeIndexedDoubles;
 import static de.isas.mztab2.io.serialization.Serializers.writeNumber;
+import static de.isas.mztab2.io.serialization.Serializers.writeObject;
 import static de.isas.mztab2.io.serialization.Serializers.writeOptColumnMappings;
 import static de.isas.mztab2.io.serialization.Serializers.writeString;
 import de.isas.mztab2.model.SmallMoleculeSummary;
 import java.io.IOException;
-import uk.ac.ebi.pride.jmztab2.model.AbundanceColumn;
-import uk.ac.ebi.pride.jmztab2.model.SmallMoleculeColumn;
-import static de.isas.mztab2.io.serialization.Serializers.writeIndexedDoubles;
-import static de.isas.mztab2.io.serialization.Serializers.writeObject;
 import java.util.Collections;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
+import uk.ac.ebi.pride.jmztab2.model.AbundanceColumn;
+import uk.ac.ebi.pride.jmztab2.model.SmallMoleculeColumn;
 import static uk.ac.ebi.pride.jmztab2.model.SmallMoleculeColumn.Stable.columnFor;
 
 /**

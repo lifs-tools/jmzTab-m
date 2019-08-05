@@ -15,11 +15,11 @@
  */
 package de.isas.mztab2.io.serialization;
 
+import de.isas.mztab2.test.utils.LogMethodName;
 import org.junit.Assert;
+import static org.junit.Assert.assertEquals;
 import org.junit.Rule;
 import org.junit.Test;
-import de.isas.mztab2.test.utils.LogMethodName;
-import static org.junit.Assert.assertEquals;
 import uk.ac.ebi.pride.jmztab2.model.IOptColumnMappingBuilder;
 import uk.ac.ebi.pride.jmztab2.model.OptColumnMappingBuilderTest;
 

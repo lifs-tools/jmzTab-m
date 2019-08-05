@@ -15,22 +15,21 @@
  */
 package uk.ac.ebi.pride.jmztab2.utils.parser;
 
-import uk.ac.ebi.pride.jmztab2.model.MZTabColumnFactory;
-import uk.ac.ebi.pride.jmztab2.model.ISmallMoleculeFeatureColumn;
-import uk.ac.ebi.pride.jmztab2.model.MZTabConstants;
-import uk.ac.ebi.pride.jmztab2.model.MZBoolean;
-import uk.ac.ebi.pride.jmztab2.model.IMZTabColumn;
-import uk.ac.ebi.pride.jmztab2.model.SmallMoleculeFeatureColumn;
-import uk.ac.ebi.pride.jmztab2.model.OptionColumn;
-import uk.ac.ebi.pride.jmztab2.model.AbundanceColumn;
 import de.isas.mztab2.model.Metadata;
 import de.isas.mztab2.model.OptColumnMapping;
 import de.isas.mztab2.model.SmallMoleculeFeature;
-import de.isas.mztab2.model.SmallMoleculeSummary;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import uk.ac.ebi.pride.jmztab2.model.AbundanceColumn;
+import uk.ac.ebi.pride.jmztab2.model.IMZTabColumn;
+import uk.ac.ebi.pride.jmztab2.model.ISmallMoleculeFeatureColumn;
+import uk.ac.ebi.pride.jmztab2.model.MZBoolean;
+import uk.ac.ebi.pride.jmztab2.model.MZTabColumnFactory;
+import uk.ac.ebi.pride.jmztab2.model.MZTabConstants;
+import uk.ac.ebi.pride.jmztab2.model.OptionColumn;
+import uk.ac.ebi.pride.jmztab2.model.SmallMoleculeFeatureColumn;
 import uk.ac.ebi.pride.jmztab2.model.SmallMoleculeFeatureColumn.Stable;
 import uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabError;

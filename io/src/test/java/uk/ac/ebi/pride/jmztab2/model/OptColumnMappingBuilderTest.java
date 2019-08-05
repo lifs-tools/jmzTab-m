@@ -19,8 +19,8 @@ import de.isas.mztab2.model.Assay;
 import de.isas.mztab2.model.OptColumnMapping;
 import de.isas.mztab2.model.Parameter;
 import org.junit.Assert;
-import org.junit.Test;
 import static org.junit.Assert.*;
+import org.junit.Test;
 import uk.ac.ebi.pride.jmztab2.model.OptColumnMappingBuilder.GlobalOptColumnMappingBuilder;
 import uk.ac.ebi.pride.jmztab2.model.OptColumnMappingBuilder.IndexedElementOptColumnMappingBuilder;
 

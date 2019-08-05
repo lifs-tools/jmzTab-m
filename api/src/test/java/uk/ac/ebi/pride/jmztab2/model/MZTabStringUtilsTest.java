@@ -15,10 +15,9 @@
  */
 package uk.ac.ebi.pride.jmztab2.model;
 
-import uk.ac.ebi.pride.jmztab2.model.MZTabStringUtils;
 import org.junit.Assert;
-import org.junit.Test;
 import static org.junit.Assert.*;
+import org.junit.Test;
 
 /**
  *

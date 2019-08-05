@@ -18,16 +18,16 @@ package de.isas.mztab2.validation;
 import de.isas.mztab2.cvmapping.JxPathElement;
 import static de.isas.mztab2.cvmapping.JxPathElement.toStream;
 import de.isas.mztab2.model.Instrument;
-import static de.isas.mztab2.validation.MzTabValidatorTest.createTestFile;
 import de.isas.mztab2.model.MzTab;
 import de.isas.mztab2.model.Parameter;
+import static de.isas.mztab2.validation.MzTabValidatorTest.createTestFile;
 import java.util.List;
 import java.util.stream.Stream;
 import org.apache.commons.jxpath.JXPathContext;
 import org.apache.commons.jxpath.Pointer;
 import org.apache.commons.lang3.tuple.Pair;
-import org.junit.Test;
 import static org.junit.Assert.*;
+import org.junit.Test;
 
 /**
  *

@@ -23,7 +23,6 @@ import de.isas.mztab2.model.Metadata;
 import static de.isas.mztab2.model.Metadata.PrefixEnum.MTD;
 import de.isas.mztab2.model.MsRun;
 import de.isas.mztab2.model.Parameter;
-import org.junit.Ignore;
 import org.junit.Test;
 import static uk.ac.ebi.pride.jmztab2.model.MZTabConstants.NEW_LINE;
 import static uk.ac.ebi.pride.jmztab2.model.MZTabConstants.TAB_STRING;

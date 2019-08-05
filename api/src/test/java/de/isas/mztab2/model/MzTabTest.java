@@ -16,31 +16,9 @@
 package de.isas.mztab2.model;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import de.isas.mztab2.model.Assay;
-import de.isas.mztab2.model.CV;
-import de.isas.mztab2.model.Comment;
-import de.isas.mztab2.model.Contact;
-import de.isas.mztab2.model.Database;
-import de.isas.mztab2.model.Instrument;
-import de.isas.mztab2.model.MsRun;
-import de.isas.mztab2.model.MzTab;
-import de.isas.mztab2.model.OptColumnMapping;
-import de.isas.mztab2.model.Parameter;
-import de.isas.mztab2.model.Publication;
-import de.isas.mztab2.model.PublicationItem;
-import de.isas.mztab2.model.Sample;
-import de.isas.mztab2.model.SampleProcessing;
-import de.isas.mztab2.model.SmallMoleculeEvidence;
-import de.isas.mztab2.model.SmallMoleculeFeature;
-import de.isas.mztab2.model.SmallMoleculeSummary;
-import de.isas.mztab2.model.Software;
-import de.isas.mztab2.model.SpectraRef;
-import de.isas.mztab2.model.StudyVariable;
-import de.isas.mztab2.model.Uri;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
@@ -98,7 +76,7 @@ public class MzTabTest {
         Assert.assertEquals(1, mztab.getSmallMoleculeEvidence().size());
     }
 
-    private MzTab createTestMzTab() {
+    public static MzTab createTestMzTab() {
         int paramId = 1;
         de.isas.mztab2.model.Metadata mtd = new de.isas.mztab2.model.Metadata();
         mtd.mzTabID("SomeId 1234").

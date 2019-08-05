@@ -29,8 +29,8 @@ import java.util.Collections;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import uk.ac.ebi.pride.jmztab2.model.AbundanceColumn;
-import static uk.ac.ebi.pride.jmztab2.model.SmallMoleculeFeatureColumn.Stable.columnFor;
 import uk.ac.ebi.pride.jmztab2.model.SmallMoleculeFeatureColumn;
+import static uk.ac.ebi.pride.jmztab2.model.SmallMoleculeFeatureColumn.Stable.columnFor;
 
 /**
  * <p>SmallMoleculeFeatureSerializer implementation for {@link de.isas.mztab2.model.SmallMoleculeFeature}.</p>

@@ -21,7 +21,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import org.junit.Assert;
-import org.junit.rules.TemporaryFolder;
 import uk.ac.ebi.pride.jmztab2.model.MZTabConstants;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorOverflowException;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorType;

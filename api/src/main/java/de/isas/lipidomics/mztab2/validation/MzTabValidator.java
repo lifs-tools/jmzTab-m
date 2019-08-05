@@ -71,17 +71,16 @@ public class MzTabValidator implements Validator<MzTab> {
             stream().
             filter(validationMessage ->
             {
-                switch (validationMessage.getMessageType()) {
-                    // do not trust the ordinal values here
-                    case ERROR:
-                        return (validationLevel == ERROR);
-                    case WARN:
-                        return (validationLevel == WARN || validationLevel == ERROR);
+                switch (validationLevel) {
                     case INFO:
-                        return (validationLevel == INFO || validationLevel == WARN || validationLevel == ERROR);
+                        return (validationMessage.getMessageType() == INFO || validationMessage.getMessageType() == WARN || validationMessage.getMessageType() == ERROR);
+                    case WARN:
+                        return (validationMessage.getMessageType() == WARN || validationMessage.getMessageType() == ERROR);
+                    case ERROR:
+                        return (validationMessage.getMessageType() == ERROR);
                     default:
                         throw new IllegalArgumentException(
-                            "Unknown message type for message: '" + validationMessage.
+                            "Unknown message type for validationLevel '"+validationLevel+"' and message: '" + validationMessage.
                                 getMessage() + "'!");
                 }
             }).

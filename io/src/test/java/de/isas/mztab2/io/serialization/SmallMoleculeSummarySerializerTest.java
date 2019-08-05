@@ -15,17 +15,17 @@
  */
 package de.isas.mztab2.io.serialization;
 
-import de.isas.mztab2.io.AbstractSerializerTest;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import de.isas.mztab2.io.AbstractSerializerTest;
+import static de.isas.mztab2.io.MzTabTestData.create2_0TestFile;
+import de.isas.mztab2.model.Assay;
 import de.isas.mztab2.model.MzTab;
 import de.isas.mztab2.model.Parameter;
 import de.isas.mztab2.model.SmallMoleculeSummary;
 import java.io.IOException;
 import java.util.Arrays;
-import org.junit.Test;
-import static de.isas.mztab2.io.MzTabTestData.create2_0TestFile;
-import de.isas.mztab2.model.Assay;
 import org.junit.Assert;
+import org.junit.Test;
 import uk.ac.ebi.pride.jmztab2.model.IOptColumnMappingBuilder;
 import uk.ac.ebi.pride.jmztab2.model.MZTabConstants;
 import uk.ac.ebi.pride.jmztab2.model.OptColumnMappingBuilder;

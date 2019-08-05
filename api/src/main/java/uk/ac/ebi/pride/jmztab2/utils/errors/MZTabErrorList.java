@@ -1,8 +1,6 @@
 package uk.ac.ebi.pride.jmztab2.utils.errors;
 
 import de.isas.mztab2.model.ValidationMessage;
-import uk.ac.ebi.pride.jmztab2.model.MZTabConstants;
-
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -10,7 +8,7 @@ import java.util.Collections;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
+import uk.ac.ebi.pride.jmztab2.model.MZTabConstants;
 import static uk.ac.ebi.pride.jmztab2.utils.MZTabProperties.MAX_ERROR_COUNT;
 
 /**

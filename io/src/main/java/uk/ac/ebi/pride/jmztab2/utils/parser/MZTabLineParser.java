@@ -15,12 +15,12 @@
  */
 package uk.ac.ebi.pride.jmztab2.utils.parser;
 
+import static uk.ac.ebi.pride.jmztab2.model.MZTabConstants.TAB;
 import uk.ac.ebi.pride.jmztab2.model.Section;
 import uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabError;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorList;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabException;
-import static uk.ac.ebi.pride.jmztab2.model.MZTabConstants.TAB;
 
 /**
  * Common tab split line parser. If there exists format or logical errors during the parse process,

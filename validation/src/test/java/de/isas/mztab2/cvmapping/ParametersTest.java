@@ -16,8 +16,8 @@
 package de.isas.mztab2.cvmapping;
 
 import de.isas.mztab2.model.Parameter;
-import org.junit.Test;
 import static org.junit.Assert.*;
+import org.junit.Test;
 
 /**
  *

@@ -19,7 +19,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.junit.Assert;
 import org.junit.Test;
-import uk.ac.ebi.pride.jmztab2.model.MZTabColumn;
 import uk.ac.ebi.pride.jmztab2.model.MZTabConstants;
 import static uk.ac.ebi.pride.jmztab2.model.MZTabConstants.REGEX_DEFAULT_RELIABILITY;
 import uk.ac.ebi.pride.jmztab2.model.MZTabUtils;

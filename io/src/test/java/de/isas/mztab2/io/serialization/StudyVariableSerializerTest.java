@@ -22,7 +22,6 @@ import de.isas.mztab2.model.Assay;
 import de.isas.mztab2.model.Metadata;
 import static de.isas.mztab2.model.Metadata.PrefixEnum.MTD;
 import de.isas.mztab2.model.Parameter;
-import de.isas.mztab2.model.Sample;
 import de.isas.mztab2.model.StudyVariable;
 import java.util.stream.Collectors;
 import org.junit.Test;

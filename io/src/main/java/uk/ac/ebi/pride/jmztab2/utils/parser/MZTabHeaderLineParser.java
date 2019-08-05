@@ -15,25 +15,24 @@
  */
 package uk.ac.ebi.pride.jmztab2.utils.parser;
 
-import uk.ac.ebi.pride.jmztab2.model.MZTabColumnFactory;
-import uk.ac.ebi.pride.jmztab2.model.MZBoolean;
-import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabError;
-import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabException;
-import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorList;
-import uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType;
-import uk.ac.ebi.pride.jmztab2.utils.errors.LogicalErrorType;
 import de.isas.mztab2.model.Assay;
 import de.isas.mztab2.model.Metadata;
 import de.isas.mztab2.model.MsRun;
 import de.isas.mztab2.model.Parameter;
 import de.isas.mztab2.model.SmallMoleculeSummary;
 import de.isas.mztab2.model.StudyVariable;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import uk.ac.ebi.pride.jmztab2.model.MZBoolean;
 import uk.ac.ebi.pride.jmztab2.model.MZTabColumn;
+import uk.ac.ebi.pride.jmztab2.model.MZTabColumnFactory;
 import uk.ac.ebi.pride.jmztab2.model.MZTabConstants;
 import uk.ac.ebi.pride.jmztab2.model.Section;
+import uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType;
+import uk.ac.ebi.pride.jmztab2.utils.errors.LogicalErrorType;
+import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabError;
+import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorList;
+import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabException;
 
 
 /**

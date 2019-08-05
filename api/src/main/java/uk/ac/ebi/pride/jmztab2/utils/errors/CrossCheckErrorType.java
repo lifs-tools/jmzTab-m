@@ -57,5 +57,10 @@ public final class CrossCheckErrorType extends MZTabErrorType {
     
     /** Constant <code>SemanticValidationException</code> */
     public static final MZTabErrorType SemanticValidationException = createError(Category.CrossCheck, "SemanticValidationException");
+    
+    public static final MZTabErrorType[] VALUES = {
+        Species, CvTermNotAllowed, CvTermRequired, CvTermRecommended, CvTermOptional, CvTermNotInRule, RulePointerObjectNullRequired, RulePointerObjectNullRecommended, RulePointerObjectNullOptional, 
+        CvTermXor, CvTermMalformed, CvUndefinedInMetadata, CvUnused, SemanticValidationException
+    };
 
 }

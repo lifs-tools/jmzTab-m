@@ -15,13 +15,12 @@
  */
 package uk.ac.ebi.pride.jmztab2.utils.parser;
 
-import uk.ac.ebi.pride.jmztab2.model.MZTabColumnFactory;
-
 import java.util.Collection;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import uk.ac.ebi.pride.jmztab2.model.IMZTabColumn;
+import uk.ac.ebi.pride.jmztab2.model.MZTabColumnFactory;
 
 /**
  * Create and maintain a couple of mappings between physical position and logical position.

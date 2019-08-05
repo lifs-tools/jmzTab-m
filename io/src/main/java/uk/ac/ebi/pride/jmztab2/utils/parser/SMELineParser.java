@@ -15,17 +15,17 @@
  */
 package uk.ac.ebi.pride.jmztab2.utils.parser;
 
-import uk.ac.ebi.pride.jmztab2.model.MZTabColumnFactory;
-import uk.ac.ebi.pride.jmztab2.model.MZBoolean;
-import uk.ac.ebi.pride.jmztab2.model.IMZTabColumn;
-import uk.ac.ebi.pride.jmztab2.model.SmallMoleculeEvidenceColumn;
-import uk.ac.ebi.pride.jmztab2.model.SmallMoleculeEvidenceColumn.Stable;
-import uk.ac.ebi.pride.jmztab2.model.OptionColumn;
-import uk.ac.ebi.pride.jmztab2.model.ISmallMoleculeEvidenceColumn;
 import de.isas.mztab2.model.Metadata;
 import de.isas.mztab2.model.OptColumnMapping;
 import de.isas.mztab2.model.SmallMoleculeEvidence;
+import uk.ac.ebi.pride.jmztab2.model.IMZTabColumn;
+import uk.ac.ebi.pride.jmztab2.model.ISmallMoleculeEvidenceColumn;
+import uk.ac.ebi.pride.jmztab2.model.MZBoolean;
+import uk.ac.ebi.pride.jmztab2.model.MZTabColumnFactory;
 import uk.ac.ebi.pride.jmztab2.model.MZTabConstants;
+import uk.ac.ebi.pride.jmztab2.model.OptionColumn;
+import uk.ac.ebi.pride.jmztab2.model.SmallMoleculeEvidenceColumn;
+import uk.ac.ebi.pride.jmztab2.model.SmallMoleculeEvidenceColumn.Stable;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorList;
 
 

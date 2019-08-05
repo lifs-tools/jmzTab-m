@@ -9,16 +9,11 @@ import de.isas.mztab2.model.SmallMoleculeSummary;
 import de.isas.mztab2.model.StudyVariable;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import org.junit.Test;
-
-import java.util.SortedMap;
-import org.junit.Assert;
-
 import static org.junit.Assert.assertEquals;
+import org.junit.Test;
 import uk.ac.ebi.pride.jmztab2.model.OptColumnMappingBuilder.IndexedElementOptColumnMappingBuilder;
 
 /**

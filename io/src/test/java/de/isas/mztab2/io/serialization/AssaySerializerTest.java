@@ -15,17 +15,17 @@
  */
 package de.isas.mztab2.io.serialization;
 
-import de.isas.mztab2.io.AbstractSerializerTest;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import de.isas.mztab2.io.AbstractSerializerTest;
 import de.isas.mztab2.io.TestResources;
 import de.isas.mztab2.model.Assay;
 import de.isas.mztab2.model.Metadata;
+import static de.isas.mztab2.model.Metadata.PrefixEnum.MTD;
 import de.isas.mztab2.model.MsRun;
+import de.isas.mztab2.model.Parameter;
 import de.isas.mztab2.model.Sample;
 import org.junit.Test;
 import static uk.ac.ebi.pride.jmztab2.model.MZTabConstants.NEW_LINE;
-import static de.isas.mztab2.model.Metadata.PrefixEnum.MTD;
-import de.isas.mztab2.model.Parameter;
 import static uk.ac.ebi.pride.jmztab2.model.MZTabConstants.TAB_STRING;
 
 /**
