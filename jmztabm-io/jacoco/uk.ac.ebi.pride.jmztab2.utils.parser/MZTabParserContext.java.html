@@ -1,0 +1,1606 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MZTabParserContext.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jmztabm-io</a> &gt; <a href="index.source.html" class="el_package">uk.ac.ebi.pride.jmztab2.utils.parser</a> &gt; <span class="el_source">MZTabParserContext.java</span></div><h1>MZTabParserContext.java</h1><pre class="source lang-java linenums">/* 
+ * Copyright 2018 Leibniz-Institut für Analytische Wissenschaften – ISAS – e.V..
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package uk.ac.ebi.pride.jmztab2.utils.parser;
+
+import de.isas.mztab2.model.Assay;
+import de.isas.mztab2.model.CV;
+import de.isas.mztab2.model.ColumnParameterMapping;
+import de.isas.mztab2.model.Contact;
+import de.isas.mztab2.model.Database;
+import de.isas.mztab2.model.Instrument;
+import de.isas.mztab2.model.Metadata;
+import de.isas.mztab2.model.MsRun;
+import de.isas.mztab2.model.Parameter;
+import de.isas.mztab2.model.Publication;
+import de.isas.mztab2.model.PublicationItem;
+import de.isas.mztab2.model.Sample;
+import de.isas.mztab2.model.SampleProcessing;
+import de.isas.mztab2.model.Software;
+import de.isas.mztab2.model.StudyVariable;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
+import lombok.Data;
+import static uk.ac.ebi.pride.jmztab2.model.MZTabStringUtils.isEmpty;
+
+/**
+ * &lt;p&gt;MZTabParserContext is used to keep track of indexed elements and interrelations during parsing.&lt;/p&gt;
+ *
+ * @author nilshoffmann
+ * @since 11/09/17
+ * 
+ */
+<span class="pc bnc" id="L51" title="All 166 branches missed.">@Data</span>
+public class MZTabParserContext {
+<span class="fc" id="L53">    private SortedMap&lt;Integer, SampleProcessing&gt; sampleProcessingMap = new TreeMap&lt;&gt;(); </span>
+<span class="fc" id="L54">    private SortedMap&lt;Integer, Instrument&gt; instrumentMap = new TreeMap&lt;&gt;(); </span>
+<span class="fc" id="L55">    private SortedMap&lt;Integer, Software&gt; softwareMap = new TreeMap&lt;&gt;(); </span>
+
+<span class="fc" id="L57">    private SortedMap&lt;Integer, Publication&gt; publicationMap = new TreeMap&lt;&gt;(); </span>
+<span class="pc" id="L58">    private SortedMap&lt;Integer, Contact&gt; contactMap = new TreeMap&lt;&gt;();</span>
+<span class="nc" id="L59">    private Parameter quantificationMethod; </span>
+    
+<span class="fc" id="L61">    private SortedMap&lt;Integer, Assay&gt; assayMap = new TreeMap&lt;&gt;(); </span>
+<span class="nc" id="L62">    private Parameter smallMoleculeQuantificationUnit;</span>
+<span class="fc" id="L63">    private SortedMap&lt;Integer, MsRun&gt; msRunMap = new TreeMap&lt;&gt;();</span>
+<span class="pc" id="L64">    private SortedMap&lt;Integer, Parameter&gt; customItemMap = new TreeMap&lt;&gt;(); </span>
+<span class="pc" id="L65">    private SortedMap&lt;Integer, Parameter&gt; derivatizationItemMap = new TreeMap&lt;&gt;();</span>
+<span class="fc" id="L66">    private SortedMap&lt;Integer, Parameter&gt; idConfidenceMeasureMap = new TreeMap&lt;&gt;(); </span>
+    
+<span class="fc" id="L68">    private SortedMap&lt;Integer, Sample&gt; sampleMap = new TreeMap&lt;&gt;();</span>
+<span class="fc" id="L69">    private SortedMap&lt;Integer, StudyVariable&gt; studyVariableMap = new TreeMap&lt;&gt;();</span>
+<span class="fc" id="L70">    private SortedMap&lt;Integer, CV&gt; cvMap = new TreeMap&lt;&gt;();</span>
+<span class="fc" id="L71">    private SortedMap&lt;Integer, Database&gt; databaseMap = new TreeMap&lt;&gt;();</span>
+<span class="pc" id="L72">    private List&lt;ColumnParameterMapping&gt; smallMoleculeColUnitList = new ArrayList&lt;&gt;();</span>
+<span class="pc" id="L73">    private List&lt;ColumnParameterMapping&gt; smallMoleculeFeatureColUnitList = new ArrayList&lt;&gt;();</span>
+<span class="pc" id="L74">    private List&lt;ColumnParameterMapping&gt; smallMoleculeEvidenceColUnitList = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L75">    private Map&lt;String, String&gt; colUnitMap = new HashMap&lt;&gt;();</span>
+    
+    /**
+     * Add a sample to metadata. Samples are NOT MANDATORY in mzTab, since many software packages cannot determine what
+     * type of sample was analysed (e.g. whether biological or technical replication was performed).
+     *
+     * @param sample SHOULD NOT be null.
+     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
+     * @return a {@link de.isas.mztab2.model.Sample} object.
+     */
+    public Sample addSample(Metadata metadata, Sample sample) {
+<span class="pc bpc" id="L86" title="1 of 2 branches missed.">        if (sample == null) {</span>
+<span class="nc" id="L87">            throw new IllegalArgumentException(&quot;Sample should not be null&quot;);</span>
+        }
+
+<span class="fc" id="L90">        this.sampleMap.put(sample.getId(), sample);</span>
+<span class="fc" id="L91">        metadata.addSampleItem(sample);</span>
+<span class="fc" id="L92">        return sample;</span>
+    }
+
+    /**
+     * Add a sample[id]-species into sample.
+     *
+     * @param id SHOULD be positive integer.
+     * @param species if null ignore operation.
+     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
+     * @return a {@link de.isas.mztab2.model.Sample} object.
+     */
+    public Sample addSampleSpecies(Metadata metadata, Integer id, Parameter species) {
+<span class="pc bpc" id="L104" title="1 of 2 branches missed.">        if (id &lt;= 0) {</span>
+<span class="nc" id="L105">            throw new IllegalArgumentException(&quot;Sample id should be greater than 0!&quot;);</span>
+        }
+<span class="fc" id="L107">        Sample sample = sampleMap.get(id);</span>
+<span class="pc bpc" id="L108" title="1 of 2 branches missed.">        if (species == null) {</span>
+<span class="nc" id="L109">            return sample;</span>
+        }
+
+<span class="fc bfc" id="L112" title="All 2 branches covered.">        if (sample == null) {</span>
+<span class="fc" id="L113">            sample = new Sample();</span>
+<span class="fc" id="L114">            sample.id(id);</span>
+<span class="fc" id="L115">            sample.addSpeciesItem(species);</span>
+<span class="fc" id="L116">            sampleMap.put(id, sample);</span>
+<span class="fc" id="L117">            metadata.addSampleItem(sample);</span>
+        } else {
+<span class="fc" id="L119">            sample.addSpeciesItem(species);</span>
+        }
+<span class="fc" id="L121">        return sample;</span>
+    }
+
+    /**
+     * Add a sample[id]-tissue into sample.
+     *
+     * @param id SHOULD be positive integer.
+     * @param tissue if null ignore operation.
+     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
+     * @return a {@link de.isas.mztab2.model.Sample} object.
+     */
+    public Sample addSampleTissue(Metadata metadata, Integer id, Parameter tissue) {
+<span class="pc bpc" id="L133" title="1 of 2 branches missed.">        if (id &lt;= 0) {</span>
+<span class="nc" id="L134">            throw new IllegalArgumentException(&quot;Sample id should be greater than 0!&quot;);</span>
+        }
+<span class="fc" id="L136">        Sample sample = sampleMap.get(id);</span>
+<span class="pc bpc" id="L137" title="1 of 2 branches missed.">        if (tissue == null) {</span>
+<span class="nc" id="L138">            return sample;</span>
+        }
+
+<span class="pc bpc" id="L141" title="1 of 2 branches missed.">        if (sample == null) {</span>
+<span class="nc" id="L142">            sample = new Sample();</span>
+<span class="nc" id="L143">            sample.id(id);</span>
+<span class="nc" id="L144">            sample.addTissueItem(tissue);</span>
+<span class="nc" id="L145">            sampleMap.put(id, sample);</span>
+<span class="nc" id="L146">            metadata.addSampleItem(sample);</span>
+        } else {
+<span class="fc" id="L148">            sample.addTissueItem(tissue);</span>
+        }
+<span class="fc" id="L150">        return sample;</span>
+    }
+
+    /**
+     * Add a sample[id]-cell_type into sample.
+     *
+     * @param id SHOULD be positive integer.
+     * @param cellType if null ignore operation.
+     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
+     * @return a {@link de.isas.mztab2.model.Sample} object.
+     */
+    public Sample addSampleCellType(Metadata metadata, Integer id, Parameter cellType) {
+<span class="pc bpc" id="L162" title="1 of 2 branches missed.">        if (id &lt;= 0) {</span>
+<span class="nc" id="L163">            throw new IllegalArgumentException(&quot;Sample id should be greater than 0!&quot;);</span>
+        }
+<span class="fc" id="L165">        Sample sample = sampleMap.get(id);</span>
+<span class="pc bpc" id="L166" title="1 of 2 branches missed.">        if (cellType == null) {</span>
+<span class="nc" id="L167">            return sample;</span>
+        }
+
+<span class="pc bpc" id="L170" title="1 of 2 branches missed.">        if (sample == null) {</span>
+<span class="nc" id="L171">            sample = new Sample();</span>
+<span class="nc" id="L172">            sample.id(id);</span>
+<span class="nc" id="L173">            sample.addCellTypeItem(cellType);</span>
+<span class="nc" id="L174">            sampleMap.put(id, sample);</span>
+<span class="nc" id="L175">            metadata.addSampleItem(sample);</span>
+        } else {
+<span class="fc" id="L177">            sample.addCellTypeItem(cellType);</span>
+        }
+<span class="fc" id="L179">        return sample;</span>
+    }
+
+    /**
+     * Add a sample[id]-disease into sample.
+     *
+     * @param id SHOULD be positive integer.
+     * @param disease if null ignore operation.
+     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
+     * @return a {@link de.isas.mztab2.model.Sample} object.
+     */
+    public Sample addSampleDisease(Metadata metadata, Integer id, Parameter disease) {
+<span class="pc bpc" id="L191" title="1 of 2 branches missed.">        if (id &lt;= 0) {</span>
+<span class="nc" id="L192">            throw new IllegalArgumentException(&quot;Sample id should be greater than 0!&quot;);</span>
+        }
+<span class="fc" id="L194">        Sample sample = sampleMap.get(id);</span>
+<span class="pc bpc" id="L195" title="1 of 2 branches missed.">        if (disease == null) {</span>
+<span class="nc" id="L196">            return sample;</span>
+        }
+
+<span class="pc bpc" id="L199" title="1 of 2 branches missed.">        if (sample == null) {</span>
+<span class="nc" id="L200">            sample = new Sample();</span>
+<span class="nc" id="L201">            sample.id(id);</span>
+<span class="nc" id="L202">            sample.addDiseaseItem(disease);</span>
+<span class="nc" id="L203">            sampleMap.put(id, sample);</span>
+<span class="nc" id="L204">            metadata.addSampleItem(sample);</span>
+        } else {
+<span class="fc" id="L206">            sample.addDiseaseItem(disease);</span>
+        }
+<span class="fc" id="L208">        return sample;</span>
+    }
+
+    /**
+     * Add a sample[id]-description into sample.
+     *
+     * @param id SHOULD be positive integer.
+     * @param description if empty ignore operation.
+     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
+     * @return a {@link de.isas.mztab2.model.Sample} object.
+     */
+    public Sample addSampleDescription(Metadata metadata, Integer id, String description) {
+<span class="pc bpc" id="L220" title="1 of 2 branches missed.">        if (id &lt;= 0) {</span>
+<span class="nc" id="L221">            throw new IllegalArgumentException(&quot;Sample id should be greater than 0!&quot;);</span>
+        }
+
+<span class="fc" id="L224">        Sample sample = sampleMap.get(id);</span>
+<span class="pc bpc" id="L225" title="1 of 2 branches missed.">        if (isEmpty(description)) {</span>
+<span class="nc" id="L226">            return sample;</span>
+        }
+
+<span class="fc bfc" id="L229" title="All 2 branches covered.">        if (sample == null) {</span>
+<span class="fc" id="L230">            sample = new Sample();</span>
+<span class="fc" id="L231">            sample.id(id);</span>
+<span class="fc" id="L232">            sample.setDescription(description);</span>
+<span class="fc" id="L233">            sampleMap.put(id, sample);</span>
+<span class="fc" id="L234">            metadata.addSampleItem(sample);</span>
+        } else {
+<span class="fc" id="L236">            sample.setDescription(description);</span>
+        }
+<span class="fc" id="L238">        return sample;</span>
+    }
+
+    /**
+     * Add a sample[id]-custom into sample. Add a custom parameter for sample.
+     *
+     * @param id SHOULD be positive integer.
+     * @param custom if null ignore operation.
+     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
+     * @return a {@link de.isas.mztab2.model.Sample} object.
+     */
+    public Sample addSampleCustom(Metadata metadata, Integer id, Parameter custom) {
+<span class="pc bpc" id="L250" title="1 of 2 branches missed.">        if (id &lt;= 0) {</span>
+<span class="nc" id="L251">            throw new IllegalArgumentException(&quot;Sample id should be greater than 0!&quot;);</span>
+        }
+<span class="fc" id="L253">        Sample sample = sampleMap.get(id);</span>
+<span class="pc bpc" id="L254" title="1 of 2 branches missed.">        if (custom == null) {</span>
+<span class="nc" id="L255">            return sample;</span>
+        }
+
+<span class="pc bpc" id="L258" title="1 of 2 branches missed.">        if (sample == null) {</span>
+<span class="nc" id="L259">            sample = new Sample();</span>
+<span class="nc" id="L260">            sample.id(id);</span>
+<span class="nc" id="L261">            sample.addCustomItem(custom);</span>
+<span class="nc" id="L262">            sampleMap.put(id, sample);</span>
+<span class="nc" id="L263">            metadata.addSampleItem(sample);</span>
+        } else {
+<span class="fc" id="L265">            sample.addCustomItem(custom);</span>
+        }
+<span class="fc" id="L267">        return sample;</span>
+    }
+
+    /**
+     * Add a sample_processing[id]. A list of parameters describing a sample processing step.
+     * The order of the data_processing items should reflect the order these processing steps
+     * were performed in. If multiple parameters are given for a step these MUST be separated by a &quot;|&quot;.
+     *
+     * @param id SHOULD be positive integer.
+     * @param sampleProcessing if null ignore operation.
+     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
+     * @return a {@link de.isas.mztab2.model.SampleProcessing} object.
+     */
+    public SampleProcessing addSampleProcessing(Metadata metadata, Integer id, List&lt;Parameter&gt; sampleProcessing) {
+<span class="pc bpc" id="L281" title="1 of 2 branches missed.">        if (id &lt;= 0) {</span>
+<span class="nc" id="L282">            throw new IllegalArgumentException(&quot;Sample id should be greater than 0!&quot;);</span>
+        }
+<span class="pc bpc" id="L284" title="1 of 2 branches missed.">        if (sampleProcessing == null) {</span>
+<span class="nc" id="L285">            return null;</span>
+        }
+
+//        sampleProcessing.setSplitChar(BAR);
+<span class="fc" id="L289">        SampleProcessing sp = new SampleProcessing();</span>
+<span class="fc" id="L290">        sp.id(id);</span>
+<span class="fc" id="L291">        sp.sampleProcessing(sampleProcessing);</span>
+<span class="fc" id="L292">        metadata.addSampleProcessingItem(sp);</span>
+<span class="fc" id="L293">        sampleProcessingMap.put(id, sp);</span>
+<span class="fc" id="L294">        return sp;</span>
+    }
+
+    /**
+     * Add a processing parameter to sample_processing[id]
+     *
+     * @param id SHOULD be positive integer.
+     * @param param if null ignore operation.
+     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
+     * @return a {@link de.isas.mztab2.model.SampleProcessing} object.
+     */
+    public SampleProcessing addSampleProcessingParameter(Metadata metadata, Integer id, Parameter param) {
+<span class="nc bnc" id="L306" title="All 2 branches missed.">        if (id &lt;= 0) {</span>
+<span class="nc" id="L307">            throw new IllegalArgumentException(&quot;Sample processing id should be greater than 0!&quot;);</span>
+        }
+<span class="nc" id="L309">        SampleProcessing sampleProcessing = sampleProcessingMap.get(id);</span>
+<span class="nc bnc" id="L310" title="All 2 branches missed.">        if (param == null) {</span>
+<span class="nc" id="L311">            return sampleProcessing;</span>
+        }
+
+<span class="nc bnc" id="L314" title="All 2 branches missed.">        if (sampleProcessing == null) {</span>
+<span class="nc" id="L315">            sampleProcessing = new SampleProcessing();</span>
+<span class="nc" id="L316">            sampleProcessing.id(id);</span>
+<span class="nc" id="L317">            sampleProcessing.addSampleProcessingItem(param);</span>
+<span class="nc" id="L318">            sampleProcessingMap.put(id, sampleProcessing);</span>
+<span class="nc" id="L319">            metadata.addSampleProcessingItem(sampleProcessing);</span>
+        } else {
+<span class="nc" id="L321">            sampleProcessing.addSampleProcessingItem(param);</span>
+        }
+<span class="nc" id="L323">        return sampleProcessing;</span>
+    }
+
+    /**
+     * Add a instrument[id] to metadata.
+     *
+     * @param instrument SHOULD NOT be null.
+     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
+     * @return a {@link de.isas.mztab2.model.Instrument} object.
+     */
+    public Instrument addInstrument(Metadata metadata, Instrument instrument) {
+<span class="nc bnc" id="L334" title="All 2 branches missed.">        if (instrument == null) {</span>
+<span class="nc" id="L335">            throw new IllegalArgumentException(&quot;Instrument should not be null&quot;);</span>
+        }
+<span class="nc" id="L337">        instrumentMap.put(instrument.getId(), instrument);</span>
+<span class="nc" id="L338">        metadata.addInstrumentItem(instrument);</span>
+<span class="nc" id="L339">        return instrument;</span>
+    }
+
+    /**
+     * Add a parameter for instrument[id]-name
+     *
+     * @param id SHOULD be positive integer.
+     * @param name if null ignore operation.
+     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
+     * @return a {@link de.isas.mztab2.model.Instrument} object.
+     */
+    public Instrument addInstrumentName(Metadata metadata, Integer id, Parameter name) {
+<span class="pc bpc" id="L351" title="1 of 2 branches missed.">        if (id &lt;= 0) {</span>
+<span class="nc" id="L352">            throw new IllegalArgumentException(&quot;Instrument id should be greater than 0!&quot;);</span>
+        }
+<span class="fc" id="L354">        Instrument instrument = instrumentMap.get(id);</span>
+<span class="pc bpc" id="L355" title="1 of 2 branches missed.">        if (name == null) {</span>
+<span class="nc" id="L356">            return instrument;</span>
+        }
+
+<span class="pc bpc" id="L359" title="1 of 2 branches missed.">        if (instrument == null) {</span>
+<span class="fc" id="L360">            instrument = new Instrument();</span>
+<span class="fc" id="L361">            instrument.id(id);</span>
+<span class="fc" id="L362">            instrument.name(name);</span>
+<span class="fc" id="L363">            instrumentMap.put(id, instrument);</span>
+<span class="fc" id="L364">            metadata.addInstrumentItem(instrument);</span>
+        } else {
+<span class="nc" id="L366">            instrument.name(name);</span>
+        }
+<span class="fc" id="L368">        return instrument;</span>
+    }
+
+    /**
+     * Add a parameter for instrument[id]-source
+     *
+     * @param id SHOULD be positive integer.
+     * @param source if null ignore operation.
+     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
+     * @return a {@link de.isas.mztab2.model.Instrument} object.
+     */
+    public Instrument addInstrumentSource(Metadata metadata, Integer id, Parameter source) {
+<span class="pc bpc" id="L380" title="1 of 2 branches missed.">        if (id &lt;= 0) {</span>
+<span class="nc" id="L381">            throw new IllegalArgumentException(&quot;Instrument id should be greater than 0!&quot;);</span>
+        }
+<span class="fc" id="L383">        Instrument instrument = instrumentMap.get(id);</span>
+<span class="pc bpc" id="L384" title="1 of 2 branches missed.">        if (source == null) {</span>
+<span class="nc" id="L385">            return instrument;</span>
+        }
+
+<span class="fc bfc" id="L388" title="All 2 branches covered.">        if (instrument == null) {</span>
+<span class="fc" id="L389">            instrument = new Instrument();</span>
+<span class="fc" id="L390">            instrument.id(id);</span>
+<span class="fc" id="L391">            instrument.setSource(source);</span>
+<span class="fc" id="L392">            instrumentMap.put(id, instrument);</span>
+<span class="fc" id="L393">            metadata.addInstrumentItem(instrument);</span>
+        } else {
+<span class="fc" id="L395">            instrument.setSource(source);</span>
+        }
+<span class="fc" id="L397">        return instrument;</span>
+    }
+
+    /**
+     * Add a parameter for instrument[id]-analyzer[i]
+     *
+     * @param id SHOULD be positive integer.
+     * @param analyzer if null ignore operation.
+     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
+     * @return a {@link de.isas.mztab2.model.Instrument} object.
+     */
+    public Instrument addInstrumentAnalyzer(Metadata metadata, Integer id, Parameter analyzer) {
+<span class="pc bpc" id="L409" title="1 of 2 branches missed.">        if (id &lt;= 0) {</span>
+<span class="nc" id="L410">            throw new IllegalArgumentException(&quot;Instrument id should be greater than 0!&quot;);</span>
+        }
+<span class="fc" id="L412">        Instrument instrument = instrumentMap.get(id);</span>
+<span class="fc bfc" id="L413" title="All 2 branches covered.">        if (analyzer == null) {</span>
+<span class="fc" id="L414">            return instrument;</span>
+        }
+
+<span class="pc bpc" id="L417" title="1 of 2 branches missed.">        if (instrument == null) {</span>
+<span class="nc" id="L418">            instrument = new Instrument();</span>
+<span class="nc" id="L419">            instrument.id(id);</span>
+<span class="nc" id="L420">            instrument.addAnalyzerItem(analyzer);</span>
+<span class="nc" id="L421">            instrumentMap.put(id, instrument);</span>
+<span class="nc" id="L422">            metadata.addInstrumentItem(instrument);</span>
+        } else {
+<span class="fc" id="L424">            instrument.addAnalyzerItem(analyzer);</span>
+        }
+<span class="fc" id="L426">        return instrument;</span>
+    }
+
+    /**
+     * Add a parameter for instrument[id]-detector
+     *
+     * @param id SHOULD be positive integer.
+     * @param detector if null ignore operation.
+     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
+     * @return a {@link de.isas.mztab2.model.Instrument} object.
+     */
+    public Instrument addInstrumentDetector(Metadata metadata, Integer id, Parameter detector) {
+<span class="pc bpc" id="L438" title="1 of 2 branches missed.">        if (id &lt;= 0) {</span>
+<span class="nc" id="L439">            throw new IllegalArgumentException(&quot;Instrument id should be greater than 0!&quot;);</span>
+        }
+
+<span class="fc" id="L442">        Instrument instrument = instrumentMap.get(id);</span>
+<span class="pc bpc" id="L443" title="1 of 2 branches missed.">        if (detector == null) {</span>
+<span class="nc" id="L444">            return instrument;</span>
+        }
+
+<span class="fc bfc" id="L447" title="All 2 branches covered.">        if (instrument == null) {</span>
+<span class="fc" id="L448">            instrument = new Instrument();</span>
+<span class="fc" id="L449">            instrument.id(id);</span>
+<span class="fc" id="L450">            instrument.setDetector(detector);</span>
+<span class="fc" id="L451">            instrumentMap.put(id, instrument);</span>
+<span class="fc" id="L452">            metadata.addInstrumentItem(instrument);</span>
+        } else {
+<span class="fc" id="L454">            instrument.setDetector(detector);</span>
+        }
+<span class="fc" id="L456">        return instrument;</span>
+    }
+
+    /**
+     * Add a software to metadata, which used to analyze the data and obtain the reported results.
+     *
+     * @param software SHOULD NOT be null
+     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
+     * @return a {@link de.isas.mztab2.model.Software} object.
+     */
+    public Software addSoftware(Metadata metadata, Software software) {
+<span class="nc bnc" id="L467" title="All 2 branches missed.">        if (software == null) {</span>
+<span class="nc" id="L468">            throw new IllegalArgumentException(&quot;Software should not be null&quot;);</span>
+        }
+
+<span class="nc" id="L471">        softwareMap.put(software.getId(), software);</span>
+<span class="nc" id="L472">        metadata.addSoftwareItem(software);</span>
+<span class="nc" id="L473">        return software;</span>
+    }
+
+    /**
+     * Add a software[id] parameter. The parameter's value SHOULD contain the software's version.
+     * The order (numbering) should reflect the order in which the tools were used.
+     *
+     * @param id SHOULD be positive integer.
+     * @param param if null ignore operation.
+     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
+     * @return a {@link de.isas.mztab2.model.Software} object.
+     */
+    public Software addSoftwareParameter(Metadata metadata, Integer id, Parameter param) {
+<span class="pc bpc" id="L486" title="1 of 2 branches missed.">        if (id &lt;= 0) {</span>
+<span class="nc" id="L487">            throw new IllegalArgumentException(&quot;Software id should be greater than 0!&quot;);</span>
+        }
+<span class="fc" id="L489">        Software software = softwareMap.get(id);</span>
+<span class="pc bpc" id="L490" title="1 of 2 branches missed.">        if (param == null) {</span>
+<span class="nc" id="L491">            return software;</span>
+        }
+
+<span class="pc bpc" id="L494" title="1 of 2 branches missed.">        if (software == null) {</span>
+<span class="fc" id="L495">            software = new Software();</span>
+<span class="fc" id="L496">            software.id(id);</span>
+<span class="fc" id="L497">            software.setParameter(param);</span>
+<span class="fc" id="L498">            softwareMap.put(id, software);</span>
+<span class="fc" id="L499">            metadata.addSoftwareItem(software);</span>
+        } else {
+<span class="nc" id="L501">            software.setParameter(param);</span>
+        }
+<span class="fc" id="L503">        return software;</span>
+    }
+
+    /**
+     * Add a software[id]-setting. This field MAY occur multiple times for a single software.
+     * The value of this field is deliberately set as a String, since there currently do not
+     * exist cvParameters for every possible setting.
+     *
+     * @param id SHOULD be positive integer.
+     * @param setting if empty ignore operation.
+     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
+     * @return a {@link de.isas.mztab2.model.Software} object.
+     */
+    public Software addSoftwareSetting(Metadata metadata, Integer id, String setting) {
+<span class="pc bpc" id="L517" title="1 of 2 branches missed.">        if (id &lt;= 0) {</span>
+<span class="nc" id="L518">            throw new IllegalArgumentException(&quot;Software id should be greater than 0!&quot;);</span>
+        }
+<span class="fc" id="L520">        Software software = softwareMap.get(id);</span>
+<span class="pc bpc" id="L521" title="1 of 2 branches missed.">        if (isEmpty(setting)) {</span>
+<span class="nc" id="L522">            return software;</span>
+        }
+
+<span class="fc bfc" id="L525" title="All 2 branches covered.">        if (software == null) {</span>
+<span class="fc" id="L526">            software = new Software();</span>
+<span class="fc" id="L527">            software.id(id);</span>
+<span class="fc" id="L528">            software.addSettingItem(setting);</span>
+<span class="fc" id="L529">            softwareMap.put(id, software);</span>
+<span class="fc" id="L530">            metadata.addSoftwareItem(software);</span>
+        } else  {
+<span class="fc" id="L532">            software.addSettingItem(setting);</span>
+        }
+<span class="fc" id="L534">        return software;</span>
+    }
+
+    /**
+     * Add a publiction to metadata. A publication associated with this file. Several publications can be given by
+     * indicating the number in the square brackets after &quot;publication&quot;. PubMed ids must be prefixed by &quot;pubmed:&quot;,
+     * DOIs by &quot;doi:&quot;. Multiple identifiers MUST be separated by &quot;|&quot;.
+     *
+     * @param publication SHOULD NOT be null.
+     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
+     * @return a {@link de.isas.mztab2.model.Publication} object.
+     */
+    public Publication addPublication(Metadata metadata, Publication publication) {
+<span class="pc bpc" id="L547" title="1 of 2 branches missed.">        if (publication == null) {</span>
+<span class="nc" id="L548">            throw new IllegalArgumentException(&quot;Publication should not be null&quot;);</span>
+        }
+<span class="fc" id="L550">        publicationMap.put(publication.getId(), publication);</span>
+<span class="fc" id="L551">        metadata.addPublicationItem(publication);</span>
+<span class="fc" id="L552">        return publication;</span>
+    }
+
+    /**
+     * Add a publication item to metadata. PubMed ids must be prefixed by &quot;pubmed:&quot;, DOIs by &quot;doi:&quot;.
+     * Multiple identifiers MUST be separated by &quot;|&quot;.
+     *
+     * @param id SHOULD be positive integer.
+     * @param type SHOULD NOT be null.
+     * @param accession SHOULD NOT set empty.
+     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
+     * @return a {@link de.isas.mztab2.model.Publication} object.
+     */
+    public Publication addPublicationItem(Metadata metadata, Integer id, PublicationItem.TypeEnum type, String accession) {
+<span class="nc bnc" id="L566" title="All 2 branches missed.">        if (id &lt;= 0) {</span>
+<span class="nc" id="L567">            throw new IllegalArgumentException(&quot;Publication id should be greater than 0!&quot;);</span>
+        }
+<span class="nc bnc" id="L569" title="All 2 branches missed.">        if (type == null) {</span>
+<span class="nc" id="L570">            throw new NullPointerException(&quot;Publication type should not be null&quot;);</span>
+        }
+<span class="nc bnc" id="L572" title="All 2 branches missed.">        if (isEmpty(accession)) {</span>
+<span class="nc" id="L573">            throw new IllegalArgumentException(&quot;Publication accession should not be empty.&quot;);</span>
+        }
+
+<span class="nc" id="L576">        Publication publication = publicationMap.get(id);</span>
+<span class="nc bnc" id="L577" title="All 2 branches missed.">        if (publication == null) {</span>
+<span class="nc" id="L578">            publication = new Publication();</span>
+<span class="nc" id="L579">            publication.id(id);</span>
+<span class="nc" id="L580">            publication.addPublicationItemsItem(new PublicationItem().type(type).accession(accession));</span>
+<span class="nc" id="L581">            publicationMap.put(id, publication);</span>
+<span class="nc" id="L582">            metadata.addPublicationItem(publication);</span>
+        } else {
+<span class="nc" id="L584">            publication.addPublicationItemsItem(new PublicationItem().type(type).accession(accession));</span>
+        }
+<span class="nc" id="L586">        return publication;</span>
+    }
+
+    /**
+     * Add a couple of publication items into publication[id]. Several publications can be given by
+     * indicating the number in the square brackets after &quot;publication&quot;. PubMed ids must be prefixed by &quot;pubmed:&quot;,
+     * DOIs by &quot;doi:&quot;. Multiple identifiers MUST be separated by &quot;|&quot;.
+     *
+     * @param id SHOULD be positive integer.
+     * @param items SHOULD NOT be null.
+     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
+     * @return a {@link de.isas.mztab2.model.Publication} object.
+     */
+    public Publication addPublicationItems(Metadata metadata, Integer id, Collection&lt;PublicationItem&gt; items) {
+<span class="nc bnc" id="L600" title="All 2 branches missed.">        if (id &lt;= 0) {</span>
+<span class="nc" id="L601">            throw new IllegalArgumentException(&quot;Publication id should be greater than 0!&quot;);</span>
+        }
+<span class="nc bnc" id="L603" title="All 2 branches missed.">        if (items == null) {</span>
+<span class="nc" id="L604">            throw new NullPointerException(&quot;Publication items should not be null&quot;);</span>
+        }
+
+<span class="nc" id="L607">        Publication publication = publicationMap.get(id);</span>
+<span class="nc bnc" id="L608" title="All 2 branches missed.">        if (publication == null) {</span>
+<span class="nc" id="L609">            publication = new Publication();</span>
+<span class="nc" id="L610">            publication.id(id);</span>
+<span class="nc" id="L611">            publication.setPublicationItems(new ArrayList&lt;&gt;(items));</span>
+<span class="nc" id="L612">            publicationMap.put(id, publication);</span>
+<span class="nc" id="L613">            metadata.addPublicationItem(publication);</span>
+        } else {
+<span class="nc" id="L615">            publication.setPublicationItems(new ArrayList&lt;&gt;(items));</span>
+        }
+<span class="nc" id="L617">        return publication;</span>
+    }
+
+    /**
+     * Add a contact into metadata.
+     *
+     * @param contact SHOULD NOT be null.
+     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
+     * @return a {@link de.isas.mztab2.model.Contact} object.
+     */
+    public Contact addContact(Metadata metadata, Contact contact) {
+<span class="nc bnc" id="L628" title="All 2 branches missed.">        if (contact == null) {</span>
+<span class="nc" id="L629">            throw new IllegalArgumentException(&quot;Contact should not be null&quot;);</span>
+        }
+
+<span class="nc" id="L632">        contactMap.put(contact.getId(), contact);</span>
+<span class="nc" id="L633">        metadata.addContactItem(contact);</span>
+<span class="nc" id="L634">        return contact;</span>
+    }
+
+    /**
+     * Add contact[id]-name. Several contacts can be given by indicating the number in the square brackets
+     * after &quot;contact&quot;. A contact has to be supplied in the format [first name] [initials] [last name] (see example).
+     *
+     * @param id SHOULD be positive integer.
+     * @param name SHOULD NOT set empty.
+     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
+     * @return a {@link de.isas.mztab2.model.Contact} object.
+     */
+    public Contact addContactName(Metadata metadata, Integer id, String name) {
+<span class="pc bpc" id="L647" title="1 of 2 branches missed.">        if (id &lt;= 0) {</span>
+<span class="nc" id="L648">            throw new IllegalArgumentException(&quot;Contact id should be greater than 0!&quot;);</span>
+        }
+<span class="pc bpc" id="L650" title="1 of 2 branches missed.">        if (isEmpty(name)) {</span>
+<span class="nc" id="L651">            throw new IllegalArgumentException(&quot;Contact name should not be empty.&quot;);</span>
+        }
+
+<span class="fc" id="L654">        Contact contact = contactMap.get(id);</span>
+<span class="pc bpc" id="L655" title="1 of 2 branches missed.">        if (contact == null) {</span>
+<span class="fc" id="L656">            contact = new Contact();</span>
+<span class="fc" id="L657">            contact.id(id);</span>
+<span class="fc" id="L658">            contact.setName(name);</span>
+<span class="fc" id="L659">            contactMap.put(id, contact);</span>
+<span class="fc" id="L660">            metadata.addContactItem(contact);</span>
+        } else {
+<span class="nc" id="L662">            contact.setName(name);</span>
+        }
+<span class="fc" id="L664">        return contact;</span>
+    }
+
+    /**
+     * Add contact[id]-affiliation.
+     *
+     * @param id SHOULD be positive integer.
+     * @param affiliation SHOULD NOT set empty.
+     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
+     * @return a {@link de.isas.mztab2.model.Contact} object.
+     */
+    public Contact addContactAffiliation(Metadata metadata, Integer id, String affiliation) {
+<span class="pc bpc" id="L676" title="1 of 2 branches missed.">        if (id &lt;= 0) {</span>
+<span class="nc" id="L677">            throw new IllegalArgumentException(&quot;Contact id should be greater than 0!&quot;);</span>
+        }
+<span class="pc bpc" id="L679" title="1 of 2 branches missed.">        if (isEmpty(affiliation)) {</span>
+<span class="nc" id="L680">            throw new IllegalArgumentException(&quot;Contact affiliation should not be empty.&quot;);</span>
+        }
+
+<span class="fc" id="L683">        Contact contact = contactMap.get(id);</span>
+<span class="fc bfc" id="L684" title="All 2 branches covered.">        if (contact == null) {</span>
+<span class="fc" id="L685">            contact = new Contact();</span>
+<span class="fc" id="L686">            contact.id(id);</span>
+<span class="fc" id="L687">            contact.setAffiliation(affiliation);</span>
+<span class="fc" id="L688">            contactMap.put(id, contact);</span>
+<span class="fc" id="L689">            metadata.addContactItem(contact);</span>
+        } else {
+<span class="fc" id="L691">            contact.setAffiliation(affiliation);</span>
+        }
+<span class="fc" id="L693">        return contact;</span>
+    }
+
+    /**
+     * Add contact[id]-email
+     *
+     * @param id SHOULD be positive integer.
+     * @param email SHOULD NOT set empty.
+     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
+     * @return a {@link de.isas.mztab2.model.Contact} object.
+     */
+    public Contact addContactEmail(Metadata metadata, Integer id, String email) {
+<span class="pc bpc" id="L705" title="1 of 2 branches missed.">        if (id &lt;= 0) {</span>
+<span class="nc" id="L706">            throw new IllegalArgumentException(&quot;Contact id should be greater than 0!&quot;);</span>
+        }
+<span class="pc bpc" id="L708" title="1 of 2 branches missed.">        if (isEmpty(email)) {</span>
+<span class="nc" id="L709">            throw new IllegalArgumentException(&quot;Contact email should not be empty.&quot;);</span>
+        }
+
+<span class="fc" id="L712">        Contact contact = contactMap.get(id);</span>
+<span class="pc bpc" id="L713" title="1 of 2 branches missed.">        if (contact == null) {</span>
+<span class="nc" id="L714">            contact = new Contact();</span>
+<span class="nc" id="L715">            contact.id(id);</span>
+<span class="nc" id="L716">            contact.setEmail(email);</span>
+<span class="nc" id="L717">            contactMap.put(id, contact);</span>
+<span class="nc" id="L718">            metadata.addContactItem(contact);</span>
+        } else {
+<span class="fc" id="L720">            contact.setEmail(email);</span>
+        }
+<span class="fc" id="L722">        return contact;</span>
+    }
+
+    /**
+     * Add a ms_run[id] into metadata. An MS run is effectively one run (or set of runs on pre-fractionated samples)
+     * on an MS instrument, and is referenced from assay in different contexts.
+     *
+     * @param msRun SHOULD NOT be null.
+     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
+     * @return a {@link de.isas.mztab2.model.MsRun} object.
+     */
+    public MsRun addMsRun(Metadata metadata, MsRun msRun) {
+<span class="pc bpc" id="L734" title="1 of 2 branches missed.">        if (msRun == null) {</span>
+<span class="nc" id="L735">            throw new IllegalArgumentException(&quot;MsRun should not be null&quot;);</span>
+        }
+
+<span class="fc" id="L738">        msRunMap.put(msRun.getId(), msRun);</span>
+<span class="fc" id="L739">        metadata.addMsRunItem(msRun);</span>
+<span class="fc" id="L740">        return msRun;</span>
+    }
+
+    /**
+     * Add ms_run[id]-format into metadata. A parameter specifying the data format of the external MS data file.
+     *
+     * @param id SHOULD be positive integer.
+     * @param format if null ignore operation.
+     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
+     * @return a {@link de.isas.mztab2.model.MsRun} object.
+     */
+    public MsRun addMsRunFormat(Metadata metadata, Integer id, Parameter format) {
+<span class="pc bpc" id="L752" title="1 of 2 branches missed.">        if (id &lt;= 0) {</span>
+<span class="nc" id="L753">            throw new IllegalArgumentException(&quot;ms_run id should be greater than 0!&quot;);</span>
+        }
+<span class="fc" id="L755">        MsRun msRun = msRunMap.get(id);</span>
+<span class="pc bpc" id="L756" title="1 of 2 branches missed.">        if (format == null) {</span>
+<span class="nc" id="L757">            return msRun;</span>
+        }
+
+<span class="fc bfc" id="L760" title="All 2 branches covered.">        if (msRun == null) {</span>
+<span class="fc" id="L761">            msRun = new MsRun();</span>
+<span class="fc" id="L762">            msRun.id(id);</span>
+<span class="fc" id="L763">            msRun.setFormat(format);</span>
+<span class="fc" id="L764">            msRunMap.put(id, msRun);</span>
+<span class="fc" id="L765">            metadata.addMsRunItem(msRun);</span>
+        } else {
+<span class="fc" id="L767">            msRun.setFormat(format);</span>
+        }
+<span class="fc" id="L769">        return msRun;</span>
+    }
+
+    /**
+     * Add ms_run[id]-location into metadata. Location of the external data file. If the actual location
+     * of the MS run is unknown, a &quot;null&quot; MUST be used as a place holder value.
+     *
+     * @param id SHOULD be positive integer.
+     * @param location if null ignore operation.
+     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
+     * @return a {@link de.isas.mztab2.model.MsRun} object.
+     */
+    public MsRun addMsRunLocation(Metadata metadata, Integer id, URI location) {
+<span class="pc bpc" id="L782" title="1 of 2 branches missed.">        if (id &lt;= 0) {</span>
+<span class="nc" id="L783">            throw new IllegalArgumentException(&quot;ms_run id should be greater than 0!&quot;);</span>
+        }
+
+<span class="fc" id="L786">        MsRun msRun = msRunMap.get(id);</span>
+<span class="fc bfc" id="L787" title="All 2 branches covered.">        if (msRun == null) {</span>
+<span class="fc" id="L788">            msRun = new MsRun();</span>
+<span class="fc" id="L789">            msRun.id(id);</span>
+<span class="fc bfc" id="L790" title="All 2 branches covered.">            msRun.setLocation(location==null?null:location.toASCIIString());</span>
+<span class="fc" id="L791">            msRunMap.put(id, msRun);</span>
+<span class="fc" id="L792">            metadata.addMsRunItem(msRun);</span>
+        } else {
+<span class="fc" id="L794">            msRun.setLocation(location.toString());</span>
+        }
+<span class="fc" id="L796">        return msRun;</span>
+    }
+    
+    /**
+     * Add ms_run[id]-instrument_ref into metadata. Reference to a commonly used instrument.
+     * 
+     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
+     * @param id SHOULD be positive integer.
+     * @param instrument if null ignore operation.
+     * @return a {@link de.isas.mztab2.model.MsRun} object.
+     */
+    public MsRun addMsRunInstrumentRef(Metadata metadata, Integer id, Instrument instrument) {
+<span class="pc bpc" id="L808" title="1 of 2 branches missed.">        if (id &lt;= 0) {</span>
+<span class="nc" id="L809">            throw new IllegalArgumentException(&quot;ms_run id should be greater than 0!&quot;);</span>
+        }
+        
+<span class="pc bpc" id="L812" title="1 of 2 branches missed.">        if (instrument==null) {</span>
+<span class="nc" id="L813">            throw new IllegalArgumentException(&quot;instrument must not be null!&quot;);</span>
+        }
+
+<span class="fc" id="L816">        MsRun msRun = msRunMap.get(id);</span>
+<span class="pc bpc" id="L817" title="1 of 2 branches missed.">        if (msRun == null) {</span>
+<span class="nc" id="L818">            msRun = new MsRun();</span>
+<span class="nc" id="L819">            msRun.id(id);</span>
+<span class="nc" id="L820">            msRun.setInstrumentRef(instrument);</span>
+<span class="nc" id="L821">            msRunMap.put(id, msRun);</span>
+<span class="nc" id="L822">            metadata.addMsRunItem(msRun);</span>
+        } else {
+<span class="fc" id="L824">            msRun.setInstrumentRef(instrument);</span>
+        }
+<span class="fc" id="L826">        return msRun;</span>
+    }
+
+    /**
+     * Add ms_run[id]-id_format into metadata. Parameter specifying the id format used in the external data file.
+     *
+     * @param id SHOULD be positive integer.
+     * @param idFormat if null ignore operation.
+     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
+     * @return a {@link de.isas.mztab2.model.MsRun} object.
+     */
+    public MsRun addMsRunIdFormat(Metadata metadata, Integer id, Parameter idFormat) {
+<span class="pc bpc" id="L838" title="1 of 2 branches missed.">        if (id &lt;= 0) {</span>
+<span class="nc" id="L839">            throw new IllegalArgumentException(&quot;ms_run id should be greater than 0!&quot;);</span>
+        }
+<span class="fc" id="L841">        MsRun msRun = msRunMap.get(id);</span>
+<span class="pc bpc" id="L842" title="1 of 2 branches missed.">        if (idFormat == null) {</span>
+<span class="nc" id="L843">            return msRun;</span>
+        }
+
+<span class="pc bpc" id="L846" title="1 of 2 branches missed.">        if (msRun == null) {</span>
+<span class="nc" id="L847">            msRun = new MsRun();</span>
+<span class="nc" id="L848">            msRun.id(id);</span>
+<span class="nc" id="L849">            msRun.setIdFormat(idFormat);</span>
+<span class="nc" id="L850">            msRunMap.put(id, msRun);</span>
+<span class="nc" id="L851">            metadata.addMsRunItem(msRun);</span>
+        } else {
+<span class="fc" id="L853">            msRun.setIdFormat(idFormat);</span>
+        }
+<span class="fc" id="L855">        return msRun;</span>
+    }
+
+    /**
+     * Add ms_run[id]-fragmentation_method into metadata. A list of &quot;|&quot; separated parameters describing
+     * all the types of fragmentation used in a given ms run.
+     *
+     * @param id SHOULD be positive integer.
+     * @param fragmentationMethod if null ignore operation.
+     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
+     * @return a {@link de.isas.mztab2.model.MsRun} object.
+     */
+    public MsRun addMsRunFragmentationMethod(Metadata metadata, Integer id, Parameter fragmentationMethod) {
+<span class="pc bpc" id="L868" title="1 of 2 branches missed.">        if (id &lt;= 0) {</span>
+<span class="nc" id="L869">            throw new IllegalArgumentException(&quot;ms_run id should be greater than 0!&quot;);</span>
+        }
+<span class="fc" id="L871">        MsRun msRun = msRunMap.get(id);</span>
+<span class="pc bpc" id="L872" title="1 of 2 branches missed.">        if (fragmentationMethod == null) {</span>
+<span class="nc" id="L873">            return msRun;</span>
+        }
+
+<span class="pc bpc" id="L876" title="1 of 2 branches missed.">        if (msRun == null) {</span>
+<span class="nc" id="L877">            msRun = new MsRun();</span>
+<span class="nc" id="L878">            msRun.id(id);</span>
+<span class="nc" id="L879">            msRun.addFragmentationMethodItem(fragmentationMethod);</span>
+<span class="nc" id="L880">            msRunMap.put(id, msRun);</span>
+<span class="nc" id="L881">            metadata.addMsRunItem(msRun);</span>
+        } else {
+<span class="fc" id="L883">            msRun.addFragmentationMethodItem(fragmentationMethod);</span>
+        }
+<span class="fc" id="L885">        return msRun;</span>
+    }
+
+    /**
+     * &lt;p&gt;addMsRunHash.&lt;/p&gt;
+     *
+     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
+     * @param id a {@link java.lang.Integer} object.
+     * @param hash a {@link java.lang.String} object.
+     * @return a {@link de.isas.mztab2.model.MsRun} object.
+     */
+    public MsRun addMsRunHash(Metadata metadata, Integer id, String hash) {
+<span class="pc bpc" id="L897" title="1 of 2 branches missed.">        if (id &lt;= 0) {</span>
+<span class="nc" id="L898">            throw new IllegalArgumentException(&quot;ms_run id should be greater than 0!&quot;);</span>
+        }
+<span class="pc bpc" id="L900" title="1 of 2 branches missed.">        if (isEmpty(hash)) {</span>
+<span class="nc" id="L901">            throw new IllegalArgumentException(&quot;ms_run hash should not be empty.&quot;);</span>
+        }
+
+<span class="fc" id="L904">        MsRun msRun = msRunMap.get(id);</span>
+<span class="pc bpc" id="L905" title="1 of 2 branches missed.">        if (msRun == null) {</span>
+<span class="nc" id="L906">            msRun = new MsRun();</span>
+<span class="nc" id="L907">            msRun.id(id);</span>
+<span class="nc" id="L908">            msRun.setHash(hash);</span>
+<span class="nc" id="L909">            msRunMap.put(id, msRun);</span>
+<span class="nc" id="L910">            metadata.addMsRunItem(msRun);</span>
+        } else {
+<span class="fc" id="L912">            msRun.setHash(hash);</span>
+        }
+<span class="fc" id="L914">        return msRun;</span>
+    }
+
+    /**
+     * &lt;p&gt;addMsRunHashMethod.&lt;/p&gt;
+     *
+     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
+     * @param id a {@link java.lang.Integer} object.
+     * @param hashMethod a {@link de.isas.mztab2.model.Parameter} object.
+     * @return a {@link de.isas.mztab2.model.MsRun} object.
+     */
+    public MsRun addMsRunHashMethod(Metadata metadata, Integer id, Parameter hashMethod) {
+<span class="pc bpc" id="L926" title="1 of 2 branches missed.">        if (id &lt;= 0) {</span>
+<span class="nc" id="L927">            throw new IllegalArgumentException(&quot;ms_run id should be greater than 0!&quot;);</span>
+        }
+<span class="fc" id="L929">        MsRun msRun = msRunMap.get(id);</span>
+<span class="pc bpc" id="L930" title="1 of 2 branches missed.">        if (hashMethod == null) {</span>
+<span class="nc" id="L931">            return msRun;</span>
+        }
+
+<span class="pc bpc" id="L934" title="1 of 2 branches missed.">        if (msRun == null) {</span>
+<span class="nc" id="L935">            msRun = new MsRun();</span>
+<span class="nc" id="L936">            msRun.id(id);</span>
+<span class="nc" id="L937">            msRun.setHashMethod(hashMethod);</span>
+<span class="nc" id="L938">            msRunMap.put(id, msRun);</span>
+<span class="nc" id="L939">            metadata.addMsRunItem(msRun);</span>
+        } else {
+<span class="fc" id="L941">            msRun.setHashMethod(hashMethod);</span>
+        }
+<span class="fc" id="L943">        return msRun;</span>
+    }
+    
+    /**
+     * &lt;p&gt;addMsRunScanPolarity.&lt;/p&gt;
+     *
+     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
+     * @param id a {@link java.lang.Integer} object.
+     * @param scanPolarity a {@link de.isas.mztab2.model.Parameter} object.
+     * @return a {@link de.isas.mztab2.model.MsRun} object.
+     */
+    public MsRun addMsRunScanPolarity(Metadata metadata, Integer id, Parameter scanPolarity) {
+<span class="pc bpc" id="L955" title="1 of 2 branches missed.">        if (id &lt;= 0) {</span>
+<span class="nc" id="L956">            throw new IllegalArgumentException(&quot;ms_run id should be greater than 0!&quot;);</span>
+        }
+<span class="fc" id="L958">        MsRun msRun = msRunMap.get(id);</span>
+<span class="pc bpc" id="L959" title="1 of 2 branches missed.">        if (scanPolarity == null) {</span>
+<span class="nc" id="L960">            return msRun;</span>
+        }
+
+<span class="pc bpc" id="L963" title="1 of 2 branches missed.">        if (msRun == null) {</span>
+<span class="nc" id="L964">            msRun = new MsRun();</span>
+<span class="nc" id="L965">            msRun.id(id);</span>
+<span class="nc" id="L966">            msRun.addScanPolarityItem(scanPolarity);</span>
+<span class="nc" id="L967">            msRunMap.put(id, msRun);</span>
+<span class="nc" id="L968">            metadata.addMsRunItem(msRun);</span>
+        } else {
+<span class="fc" id="L970">            msRun.addScanPolarityItem(scanPolarity);</span>
+        }
+<span class="fc" id="L972">        return msRun;</span>
+    }
+
+    /**
+     * Add a assay into metadata. The application of a measurement about the sample (in this case through MS) -
+     * producing values about small molecules, peptides or proteins. One assay is typically mapped to one MS run
+     * in the case of label-free MS analysis or multiple assays are mapped to one MS run for multiplexed techniques,
+     * along with a description of the label or tag applied.
+     *
+     * @param assay SHOULD NOT be null.
+     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
+     * @return a {@link de.isas.mztab2.model.Assay} object.
+     */
+    public Assay addAssay(Metadata metadata, Assay assay) {
+<span class="pc bpc" id="L986" title="1 of 2 branches missed.">        if (assay == null) {</span>
+<span class="nc" id="L987">            throw new IllegalArgumentException(&quot;Assay should not be null&quot;);</span>
+        }
+
+<span class="fc" id="L990">        assayMap.put(assay.getId(), assay);</span>
+<span class="fc" id="L991">        metadata.addAssayItem(assay);</span>
+<span class="fc" id="L992">        return assay;</span>
+    }
+    
+    /**
+     * Add a assay[id]-custom[i] into metadata. The application of a measurement about the sample (in this case through MS) -
+     * producing values about small molecules, peptides or proteins. One assay is typically mapped to one MS run
+     * in the case of label-free MS analysis or multiple assays are mapped to one MS run for multiplexed techniques,
+     * along with a description of the label or tag applied.
+     *
+     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
+     * @param id SHOULD NOT be null.
+     * @param param the parameter.
+     * @return a {@link de.isas.mztab2.model.Assay} object.
+     */
+    public Assay addAssayCustom(Metadata metadata, Integer id, Parameter param) {
+<span class="nc bnc" id="L1007" title="All 2 branches missed.">        if (id &lt;= 0) {</span>
+<span class="nc" id="L1008">            throw new IllegalArgumentException(&quot;assay id should be greater than 0!&quot;);</span>
+        }
+        
+<span class="nc" id="L1011">        Assay assay = assayMap.get(id);</span>
+<span class="nc bnc" id="L1012" title="All 2 branches missed.">        if (assay == null) {</span>
+<span class="nc" id="L1013">            assay = new Assay();</span>
+<span class="nc" id="L1014">            assay.id(id);</span>
+<span class="nc" id="L1015">            assay.addCustomItem(param);</span>
+<span class="nc" id="L1016">            assayMap.put(id, assay);</span>
+<span class="nc" id="L1017">            metadata.addAssayItem(assay);</span>
+        } else {
+<span class="nc" id="L1019">            assay.addCustomItem(param);</span>
+        }
+<span class="nc" id="L1021">        return assay;</span>
+    }
+    
+        /**
+     * Add a assay[id]-external_uri into metadata. The application of a measurement about the sample (in this case through MS) -
+     * producing values about small molecules, peptides or proteins. One assay is typically mapped to one MS run
+     * in the case of label-free MS analysis or multiple assays are mapped to one MS run for multiplexed techniques,
+     * along with a description of the label or tag applied.
+     *
+     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
+     * @param id the id of the assay element.
+     * @param location SHOULD NOT be null.
+     * @return a {@link de.isas.mztab2.model.Assay} object.
+     */
+    public Assay addAssayExternalUri(Metadata metadata, Integer id, URI location) {
+<span class="nc bnc" id="L1036" title="All 2 branches missed.">        if (id &lt;= 0) {</span>
+<span class="nc" id="L1037">            throw new IllegalArgumentException(&quot;assay id should be greater than 0!&quot;);</span>
+        }
+
+<span class="nc" id="L1040">        Assay assay = assayMap.get(id);</span>
+<span class="nc bnc" id="L1041" title="All 2 branches missed.">        if (assay == null) {</span>
+<span class="nc" id="L1042">            assay = new Assay();</span>
+<span class="nc" id="L1043">            assay.id(id);</span>
+<span class="nc bnc" id="L1044" title="All 2 branches missed.">            assay.setExternalUri(location==null?null:location.toASCIIString());</span>
+<span class="nc" id="L1045">            assayMap.put(id, assay);</span>
+<span class="nc" id="L1046">            metadata.addAssayItem(assay);</span>
+        } else {
+<span class="nc" id="L1048">            assay.setExternalUri(location.toString());</span>
+        }
+<span class="nc" id="L1050">        return assay;</span>
+    }
+
+    /**
+     * Add assay[id]-sample_ref into metadata. An association from a given assay to the sample analysed.
+     *
+     * @param id SHOULD be positive integer.
+     * @param sample SHOULD NOT be null, and SHOULD be defined in metadata first.
+     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
+     * @return a {@link de.isas.mztab2.model.Assay} object.
+     */
+    public Assay addAssaySample(Metadata metadata, Integer id, Sample sample) {
+<span class="pc bpc" id="L1062" title="1 of 2 branches missed.">        if (id &lt;= 0) {</span>
+<span class="nc" id="L1063">            throw new IllegalArgumentException(&quot;assay id should be greater than 0!&quot;);</span>
+        }
+<span class="pc bpc" id="L1065" title="1 of 2 branches missed.">        if (sample == null) {</span>
+<span class="nc" id="L1066">            throw new NullPointerException(&quot;assay sample_ref should not be null.&quot;);</span>
+        }
+<span class="pc bpc" id="L1068" title="1 of 2 branches missed.">        if (! sampleMap.containsValue(sample)) {</span>
+<span class="nc" id="L1069">            throw new IllegalArgumentException(&quot;Sample not defined in metadata.&quot;);</span>
+        }
+
+<span class="fc" id="L1072">        Assay assay = assayMap.get(id);</span>
+<span class="fc bfc" id="L1073" title="All 2 branches covered.">        if (assay == null) {</span>
+<span class="fc" id="L1074">            assay = new Assay();</span>
+<span class="fc" id="L1075">            assay.id(id);</span>
+<span class="fc" id="L1076">            assay.setSampleRef(sample);</span>
+<span class="fc" id="L1077">            assayMap.put(id, assay);</span>
+<span class="fc" id="L1078">            metadata.addAssayItem(assay);</span>
+        } else {
+<span class="fc" id="L1080">            assay.setSampleRef(sample);</span>
+        }
+<span class="fc" id="L1082">        return assay;</span>
+    }
+
+    /**
+     * Add assay[id]-ms_run_ref into metadata. An association from a given assay to the source MS run.
+     *
+     * @param id SHOULD be positive integer.
+     * @param msRun SHOULD NOT be null, and SHOULD be defined in metadata first.
+     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
+     * @return a {@link de.isas.mztab2.model.Assay} object.
+     */
+    public Assay addAssayMsRun(Metadata metadata, Integer id, MsRun msRun) {
+<span class="pc bpc" id="L1094" title="1 of 2 branches missed.">        if (id &lt;= 0) {</span>
+<span class="nc" id="L1095">            throw new IllegalArgumentException(&quot;assay id should be greater than 0!&quot;);</span>
+        }
+<span class="pc bpc" id="L1097" title="1 of 2 branches missed.">        if (msRun == null) {</span>
+<span class="nc" id="L1098">            throw new NullPointerException(&quot;assay ms_run_ref should not be null.&quot;);</span>
+        }
+<span class="pc bpc" id="L1100" title="1 of 2 branches missed.">        if (! msRunMap.containsValue(msRun)) {</span>
+<span class="nc" id="L1101">            throw new IllegalArgumentException(&quot;ms_run should be defined in metadata first.&quot;);</span>
+        }
+
+<span class="fc" id="L1104">        Assay assay = assayMap.get(id);</span>
+<span class="fc bfc" id="L1105" title="All 2 branches covered.">        if (assay == null) {</span>
+<span class="fc" id="L1106">            assay = new Assay();</span>
+<span class="fc" id="L1107">            assay.id(id);</span>
+<span class="fc" id="L1108">            assay.addMsRunRefItem(msRun);</span>
+<span class="fc" id="L1109">            assayMap.put(id, assay);</span>
+<span class="fc" id="L1110">            metadata.addAssayItem(assay);</span>
+        } else {
+<span class="fc" id="L1112">            assay.addMsRunRefItem(msRun);</span>
+        }
+<span class="fc" id="L1114">        return assay;</span>
+    }
+
+    /**
+     * Add a study variable into metadata. The variables about which the final results of a study are reported, which
+     * may have been derived following averaging across a group of replicate measurements (assays). In files where assays
+     * are reported, study variables have references to assays. The same concept has been defined by others as &quot;experimental factor&quot;.
+     *
+     * @param studyVariable SHOULD NOT be null.
+     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
+     * @return a {@link de.isas.mztab2.model.StudyVariable} object.
+     */
+    public StudyVariable addStudyVariable(Metadata metadata, StudyVariable studyVariable) {
+<span class="pc bpc" id="L1127" title="1 of 2 branches missed.">        if (studyVariable == null) {</span>
+<span class="nc" id="L1128">            throw new IllegalArgumentException(&quot;StudyVariable should not be null&quot;);</span>
+        }
+<span class="fc" id="L1130">        studyVariableMap.put(studyVariable.getId(), studyVariable);</span>
+<span class="fc" id="L1131">        metadata.addStudyVariableItem(studyVariable);</span>
+<span class="fc" id="L1132">        return studyVariable;</span>
+    }
+
+    /**
+     * Add a study_variable[id]-assay_refs. Comma-separated references to the IDs of assays grouped in the study variable.
+     *
+     * @param id SHOULD be positive integer.
+     * @param assay SHOULD NOT be null, and should be defined in metadata first.
+     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
+     * @return a {@link de.isas.mztab2.model.StudyVariable} object.
+     */
+    public StudyVariable addStudyVariableAssay(Metadata metadata, Integer id, Assay assay) {
+<span class="pc bpc" id="L1144" title="1 of 2 branches missed.">        if (id &lt;= 0) {</span>
+<span class="nc" id="L1145">            throw new IllegalArgumentException(&quot;study variable id should be greater than 0!&quot;);</span>
+        }
+<span class="pc bpc" id="L1147" title="1 of 2 branches missed.">        if (assay == null) {</span>
+<span class="nc" id="L1148">            throw new NullPointerException(&quot;study_variable[n]-assay_ref should not be null.&quot;);</span>
+        }
+<span class="pc bpc" id="L1150" title="1 of 2 branches missed.">        if (! assayMap.containsValue(assay)) {</span>
+<span class="nc" id="L1151">            throw new IllegalArgumentException(&quot;assay should be defined in metadata first&quot;);</span>
+        }
+
+<span class="fc" id="L1154">        StudyVariable studyVariable = studyVariableMap.get(id);</span>
+<span class="fc bfc" id="L1155" title="All 2 branches covered.">        if (studyVariable == null) {</span>
+<span class="fc" id="L1156">            studyVariable = new StudyVariable();</span>
+<span class="fc" id="L1157">            studyVariable.id(id);</span>
+<span class="fc" id="L1158">            studyVariable.addAssayRefsItem(assay);</span>
+<span class="fc" id="L1159">            studyVariableMap.put(id, studyVariable);</span>
+<span class="fc" id="L1160">            metadata.addStudyVariableItem(studyVariable);</span>
+        } else {
+<span class="fc" id="L1162">            studyVariable.addAssayRefsItem(assay);</span>
+        }
+<span class="fc" id="L1164">        return studyVariable;</span>
+    }
+
+    /**
+     * Add a study_variable[id]-description. A textual description of the study variable.
+     *
+     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
+     * @param id SHOULD be positive integer.
+     * @param description if empty ignore operation.
+     * @return a {@link de.isas.mztab2.model.StudyVariable} object.
+     */
+    public StudyVariable addStudyVariableDescription(Metadata metadata, Integer id, String description) {
+<span class="pc bpc" id="L1176" title="1 of 2 branches missed.">        if (id &lt;= 0) {</span>
+<span class="nc" id="L1177">            throw new IllegalArgumentException(&quot;study variable id should be greater than 0!&quot;);</span>
+        }
+<span class="fc" id="L1179">        StudyVariable studyVariable = studyVariableMap.get(id);</span>
+<span class="pc bpc" id="L1180" title="1 of 2 branches missed.">        if (isEmpty(description)) {</span>
+<span class="nc" id="L1181">            return studyVariable;</span>
+        }
+
+<span class="fc bfc" id="L1184" title="All 2 branches covered.">        if (studyVariable == null) {</span>
+<span class="fc" id="L1185">            studyVariable = new StudyVariable();</span>
+<span class="fc" id="L1186">            studyVariable.id(id);</span>
+<span class="fc" id="L1187">            metadata.addStudyVariableItem(studyVariable);</span>
+        }
+
+<span class="fc" id="L1190">        studyVariable.setDescription(description);</span>
+<span class="fc" id="L1191">        studyVariableMap.put(id, studyVariable);</span>
+<span class="fc" id="L1192">        return studyVariable;</span>
+    }
+    
+    /**
+     * Add a study_variable[id]-factor. A Parameter further refining what is known about the study design.
+     * 
+     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
+     * @param id id SHOULD be positive integer.
+     * @param checkParameter the study variable factor Parameter to add.
+     * @return a {@link de.isas.mztab2.model.StudyVariable} object.
+     */
+    public StudyVariable addStudyVariableFactors(Metadata metadata, Integer id, Parameter checkParameter) {
+<span class="pc bpc" id="L1204" title="1 of 2 branches missed.">        if (id &lt;= 0) {</span>
+<span class="nc" id="L1205">            throw new IllegalArgumentException(&quot;study variable id should be greater than 0!&quot;);</span>
+        }
+<span class="fc" id="L1207">        StudyVariable studyVariable = studyVariableMap.get(id);</span>
+<span class="pc bpc" id="L1208" title="1 of 2 branches missed.">        if (checkParameter == null) {</span>
+<span class="nc" id="L1209">            return studyVariable;</span>
+        }
+
+<span class="pc bpc" id="L1212" title="1 of 2 branches missed.">        if (studyVariable == null) {</span>
+<span class="nc" id="L1213">            studyVariable = new StudyVariable();</span>
+<span class="nc" id="L1214">            studyVariable.id(id);</span>
+<span class="nc" id="L1215">            metadata.addStudyVariableItem(studyVariable);</span>
+        }
+
+<span class="fc" id="L1218">        studyVariable.addFactorsItem(checkParameter);</span>
+<span class="fc" id="L1219">        studyVariableMap.put(id, studyVariable);</span>
+<span class="fc" id="L1220">        return studyVariable;</span>
+    }
+    
+    /**
+     * Add a study_variable[id]-variation_function. This is a Parameter detailing how the
+     * reported study variable abundances have been calculated.
+     *
+     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
+     * @param id SHOULD be positive integer.
+     * @param checkParameter the parameter.
+     * @return a {@link de.isas.mztab2.model.StudyVariable} object.
+     */
+    public StudyVariable addStudyVariableVariationFunction(Metadata metadata, Integer id,
+        Parameter checkParameter) {
+<span class="pc bpc" id="L1234" title="1 of 2 branches missed.">        if (id &lt;= 0) {</span>
+<span class="nc" id="L1235">            throw new IllegalArgumentException(&quot;study variable id should be greater than 0!&quot;);</span>
+        }
+<span class="fc" id="L1237">        StudyVariable studyVariable = studyVariableMap.get(id);</span>
+<span class="pc bpc" id="L1238" title="1 of 2 branches missed.">        if (checkParameter == null) {</span>
+<span class="nc" id="L1239">            return studyVariable;</span>
+        }
+<span class="pc bpc" id="L1241" title="1 of 2 branches missed.">        if (studyVariable == null) {</span>
+<span class="nc" id="L1242">            studyVariable = new StudyVariable();</span>
+<span class="nc" id="L1243">            studyVariable.id(id);</span>
+<span class="nc" id="L1244">            studyVariable.setVariationFunction(checkParameter);</span>
+<span class="nc" id="L1245">            studyVariableMap.put(id, studyVariable);</span>
+<span class="nc" id="L1246">            metadata.addStudyVariableItem(studyVariable);</span>
+        } else {
+<span class="fc" id="L1248">            studyVariable.setVariationFunction(checkParameter);</span>
+        }
+<span class="fc" id="L1250">        return studyVariable;</span>
+    }
+    
+    /**
+     * Add a study_variable[id]-average_function. This is a Parameter detailing how the
+     * reported study variable abundances have been calculated.
+     *
+     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
+     * @param id SHOULD be positive integer.
+     * @param checkParameter the parameter.
+     * @return a {@link de.isas.mztab2.model.StudyVariable} object.
+     */
+    public StudyVariable addStudyVariableAverageFunction(Metadata metadata, Integer id,
+        Parameter checkParameter) {
+<span class="pc bpc" id="L1264" title="1 of 2 branches missed.">        if (id &lt;= 0) {</span>
+<span class="nc" id="L1265">            throw new IllegalArgumentException(&quot;study variable id should be greater than 0!&quot;);</span>
+        }
+<span class="fc" id="L1267">        StudyVariable studyVariable = studyVariableMap.get(id);</span>
+<span class="pc bpc" id="L1268" title="1 of 2 branches missed.">        if (checkParameter == null) {</span>
+<span class="nc" id="L1269">            return studyVariable;</span>
+        }
+<span class="pc bpc" id="L1271" title="1 of 2 branches missed.">        if (studyVariable == null) {</span>
+<span class="nc" id="L1272">            studyVariable = new StudyVariable();</span>
+<span class="nc" id="L1273">            studyVariable.id(id);</span>
+<span class="nc" id="L1274">            studyVariable.setAverageFunction(checkParameter);</span>
+<span class="nc" id="L1275">            studyVariableMap.put(id, studyVariable);</span>
+<span class="nc" id="L1276">            metadata.addStudyVariableItem(studyVariable);</span>
+        } else {
+<span class="fc" id="L1278">            studyVariable.setAverageFunction(checkParameter);</span>
+        }
+<span class="fc" id="L1280">        return studyVariable;</span>
+    }
+
+    /**
+     * Add a controlled vocabularies/ontologies into metadata. Define the controlled vocabularies/ontologies
+     * used in the mzTab file.
+     *
+     * @param cv SHOULD NOT be null.
+     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
+     * @return a {@link de.isas.mztab2.model.CV} object.
+     */
+    public CV addCV(Metadata metadata, CV cv) {
+<span class="nc bnc" id="L1292" title="All 2 branches missed.">        if (cv == null) {</span>
+<span class="nc" id="L1293">            throw new NullPointerException(&quot;Controlled vocabularies/ontologies can not set null!&quot;);</span>
+        }
+
+<span class="nc" id="L1296">        cvMap.put(cv.getId(), cv);</span>
+<span class="nc" id="L1297">        metadata.addCvItem(cv);</span>
+<span class="nc" id="L1298">        return cv;</span>
+    }
+
+    /**
+     * Add a cv[id]-label. A string describing the labels of the controlled vocabularies/ontologies used in the mzTab file
+     *
+     * @param id SHOULD be positive integer.
+     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
+     * @param label a {@link java.lang.String} object.
+     * @return a {@link de.isas.mztab2.model.CV} object.
+     */
+    public CV addCVLabel(Metadata metadata, Integer id, String label) {
+<span class="pc bpc" id="L1310" title="1 of 2 branches missed.">        if (id &lt;= 0) {</span>
+<span class="nc" id="L1311">            throw new IllegalArgumentException(&quot;controlled vocabularies id should be greater than 0!&quot;);</span>
+        }
+
+<span class="fc" id="L1314">        CV cv = cvMap.get(id);</span>
+<span class="pc bpc" id="L1315" title="1 of 2 branches missed.">        if (cv == null) {</span>
+<span class="fc" id="L1316">            cv = new CV();</span>
+<span class="fc" id="L1317">            cv.id(id);</span>
+<span class="fc" id="L1318">            metadata.addCvItem(cv);</span>
+        }
+
+<span class="fc" id="L1321">        cv.setLabel(label);</span>
+<span class="fc" id="L1322">        return cvMap.put(id, cv);</span>
+    }
+
+    /**
+     * Add a cv[id]-full_name. A string describing the full names of the controlled vocabularies/ontologies used in
+     * the mzTab file
+     *
+     * @param id SHOULD be positive integer.
+     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
+     * @param fullName a {@link java.lang.String} object.
+     * @return a {@link de.isas.mztab2.model.CV} object.
+     */
+    public CV addCVFullName(Metadata metadata, Integer id, String fullName) {
+<span class="pc bpc" id="L1335" title="1 of 2 branches missed.">        if (id &lt;= 0) {</span>
+<span class="nc" id="L1336">            throw new IllegalArgumentException(&quot;controlled vocabularies id should be greater than 0!&quot;);</span>
+        }
+
+<span class="fc" id="L1339">        CV cv = cvMap.get(id);</span>
+<span class="fc bfc" id="L1340" title="All 2 branches covered.">        if (cv == null) {</span>
+<span class="fc" id="L1341">            cv = new CV();</span>
+<span class="fc" id="L1342">            cv.id(id);</span>
+<span class="fc" id="L1343">            metadata.addCvItem(cv);</span>
+        }
+
+<span class="fc" id="L1346">        cv.setFullName(fullName);</span>
+<span class="fc" id="L1347">        return cvMap.put(id, cv);</span>
+    }
+
+    /**
+     * Add a cv[id]-version. A string describing the version of the controlled vocabularies/ontologies used in
+     * the mzTab file
+     *
+     * @param id SHOULD be positive integer.
+     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
+     * @param version a {@link java.lang.String} object.
+     * @return a {@link de.isas.mztab2.model.CV} object.
+     */
+    public CV addCVVersion(Metadata metadata, Integer id, String version) {
+<span class="pc bpc" id="L1360" title="1 of 2 branches missed.">        if (id &lt;= 0) {</span>
+<span class="nc" id="L1361">            throw new IllegalArgumentException(&quot;controlled vocabularies id should be greater than 0!&quot;);</span>
+        }
+
+<span class="fc" id="L1364">        CV cv = cvMap.get(id);</span>
+<span class="pc bpc" id="L1365" title="1 of 2 branches missed.">        if (cv == null) {</span>
+<span class="nc" id="L1366">            cv = new CV();</span>
+<span class="nc" id="L1367">            cv.id(id);</span>
+<span class="nc" id="L1368">            metadata.addCvItem(cv);</span>
+        }
+
+<span class="fc" id="L1371">        cv.setVersion(version);</span>
+<span class="fc" id="L1372">        return cvMap.put(id, cv);</span>
+    }
+
+    /**
+     * Add a cv[id]-uri. A string containing the URIs of the controlled vocabularies/ontologies used in the
+     * mzTab file
+     *
+     * @param id SHOULD be positive integer.
+     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
+     * @param uri a {@link java.lang.String} object.
+     * @return a {@link de.isas.mztab2.model.CV} object.
+     */
+    public CV addCVURI(Metadata metadata, Integer id, String uri) {
+<span class="pc bpc" id="L1385" title="1 of 2 branches missed.">        if (id &lt;= 0) {</span>
+<span class="nc" id="L1386">            throw new IllegalArgumentException(&quot;controlled vocabularies id should be greater than 0!&quot;);</span>
+        }
+
+<span class="fc" id="L1389">        CV cv = cvMap.get(id);</span>
+<span class="pc bpc" id="L1390" title="1 of 2 branches missed.">        if (cv == null) {</span>
+<span class="nc" id="L1391">            cv = new CV();</span>
+<span class="nc" id="L1392">            cv.id(id);</span>
+<span class="nc" id="L1393">            metadata.addCvItem(cv);</span>
+        }
+
+<span class="fc" id="L1396">        cv.setUri(uri);</span>
+<span class="fc" id="L1397">        return cvMap.put(id, cv);</span>
+    }
+
+    /**
+     * Defines the unit for the data reported in a column of the small molecule section. Defines the used unit for a column
+     * in the small molecule section. The format of the value has to be {column name}={Parameter defining the unit}
+     * This field MUST NOT be used to define a unit for quantification columns. The unit used for small molecule quantification
+     * values MUST be set in small_molecule-quantification_unit.
+     *
+     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
+     * @param columnName SHOULD NOT be null
+     * @param param SHOULD NOT be null
+     */
+    public void addSmallMoleculeColUnit(Metadata metadata, String columnName, Parameter param) {
+<span class="fc" id="L1411">        ColumnParameterMapping cpm = new ColumnParameterMapping();</span>
+<span class="fc" id="L1412">        cpm.columnName(columnName).param(param);</span>
+<span class="fc" id="L1413">        this.smallMoleculeColUnitList.add(cpm);</span>
+<span class="fc" id="L1414">        metadata.addColunitSmallMoleculeItem(cpm);</span>
+<span class="fc" id="L1415">    }</span>
+    
+    /**
+     * Defines the unit for the data reported in a column of the small molecule section. Defines the used unit for a column
+     * in the small molecule section. The format of the value has to be {column name}={Parameter defining the unit}
+     * This field MUST NOT be used to define a unit for quantification columns. The unit used for small molecule quantification
+     * values MUST be set in small_molecule-quantification_unit.
+     *
+     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
+     * @param columnName SHOULD NOT be null
+     * @param param SHOULD NOT be null
+     */
+    public void addSmallMoleculeFeatureColUnit(Metadata metadata, String columnName, Parameter param) {
+<span class="nc" id="L1428">        ColumnParameterMapping cpm = new ColumnParameterMapping();</span>
+<span class="nc" id="L1429">        cpm.columnName(columnName).param(param);</span>
+<span class="nc" id="L1430">        this.smallMoleculeFeatureColUnitList.add(cpm);</span>
+<span class="nc" id="L1431">        metadata.addColunitSmallMoleculeFeatureItem(cpm);</span>
+<span class="nc" id="L1432">    }</span>
+    
+    /**
+     * Defines the unit for the data reported in a column of the small molecule section. Defines the used unit for a column
+     * in the small molecule section. The format of the value has to be {column name}={Parameter defining the unit}
+     * This field MUST NOT be used to define a unit for quantification columns. The unit used for small molecule quantification
+     * values MUST be set in small_molecule-quantification_unit.
+     *
+     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
+     * @param columnName SHOULD NOT be null
+     * @param param SHOULD NOT be null
+     */
+    public void addSmallMoleculeEvidenceColUnit(Metadata metadata, String columnName, Parameter param) {
+<span class="fc" id="L1445">        ColumnParameterMapping cpm = new ColumnParameterMapping();</span>
+<span class="fc" id="L1446">        cpm.columnName(columnName).param(param);</span>
+<span class="fc" id="L1447">        this.smallMoleculeEvidenceColUnitList.add(cpm);</span>
+<span class="fc" id="L1448">        metadata.addColunitSmallMoleculeEvidenceItem(cpm);</span>
+<span class="fc" id="L1449">    }</span>
+
+    /**
+     *  Defines a method to access the colUnit to help in the transformation from columnName String -&amp;gt; to columnName MZTabColumn
+     *
+     * @return a {@link java.util.Map} object.
+     */
+    public Map&lt;String, String&gt; getColUnitMap() {
+<span class="nc" id="L1457">        return colUnitMap;</span>
+    }
+
+    /**
+     * Add a confidence measure id parameter.
+     * @param id SHOULD NOT be null
+     * @param parameter SHOULD NOT be null
+     */
+    void addIdConfidenceMeasure(Metadata metadata, Integer id, Parameter parameter) {
+<span class="pc bpc" id="L1466" title="1 of 2 branches missed.">        if(parameter.getId()==null) {</span>
+<span class="fc" id="L1467">            parameter.setId(id);</span>
+        }
+<span class="fc" id="L1469">        this.idConfidenceMeasureMap.put(id, parameter);</span>
+<span class="fc" id="L1470">        metadata.addIdConfidenceMeasureItem(parameter);</span>
+<span class="fc" id="L1471">    }</span>
+
+    /**
+     * Add a custom item parameter.
+     * @param metadata
+     * @param id
+     * @param custom 
+     * @return
+     */
+    Parameter addCustomItem(Metadata metadata, Integer id, Parameter custom) {
+<span class="pc bpc" id="L1481" title="1 of 2 branches missed.">        if (custom == null) {</span>
+<span class="nc" id="L1482">            return null;</span>
+        }
+<span class="pc bpc" id="L1484" title="1 of 2 branches missed.">        if(custom.getId()==null) {</span>
+<span class="fc" id="L1485">            custom.setId(id);</span>
+        }
+<span class="fc" id="L1487">        this.customItemMap.put(id, custom);</span>
+<span class="fc" id="L1488">        metadata.addCustomItem(custom);</span>
+<span class="fc" id="L1489">        return custom;</span>
+    }
+    
+    /**
+     * Add a derivatization agent parameter.
+     * @param metadata
+     * @param id
+     * @param derivatizationAgent
+     * @return 
+     */
+    Parameter addDerivatizationAgentItem(Metadata metadata, Integer id, Parameter derivatizationAgent) {
+<span class="pc bpc" id="L1500" title="1 of 2 branches missed.">        if (derivatizationAgent == null) {</span>
+<span class="nc" id="L1501">            return null;</span>
+        }
+<span class="pc bpc" id="L1503" title="1 of 2 branches missed.">        if(derivatizationAgent.getId()==null) {</span>
+<span class="fc" id="L1504">            derivatizationAgent.setId(id);</span>
+        }
+<span class="fc" id="L1506">        this.derivatizationItemMap.put(id, derivatizationAgent);</span>
+<span class="fc" id="L1507">        metadata.addDerivatizationAgentItem(derivatizationAgent);</span>
+<span class="fc" id="L1508">        return derivatizationAgent;</span>
+    }
+
+    /**
+     * &lt;p&gt;addDatabase.&lt;/p&gt;
+     *
+     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
+     * @param database a {@link de.isas.mztab2.model.Database} object.
+     * @return a {@link de.isas.mztab2.model.Database} object.
+     */
+    public Database addDatabase(Metadata metadata, Database database) {
+<span class="pc bpc" id="L1519" title="1 of 2 branches missed.">        if (database == null) {</span>
+<span class="nc" id="L1520">            throw new IllegalArgumentException(&quot;Database should not be null&quot;);</span>
+        }
+<span class="fc" id="L1522">        databaseMap.put(database.getId(), database);</span>
+<span class="fc" id="L1523">        metadata.addDatabaseItem(database);</span>
+<span class="fc" id="L1524">        return database;</span>
+    }
+
+    /**
+     * &lt;p&gt;addDatabasePrefix.&lt;/p&gt;
+     *
+     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
+     * @param id a {@link java.lang.Integer} object.
+     * @param valueLabel a {@link java.lang.String} object.
+     * @return a {@link de.isas.mztab2.model.Database} object.
+     */
+    public Database addDatabasePrefix(Metadata metadata, Integer id, String valueLabel) {
+<span class="pc bpc" id="L1536" title="1 of 2 branches missed.">        if (id &lt;= 0) {</span>
+<span class="nc" id="L1537">            throw new IllegalArgumentException(&quot;database id should be greater than 0!&quot;);</span>
+        }
+
+<span class="fc" id="L1540">        Database database = databaseMap.get(id);</span>
+<span class="pc bpc" id="L1541" title="1 of 2 branches missed.">        if (database == null) {</span>
+<span class="nc" id="L1542">            database = new Database();</span>
+<span class="nc" id="L1543">            database.id(id);</span>
+<span class="nc" id="L1544">            database.setPrefix(valueLabel);</span>
+<span class="nc" id="L1545">            databaseMap.put(id, database);</span>
+<span class="nc" id="L1546">            metadata.addDatabaseItem(database);</span>
+        } else {
+<span class="fc" id="L1548">            database.setPrefix(valueLabel);</span>
+        }
+<span class="fc" id="L1550">        return database;</span>
+    }
+
+    /**
+     * &lt;p&gt;addDatabaseVersion.&lt;/p&gt;
+     *
+     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
+     * @param id a {@link java.lang.Integer} object.
+     * @param version a {@link java.lang.String} object.
+     * @return a {@link de.isas.mztab2.model.Database} object.
+     */
+    public Database addDatabaseVersion(Metadata metadata, Integer id, String version) {
+<span class="pc bpc" id="L1562" title="1 of 2 branches missed.">        if (id &lt;= 0) {</span>
+<span class="nc" id="L1563">            throw new IllegalArgumentException(&quot;database id should be greater than 0!&quot;);</span>
+        }
+
+<span class="fc" id="L1566">        Database database = databaseMap.get(id);</span>
+<span class="pc bpc" id="L1567" title="1 of 2 branches missed.">        if (database == null) {</span>
+<span class="nc" id="L1568">            database = new Database();</span>
+<span class="nc" id="L1569">            database.id(id);</span>
+<span class="nc" id="L1570">            database.setVersion(version);</span>
+<span class="nc" id="L1571">            databaseMap.put(id, database);</span>
+<span class="nc" id="L1572">            metadata.addDatabaseItem(database);</span>
+        } else {
+<span class="fc" id="L1574">            database.setVersion(version);</span>
+        }
+<span class="fc" id="L1576">        return database;</span>
+    }
+
+    /**
+     * &lt;p&gt;addDatabaseUri.&lt;/p&gt;
+     *
+     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
+     * @param id a {@link java.lang.Integer} object.
+     * @param checkURI a {@link java.net.URI} object.
+     * @return a {@link de.isas.mztab2.model.Database} object.
+     */
+    public Database addDatabaseUri(Metadata metadata, Integer id, URI checkURI) {
+<span class="pc bpc" id="L1588" title="1 of 2 branches missed.">        if (id &lt;= 0) {</span>
+<span class="nc" id="L1589">            throw new IllegalArgumentException(&quot;database id should be greater than 0!&quot;);</span>
+        }
+
+<span class="fc" id="L1592">        Database database = databaseMap.get(id);</span>
+<span class="pc bpc" id="L1593" title="1 of 2 branches missed.">        if (database == null) {</span>
+<span class="nc" id="L1594">            database = new Database();</span>
+<span class="nc" id="L1595">            database.id(id);</span>
+<span class="nc bnc" id="L1596" title="All 2 branches missed.">            database.setUri(checkURI==null?null:checkURI.toString());</span>
+<span class="nc" id="L1597">            databaseMap.put(id, database);</span>
+<span class="nc" id="L1598">            metadata.addDatabaseItem(database);</span>
+        } else {
+<span class="fc bfc" id="L1600" title="All 2 branches covered.">            database.setUri(checkURI==null?null:checkURI.toString());</span>
+        }
+<span class="fc" id="L1602">        return database;</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.3.201901230119</span></div></body></html>

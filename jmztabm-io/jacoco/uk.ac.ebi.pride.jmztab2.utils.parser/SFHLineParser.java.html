@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SFHLineParser.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jmztabm-io</a> &gt; <a href="index.source.html" class="el_package">uk.ac.ebi.pride.jmztab2.utils.parser</a> &gt; <span class="el_source">SFHLineParser.java</span></div><h1>SFHLineParser.java</h1><pre class="source lang-java linenums">/* 
+ * Copyright 2018 Leibniz-Institut für Analytische Wissenschaften – ISAS – e.V..
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package uk.ac.ebi.pride.jmztab2.utils.parser;
+
+import de.isas.mztab2.model.Assay;
+import de.isas.mztab2.model.Metadata;
+import de.isas.mztab2.model.Parameter;
+import java.util.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import uk.ac.ebi.pride.jmztab2.model.IMZTabColumn;
+import uk.ac.ebi.pride.jmztab2.model.ISmallMoleculeFeatureColumn;
+import uk.ac.ebi.pride.jmztab2.model.MZTabColumnFactory;
+import uk.ac.ebi.pride.jmztab2.model.MZTabConstants;
+import uk.ac.ebi.pride.jmztab2.model.Section;
+import uk.ac.ebi.pride.jmztab2.model.SmallMoleculeFeatureColumn;
+import uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType;
+import uk.ac.ebi.pride.jmztab2.utils.errors.LogicalErrorType;
+import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabError;
+import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorList;
+import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabException;
+
+/**
+ * Parse and validate Small Molecule Feature header line into a {@link uk.ac.ebi.pride.jmztab2.model.MZTabColumnFactory}.
+ *
+ * @author nilshoffmann
+ * @since 11/09/17
+ * 
+ */
+public class SFHLineParser extends MZTabHeaderLineParser {
+
+<span class="fc" id="L45">    private static final Logger LOGGER = LoggerFactory.getLogger(SFHLineParser.class);</span>
+    private Map&lt;Integer, String&gt; physPositionToOrder;
+
+
+    /**
+     * &lt;p&gt;Constructor for SFHLineParser.&lt;/p&gt;
+     *
+     * @param context a {@link uk.ac.ebi.pride.jmztab2.utils.parser.MZTabParserContext} object.
+     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
+     */
+    public SFHLineParser(MZTabParserContext context, Metadata metadata) {
+<span class="fc" id="L56">        super(context, MZTabColumnFactory.getInstance(Section.Small_Molecule_Feature_Header), metadata);</span>
+<span class="fc" id="L57">    }</span>
+
+    /** {@inheritDoc} */
+    @Override
+    protected int parseColumns() throws MZTabException {
+        String header;
+        Integer physicalPosition;
+
+        ISmallMoleculeFeatureColumn column;
+<span class="fc" id="L66">        SortedMap&lt;String, IMZTabColumn&gt; columnMapping = factory.getColumnMapping();</span>
+<span class="fc" id="L67">        SortedMap&lt;String, IMZTabColumn&gt; optionalMapping = factory.getOptionalColumnMapping();</span>
+<span class="fc" id="L68">        SortedMap&lt;String, IMZTabColumn&gt; stableMapping = factory.getStableColumnMapping();</span>
+
+<span class="fc" id="L70">        physPositionToOrder = generateHeaderPhysPositionToOrderMap(items);</span>
+
+        //Iterates through the tokens in the protein header
+        //It will identify the type of column and the position accordingly
+<span class="fc bfc" id="L74" title="All 2 branches covered.">        for (physicalPosition = 1; physicalPosition &lt; items.length; physicalPosition++) {</span>
+
+<span class="fc" id="L76">            column = null;</span>
+<span class="fc" id="L77">            header = items[physicalPosition];</span>
+
+<span class="fc bfc" id="L79" title="All 2 branches covered.">            if (header.contains(MZTabConstants.ABUNDANCE_PREFIX)) {</span>
+<span class="fc" id="L80">                checkAbundanceColumns(physicalPosition, physPositionToOrder.get(physicalPosition));</span>
+<span class="fc bfc" id="L81" title="All 2 branches covered.">            } else if (header.startsWith(MZTabConstants.OPT_PREFIX)) {</span>
+<span class="fc" id="L82">                checkOptColumnName(header);</span>
+            } else {
+                try {
+<span class="fc" id="L85">                    column = SmallMoleculeFeatureColumn.Stable.columnFor(header);</span>
+<span class="nc" id="L86">                } catch(IllegalArgumentException ex) {</span>
+<span class="nc" id="L87">                    throw new MZTabException(new MZTabError(LogicalErrorType.ColumnNotValid,lineNumber,header,section.getName()));</span>
+<span class="fc" id="L88">                }</span>
+                
+            }
+
+<span class="fc bfc" id="L92" title="All 2 branches covered.">            if (column != null) {</span>
+<span class="pc bpc" id="L93" title="1 of 2 branches missed.">                if (!column.getOrder().equals(physPositionToOrder.get(physicalPosition))) {</span>
+<span class="nc" id="L94">                    column.setOrder(physPositionToOrder.get(physicalPosition));</span>
+<span class="nc" id="L95">                    LOGGER.debug(column.toString());</span>
+                }
+<span class="fc bfc" id="L97" title="All 2 branches covered.">                if(column.isOptional()){</span>
+<span class="fc" id="L98">                    optionalMapping.put(column.getLogicPosition(), column);</span>
+                } else {
+<span class="fc" id="L100">                    stableMapping.put(column.getLogicPosition(), column);</span>
+                }
+<span class="fc" id="L102">                columnMapping.put(column.getLogicPosition(), column);</span>
+            }
+        }
+<span class="fc" id="L105">        return physicalPosition;</span>
+    }
+
+    private Map&lt;Integer, String&gt; generateHeaderPhysPositionToOrderMap(String[] items) {
+        Integer physicalPosition;
+<span class="fc" id="L110">        Map&lt;Integer, String&gt; physicalPositionToOrder = new LinkedHashMap&lt;&gt;();</span>
+<span class="fc" id="L111">        int order = 0;</span>
+
+<span class="fc bfc" id="L113" title="All 2 branches covered.">        for (physicalPosition = 1; physicalPosition &lt; items.length; physicalPosition++) {</span>
+<span class="pc bpc" id="L114" title="1 of 2 branches missed.">            if(physicalPositionToOrder.containsKey(physicalPosition)) {</span>
+<span class="nc" id="L115">                throw new IllegalArgumentException(&quot;Physical position &quot;+physicalPosition+&quot; for item &quot;+items[physicalPosition-1]+&quot; is already assigned!&quot;);</span>
+            }
+<span class="fc" id="L117">            physicalPositionToOrder.put(physicalPosition, fromIndexToOrder(++order));</span>
+        }
+<span class="fc" id="L119">        return physicalPositionToOrder;</span>
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * The following optional columns are mandatory:
+     * 1. abundance_assay[1-n]
+     *
+     * NOTICE: this method will be called at end of parse() function.
+     * @see MZTabHeaderLineParser#parse(int, String, MZTabErrorList)
+     * @see MZTabHeaderLineParser#parse(int, String, MZTabErrorList)
+     */
+    @Override
+    protected void refine() throws MZTabException {
+
+        //mandatory columns
+<span class="fc" id="L136">        List&lt;String&gt; mandatoryColumnHeaders = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L137" title="All 2 branches covered.">        for(ISmallMoleculeFeatureColumn column: SmallMoleculeFeatureColumn.Stable.columns()) {</span>
+<span class="fc" id="L138">            mandatoryColumnHeaders.add(column.getName());</span>
+<span class="fc" id="L139">        }</span>
+
+<span class="fc" id="L141">        Parameter smallMoleculeFeatureQuantificationUnit = Optional.ofNullable(metadata.getSmallMoleculeFeatureQuantificationUnit()).orElseThrow(() -&gt; </span>
+<span class="nc" id="L142">            new MZTabException(new MZTabError(LogicalErrorType.NoSmallMoleculeFeatureQuantificationUnit, lineNumber)));</span>
+
+<span class="fc bfc" id="L144" title="All 2 branches covered.">        for (String columnHeader : mandatoryColumnHeaders) {</span>
+<span class="pc bpc" id="L145" title="1 of 2 branches missed.">            if (factory.findColumnByHeader(columnHeader) == null) {</span>
+<span class="nc" id="L146">                throw new MZTabException(new MZTabError(FormatErrorType.StableColumn, lineNumber, columnHeader));</span>
+            }
+<span class="fc" id="L148">        }</span>
+
+<span class="fc bfc" id="L150" title="All 2 branches covered.">        for (Assay assay : metadata.getAssay()) {</span>
+<span class="fc" id="L151">            String assayLabel = &quot;_&quot;+Metadata.Properties.assay+&quot;[&quot; + assay.getId() + &quot;]&quot;;</span>
+<span class="fc" id="L152">            refineOptionalColumn(Section.Small_Molecule_Feature_Header, &quot;abundance&quot; + assayLabel);</span>
+<span class="fc" id="L153">        }</span>
+<span class="fc" id="L154">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.3.201901230119</span></div></body></html>

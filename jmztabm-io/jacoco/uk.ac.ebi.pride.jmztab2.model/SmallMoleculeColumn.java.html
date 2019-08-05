@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SmallMoleculeColumn.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jmztabm-io</a> &gt; <a href="index.source.html" class="el_package">uk.ac.ebi.pride.jmztab2.model</a> &gt; <span class="el_source">SmallMoleculeColumn.java</span></div><h1>SmallMoleculeColumn.java</h1><pre class="source lang-java linenums">/* 
+ * Copyright 2018 Leibniz-Institut für Analytische Wissenschaften – ISAS – e.V..
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package uk.ac.ebi.pride.jmztab2.model;
+
+import de.isas.mztab2.model.IndexedElement;
+import de.isas.mztab2.model.Parameter;
+import de.isas.mztab2.model.SmallMoleculeSummary;
+import static de.isas.mztab2.model.SmallMoleculeSummary.Properties.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
+/**
+ * Define the stable columns which have stable order in the small molecule header
+ * line.
+ *
+ *  * To create optional column mappings, see
+ * {@link uk.ac.ebi.pride.jmztab2.model.OptColumnMappingBuilder}.
+ *
+ * @author qingwei
+ * @author nilshoffmann
+ * @since 23/05/13
+ *
+ */
+public class SmallMoleculeColumn implements ISmallMoleculeColumn {
+
+    private final IMZTabColumn column;
+
+    SmallMoleculeColumn(String name, Class dataType, boolean optional,
+<span class="fc" id="L43">        String order) {</span>
+<span class="fc" id="L44">        this.column = new MZTabColumn(name, dataType, optional, order);</span>
+<span class="fc" id="L45">    }</span>
+
+    SmallMoleculeColumn(String name, Class dataType, boolean optional,
+<span class="nc" id="L48">        String order, Integer id) {</span>
+<span class="nc" id="L49">        this.column = new MZTabColumn(name, dataType, optional, order, id);</span>
+<span class="nc" id="L50">    }</span>
+
+    /**
+     * Stable {@link SmallMoleculeColumn} definition templates.
+     */
+<span class="fc" id="L55">    public static enum Stable {</span>
+<span class="fc" id="L56">        SML_ID(smlId.toUpper(), String.class, false, &quot;01&quot;),</span>
+<span class="fc" id="L57">        SMF_ID_REFS(smfIdRefs.toUpper(), SplitList.class, false, &quot;02&quot;),</span>
+<span class="fc" id="L58">        DATABASE_IDENTIFIER(databaseIdentifier, SplitList.class, false, &quot;03&quot;),</span>
+<span class="fc" id="L59">        CHEMICAL_FORMULA(chemicalFormula, String.class, false, &quot;04&quot;),</span>
+<span class="fc" id="L60">        SMILES(smiles,</span>
+            SplitList.class, false, &quot;05&quot;),
+<span class="fc" id="L62">        INCHI(inchi,</span>
+            SplitList.class, false, &quot;06&quot;),
+<span class="fc" id="L64">        CHEMICAL_NAME(</span>
+            chemicalName, SplitList.class, false, &quot;07&quot;),
+<span class="fc" id="L66">        URI(uri,</span>
+            java.net.URI.class, false, &quot;08&quot;),
+<span class="fc" id="L68">        THEOR_NEUTRAL_MASS(</span>
+            theoreticalNeutralMass, Double.class, false, &quot;09&quot;),
+<span class="fc" id="L70">        ADDUCT_IONS(</span>
+            adductIons, SplitList.class, false, &quot;10&quot;),
+<span class="fc" id="L72">        RELIABILITY(</span>
+            reliability, String.class, false, &quot;11&quot;),
+<span class="fc" id="L74">        BEST_ID_CONFIDENCE_MEASURE(</span>
+            bestIdConfidenceMeasure, Parameter.class, false, &quot;12&quot;),
+<span class="fc" id="L76">        BEST_ID_CONFIDENCE_VALUE(</span>
+            bestIdConfidenceValue, Double.class, false, &quot;13&quot;);
+
+        private final ISmallMoleculeColumn column;
+
+        private Stable(SmallMoleculeSummary.Properties property,
+            Class columnType, boolean optional,
+<span class="fc" id="L83">            String order) {</span>
+<span class="fc" id="L84">            this.column = new SmallMoleculeColumn(property.getPropertyName(),</span>
+                columnType, optional,
+                order);
+<span class="fc" id="L87">        }</span>
+
+        private Stable(String name, Class columnType, boolean optional,
+<span class="fc" id="L90">            String order) {</span>
+<span class="fc" id="L91">            this.column = new SmallMoleculeColumn(name, columnType, optional,</span>
+                order);
+<span class="fc" id="L93">        }</span>
+
+        private Stable(String name, Class columnType, boolean optional,
+<span class="nc" id="L96">            String order, Integer id) {</span>
+<span class="nc" id="L97">            this.column = new SmallMoleculeColumn(name, columnType, optional,</span>
+                order, id);
+<span class="nc" id="L99">        }</span>
+
+        /**
+         * Returns a stable column instance template.
+         *
+         * @param name the column name (lower case).
+         * @return the stable column instance template.
+         * @throws IllegalArgumentException for unknown column names.
+         */
+        public static SmallMoleculeColumn.Stable forName(String name) throws IllegalArgumentException {
+<span class="fc" id="L109">            SmallMoleculeColumn.Stable s = Arrays.stream(</span>
+<span class="fc" id="L110">                SmallMoleculeColumn.Stable.values()).</span>
+<span class="fc" id="L111">                filter((v) -&gt;</span>
+<span class="fc" id="L112">                    v.column.</span>
+<span class="fc" id="L113">                        getName().</span>
+<span class="fc" id="L114">                        equals(name)).</span>
+<span class="fc" id="L115">                findFirst().</span>
+<span class="fc" id="L116">                orElseThrow(() -&gt;</span>
+<span class="nc" id="L117">                    new IllegalArgumentException(&quot;Unknown key:&quot; + name));</span>
+<span class="fc" id="L118">            return s;</span>
+        }
+
+        /**
+         * Returns a new {@link ISmallMoleculeColumn} instance for the
+         * given stable column template.
+         *
+         * @param s the small molecule stable column template.
+         * @return a new small molecule column instance
+         * {@link SmallMoleculeColumn}.
+         */
+        public static ISmallMoleculeColumn columnFor(Stable s) {
+<span class="fc" id="L130">            return new SmallMoleculeColumn(s.column.getName(), s.column.</span>
+<span class="fc" id="L131">                getDataType(), s.column.isOptional(), s.column.getOrder());</span>
+        }
+
+        /**
+         * Returns a new {@link ISmallMoleculeColumn} instance for the
+         * given stable column name.
+         *
+         * @param name the small molecule stable column template name (lower
+         * case).
+         * @return a new small molecule column instance
+         * {@link SmallMoleculeColumn}.
+         * @throws IllegalArgumentException for unknown column names.
+         */
+        public static ISmallMoleculeColumn columnFor(String name) throws IllegalArgumentException {
+<span class="fc" id="L145">            return columnFor(forName(name));</span>
+        }
+
+        /**
+         * Returns all stable {@link ISmallMoleculeColumn} templates.
+         *
+         * @return the stable small molecule columns templates.
+         */
+        public static List&lt;ISmallMoleculeColumn&gt; columns() {
+<span class="nc" id="L154">            return Arrays.stream(SmallMoleculeColumn.Stable.values()).</span>
+<span class="nc" id="L155">                map((s) -&gt;</span>
+                {
+<span class="nc" id="L157">                    return new SmallMoleculeColumn(s.column.getName(), s.column.</span>
+<span class="nc" id="L158">                        getDataType(), s.column.isOptional(), s.column.</span>
+<span class="nc" id="L159">                        getOrder());</span>
+                }).
+<span class="nc" id="L161">                collect(Collectors.toList());</span>
+        }
+
+    };
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Class&lt;?&gt; getDataType() {
+<span class="fc" id="L171">        return this.column.getDataType();</span>
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public IndexedElement getElement() {
+<span class="nc" id="L179">        return this.column.getElement();</span>
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getHeader() {
+<span class="fc" id="L187">        return this.column.getHeader();</span>
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getLogicPosition() {
+<span class="fc" id="L195">        return this.column.getLogicPosition();</span>
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getName() {
+<span class="fc" id="L203">        return this.column.getName();</span>
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getOrder() {
+<span class="fc" id="L211">        return this.column.getOrder();</span>
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isOptional() {
+<span class="fc" id="L219">        return this.column.isOptional();</span>
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setHeader(String header) {
+<span class="nc" id="L227">        this.column.setHeader(header);</span>
+<span class="nc" id="L228">    }</span>
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setLogicPosition(String logicPosition) {
+<span class="nc" id="L235">        this.column.setLogicPosition(logicPosition);</span>
+<span class="nc" id="L236">    }</span>
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setOrder(String order) {
+<span class="fc" id="L243">        this.column.setOrder(order);</span>
+<span class="fc" id="L244">    }</span>
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setElement(IndexedElement element) {
+<span class="nc" id="L251">        this.column.setElement(element);</span>
+<span class="nc" id="L252">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.3.201901230119</span></div></body></html>

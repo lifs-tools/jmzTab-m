@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SMLLineParser.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jmztabm-io</a> &gt; <a href="index.source.html" class="el_package">uk.ac.ebi.pride.jmztab2.utils.parser</a> &gt; <span class="el_source">SMLLineParser.java</span></div><h1>SMLLineParser.java</h1><pre class="source lang-java linenums">/* 
+ * Copyright 2018 Leibniz-Institut für Analytische Wissenschaften – ISAS – e.V..
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package uk.ac.ebi.pride.jmztab2.utils.parser;
+
+import de.isas.mztab2.model.Metadata;
+import de.isas.mztab2.model.OptColumnMapping;
+import de.isas.mztab2.model.SmallMoleculeSummary;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import uk.ac.ebi.pride.jmztab2.model.AbundanceColumn;
+import uk.ac.ebi.pride.jmztab2.model.IMZTabColumn;
+import uk.ac.ebi.pride.jmztab2.model.ISmallMoleculeColumn;
+import uk.ac.ebi.pride.jmztab2.model.MZBoolean;
+import uk.ac.ebi.pride.jmztab2.model.MZTabColumnFactory;
+import uk.ac.ebi.pride.jmztab2.model.MZTabConstants;
+import uk.ac.ebi.pride.jmztab2.model.OptionColumn;
+import uk.ac.ebi.pride.jmztab2.model.SmallMoleculeColumn;
+import uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType;
+import uk.ac.ebi.pride.jmztab2.utils.errors.LogicalErrorType;
+import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabError;
+import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorList;
+import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorOverflowException;
+
+/**
+ * &lt;p&gt;
+ * SMLLineParser class.&lt;/p&gt;
+ *
+ * @author qingwei
+ * @author nilshoffmann
+ * @since 10/02/13
+ *
+ */
+public class SMLLineParser extends MZTabDataLineParser&lt;SmallMoleculeSummary&gt; {
+
+    private SmallMoleculeSummary smallMoleculeSummary;
+
+    /**
+     * &lt;p&gt;
+     * Constructor for SMLLineParser.&lt;/p&gt;
+     *
+     * @param context a
+     * {@link uk.ac.ebi.pride.jmztab2.utils.parser.MZTabParserContext} object.
+     * @param factory a {@link uk.ac.ebi.pride.jmztab2.model.MZTabColumnFactory}
+     * object.
+     * @param positionMapping a
+     * {@link uk.ac.ebi.pride.jmztab2.utils.parser.PositionMapping} object.
+     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
+     * @param errorList a
+     * {@link uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorList} object.
+     */
+    public SMLLineParser(MZTabParserContext context, MZTabColumnFactory factory,
+        PositionMapping positionMapping,
+        Metadata metadata, MZTabErrorList errorList) {
+<span class="fc" id="L68">        super(context, factory, positionMapping, metadata, errorList);</span>
+<span class="fc" id="L69">    }</span>
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected int checkData() {
+
+        IMZTabColumn column;
+        String columnName;
+        String target;
+        int physicalPosition;
+        String logicalPosition;
+<span class="fc" id="L82">        smallMoleculeSummary = new SmallMoleculeSummary();</span>
+
+<span class="fc bfc" id="L84" title="All 2 branches covered.">        for (physicalPosition = 1; physicalPosition &lt; items.length; physicalPosition++) {</span>
+<span class="fc" id="L85">            logicalPosition = positionMapping.get(physicalPosition);</span>
+<span class="fc" id="L86">            column = factory.getColumnMapping().</span>
+<span class="fc" id="L87">                get(logicalPosition);</span>
+
+<span class="pc bpc" id="L89" title="1 of 2 branches missed.">            if (column != null) {</span>
+<span class="fc" id="L90">                columnName = column.getName();</span>
+<span class="fc" id="L91">                target = items[physicalPosition];</span>
+<span class="fc bfc" id="L92" title="All 2 branches covered.">                if (column instanceof ISmallMoleculeColumn) {</span>
+<span class="fc" id="L93">                    SmallMoleculeColumn.Stable stableColumn = SmallMoleculeColumn.Stable.</span>
+<span class="fc" id="L94">                        forName(columnName);</span>
+<span class="pc bpc" id="L95" title="1 of 14 branches missed.">                    switch (stableColumn) {</span>
+                        case ADDUCT_IONS:
+<span class="fc" id="L97">                            List&lt;String&gt; adductIons = checkStringList(</span>
+                                column, target, MZTabConstants.BAR);
+<span class="fc" id="L99">                            checkRegexMatches(errorList, lineNumber,</span>
+                                SmallMoleculeSummary.Properties.adductIons,
+                                MZTabConstants.REGEX_ADDUCT, adductIons);
+<span class="fc" id="L102">                            smallMoleculeSummary.adductIons(adductIons);</span>
+<span class="fc" id="L103">                            break;</span>
+                        case BEST_ID_CONFIDENCE_MEASURE:
+<span class="fc" id="L105">                            smallMoleculeSummary.bestIdConfidenceMeasure(</span>
+<span class="fc" id="L106">                                checkParameter(column, target, true));</span>
+<span class="fc" id="L107">                            break;</span>
+                        case BEST_ID_CONFIDENCE_VALUE:
+<span class="fc" id="L109">                            smallMoleculeSummary.bestIdConfidenceValue(</span>
+<span class="fc" id="L110">                                checkDouble(column, target));</span>
+<span class="fc" id="L111">                            break;</span>
+                        case CHEMICAL_FORMULA:
+<span class="fc" id="L113">                            smallMoleculeSummary.chemicalFormula(</span>
+<span class="fc" id="L114">                                checkStringList(column, target,</span>
+                                    MZTabConstants.BAR));
+<span class="fc" id="L116">                            break;</span>
+                        case CHEMICAL_NAME:
+<span class="fc" id="L118">                            smallMoleculeSummary.chemicalName(checkStringList(</span>
+                                column, target, MZTabConstants.BAR));
+<span class="fc" id="L120">                            break;</span>
+                        case DATABASE_IDENTIFIER:
+<span class="fc" id="L122">                            smallMoleculeSummary.databaseIdentifier(</span>
+<span class="fc" id="L123">                                checkStringList(column, target,</span>
+                                    MZTabConstants.BAR));
+<span class="fc" id="L125">                            break;</span>
+                        case INCHI:
+<span class="fc" id="L127">                            smallMoleculeSummary.inchi(checkStringList(column,</span>
+                                target, MZTabConstants.BAR));
+<span class="fc" id="L129">                            break;</span>
+                        case RELIABILITY:
+<span class="fc" id="L131">                            smallMoleculeSummary.reliability(checkString(column,</span>
+                                target, false));
+<span class="fc" id="L133">                            break;</span>
+                        case SMF_ID_REFS:
+<span class="fc" id="L135">                            smallMoleculeSummary.smfIdRefs(checkIntegerList(</span>
+                                column, target, MZTabConstants.BAR));
+<span class="fc" id="L137">                            break;</span>
+                        case SMILES:
+<span class="fc" id="L139">                            smallMoleculeSummary.smiles(checkSmiles(column,</span>
+                                target));
+<span class="fc" id="L141">                            break;</span>
+                        case SML_ID:
+<span class="fc" id="L143">                            smallMoleculeSummary.smlId(checkInteger(column,</span>
+                                target, false));
+<span class="fc" id="L145">                            break;</span>
+                        case THEOR_NEUTRAL_MASS:
+<span class="fc" id="L147">                            smallMoleculeSummary.theoreticalNeutralMass(</span>
+<span class="fc" id="L148">                                checkDoubleList(column, target));</span>
+<span class="fc" id="L149">                            break;</span>
+                        case URI:
+<span class="fc" id="L151">                            smallMoleculeSummary.uri(</span>
+<span class="fc" id="L152">                                checkStringList(column, target,</span>
+                                    MZTabConstants.BAR));
+                            break;
+
+                    }
+
+<span class="fc bfc" id="L158" title="All 2 branches covered.">                } else if (column instanceof AbundanceColumn) {</span>
+<span class="fc bfc" id="L159" title="All 2 branches covered.">                    if (columnName.startsWith(</span>
+                        SmallMoleculeSummary.Properties.abundanceAssay.
+<span class="fc" id="L161">                            getPropertyName())) {</span>
+<span class="fc" id="L162">                        smallMoleculeSummary.addAbundanceAssayItem(checkDouble(</span>
+                            column, target));
+<span class="fc bfc" id="L164" title="All 2 branches covered.">                    } else if (columnName.startsWith(</span>
+                        SmallMoleculeSummary.Properties.abundanceStudyVariable.
+<span class="fc" id="L166">                            getPropertyName())) {</span>
+<span class="fc" id="L167">                        smallMoleculeSummary.addAbundanceStudyVariableItem(</span>
+<span class="fc" id="L168">                            checkDouble(column, target));</span>
+<span class="pc bpc" id="L169" title="1 of 2 branches missed.">                    } else if (columnName.startsWith(</span>
+                        SmallMoleculeSummary.Properties.abundanceVariationStudyVariable.
+<span class="fc" id="L171">                            getPropertyName())) {</span>
+<span class="fc" id="L172">                        smallMoleculeSummary.</span>
+<span class="fc" id="L173">                            addAbundanceVariationStudyVariableItem(checkDouble(</span>
+                                column, target));
+                    }
+<span class="pc bpc" id="L176" title="1 of 2 branches missed.">                } else if (column instanceof OptionColumn) {</span>
+<span class="pc bpc" id="L177" title="1 of 2 branches missed.">                    if (columnName.startsWith(MZTabConstants.OPT_PREFIX)) {</span>
+<span class="fc" id="L178">                        Class dataType = column.getDataType();</span>
+<span class="fc" id="L179">                        OptColumnMapping optColMapping = new OptColumnMapping();</span>
+<span class="fc" id="L180">                        optColMapping.identifier(columnName.substring(</span>
+<span class="fc" id="L181">                            MZTabConstants.OPT_PREFIX.length()));</span>
+<span class="pc bpc" id="L182" title="1 of 2 branches missed.">                        if (dataType.equals(String.class)) {</span>
+<span class="fc" id="L183">                            optColMapping.value(checkString(column, target));</span>
+<span class="nc bnc" id="L184" title="All 2 branches missed.">                        } else if (dataType.equals(Double.class)) {</span>
+<span class="nc" id="L185">                            optColMapping.value(Double.toString(checkDouble(</span>
+                                column, target)));
+<span class="nc bnc" id="L187" title="All 2 branches missed.">                        } else if (dataType.equals(MZBoolean.class)) {</span>
+<span class="nc" id="L188">                            optColMapping.value(Boolean.toString(checkMZBoolean(</span>
+                                column, target).
+<span class="nc" id="L190">                                toBoolean()));</span>
+                        }
+<span class="fc" id="L192">                        smallMoleculeSummary.addOptItem(optColMapping);</span>
+                    }
+                }
+            }
+        }
+
+<span class="fc" id="L198">        checkItemNumbers(errorList, lineNumber, smallMoleculeSummary.</span>
+<span class="fc" id="L199">            getDatabaseIdentifier(),</span>
+            SmallMoleculeSummary.Properties.databaseIdentifier,
+<span class="fc" id="L201">            smallMoleculeSummary.getChemicalFormula(),</span>
+            SmallMoleculeSummary.Properties.chemicalFormula);
+<span class="fc" id="L203">        checkItemNumbers(errorList, lineNumber, smallMoleculeSummary.</span>
+<span class="fc" id="L204">            getDatabaseIdentifier(),</span>
+            SmallMoleculeSummary.Properties.databaseIdentifier,
+<span class="fc" id="L206">            smallMoleculeSummary.getSmiles(),</span>
+            SmallMoleculeSummary.Properties.smiles);
+<span class="fc" id="L208">        checkItemNumbers(errorList, lineNumber, smallMoleculeSummary.</span>
+<span class="fc" id="L209">            getDatabaseIdentifier(),</span>
+            SmallMoleculeSummary.Properties.databaseIdentifier,
+<span class="fc" id="L211">            smallMoleculeSummary.getInchi(),</span>
+            SmallMoleculeSummary.Properties.inchi);
+<span class="fc" id="L213">        checkItemNumbers(errorList, lineNumber, smallMoleculeSummary.</span>
+<span class="fc" id="L214">            getDatabaseIdentifier(),</span>
+            SmallMoleculeSummary.Properties.databaseIdentifier,
+<span class="fc" id="L216">            smallMoleculeSummary.getChemicalName(),</span>
+            SmallMoleculeSummary.Properties.chemicalName);
+<span class="fc" id="L218">        checkItemNumbers(errorList, lineNumber, smallMoleculeSummary.</span>
+<span class="fc" id="L219">            getDatabaseIdentifier(),</span>
+            SmallMoleculeSummary.Properties.databaseIdentifier,
+<span class="fc" id="L221">            smallMoleculeSummary.getUri(),</span>
+            SmallMoleculeSummary.Properties.uri);
+<span class="fc" id="L223">        checkItemNumbers(errorList, lineNumber, smallMoleculeSummary.</span>
+<span class="fc" id="L224">            getDatabaseIdentifier(),</span>
+            SmallMoleculeSummary.Properties.databaseIdentifier,
+<span class="fc" id="L226">            smallMoleculeSummary.getTheoreticalNeutralMass(),</span>
+            SmallMoleculeSummary.Properties.theoreticalNeutralMass);
+<span class="fc" id="L228">        return physicalPosition;</span>
+    }
+
+    protected void checkRegexMatches(MZTabErrorList errorList, int lineNumber,
+        SmallMoleculeSummary.Properties elementProperty,
+        String regularExpression, List&lt;String&gt; elements) {
+<span class="pc bpc" id="L234" title="1 of 2 branches missed.">        if (!elements.isEmpty()) {</span>
+<span class="fc" id="L235">            Pattern p = Pattern.compile(regularExpression);</span>
+<span class="fc bfc" id="L236" title="All 2 branches covered.">            for (int i = 0; i &lt; elements.size(); i++) {</span>
+<span class="fc" id="L237">                String element = elements.get(i);</span>
+<span class="pc bpc" id="L238" title="1 of 2 branches missed.">                if(!&quot;null&quot;.equals(element)) {</span>
+<span class="fc" id="L239">                    Matcher m = p.matcher(element);</span>
+<span class="pc bpc" id="L240" title="1 of 2 branches missed.">                    if (!m.matches()) {</span>
+<span class="nc" id="L241">                        errorList.add(new MZTabError(FormatErrorType.RegexMismatch,</span>
+<span class="nc" id="L242">                            lineNumber, elementProperty.getPropertyName(), element,</span>
+                            &quot;&quot; + (i + 1), regularExpression));
+                    }
+                }
+            }
+        }
+
+<span class="fc" id="L249">    }</span>
+
+    protected void checkItemNumbers(MZTabErrorList errorList, int lineNumber,
+        List&lt;?&gt; reference, SmallMoleculeSummary.Properties referenceProperty,
+        List&lt;?&gt; toCheck, SmallMoleculeSummary.Properties toCheckProperty) throws MZTabErrorOverflowException {
+        //check that array types have same element number
+<span class="pc bpc" id="L255" title="1 of 4 branches missed.">        if (!toCheck.isEmpty() &amp;&amp; reference.size() != toCheck.size()) {</span>
+<span class="nc" id="L256">            errorList.add(new MZTabError(LogicalErrorType.ItemNumberMismatch,</span>
+<span class="nc" id="L257">                lineNumber, toCheckProperty.getPropertyName(), &quot;&quot; + toCheck.</span>
+<span class="nc" id="L258">                size(), referenceProperty.getPropertyName(), &quot;&quot; + reference.</span>
+<span class="nc" id="L259">                size()));</span>
+        }
+<span class="fc" id="L261">    }</span>
+
+    /**
+     * &lt;p&gt;
+     * getRecord.&lt;/p&gt;
+     *
+     * @return a {@link de.isas.mztab2.model.SmallMoleculeSummary} object.
+     */
+    @Override
+    public SmallMoleculeSummary getRecord() {
+
+<span class="pc bpc" id="L272" title="1 of 2 branches missed.">        if (smallMoleculeSummary == null) {</span>
+<span class="nc" id="L273">            smallMoleculeSummary = new SmallMoleculeSummary();</span>
+        }
+<span class="fc" id="L275">        return smallMoleculeSummary;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.3.201901230119</span></div></body></html>

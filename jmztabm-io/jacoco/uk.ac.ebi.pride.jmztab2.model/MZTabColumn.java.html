@@ -1,0 +1,373 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MZTabColumn.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jmztabm-io</a> &gt; <a href="index.source.html" class="el_package">uk.ac.ebi.pride.jmztab2.model</a> &gt; <span class="el_source">MZTabColumn.java</span></div><h1>MZTabColumn.java</h1><pre class="source lang-java linenums">/* 
+ * Copyright 2018 Leibniz-Institut für Analytische Wissenschaften – ISAS – e.V..
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package uk.ac.ebi.pride.jmztab2.model;
+
+import de.isas.mztab2.io.serialization.Serializers;
+import de.isas.mztab2.model.IndexedElement;
+
+/**
+ * Define a column header which used in {@link uk.ac.ebi.pride.jmztab2.model.Section#Protein_Header}, {@link uk.ac.ebi.pride.jmztab2.model.Section#Peptide_Header},
+ * {@link uk.ac.ebi.pride.jmztab2.model.Section#PSM_Header}, or {@link uk.ac.ebi.pride.jmztab2.model.Section#Small_Molecule_Header}. There are two kinds of columns: stable column
+ * and optional column. Stable column has stable position and header name, while optional column not.
+ * {@link uk.ac.ebi.pride.jmztab2.model.MZTabColumnFactory} used to create and maintain these column objects.
+ *
+ * @see MZTabColumnFactory
+ * @see SmallMoleculeColumn
+ * @see SmallMoleculeFeatureColumn
+ * @see SmallMoleculeEvidenceColumn
+ * @see OptionColumn
+ * @see ParameterOptionColumn
+ * @see AbundanceColumn
+ * @author qingwei
+ * @author nilshoffmann
+ * @since 23/05/13
+ * 
+ */
+public class MZTabColumn implements IMZTabColumn {
+    private final String name;
+    private String order;
+    private Integer id;
+    private String header;
+    private String logicPosition;
+    private Class dataType;
+    private boolean optional;
+
+    private IndexedElement element;
+
+    /**
+     * Create a column header object. Default, the column header keep the same value with name, and logical position keep
+     * the same value with order.
+     *
+     * @param name define a stable name for column. For optional column, only set stable part for name.
+     * @param dataType define the data type for column.
+     * @param optional if false the column is stable type, otherwise is optional column.
+     * @param order internal order. Every non {@link uk.ac.ebi.pride.jmztab2.model.OptionColumn} has stable order. Column order is used to maintain the
+     *              logical position in {@link uk.ac.ebi.pride.jmztab2.model.MZTabColumnFactory}
+     */
+    public MZTabColumn(String name, Class dataType, boolean optional, String order) {
+<span class="fc" id="L61">        this(name, dataType, optional, order, null);</span>
+<span class="fc" id="L62">    }</span>
+
+    /**
+     * Create a column header object. Default, the column header keep the same value with name, and logical position keep
+     * the same value with order.
+     *
+     * @param name define a stable name for column. For optional column, only set stable part for name.
+     * @param dataType define the data type for column.
+     * @param optional if false the column is stable type, otherwise is optional column.
+     * @param order internal order. Every non {@link uk.ac.ebi.pride.jmztab2.model.OptionColumn} has stable order. Column order is used to maintain the
+     *              logical position in {@link uk.ac.ebi.pride.jmztab2.model.MZTabColumnFactory}
+     * @param id incremental index used for some optional columns like best_search_engine_score[1], best_search_engine_score[2]
+     */
+<span class="fc" id="L75">    public MZTabColumn(String name, Class dataType, boolean optional, String order, Integer id) {</span>
+<span class="pc bpc" id="L76" title="1 of 2 branches missed.">        if (MZTabStringUtils.isEmpty(name)) {</span>
+<span class="nc" id="L77">            throw new IllegalArgumentException(&quot;Column name should not empty.&quot;);</span>
+        }
+<span class="fc" id="L79">        this.name = name;</span>
+
+<span class="pc bpc" id="L81" title="1 of 2 branches missed.">        if (dataType == null) {</span>
+<span class="nc" id="L82">            throw new NullPointerException(&quot;Column data type should not set null!&quot;);</span>
+        }
+<span class="fc" id="L84">        this.dataType = dataType;</span>
+<span class="fc" id="L85">        this.optional = optional;</span>
+<span class="fc" id="L86">        this.order = order;</span>
+<span class="fc" id="L87">        this.id = id;</span>
+
+<span class="fc" id="L89">        this.header = generateHeader(name);</span>
+<span class="fc" id="L90">        this.logicPosition = generateLogicalPosition();</span>
+<span class="fc" id="L91">    }</span>
+
+    private String generateHeader(String name) {
+<span class="fc" id="L94">        StringBuilder sb = new StringBuilder();</span>
+
+<span class="fc" id="L96">        sb.append(name);</span>
+<span class="fc bfc" id="L97" title="All 2 branches covered.">        if (id != null) {</span>
+<span class="fc" id="L98">            sb.append(&quot;[&quot;).append(id).append(&quot;]&quot;);</span>
+        }
+
+<span class="fc" id="L101">        return sb.toString();</span>
+    }
+
+    private String generateLogicalPosition() {
+<span class="fc" id="L105">        StringBuilder sb = new StringBuilder();</span>
+
+<span class="fc" id="L107">        sb.append(order);</span>
+<span class="fc bfc" id="L108" title="All 2 branches covered.">        if (id != null) {</span>
+            // generate id string which length is 2. Eg. 12, return 12; 1, return 01
+<span class="fc" id="L110">            sb.append(String.format(&quot;%02d&quot;, id));</span>
+        } else {
+<span class="fc" id="L112">            sb.append(&quot;00&quot;);</span>
+        }
+
+<span class="fc bfc" id="L115" title="All 2 branches covered.">        if (element != null) {</span>
+<span class="fc" id="L116">            sb.append(String.format(&quot;%02d&quot;, element.getId()));</span>
+        } else {
+<span class="fc" id="L118">            sb.append(&quot;00&quot;);</span>
+        }
+
+<span class="fc" id="L121">        return sb.toString();</span>
+    }
+
+
+    /**
+     * {@inheritDoc}
+     *
+     * Get the column name. For stable column, name and header are same. But for optional column, name is part
+     * of its header. For example, optional column which header is search_engine_score_ms_run[1-n], and its name
+     * is search_engine_score. Besides this, ms_run[1-n] is kind of {@link #element}
+     *
+     * Notice: this design pattern not fit for {@link AbundanceColumn}, {@link OptionColumn} and {@link ParameterOptionColumn}.
+     * These optional columns need be generated by calling {@link MZTabColumnFactory} 's methods.
+     * @see #getHeader()
+     * @see #setElement(IndexedElement)
+     * @see #getHeader()
+     * @see #setElement(IndexedElement)
+     */
+    @Override
+    public String getName() {
+<span class="fc" id="L141">        return name;</span>
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * Get the column internal order. For stable column, order and logical position are same. But for optional column,
+     * the logical position need to be calculated by concatenating order and index element id. For example, optional column
+     * search_engine_score_ms_run[2] in Protein section, its order is 09, and the logical position is 092. Because the
+     * element ms_run[2] 's index is 2.
+     *
+     * Notice: this design pattern not fit for {@link AbundanceColumn}, {@link OptionColumn} and {@link ParameterOptionColumn}.
+     * These optional columns need be generated by calling {@link MZTabColumnFactory} 's methods.
+     * @see #getLogicPosition()
+     */
+    @Override
+    public String getOrder() {
+<span class="fc" id="L158">        return order;</span>
+    }
+
+    /*
+     * Allows to reassign the order in case the file doesn't follow the recommended order
+     */
+    /** {@inheritDoc} */
+    @Override
+    public void setOrder(String order) {
+        //As the order change, the logic position need to be regenerated.
+<span class="fc" id="L168">        this.order = order;</span>
+<span class="fc" id="L169">        this.logicPosition = generateLogicalPosition();</span>
+
+<span class="fc" id="L171">    }</span>
+
+    /**
+     * {@inheritDoc}
+     *
+     * Get the column name. For stable column, name and header are same. While for optional column, name is part
+     * of its header. For example, optional column which header is search_engine_score_ms_run[1-n], and its name
+     * is search_engine_score.  Besides this, ms_run[1-n] is kind of {@link #element}
+     *
+     * Notice: this design pattern not fit for {@link AbundanceColumn}, {@link OptionColumn} and {@link ParameterOptionColumn}.
+     * These optional columns need be generated by calling {@link MZTabColumnFactory} 's methods.
+     * @see #getName()
+     * @see #setElement(IndexedElement)
+     * @see #getName()
+     * @see #setElement(IndexedElement)
+     */
+    @Override
+    public String getHeader() {
+<span class="fc" id="L189">        return header;</span>
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void setHeader(String header) {
+<span class="nc" id="L195">        this.header = header;</span>
+<span class="nc" id="L196">    }</span>
+
+    /**
+     * {@inheritDoc}
+     *
+     * Get the column logical position. For stable column, order and logical position are same. But for optional column,
+     * the logical position need to calculate by concatenate order and index element id. For example, optional column
+     * search_engine_score_ms_run[2] in Protein section, its order is 09, and the logical position is 092. Because the
+     * element ms_run[2] 's index is 2.
+     *
+     *&lt;p&gt;Notice: this design pattern not fit for {@link AbundanceColumn}, {@link OptionColumn} and {@link ParameterOptionColumn}.
+     * These optional columns need be generated by calling {@link MZTabColumnFactory} 's methods.&lt;/p&gt;
+     *
+     *&lt;p&gt;Notice: in {@link MZTabColumnFactory}, we use logical position to maintain the logical consistence within the {@link de.isas.mztab2.model.MzTab} file.
+     * During the process of parsing mzTab file, we create a mapping between physical position and internal logical position.&lt;/p&gt;
+     * @see #getOrder()
+     */
+    @Override
+    public String getLogicPosition() {
+<span class="fc" id="L215">        generateLogicalPosition();</span>
+<span class="fc" id="L216">        return logicPosition;</span>
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void setLogicPosition(String logicPosition) {
+<span class="nc" id="L222">        this.logicPosition = logicPosition;</span>
+<span class="nc" id="L223">    }</span>
+
+    /**
+     * {@inheritDoc}
+     *
+     * Get the column data type Class.
+     */
+    @Override
+    public Class getDataType() {
+<span class="fc" id="L232">        return dataType;</span>
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * Judge this column belong to stable column or optional column.
+     */
+    @Override
+    public boolean isOptional() {
+<span class="fc" id="L242">        return optional;</span>
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * Indexed element used in optional column header and logical position definition.
+     * In stable column, the return is null.
+     *
+     * Notice: this design pattern not fit for {@link AbundanceColumn}, {@link OptionColumn} and {@link ParameterOptionColumn}.
+     * These optional columns need be generated by calling {@link MZTabColumnFactory} 's methods.
+     * @see #getHeader()
+     * @see #getLogicPosition()
+     * @see #getHeader()
+     * @see #getLogicPosition()
+     */
+    @Override
+    public IndexedElement getElement() {
+<span class="nc" id="L260">        return element;</span>
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * Indexed element used in optional column header and logical position definition.
+     * In stable column, the return is null.
+     *
+     * Notice: this design pattern not fit for {@link AbundanceColumn}, {@link OptionColumn} and {@link ParameterOptionColumn}.
+     * These optional columns need be generated by calling {@link MZTabColumnFactory} 's methods.
+     * @see #getHeader()
+     * @see #getLogicPosition()
+     * @see #getHeader()
+     * @see #getLogicPosition()
+     */
+    public void setElement(IndexedElement element) {
+<span class="pc bpc" id="L277" title="1 of 2 branches missed.">        if (element == null) {</span>
+<span class="nc" id="L278">            throw new NullPointerException(&quot;Can not set null indexed element for optional column!&quot;);</span>
+        }
+<span class="fc" id="L280">        this.element = element;</span>
+
+<span class="fc" id="L282">        this.logicPosition = generateLogicalPosition();</span>
+<span class="fc" id="L283">        StringBuilder sb = new StringBuilder();</span>
+<span class="pc bpc" id="L284" title="1 of 2 branches missed.">        if(this instanceof AbundanceColumn) {</span>
+<span class="fc" id="L285">            sb.append(this.header).append(&quot;[&quot;).</span>
+<span class="fc" id="L286">            append(element.getId()).</span>
+<span class="fc" id="L287">            append(&quot;]&quot;);</span>
+        } else {
+<span class="nc" id="L289">            sb.append(this.header).append(&quot;_&quot;).append(Serializers.getReference(element, element.getId()));</span>
+        }
+<span class="fc" id="L291">        this.header = sb.toString();</span>
+<span class="fc" id="L292">    }</span>
+
+    /**
+     * Create a optional column for {@link Section#Protein_Header}, {@link Section#Peptide_Header},
+     * {@link Section#PSM_Header}, {@link Section#Small_Molecule_Header}, {@link Section#Small_Molecule_Feature_Header},
+     * or {@link Section#Small_Molecule_Evidence_Header}.
+     *
+     * Notice: this function only used to create stable order optional column, such as  num_psms_ms_run[1-n] and so on.
+     * Not used to create {@link AbundanceColumn}, {@link OptionColumn} and {@link ParameterOptionColumn}.
+     * These optional columns need be generated by calling {@link MZTabColumnFactory} 's methods.
+     *
+     * @see MZTabColumnFactory#addOptionalColumn(MZTabColumn, MsRun)
+     */
+    static IMZTabColumn createOptionalColumn(Section section, IMZTabColumn column, Integer id, IndexedElement element) {
+<span class="nc bnc" id="L306" title="All 2 branches missed.">        if (! column.isOptional()) {</span>
+<span class="nc" id="L307">            throw new IllegalArgumentException(column + &quot; is not optional column!&quot;);</span>
+        }
+
+<span class="nc" id="L310">        IMZTabColumn optionColumn = null;</span>
+<span class="nc bnc" id="L311" title="All 4 branches missed.">        switch (section) {</span>
+//            case Protein_Header:
+//                optionColumn = new ProteinColumn(column.getName(), column.getDataType(), column.isOptional(), column.getOrder(), id);
+//                break;
+//            case Peptide_Header:
+//                optionColumn = new PeptideColumn(column.getName(), column.getDataType(), column.isOptional(), column.getOrder(), id);
+//                break;
+//            case PSM_Header:
+//                optionColumn = new PSMColumn(column.getName(), column.getDataType(), column.isOptional(), column.getOrder(), id);
+//                break;
+            case Small_Molecule_Header:
+<span class="nc" id="L322">                optionColumn = new SmallMoleculeColumn(column.getName(), column.getDataType(), column.isOptional(), column.getOrder(), id);</span>
+<span class="nc" id="L323">                break;</span>
+            case Small_Molecule_Feature_Header:
+<span class="nc" id="L325">                optionColumn = new SmallMoleculeFeatureColumn(column.getName(), column.getDataType(), column.isOptional(), column.getOrder(), id);</span>
+<span class="nc" id="L326">                break;</span>
+            case Small_Molecule_Evidence_Header:
+<span class="nc" id="L328">                optionColumn = new SmallMoleculeEvidenceColumn(column.getName(), column.getDataType(), column.isOptional(), column.getOrder(), id);</span>
+                break;
+        }
+
+<span class="nc bnc" id="L332" title="All 4 branches missed.">        if (optionColumn != null &amp;&amp; element != null) {</span>
+<span class="nc" id="L333">            optionColumn.setElement(element);</span>
+        }
+
+<span class="nc" id="L336">        return optionColumn;</span>
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public String toString() {
+<span class="nc" id="L342">        return &quot;MZTabColumn{&quot; +</span>
+                &quot;header='&quot; + header + '\'' +
+                &quot;, logicPosition='&quot; + logicPosition + '\'' +
+                &quot;, dataType=&quot; + dataType +
+                &quot;, optional=&quot; + optional +
+                '}';
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean equals(Object o) {
+<span class="nc bnc" id="L353" title="All 2 branches missed.">        if (this == o) return true;</span>
+<span class="nc bnc" id="L354" title="All 4 branches missed.">        if (o == null || getClass() != o.getClass()) return false;</span>
+
+<span class="nc" id="L356">        MZTabColumn column = (MZTabColumn) o;</span>
+
+<span class="nc bnc" id="L358" title="All 2 branches missed.">        if (optional != column.optional) return false;</span>
+<span class="nc bnc" id="L359" title="All 6 branches missed.">        if (dataType != null ? !dataType.equals(column.dataType) : column.dataType != null) return false;</span>
+<span class="nc bnc" id="L360" title="All 12 branches missed.">        return (header != null ? header.equals(column.header) : column.header == null) &amp;&amp; (logicPosition != null ? logicPosition.equals(column.logicPosition) : column.logicPosition == null);</span>
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public int hashCode() {
+<span class="nc bnc" id="L366" title="All 2 branches missed.">        int result = header != null ? header.hashCode() : 0;</span>
+<span class="nc bnc" id="L367" title="All 2 branches missed.">        result = 31 * result + (logicPosition != null ? logicPosition.hashCode() : 0);</span>
+<span class="nc bnc" id="L368" title="All 2 branches missed.">        result = 31 * result + (dataType != null ? dataType.hashCode() : 0);</span>
+<span class="nc bnc" id="L369" title="All 2 branches missed.">        result = 31 * result + (optional ? 1 : 0);</span>
+<span class="nc" id="L370">        return result;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.3.201901230119</span></div></body></html>

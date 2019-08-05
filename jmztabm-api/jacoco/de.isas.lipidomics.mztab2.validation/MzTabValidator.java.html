@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MzTabValidator.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jmztabm-api</a> &gt; <a href="index.source.html" class="el_package">de.isas.lipidomics.mztab2.validation</a> &gt; <span class="el_source">MzTabValidator.java</span></div><h1>MzTabValidator.java</h1><pre class="source lang-java linenums">/*
+ * Copyright 2018 Leibniz-Institut für Analytische Wissenschaften – ISAS – e.V..
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package de.isas.lipidomics.mztab2.validation;
+
+import de.isas.mztab2.model.MzTab;
+import de.isas.mztab2.model.ValidationMessage;
+import static de.isas.mztab2.model.ValidationMessage.MessageTypeEnum.ERROR;
+import static de.isas.mztab2.model.ValidationMessage.MessageTypeEnum.INFO;
+import static de.isas.mztab2.model.ValidationMessage.MessageTypeEnum.WARN;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
+
+/**
+ * Delegating validator implementation that forwards validation to the provided
+ * validator implementations.
+ *
+ * @author nilshoffmann
+ */
+public class MzTabValidator implements Validator&lt;MzTab&gt; {
+
+    private final List&lt;Validator&lt;MzTab&gt;&gt; validators;
+
+<span class="fc" id="L38">    public MzTabValidator(Validator&lt;MzTab&gt;... validator) {</span>
+<span class="fc" id="L39">        this.validators = Arrays.asList(validator);</span>
+<span class="fc" id="L40">    }</span>
+
+    @Override
+    public List&lt;ValidationMessage&gt; validate(MzTab mzTab) {
+<span class="fc" id="L44">        return validators.stream().</span>
+<span class="fc" id="L45">            map(validator -&gt;</span>
+            {
+<span class="fc" id="L47">                return validator.validate(mzTab);</span>
+            }).
+<span class="fc" id="L49">            flatMap(Collection::stream).</span>
+<span class="fc" id="L50">            collect(Collectors.toList());</span>
+    }
+
+    /**
+     * Validate the given mzTab object, filtering messages that are of a lower
+     * level than the given one. Thus, for validationLevel=ERROR, only ERROR
+     * messages will be returned, for WARN, ERROR and WARN messages will be
+     * returned. For INFO, INFO, WARN and ERROR messages will be returned.
+     *
+     * @param mzTab the mzTab object to validate.
+     * @param validationLevel the validation level, used as a message filter.
+     * @param validators the validators to apply in sequence to the mzTab
+     * object.
+     * @return the filtered list of validation messages according to the giben
+     * validationLevel.
+     */
+    public static List&lt;ValidationMessage&gt; validate(MzTab mzTab,
+        ValidationMessage.MessageTypeEnum validationLevel,
+        Validator&lt;MzTab&gt;... validators) {
+<span class="fc" id="L69">        MzTabValidator validator = new MzTabValidator(validators);</span>
+<span class="fc" id="L70">        return validator.validate(mzTab).</span>
+<span class="fc" id="L71">            stream().</span>
+<span class="fc" id="L72">            filter(validationMessage -&gt;</span>
+            {
+<span class="pc bpc" id="L74" title="3 of 4 branches missed.">                switch (validationLevel) {</span>
+                    case INFO:
+<span class="pc bpc" id="L76" title="2 of 6 branches missed.">                        return (validationMessage.getMessageType() == INFO || validationMessage.getMessageType() == WARN || validationMessage.getMessageType() == ERROR);</span>
+                    case WARN:
+<span class="nc bnc" id="L78" title="All 4 branches missed.">                        return (validationMessage.getMessageType() == WARN || validationMessage.getMessageType() == ERROR);</span>
+                    case ERROR:
+<span class="nc bnc" id="L80" title="All 2 branches missed.">                        return (validationMessage.getMessageType() == ERROR);</span>
+                    default:
+<span class="nc" id="L82">                        throw new IllegalArgumentException(</span>
+                            &quot;Unknown message type for validationLevel '&quot;+validationLevel+&quot;' and message: '&quot; + validationMessage.
+<span class="nc" id="L84">                                getMessage() + &quot;'!&quot;);</span>
+                }
+            }).
+<span class="fc" id="L87">            collect(Collectors.toList());</span>
+
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.3.201901230119</span></div></body></html>

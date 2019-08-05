@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>XorValidationHandler.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jmztabm-validation</a> &gt; <a href="index.source.html" class="el_package">de.isas.mztab2.validation.handlers</a> &gt; <span class="el_source">XorValidationHandler.java</span></div><h1>XorValidationHandler.java</h1><pre class="source lang-java linenums">/*
+ * Copyright 2018 Leibniz-Institut für Analytische Wissenschaften – ISAS – e.V..
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package de.isas.mztab2.validation.handlers;
+
+import de.isas.mztab2.cvmapping.CvMappingUtils;
+import static de.isas.mztab2.cvmapping.CvMappingUtils.toErrorLevel;
+import de.isas.mztab2.cvmapping.RuleEvaluationResult;
+import de.isas.mztab2.io.serialization.ParameterConverter;
+import de.isas.mztab2.model.ValidationMessage;
+import de.isas.mztab2.validation.CvTermValidationHandler;
+import info.psidev.cvmapping.CvMappingRule;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import uk.ac.ebi.pride.jmztab2.utils.errors.CrossCheckErrorType;
+import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabError;
+import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorType;
+
+/**
+ * Implements 'XOR' logic, meaning mutually exclusive alternative possible terms or term roots for
+ * an object are allowed.
+ * @author nilshoffmann
+ */
+<span class="fc" id="L40">public class XorValidationHandler implements CvTermValidationHandler {</span>
+
+    @Override
+    public List&lt;ValidationMessage&gt; handleParameters(RuleEvaluationResult result,
+        boolean errorOnTermNotInRule) {
+        // xor logic means, if one of the defined terms or its children is set, none of the others is allowed
+<span class="nc" id="L46">        final List&lt;ValidationMessage&gt; messages = new ArrayList&lt;&gt;();</span>
+        // all defined terms or children thereof need to appear
+<span class="nc" id="L48">        Set&lt;String&gt; matchedParameters = new HashSet&lt;&gt;();</span>
+<span class="nc" id="L49">        matchedParameters.addAll(result.getAllowedParameters().</span>
+<span class="nc" id="L50">            keySet());</span>
+<span class="nc" id="L51">        matchedParameters.retainAll(result.getFoundParameters().</span>
+<span class="nc" id="L52">            keySet());</span>
+<span class="nc bnc" id="L53" title="All 2 branches missed.">        if (matchedParameters.isEmpty()) {</span>
+<span class="nc bnc" id="L54" title="All 2 branches missed.">            for (String s : result.getAllowedParameters().</span>
+<span class="nc" id="L55">                keySet()) {</span>
+<span class="nc" id="L56">                MZTabErrorType errorType = null;</span>
+<span class="nc bnc" id="L57" title="All 4 branches missed.">                switch (result.getRule().</span>
+<span class="nc" id="L58">                    getRequirementLevel()) {</span>
+                    case MAY:
+<span class="nc" id="L60">                        errorType = CrossCheckErrorType.CvTermOptional;</span>
+<span class="nc" id="L61">                        break;</span>
+                    case SHOULD:
+<span class="nc" id="L63">                        errorType = CrossCheckErrorType.CvTermRecommended;</span>
+<span class="nc" id="L64">                        break;</span>
+                    case MUST:
+<span class="nc" id="L66">                        errorType = CrossCheckErrorType.CvTermRequired;</span>
+<span class="nc" id="L67">                        break;</span>
+                    default:
+<span class="nc" id="L69">                        throw new IllegalArgumentException(</span>
+                            &quot;Unknown requirement level value: &quot; + result.
+<span class="nc" id="L71">                                getRule().</span>
+<span class="nc" id="L72">                                getRequirementLevel() + &quot;! Supported are: &quot; + Arrays.</span>
+<span class="nc" id="L73">                                toString(CvMappingRule.RequirementLevel.</span>
+<span class="nc" id="L74">                                    values()));</span>
+                }
+<span class="nc" id="L76">                MZTabError error = new MZTabError(errorType, -1,</span>
+<span class="nc" id="L77">                    new ParameterConverter().convert(result.</span>
+<span class="nc" id="L78">                        getAllowedParameters().</span>
+<span class="nc" id="L79">                        get(</span>
+<span class="nc" id="L80">                            s)), result.getRule().</span>
+<span class="nc" id="L81">                        getCvElementPath(), CvMappingUtils.</span>
+<span class="nc" id="L82">                        niceToString(</span>
+<span class="nc" id="L83">                            result.getRule()));</span>
+<span class="nc" id="L84">                messages.add(error.toValidationMessage());</span>
+<span class="nc" id="L85">            }</span>
+<span class="nc bnc" id="L86" title="All 2 branches missed.">        } else if (matchedParameters.size() &gt; 1) {</span>
+            //Only one of the provided cv terms for &quot;{1}&quot; {0} be reported. You defined terms &quot;{2}&quot;. Allowed terms are defined in rule &quot;{3}&quot;.
+<span class="nc" id="L88">            String definedParameters = matchedParameters.stream().</span>
+<span class="nc" id="L89">                collect(Collectors.joining(&quot;, &quot;));</span>
+<span class="nc" id="L90">            MZTabErrorType xorErrorType = MZTabErrorType.forLevel(</span>
+                MZTabErrorType.Category.CrossCheck,
+<span class="nc" id="L92">                toErrorLevel(result.getRule().</span>
+<span class="nc" id="L93">                    getRequirementLevel()), &quot;CvTermXor&quot;);</span>
+<span class="nc" id="L94">            MZTabError error = new MZTabError(xorErrorType, -1,</span>
+<span class="nc" id="L95">                result.getRule().</span>
+<span class="nc" id="L96">                    getRequirementLevel().</span>
+<span class="nc" id="L97">                    value(), result.getRule().</span>
+<span class="nc" id="L98">                    getCvElementPath(), definedParameters,</span>
+<span class="nc" id="L99">                CvMappingUtils.niceToString(result.getRule()));</span>
+<span class="nc" id="L100">            messages.add(error.toValidationMessage());</span>
+        }
+<span class="nc" id="L102">        return messages;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.3.201901230119</span></div></body></html>

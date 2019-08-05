@@ -1,0 +1,330 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Section.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jmztabm-io</a> &gt; <a href="index.source.html" class="el_package">uk.ac.ebi.pride.jmztab2.model</a> &gt; <span class="el_source">Section.java</span></div><h1>Section.java</h1><pre class="source lang-java linenums">/* 
+ * Copyright 2018 Leibniz-Institut für Analytische Wissenschaften – ISAS – e.V..
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package uk.ac.ebi.pride.jmztab2.model;
+
+/**
+ * Every line in an mzTab file MUST start with a three letter code identifying the type of line delimited by
+ * a Tab character. The three letter codes are as follows :
+ * - MTD for metadata
+ * - PRH for the protein table header line (the column labels)
+ * - PRT for rows of the protein table
+ * - PEH for the peptide table header line (the column labels)
+ * - PEP for rows of the peptide table
+ * - PSH for the PSM table header (the column labels)
+ * - PSM for rows of the PSM table
+ * - SMH for small molecule table header line (the column labels)
+ * - SML for rows of the small molecule table
+ * - COM for comment lines
+ *
+ * @author qingwei
+ * @author jgriss
+ * @author nilshoffmann
+ * @since 31/01/13
+ * 
+ */
+<span class="fc" id="L38">public enum Section {</span>
+<span class="fc" id="L39">    Comment                         (&quot;COM&quot;, &quot;comment&quot;,                  0),</span>
+<span class="fc" id="L40">    Metadata                        (&quot;MTD&quot;, &quot;metadata&quot;,                 1),</span>
+<span class="fc" id="L41">    Protein_Header                  (&quot;PRH&quot;, &quot;protein_header&quot;,           2),</span>
+<span class="fc" id="L42">    Protein                         (&quot;PRT&quot;, &quot;protein&quot;,                  3),</span>
+<span class="fc" id="L43">    Peptide_Header                  (&quot;PEH&quot;, &quot;peptide_header&quot;,           4),</span>
+<span class="fc" id="L44">    Peptide                         (&quot;PEP&quot;, &quot;peptide&quot;,                  5),</span>
+<span class="fc" id="L45">    PSM_Header                      (&quot;PSH&quot;, &quot;psm_header&quot;,               6),</span>
+<span class="fc" id="L46">    PSM                             (&quot;PSM&quot;, &quot;psm&quot;,                      7),</span>
+<span class="fc" id="L47">    Small_Molecule_Header           (&quot;SMH&quot;, &quot;small_molecule_header&quot;,    8),</span>
+<span class="fc" id="L48">    Small_Molecule                  (&quot;SML&quot;, &quot;small_molecule&quot;,           9),</span>
+<span class="fc" id="L49">    Small_Molecule_Feature_Header   (&quot;SFH&quot;, &quot;small_molecule_feature_header&quot;,    10),</span>
+<span class="fc" id="L50">    Small_Molecule_Feature          (&quot;SMF&quot;, &quot;small_molecule_feature&quot;,           11),</span>
+<span class="fc" id="L51">    Small_Molecule_Evidence_Header  (&quot;SEH&quot;, &quot;small_molecule_evidence_header&quot;,    12),</span>
+<span class="fc" id="L52">    Small_Molecule_Evidence         (&quot;SME&quot;, &quot;small_molecule_evidence&quot;,           13);</span>
+    
+
+    private final String prefix;
+    private final String name;
+    private final int level;
+
+<span class="fc" id="L59">    Section(String prefix, String name, int level) {</span>
+<span class="fc" id="L60">        this.prefix = prefix;</span>
+<span class="fc" id="L61">        this.name = name;</span>
+<span class="fc" id="L62">        this.level = level;</span>
+<span class="fc" id="L63">    }</span>
+
+    /**
+     * &lt;p&gt;Getter for the field &lt;code&gt;prefix&lt;/code&gt;.&lt;/p&gt;
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public String getPrefix() {
+<span class="fc" id="L71">        return prefix;</span>
+    }
+
+    /**
+     * &lt;p&gt;Getter for the field &lt;code&gt;name&lt;/code&gt;.&lt;/p&gt;
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public String getName() {
+<span class="fc" id="L80">        return name;</span>
+    }
+
+    /**
+     * &lt;p&gt;Getter for the field &lt;code&gt;level&lt;/code&gt;.&lt;/p&gt;
+     *
+     * @return a int.
+     */
+    public int getLevel() {
+<span class="fc" id="L89">        return level;</span>
+    }
+
+    /**
+     * &lt;p&gt;findSection.&lt;/p&gt;
+     *
+     * @param level a int.
+     * @return a {@link uk.ac.ebi.pride.jmztab2.model.Section} object.
+     */
+    public static Section findSection(int level) {
+        Section section;
+<span class="pc bpc" id="L100" title="1 of 15 branches missed.">        switch (level) {</span>
+            case 0:
+<span class="fc" id="L102">                section = Comment;</span>
+<span class="fc" id="L103">                break;</span>
+            case 1:
+<span class="fc" id="L105">                section = Metadata;</span>
+<span class="fc" id="L106">                break;</span>
+            case 2:
+<span class="fc" id="L108">                section = Protein_Header;</span>
+<span class="fc" id="L109">                break;</span>
+            case 3:
+<span class="fc" id="L111">                section = Protein;</span>
+<span class="fc" id="L112">                break;</span>
+            case 4:
+<span class="fc" id="L114">                section = Peptide_Header;</span>
+<span class="fc" id="L115">                break;</span>
+            case 5:
+<span class="fc" id="L117">                section = Peptide;</span>
+<span class="fc" id="L118">                break;</span>
+            case 6:
+<span class="fc" id="L120">                section = PSM_Header;</span>
+<span class="fc" id="L121">                break;</span>
+            case 7:
+<span class="fc" id="L123">                section = PSM;</span>
+<span class="fc" id="L124">                break;</span>
+            case 8:
+<span class="fc" id="L126">                section = Small_Molecule_Header;</span>
+<span class="fc" id="L127">                break;</span>
+            case 9:
+<span class="fc" id="L129">                section = Small_Molecule;</span>
+<span class="fc" id="L130">                break;</span>
+            case 10:
+<span class="fc" id="L132">                section = Small_Molecule_Feature_Header;</span>
+<span class="fc" id="L133">                break;</span>
+            case 11:
+<span class="fc" id="L135">                section = Small_Molecule_Feature;</span>
+<span class="fc" id="L136">                break;</span>
+            case 12:
+<span class="fc" id="L138">                section = Small_Molecule_Evidence_Header;</span>
+<span class="fc" id="L139">                break;</span>
+            case 13:
+<span class="fc" id="L141">                section = Small_Molecule_Evidence;</span>
+<span class="fc" id="L142">                break;</span>
+            default:
+<span class="nc" id="L144">                section = null;</span>
+        }
+
+<span class="fc" id="L147">        return section;</span>
+    }
+
+    /**
+     * Judge the section is comment section or not.
+     *
+     * @return a boolean.
+     */
+    public boolean isComment() {
+<span class="fc bfc" id="L156" title="All 2 branches covered.">        return this == Comment;</span>
+    }
+
+    /**
+     * Judge the section is metadata section or not.
+     *
+     * @return a boolean.
+     */
+    public boolean isMetadata() {
+<span class="fc bfc" id="L165" title="All 2 branches covered.">        return this == Metadata;</span>
+    }
+
+    /**
+     * Judge the section is protein_header, peptide_header, psm_header, small_molecule_header, small_molecule_feature_header or small_molecule_evidence_header section.
+     *
+     * @return a boolean.
+     */
+    public boolean isHeader() {
+<span class="fc bfc" id="L174" title="All 12 branches covered.">        return this == Protein_Header || this == Peptide_Header || this == PSM_Header || this == Small_Molecule_Header || this == Small_Molecule_Feature_Header || this == Small_Molecule_Evidence_Header;</span>
+    }
+
+    /**
+     * Judge the section is protein, peptide, psm, small_molecule, small_molecule_feature or small_molecule_evidence section.
+     *
+     * @return a boolean.
+     */
+    public boolean isData() {
+<span class="fc bfc" id="L183" title="All 12 branches covered.">        return this == Protein || this == Peptide || this == PSM || this == Small_Molecule || this == Small_Molecule_Feature || this == Small_Molecule_Evidence;</span>
+    }
+
+    /**
+     * Translate the section to corresponding header section. If can not mapping, return null.
+     * Metadata, Comment --&amp;gt; null
+     * Protein, Protein_Header --&amp;gt; ProteinHeader
+     * Peptide, Peptide_Header --&amp;gt; PeptideHeader
+     * PSM, PSM_Header --&amp;gt; PSMHeader
+     * SmallMolecule, SmallMolecule_Header --&amp;gt; SmallMoleculeHeader
+     * SmallMoleculeFeature, SmallMoleculeFeature_Header --&amp;gt; SmallMoleculeFeatureHeader
+     * SmallMoleculeEvidence, SmallMoleculeEvidence_Header --&amp;gt; SmallMoleculeEvidenceHeader
+     *
+     * @see #toDataSection(Section)
+     * @param section a {@link uk.ac.ebi.pride.jmztab2.model.Section} object.
+     * @return a {@link uk.ac.ebi.pride.jmztab2.model.Section} object.
+     */
+    public static Section toHeaderSection(Section section) {
+        Section header;
+<span class="fc bfc" id="L202" title="All 7 branches covered.">        switch (section) {</span>
+            case Peptide:
+            case Peptide_Header:
+<span class="fc" id="L205">                header = Section.Peptide_Header;</span>
+<span class="fc" id="L206">                break;</span>
+            case Protein:
+            case Protein_Header:
+<span class="fc" id="L209">                header = Section.Protein_Header;</span>
+<span class="fc" id="L210">                break;</span>
+            case PSM:
+            case PSM_Header:
+<span class="fc" id="L213">                header = Section.PSM_Header;</span>
+<span class="fc" id="L214">                break;</span>
+            case Small_Molecule:
+            case Small_Molecule_Header:
+<span class="fc" id="L217">                header = Section.Small_Molecule_Header;</span>
+<span class="fc" id="L218">                break;</span>
+            case Small_Molecule_Feature:
+            case Small_Molecule_Feature_Header:
+<span class="fc" id="L221">                header = Section.Small_Molecule_Feature_Header;</span>
+<span class="fc" id="L222">                break;</span>
+            case Small_Molecule_Evidence:
+            case Small_Molecule_Evidence_Header:
+<span class="fc" id="L225">                header = Section.Small_Molecule_Evidence_Header;</span>
+<span class="fc" id="L226">                break;</span>
+            default:
+<span class="fc" id="L228">                header = null;</span>
+        }
+
+<span class="fc" id="L231">        return header;</span>
+    }
+
+    /**
+     * Translate the section to corresponding data section. If can not mapping, return null.
+     * Metadata, Comment --&amp;gt; null
+     * Protein, Protein_Header --&amp;gt; Protein
+     * Peptide, Peptide_Header --&amp;gt; Peptide
+     * PSM, PSM_Header --&amp;gt; PSMHeader
+     * SmallMolecule, SmallMolecule_Header --&amp;gt; SmallMolecule
+     * SmallMoleculeFeature, SmallMoleculeFeature_Header --&amp;gt; SmallMoleculeFeature
+     * SmallMoleculeEvidence, SmallMoleculeEvidence_Header --&amp;gt; SmallMoleculeEvidence
+     *
+     * @see #toHeaderSection(Section)
+     * @param section a {@link uk.ac.ebi.pride.jmztab2.model.Section} object.
+     * @return a {@link uk.ac.ebi.pride.jmztab2.model.Section} object.
+     */
+    public static Section toDataSection(Section section) {
+        Section data;
+<span class="fc bfc" id="L250" title="All 7 branches covered.">        switch (section) {</span>
+            case Peptide:
+            case Peptide_Header:
+<span class="fc" id="L253">                data = Section.Peptide;</span>
+<span class="fc" id="L254">                break;</span>
+            case Protein:
+            case Protein_Header:
+<span class="fc" id="L257">                data = Section.Protein;</span>
+<span class="fc" id="L258">                break;</span>
+            case PSM:
+            case PSM_Header:
+<span class="fc" id="L261">                data = Section.PSM;</span>
+<span class="fc" id="L262">                break;</span>
+            case Small_Molecule:
+            case Small_Molecule_Header:
+<span class="fc" id="L265">                data = Section.Small_Molecule;</span>
+<span class="fc" id="L266">                break;</span>
+            case Small_Molecule_Feature:
+            case Small_Molecule_Feature_Header:
+<span class="fc" id="L269">                data = Section.Small_Molecule_Feature;</span>
+<span class="fc" id="L270">                break;</span>
+            case Small_Molecule_Evidence:
+            case Small_Molecule_Evidence_Header:
+<span class="fc" id="L273">                data = Section.Small_Molecule_Evidence;</span>
+<span class="fc" id="L274">                break;</span>
+            default:
+<span class="fc" id="L276">                data = null;</span>
+        }
+
+<span class="fc" id="L279">        return data;</span>
+    }
+
+    /**
+     * Query section based on its name or prefix with case-insensitive. For example:
+     * findSection(&quot;protein&quot;) == findSection(&quot;PRT&quot;);
+     * Both of them to locate the {@link uk.ac.ebi.pride.jmztab2.model.Section#Protein}
+     *
+     * @param key if empty, return null.
+     * @return a {@link uk.ac.ebi.pride.jmztab2.model.Section} object.
+     */
+    public static Section findSection(String key) {
+<span class="fc bfc" id="L291" title="All 2 branches covered.">        if (MZTabStringUtils.isEmpty(key)) {</span>
+<span class="fc" id="L292">            return null;</span>
+        }
+
+<span class="fc" id="L295">        key = key.trim();</span>
+
+<span class="fc bfc" id="L297" title="All 4 branches covered.">        if (key.equalsIgnoreCase(Comment.getName()) || key.equalsIgnoreCase(Comment.getPrefix())) {</span>
+<span class="fc" id="L298">            return Comment;</span>
+<span class="fc bfc" id="L299" title="All 4 branches covered.">        } else if (key.equalsIgnoreCase(Metadata.getName()) || key.equalsIgnoreCase(Metadata.getPrefix())) {</span>
+<span class="fc" id="L300">            return Metadata;</span>
+<span class="fc bfc" id="L301" title="All 4 branches covered.">        } else if (key.equalsIgnoreCase(Peptide_Header.getName()) || key.equalsIgnoreCase(Peptide_Header.getPrefix())) {</span>
+<span class="fc" id="L302">            return Peptide_Header;</span>
+<span class="fc bfc" id="L303" title="All 4 branches covered.">        } else if (key.equalsIgnoreCase(Peptide.getName()) || key.equalsIgnoreCase(Peptide.getPrefix())) {</span>
+<span class="fc" id="L304">            return Peptide;</span>
+<span class="fc bfc" id="L305" title="All 4 branches covered.">        } else if (key.equalsIgnoreCase(Protein_Header.getName()) || key.equalsIgnoreCase(Protein_Header.getPrefix())) {</span>
+<span class="fc" id="L306">            return Protein_Header;</span>
+<span class="fc bfc" id="L307" title="All 4 branches covered.">        } else if (key.equalsIgnoreCase(Protein.getName()) || key.equalsIgnoreCase(Protein.getPrefix())) {</span>
+<span class="fc" id="L308">            return Protein;</span>
+<span class="fc bfc" id="L309" title="All 4 branches covered.">        } else if (key.equalsIgnoreCase(PSM_Header.getName()) || key.equalsIgnoreCase(PSM_Header.getPrefix())) {</span>
+<span class="fc" id="L310">            return PSM_Header;</span>
+<span class="pc bpc" id="L311" title="1 of 4 branches missed.">        } else if (key.equalsIgnoreCase(PSM.getName()) || key.equalsIgnoreCase(PSM.getPrefix())) {</span>
+<span class="fc" id="L312">            return PSM;</span>
+<span class="fc bfc" id="L313" title="All 4 branches covered.">        } else if (key.equalsIgnoreCase(Small_Molecule_Header.getName()) || key.equalsIgnoreCase(Small_Molecule_Header.getPrefix())) {</span>
+<span class="fc" id="L314">            return Small_Molecule_Header;</span>
+<span class="fc bfc" id="L315" title="All 4 branches covered.">        } else if (key.equalsIgnoreCase(Small_Molecule.getName()) || key.equalsIgnoreCase(Small_Molecule.getPrefix())) {</span>
+<span class="fc" id="L316">            return Small_Molecule;</span>
+<span class="fc bfc" id="L317" title="All 4 branches covered.">        } else if (key.equalsIgnoreCase(Small_Molecule_Feature_Header.getName()) || key.equalsIgnoreCase(Small_Molecule_Feature_Header.getPrefix())) {</span>
+<span class="fc" id="L318">            return Small_Molecule_Feature_Header;</span>
+<span class="fc bfc" id="L319" title="All 4 branches covered.">        } else if (key.equalsIgnoreCase(Small_Molecule_Feature.getName()) || key.equalsIgnoreCase(Small_Molecule_Feature.getPrefix())) {</span>
+<span class="fc" id="L320">            return Small_Molecule_Feature;</span>
+<span class="fc bfc" id="L321" title="All 4 branches covered.">        } else if (key.equalsIgnoreCase(Small_Molecule_Evidence_Header.getName()) || key.equalsIgnoreCase(Small_Molecule_Evidence_Header.getPrefix())) {</span>
+<span class="fc" id="L322">            return Small_Molecule_Evidence_Header;</span>
+<span class="pc bpc" id="L323" title="1 of 4 branches missed.">        } else if (key.equalsIgnoreCase(Small_Molecule_Evidence.getName()) || key.equalsIgnoreCase(Small_Molecule_Evidence.getPrefix())) {</span>
+<span class="fc" id="L324">            return Small_Molecule_Evidence;</span>
+        } else {
+<span class="nc" id="L326">            return null;</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.3.201901230119</span></div></body></html>

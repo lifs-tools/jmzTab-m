@@ -1,0 +1,1206 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MTDLineParser.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jmztabm-io</a> &gt; <a href="index.source.html" class="el_package">uk.ac.ebi.pride.jmztab2.utils.parser</a> &gt; <span class="el_source">MTDLineParser.java</span></div><h1>MTDLineParser.java</h1><pre class="source lang-java linenums">/* 
+ * Copyright 2018 Leibniz-Institut für Analytische Wissenschaften – ISAS – e.V..
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package uk.ac.ebi.pride.jmztab2.utils.parser;
+
+import de.isas.mztab2.io.validators.AssayValidator;
+import de.isas.mztab2.io.validators.CvValidator;
+import de.isas.mztab2.io.validators.DatabaseValidator;
+import de.isas.mztab2.io.validators.MsRunValidator;
+import de.isas.mztab2.io.validators.MzTabIdValidator;
+import de.isas.mztab2.io.validators.MzTabVersionValidator;
+import de.isas.mztab2.io.validators.QuantificationMethodValidator;
+import de.isas.mztab2.io.validators.SmallMoleculeFeatureQuantificationUnitValidator;
+import de.isas.mztab2.io.validators.SmallMoleculeQuantificationUnitValidator;
+import de.isas.mztab2.io.validators.SoftwareValidator;
+import de.isas.mztab2.io.validators.StudyVariableValidator;
+import de.isas.mztab2.model.Assay;
+import de.isas.mztab2.model.CV;
+import de.isas.mztab2.model.Contact;
+import de.isas.mztab2.model.Database;
+import de.isas.mztab2.model.IndexedElement;
+import de.isas.mztab2.model.Instrument;
+import de.isas.mztab2.model.Metadata;
+import de.isas.mztab2.model.MsRun;
+import de.isas.mztab2.model.Parameter;
+import de.isas.mztab2.model.Publication;
+import de.isas.mztab2.model.Sample;
+import de.isas.mztab2.model.SampleProcessing;
+import de.isas.mztab2.model.Software;
+import de.isas.mztab2.model.StudyVariable;
+import de.isas.mztab2.model.Uri;
+import java.net.URI;
+import java.util.*;
+import java.util.function.Consumer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import uk.ac.ebi.pride.jmztab2.model.MZTabConstants;
+import static uk.ac.ebi.pride.jmztab2.model.MZTabStringUtils.*;
+import static uk.ac.ebi.pride.jmztab2.model.MZTabUtils.*;
+import uk.ac.ebi.pride.jmztab2.model.MetadataElement;
+import uk.ac.ebi.pride.jmztab2.model.MetadataProperty;
+import uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType;
+import uk.ac.ebi.pride.jmztab2.utils.errors.LogicalErrorType;
+import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabError;
+import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorList;
+import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorOverflowException;
+import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorType;
+import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabException;
+import de.isas.mztab2.io.validators.MetadataValidator;
+
+/**
+ * Parse a metadata line into a element. Metadata Element start with MTD, its
+ * structure like: MTD
+ * {@link uk.ac.ebi.pride.jmztab2.model.MetadataElement}([id])(-{@link uk.ac.ebi.pride.jmztab2.model.MetadataProperty})    {Element Value}
+ *
+ * @see MetadataElement
+ * @see MetadataProperty
+ * @author qingwei
+ * @author nilshoffmann
+ * @since 08/02/13
+ *
+ */
+public class MTDLineParser extends MZTabLineParser {
+
+<span class="fc" id="L78">    private static final String Error_Header = Metadata.PrefixEnum.MTD.</span>
+<span class="fc" id="L79">        getValue() + &quot;\t&quot;;</span>
+
+<span class="fc" id="L81">    private final Metadata metadata = new Metadata();</span>
+
+    /**
+     * &lt;p&gt;
+     * Constructor for MTDLineParser.&lt;/p&gt;
+     *
+     * @param context a
+     * {@link uk.ac.ebi.pride.jmztab2.utils.parser.MZTabParserContext} object.
+     */
+    public MTDLineParser(MZTabParserContext context) {
+<span class="fc" id="L91">        super(context);</span>
+<span class="fc" id="L92">    }</span>
+
+    /**
+     * {@inheritDoc}
+     *
+     * Most of e, we use {@link #parseNormalMetadata(String, String)} to parse
+     * defineLabel into Metadata Element.
+     */
+    @Override
+    public void parse(int lineNumber, String mtdLine, MZTabErrorList errorList) throws MZTabException {
+<span class="fc" id="L102">        super.parse(lineNumber, mtdLine, errorList);</span>
+
+<span class="pc bpc" id="L104" title="1 of 2 branches missed.">        if (items.length != 3) {</span>
+<span class="nc" id="L105">            MZTabError error = new MZTabError(FormatErrorType.MTDLine,</span>
+                lineNumber, mtdLine);
+<span class="nc" id="L107">            throw new MZTabException(error);</span>
+        }
+
+<span class="fc" id="L110">        String defineLabel = items[1].trim().</span>
+<span class="fc" id="L111">            toLowerCase();</span>
+<span class="fc" id="L112">        String valueLabel = items[2].trim();</span>
+
+<span class="fc" id="L114">        parseNormalMetadata(defineLabel, valueLabel);</span>
+<span class="fc" id="L115">    }</span>
+
+    /**
+     * Parse valueLabel based on email format. If exists parse error, add it
+     * into {@link MZTabErrorList}.
+     */
+    private String checkEmail(String defineLabel, String valueLabel) {
+<span class="fc" id="L122">        String email = parseEmail(valueLabel);</span>
+
+<span class="pc bpc" id="L124" title="1 of 2 branches missed.">        if (email == null) {</span>
+<span class="nc" id="L125">            errorList.add(new MZTabError(FormatErrorType.Email, lineNumber,</span>
+                Error_Header + defineLabel, valueLabel));
+        }
+
+<span class="fc" id="L129">        return email;</span>
+    }
+
+    /**
+     * Parse {@link MetadataProperty} which depend on the
+     * {@link MetadataElement}. If exists parse error, stop validate and throw
+     * {@link MZTabException} directly.
+     */
+    private MetadataProperty checkProperty(MetadataElement element,
+        String propertyName) throws MZTabException {
+<span class="fc bfc" id="L139" title="All 2 branches covered.">        if (isEmpty(propertyName)) {</span>
+<span class="fc" id="L140">            return null;</span>
+        }
+
+<span class="fc" id="L143">        Optional&lt;MetadataProperty&gt; property = MetadataProperty.findProperty(element,</span>
+            propertyName);
+<span class="fc bfc" id="L145" title="All 2 branches covered.">        if (!property.isPresent()) {</span>
+<span class="fc" id="L146">            MZTabError error = new MZTabError(FormatErrorType.MTDDefineLabel,</span>
+<span class="fc" id="L147">                lineNumber, element.getName() + &quot;-&quot; + propertyName);</span>
+<span class="fc" id="L148">            throw new MZTabException(error);</span>
+        }
+
+<span class="fc" id="L151">        return property.get();</span>
+    }
+
+    /**
+     * Parse valueLabel to {@link Parameter} If exists parse error, add it into
+     * {@link MZTabErrorList}
+     */
+    private Parameter checkParameter(String defineLabel, String valueLabel) {
+<span class="fc" id="L159">        Parameter param = parseParam(valueLabel);</span>
+<span class="fc bfc" id="L160" title="All 2 branches covered.">        if (param == null) {</span>
+<span class="fc" id="L161">            errorList.add(new MZTabError(FormatErrorType.Param, lineNumber,</span>
+                Error_Header + defineLabel, valueLabel));
+        }
+<span class="fc" id="L164">        return param;</span>
+    }
+
+    /**
+     * Parse valueLabel to a list of '|' separated parameters. If exists parse
+     * error, add it into {@link MZTabErrorList}
+     */
+    private List&lt;Parameter&gt; checkParameterList(String defineLabel,
+        String valueLabel) {
+<span class="fc" id="L173">        List&lt;Parameter&gt; paramList = parseParamList(valueLabel);</span>
+
+<span class="fc bfc" id="L175" title="All 2 branches covered.">        if (paramList.isEmpty()) {</span>
+<span class="fc" id="L176">            errorList.add(new MZTabError(FormatErrorType.ParamList, lineNumber,</span>
+                Error_Header + defineLabel, valueLabel));
+        }
+
+<span class="fc" id="L180">        return paramList;</span>
+    }
+
+    /**
+     * Parse valueLabel to a list of '|' separated parameters. If exists parse
+     * error, add it into {@link MZTabErrorList}
+     */
+    private Publication checkPublication(Integer id, String defineLabel,
+        String valueLabel) throws MZTabException {
+<span class="fc" id="L189">        if (!context.getPublicationMap().</span>
+<span class="fc bfc" id="L190" title="All 2 branches covered.">            containsKey(id)) {</span>
+<span class="fc" id="L191">            context.addPublication(metadata, new Publication().id(id));</span>
+        }
+<span class="fc" id="L193">        Publication publications = null;</span>
+        try {
+<span class="fc" id="L195">            publications = parsePublicationItems(context.</span>
+<span class="fc" id="L196">                getPublicationMap().</span>
+<span class="fc" id="L197">                get(id), lineNumber, valueLabel);</span>
+<span class="pc bpc" id="L198" title="2 of 4 branches missed.">            if (publications == null || publications.getPublicationItems() == null || publications.</span>
+<span class="fc" id="L199">                getPublicationItems().</span>
+<span class="pc bpc" id="L200" title="1 of 2 branches missed.">                isEmpty()) {</span>
+<span class="nc" id="L201">                errorList.add(</span>
+                    new MZTabError(FormatErrorType.Publication, lineNumber,
+                        Error_Header + defineLabel, valueLabel));
+            }
+<span class="fc" id="L205">        } catch (MZTabException ex) {</span>
+<span class="fc" id="L206">            errorList.add(ex.getError());</span>
+<span class="fc" id="L207">        }</span>
+
+<span class="fc" id="L209">        return publications;</span>
+
+    }
+
+    /**
+     * Parse valueLabel to a {@link java.net.URI} If exists parse error, add it
+     * into {@link MZTabErrorList}
+     */
+    private java.net.URI checkURI(String defineLabel, String valueLabel,
+        boolean mandatory) {
+<span class="fc bfc" id="L219" title="All 2 branches covered.">        if (null == parseString(valueLabel)) {</span>
+<span class="fc bfc" id="L220" title="All 2 branches covered.">            if (mandatory) {</span>
+                // &quot;null&quot; value is supported when the ms_run[1-n]-location is unknown
+<span class="fc" id="L222">                errorList.add(new MZTabError(LogicalErrorType.NotNULL,</span>
+                    lineNumber,
+                    Error_Header + defineLabel, valueLabel));
+            }
+<span class="fc" id="L226">            return null;</span>
+        }
+
+<span class="fc" id="L229">        java.net.URI uri = parseURI(valueLabel);</span>
+<span class="pc bpc" id="L230" title="1 of 2 branches missed.">        if (uri == null) {</span>
+<span class="nc" id="L231">            errorList.add(new MZTabError(FormatErrorType.URI, lineNumber,</span>
+                Error_Header + defineLabel, valueLabel));
+        }
+
+<span class="fc" id="L235">        return uri;</span>
+    }
+
+    /**
+     * Parse defineLabel to a index id number. If exists parse error, stop
+     * validate and throw {@link MZTabException} directly.
+     */
+    private int checkIndex(String defineLabel, String id) throws MZTabException {
+        try {
+<span class="fc" id="L244">            Integer index = Integer.parseInt(id);</span>
+<span class="pc bpc" id="L245" title="1 of 2 branches missed.">            if (index &lt; 1) {</span>
+<span class="nc" id="L246">                throw new NumberFormatException();</span>
+            }
+
+<span class="fc" id="L249">            return index;</span>
+<span class="fc" id="L250">        } catch (NumberFormatException e) {</span>
+<span class="fc" id="L251">            MZTabError error = new MZTabError(LogicalErrorType.IdNumber,</span>
+                lineNumber, Error_Header + defineLabel, id);
+<span class="fc" id="L253">            throw new MZTabException(error);</span>
+        }
+    }
+
+    /**
+     * Parse valueLabel to a {@link IndexedElement} If exists parse error, stop
+     * validate and throw {@link MZTabException} directly.
+     */
+    private IndexedElement checkIndexedElement(String defineLabel,
+        String valueLabel, MetadataElement element) throws MZTabException {
+<span class="fc" id="L263">        IndexedElement indexedElement = parseIndexedElement(valueLabel, element);</span>
+<span class="pc bpc" id="L264" title="1 of 2 branches missed.">        if (indexedElement == null) {</span>
+<span class="nc" id="L265">            MZTabError error = new MZTabError(FormatErrorType.IndexedElement,</span>
+                lineNumber, Error_Header + defineLabel, valueLabel);
+<span class="nc" id="L267">            throw new MZTabException(error);</span>
+        }
+
+<span class="fc" id="L270">        return indexedElement;</span>
+    }
+
+    /**
+     * Parse valueLabel to a {@link IndexedElement} list. If exists parse error,
+     * stop validate and throw {@link MZTabException} directly.
+     */
+    private List&lt;IndexedElement&gt; checkIndexedElementList(String defineLabel,
+        String valueLabel, MetadataElement element) throws MZTabException {
+<span class="fc" id="L279">        List&lt;IndexedElement&gt; indexedElementList = parseRefList(valueLabel,</span>
+            element);
+<span class="pc bpc" id="L281" title="2 of 4 branches missed.">        if (indexedElementList == null || indexedElementList.isEmpty()) {</span>
+<span class="nc" id="L282">            MZTabError error = new MZTabError(FormatErrorType.IndexedElement,</span>
+                lineNumber, Error_Header + defineLabel, valueLabel);
+<span class="nc" id="L284">            throw new MZTabException(error);</span>
+        }
+<span class="fc" id="L286">        return indexedElementList;</span>
+    }
+
+    /**
+     * The metadata line including three parts: MTD {defineLabel} {valueLabel}
+     *
+     * In normal, define label structure like:
+     * {@link MetadataElement}([id])(-{@link MetadataSubElement}[pid])(-{@link MetadataProperty})
+     *
+     * @see MetadataElement : Mandatory
+     * @see MetadataSubElement : Optional
+     * @see MetadataProperty : Optional.
+     *
+     * If exists parse error, add it into {@link MZTabErrorList}
+     */
+    private void parseNormalMetadata(String defineLabel, String valueLabel) throws MZTabException {
+<span class="fc" id="L302">        Pattern pattern = Pattern.compile(MZTabConstants.REGEX_NORMAL_METADATA);</span>
+<span class="fc" id="L303">        Matcher matcher = pattern.matcher(defineLabel);</span>
+
+<span class="pc bpc" id="L305" title="1 of 2 branches missed.">        if (matcher.find()) {</span>
+            // Stage 1: create Unit.
+<span class="fc" id="L307">            MetadataElement element = MetadataElement.findElement(matcher.group(</span>
+                1));
+<span class="pc bpc" id="L309" title="1 of 2 branches missed.">            if (element == null) {</span>
+<span class="nc" id="L310">                throw new MZTabException(new MZTabError(</span>
+                    FormatErrorType.MTDDefineLabel, lineNumber, defineLabel));
+            }
+
+<span class="pc bpc" id="L314" title="1 of 24 branches missed.">            switch (element) {</span>
+                case MZTAB:
+<span class="fc" id="L316">                    handleMzTab(element, matcher, defineLabel, valueLabel);</span>
+<span class="fc" id="L317">                    break;</span>
+                case TITLE:
+<span class="fc" id="L319">                    handleTitle(defineLabel, valueLabel);</span>
+<span class="fc" id="L320">                    break;</span>
+                case DESCRIPTION:
+<span class="fc" id="L322">                    handleDescription(defineLabel, valueLabel);</span>
+<span class="fc" id="L323">                    break;</span>
+                case SAMPLE_PROCESSING:
+<span class="fc" id="L325">                    handleSampleProcessing(defineLabel, matcher, valueLabel);</span>
+<span class="fc" id="L326">                    break;</span>
+                case INSTRUMENT:
+<span class="fc" id="L328">                    handleInstrument(defineLabel, matcher, element, valueLabel);</span>
+<span class="fc" id="L329">                    break;</span>
+                case SOFTWARE:
+<span class="fc" id="L331">                    handleSoftware(defineLabel, matcher, element, valueLabel);</span>
+<span class="fc" id="L332">                    break;</span>
+                case PUBLICATION:
+<span class="fc" id="L334">                    handlePublication(defineLabel, matcher, valueLabel);</span>
+<span class="fc" id="L335">                    break;</span>
+                case CONTACT:
+<span class="fc" id="L337">                    handleContact(defineLabel, matcher, element, valueLabel);</span>
+<span class="fc" id="L338">                    break;</span>
+                case URI:
+<span class="fc" id="L340">                    handleUri(defineLabel, matcher, valueLabel, false);</span>
+<span class="fc" id="L341">                    break;</span>
+                case EXTERNAL_STUDY_URI:
+<span class="fc" id="L343">                    handleExternalStudyUri(defineLabel, matcher, valueLabel);</span>
+<span class="fc" id="L344">                    break;</span>
+                case QUANTIFICATION_METHOD:
+<span class="fc" id="L346">                    handleQuantificationMethod(defineLabel, valueLabel);</span>
+<span class="fc" id="L347">                    break;</span>
+                case SMALL_MOLECULE:
+<span class="fc" id="L349">                    handleSmallMolecule(element, matcher, defineLabel,</span>
+                        valueLabel);
+<span class="fc" id="L351">                    break;</span>
+                case SMALL_MOLECULE_FEATURE:
+<span class="fc" id="L353">                    handleSmallMoleculeFeature(element, matcher, defineLabel,</span>
+                        valueLabel);
+<span class="fc" id="L355">                    break;</span>
+                case MS_RUN:
+<span class="fc" id="L357">                    handleMsRun(defineLabel, matcher, element, valueLabel);</span>
+<span class="fc" id="L358">                    break;</span>
+                case SAMPLE:
+<span class="fc" id="L360">                    handleSample(defineLabel, matcher, element, valueLabel);</span>
+<span class="fc" id="L361">                    break;</span>
+                case ASSAY:
+<span class="fc" id="L363">                    handleAssay(matcher, defineLabel, element, valueLabel);</span>
+<span class="fc" id="L364">                    break;</span>
+                case STUDY_VARIABLE:
+<span class="fc" id="L366">                    handleStudyVariable(defineLabel, matcher, element,</span>
+                        valueLabel);
+<span class="fc" id="L368">                    break;</span>
+                case CUSTOM:
+<span class="fc" id="L370">                    handleCustom(defineLabel, matcher, valueLabel);</span>
+<span class="fc" id="L371">                    break;</span>
+                case CV:
+<span class="fc" id="L373">                    handleCv(defineLabel, matcher, element, valueLabel);</span>
+<span class="fc" id="L374">                    break;</span>
+                case DATABASE:
+<span class="fc" id="L376">                    handleDatabase(defineLabel, matcher, element, valueLabel);</span>
+<span class="fc" id="L377">                    break;</span>
+                case DERIVATIZATION_AGENT:
+<span class="fc" id="L379">                    handleDerivatizationAgent(defineLabel, matcher, valueLabel);</span>
+<span class="fc" id="L380">                    break;</span>
+                case COLUNIT:
+                case COLUNIT_SMALL_MOLECULE:
+                case COLUNIT_SMALL_MOLECULE_FEATURE:
+                case COLUNIT_SMALL_MOLECULE_EVIDENCE:
+<span class="fc" id="L385">                    handleColunit(defineLabel, valueLabel);</span>
+<span class="fc" id="L386">                    break;</span>
+                case ID_CONFIDENCE_MEASURE:
+<span class="fc" id="L388">                    handleIdConfidenceMeasure(defineLabel, matcher, valueLabel);</span>
+                    break;
+                //opt column definitions are handled later
+            }
+
+<span class="fc" id="L393">        } else {</span>
+<span class="nc" id="L394">            throw new MZTabException(new MZTabError(FormatErrorType.MTDLine,</span>
+                lineNumber, line));
+        }
+<span class="fc" id="L397">    }</span>
+
+    protected void handleIdConfidenceMeasure(String defineLabel, Matcher matcher,
+        String valueLabel) throws MZTabException {
+        Integer id;
+<span class="fc" id="L402">        id = checkIndex(defineLabel, matcher.group(3));</span>
+<span class="fc" id="L403">        context.addIdConfidenceMeasure(metadata, id, checkParameter(</span>
+            defineLabel, valueLabel));
+<span class="fc" id="L405">    }</span>
+
+    protected void handleColunit(String defineLabel, String valueLabel) throws MZTabErrorOverflowException {
+        // In this stage, just store them into colUnitMap&lt;defineLabel, valueLabel&gt;.
+        // after the section columns is created we will add the col unit.
+<span class="pc bpc" id="L410" title="1 of 2 branches missed.">        if (!defineLabel.equals(&quot;colunit-protein&quot;)</span>
+<span class="pc bpc" id="L411" title="1 of 2 branches missed.">            &amp;&amp; !defineLabel.equals(&quot;colunit-peptide&quot;)</span>
+<span class="pc bpc" id="L412" title="1 of 2 branches missed.">            &amp;&amp; !defineLabel.equals(&quot;colunit-psm&quot;)</span>
+<span class="fc bfc" id="L413" title="All 2 branches covered.">            &amp;&amp; !defineLabel.equals(Metadata.Properties.colunitSmallMolecule.</span>
+<span class="fc" id="L414">                getPropertyName())</span>
+<span class="fc bfc" id="L415" title="All 2 branches covered.">            &amp;&amp; !defineLabel.equals(</span>
+                Metadata.Properties.colunitSmallMoleculeEvidence.
+<span class="fc" id="L417">                    getPropertyName())</span>
+<span class="pc bpc" id="L418" title="1 of 2 branches missed.">            &amp;&amp; !defineLabel.equals(</span>
+                Metadata.Properties.colunitSmallMoleculeFeature.
+<span class="fc" id="L420">                    getPropertyName())) {</span>
+<span class="fc" id="L421">            errorList.add(new MZTabError(</span>
+                FormatErrorType.MTDDefineLabel, lineNumber,
+                defineLabel));
+        } else {
+<span class="fc" id="L425">            String[] colunitDef = valueLabel.split(&quot;=&quot;);</span>
+<span class="pc bpc" id="L426" title="1 of 2 branches missed.">            if (colunitDef.length != 2) {</span>
+<span class="nc" id="L427">                errorList.add(new MZTabError(</span>
+                    FormatErrorType.InvalidColunitFormat, lineNumber, valueLabel));
+            }
+<span class="fc" id="L430">            Parameter p = checkParameter(defineLabel, colunitDef[1]);</span>
+<span class="fc" id="L431">            String columnName = colunitDef[0];</span>
+<span class="pc bpc" id="L432" title="1 of 2 branches missed.">            if (columnName == null) {</span>
+<span class="nc" id="L433">                errorList.add(new MZTabError(</span>
+                    FormatErrorType.InvalidColunitFormat, lineNumber, valueLabel));
+            } else {
+<span class="fc bfc" id="L436" title="All 2 branches covered.">                if (defineLabel.equals(</span>
+<span class="fc" id="L437">                    Metadata.Properties.colunitSmallMolecule.getPropertyName())) {</span>
+<span class="fc" id="L438">                    context.addSmallMoleculeColUnit(metadata, columnName, p);</span>
+<span class="pc bpc" id="L439" title="1 of 2 branches missed.">                } else if (defineLabel.equals(</span>
+                    Metadata.Properties.colunitSmallMoleculeFeature.
+<span class="fc" id="L441">                        getPropertyName())) {</span>
+<span class="nc" id="L442">                    context.addSmallMoleculeFeatureColUnit(metadata, columnName,</span>
+                        p);
+<span class="pc bpc" id="L444" title="1 of 2 branches missed.">                } else if (defineLabel.equals(</span>
+                    Metadata.Properties.colunitSmallMoleculeEvidence.
+<span class="fc" id="L446">                        getPropertyName())) {</span>
+<span class="fc" id="L447">                    context.</span>
+<span class="fc" id="L448">                        addSmallMoleculeEvidenceColUnit(metadata, columnName, p);</span>
+                } else {
+<span class="nc" id="L450">                    errorList.add(new MZTabError(</span>
+                        FormatErrorType.MTDDefineLabel, lineNumber,
+                        defineLabel));
+                }
+            }
+        }
+<span class="fc" id="L456">    }</span>
+
+    protected void handleDatabase(String defineLabel, Matcher matcher,
+        MetadataElement element, String valueLabel) throws MZTabException {
+        Integer id;
+        MetadataProperty property;
+<span class="fc" id="L462">        id = checkIndex(defineLabel, matcher.group(3));</span>
+<span class="fc" id="L463">        property = checkProperty(element, matcher.group(5));</span>
+<span class="fc" id="L464">        addDatabase(context, metadata, property, id, defineLabel, valueLabel);</span>
+<span class="fc" id="L465">    }</span>
+
+    protected void handleCv(String defineLabel, Matcher matcher,
+        MetadataElement element, String valueLabel) throws MZTabException {
+        Integer id;
+        MetadataProperty property;
+<span class="fc" id="L471">        id = checkIndex(defineLabel, matcher.group(3));</span>
+<span class="fc" id="L472">        property = checkProperty(element, matcher.group(5));</span>
+<span class="fc" id="L473">        addCv(context, metadata, property, id, valueLabel);</span>
+<span class="fc" id="L474">    }</span>
+
+    protected void handleStudyVariable(String defineLabel, Matcher matcher,
+        MetadataElement element, String valueLabel) throws MZTabException, MZTabErrorOverflowException {
+        Integer id;
+        MetadataProperty property;
+<span class="fc" id="L480">        id = checkIndex(defineLabel, matcher.group(3));</span>
+<span class="fc" id="L481">        property = checkProperty(element, matcher.group(5));</span>
+<span class="fc" id="L482">        addStudyVariable(context, metadata, property, defineLabel, valueLabel,</span>
+            id);
+<span class="fc" id="L484">    }</span>
+
+    protected void handleAssay(Matcher matcher, String defineLabel,
+        MetadataElement element, String valueLabel) throws MZTabException {
+        Integer id;
+        MetadataProperty property;
+<span class="pc bpc" id="L490" title="1 of 2 branches missed.">        if (isEmpty(matcher.group(6))) {</span>
+            // no quantification modification. For example: assay[1-n]-quantification_reagent
+<span class="fc" id="L492">            id = checkIndex(defineLabel, matcher.group(3));</span>
+<span class="fc" id="L493">            property = checkProperty(element, matcher.group(5));</span>
+<span class="fc" id="L494">            addAssay(context, metadata, property, defineLabel, valueLabel, id);</span>
+        } else {
+<span class="nc" id="L496">            throw new MZTabException(</span>
+                &quot;assay does not support quantification modification!&quot;);
+        }
+<span class="fc" id="L499">    }</span>
+
+    protected void handleSample(String defineLabel, Matcher matcher,
+        MetadataElement element, String valueLabel) throws MZTabException {
+        Integer id;
+        MetadataProperty property;
+<span class="fc" id="L505">        id = checkIndex(defineLabel, matcher.group(3));</span>
+<span class="fc" id="L506">        property = checkProperty(element, matcher.group(5));</span>
+<span class="fc" id="L507">        addSample(context, metadata, property, id, defineLabel, valueLabel);</span>
+<span class="fc" id="L508">    }</span>
+
+    protected void handleCustom(String defineLabel, Matcher matcher,
+        String valueLabel) throws MZTabException {
+        Integer id;
+<span class="fc" id="L513">        id = checkIndex(defineLabel, matcher.group(3));</span>
+<span class="fc" id="L514">        context.addCustomItem(metadata, id, checkParameter(</span>
+            defineLabel, valueLabel));
+<span class="fc" id="L516">    }</span>
+
+    protected void handleDerivatizationAgent(String defineLabel, Matcher matcher,
+        String valueLabel) throws MZTabException {
+        Integer id;
+<span class="fc" id="L521">        id = checkIndex(defineLabel, matcher.group(3));</span>
+<span class="fc" id="L522">        context.addDerivatizationAgentItem(metadata, id, checkParameter(</span>
+            defineLabel, valueLabel));
+<span class="fc" id="L524">    }</span>
+
+    protected void handleMsRun(String defineLabel, Matcher matcher,
+        MetadataElement element, String valueLabel) throws MZTabException {
+        Integer id;
+        MetadataProperty property;
+<span class="fc" id="L530">        id = checkIndex(defineLabel, matcher.group(3));</span>
+<span class="fc" id="L531">        property = checkProperty(element, matcher.group(5));</span>
+<span class="fc" id="L532">        addMsRun(context, metadata, property, id, defineLabel, valueLabel);</span>
+<span class="fc" id="L533">    }</span>
+
+    protected void handleSmallMoleculeFeature(MetadataElement element,
+        Matcher matcher, String defineLabel, String valueLabel) throws MZTabException {
+        MetadataProperty property;
+<span class="fc" id="L538">        property = checkProperty(element, matcher.group(5));</span>
+<span class="pc bpc" id="L539" title="1 of 2 branches missed.">        if (property == null) {</span>
+<span class="nc" id="L540">            MZTabError error = new MZTabError(</span>
+                FormatErrorType.MTDDefineLabel,
+                lineNumber, defineLabel + &quot;-&quot; + valueLabel);
+<span class="nc" id="L543">            throw new MZTabException(error);</span>
+        }
+<span class="pc bpc" id="L545" title="1 of 2 branches missed.">        if (property == MetadataProperty.SMALL_MOLECULE_FEATURE_QUANTIFICATION_UNIT) {</span>
+<span class="fc" id="L546">            if (metadata.</span>
+<span class="pc bpc" id="L547" title="1 of 2 branches missed.">                getSmallMoleculeFeatureQuantificationUnit() != null) {</span>
+<span class="nc" id="L548">                throw new MZTabException(new MZTabError(</span>
+                    LogicalErrorType.DuplicationDefine,
+                    lineNumber, defineLabel));
+            }
+<span class="fc" id="L552">            metadata.setSmallMoleculeFeatureQuantificationUnit(</span>
+<span class="fc" id="L553">                checkParameter(defineLabel, valueLabel));</span>
+        }
+<span class="fc" id="L555">    }</span>
+
+    protected void handleSmallMolecule(MetadataElement element, Matcher matcher,
+        String defineLabel, String valueLabel) throws MZTabException {
+        MetadataProperty property;
+<span class="fc" id="L560">        property = checkProperty(element, matcher.group(5));</span>
+<span class="pc bpc" id="L561" title="1 of 2 branches missed.">        if (property == null) {</span>
+<span class="nc" id="L562">            MZTabError error = new MZTabError(</span>
+                FormatErrorType.MTDDefineLabel,
+                lineNumber, defineLabel + &quot;-&quot; + valueLabel);
+<span class="nc" id="L565">            throw new MZTabException(error);</span>
+        }
+<span class="fc bfc" id="L567" title="All 2 branches covered.">        if (property == MetadataProperty.SMALL_MOLECULE_QUANTIFICATION_UNIT) {</span>
+<span class="pc bpc" id="L568" title="1 of 2 branches missed.">            if (metadata.getSmallMoleculeQuantificationUnit() != null) {</span>
+<span class="nc" id="L569">                throw new MZTabException(new MZTabError(</span>
+                    LogicalErrorType.DuplicationDefine,
+                    lineNumber, defineLabel));
+            }
+<span class="fc" id="L573">            metadata.setSmallMoleculeQuantificationUnit(</span>
+<span class="fc" id="L574">                checkParameter(defineLabel, valueLabel));</span>
+<span class="pc bpc" id="L575" title="1 of 2 branches missed.">        } else if (property == MetadataProperty.SMALL_MOLECULE_IDENTIFICATION_RELIABILITY) {</span>
+<span class="fc" id="L576">            if (metadata.</span>
+<span class="pc bpc" id="L577" title="1 of 2 branches missed.">                getSmallMoleculeIdentificationReliability() != null) {</span>
+<span class="nc" id="L578">                throw new MZTabException(new MZTabError(</span>
+                    LogicalErrorType.DuplicationDefine,
+                    lineNumber, defineLabel));
+            }
+<span class="fc" id="L582">            metadata.setSmallMoleculeIdentificationReliability(</span>
+<span class="fc" id="L583">                checkParameter(defineLabel, valueLabel));</span>
+        }
+<span class="fc" id="L585">    }</span>
+
+    protected void handleQuantificationMethod(String defineLabel,
+        String valueLabel) throws MZTabException {
+<span class="pc bpc" id="L589" title="1 of 2 branches missed.">        if (metadata.getQuantificationMethod() != null) {</span>
+<span class="nc" id="L590">            throw new MZTabException(new MZTabError(</span>
+                LogicalErrorType.DuplicationDefine, lineNumber,
+                defineLabel));
+        }
+<span class="fc" id="L594">        metadata.</span>
+<span class="fc" id="L595">            setQuantificationMethod(checkParameter(defineLabel, valueLabel));</span>
+<span class="fc" id="L596">    }</span>
+
+    protected void handleExternalStudyUri(String defineLabel, Matcher matcher,
+        String valueLabel) throws MZTabException {
+        Integer id;
+<span class="fc" id="L601">        id = checkIndex(defineLabel, matcher.group(3));</span>
+<span class="fc" id="L602">        URI uri = checkURI(defineLabel, valueLabel, false);</span>
+<span class="fc" id="L603">        metadata.addExternalStudyUriItem(new Uri().id(id).</span>
+<span class="pc bpc" id="L604" title="1 of 2 branches missed.">            value(uri == null ? MZTabConstants.NULL : uri.toASCIIString()));</span>
+<span class="fc" id="L605">    }</span>
+
+    protected void handleUri(String defineLabel, Matcher matcher,
+        String valueLabel, boolean mandatory) throws MZTabException {
+        Integer id;
+<span class="fc" id="L610">        id = checkIndex(defineLabel, matcher.group(3));</span>
+<span class="fc" id="L611">        URI uri = checkURI(defineLabel, valueLabel, mandatory);</span>
+<span class="fc" id="L612">        metadata.addUriItem(new Uri().id(id).</span>
+<span class="pc bpc" id="L613" title="1 of 2 branches missed.">            value(uri == null ? MZTabConstants.NULL : uri.toASCIIString()));</span>
+<span class="fc" id="L614">    }</span>
+
+    protected void handleContact(String defineLabel, Matcher matcher,
+        MetadataElement element, String valueLabel) throws MZTabException {
+        Integer id;
+        MetadataProperty property;
+<span class="fc" id="L620">        id = checkIndex(defineLabel, matcher.group(3));</span>
+<span class="fc" id="L621">        property = checkProperty(element, matcher.group(5));</span>
+<span class="fc" id="L622">        addContact(context, metadata, property, id, valueLabel, defineLabel);</span>
+<span class="fc" id="L623">    }</span>
+
+    protected void handlePublication(String defineLabel, Matcher matcher,
+        String valueLabel) throws MZTabException {
+        Integer id;
+<span class="fc" id="L628">        id = checkIndex(defineLabel, matcher.group(3));</span>
+<span class="fc" id="L629">        checkPublication(id, defineLabel, valueLabel);</span>
+<span class="fc" id="L630">    }</span>
+
+    protected void handleSoftware(String defineLabel, Matcher matcher,
+        MetadataElement element, String valueLabel) throws MZTabErrorOverflowException, MZTabException {
+        Integer id;
+        MetadataProperty property;
+<span class="fc" id="L636">        id = checkIndex(defineLabel, matcher.group(3));</span>
+<span class="fc" id="L637">        property = checkProperty(element, matcher.group(5));</span>
+<span class="fc" id="L638">        addSoftware(context, metadata, property, defineLabel, valueLabel, id);</span>
+<span class="fc" id="L639">    }</span>
+
+    protected void handleInstrument(String defineLabel, Matcher matcher,
+        MetadataElement element, String valueLabel) throws MZTabException {
+        Integer id;
+        MetadataProperty property;
+        Parameter param;
+<span class="fc" id="L646">        id = checkIndex(defineLabel, matcher.group(3));</span>
+<span class="fc" id="L647">        property = checkProperty(element, matcher.group(5));</span>
+<span class="fc" id="L648">        param = checkParameter(defineLabel, valueLabel);</span>
+<span class="fc" id="L649">        addInstrument(context, metadata, property, id, param);</span>
+<span class="fc" id="L650">    }</span>
+
+    protected void handleSampleProcessing(String defineLabel, Matcher matcher,
+        String valueLabel) throws MZTabException {
+        Integer id;
+<span class="fc" id="L655">        id = checkIndex(defineLabel, matcher.group(3));</span>
+<span class="fc" id="L656">        addSampleProcessing(context, metadata, id, checkParameterList(</span>
+            defineLabel, valueLabel));
+<span class="fc" id="L658">    }</span>
+
+    protected void handleDescription(String defineLabel, String valueLabel) throws MZTabException {
+<span class="pc bpc" id="L661" title="1 of 2 branches missed.">        if (metadata.getDescription() != null) {</span>
+<span class="nc" id="L662">            throw new MZTabException(new MZTabError(</span>
+                LogicalErrorType.DuplicationDefine, lineNumber,
+                defineLabel));
+        }
+<span class="fc" id="L666">        metadata.setDescription(valueLabel);</span>
+<span class="fc" id="L667">    }</span>
+
+    protected void handleTitle(String defineLabel, String valueLabel) throws MZTabException {
+<span class="pc bpc" id="L670" title="1 of 2 branches missed.">        if (metadata.getTitle() != null) {</span>
+<span class="nc" id="L671">            throw new MZTabException(new MZTabError(</span>
+                LogicalErrorType.DuplicationDefine, lineNumber,
+                defineLabel));
+        }
+<span class="fc" id="L675">        metadata.setTitle(valueLabel);</span>
+<span class="fc" id="L676">    }</span>
+
+    protected void handleMzTab(MetadataElement element, Matcher matcher,
+        String defineLabel, String valueLabel) throws MZTabException {
+        MetadataProperty property;
+<span class="fc" id="L681">        property = checkProperty(element, matcher.group(5));</span>
+<span class="pc bpc" id="L682" title="1 of 2 branches missed.">        if (property == null) {</span>
+<span class="nc" id="L683">            MZTabError error = new MZTabError(</span>
+                FormatErrorType.MTDDefineLabel,
+                lineNumber, defineLabel + &quot;-&quot; + valueLabel);
+<span class="nc" id="L686">            throw new MZTabException(error);</span>
+        }
+<span class="pc bpc" id="L688" title="1 of 3 branches missed.">        switch (property) {</span>
+            case MZTAB_VERSION:
+<span class="fc bfc" id="L690" title="All 2 branches covered.">                if (metadata.getMzTabVersion() != null) {</span>
+<span class="fc" id="L691">                    throw new MZTabException(new MZTabError(</span>
+                        LogicalErrorType.DuplicationDefine,
+                        lineNumber, defineLabel));
+                }
+<span class="pc bpc" id="L695" title="1 of 2 branches missed.">                if (parseMzTabVersion(valueLabel) == null) {</span>
+<span class="nc" id="L696">                    throw new MZTabException(new MZTabError(</span>
+                        FormatErrorType.MZTabVersion, lineNumber,
+                        defineLabel, valueLabel));
+                }
+
+<span class="fc" id="L701">                metadata.mzTabVersion(valueLabel);</span>
+<span class="fc" id="L702">                break;</span>
+            case MZTAB_ID:
+<span class="pc bpc" id="L704" title="1 of 2 branches missed.">                if (metadata.getMzTabID() != null) {</span>
+<span class="nc" id="L705">                    throw new MZTabException(new MZTabError(</span>
+                        LogicalErrorType.DuplicationDefine,
+                        lineNumber, defineLabel));
+                }
+<span class="pc bpc" id="L709" title="1 of 2 branches missed.">                if (parseString(valueLabel) == null) {</span>
+<span class="nc" id="L710">                    throw new MZTabException(new MZTabError(</span>
+                        FormatErrorType.MZTabId, lineNumber,
+                        defineLabel, valueLabel));
+                }
+<span class="fc" id="L714">                metadata.mzTabID(parseString(valueLabel));</span>
+<span class="fc" id="L715">                break;</span>
+            default:
+<span class="nc" id="L717">                MZTabError error = new MZTabError(</span>
+                    FormatErrorType.MTDDefineLabel,
+                    lineNumber, defineLabel + &quot;-&quot; + valueLabel);
+<span class="nc" id="L720">                throw new MZTabException(error);</span>
+        }
+<span class="fc" id="L722">    }</span>
+    
+    private &lt;T&gt; void validate(T t, MetadataValidator&lt;T&gt; validator, MZTabParserContext context, MZTabErrorList errorList) {
+<span class="fc" id="L725">        validator.validateRefine(t, context).forEach((error) -&gt; {</span>
+<span class="fc" id="L726">            errorList.add(error);</span>
+<span class="fc" id="L727">        });</span>
+<span class="fc" id="L728">    }</span>
+
+    /**
+     * Refine the metadata, and check whether missing some important
+     * information. fixed_mode, variable_mode must provide in the Complete file.
+     * Detail information see specification 5.5
+     *
+     * @throws uk.ac.ebi.pride.jmztab2.utils.errors.MZTabException if any.
+     */
+    public void refineNormalMetadata() throws MZTabException {
+<span class="fc" id="L738">        validate(metadata, new MzTabVersionValidator(), context, errorList);</span>
+<span class="fc" id="L739">        validate(metadata, new MzTabIdValidator(), context, errorList);</span>
+<span class="fc" id="L740">        validate(metadata, new SoftwareValidator(), context, errorList);</span>
+<span class="fc" id="L741">        validate(metadata, new QuantificationMethodValidator(), context, errorList);</span>
+<span class="fc" id="L742">        validate(metadata, new AssayValidator(), context, errorList);</span>
+<span class="fc" id="L743">        validate(metadata, new StudyVariableValidator(), context, errorList);</span>
+<span class="fc" id="L744">        validate(metadata, new MsRunValidator(), context, errorList);</span>
+<span class="fc" id="L745">        validate(metadata, new CvValidator(), context, errorList);</span>
+<span class="fc" id="L746">        validate(metadata, new DatabaseValidator(), context, errorList);</span>
+<span class="fc" id="L747">        validate(metadata, new SmallMoleculeQuantificationUnitValidator(), context, errorList);</span>
+<span class="fc" id="L748">        validate(metadata, new SmallMoleculeFeatureQuantificationUnitValidator(), context, errorList);</span>
+<span class="fc" id="L749">        validate(metadata, new SmallMoleculeQuantificationUnitValidator(), context, errorList);</span>
+<span class="fc" id="L750">    }</span>
+
+    /**
+     * &lt;p&gt;
+     * Getter for the field &lt;code&gt;metadata&lt;/code&gt;.&lt;/p&gt;
+     *
+     * @return a {@link de.isas.mztab2.model.Metadata} object.
+     */
+    public Metadata getMetadata() {
+<span class="fc" id="L759">        return metadata;</span>
+    }
+
+    private void addSampleProcessing(MZTabParserContext context,
+        Metadata metadata, Integer id,
+        List&lt;Parameter&gt; checkParameterList) throws MZTabException {
+<span class="fc" id="L765">        SampleProcessing sp = context.addSampleProcessing(metadata, id,</span>
+            checkParameterList);
+<span class="pc bpc" id="L767" title="1 of 2 branches missed.">        if (sp == null) {</span>
+<span class="nc" id="L768">            throw new MZTabException(new MZTabError(LogicalErrorType.NULL,</span>
+                lineNumber,
+                Metadata.Properties.sampleProcessing + &quot;[&quot; + id + &quot;]&quot;));
+        }
+<span class="fc" id="L772">    }</span>
+
+    /**
+     * &lt;p&gt;
+     * handleParam.&lt;/p&gt;
+     *
+     * @param defineLabel a {@link java.lang.String} object.
+     * @param valueLabel a {@link java.lang.String} object.
+     * @param errorType a
+     * {@link uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorType} object.
+     * @param lineNumber a int.
+     * @param consumer a {@link java.util.function.Consumer} object.
+     * @throws uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorOverflowException
+     * if any.
+     */
+    public void handleParam(String defineLabel, String valueLabel,
+        MZTabErrorType errorType, int lineNumber,
+        Consumer&lt;Parameter&gt; consumer) throws MZTabErrorOverflowException {
+        Parameter param;
+<span class="nc" id="L791">        param = checkParameter(defineLabel, valueLabel);</span>
+<span class="nc bnc" id="L792" title="All 4 branches missed.">        if (param != null &amp;&amp; (param.getValue() == null || param.getValue().</span>
+<span class="nc" id="L793">            trim().</span>
+<span class="nc bnc" id="L794" title="All 2 branches missed.">            length() == 0)) {</span>
+<span class="nc" id="L795">            errorList.add(new MZTabError(errorType, lineNumber, valueLabel));</span>
+        } else {
+<span class="nc" id="L797">            consumer.accept(param);</span>
+        }
+<span class="nc" id="L799">    }</span>
+
+    private void addInstrument(MZTabParserContext context, Metadata metadata,
+        MetadataProperty property,
+        Integer id,
+        Parameter param) throws MZTabException {
+<span class="fc" id="L805">        Instrument instrument = null;</span>
+
+<span class="pc bpc" id="L807" title="1 of 2 branches missed.">        if (property == null) {</span>
+<span class="nc" id="L808">            MZTabError error = new MZTabError(</span>
+                FormatErrorType.MTDDefineLabel,
+                lineNumber,
+                Metadata.Properties.instrument + &quot;[&quot; + id + &quot;]&quot; + &quot;-&quot; + property);
+<span class="nc" id="L812">            throw new MZTabException(error);</span>
+        }
+
+<span class="pc bpc" id="L815" title="1 of 5 branches missed.">        switch (property) {</span>
+            case INSTRUMENT_NAME:
+<span class="fc" id="L817">                instrument = context.addInstrumentName(metadata, id, param);</span>
+<span class="fc" id="L818">                break;</span>
+            case INSTRUMENT_SOURCE:
+<span class="fc" id="L820">                instrument = context.addInstrumentSource(metadata, id, param);</span>
+<span class="fc" id="L821">                break;</span>
+            case INSTRUMENT_ANALYZER:
+<span class="fc" id="L823">                instrument = context.addInstrumentAnalyzer(metadata, id, param);</span>
+<span class="fc" id="L824">                break;</span>
+            case INSTRUMENT_DETECTOR:
+<span class="fc" id="L826">                instrument = context.addInstrumentDetector(metadata, id, param);</span>
+<span class="fc" id="L827">                break;</span>
+            default:
+<span class="nc" id="L829">                MZTabError error = new MZTabError(</span>
+                    FormatErrorType.MTDDefineLabel,
+                    lineNumber,
+                    Metadata.Properties.instrument + &quot;[&quot; + id + &quot;]&quot; + &quot;-&quot; + property);
+<span class="nc" id="L833">                throw new MZTabException(error);</span>
+        }
+<span class="fc bfc" id="L835" title="All 2 branches covered.">        if (instrument == null) {</span>
+<span class="fc" id="L836">            throw new MZTabException(new MZTabError(LogicalErrorType.NULL,</span>
+                lineNumber, Metadata.Properties.instrument + &quot;[&quot; + id + &quot;]&quot;));
+        }
+<span class="fc" id="L839">    }</span>
+
+    private void addSoftware(MZTabParserContext context, Metadata metadata,
+        MetadataProperty property,
+        String defineLabel,
+        String valueLabel, Integer id) throws MZTabErrorOverflowException, MZTabException {
+        Parameter param;
+<span class="fc" id="L846">        Software software = null;</span>
+<span class="fc bfc" id="L847" title="All 2 branches covered.">        if (property == null) {</span>
+<span class="fc" id="L848">            param = checkParameter(defineLabel, valueLabel);</span>
+<span class="pc bpc" id="L849" title="2 of 4 branches missed.">            if (param != null &amp;&amp; (param.getValue() == null || param.getValue().</span>
+<span class="fc" id="L850">                trim().</span>
+<span class="pc bpc" id="L851" title="1 of 2 branches missed.">                length() == 0)) {</span>
+                // this is a warn.
+<span class="nc" id="L853">                errorList.add(new MZTabError(LogicalErrorType.SoftwareVersion,</span>
+                    lineNumber, valueLabel));
+            }
+<span class="fc" id="L856">            software = context.addSoftwareParameter(metadata, id, param);</span>
+        } else {
+<span class="pc bpc" id="L858" title="1 of 2 branches missed.">            switch (property) {</span>
+                case SOFTWARE_SETTING:
+<span class="fc" id="L860">                    software = context.addSoftwareSetting(metadata, id,</span>
+                        valueLabel);
+<span class="fc" id="L862">                    break;</span>
+                default:
+<span class="nc" id="L864">                    MZTabError error = new MZTabError(</span>
+                        FormatErrorType.MTDDefineLabel,
+                        lineNumber, defineLabel + &quot;-&quot; + valueLabel);
+<span class="nc" id="L867">                    throw new MZTabException(error);</span>
+            }
+        }
+<span class="pc bpc" id="L870" title="1 of 2 branches missed.">        if (software == null) {</span>
+<span class="nc" id="L871">            throw new MZTabException(new MZTabError(LogicalErrorType.NULL,</span>
+                lineNumber, Metadata.Properties.software + &quot;[&quot; + id + &quot;]&quot;));
+        }
+<span class="fc" id="L874">    }</span>
+
+    private void addContact(MZTabParserContext context, Metadata metadata,
+        MetadataProperty property,
+        Integer id,
+        String valueLabel, String defineLabel) throws MZTabException {
+<span class="fc" id="L880">        Contact contact = null;</span>
+<span class="pc bpc" id="L881" title="1 of 2 branches missed.">        if (property == null) {</span>
+<span class="nc" id="L882">            MZTabError error = new MZTabError(</span>
+                FormatErrorType.MTDDefineLabel,
+                lineNumber, defineLabel + &quot;-&quot; + valueLabel);
+<span class="nc" id="L885">            throw new MZTabException(error);</span>
+        }
+<span class="pc bpc" id="L887" title="1 of 4 branches missed.">        switch (property) {</span>
+            case CONTACT_NAME:
+<span class="fc" id="L889">                contact = context.addContactName(metadata, id, valueLabel);</span>
+<span class="fc" id="L890">                break;</span>
+            case CONTACT_AFFILIATION:
+<span class="fc" id="L892">                contact = context.</span>
+<span class="fc" id="L893">                    addContactAffiliation(metadata, id, valueLabel);</span>
+<span class="fc" id="L894">                break;</span>
+            case CONTACT_EMAIL:
+<span class="fc" id="L896">                checkEmail(defineLabel, valueLabel);</span>
+<span class="fc" id="L897">                contact = context.addContactEmail(metadata, id, valueLabel);</span>
+<span class="fc" id="L898">                break;</span>
+            default:
+<span class="nc" id="L900">                MZTabError error = new MZTabError(</span>
+                    FormatErrorType.MTDDefineLabel,
+                    lineNumber, defineLabel + &quot;-&quot; + valueLabel);
+<span class="nc" id="L903">                throw new MZTabException(error);</span>
+        }
+<span class="pc bpc" id="L905" title="1 of 2 branches missed.">        if (contact == null) {</span>
+<span class="nc" id="L906">            throw new MZTabException(new MZTabError(LogicalErrorType.NULL,</span>
+                lineNumber, Metadata.Properties.contact + &quot;[&quot; + id + &quot;]&quot;));
+        }
+<span class="fc" id="L909">    }</span>
+
+    private void addMsRun(MZTabParserContext context, Metadata metadata,
+        MetadataProperty property,
+        Integer id,
+        String defineLabel, String valueLabel) throws MZTabException {
+<span class="fc" id="L915">        MsRun msRun = null;</span>
+<span class="pc bpc" id="L916" title="1 of 2 branches missed.">        if (property == null) {</span>
+<span class="nc" id="L917">            msRun = context.addMsRun(metadata, new MsRun().id(id).</span>
+<span class="nc" id="L918">                name(valueLabel));</span>
+        } else {
+<span class="pc bpc" id="L920" title="1 of 9 branches missed.">            switch (property) {</span>
+                case MS_RUN_LOCATION:
+<span class="fc" id="L922">                    msRun = context.addMsRunLocation(metadata, id, checkURI(</span>
+                        defineLabel, valueLabel, true));
+<span class="fc" id="L924">                    break;</span>
+                case MS_RUN_INSTRUMENT_REF:
+<span class="fc" id="L926">                    List&lt;IndexedElement&gt; indexedElements = checkIndexedElementList(</span>
+                        defineLabel, valueLabel,
+                        MetadataElement.INSTRUMENT);
+<span class="pc bpc" id="L929" title="2 of 4 branches missed.">                    if (indexedElements != null &amp;&amp; !indexedElements.isEmpty() &amp;&amp; indexedElements.</span>
+<span class="pc bpc" id="L930" title="1 of 2 branches missed.">                        size() == 1) {</span>
+<span class="fc" id="L931">                        Instrument instrument = context.getInstrumentMap().</span>
+<span class="fc" id="L932">                            get(indexedElements.get(0).</span>
+<span class="fc" id="L933">                                getId());</span>
+<span class="pc bpc" id="L934" title="1 of 2 branches missed.">                        if (instrument == null) {</span>
+<span class="nc" id="L935">                            throw new MZTabException(new MZTabError(</span>
+                                LogicalErrorType.NotDefineInMetadata, lineNumber,
+                                valueLabel,
+                                valueLabel));
+                        }
+<span class="fc" id="L940">                        msRun = context.addMsRunInstrumentRef(metadata, id,</span>
+                            instrument);
+<span class="fc" id="L942">                    }</span>
+                    break;
+                case MS_RUN_FORMAT:
+<span class="fc" id="L945">                    msRun = context.addMsRunFormat(metadata, id, checkParameter(</span>
+                        defineLabel, valueLabel));
+<span class="fc" id="L947">                    break;</span>
+                case MS_RUN_ID_FORMAT:
+<span class="fc" id="L949">                    msRun = context.addMsRunIdFormat(metadata, id,</span>
+<span class="fc" id="L950">                        checkParameter(defineLabel, valueLabel));</span>
+<span class="fc" id="L951">                    break;</span>
+                case MS_RUN_FRAGMENTATION_METHOD:
+<span class="fc" id="L953">                    msRun = context.addMsRunFragmentationMethod(metadata, id,</span>
+<span class="fc" id="L954">                        checkParameter(defineLabel, valueLabel));</span>
+<span class="fc" id="L955">                    break;</span>
+                case MS_RUN_SCAN_POLARITY:
+<span class="fc" id="L957">                    msRun = context.addMsRunScanPolarity(metadata, id,</span>
+<span class="fc" id="L958">                        checkParameter(defineLabel, valueLabel));</span>
+<span class="fc" id="L959">                    break;</span>
+                case MS_RUN_HASH:
+<span class="fc" id="L961">                    msRun = context.addMsRunHash(metadata, id, valueLabel);</span>
+<span class="fc" id="L962">                    break;</span>
+                case MS_RUN_HASH_METHOD:
+<span class="fc" id="L964">                    msRun = context.addMsRunHashMethod(metadata, id,</span>
+<span class="fc" id="L965">                        checkParameter(defineLabel, valueLabel));</span>
+<span class="fc" id="L966">                    break;</span>
+                default:
+<span class="nc" id="L968">                    MZTabError error = new MZTabError(</span>
+                        FormatErrorType.MTDDefineLabel,
+                        lineNumber, defineLabel + &quot;-&quot; + valueLabel);
+<span class="nc" id="L971">                    throw new MZTabException(error);</span>
+            }
+        }
+<span class="pc bpc" id="L974" title="1 of 2 branches missed.">        if (msRun == null) {</span>
+<span class="nc" id="L975">            throw new MZTabException(new MZTabError(LogicalErrorType.NULL,</span>
+                lineNumber, Metadata.Properties.msRun + &quot;[&quot; + id + &quot;]&quot;));
+        }
+<span class="fc" id="L978">    }</span>
+
+    private void addDatabase(MZTabParserContext context, Metadata metadata,
+        MetadataProperty property,
+        Integer id,
+        String defineLabel, String valueLabel) throws MZTabException {
+<span class="fc" id="L984">        Database database = null;</span>
+<span class="fc bfc" id="L985" title="All 2 branches covered.">        if (property == null) {</span>
+<span class="fc" id="L986">            database = context.addDatabase(metadata, new Database().id(id).</span>
+<span class="fc" id="L987">                param(checkParameter(defineLabel, valueLabel)));</span>
+        } else {
+<span class="pc bpc" id="L989" title="1 of 4 branches missed.">            switch (property) {</span>
+                case DATABASE_PREFIX:
+<span class="fc" id="L991">                    database = context.addDatabasePrefix(metadata, id,</span>
+                        valueLabel);
+<span class="fc" id="L993">                    break;</span>
+                case DATABASE_VERSION:
+<span class="fc" id="L995">                    database = context.addDatabaseVersion(metadata, id,</span>
+                        valueLabel);
+<span class="fc" id="L997">                    break;</span>
+                case DATABASE_URI:
+<span class="fc" id="L999">                    database = context.addDatabaseUri(metadata, id, checkURI(</span>
+                        defineLabel,
+                        valueLabel, false));
+<span class="fc" id="L1002">                    break;</span>
+                default:
+<span class="nc" id="L1004">                    MZTabError error = new MZTabError(</span>
+                        FormatErrorType.MTDDefineLabel,
+                        lineNumber, defineLabel + &quot;-&quot; + valueLabel);
+<span class="nc" id="L1007">                    throw new MZTabException(error);</span>
+            }
+        }
+<span class="pc bpc" id="L1010" title="1 of 2 branches missed.">        if (database == null) {</span>
+<span class="nc" id="L1011">            throw new MZTabException(new MZTabError(LogicalErrorType.NULL,</span>
+                lineNumber, Metadata.Properties.database + &quot;[&quot; + id + &quot;]&quot;));
+        }
+<span class="fc" id="L1014">    }</span>
+
+    private void addSample(MZTabParserContext context, Metadata metadata,
+        MetadataProperty property,
+        Integer id,
+        String defineLabel, String valueLabel) throws MZTabException {
+<span class="fc bfc" id="L1020" title="All 2 branches covered.">        if (property == null) {</span>
+<span class="fc" id="L1021">            context.addSample(metadata, new Sample().id(id).</span>
+<span class="fc" id="L1022">                name(valueLabel));</span>
+        } else {
+<span class="pc bpc" id="L1024" title="1 of 7 branches missed.">            switch (property) {</span>
+                case SAMPLE_SPECIES:
+<span class="fc" id="L1026">                    context.addSampleSpecies(metadata, id, checkParameter(</span>
+                        defineLabel, valueLabel));
+<span class="fc" id="L1028">                    break;</span>
+                case SAMPLE_TISSUE:
+<span class="fc" id="L1030">                    context.addSampleTissue(metadata, id, checkParameter(</span>
+                        defineLabel, valueLabel));
+<span class="fc" id="L1032">                    break;</span>
+                case SAMPLE_CELL_TYPE:
+<span class="fc" id="L1034">                    context.addSampleCellType(metadata, id, checkParameter(</span>
+                        defineLabel, valueLabel));
+<span class="fc" id="L1036">                    break;</span>
+                case SAMPLE_DISEASE:
+<span class="fc" id="L1038">                    context.addSampleDisease(metadata, id, checkParameter(</span>
+                        defineLabel, valueLabel));
+<span class="fc" id="L1040">                    break;</span>
+                case SAMPLE_DESCRIPTION:
+<span class="fc" id="L1042">                    context.addSampleDescription(metadata, id, valueLabel);</span>
+<span class="fc" id="L1043">                    break;</span>
+                case SAMPLE_CUSTOM:
+<span class="fc" id="L1045">                    context.addSampleCustom(metadata, id, checkParameter(</span>
+                        defineLabel, valueLabel));
+<span class="fc" id="L1047">                    break;</span>
+                default:
+<span class="nc" id="L1049">                    MZTabError error = new MZTabError(</span>
+                        FormatErrorType.MTDDefineLabel,
+                        lineNumber, defineLabel + &quot;-&quot; + valueLabel);
+<span class="nc" id="L1052">                    throw new MZTabException(error);</span>
+            }
+        }
+<span class="fc" id="L1055">    }</span>
+
+    private void addAssay(MZTabParserContext context, Metadata metadata,
+        MetadataProperty property,
+        String defineLabel,
+        String valueLabel, Integer id) throws MZTabException {
+        IndexedElement indexedElement;
+<span class="fc bfc" id="L1062" title="All 2 branches covered.">        if (property == null) {</span>
+<span class="fc" id="L1063">            context.addAssay(metadata, new Assay().id(id).</span>
+<span class="fc" id="L1064">                name(valueLabel));</span>
+        } else {
+<span class="pc bpc" id="L1066" title="3 of 5 branches missed.">            switch (property) {</span>
+                case ASSAY_CUSTOM:
+<span class="nc" id="L1068">                    context.addAssayCustom(metadata, id, checkParameter(</span>
+                        defineLabel, valueLabel));
+<span class="nc" id="L1070">                    break;</span>
+                case ASSAY_EXTERNAL_URI:
+<span class="nc" id="L1072">                    context.addAssayExternalUri(metadata, id, checkURI(</span>
+                        defineLabel,
+                        valueLabel, false));
+<span class="nc" id="L1075">                    break;</span>
+                case ASSAY_SAMPLE_REF:
+<span class="fc" id="L1077">                    indexedElement = checkIndexedElement(defineLabel, valueLabel,</span>
+                        MetadataElement.SAMPLE);
+<span class="pc bpc" id="L1079" title="1 of 2 branches missed.">                    if (indexedElement != null) {</span>
+<span class="fc" id="L1080">                        Sample sample = context.getSampleMap().</span>
+<span class="fc" id="L1081">                            get(indexedElement.getId());</span>
+<span class="pc bpc" id="L1082" title="1 of 2 branches missed.">                        if (sample == null) {</span>
+<span class="nc" id="L1083">                            throw new MZTabException(new MZTabError(</span>
+                                LogicalErrorType.NotDefineInMetadata, lineNumber,
+                                valueLabel,
+                                valueLabel));
+                        }
+<span class="fc" id="L1088">                        context.addAssaySample(metadata, id, sample);</span>
+<span class="fc" id="L1089">                    }</span>
+                    break;
+                case ASSAY_MS_RUN_REF:
+<span class="fc" id="L1092">                    indexedElement = checkIndexedElement(defineLabel, valueLabel,</span>
+                        MetadataElement.MS_RUN);
+<span class="pc bpc" id="L1094" title="1 of 2 branches missed.">                    if (indexedElement != null) {</span>
+<span class="fc" id="L1095">                        MsRun msRun = context.getMsRunMap().</span>
+<span class="fc" id="L1096">                            get(indexedElement.getId());</span>
+<span class="pc bpc" id="L1097" title="1 of 2 branches missed.">                        if (msRun == null) {</span>
+<span class="nc" id="L1098">                            throw new MZTabException(new MZTabError(</span>
+                                LogicalErrorType.NotDefineInMetadata, lineNumber,
+                                valueLabel));
+                        }
+<span class="fc" id="L1102">                        context.addAssayMsRun(metadata, id, msRun);</span>
+<span class="fc" id="L1103">                    }</span>
+                    break;
+                default:
+<span class="nc" id="L1106">                    MZTabError error = new MZTabError(</span>
+                        FormatErrorType.MTDDefineLabel,
+                        lineNumber, defineLabel + &quot;-&quot; + valueLabel);
+<span class="nc" id="L1109">                    throw new MZTabException(error);</span>
+            }
+        }
+<span class="fc" id="L1112">    }</span>
+
+    private void addStudyVariable(MZTabParserContext context, Metadata metadata,
+        MetadataProperty property,
+        String defineLabel,
+        String valueLabel, Integer id) throws MZTabErrorOverflowException, MZTabException {
+        List&lt;IndexedElement&gt; indexedElementList;
+<span class="fc bfc" id="L1119" title="All 2 branches covered.">        if (property == null) {</span>
+<span class="fc" id="L1120">            context.addStudyVariable(metadata, new StudyVariable().id(id).</span>
+<span class="fc" id="L1121">                name(valueLabel));</span>
+        } else {
+<span class="pc bpc" id="L1123" title="1 of 6 branches missed.">            switch (property) {</span>
+                case STUDY_VARIABLE_ASSAY_REFS:
+<span class="fc" id="L1125">                    indexedElementList = checkIndexedElementList(defineLabel,</span>
+                        valueLabel, MetadataElement.ASSAY);
+                    // detect duplicates
+<span class="fc" id="L1128">                    indexedElementList.stream().</span>
+<span class="fc" id="L1129">                        filter(i -&gt;</span>
+<span class="fc bfc" id="L1130" title="All 2 branches covered.">                            Collections.frequency(indexedElementList, i) &gt; 1).</span>
+<span class="fc" id="L1131">                        collect(Collectors.toSet()).</span>
+<span class="fc" id="L1132">                        forEach((indexedElement) -&gt;</span>
+                        {
+<span class="fc" id="L1134">                            errorList.add(new MZTabError(</span>
+                                LogicalErrorType.DuplicationID, lineNumber,
+                                valueLabel));
+<span class="fc" id="L1137">                        });</span>
+                    // check that assays exist
+<span class="fc bfc" id="L1139" title="All 2 branches covered.">                    for (IndexedElement e : indexedElementList) {</span>
+                        //assays need to be defined before
+<span class="fc" id="L1141">                        if (!context.getAssayMap().</span>
+<span class="pc bpc" id="L1142" title="1 of 2 branches missed.">                            containsKey(e.getId())) {</span>
+                            // can not find assay[id] in metadata.
+<span class="nc" id="L1144">                            throw new MZTabException(new MZTabError(</span>
+                                LogicalErrorType.NotDefineInMetadata, lineNumber,
+                                valueLabel));
+                        }
+<span class="fc" id="L1148">                        context.addStudyVariableAssay(metadata, id, context.</span>
+<span class="fc" id="L1149">                            getAssayMap().</span>
+<span class="fc" id="L1150">                            get(e.getId()));</span>
+<span class="fc" id="L1151">                    }</span>
+<span class="fc" id="L1152">                    break;</span>
+                case STUDY_VARIABLE_AVERAGE_FUNCTION:
+<span class="fc" id="L1154">                    context.addStudyVariableAverageFunction(metadata, id,</span>
+<span class="fc" id="L1155">                        checkParameter(defineLabel, valueLabel));</span>
+<span class="fc" id="L1156">                    break;</span>
+                case STUDY_VARIABLE_VARIATION_FUNCTION:
+<span class="fc" id="L1158">                    context.addStudyVariableVariationFunction(metadata, id,</span>
+<span class="fc" id="L1159">                        checkParameter(defineLabel, valueLabel));</span>
+<span class="fc" id="L1160">                    break;</span>
+                case STUDY_VARIABLE_DESCRIPTION:
+<span class="fc" id="L1162">                    context.</span>
+<span class="fc" id="L1163">                        addStudyVariableDescription(metadata, id, valueLabel);</span>
+<span class="fc" id="L1164">                    break;</span>
+                case STUDY_VARIABLE_FACTORS:
+<span class="fc" id="L1166">                    context.addStudyVariableFactors(metadata, id,</span>
+<span class="fc" id="L1167">                        checkParameter(defineLabel, valueLabel));</span>
+<span class="fc" id="L1168">                    break;</span>
+                default:
+<span class="nc" id="L1170">                    MZTabError error = new MZTabError(</span>
+                        FormatErrorType.MTDDefineLabel,
+                        lineNumber, defineLabel + &quot;-&quot; + valueLabel);
+<span class="nc" id="L1173">                    throw new MZTabException(error);</span>
+            }
+        }
+<span class="fc" id="L1176">    }</span>
+
+    private void addCv(MZTabParserContext context, Metadata metadata,
+        MetadataProperty property, Integer id,
+        String valueLabel) throws MZTabException {
+<span class="pc bpc" id="L1181" title="1 of 2 branches missed.">        if (property == null) {</span>
+<span class="nc" id="L1182">            context.addCV(metadata, new CV().id(id));</span>
+        } else {
+<span class="pc bpc" id="L1184" title="1 of 5 branches missed.">            switch (property) {</span>
+                case CV_LABEL:
+<span class="fc" id="L1186">                    context.addCVLabel(metadata, id, valueLabel);</span>
+<span class="fc" id="L1187">                    break;</span>
+                case CV_FULL_NAME:
+<span class="fc" id="L1189">                    context.addCVFullName(metadata, id, valueLabel);</span>
+<span class="fc" id="L1190">                    break;</span>
+                case CV_VERSION:
+<span class="fc" id="L1192">                    context.addCVVersion(metadata, id, valueLabel);</span>
+<span class="fc" id="L1193">                    break;</span>
+                case CV_URI:
+<span class="fc" id="L1195">                    context.addCVURI(metadata, id, valueLabel);</span>
+<span class="fc" id="L1196">                    break;</span>
+                default:
+<span class="nc" id="L1198">                    MZTabError error = new MZTabError(</span>
+                        FormatErrorType.MTDDefineLabel,
+                        lineNumber, property + &quot;[&quot; + id + &quot;]&quot; + &quot;-&quot; + valueLabel);
+<span class="nc" id="L1201">                    throw new MZTabException(error);</span>
+            }
+        }
+<span class="fc" id="L1204">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.3.201901230119</span></div></body></html>

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CrossCheckErrorType.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jmztabm-api</a> &gt; <a href="index.source.html" class="el_package">uk.ac.ebi.pride.jmztab2.utils.errors</a> &gt; <span class="el_source">CrossCheckErrorType.java</span></div><h1>CrossCheckErrorType.java</h1><pre class="source lang-java linenums">package uk.ac.ebi.pride.jmztab2.utils.errors;
+
+import java.util.Arrays;
+
+/**
+ * Provide crosscheck service, that is parse the consistent between current mztab file and
+ * some other resource (eg, database, xml file and so on).
+ *
+ *
+ * @author qingwei
+ * @author nilshoffmann
+ * @since 29/01/13
+ * 
+ */
+public final class CrossCheckErrorType extends MZTabErrorType {
+    
+    private CrossCheckErrorType() {
+        
+    }
+    
+    /** Constant &lt;code&gt;Species&lt;/code&gt; */
+<span class="fc" id="L22">    public static final MZTabErrorType Species = createWarn(Category.CrossCheck, &quot;Species&quot;);</span>
+
+    /** Constant &lt;code&gt;CvTermNotAllowed&lt;/code&gt; */
+<span class="fc" id="L25">    public static final MZTabErrorType CvTermNotAllowed = createWarn(Category.CrossCheck, &quot;CvTermNotAllowed&quot;);</span>
+    
+    /** Constant &lt;code&gt;CvTermRequired&lt;/code&gt; */
+<span class="fc" id="L28">    public static final MZTabErrorType CvTermRequired = createError(Category.CrossCheck, &quot;CvTermRequired&quot;);</span>
+    
+    /** Constant &lt;code&gt;CvTermRecommended&lt;/code&gt; */
+<span class="fc" id="L31">    public static final MZTabErrorType CvTermRecommended = createWarn(Category.CrossCheck, &quot;CvTermRecommended&quot;);</span>
+    
+    /** Constant &lt;code&gt;CvTermOptional&lt;/code&gt; */
+<span class="fc" id="L34">    public static final MZTabErrorType CvTermOptional = createInfo(Category.CrossCheck, &quot;CvTermOptional&quot;);</span>
+    
+    /** Constant &lt;code&gt;CvTermNotInRule&lt;/code&gt; */
+<span class="fc" id="L37">    public static final MZTabErrorType CvTermNotInRule = createWarn(Category.CrossCheck, &quot;CvTermNotInRule&quot;);</span>
+    
+    /** *  Constant &lt;code&gt;RulePointerObjectNullRequired&lt;/code&gt; */
+<span class="fc" id="L40">    public static final MZTabErrorType RulePointerObjectNullRequired = createError(Category.CrossCheck, &quot;RulePointerObjectNull&quot;);</span>
+    
+    /** *  Constant &lt;code&gt;RulePointerObjectNullRecommended&lt;/code&gt; */
+<span class="fc" id="L43">    public static final MZTabErrorType RulePointerObjectNullRecommended = createWarn(Category.CrossCheck, &quot;RulePointerObjectNull&quot;);</span>
+    
+    /** *  Constant &lt;code&gt;RulePointerObjectNullOptional&lt;/code&gt; */
+<span class="fc" id="L46">    public static final MZTabErrorType RulePointerObjectNullOptional = createInfo(Category.CrossCheck, &quot;RulePointerObjectNull&quot;);</span>
+
+    /** Constant &lt;code&gt;CvTermXor&lt;/code&gt; */
+<span class="fc" id="L49">    public static final MZTabErrorType CvTermXor = createError(Category.CrossCheck, &quot;CvTermXor&quot;);</span>
+    
+    /** Constant &lt;code&gt;CvTermMalformed&lt;/code&gt; */
+<span class="fc" id="L52">    public static final MZTabErrorType CvTermMalformed = createError(Category.CrossCheck, &quot;CvTermMalformed&quot;);</span>
+
+    /** Constant &lt;code&gt;CvUndefinedInMetadata&lt;/code&gt; */
+<span class="fc" id="L55">    public static final MZTabErrorType CvUndefinedInMetadata = createError(Category.CrossCheck, &quot;CvUndefinedInMetadata&quot;);</span>
+    
+    /** Constant &lt;code&gt;CvUnused&lt;/code&gt; */
+<span class="fc" id="L58">    public static final MZTabErrorType CvUnused = createWarn(Category.CrossCheck, &quot;CvUnused&quot;);</span>
+    
+    /** Constant &lt;code&gt;SemanticValidationException&lt;/code&gt; */
+<span class="fc" id="L61">    public static final MZTabErrorType SemanticValidationException = createError(Category.CrossCheck, &quot;SemanticValidationException&quot;);</span>
+    
+<span class="fc" id="L63">    private static final MZTabErrorType[] VALUES = {</span>
+        Species, CvTermNotAllowed, CvTermRequired, CvTermRecommended, CvTermOptional, CvTermNotInRule, RulePointerObjectNullRequired, RulePointerObjectNullRecommended, RulePointerObjectNullOptional, 
+        CvTermXor, CvTermMalformed, CvUndefinedInMetadata, CvUnused, SemanticValidationException
+    };
+    
+    public static MZTabErrorType[] getValues() {
+<span class="fc" id="L69">        return Arrays.copyOf(VALUES, VALUES.length);</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.3.201901230119</span></div></body></html>
