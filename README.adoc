@@ -4,9 +4,16 @@ Nils Hoffmann <nils.hoffmann@isas.de>
 
 image:https://travis-ci.org/lifs-tools/jmzTab-m.svg?branch=master["Build Status", link="https://travis-ci.org/lifs-tools/jmzTab-m"] image:https://img.shields.io/maven-central/v/de.isas.mztab/jmztabm-cli.svg["Maven Central", link="https://search.maven.org/search?q=a:jmztabm-cli"] image:https://img.shields.io/github/release/lifs-tools/jmzTab-m.svg["Latest Release", link="https://github.com/lifs-tools/jmzTab-m/releases/latest"] image:https://zenodo.org/badge/DOI/10.5281/zenodo.3245765.svg["DOI", link="https://doi.org/10.5281/zenodo.3245765"]
 
-
-
 This project is the reference reader, writer and validator implementation for mzTab for metabolomics 2.0+, based on the https://github.com/PRIDE-Utilities/jmztab[jmztab project].
+
+mzTab-M is intended as a reporting standard for quantitative results from metabolomics/lipodomics approaches. This format is further intended to provide local LIMS systems as well as MS metabolomics repositories a simple way to share and combine basic information.
+
+mzTab-M has been developed with a view to support the following general tasks:
+
+. Facilitate the sharing of final experimental results, especially with researchers outside the field of metabolomics.
+. Export of results to external software, including programs such as Microsoft Excel® and Open Office Spreadsheet and statistical software / coding languages such as R.
+. Act as an output format of (web-) services that report MS-based results and thus can produce standardized result pages.
+. Be able to link to the external experimental evidence e.g. by referencing back to mzML files.
 
 The latest draft version of the mzTab spec is available https://github.com/HUPO-PSI/mzTab[here].
 
