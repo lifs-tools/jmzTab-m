@@ -4,10 +4,10 @@
     <parent>
         <artifactId>jmztabm</artifactId>
         <groupId>de.isas.mztab</groupId>
-        <version>1.0.3-SNAPSHOT</version>
+        <version>1.0.3</version>
     </parent>
     <artifactId>jmztabm-api</artifactId>
-    <version>1.0.3-SNAPSHOT</version>
+    <version>1.0.3</version>
     <packaging>jar</packaging>
     <properties>
         <swagger.api.spec>mzTab_m_swagger.yml</swagger.api.spec>
