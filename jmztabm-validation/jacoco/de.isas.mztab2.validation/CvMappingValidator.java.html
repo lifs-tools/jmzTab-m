@@ -277,7 +277,7 @@ public class CvMappingValidator implements Validator&lt;MzTab&gt; {
 <span class="fc" id="L277">            RuleEvaluationResult result = ruleHandler.handleRule(rule,</span>
                 filteredSelection);
 
-<span class="pc bpc" id="L280" title="2 of 4 branches missed.">            switch (rule.getCvTermsCombinationLogic()) {</span>
+<span class="pc bpc" id="L280" title="1 of 4 branches missed.">            switch (rule.getCvTermsCombinationLogic()) {</span>
                 case AND:
 <span class="fc" id="L282">                    messages.addAll(andHandler.handleParameters(result,</span>
                         errorOnTermNotInRule));
@@ -287,9 +287,9 @@ public class CvMappingValidator implements Validator&lt;MzTab&gt; {
                         errorOnTermNotInRule));
 <span class="fc" id="L288">                    break;</span>
                 case XOR:
-<span class="nc" id="L290">                    messages.addAll(xorHandler.handleParameters(result,</span>
+<span class="fc" id="L290">                    messages.addAll(xorHandler.handleParameters(result,</span>
                         errorOnTermNotInRule));
-<span class="nc" id="L292">                    break;</span>
+<span class="fc" id="L292">                    break;</span>
                 default:
 <span class="nc" id="L294">                    throw new IllegalArgumentException(</span>
                         &quot;Unknown combination logic value: &quot; + rule.

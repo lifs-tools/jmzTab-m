@@ -41,12 +41,12 @@ import org.apache.commons.lang3.tuple.Pair;
 <span class="fc" id="L41">                if (pair.getValue().</span>
 <span class="pc bpc" id="L42" title="1 of 2 branches missed.">                    getCvAccession() == null || pair.getValue().</span>
 <span class="fc" id="L43">                        getCvAccession().</span>
-<span class="pc bpc" id="L44" title="1 of 2 branches missed.">                        isEmpty()) {</span>
+<span class="fc bfc" id="L44" title="All 2 branches covered.">                        isEmpty()) {</span>
                     //user parameter
-<span class="nc" id="L46">                    log.debug(&quot;Removing user parameter for path &quot; + pair.</span>
-<span class="nc" id="L47">                        getKey().</span>
-<span class="nc" id="L48">                        asPath() + &quot; with value &quot; + pair.getValue());</span>
-<span class="nc" id="L49">                    return false;</span>
+<span class="fc" id="L46">                    log.debug(&quot;Removing user parameter for path &quot; + pair.</span>
+<span class="fc" id="L47">                        getKey().</span>
+<span class="fc" id="L48">                        asPath() + &quot; with value &quot; + pair.getValue());</span>
+<span class="fc" id="L49">                    return false;</span>
                 }
 <span class="fc" id="L51">                return true;</span>
             }).

@@ -43,16 +43,16 @@ import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorType;
     public List&lt;ValidationMessage&gt; handleParameters(RuleEvaluationResult result,
         boolean errorOnTermNotInRule) {
         // xor logic means, if one of the defined terms or its children is set, none of the others is allowed
-<span class="nc" id="L46">        final List&lt;ValidationMessage&gt; messages = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L46">        final List&lt;ValidationMessage&gt; messages = new ArrayList&lt;&gt;();</span>
         // all defined terms or children thereof need to appear
-<span class="nc" id="L48">        Set&lt;String&gt; matchedParameters = new HashSet&lt;&gt;();</span>
-<span class="nc" id="L49">        matchedParameters.addAll(result.getAllowedParameters().</span>
-<span class="nc" id="L50">            keySet());</span>
-<span class="nc" id="L51">        matchedParameters.retainAll(result.getFoundParameters().</span>
-<span class="nc" id="L52">            keySet());</span>
-<span class="nc bnc" id="L53" title="All 2 branches missed.">        if (matchedParameters.isEmpty()) {</span>
-<span class="nc bnc" id="L54" title="All 2 branches missed.">            for (String s : result.getAllowedParameters().</span>
-<span class="nc" id="L55">                keySet()) {</span>
+<span class="fc" id="L48">        Set&lt;String&gt; matchedParameters = new HashSet&lt;&gt;();</span>
+<span class="fc" id="L49">        matchedParameters.addAll(result.getAllowedParameters().</span>
+<span class="fc" id="L50">            keySet());</span>
+<span class="fc" id="L51">        matchedParameters.retainAll(result.getFoundParameters().</span>
+<span class="fc" id="L52">            keySet());</span>
+<span class="fc bfc" id="L53" title="All 2 branches covered.">        if (matchedParameters.isEmpty()) {</span>
+<span class="pc bpc" id="L54" title="1 of 2 branches missed.">            for (String s : result.getAllowedParameters().</span>
+<span class="fc" id="L55">                keySet()) {</span>
 <span class="nc" id="L56">                MZTabErrorType errorType = null;</span>
 <span class="nc bnc" id="L57" title="All 4 branches missed.">                switch (result.getRule().</span>
 <span class="nc" id="L58">                    getRequirementLevel()) {</span>
@@ -82,8 +82,8 @@ import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorType;
 <span class="nc" id="L82">                        niceToString(</span>
 <span class="nc" id="L83">                            result.getRule()));</span>
 <span class="nc" id="L84">                messages.add(error.toValidationMessage());</span>
-<span class="nc" id="L85">            }</span>
-<span class="nc bnc" id="L86" title="All 2 branches missed.">        } else if (matchedParameters.size() &gt; 1) {</span>
+<span class="pc" id="L85">            }</span>
+<span class="pc bpc" id="L86" title="1 of 2 branches missed.">        } else if (matchedParameters.size() &gt; 1) {</span>
             //Only one of the provided cv terms for &quot;{1}&quot; {0} be reported. You defined terms &quot;{2}&quot;. Allowed terms are defined in rule &quot;{3}&quot;.
 <span class="nc" id="L88">            String definedParameters = matchedParameters.stream().</span>
 <span class="nc" id="L89">                collect(Collectors.joining(&quot;, &quot;));</span>
@@ -99,7 +99,7 @@ import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorType;
 <span class="nc" id="L99">                CvMappingUtils.niceToString(result.getRule()));</span>
 <span class="nc" id="L100">            messages.add(error.toValidationMessage());</span>
         }
-<span class="nc" id="L102">        return messages;</span>
+<span class="fc" id="L102">        return messages;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.3.201901230119</span></div></body></html>

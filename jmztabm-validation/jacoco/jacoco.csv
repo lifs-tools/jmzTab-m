@@ -1,9 +1,9 @@
 GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
 jmztabm-validation,de.isas.mztab2.validation.handlers,ExtraParametersValidationHandler,30,75,1,5,5,21,1,4,0,2
-jmztabm-validation,de.isas.mztab2.validation.handlers,ResolvingCvRuleHandler,133,201,10,12,30,56,7,9,0,4
+jmztabm-validation,de.isas.mztab2.validation.handlers,ResolvingCvRuleHandler,130,204,8,14,29,57,6,10,0,4
 jmztabm-validation,de.isas.mztab2.validation.handlers,EmptyRuleHandler,52,106,2,4,8,16,2,5,0,3
-jmztabm-validation,de.isas.mztab2.validation.handlers,XorValidationHandler,168,3,10,0,47,1,7,1,1,1
-jmztabm-validation,de.isas.mztab2.validation.handlers,OrValidationHandler,87,20,7,1,26,8,5,2,0,2
+jmztabm-validation,de.isas.mztab2.validation.handlers,XorValidationHandler,130,41,6,4,35,13,5,3,0,2
+jmztabm-validation,de.isas.mztab2.validation.handlers,OrValidationHandler,79,28,5,3,24,10,4,3,0,2
 jmztabm-validation,de.isas.mztab2.validation.handlers,AndValidationHandler,85,20,7,1,25,8,5,2,0,2
 jmztabm-validation,de.isas.mztab2.validation.handlers,SharedParametersValidationHandler,211,3,8,0,45,1,5,1,1,1
 jmztabm-validation,info.psidev.cvmapping,CvReference,3,14,0,0,1,6,1,4,1,4
@@ -18,14 +18,14 @@ jmztabm-validation,info.psidev.cvmapping,CvMappingRule,7,49,0,2,3,19,2,13,2,12
 jmztabm-validation,de.isas.mztab2.cvmapping,SetOperations,27,22,0,0,6,6,4,2,4,2
 jmztabm-validation,de.isas.mztab2.cvmapping,RuleEvaluationResult,175,24,36,0,1,4,22,4,4,4
 jmztabm-validation,de.isas.mztab2.cvmapping,CvParameterLookupService,42,177,5,11,9,43,7,13,2,10
-jmztabm-validation,de.isas.mztab2.cvmapping,RemoveUserParams,42,43,3,3,8,17,3,5,0,5
+jmztabm-validation,de.isas.mztab2.cvmapping,RemoveUserParams,22,63,2,4,4,21,2,6,0,5
 jmztabm-validation,de.isas.mztab2.cvmapping,JxPathElement.new Iterator() {...},0,20,0,0,0,3,0,3,0,3
 jmztabm-validation,de.isas.mztab2.cvmapping,CvParameterLookupService.new LinkedHashMap() {...},2,16,1,1,0,2,1,2,0,2
 jmztabm-validation,de.isas.mztab2.cvmapping,ParameterComparisonResult,0,34,0,0,0,2,0,1,0,1
 jmztabm-validation,de.isas.mztab2.cvmapping,JxPathElement,47,48,3,1,11,10,5,6,3,6
-jmztabm-validation,de.isas.mztab2.cvmapping,CvMappingUtils,156,209,13,19,59,70,17,13,5,6
+jmztabm-validation,de.isas.mztab2.cvmapping,CvMappingUtils,151,214,12,20,58,71,16,14,5,6
 jmztabm-validation,de.isas.mztab2.validation,MzTabBeanValidator,22,80,0,2,9,23,2,5,2,4
-jmztabm-validation,de.isas.mztab2.validation,CvMappingValidator,212,285,2,6,48,63,8,12,6,9
+jmztabm-validation,de.isas.mztab2.validation,CvMappingValidator,203,294,1,7,46,65,7,13,6,9
 jmztabm-validation,de.isas.mztab2.validation,CvDefinitionValidationHandler,4,161,2,4,0,40,3,9,1,8
 jmztabm-validation,de.isas.mztab2.validation,CvMappingValidator.CvMappingValidatorBuilder,57,77,0,0,0,1,1,12,1,12
 jmztabm-validation,de.isas.mztab2.validation,CvDefinitionValidationHandler.CvDefinitionValidationHandlerBuilder,9,0,0,0,1,0,3,0,3,0

@@ -77,7 +77,7 @@ public class ResolvingCvRuleHandler implements CvRuleHandler {
 <span class="fc" id="L77">                                isChildOfOrSame(CvMappingUtils.asParameter(</span>
                                     cvTerm),
 <span class="fc" id="L79">                                    pair.getValue());</span>
-<span class="pc bpc" id="L80" title="2 of 4 branches missed.">                            switch (result) {</span>
+<span class="pc bpc" id="L80" title="1 of 4 branches missed.">                            switch (result) {</span>
                                 case CHILD_OF:
 <span class="fc" id="L82">                                    log.debug(pair.getValue().</span>
 <span class="fc" id="L83">                                        getCvAccession() + &quot; is a child of &quot; + cvTerm.</span>
@@ -93,7 +93,7 @@ public class ResolvingCvRuleHandler implements CvRuleHandler {
 <span class="fc" id="L93">                                        toUpperCase(), pair);</span>
 <span class="fc" id="L94">                                    break;</span>
                                 case IDENTICAL:
-<span class="nc bnc" id="L96" title="All 2 branches missed.">                                    if (cvTerm.isUseTerm()) {</span>
+<span class="pc bpc" id="L96" title="1 of 2 branches missed.">                                    if (cvTerm.isUseTerm()) {</span>
 <span class="nc" id="L97">                                        log.debug(pair.getValue().</span>
 <span class="nc" id="L98">                                            getCvAccession() + &quot; is identical to &quot; + cvTerm.</span>
 <span class="nc" id="L99">                                                getTermAccession());</span>

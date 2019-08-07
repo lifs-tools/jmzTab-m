@@ -47,9 +47,9 @@ import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorType;
 <span class="fc" id="L47">            getAllowedParameters().</span>
 <span class="fc" id="L48">            keySet(), result.getFoundParameters().</span>
 <span class="fc" id="L49">                keySet());</span>
-<span class="pc bpc" id="L50" title="1 of 2 branches missed.">        if (matchedParameters.isEmpty()) {</span>
-<span class="nc bnc" id="L51" title="All 2 branches missed.">            for (String s : result.getAllowedParameters().</span>
-<span class="nc" id="L52">                keySet()) {</span>
+<span class="fc bfc" id="L50" title="All 2 branches covered.">        if (matchedParameters.isEmpty()) {</span>
+<span class="pc bpc" id="L51" title="1 of 2 branches missed.">            for (String s : result.getAllowedParameters().</span>
+<span class="fc" id="L52">                keySet()) {</span>
 <span class="nc" id="L53">                MZTabErrorType errorType = null;</span>
 <span class="nc bnc" id="L54" title="All 4 branches missed.">                switch (result.getRule().</span>
 <span class="nc" id="L55">                    getRequirementLevel()) {</span>

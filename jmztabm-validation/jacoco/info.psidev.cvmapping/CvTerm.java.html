@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="de"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CvTerm.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jmztabm-validation</a> &gt; <a href="index.source.html" class="el_package">info.psidev.cvmapping</a> &gt; <span class="el_source">CvTerm.java</span></div><h1>CvTerm.java</h1><pre class="source lang-java linenums">//
+// Diese Datei wurde mit der JavaTM Architecture for XML Binding(JAXB) Reference Implementation, v2.3.0 generiert 
+// Siehe &lt;a href=&quot;https://javaee.github.io/jaxb-v2/&quot;&gt;https://javaee.github.io/jaxb-v2/&lt;/a&gt; 
+// Änderungen an dieser Datei gehen bei einer Neukompilierung des Quellschemas verloren. 
+// Generiert: 2019.08.06 um 12:40:58 PM CEST 
+//
+
+
+package info.psidev.cvmapping;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlIDREF;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlSchemaType;
+import javax.xml.bind.annotation.XmlType;
+
+
+/**
+ * &lt;p&gt;Java-Klasse für anonymous complex type.
+ * 
+ * &lt;p&gt;Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
+ * 
+ * &lt;pre&gt;
+ * &amp;lt;complexType&amp;gt;
+ *   &amp;lt;complexContent&amp;gt;
+ *     &amp;lt;restriction base=&quot;{http://www.w3.org/2001/XMLSchema}anyType&quot;&amp;gt;
+ *       &amp;lt;attribute name=&quot;cvIdentifierRef&quot; use=&quot;required&quot; type=&quot;{http://www.w3.org/2001/XMLSchema}IDREF&quot; /&amp;gt;
+ *       &amp;lt;attribute name=&quot;termAccession&quot; use=&quot;required&quot; type=&quot;{http://www.w3.org/2001/XMLSchema}string&quot; /&amp;gt;
+ *       &amp;lt;attribute name=&quot;termName&quot; use=&quot;required&quot; type=&quot;{http://www.w3.org/2001/XMLSchema}string&quot; /&amp;gt;
+ *       &amp;lt;attribute name=&quot;useTermName&quot; type=&quot;{http://www.w3.org/2001/XMLSchema}boolean&quot; default=&quot;false&quot; /&amp;gt;
+ *       &amp;lt;attribute name=&quot;useTerm&quot; use=&quot;required&quot; type=&quot;{http://www.w3.org/2001/XMLSchema}boolean&quot; /&amp;gt;
+ *       &amp;lt;attribute name=&quot;allowChildren&quot; use=&quot;required&quot; type=&quot;{http://www.w3.org/2001/XMLSchema}boolean&quot; /&amp;gt;
+ *       &amp;lt;attribute name=&quot;isRepeatable&quot; type=&quot;{http://www.w3.org/2001/XMLSchema}boolean&quot; default=&quot;true&quot; /&amp;gt;
+ *     &amp;lt;/restriction&amp;gt;
+ *   &amp;lt;/complexContent&amp;gt;
+ * &amp;lt;/complexType&amp;gt;
+ * &lt;/pre&gt;
+ * 
+ * 
+ */
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = &quot;&quot;)
+@XmlRootElement(name = &quot;CvTerm&quot;)
+<span class="fc" id="L46">public class CvTerm {</span>
+
+    @XmlAttribute(name = &quot;cvIdentifierRef&quot;, required = true)
+    @XmlIDREF
+    @XmlSchemaType(name = &quot;IDREF&quot;)
+    protected CvReference cvIdentifierRef;
+    @XmlAttribute(name = &quot;termAccession&quot;, required = true)
+    protected String termAccession;
+    @XmlAttribute(name = &quot;termName&quot;, required = true)
+    protected String termName;
+    @XmlAttribute(name = &quot;useTermName&quot;)
+    protected Boolean useTermName;
+    @XmlAttribute(name = &quot;useTerm&quot;, required = true)
+    protected boolean useTerm;
+    @XmlAttribute(name = &quot;allowChildren&quot;, required = true)
+    protected boolean allowChildren;
+    @XmlAttribute(name = &quot;isRepeatable&quot;)
+    protected Boolean isRepeatable;
+
+    /**
+     * Ruft den Wert der cvIdentifierRef-Eigenschaft ab.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Object }
+     *     
+     */
+    public CvReference getCvIdentifierRef() {
+<span class="fc" id="L74">        return cvIdentifierRef;</span>
+    }
+
+    /**
+     * Legt den Wert der cvIdentifierRef-Eigenschaft fest.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Object }
+     *     
+     */
+    public void setCvIdentifierRef(CvReference value) {
+<span class="fc" id="L86">        this.cvIdentifierRef = value;</span>
+<span class="fc" id="L87">    }</span>
+
+    /**
+     * Ruft den Wert der termAccession-Eigenschaft ab.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getTermAccession() {
+<span class="fc" id="L98">        return termAccession;</span>
+    }
+
+    /**
+     * Legt den Wert der termAccession-Eigenschaft fest.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setTermAccession(String value) {
+<span class="fc" id="L110">        this.termAccession = value;</span>
+<span class="fc" id="L111">    }</span>
+
+    /**
+     * Ruft den Wert der termName-Eigenschaft ab.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getTermName() {
+<span class="fc" id="L122">        return termName;</span>
+    }
+
+    /**
+     * Legt den Wert der termName-Eigenschaft fest.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setTermName(String value) {
+<span class="fc" id="L134">        this.termName = value;</span>
+<span class="fc" id="L135">    }</span>
+
+    /**
+     * Ruft den Wert der useTermName-Eigenschaft ab.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Boolean }
+     *     
+     */
+    public boolean isUseTermName() {
+<span class="pc bpc" id="L146" title="1 of 2 branches missed.">        if (useTermName == null) {</span>
+<span class="fc" id="L147">            return false;</span>
+        } else {
+<span class="nc" id="L149">            return useTermName;</span>
+        }
+    }
+
+    /**
+     * Legt den Wert der useTermName-Eigenschaft fest.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Boolean }
+     *     
+     */
+    public void setUseTermName(Boolean value) {
+<span class="nc" id="L162">        this.useTermName = value;</span>
+<span class="nc" id="L163">    }</span>
+
+    /**
+     * Ruft den Wert der useTerm-Eigenschaft ab.
+     * 
+     */
+    public boolean isUseTerm() {
+<span class="fc" id="L170">        return useTerm;</span>
+    }
+
+    /**
+     * Legt den Wert der useTerm-Eigenschaft fest.
+     * 
+     */
+    public void setUseTerm(boolean value) {
+<span class="nc" id="L178">        this.useTerm = value;</span>
+<span class="nc" id="L179">    }</span>
+
+    /**
+     * Ruft den Wert der allowChildren-Eigenschaft ab.
+     * 
+     */
+    public boolean isAllowChildren() {
+<span class="fc" id="L186">        return allowChildren;</span>
+    }
+
+    /**
+     * Legt den Wert der allowChildren-Eigenschaft fest.
+     * 
+     */
+    public void setAllowChildren(boolean value) {
+<span class="fc" id="L194">        this.allowChildren = value;</span>
+<span class="fc" id="L195">    }</span>
+
+    /**
+     * Ruft den Wert der isRepeatable-Eigenschaft ab.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Boolean }
+     *     
+     */
+    public boolean isIsRepeatable() {
+<span class="nc bnc" id="L206" title="All 2 branches missed.">        if (isRepeatable == null) {</span>
+<span class="nc" id="L207">            return true;</span>
+        } else {
+<span class="nc" id="L209">            return isRepeatable;</span>
+        }
+    }
+
+    /**
+     * Legt den Wert der isRepeatable-Eigenschaft fest.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Boolean }
+     *     
+     */
+    public void setIsRepeatable(Boolean value) {
+<span class="fc" id="L222">        this.isRepeatable = value;</span>
+<span class="fc" id="L223">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.3.201901230119</span></div></body></html>
