@@ -23,7 +23,7 @@ The web-based validator application is available https://github.com/lifs-tools/j
 
 The Swagger definition file is https://github.com/lifs-tools/jmzTab-m/blob/master/api/src/main/resources/mzTab_m_swagger.yml[here].
 
-The CV mapping file bundled with jmzTab-M is https://github.com/lifs-tools/jmzTab-m/blob/master/validation/src/main/resources/mappings/mzTab-M-mapping.xml[here].
+The controlled vocabulary (CV) mapping file bundled with jmzTab-M is https://github.com/lifs-tools/jmzTab-m/blob/master/validation/src/main/resources/mappings/mzTab-M-mapping.xml[here].
 
 Information on validation messages is available in <<validation-message-templates-and-ids>>.
 
