@@ -67,17 +67,17 @@ to see the available options.
 
 To validate a particular file with a given level (one of: Info, Warn, Error, where Info includes Warn and Error), run
 
-  java -jar jmztabm-cli-<VERSION>.jar -check inFile=examples/MTBLS263.mztab -level Info
+  java -jar jmztabm-cli-<VERSION>.jar -c examples/MTBLS263.mztab -level Info
 
 To run a semantic validation based on a controlled vocabulary term mapping file, run
 
-  java -jar jmztabm-cli-<VERSION>.jar -check inFile=examples/MTBLS263.mztab -level Info -checkSemantic mappingFile=cv-mapping/mzTab-M-mapping.xml
+  java -jar jmztabm-cli-<VERSION>.jar -c examples/MTBLS263.mztab -level Info -s cv-mapping/mzTab-M-mapping.xml
 
 === Converting to JSON
 
 If you want to exchange your mzTab-M model in JSON format, you can transcode your mzTab-M TSV file into JSON as follows:
 
-  java -jar jmztabm-cli-<VERSION>.jar -check inFile=examples/gcxgc-ms-example.mztab -toJson -checkSemantic mappingFile=cv-mapping/mzTab-M-mapping.xml
+  java -jar jmztabm-cli-<VERSION>.jar -c examples/gcxgc-ms-example.mztab -toJson -s cv-mapping/mzTab-M-mapping.xml
 
 This will create a new file on successful validation, named <inFile>.json (inFile without any paths) that contains your mzTab-M data serialized as JSON.
 
@@ -87,7 +87,7 @@ NOTE: Comments are retained within the comments part of the JSON document but no
 
 If you only have a JSON model of your mzTab-M file available, you can convert it using the command line as follows:
 
-  java -jar jmztabm-cli-<VERSION>.jar -check inFile=examples/gcxgc-ms-example.mztab.json -fromJson -checkSemantic mappingFile=cv-mapping/mzTab-M-mapping.xml
+  java -jar jmztabm-cli-<VERSION>.jar -c examples/gcxgc-ms-example.mztab.json -fromJson -s cv-mapping/mzTab-M-mapping.xml
 
 This will create a new file on successful validation, named <inFile>.mztab (inFile without any paths) that contains your mzTab-M data serialized in TSV format.
 
@@ -122,7 +122,7 @@ Then, run the following command, replacing `<VERSION>` with the current version,
 This will only invoke the default entrypoint of the container, which is a shell script wrapper calling the jmztab-m-cli Jar. It passes all arguments to the validator, so that all
 arguments that you would pass normally will work in the same way (please replace `<YOUR_MZTABM_FILE>` with the actual file's name in `<YOUR_DATA_DIR>`:
 
-  docker run -v <YOUR_DATA_DIR>:/home/data:rw lifs/jmztabm-cli:<VERSION> -check inFile=<YOUR_MZTABM_FILE>
+  docker run -v <YOUR_DATA_DIR>:/home/data:rw lifs/jmztabm-cli:<VERSION> -c <YOUR_MZTABM_FILE>
 
 == Using the project code releases via Maven Central
 
