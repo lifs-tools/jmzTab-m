@@ -149,7 +149,7 @@ To use the semantic validation with the mapping file in your own Maven project, 
 where `jmztab.version` is the version of jmztabm you wish to use, e.g. for a release version:
 
   <properties>
-    <jmztabm.version>1.0.3</jmztabm.version>
+    <jmztabm.version>1.0.4</jmztabm.version>
   </properties>
 
 as defined in the properties section of your pom file.
@@ -192,7 +192,7 @@ and
 for the io module, where `jmztab.version` is the version of jmztabm you wish to use, e.g. for a `SNAPSHOT` version:
 
   <properties>
-    <jmztabm.version>0.9.9-SNAPSHOT</jmztabm.version>
+    <jmztabm.version>1.0.5-SNAPSHOT</jmztabm.version>
   </properties>
 
 as defined in the properties section of your pom file.
