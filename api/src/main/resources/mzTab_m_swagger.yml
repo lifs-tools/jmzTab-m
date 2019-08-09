@@ -768,7 +768,7 @@ definitions:
             SMH	SML_ID	…	adduct_ions	…
             SML	1	…	[M+H]1+ | [M+Na]1+	…
         default: []
-        pattern: '^\[\d*M([-][\w]*)\]\d*[+-]$'
+        pattern: '^\[\d*M([+-][\w]*)\]\d*[+-]$'
         items:
           type: string
       reliability:
@@ -957,7 +957,7 @@ definitions:
             SFH	SMF_ID	…	adduct_ion	…
             SMF	1	…	[M+H]+	…
             SMF	2	…	[M+2Na]2+	…
-        pattern: '^\[\d*M([-][\w]*)\]\d*[+-]$'
+        pattern: '^\[\d*M([+-][\w]*)\]\d*[+-]$'
       isotopomer:
         $ref: '#/definitions/Parameter'
         description: If de-isotoping has not been performed, then the isotopomer quantified MUST be reported here e.g. “+1”, “+2”, “13C peak” using CV terms, otherwise (i.e. for approaches where SMF rows are de-isotoped features) this MUST be null.
