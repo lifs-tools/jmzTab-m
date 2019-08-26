@@ -41,7 +41,7 @@ look at the `api/pom.xml` file and at the https://github.com/swagger-api/swagger
 
 The generated code is available in the zip archives below the `api/target` directory:
 
-. mztab-api-python https://github.com/lifs-tools/pymTab-m[GitHub project]
+. mztab-api-python https://github.com/lifs-tools/pymzTab-m[GitHub project]
 . mztab-api-r https://github.com/lifs-tools/rmzTab-m[GitHub project]
 
 The generated JAVA code is available in a jar archive below the `api/target` directory:
