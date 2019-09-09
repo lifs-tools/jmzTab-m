@@ -312,7 +312,7 @@ public class MZTabCommandLine {
                 errorsOrWarnings = nErrorsOrWarnings > 0;
                 //these are reported to std.err already.
                 LOGGER.error(
-                    "There were " + errorList.size() + " validation messages including " + nErrorsOrWarnings + " warnings or errors during validation your file, please check the output for details!");
+                    "There were " + errorList.size() + " validation messages including " + nErrorsOrWarnings + " warnings or errors during validation of your file, please check the output for details!");
             }
             if (toJson) {
                 File jsonFile = new File(inFile.getName() + ".json");

@@ -114,6 +114,7 @@ public class MZTabFileParserTest {
     void testExample(File tf, ClassPathFile resource,
         MZTabErrorType.Level level,
         Integer expectedErrors) throws MZTabException {
+        System.out.println("Testing example: " + resource.fileName());
         try {
             MzTab mzTab = TestResources.parseResource(tf, resource.fileName(), level,
                 expectedErrors);

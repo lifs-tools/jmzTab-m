@@ -92,8 +92,8 @@ public class ExampleFilesValidationTestIT {
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][]{
             {LIPIDOMICS_EXAMPLE, MZTabErrorType.Level.Info,
-                0, 9},
-            {MTBLS263, MZTabErrorType.Level.Info, 0, 17},
+                0, 8},
+            {MTBLS263, MZTabErrorType.Level.Info, 0, 15},
             //            {MOUSELIVER_NEGATIVE, MZTabErrorType.Level.Info, 0, 1},
             //            {MOUSELIVER_NEGATIVE_MZTAB_NULL_COLUNIT,
             //                MZTabErrorType.Level.Info, 1, 3},
