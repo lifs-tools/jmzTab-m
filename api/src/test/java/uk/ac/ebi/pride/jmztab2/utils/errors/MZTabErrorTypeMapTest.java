@@ -50,7 +50,7 @@ public class MZTabErrorTypeMapTest {
     public void testGetTypeMap() {
         MZTabErrorTypeMap instance = new MZTabErrorTypeMap();
         Map<Integer, MZTabErrorType> result = instance.getTypeMap();
-        assertEquals(97, result.size());
+        assertEquals(99, result.size());
     }
     
 }

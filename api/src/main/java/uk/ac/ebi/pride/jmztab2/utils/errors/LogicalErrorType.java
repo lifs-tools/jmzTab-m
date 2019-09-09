@@ -238,6 +238,15 @@ public final class LogicalErrorType extends MZTabErrorType {
      */
     public static final MZTabErrorType UndefinedStudyVariableNameOnceOnly = createError(Category.Logical, "UndefinedStudyVariableNameOnceOnly");
     
+    /**
+     * Constant <code>SpectraIdFormatNotValid</code>
+     */
+    public static final MZTabErrorType SpectraIdFormatNotValid = createError(Category.Logical, "SpectraIdFormatNotValid");
+    
+    /**
+     * Constant <code>SpectraIdFormatNotSupported</code>
+     */
+    public static final MZTabErrorType SpectraIdFormatNotSupported = createWarn(Category.Logical, "SpectraIdFormatNotSupported");
 
     private static final MZTabErrorType[] VALUES = {
         NULL, NotNULL, LineOrder, HeaderLine, NoHeaderLine,
@@ -245,7 +254,8 @@ public final class LogicalErrorType extends MZTabErrorType {
         MsRunHashMethodNotDefined, NotDefineInMetadata, NotDefineInHeader, DuplicationDefine, DuplicationAccession, AssayRefs, ProteinCoverage, IdNumber, ModificationPosition, CHEMMODS, SubstituteIdentifier,
         SoftwareVersion, AbundanceColumnTogether, AbundanceColumnSameId, SpectraRef, AmbiguityMod, MsRunLocation, FixedMod, VariableMod, PeptideSection, QuantificationAbundance, DuplicationID, ColumnNotValid,
         HeaderNotValid, NoMetadataSection, NoSmallMoleculeEvidenceSection, NoSmallMoleculeFeatureSection, NoSmallMoleculeSummarySection, NoSmallMoleculeQuantificationUnit, NoSmallMoleculeFeatureQuantificationUnit,
-        NoSmallMoleculeIdentificationReliability, ExternalStudyIdFormatNotDefined, ExternalStudyFormatNotDefined, NoDatabaseMustHaveNullPrefix, ItemNumberMismatch, UnknownRefId, SingleStudyVariableName, UndefinedStudyVariableNameOnceOnly
+        NoSmallMoleculeIdentificationReliability, ExternalStudyIdFormatNotDefined, ExternalStudyFormatNotDefined, NoDatabaseMustHaveNullPrefix, ItemNumberMismatch, UnknownRefId, SingleStudyVariableName, UndefinedStudyVariableNameOnceOnly,
+        SpectraIdFormatNotValid, SpectraIdFormatNotSupported
     };
     
     public static MZTabErrorType[] getValues() {

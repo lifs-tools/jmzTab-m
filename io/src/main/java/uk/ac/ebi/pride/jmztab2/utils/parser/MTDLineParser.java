@@ -59,7 +59,7 @@ import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorList;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorOverflowException;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorType;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabException;
-import de.isas.mztab2.io.validators.MetadataValidator;
+import de.isas.mztab2.io.validators.RefiningValidator;
 
 /**
  * Parse a metadata line into a element. Metadata Element start with MTD, its
@@ -721,7 +721,7 @@ public class MTDLineParser extends MZTabLineParser {
         }
     }
     
-    private <T> void validate(T t, MetadataValidator<T> validator, MZTabParserContext context, MZTabErrorList errorList) {
+    private <T> void validate(T t, RefiningValidator<T> validator, MZTabParserContext context, MZTabErrorList errorList) {
         validator.validateRefine(t, context).forEach((error) -> {
             errorList.add(error);
         });

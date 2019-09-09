@@ -15,28 +15,31 @@
  */
 package de.isas.mztab2.io.validators;
 
-import de.isas.mztab2.model.Metadata;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import uk.ac.ebi.pride.jmztab2.utils.errors.LogicalErrorType;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabError;
 import uk.ac.ebi.pride.jmztab2.utils.parser.MZTabParserContext;
 
 /**
- * Validates that the quantification method section is present in metadata.
+ * Implementations of the refining validator are applied to the type object
+ * after the actual line parsing process, for post-hoc validation. This may 
+ * happen before the actual mzTab object has been fully constructed. Implementations will therefor
+ * receive the current parser context, too.
  *
  * @author nilshoffmann
+ * @param <T> the type of the parsed object to validate.
  */
-public class QuantificationMethodValidator implements RefiningValidator<Metadata> {
+public interface RefiningValidator<T> {
 
-    @Override
-    public List<MZTabError> validateRefine(Metadata metadata, MZTabParserContext parserContext) {
-        if (metadata.getQuantificationMethod() == null) {
-            return Arrays.asList(new MZTabError(
-                    LogicalErrorType.NotDefineInMetadata, -1,
-                    Metadata.Properties.quantificationMethod.getPropertyName()));
-        }
+    /**
+     * Validate the given object of type T, using the provided parser context to
+     * check state of not yet completely parsed and constructed mzTab hierarchy.
+     *
+     * @param t the object to validate
+     * @param parserContext the parser context
+     * @return a list of {@link MZTabError}, maybe empty.
+     */
+    public default List<MZTabError> validateRefine(T t, MZTabParserContext parserContext) {
         return Collections.emptyList();
     }
 

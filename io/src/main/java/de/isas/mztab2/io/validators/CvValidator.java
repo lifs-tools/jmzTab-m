@@ -29,7 +29,7 @@ import uk.ac.ebi.pride.jmztab2.utils.parser.MZTabParserContext;
  *
  * @author nilshoffmann
  */
-public class CvValidator implements MetadataValidator<Metadata> {
+public class CvValidator implements RefiningValidator<Metadata> {
 
     @Override
     public List<MZTabError> validateRefine(Metadata metadata, MZTabParserContext parserContext) {

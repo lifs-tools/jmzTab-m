@@ -6,6 +6,8 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.BinaryOperator;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.ebi.pride.jmztab2.model.MZTabConstants;
@@ -92,7 +94,7 @@ public class MZTabErrorList {
      * equal or greater than its level setting.
      *
      * @param error SHOULD NOT set null
-     * @return a boolean.
+     * @return a boolean, false if the element could not be added, true on success
      * @throws uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorOverflowException
      * if any.
      */
@@ -121,6 +123,30 @@ public class MZTabErrorList {
         }
 
         return errorList.add(error);
+    }
+    
+    /**
+     * A limit max capacity list, if contains a couple of
+     * {@link uk.ac.ebi.pride.jmztab2.utils.errors.MZTabError} objects. If
+     * overflow, system will raise
+     * {@link uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorOverflowException}.
+     * Besides this, during add a new
+     * {@link uk.ac.ebi.pride.jmztab2.utils.errors.MZTabError} object, it's
+     * {@link uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorType#level} SHOULD
+     * equal or greater than its level setting.
+     *
+     * @param errors the list of MZTabError objects, must not be null
+     * @return a boolean, false no elements were added, true otherwise.
+     * @throws uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorOverflowException
+     * if any.
+     */
+    public boolean addAll(List<MZTabError> errors) throws MZTabErrorOverflowException {
+        if (errors == null) {
+            throw new NullPointerException("Can not add a null list of errors.");
+        }
+        return errors.stream().map((t) -> {
+            return errorList.add(t);
+        }).collect(Collectors.reducing((Boolean t, Boolean u) -> t || u)).orElse(Boolean.FALSE);
     }
 
     /**

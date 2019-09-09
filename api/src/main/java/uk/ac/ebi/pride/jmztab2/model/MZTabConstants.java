@@ -72,4 +72,22 @@ public final class MZTabConstants {
     /** Constant <code>REGEX_ADDUCT="^\[\d*M([+-][\w\d]+)*\]\d*[+-]$"</code> */
     public static final String REGEX_ADDUCT = "^\\[\\d*M([+-][\\w\\d]+)*\\]\\d*[+-]$";
     
+    /** Constant <code>REGEX_SPECTRA_REF_THERMO_NATIVE = "controllerType=[\\d]+ controllerNumber=[1-9]\\d* scan=[1-9]\\d*"</code> */
+    public static final String REGEX_SPECTRA_REF_THERMO_NATIVE = "controllerType=[\\d]+ controllerNumber=[1-9]\\d* scan=[1-9]\\d*";
+    /** Constant <code>REGEX_SPECTRA_REF_WATERS_NATIVE = "function=[1-9]\\d* process=[\\d]+ scan=[\\d]+"</code> */
+    public static final String REGEX_SPECTRA_REF_WATERS_NATIVE = "function=[1-9]\\d* process=[\\d]+ scan=[\\d]+";
+    /** Constant <code>REGEX_SPECTRA_REF_WIFF_NATIVE = "sample=[\\d]+ period=[\\d]+ cycle=[\\d]+ experiment=[\\d]+"</code> */
+    public static final String REGEX_SPECTRA_REF_WIFF_NATIVE = "sample=[\\d]+ period=[\\d]+ cycle=[\\d]+ experiment=[\\d]+";
+//    /** Constant <code>REGEX_SPECTRA_REF_SCIEX_TOF_TOF_NATIVE = "jobRun=[\\d]+ spotLabel=[\\d]+ spectrum=[\\d]+"</code> */
+//    public static final String REGEX_SPECTRA_REF_SCIEX_TOF_TOF_NATIVE = "jobRun=[\\d]+ spotLabel=[\\w]+ spectrum=[\\d]+";
+    /** Constant <code>REGEX_SPECTRA_REF_INDEX = "index=[\\d]+"</code> */
+    public static final String REGEX_SPECTRA_REF_INDEX = "index=[\\d]+";
+    /** Constant <code>REGEX_SPECTRA_REF_FILE = "file=[\\w]+"</code> */
+    public static final String REGEX_SPECTRA_REF_FILE = "file=[\\w]+";
+    /** Constant <code>REGEX_SPECTRA_REF_SPECTRUM = "spectrum=[\\d]+"</code> */
+    public static final String REGEX_SPECTRA_REF_SPECTRUM = "spectrum=[\\d]+";
+    /** Constant <code>REGEX_SPECTRA_REF_MZML_UNIQUE = "[\\w]+"</code> */
+    public static final String REGEX_SPECTRA_REF_MZML_UNIQUE = "[\\w]+";
+    /** Constant <code>REGEX_SPECTRA_REF_SCAN = "scan=[\\d]+"</code> */
+    public static final String REGEX_SPECTRA_REF_SCAN = "scan=[\\d]+";
 }

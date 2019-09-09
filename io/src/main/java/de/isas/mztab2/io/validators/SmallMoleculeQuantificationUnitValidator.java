@@ -28,7 +28,7 @@ import uk.ac.ebi.pride.jmztab2.utils.parser.MZTabParserContext;
  *
  * @author nilshoffmann
  */
-public class SmallMoleculeQuantificationUnitValidator implements MetadataValidator<Metadata> {
+public class SmallMoleculeQuantificationUnitValidator implements RefiningValidator<Metadata> {
 
     @Override
     public List<MZTabError> validateRefine(Metadata metadata, MZTabParserContext parserContext) {
