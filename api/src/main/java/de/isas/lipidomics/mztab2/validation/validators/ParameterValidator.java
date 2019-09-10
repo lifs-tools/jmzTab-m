@@ -34,8 +34,8 @@ public interface ParameterValidator extends ConstraintValidator<CheckParameter, 
         Optional<Parameter> optional = Optional.ofNullable(parameter);
         if (optional.isPresent()) {
             Parameter p = optional.get();
-            // a cv parameter must have non-null cvLabel, non-null cvAccession and non-null name
-            // a user parameter must have null cvVlabel, null cvAccession and non-null name
+            // a cv parameter must have non-null cvLabel, non-null cvAccession and non-null name and optionally a value
+            // a user parameter must have null cvVlabel, null cvAccession and non-null name and optionally a value
             if ((p.getCvLabel() != null && !p.getCvLabel().isEmpty()) && (p.getCvAccession() != null && !p.getCvAccession().isEmpty()) && (p.getName() != null && !p.getName().isEmpty())) {
                 return true;
             } else if ((p.getCvLabel() == null || p.getCvLabel().isEmpty()) && (p.getCvAccession() == null || p.getCvAccession().isEmpty()) && (p.getName() != null && !p.getName().isEmpty())) {
