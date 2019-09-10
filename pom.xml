@@ -293,6 +293,12 @@
                             </goals>
                         </execution>
                         <execution>
+                            <id>prepare-agent-integration</id>
+                            <goals>
+                                <goal>prepare-agent-integration</goal>
+                            </goals>
+                        </execution>
+                        <execution>
                             <id>report-integration</id>
                             <goals>
                                 <goal>report-integration</goal>
