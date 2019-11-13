@@ -536,7 +536,7 @@
         <swagger.version>1.5.21</swagger.version>
         <jersey.version>2.22.2</jersey.version>
         <jackson.version>2.9.9</jackson.version>
-        <jackson.core.version>2.9.9.2</jackson.core.version>
+        <jackson.core.version>2.9.10.1</jackson.core.version>
         <jodatime.version>2.9.9</jodatime.version>
         <hibernate.validator.version>6.0.7.Final</hibernate.validator.version>
         <slf4j.version>1.7.25</slf4j.version>
