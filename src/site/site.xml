@@ -19,16 +19,10 @@
             <item name="mzTab-M Webapp" href="https://github.com/lifs-tools/jmzTab-m-webapp"/>
         </links>
         <menu ref="reports" />
+        <menu name="Project JavaDocs">
+            <item name="Overview" href="apidocs/index.html"/>
+        </menu>
         <menu ref="parent" />
         <menu ref="modules" />
-<!--        <menu name="Overview">
-            <item name="Summary" href="summary.html"/>
-            
-        </menu>
-        <menu name="Project Documentation">
-            <item name="Information" href="project-info.html"/>
-            <item name="Modules" href="modules.html"/>
-            <item name="Reports" href="project-reports.html"/>
-        </menu>-->
     </body>
 </project>
