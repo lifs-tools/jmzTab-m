@@ -13,3 +13,8 @@
 /jmztabm-test-utils/target/
 /test-utils/target/
 /cli/nbproject/
+.classpath
+.project
+.settings
+*.versionsBackup
+dependency-reduced-pom.xml
