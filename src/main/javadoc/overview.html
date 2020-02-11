@@ -37,6 +37,30 @@ limitations under the License.
                 <li><a href="de/isas/mztab2/cli/package-summary.html">CLI - the command line interface for reading, validation and conversion of mzTab-M 2.0 JSON and CSV files.</a></li>
                 <li><a href="de/isas/mztab2/test/utils/package-summary.html">TEST UTILS - utilities for extracting and testing of mzTab-M test files.</a></li>
             </ul>
+            <h4>mzTab-M structure and object model mapping</h4>
+            <figure>
+                <img src="resources/apidocs/mzTab-M-reporting-format-levels-hierarchy.png" style="width:33%;"/>
+                <figcaption>Logical structure of the mzTab-M format. An mzTab-M file is organized into four levels that capture different aspects of the result data.</figcaption>
+            </figure>
+            <p>mzTab-M is a hierarchical, table-based data format. It consists of four levels that capture different aspects of the result data.</p>
+            <h5>The Metadata Level</h5>
+            <p>This level defines metadata that describes the origin of the data, e.g. assays and ms runs, the contact persons, study variables, methods and preprocessing and which databases, quantification and identification methods were used.</p>
+            <h5>The Summary Level</h5>
+            <p>This level reports identified small molecules, their chemical name, SMILES etc., together with their quantities across assays and within study variables.</p>
+            <h5>The MS Feature and Quantitation Level</h5>
+            <p>This level reports the feature level data for each assay, which are used to calculate the quantities reported in the summary level. A feature is characterized by m/z, adduct, charge, retention time and other properties.</p>
+            <h5>The Identification Evidence Level</h5>
+            <p>This level reports evidence for (groups of) features reported on the feature level across assays. Evidence may be a database hit, score, etc. Evidence entries also cross-link the grouped features to the actual ms-runs and scan number.</p>
+            <h4>Simplified mzTab-M example with MS1 and MS2 level evidence</h4>
+            <figure>
+                <img src="resources/apidocs/MzTab-M-Simplified-Schematic-Structure.png" style="width:45%;"/>
+                <figcaption>Simplified mzTab-M example from lipidomics, reporting evidence in the form of diagnostic fragments from MS2 for an MS1 signal.</figcaption>
+            </figure>
+            <h4>mzTab-M object model</h4>
+            <figure>
+                <img src="resources/apidocs/mzTab-M-object-model-small.png" style="width:75%;"/>
+                <figcaption>mzTab-M model generated from the OpenAPI swagger model specification. Please see the <a href="https://hupo-psi.github.io/mzTab/2_0-metabolomics-release/mzTab_format_specification_2_0-M_release.html" target="_blank">mzTab-M specification</a> or the <a href="de/isas/mztab2/model/package-summary.html">API model package summary and JavaDoc</a> for more details.</figcaption>
+            </figure>
         </div>
     </body>
 </html>

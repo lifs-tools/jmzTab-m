@@ -204,6 +204,7 @@
                                 <source>8</source>
                                 <detectJavaApiLink>false</detectJavaApiLink>
                                 <additionalparam>-Xdoclint:none</additionalparam>
+                                <docfilessubdirs>true</docfilessubdirs>
                             </configuration>
                         </execution>
                         <execution>
@@ -680,6 +681,7 @@
                 <configuration>
                     <source>8</source>
                     <linksource>true</linksource>
+                    <docfilessubdirs>true</docfilessubdirs>
                 </configuration>
                 <reportSets>
                     <reportSet>
@@ -731,6 +733,7 @@
                                 <configuration>
                                     <detectJavaApiLink>false</detectJavaApiLink>
                                     <additionalparam>-Xdoclint:none</additionalparam>
+                                    <docfilessubdirs>true</docfilessubdirs>
                                 </configuration>
                             </execution>
                         </executions>
@@ -784,6 +787,7 @@
                                 <configuration>
                                     <detectJavaApiLink>false</detectJavaApiLink>
                                     <additionalparam>-Xdoclint:none</additionalparam>
+                                    <docfilessubdirs>true</docfilessubdirs>
                                 </configuration>
                             </execution>
                         </executions>
