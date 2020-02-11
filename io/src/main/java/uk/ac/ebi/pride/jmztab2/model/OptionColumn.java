@@ -16,7 +16,7 @@
 package uk.ac.ebi.pride.jmztab2.model;
 
 import de.isas.mztab2.io.serialization.Serializers;
-import de.isas.mztab2.model.IndexedElement;
+import de.isas.mztab2.model.IndexedElementAdapter;
 
 /**
  * Additional columns can be added to the end of the protein table. These column
@@ -49,7 +49,7 @@ public class OptionColumn extends MZTabColumn {
      * @param name SHOULD NOT be empty.
      * @return a {@link java.lang.String} object.
      */
-    public static String getHeader(IndexedElement element, String name) {
+    public static String getHeader(IndexedElementAdapter element, String name) {
         if (MZTabStringUtils.isEmpty(name)) {
             throw new IllegalArgumentException(
                     "Optional column's name should not be empty.");
@@ -76,7 +76,7 @@ public class OptionColumn extends MZTabColumn {
      * @param columnType SHOULD NOT be empty.
      * @param offset SHOULD be positive integer.
      */
-    public OptionColumn(IndexedElement element, String value, Class columnType,
+    public OptionColumn(IndexedElementAdapter element, String value, Class columnType,
             int offset) {
         super(getHeader(element, value), columnType, true, offset + 1 + "");
     }

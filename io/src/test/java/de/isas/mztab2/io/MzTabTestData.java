@@ -30,6 +30,7 @@ import de.isas.mztab2.model.SampleProcessing;
 import de.isas.mztab2.model.Software;
 import de.isas.mztab2.model.StudyVariable;
 import de.isas.mztab2.model.Uri;
+import java.net.URI;
 import java.util.Arrays;
 
 /**
@@ -53,7 +54,7 @@ public class MzTabTestData {
                 ).
                 addMsRunItem(
                     new MsRun().id(1).
-                        location("file:///path/to/file1.mzML").
+                        location(URI.create("file:///path/to/file1.mzML")).
                         format(
                             new Parameter().
                                 cvLabel("MS").
@@ -108,7 +109,7 @@ public class MzTabTestData {
                 ).
                 addMsRunItem(
                     new MsRun().id(1).
-                        location("file:///path/to/file1.mzML").
+                        location(URI.create("file:///path/to/file1.mzML")).
                         format(
                             new Parameter().
                                 cvLabel("MS").
@@ -242,15 +243,15 @@ public class MzTabTestData {
             email("crick@cam.ac.uk"));
         mtd.addUriItem(new Uri().id(1).
             value(
-                "http://www.ebi.ac.uk/pride/url/to/experiment"));
+                URI.create("http://www.ebi.ac.uk/pride/url/to/experiment")));
         mtd.addUriItem(new Uri().id(2).
             value(
-                "http://proteomecentral.proteomexchange.org/cgi/GetDataset"));
+                URI.create("http://proteomecentral.proteomexchange.org/cgi/GetDataset")));
         mtd.addExternalStudyUriItem(new Uri().id(1).
             value(
-                "https://www.ebi.ac.uk/metabolights/MTBLS400"));
+                URI.create("https://www.ebi.ac.uk/metabolights/MTBLS400")));
         MsRun msRun1 = new MsRun().id(1).
-            location("file://ftp.ebi.ac.uk/path/to/file").
+            location(URI.create("file://ftp.ebi.ac.uk/path/to/file")).
             idFormat(new Parameter().cvLabel("MS").
                 cvAccession("MS:1001530").
                 name(
@@ -264,7 +265,7 @@ public class MzTabTestData {
                     name("CID"));
         mtd.addMsRunItem(msRun1);
         MsRun msRun2 = new MsRun().id(2).
-            location("ftp://ftp.ebi.ac.uk/path/to/file").
+            location(URI.create("ftp://ftp.ebi.ac.uk/path/to/file")).
             format(new Parameter().cvLabel("MS").
                 cvAccession("MS:1001062").
                 name("Mascot MGF file")).
@@ -362,7 +363,7 @@ public class MzTabTestData {
             label("MS").
             fullName("PSI-MS ontology").
             version("3.54.0").
-            uri("https://raw.githubusercontent.com/HUPO-PSI/psi-ms-CV/master/psi-ms.obo"));
+            uri(URI.create("https://raw.githubusercontent.com/HUPO-PSI/psi-ms-CV/master/psi-ms.obo")));
 //
 //        mtd.addQuantificationMethodItem(new Parameter().cvLabel("MS").
 //            cvAccession("MS:1001837").

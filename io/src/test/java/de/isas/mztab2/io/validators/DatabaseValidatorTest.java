@@ -18,6 +18,7 @@ package de.isas.mztab2.io.validators;
 import de.isas.mztab2.model.Database;
 import de.isas.mztab2.model.Metadata;
 import de.isas.mztab2.model.Parameter;
+import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
 import org.junit.Test;
@@ -54,7 +55,7 @@ public class DatabaseValidatorTest {
     @Test
     public void testValidateRefineNoDatabase() {
         Metadata metadata = new Metadata();
-        metadata.addDatabaseItem(new Database().id(1).uri("file:///my/illegal/db/uri").param(new Parameter().name("no database")).prefix("my illegal prefix"));
+        metadata.addDatabaseItem(new Database().id(1).uri(URI.create("file:///my/illegal/db/uri")).param(new Parameter().name("no database")).prefix("my illegal prefix"));
         MZTabParserContext parserContext = new MZTabParserContext();
         DatabaseValidator instance = new DatabaseValidator();
         List<MZTabError> expResult = Arrays.asList(new MZTabError(

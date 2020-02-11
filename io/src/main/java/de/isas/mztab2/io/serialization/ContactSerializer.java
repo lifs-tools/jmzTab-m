@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import static de.isas.mztab2.io.serialization.Serializers.addLineWithProperty;
 import de.isas.mztab2.model.Contact;
+import de.isas.mztab2.model.IndexedElementAdapter;
 import java.io.IOException;
 import lombok.extern.slf4j.Slf4j;
 import uk.ac.ebi.pride.jmztab2.model.Section;
@@ -67,7 +68,7 @@ public class ContactSerializer extends StdSerializer<Contact> {
     public void serialize(Contact contact, JsonGenerator jg,
         SerializerProvider sp) throws IOException {
         if (contact != null) {
-            Serializers.checkIndexedElement(contact);
+            Serializers.checkIndexedElement(new IndexedElementAdapter<Contact>(contact));
             addLineWithProperty(jg, Section.Metadata.getPrefix(),
                 Contact.Properties.name.getPropertyName(), contact,
                 contact.

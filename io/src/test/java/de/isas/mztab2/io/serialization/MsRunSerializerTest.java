@@ -23,6 +23,7 @@ import de.isas.mztab2.model.Metadata;
 import static de.isas.mztab2.model.Metadata.PrefixEnum.MTD;
 import de.isas.mztab2.model.MsRun;
 import de.isas.mztab2.model.Parameter;
+import java.net.URI;
 import org.junit.Test;
 import static uk.ac.ebi.pride.jmztab2.model.MZTabConstants.NEW_LINE;
 import static uk.ac.ebi.pride.jmztab2.model.MZTabConstants.TAB_STRING;
@@ -41,7 +42,7 @@ public class MsRunSerializerTest extends AbstractSerializerTest {
         Metadata mtd = new Metadata();
         Instrument instrument1 = new Instrument().id(1);
         MsRun msRun1 = new MsRun().id(1).
-            location("file://ftp.ebi.ac.uk/path/to/file1.mzml").
+            location(URI.create("file://ftp.ebi.ac.uk/path/to/file1.mzml")).
             idFormat(new Parameter().cvLabel("MS").
                 cvAccession("MS:1001530").
                 name(

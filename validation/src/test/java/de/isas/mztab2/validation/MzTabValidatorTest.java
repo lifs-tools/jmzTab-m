@@ -26,6 +26,7 @@ import de.isas.mztab2.model.PublicationItem;
 import de.isas.mztab2.model.Sample;
 import de.isas.mztab2.model.ValidationMessage;
 import de.isas.mztab2.test.utils.LogMethodName;
+import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -55,7 +56,7 @@ public class MzTabValidatorTest {
                 "ISAS e.V. Dortmund, Germany");
         contact1.id(1);
         MsRun msRun1 = new MsRun().id(1).
-            location("file:///path/to/file1.mzML").
+            location(URI.create("file:///path/to/file1.mzML")).
             format(
                 new Parameter().id(1).
                     cvLabel("MS").
@@ -145,7 +146,7 @@ public class MzTabValidatorTest {
         CV cv1 = new CV().label("MS").
             fullName("PSI-MS").
             version("4.0.18").
-            uri("https://github.com/HUPO-PSI/psi-ms-CV/blob/master/psi-ms.obo");
+            uri(URI.create("https://github.com/HUPO-PSI/psi-ms-CV/blob/master/psi-ms.obo"));
         cv1.id(1);
         mztabfile.getMetadata().
             addCvItem(cv1);

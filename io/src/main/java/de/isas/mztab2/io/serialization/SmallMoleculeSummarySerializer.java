@@ -26,6 +26,7 @@ import static de.isas.mztab2.io.serialization.Serializers.writeNumber;
 import static de.isas.mztab2.io.serialization.Serializers.writeObject;
 import static de.isas.mztab2.io.serialization.Serializers.writeOptColumnMappings;
 import static de.isas.mztab2.io.serialization.Serializers.writeString;
+import static de.isas.mztab2.io.serialization.Serializers.writeURIListAsStringArray;
 import de.isas.mztab2.model.SmallMoleculeSummary;
 import java.io.IOException;
 import java.util.Collections;
@@ -102,7 +103,7 @@ public class SmallMoleculeSummarySerializer extends StdSerializer<SmallMoleculeS
             writeAsStringArray(columnFor(
                 SmallMoleculeColumn.Stable.CHEMICAL_NAME), jg,
                 smallMoleculeSummary.getChemicalName());
-            writeAsStringArray(columnFor(SmallMoleculeColumn.Stable.URI), jg,
+            writeURIListAsStringArray(columnFor(SmallMoleculeColumn.Stable.URI), jg,
                 smallMoleculeSummary.getUri());
             writeAsNumberArray(columnFor(
                 SmallMoleculeColumn.Stable.THEOR_NEUTRAL_MASS), jg,

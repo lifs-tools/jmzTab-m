@@ -18,6 +18,7 @@ package de.isas.mztab2.io.validators;
 import de.isas.mztab2.model.MsRun;
 import de.isas.mztab2.model.Parameter;
 import de.isas.mztab2.model.SpectraRef;
+import java.net.URI;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -94,7 +95,7 @@ public class SpectraRefValidatorTest {
         IMZTabColumn column = SmallMoleculeEvidenceColumn.Stable.columnFor(SPECTRA_REF);
         SpectraRefValidator instance = new SpectraRefValidator();
         Parameter param = new Parameter().id(1).cvLabel("MS").cvAccession("MS:1001526").name("spectrum from database integer nativeID format");
-        MsRun msRun = new MsRun().id(1).idFormat(param).format(new Parameter().id(2).cvLabel("MS").cvAccession("MS:1000584").name("mzML file")).location("file:///some/path/to/file.mzML");
+        MsRun msRun = new MsRun().id(1).idFormat(param).format(new Parameter().id(2).cvLabel("MS").cvAccession("MS:1000584").name("mzML file")).location(URI.create("file:///some/path/to/file.mzML"));
         List<MZTabError> result = instance.validateLine(
             lineNumber, 
             parserContext, 
@@ -118,7 +119,7 @@ public class SpectraRefValidatorTest {
         IMZTabColumn column = SmallMoleculeEvidenceColumn.Stable.columnFor(SPECTRA_REF);
         SpectraRefValidator instance = new SpectraRefValidator();
         Parameter param = new Parameter().id(1).cvLabel("MS").cvAccession("MS:1000768").name("Thermo nativeID format");
-        MsRun msRun = new MsRun().id(1).idFormat(param).format(new Parameter().id(2).cvLabel("MS").cvAccession("MS:1000584").name("mzML file")).location("file:///some/path/to/file.mzML");
+        MsRun msRun = new MsRun().id(1).idFormat(param).format(new Parameter().id(2).cvLabel("MS").cvAccession("MS:1000584").name("mzML file")).location(URI.create("file:///some/path/to/file.mzML"));
         List<MZTabError> result = instance.validateLine(
             lineNumber, 
             parserContext, 
@@ -150,7 +151,7 @@ public class SpectraRefValidatorTest {
         IMZTabColumn column = SmallMoleculeEvidenceColumn.Stable.columnFor(SPECTRA_REF);
         SpectraRefValidator instance = new SpectraRefValidator();
         Parameter param = new Parameter().id(1).cvLabel("MS").cvAccession("MS:1000776").name("scan number only nativeID format");
-        MsRun msRun = new MsRun().id(1).idFormat(param).format(new Parameter().id(2).cvLabel("MS").cvAccession("MS:1000584").name("mzML file")).location("file:///some/path/to/file.mzML");
+        MsRun msRun = new MsRun().id(1).idFormat(param).format(new Parameter().id(2).cvLabel("MS").cvAccession("MS:1000584").name("mzML file")).location(URI.create("file:///some/path/to/file.mzML"));
         List<MZTabError> result = instance.validateLine(
             lineNumber, 
             parserContext, 
@@ -178,7 +179,7 @@ public class SpectraRefValidatorTest {
         IMZTabColumn column = SmallMoleculeEvidenceColumn.Stable.columnFor(SPECTRA_REF);
         SpectraRefValidator instance = new SpectraRefValidator();
         Parameter param = new Parameter().id(1).cvLabel("MS").cvAccession("MS:1000768").name("Thermo nativeID format");
-        MsRun msRun = new MsRun().id(1).idFormat(param).format(new Parameter().id(2).cvLabel("MS").cvAccession("MS:1000584").name("mzML file")).location("file:///some/path/to/file.mzML");
+        MsRun msRun = new MsRun().id(1).idFormat(param).format(new Parameter().id(2).cvLabel("MS").cvAccession("MS:1000584").name("mzML file")).location(URI.create("file:///some/path/to/file.mzML"));
 
         checkThatPatternFails(instance, pattern, "controllerType=1 controllerNumber=22 scan=-1", column, msRun);
         checkThatPatternFails(instance, pattern, "controllerType=1 controllerNumber=22 scan=0", column, msRun);
@@ -195,7 +196,7 @@ public class SpectraRefValidatorTest {
         IMZTabColumn column = SmallMoleculeEvidenceColumn.Stable.columnFor(SPECTRA_REF);
         SpectraRefValidator instance = new SpectraRefValidator();
         Parameter param = new Parameter().id(1).cvLabel("MS").cvAccession("MS:1000769").name("Waters nativeID format");
-        MsRun msRun = new MsRun().id(1).idFormat(param).format(new Parameter().id(2).cvLabel("MS").cvAccession("MS:1000584").name("mzML file")).location("file:///some/path/to/file.mzML");
+        MsRun msRun = new MsRun().id(1).idFormat(param).format(new Parameter().id(2).cvLabel("MS").cvAccession("MS:1000584").name("mzML file")).location(URI.create("file:///some/path/to/file.mzML"));
 
         checkThatPatternFails(instance, pattern, "function=0 process=22 scan=0", column, msRun);
         checkThatPatternFails(instance, pattern, "function=1 process=22 scan=-1", column, msRun);
@@ -210,7 +211,7 @@ public class SpectraRefValidatorTest {
         IMZTabColumn column = SmallMoleculeEvidenceColumn.Stable.columnFor(SPECTRA_REF);
         SpectraRefValidator instance = new SpectraRefValidator();
         Parameter param = new Parameter().id(1).cvLabel("MS").cvAccession("MS:1000770").name("WIFF nativeID format");
-        MsRun msRun = new MsRun().id(1).idFormat(param).format(new Parameter().id(2).cvLabel("MS").cvAccession("MS:1000584").name("mzML file")).location("file:///some/path/to/file.mzML");
+        MsRun msRun = new MsRun().id(1).idFormat(param).format(new Parameter().id(2).cvLabel("MS").cvAccession("MS:1000584").name("mzML file")).location(URI.create("file:///some/path/to/file.mzML"));
 
         checkThatPatternFails(instance, pattern, "sample=0 period=22 cycle=0 experiment=-1", column, msRun);
         checkThatPatternFails(instance, pattern, "sample=0 period=22 cycle=-1 experiment=0", column, msRun);
@@ -226,7 +227,7 @@ public class SpectraRefValidatorTest {
         IMZTabColumn column = SmallMoleculeEvidenceColumn.Stable.columnFor(SPECTRA_REF);
         SpectraRefValidator instance = new SpectraRefValidator();
         Parameter param = new Parameter().id(1).cvLabel("MS").cvAccession("MS:1000774").name("multiple peak list nativeID format");
-        MsRun msRun = new MsRun().id(1).idFormat(param).format(new Parameter().id(2).cvLabel("MS").cvAccession("MS:1000584").name("mzML file")).location("file:///some/path/to/file.mzML");
+        MsRun msRun = new MsRun().id(1).idFormat(param).format(new Parameter().id(2).cvLabel("MS").cvAccession("MS:1000584").name("mzML file")).location(URI.create("file:///some/path/to/file.mzML"));
 
         checkThatPatternFails(instance, pattern, "index=-1", column, msRun);
         //index must be >= 0
@@ -239,7 +240,7 @@ public class SpectraRefValidatorTest {
         IMZTabColumn column = SmallMoleculeEvidenceColumn.Stable.columnFor(SPECTRA_REF);
         SpectraRefValidator instance = new SpectraRefValidator();
         Parameter param = new Parameter().id(1).cvLabel("MS").cvAccession("MS:1000776").name("scan number only nativeID format");
-        MsRun msRun = new MsRun().id(1).idFormat(param).format(new Parameter().id(2).cvLabel("MS").cvAccession("MS:1000584").name("mzML file")).location("file:///some/path/to/file.mzML");
+        MsRun msRun = new MsRun().id(1).idFormat(param).format(new Parameter().id(2).cvLabel("MS").cvAccession("MS:1000584").name("mzML file")).location(URI.create("file:///some/path/to/file.mzML"));
 
         checkThatPatternFails(instance, pattern, "scan=-1", column, msRun);
         //scan must be >= 0
@@ -252,7 +253,7 @@ public class SpectraRefValidatorTest {
         IMZTabColumn column = SmallMoleculeEvidenceColumn.Stable.columnFor(SPECTRA_REF);
         SpectraRefValidator instance = new SpectraRefValidator();
         Parameter param = new Parameter().id(1).cvLabel("MS").cvAccession("MS:1000777").name("spectrum identifier nativeID format");
-        MsRun msRun = new MsRun().id(1).idFormat(param).format(new Parameter().id(2).cvLabel("MS").cvAccession("MS:1000584").name("mzML file")).location("file:///some/path/to/file.mzML");
+        MsRun msRun = new MsRun().id(1).idFormat(param).format(new Parameter().id(2).cvLabel("MS").cvAccession("MS:1000584").name("mzML file")).location(URI.create("file:///some/path/to/file.mzML"));
 
         checkThatPatternFails(instance, pattern, "spectrum=-1", column, msRun);
         //spectrum must be >= 0

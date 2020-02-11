@@ -16,6 +16,7 @@
 package uk.ac.ebi.pride.jmztab2.utils.parser;
 
 import de.isas.mztab2.model.Assay;
+import de.isas.mztab2.model.IndexedElementAdapter;
 import de.isas.mztab2.model.Metadata;
 import de.isas.mztab2.model.MsRun;
 import de.isas.mztab2.model.Parameter;
@@ -188,9 +189,9 @@ public abstract class MZTabHeaderLineParser extends MZTabLineParser {
                         error = new MZTabError(LogicalErrorType.AssayNotDefined, lineNumber, nameLabel);
                         throw new MZTabException(error);
                     } else if (param == null) {
-                        factory.addOptionalColumn(element, value, dataType);
+                        factory.addOptionalColumn(new IndexedElementAdapter(element), value, dataType);
                     } else {
-                        factory.addOptionalColumn(element, param, dataType);
+                        factory.addOptionalColumn(new IndexedElementAdapter(element), param, dataType);
                     }
                 } else if (object_id.contains(Metadata.Properties.studyVariable.getPropertyName())) {
                     StudyVariable element = context.getStudyVariableMap().get(id);
@@ -199,9 +200,9 @@ public abstract class MZTabHeaderLineParser extends MZTabLineParser {
                         error = new MZTabError(LogicalErrorType.StudyVariableNotDefined, lineNumber, nameLabel);
                         throw new MZTabException(error);
                     } else if (param == null) {
-                        factory.addOptionalColumn(element, value, dataType);
+                        factory.addOptionalColumn(new IndexedElementAdapter(element), value, dataType);
                     } else {
-                        factory.addOptionalColumn(element, param, dataType);
+                        factory.addOptionalColumn(new IndexedElementAdapter(element), param, dataType);
                     }
                 } else if (object_id.contains(Metadata.Properties.msRun.getPropertyName())) {
                     // not found ms_run_id in metadata.
@@ -210,9 +211,9 @@ public abstract class MZTabHeaderLineParser extends MZTabLineParser {
                         error = new MZTabError(LogicalErrorType.MsRunNotDefined, lineNumber, nameLabel);
                         throw new MZTabException(error);
                     } else if (param == null) {
-                        factory.addOptionalColumn(element, value, dataType);
+                        factory.addOptionalColumn(new IndexedElementAdapter(element), value, dataType);
                     } else {
-                        factory.addOptionalColumn(element, param, dataType);
+                        factory.addOptionalColumn(new IndexedElementAdapter(element), param, dataType);
                     }
                 }
             }

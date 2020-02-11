@@ -15,7 +15,7 @@
  */
 package uk.ac.ebi.pride.jmztab2.model;
 
-import de.isas.mztab2.model.IndexedElement;
+import de.isas.mztab2.model.IndexedElementAdapter;
 import de.isas.mztab2.model.Metadata;
 import de.isas.mztab2.model.MsRun;
 import de.isas.mztab2.model.Parameter;
@@ -236,15 +236,15 @@ public class MZTabUtils {
     }
 
     /**
-     * parse the target into a {@link de.isas.mztab2.model.IndexedElement}
+     * Parse the target into a {@link de.isas.mztab2.model.IndexedElementAdapter}
      * object.
      *
      * @param target a {@link java.lang.String} object.
      * @param element a {@link uk.ac.ebi.pride.jmztab2.model.MetadataElement}
      * object.
-     * @return a {@link de.isas.mztab2.model.IndexedElement} object.
+     * @return a {@link de.isas.mztab2.model.IndexedElementAdapter} object.
      */
-    public static IndexedElement parseIndexedElement(String target,
+    public static IndexedElementAdapter parseIndexedElement(String target,
         MetadataElement element) {
         target = parseString(target);
         if (target == null) {
@@ -255,8 +255,9 @@ public class MZTabUtils {
         Matcher matcher = pattern.matcher(target);
         if (matcher.find()) {
             Integer id = new Integer(matcher.group(1));
-            IndexedElement p = new IndexedElement().id(id);
-            p.elementType(element.getName());
+            IndexedElementAdapter p = new IndexedElementAdapter(null);
+            p.setId(id);
+            //p.elementType(element.getName());
             return p;
         } else {
             return null;
@@ -264,19 +265,19 @@ public class MZTabUtils {
     }
 
     /**
-     * Parse the target into a {@link de.isas.mztab2.model.IndexedElement} list.
+     * Parse the target into a {@link de.isas.mztab2.model.IndexedElementAdapter} list.
      *
      * @param target a {@link java.lang.String} object.
      * @param element a {@link uk.ac.ebi.pride.jmztab2.model.MetadataElement}
      * object.
      * @return a {@link java.util.List} object.
      */
-    public static List<IndexedElement> parseRefList(String target,
+    public static List<IndexedElementAdapter> parseRefList(String target,
         MetadataElement element) {
         List<String> list = parseStringList(MZTabConstants.COMMA, target);
         
-        List<IndexedElement> indexedElementList = new ArrayList<>();
-        IndexedElement indexedElement;
+        List<IndexedElementAdapter> indexedElementList = new ArrayList<>();
+        IndexedElementAdapter indexedElement;
         for (String item : list) {
             indexedElement = parseIndexedElement(item, element);
             if (indexedElement == null) {

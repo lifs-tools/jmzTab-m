@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import static de.isas.mztab2.io.serialization.Serializers.addLineWithNullProperty;
 import static de.isas.mztab2.io.serialization.Serializers.addLineWithProperty;
 import de.isas.mztab2.model.Database;
+import de.isas.mztab2.model.IndexedElementAdapter;
 import de.isas.mztab2.model.Parameter;
 import java.io.IOException;
 import java.util.Arrays;
@@ -71,7 +72,7 @@ public class DatabaseSerializer extends StdSerializer<Database> {
     public void serialize(Database database, JsonGenerator jg,
         SerializerProvider sp) throws IOException {
         if (database != null) {
-            Serializers.checkIndexedElement(database);
+            Serializers.checkIndexedElement(new IndexedElementAdapter<Database>(database));
             Serializers.addLineWithPropertyParameters(jg, Section.Metadata.
                 getPrefix(),
                 null, database, Arrays.asList(database.getParam()));

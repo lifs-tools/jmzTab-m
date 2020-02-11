@@ -20,6 +20,8 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import static de.isas.mztab2.io.serialization.Serializers.addSubElementStrings;
+import de.isas.mztab2.model.IndexedElementAdapter;
+import de.isas.mztab2.model.Parameter;
 import de.isas.mztab2.model.Software;
 import java.io.IOException;
 import lombok.extern.slf4j.Slf4j;
@@ -67,10 +69,10 @@ public class SoftwareSerializer extends StdSerializer<Software> {
     public void serialize(Software software, JsonGenerator jg,
         SerializerProvider sp) throws IOException {
         if (software != null) {
-            Serializers.checkIndexedElement(software);
+            Serializers.checkIndexedElement(new IndexedElementAdapter<Software>(software));
             Serializers.addIndexedLine(jg, sp, Section.Metadata.getPrefix(),
                 software,
-                software.getParameter());
+                new IndexedElementAdapter<Parameter>(software.getParameter()));
             addSubElementStrings(jg, Section.Metadata.getPrefix(), software,
                 Software.Properties.setting.getPropertyName(),
                 software.getSetting(), false);

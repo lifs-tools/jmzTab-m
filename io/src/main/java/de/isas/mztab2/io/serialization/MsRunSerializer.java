@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import static de.isas.mztab2.io.serialization.Serializers.addLineWithProperty;
 import static de.isas.mztab2.io.serialization.Serializers.addSubElementParameter;
 import static de.isas.mztab2.io.serialization.Serializers.addSubElementParameters;
+import de.isas.mztab2.model.IndexedElementAdapter;
 import de.isas.mztab2.model.Metadata;
 import de.isas.mztab2.model.MsRun;
 import java.io.IOException;
@@ -70,7 +71,7 @@ public class MsRunSerializer extends StdSerializer<MsRun> {
     public void serialize(MsRun msRun, JsonGenerator jg,
         SerializerProvider sp) throws IOException {
         if (msRun != null) {
-            Serializers.checkIndexedElement(msRun);
+            Serializers.checkIndexedElement(new IndexedElementAdapter<MsRun>(msRun));
             addLineWithProperty(jg, Section.Metadata.getPrefix(),
                 MsRun.Properties.name.getPropertyName(), msRun,
                 msRun.getName());

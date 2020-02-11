@@ -22,6 +22,7 @@ import de.isas.mztab2.model.Database;
 import de.isas.mztab2.model.Metadata;
 import static de.isas.mztab2.model.Metadata.PrefixEnum.MTD;
 import de.isas.mztab2.model.Parameter;
+import java.net.URI;
 import org.junit.Test;
 import static uk.ac.ebi.pride.jmztab2.model.MZTabConstants.NEW_LINE;
 import static uk.ac.ebi.pride.jmztab2.model.MZTabConstants.TAB_STRING;
@@ -53,7 +54,7 @@ public class DatabaseSerializerTest extends AbstractSerializerTest {
                 name("HMDB")).
             version("3.6").
             prefix("hmdb").
-            uri("http://www.hmdb.ca/"));
+            uri(URI.create("http://www.hmdb.ca/")));
 
         //param prefix uri version
         assertEqSentry(TestResources.MZTAB_VERSION_HEADER

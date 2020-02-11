@@ -28,6 +28,7 @@ import de.isas.mztab2.validation.handlers.ResolvingCvRuleHandler;
 import info.psidev.cvmapping.CvMappingRule;
 import info.psidev.cvmapping.CvReference;
 import info.psidev.cvmapping.CvTerm;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.jxpath.JXPathContext;
@@ -114,7 +115,7 @@ public class CvMappingValidatorTest {
                     "Mass spectrometer output files and spectra interpretation").
                 label("MS").
                 version("4.1.11").
-                uri("https://raw.githubusercontent.com/HUPO-PSI/psi-ms-CV/master/psi-ms.obo"));
+                uri(URI.create("https://raw.githubusercontent.com/HUPO-PSI/psi-ms-CV/master/psi-ms.obo")));
 
         Assert.assertEquals(1, mzTabFile.getMetadata().
             getCv().
@@ -128,24 +129,24 @@ public class CvMappingValidatorTest {
                     fullName("Human Disease Ontology").
                     label("DOID").
                     version("2018-07-05").
-                    uri("https://www.ebi.ac.uk/ols/ontologies/doid")
+                    uri(URI.create("https://www.ebi.ac.uk/ols/ontologies/doid"))
             ).
             addCvItem(
                 new CV().id(3).
                     fullName("Cell Ontology").
                     label("CL").
                     version("2017-12-11").
-                    uri("https://www.ebi.ac.uk/ols/ontologies/cl")).
+                    uri(URI.create("https://www.ebi.ac.uk/ols/ontologies/cl"))).
             addCvItem(new CV().id(4).
                 fullName("BRENDA tissue / enzyme source").
                 label("BTO").
                 version("2016-05-05").
-                uri("https://www.ebi.ac.uk/ols/ontologies/bto")).
+                uri(URI.create("https://www.ebi.ac.uk/ols/ontologies/bto"))).
             addCvItem(new CV().id(5).
                 fullName("NCBI organismal classification").
                 label("NCBITaxon").
                 version("2018-03-02").
-                uri("https://www.ebi.ac.uk/ols/ontologies/ncbitaxon"));
+                uri(URI.create("https://www.ebi.ac.uk/ols/ontologies/ncbitaxon")));
         messages = handler.validate(mzTabFile);
         Assert.assertEquals(0, messages.size());
         mzTabFile.getMetadata().
@@ -154,7 +155,7 @@ public class CvMappingValidatorTest {
                     fullName("Units of measurement").
                     label("UO").
                     version("2018-03-24").
-                    uri("https://www.ebi.ac.uk/ols/ontologies/uo")
+                    uri(URI.create("https://www.ebi.ac.uk/ols/ontologies/uo"))
             );
         messages = handler.validate(mzTabFile);
         Assert.assertEquals(1, messages.size());

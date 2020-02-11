@@ -2,6 +2,7 @@ package uk.ac.ebi.pride.jmztab2.model;
 
 import de.isas.mztab2.io.MzTabNonValidatingWriter;
 import de.isas.mztab2.model.Assay;
+import de.isas.mztab2.model.IndexedElementAdapter;
 import de.isas.mztab2.model.Metadata;
 import de.isas.mztab2.model.MsRun;
 import de.isas.mztab2.model.MzTab;
@@ -53,9 +54,9 @@ public class MZTabColumnFactoryTest {
                 mtd.getStudyVariable().get(1).addAssayRefsItem(assay);
             }
 
-            peak_mz_opt.put(assay, OptColumnMappingBuilder.forIndexedElement(assay).withName("peak_mz"));
-            peak_rt_opt.put(assay, OptColumnMappingBuilder.forIndexedElement(assay).withName("peak_rt"));
-            peak_height_opt.put(assay, OptColumnMappingBuilder.forIndexedElement(assay).withName("peak_height"));
+            peak_mz_opt.put(assay, OptColumnMappingBuilder.forIndexedElement(new IndexedElementAdapter(assay)).withName("peak_mz"));
+            peak_rt_opt.put(assay, OptColumnMappingBuilder.forIndexedElement(new IndexedElementAdapter(assay)).withName("peak_rt"));
+            peak_height_opt.put(assay, OptColumnMappingBuilder.forIndexedElement(new IndexedElementAdapter(assay)).withName("peak_height"));
 
         }
         for (int i = 1; i<=molecules; i++) {

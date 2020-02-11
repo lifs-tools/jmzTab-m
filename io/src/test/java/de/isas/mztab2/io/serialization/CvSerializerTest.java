@@ -21,6 +21,7 @@ import de.isas.mztab2.io.TestResources;
 import de.isas.mztab2.model.CV;
 import de.isas.mztab2.model.Metadata;
 import static de.isas.mztab2.model.Metadata.PrefixEnum.MTD;
+import java.net.URI;
 import org.junit.Test;
 import static uk.ac.ebi.pride.jmztab2.model.MZTabConstants.NEW_LINE;
 import static uk.ac.ebi.pride.jmztab2.model.MZTabConstants.TAB_STRING;
@@ -44,12 +45,12 @@ public class CvSerializerTest extends AbstractSerializerTest {
             label("MS").
             fullName("PSI-MS ontology").
             version("3.54.0").
-            uri("https://raw.githubusercontent.com/HUPO-PSI/psi-ms-CV/master/psi-ms.obo"));
+            uri(URI.create("https://raw.githubusercontent.com/HUPO-PSI/psi-ms-CV/master/psi-ms.obo")));
         mtd.addCvItem(new CV().id(2).
             label("CHEBI").
             fullName("Chebi ontology").
             version("164").
-            uri("ftp://ftp.ebi.ac.uk/pub/databases/chebi/ontology/chebi.obo"));
+            uri(URI.create("ftp://ftp.ebi.ac.uk/pub/databases/chebi/ontology/chebi.obo")));
 
         assertEqSentry(TestResources.MZTAB_VERSION_HEADER
             + MTD + TAB_STRING + Metadata.Properties.cv + "[1]-label" + TAB_STRING + "MS" + NEW_LINE

@@ -18,6 +18,7 @@ package de.isas.mztab2.io.validators;
 import de.isas.mztab2.model.Metadata;
 import de.isas.mztab2.model.MsRun;
 import de.isas.mztab2.model.Parameter;
+import java.net.URI;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -59,7 +60,7 @@ public class MsRunValidatorTest {
         Metadata metadata = new Metadata();
         MZTabParserContext parserContext = new MZTabParserContext();
         MsRunValidator instance = new MsRunValidator();
-        MsRun msRun = new MsRun().id(1).location("file:///path/to/my.mzml").scanPolarity(null);
+        MsRun msRun = new MsRun().id(1).location(URI.create("file:///path/to/my.mzml")).scanPolarity(null);
         parserContext.addMsRun(metadata, msRun);
         metadata.addMsRunItem(msRun);
         List<MZTabError> expResult = Arrays.asList(new MZTabError(

@@ -23,6 +23,7 @@ import static de.isas.mztab2.io.serialization.Serializers.writeAsStringArray;
 import static de.isas.mztab2.io.serialization.Serializers.writeNumber;
 import static de.isas.mztab2.io.serialization.Serializers.writeObject;
 import static de.isas.mztab2.io.serialization.Serializers.writeString;
+import static de.isas.mztab2.io.serialization.Serializers.writeUriString;
 import de.isas.mztab2.model.Metadata;
 import de.isas.mztab2.model.SmallMoleculeEvidence;
 import java.io.IOException;
@@ -99,7 +100,7 @@ public class SmallMoleculeEvidenceSerializer extends StdSerializer<SmallMolecule
             writeString(columnFor(
                 SmallMoleculeEvidenceColumn.Stable.CHEMICAL_NAME), jg,
                 smallMoleculeEvidence.getChemicalName());
-            writeString(columnFor(SmallMoleculeEvidenceColumn.Stable.URI), jg,
+            writeUriString(columnFor(SmallMoleculeEvidenceColumn.Stable.URI), jg,
                 smallMoleculeEvidence.getUri());
             writeObject(columnFor(
                 SmallMoleculeEvidenceColumn.Stable.DERIVATIZED_FORM), jg,

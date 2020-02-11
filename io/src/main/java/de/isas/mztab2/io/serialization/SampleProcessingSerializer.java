@@ -19,8 +19,10 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+import de.isas.mztab2.model.IndexedElementAdapter;
 import de.isas.mztab2.model.SampleProcessing;
 import java.io.IOException;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import uk.ac.ebi.pride.jmztab2.model.Section;
 
@@ -62,10 +64,12 @@ public class SampleProcessingSerializer extends StdSerializer<SampleProcessing> 
     public void serialize(SampleProcessing sampleProcessing, JsonGenerator jg,
         SerializerProvider sp) throws IOException {
         if (sampleProcessing != null) {
-            Serializers.checkIndexedElement(sampleProcessing);
+            Serializers.checkIndexedElement(new IndexedElementAdapter<SampleProcessing>(sampleProcessing));
             Serializers.addIndexedLine(jg, sp, Section.Metadata.getPrefix(),
                 sampleProcessing,
-                sampleProcessing.getSampleProcessing());
+                sampleProcessing.getSampleProcessing().stream().map((param) -> {
+                        return new IndexedElementAdapter(param);
+                    }).collect(Collectors.toList()));
         } else {
             log.debug(SampleProcessing.class.getSimpleName()+" is null!");
         }

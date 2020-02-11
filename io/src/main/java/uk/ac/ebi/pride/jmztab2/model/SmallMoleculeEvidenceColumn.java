@@ -15,11 +15,12 @@
  */
 package uk.ac.ebi.pride.jmztab2.model;
 
-import de.isas.mztab2.model.IndexedElement;
+import de.isas.mztab2.model.IndexedElementAdapter;
 import de.isas.mztab2.model.Parameter;
 import de.isas.mztab2.model.SmallMoleculeEvidence;
 import static de.isas.mztab2.model.SmallMoleculeEvidence.Properties.*;
 import de.isas.mztab2.model.StringList;
+//import de.isas.mztab2.model.StringList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -178,7 +179,7 @@ public class SmallMoleculeEvidenceColumn implements ISmallMoleculeEvidenceColumn
      * {@inheritDoc}
      */
     @Override
-    public IndexedElement getElement() {
+    public IndexedElementAdapter getElement() {
         return this.column.getElement();
     }
 
@@ -250,7 +251,7 @@ public class SmallMoleculeEvidenceColumn implements ISmallMoleculeEvidenceColumn
      * {@inheritDoc}
      */
     @Override
-    public void setElement(IndexedElement element) {
+    public void setElement(IndexedElementAdapter element) {
         this.column.setElement(element);
     }
 }

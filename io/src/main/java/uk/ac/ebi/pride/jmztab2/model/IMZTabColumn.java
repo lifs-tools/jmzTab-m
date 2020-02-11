@@ -15,7 +15,7 @@
  */
 package uk.ac.ebi.pride.jmztab2.model;
 
-import de.isas.mztab2.model.IndexedElement;
+import de.isas.mztab2.model.IndexedElementAdapter;
 
 /**
  * <p>IMZTabColumn interface.</p>
@@ -48,7 +48,7 @@ public interface IMZTabColumn {
      * @see #getLogicPosition()
      * @return a {@link de.isas.mztab2.model.IndexedElement} object.
      */
-    IndexedElement getElement();
+    IndexedElementAdapter getElement();
 
     /**
      * Get the column name. For stable column, name and header are same. While
@@ -178,6 +178,6 @@ public interface IMZTabColumn {
      * @see #getLogicPosition()
      * @param element SHOULD NOT set null.
      */
-    void setElement(IndexedElement element);
+    void setElement(IndexedElementAdapter element);
 
 }

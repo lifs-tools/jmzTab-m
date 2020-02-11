@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import static de.isas.mztab2.io.serialization.Serializers.addLineWithProperty;
 import static de.isas.mztab2.io.serialization.Serializers.addLineWithPropertyParameters;
 import static de.isas.mztab2.io.serialization.Serializers.addSubElementStrings;
+import de.isas.mztab2.model.IndexedElementAdapter;
 import de.isas.mztab2.model.Instrument;
 import java.io.IOException;
 import java.util.Arrays;
@@ -70,7 +71,7 @@ public class InstrumentSerializer extends StdSerializer<Instrument> {
     public void serialize(Instrument instrument, JsonGenerator jg,
         SerializerProvider sp) throws IOException {
         if (instrument != null) {
-            Serializers.checkIndexedElement(instrument);
+            Serializers.checkIndexedElement(new IndexedElementAdapter<Instrument>(instrument));
             addLineWithProperty(jg, Section.Metadata.getPrefix(),
                 Instrument.Properties.name.getPropertyName(),
                 instrument,

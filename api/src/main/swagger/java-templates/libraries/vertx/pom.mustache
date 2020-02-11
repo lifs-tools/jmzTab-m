@@ -13,6 +13,13 @@
         <developerConnection>{{scmDeveloperConnection}}</developerConnection>
         <url>{{scmUrl}}</url>
     </scm>
+{{#parentOverridden}}
+    <parent>
+        <groupId>{{{parentGroupId}}}</groupId>
+        <artifactId>{{{parentArtifactId}}}</artifactId>
+        <version>{{{parentVersion}}}</version>
+    </parent>
+{{/parentOverridden}}
 
     <licenses>
         <license>
@@ -114,8 +121,7 @@
                         </goals>
                         <configuration>
                             <sources>
-                                <source>
-                                src/main/java</source>
+                                <source>src/main/java</source>
                             </sources>
                         </configuration>
                     </execution>
@@ -127,8 +133,7 @@
                         </goals>
                         <configuration>
                             <sources>
-                                <source>
-                                src/test/java</source>
+                                <source>src/test/java</source>
                             </sources>
                         </configuration>
                     </execution>
@@ -139,8 +144,7 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.6.1</version>
                 <configuration>
-                    <source>
-                    1.8</source>
+                    <source>1.8</source>
                     <target>1.8</target>
                 </configuration>
             </plugin>
@@ -201,9 +205,16 @@
         <dependency>
             <groupId>io.swagger</groupId>
             <artifactId>swagger-annotations</artifactId>
-            <version>${swagger-core-version}</version>
+            <version>${swagger-annotations-version}</version>
         </dependency>
 
+        <!-- @Nullable annotation -->
+        <dependency>
+            <groupId>com.google.code.findbugs</groupId>
+            <artifactId>jsr305</artifactId>
+            <version>3.0.2</version>
+        </dependency>
+        
         <!-- Vertx -->
         <dependency>
             <groupId>io.vertx</groupId>
@@ -230,7 +241,12 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>${jackson-version}</version>
+            <version>${jackson-databind}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openapitools</groupId>
+            <artifactId>jackson-databind-nullable</artifactId>
+            <version>${jackson-databind-nullable-version}</version>
         </dependency>
         {{#joda}}
             <dependency>
@@ -272,8 +288,10 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <vertx-version>3.4.2</vertx-version>
-        <swagger-core-version>1.5.16</swagger-core-version>
-        <jackson-version>{{^threetenbp}}2.8.9{{/threetenbp}}{{#threetenbp}}2.6.4{{/threetenbp}}</jackson-version>
+        <swagger-annotations-version>1.5.22</swagger-annotations-version>
+        <jackson-version>{{^threetenbp}}2.9.10{{/threetenbp}}{{#threetenbp}}2.6.4{{/threetenbp}}</jackson-version>
+        <jackson-databind>{{^threetenbp}}2.9.10{{/threetenbp}}{{#threetenbp}}2.6.4{{/threetenbp}}</jackson-databind>
+        <jackson-databind-nullable-version>0.2.0</jackson-databind-nullable-version>
         <junit-version>4.12</junit-version>
     </properties>
 </project>

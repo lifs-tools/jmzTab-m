@@ -1,0 +1,13 @@
+Running jmztabm-cli
+ version: '1.0.4'
+ build-date: '2019-08-09T08:58:22.722Z'
+ scm-location: 'https://github.com/lifs-tools/jmztab-m/tree/master/jmztabm-cli'
+ commit: '3bb1ad5adfe40abf7ef69be02292caf224551034'
+ branch: 'master'
+
+Validator set to default level 'Info'
+Beginning validation of mztab file: /home/data/lipidomics-example-missing-requiredMTD.mzTab
+[Error-2008] line -1: "software" MUST be defined in the metadata section.
+There were 1 validation messages including 1 warnings or errors during validation your file, please check the output for details!
+Finished validation!
+

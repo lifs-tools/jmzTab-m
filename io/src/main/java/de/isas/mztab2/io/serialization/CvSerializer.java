@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import static de.isas.mztab2.io.serialization.Serializers.addLineWithProperty;
 import de.isas.mztab2.model.CV;
+import de.isas.mztab2.model.IndexedElementAdapter;
 import java.io.IOException;
 import lombok.extern.slf4j.Slf4j;
 import uk.ac.ebi.pride.jmztab2.model.Section;
@@ -67,7 +68,7 @@ public class CvSerializer extends StdSerializer<CV> {
     public void serialize(CV cv, JsonGenerator jg,
         SerializerProvider sp) throws IOException {
         if (cv != null) {
-            Serializers.checkIndexedElement(cv);
+            Serializers.checkIndexedElement(new IndexedElementAdapter<CV>(cv));
             addLineWithProperty(jg, Section.Metadata.getPrefix(),
                 CV.Properties.label.getPropertyName(), cv,
                 cv.

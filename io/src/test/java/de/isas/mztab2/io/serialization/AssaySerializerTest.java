@@ -24,6 +24,7 @@ import static de.isas.mztab2.model.Metadata.PrefixEnum.MTD;
 import de.isas.mztab2.model.MsRun;
 import de.isas.mztab2.model.Parameter;
 import de.isas.mztab2.model.Sample;
+import java.net.URI;
 import org.junit.Test;
 import static uk.ac.ebi.pride.jmztab2.model.MZTabConstants.NEW_LINE;
 import static uk.ac.ebi.pride.jmztab2.model.MZTabConstants.TAB_STRING;
@@ -43,7 +44,7 @@ public class AssaySerializerTest extends AbstractSerializerTest {
 
         Metadata metadata = new Metadata();
         Assay assay = new Assay().id(1).
-                externalUri("http://jus.tf.for.testing.de/really").
+                externalUri(URI.create("http://jus.tf.for.testing.de/really")).
                 name(Metadata.Properties.assay + " 1");
         metadata.addAssayItem(assay);
 
@@ -65,7 +66,7 @@ public class AssaySerializerTest extends AbstractSerializerTest {
         //do not add sample to metadata, just test the ref mechanism
         Sample sample = new Sample().id(1);
         Assay assay = new Assay().id(1).
-                externalUri("http://jus.tf.for.testing.de/really").
+                externalUri(URI.create("http://jus.tf.for.testing.de/really")).
                 name(Metadata.Properties.assay + " 1").
                 sampleRef(sample);
         metadata.addAssayItem(assay);
@@ -89,7 +90,7 @@ public class AssaySerializerTest extends AbstractSerializerTest {
         //do not add to metadata, just test the ref mechanism
         MsRun msRun = new MsRun().id(1);
         Assay assay = new Assay().id(1).
-                externalUri("http://jus.tf.for.testing.de/really").
+                externalUri(URI.create("http://jus.tf.for.testing.de/really")).
                 name("assay 1").
                 addMsRunRefItem(msRun);
         metadata.addAssayItem(assay);

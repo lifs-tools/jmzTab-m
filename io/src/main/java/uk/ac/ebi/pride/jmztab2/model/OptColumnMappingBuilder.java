@@ -15,7 +15,7 @@
  */
 package uk.ac.ebi.pride.jmztab2.model;
 
-import de.isas.mztab2.model.IndexedElement;
+import de.isas.mztab2.model.IndexedElementAdapter;
 import de.isas.mztab2.model.OptColumnMapping;
 import de.isas.mztab2.model.Parameter;
 
@@ -136,7 +136,7 @@ public class OptColumnMappingBuilder implements IOptColumnMappingBuilder {
      */
     public static class IndexedElementOptColumnMappingBuilder extends NameParamOptColumnMappingBuilder {
 
-        private final IndexedElement indexedElement;
+        private final IndexedElementAdapter indexedElement;
 
         @Override
         public IndexedElementOptColumnMappingBuilder withName(String name) {
@@ -159,7 +159,7 @@ public class OptColumnMappingBuilder implements IOptColumnMappingBuilder {
          * @param indexedElement the indexed element to reference in this
          * optional column.
          */
-        public IndexedElementOptColumnMappingBuilder(IndexedElement indexedElement) {
+        public IndexedElementOptColumnMappingBuilder(IndexedElementAdapter indexedElement) {
             this.indexedElement = indexedElement;
         }
 
@@ -198,7 +198,7 @@ public class OptColumnMappingBuilder implements IOptColumnMappingBuilder {
      * @param indexedElement the object to reference.
      * @return the builder instance for an indexed element opt column.
      */
-    public static IndexedElementOptColumnMappingBuilder forIndexedElement(IndexedElement indexedElement) {
+    public static IndexedElementOptColumnMappingBuilder forIndexedElement(IndexedElementAdapter indexedElement) {
         return new IndexedElementOptColumnMappingBuilder(indexedElement);
     }
 }

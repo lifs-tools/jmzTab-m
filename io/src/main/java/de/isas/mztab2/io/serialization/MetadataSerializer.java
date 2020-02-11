@@ -26,7 +26,7 @@ import de.isas.mztab2.model.Assay;
 import de.isas.mztab2.model.CV;
 import de.isas.mztab2.model.Contact;
 import de.isas.mztab2.model.Database;
-import de.isas.mztab2.model.IndexedElement;
+import de.isas.mztab2.model.IndexedElementAdapter;
 import de.isas.mztab2.model.Instrument;
 import de.isas.mztab2.model.Metadata;
 import de.isas.mztab2.model.MsRun;
@@ -41,6 +41,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import uk.ac.ebi.pride.jmztab2.model.MZTabConstants;
 import uk.ac.ebi.pride.jmztab2.model.MetadataElement;
@@ -87,11 +88,11 @@ public class MetadataSerializer extends StdSerializer<Metadata> {
      * @param sp a {@link com.fasterxml.jackson.databind.SerializerProvider}
      * object.
      * @param comparator a {@link java.util.Comparator} object.
-     * @param <T> a T object.
+     * @param <T> a {@link de.isas.mztab2.model.IndexedElementAdapter} object.
      */
-    public static <T extends IndexedElement> void serializeListWithMetadataElement(
-        List<T> list, MetadataElement mtdElement, JsonGenerator jg,
-        SerializerProvider sp, Comparator<? super T> comparator) {
+    public static <T> void serializeListWithMetadataElement(
+        List<IndexedElementAdapter<T>> list, MetadataElement mtdElement, JsonGenerator jg,
+        SerializerProvider sp, Comparator<? super IndexedElementAdapter<T>> comparator) {
         list.stream().
             sorted(comparator).
             forEach((object) ->
@@ -193,9 +194,12 @@ public class MetadataSerializer extends StdSerializer<Metadata> {
             }
             //file uri
             if (t.getUri() != null) {
-                serializeListWithMetadataElement(t.getUri(),
+                List<IndexedElementAdapter<Uri>> l = t.getUri().stream().map((uri) -> {
+                        return new IndexedElementAdapter<Uri>(uri);
+                    }).collect(Collectors.toList());
+                serializeListWithMetadataElement(l,
                     MetadataElement.URI, jg, sp, Comparator.comparing(
-                        Uri::getId,
+                        IndexedElementAdapter::getId,
                         Comparator.nullsFirst(Comparator.naturalOrder())));
             } else {
                 
@@ -203,10 +207,13 @@ public class MetadataSerializer extends StdSerializer<Metadata> {
             }
             //external study uri
             if (t.getExternalStudyUri() != null) {
-                serializeListWithMetadataElement(t.getExternalStudyUri(),
+                List<IndexedElementAdapter<Uri>> l = t.getExternalStudyUri().stream().map((uri) -> {
+                        return new IndexedElementAdapter<Uri>(uri);
+                    }).collect(Collectors.toList());
+                serializeListWithMetadataElement(l,
                     MetadataElement.EXTERNAL_STUDY_URI, jg, sp, Comparator.
                         comparing(
-                            Uri::getId,
+                            IndexedElementAdapter::getId,
                             Comparator.nullsFirst(Comparator.naturalOrder())));
             } else {
                 
@@ -265,10 +272,13 @@ public class MetadataSerializer extends StdSerializer<Metadata> {
             }
             //derivatization agent
             if (t.getDerivatizationAgent() != null) {
-                serializeListWithMetadataElement(t.getDerivatizationAgent(),
+                List<IndexedElementAdapter<Parameter>> l = t.getDerivatizationAgent().stream().map((param) -> {
+                        return new IndexedElementAdapter<Parameter>(param);
+                    }).collect(Collectors.toList());
+                serializeListWithMetadataElement(l,
                     MetadataElement.DERIVATIZATION_AGENT, jg, sp, Comparator.
                         comparing(
-                            Parameter::getId,
+                            IndexedElementAdapter::getId,
                             Comparator.nullsFirst(Comparator.naturalOrder())
                         ));
             } else {
@@ -308,9 +318,12 @@ public class MetadataSerializer extends StdSerializer<Metadata> {
             }
             //custom
             if (t.getCustom() != null) {
-                serializeListWithMetadataElement(t.getCustom(),
+                List<IndexedElementAdapter<Parameter>> l = t.getCustom().stream().map((param) -> {
+                        return new IndexedElementAdapter<Parameter>(param);
+                    }).collect(Collectors.toList());
+                serializeListWithMetadataElement(l,
                     MetadataElement.CUSTOM, jg, sp, Comparator.comparing(
-                        Parameter::getId, Comparator.nullsFirst(Comparator.
+                        IndexedElementAdapter::getId, Comparator.nullsFirst(Comparator.
                             naturalOrder())));
             } else {
                 
@@ -370,10 +383,13 @@ public class MetadataSerializer extends StdSerializer<Metadata> {
                     log.debug( "Databases are null!");
             }
             if (t.getIdConfidenceMeasure() != null) {
-                serializeListWithMetadataElement(t.getIdConfidenceMeasure(),
+                List<IndexedElementAdapter<Parameter>> l = t.getIdConfidenceMeasure().stream().map((param) -> {
+                        return new IndexedElementAdapter<Parameter>(param);
+                    }).collect(Collectors.toList());
+                serializeListWithMetadataElement(l,
                     MetadataElement.ID_CONFIDENCE_MEASURE, jg, sp, Comparator.
                         comparing(
-                            Parameter::getId, Comparator.nullsFirst(Comparator.
+                            IndexedElementAdapter::getId, Comparator.nullsFirst(Comparator.
                                 naturalOrder())));
             } else {
                 

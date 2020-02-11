@@ -10,15 +10,34 @@
     <version>1.0.5-SNAPSHOT</version>
     <packaging>jar</packaging>
     <properties>
-        <swagger.api.spec>mzTab_m_swagger.yml</swagger.api.spec>
+        <swagger.api.spec>mzTab_m_swagger-oa3.yml</swagger.api.spec>
     </properties>
     <build>
         <plugins>
             <plugin>
-                <groupId>io.swagger</groupId>
-                <artifactId>swagger-codegen-maven-plugin</artifactId>
-                <version>2.4.1</version> <!-- 2.3.1 -->
+                <groupId>org.openapitools</groupId>
+                <artifactId>openapi-generator-maven-plugin</artifactId>
+                <!-- RELEASE_VERSION -->
+                <version>4.2.3</version>
                 <executions>
+                    <!--                    <execution>
+                        <id>generate-protobuf-grpc</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <inputSpec>${project.basedir}/src/main/resources/${swagger.api.spec}</inputSpec>
+                            <language>protobuf-schema</language>
+                            <modelPackage>de.isas.mztab2.grpc.model</modelPackage>
+                            <apiPackage>de.isas.mztab2.grpc.api</apiPackage>
+                            <invokerPackage>de.isas.mztab2.grpc.invoker</invokerPackage>
+                            <generateApis>true</generateApis>
+                            <generateModelTests>true</generateModelTests>
+                            <additionalProperties>true</additionalProperties>
+                            <generateSupportingFiles>true</generateSupportingFiles>
+                            <generateApiDocumentation>true</generateApiDocumentation>
+                        </configuration>
+                    </execution>-->
                     <execution>
                         <id>generate-java-client-lib</id>
                         <goals>
@@ -35,7 +54,7 @@
                             <invokerPackage>de.isas.mztab2.invoker</invokerPackage>
                             <withXml>true</withXml>
                             <generateApis>false</generateApis>
-                            <generateModelTests>true</generateModelTests>
+                            <generateModelTests>false</generateModelTests>
                             <additionalProperties>true</additionalProperties>
                             <generateSupportingFiles>false</generateSupportingFiles>
                             <generateApiDocumentation>false</generateApiDocumentation>
@@ -47,8 +66,8 @@
                                 <sourceFolder>mztab-java</sourceFolder>
                                 <useBeanValidation>true</useBeanValidation>
                                 <performBeanValidation>true</performBeanValidation>
-                                <withXml>true</withXml>
                                 <supportsInheritance>true</supportsInheritance>
+                                <withXml>true</withXml>
                             </configOptions>
                             <output>${project.build.directory}/generated-sources/</output>
                             <addCompileSourceRoot>true</addCompileSourceRoot>
@@ -103,6 +122,9 @@
                             <generateSupportingFiles>true</generateSupportingFiles>
                             <generateApiDocumentation>true</generateApiDocumentation>
                             <output>${project.build.directory}/generated-sources/mztab-python</output>
+                            <configOptions>
+                                <supportsInheritance>true</supportsInheritance>
+                            </configOptions>
                         </configuration>
                     </execution>
                     <execution>
@@ -114,7 +136,7 @@
                             <!--target to generate r client code--> 
                             <inputSpec>${project.basedir}/src/main/resources/${swagger.api.spec}</inputSpec>
                             <language>r</language>
-                            <templateDirectory>${project.basedir}/src/main/swagger/r-templates</templateDirectory>
+                            <!--<templateDirectory>${project.basedir}/src/main/swagger/r-templates</templateDirectory>-->
                             <withXml>true</withXml>
                             <generateApis>true</generateApis>
                             <generateModelTests>true</generateModelTests>
@@ -122,6 +144,7 @@
                             <generateApiDocumentation>true</generateApiDocumentation>
                             <configOptions>
                                 <packageName>rmztab</packageName>
+                                <supportsInheritance>true</supportsInheritance>
                             </configOptions>
                             <output>${project.build.directory}/generated-sources/mztab-r</output>
                             <modelPackage>mztab-r</modelPackage>
@@ -131,7 +154,7 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
+            <!--            <plugin>
                 <groupId>io.github.swagger2markup</groupId>
                 <artifactId>swagger2markup-maven-plugin</artifactId>
                 <version>${swagger2markup.version}</version>
@@ -150,12 +173,12 @@
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>
+            </plugin>-->
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <version>3.1.0</version>
                 <executions>
-                    <execution>
+                    <!--                    <execution>
                         <id>make-adoc-assembly</id>
                         <phase>package</phase>
                         <goals>
@@ -163,12 +186,12 @@
                         </goals>
                         <configuration>
                             <descriptors>
-                                <descriptor>src/assembly/asciidoc-zip.xml</descriptor> <!-- path to the descriptor -->
+                                <descriptor>src/assembly/asciidoc-zip.xml</descriptor>  path to the descriptor 
                             </descriptors>
                             <finalName>mztab-api-adoc-${project.version}</finalName>
                             <appendAssemblyId>true</appendAssemblyId>
                         </configuration>
-                    </execution>
+                    </execution>-->
                     <execution>
                         <id>make-python-assembly</id>
                         <phase>package</phase>
@@ -267,6 +290,10 @@
             <artifactId>validation-api</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.hibernate.validator</groupId>
+            <artifactId>hibernate-validator</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.fasterxml.jackson.dataformat</groupId>
             <artifactId>jackson-dataformat-xml</artifactId>
         </dependency>
@@ -286,6 +313,20 @@
         <dependency>
             <groupId>javax.annotation</groupId>
             <artifactId>javax.annotation-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.findbugs</groupId>
+            <artifactId>jsr305</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.openapitools</groupId>
+            <artifactId>jackson-databind-nullable</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <type>jar</type>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
     <description>The data model for the mzTab-M 2.0 data standard format for metabolomics.</description>

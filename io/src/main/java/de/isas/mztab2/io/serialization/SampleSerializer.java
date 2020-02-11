@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import static de.isas.mztab2.io.serialization.Serializers.addLineWithProperty;
 import static de.isas.mztab2.io.serialization.Serializers.addSubElementParameters;
+import de.isas.mztab2.model.IndexedElementAdapter;
 import de.isas.mztab2.model.Sample;
 import java.io.IOException;
 import lombok.extern.slf4j.Slf4j;
@@ -64,7 +65,7 @@ public class SampleSerializer extends StdSerializer<Sample> {
     public void serialize(Sample sample, JsonGenerator jg,
         SerializerProvider sp) throws IOException {
         if (sample != null) {
-            Serializers.checkIndexedElement(sample);
+            Serializers.checkIndexedElement(new IndexedElementAdapter<Sample>(sample));
             addLineWithProperty(jg, Section.Metadata.getPrefix(), null, sample,
                 sample.
                     getName());

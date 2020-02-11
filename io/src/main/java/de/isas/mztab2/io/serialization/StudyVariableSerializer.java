@@ -23,6 +23,7 @@ import static de.isas.mztab2.io.serialization.Serializers.addLineWithProperty;
 import static de.isas.mztab2.io.serialization.Serializers.addSubElementParameters;
 import static de.isas.mztab2.io.serialization.Serializers.addSubElementStrings;
 import de.isas.mztab2.model.Assay;
+import de.isas.mztab2.model.IndexedElementAdapter;
 import de.isas.mztab2.model.Metadata;
 import de.isas.mztab2.model.StudyVariable;
 import java.io.IOException;
@@ -75,7 +76,7 @@ public class StudyVariableSerializer extends StdSerializer<StudyVariable> {
     public void serialize(StudyVariable studyVariable, JsonGenerator jg,
         SerializerProvider sp) throws IOException {
         if (studyVariable != null) {
-            Serializers.checkIndexedElement(studyVariable);
+            Serializers.checkIndexedElement(new IndexedElementAdapter<StudyVariable>(studyVariable));
             addLineWithProperty(jg, Section.Metadata.getPrefix(), null,
                 studyVariable,
                 studyVariable.getName());

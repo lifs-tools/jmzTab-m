@@ -30,7 +30,6 @@ import de.isas.mztab2.model.Assay;
 import de.isas.mztab2.model.CV;
 import de.isas.mztab2.model.Contact;
 import de.isas.mztab2.model.Database;
-import de.isas.mztab2.model.IndexedElement;
 import de.isas.mztab2.model.Instrument;
 import de.isas.mztab2.model.Metadata;
 import de.isas.mztab2.model.MsRun;
@@ -60,6 +59,7 @@ import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorOverflowException;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorType;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabException;
 import de.isas.mztab2.io.validators.RefiningValidator;
+import de.isas.mztab2.model.IndexedElementAdapter;
 
 /**
  * Parse a metadata line into a element. Metadata Element start with MTD, its
@@ -258,9 +258,9 @@ public class MTDLineParser extends MZTabLineParser {
      * Parse valueLabel to a {@link IndexedElement} If exists parse error, stop
      * validate and throw {@link MZTabException} directly.
      */
-    private IndexedElement checkIndexedElement(String defineLabel,
+    private IndexedElementAdapter checkIndexedElement(String defineLabel,
         String valueLabel, MetadataElement element) throws MZTabException {
-        IndexedElement indexedElement = parseIndexedElement(valueLabel, element);
+        IndexedElementAdapter indexedElement = parseIndexedElement(valueLabel, element);
         if (indexedElement == null) {
             MZTabError error = new MZTabError(FormatErrorType.IndexedElement,
                 lineNumber, Error_Header + defineLabel, valueLabel);
@@ -274,9 +274,9 @@ public class MTDLineParser extends MZTabLineParser {
      * Parse valueLabel to a {@link IndexedElement} list. If exists parse error,
      * stop validate and throw {@link MZTabException} directly.
      */
-    private List<IndexedElement> checkIndexedElementList(String defineLabel,
+    private List<IndexedElementAdapter> checkIndexedElementList(String defineLabel,
         String valueLabel, MetadataElement element) throws MZTabException {
-        List<IndexedElement> indexedElementList = parseRefList(valueLabel,
+        List<IndexedElementAdapter> indexedElementList = parseRefList(valueLabel,
             element);
         if (indexedElementList == null || indexedElementList.isEmpty()) {
             MZTabError error = new MZTabError(FormatErrorType.IndexedElement,
@@ -601,7 +601,7 @@ public class MTDLineParser extends MZTabLineParser {
         id = checkIndex(defineLabel, matcher.group(3));
         URI uri = checkURI(defineLabel, valueLabel, false);
         metadata.addExternalStudyUriItem(new Uri().id(id).
-            value(uri == null ? MZTabConstants.NULL : uri.toASCIIString()));
+            value(uri == null ? null : uri));
     }
 
     protected void handleUri(String defineLabel, Matcher matcher,
@@ -610,7 +610,7 @@ public class MTDLineParser extends MZTabLineParser {
         id = checkIndex(defineLabel, matcher.group(3));
         URI uri = checkURI(defineLabel, valueLabel, mandatory);
         metadata.addUriItem(new Uri().id(id).
-            value(uri == null ? MZTabConstants.NULL : uri.toASCIIString()));
+            value(uri == null ? null : uri));
     }
 
     protected void handleContact(String defineLabel, Matcher matcher,
@@ -923,7 +923,7 @@ public class MTDLineParser extends MZTabLineParser {
                         defineLabel, valueLabel, true));
                     break;
                 case MS_RUN_INSTRUMENT_REF:
-                    List<IndexedElement> indexedElements = checkIndexedElementList(
+                    List<IndexedElementAdapter> indexedElements = checkIndexedElementList(
                         defineLabel, valueLabel,
                         MetadataElement.INSTRUMENT);
                     if (indexedElements != null && !indexedElements.isEmpty() && indexedElements.
@@ -1058,7 +1058,7 @@ public class MTDLineParser extends MZTabLineParser {
         MetadataProperty property,
         String defineLabel,
         String valueLabel, Integer id) throws MZTabException {
-        IndexedElement indexedElement;
+        IndexedElementAdapter indexedElement;
         if (property == null) {
             context.addAssay(metadata, new Assay().id(id).
                 name(valueLabel));
@@ -1115,7 +1115,7 @@ public class MTDLineParser extends MZTabLineParser {
         MetadataProperty property,
         String defineLabel,
         String valueLabel, Integer id) throws MZTabErrorOverflowException, MZTabException {
-        List<IndexedElement> indexedElementList;
+        List<IndexedElementAdapter> indexedElementList;
         if (property == null) {
             context.addStudyVariable(metadata, new StudyVariable().id(id).
                 name(valueLabel));
@@ -1136,7 +1136,7 @@ public class MTDLineParser extends MZTabLineParser {
                                 valueLabel));
                         });
                     // check that assays exist
-                    for (IndexedElement e : indexedElementList) {
+                    for (IndexedElementAdapter e : indexedElementList) {
                         //assays need to be defined before
                         if (!context.getAssayMap().
                             containsKey(e.getId())) {

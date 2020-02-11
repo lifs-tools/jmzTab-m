@@ -21,12 +21,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import de.isas.mztab2.model.Assay;
-import de.isas.mztab2.model.IndexedElement;
+import de.isas.mztab2.model.IndexedElementAdapter;
 import de.isas.mztab2.model.OptColumnMapping;
 import de.isas.mztab2.model.Parameter;
 import de.isas.mztab2.model.StudyVariable;
 import de.isas.mztab2.model.Uri;
 import java.io.IOException;
+import java.net.URI;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -161,7 +162,7 @@ public class Serializers {
      * addIndexedLine for elements like assay[1] that have an id and one
      * additional property element</p>
      *
-     * @param <T> the type of {@link IndexedElement}.
+     * @param <T> the type of {@link IndexedElementAdapter}.
      * @param jg a {@link com.fasterxml.jackson.core.JsonGenerator} object.
      * @param sp a {@link com.fasterxml.jackson.databind.SerializerProvider}
      * object.
@@ -169,7 +170,7 @@ public class Serializers {
      * @param element a {@link java.lang.Object} object.
      * @param indexedElement a {@link de.isas.mztab2.model.Parameter} object.
      */
-    public static <T extends IndexedElement> void addIndexedLine(
+    public static <T extends IndexedElementAdapter> void addIndexedLine(
             JsonGenerator jg, SerializerProvider sp, String prefix,
             Object element, T indexedElement) {
         addIndexedLine(jg, sp, prefix, element, Arrays.asList(indexedElement));
@@ -188,7 +189,7 @@ public class Serializers {
      * @param element a {@link java.lang.Object} object.
      * @param indexedElementList a {@link java.util.List} object.
      */
-    public static <T extends IndexedElement> void addIndexedLine(
+    public static <T extends IndexedElementAdapter> void addIndexedLine(
             JsonGenerator jg, SerializerProvider sp, String prefix,
             Object element,
             List<T> indexedElementList) {
@@ -214,8 +215,9 @@ public class Serializers {
                     toString());
             //value
             jg.writeString(indexedElementList.stream().
-                    map((indexedElement)
+                    map((indexedElementAdapter)
                             -> {
+                        Object indexedElement = indexedElementAdapter.getAdaptee();
                         if (indexedElement instanceof Parameter) {
                             return new ParameterConverter().convert(
                                     (Parameter) indexedElement);
@@ -445,18 +447,49 @@ public class Serializers {
         if (element instanceof MetadataElement) {
             return Optional.ofNullable(((MetadataElement) element).getName());
         }
-        JacksonXmlRootElement rootElement = element.getClass().
+        JacksonXmlRootElement rootElement = null;
+        
+        if(element instanceof IndexedElementAdapter) {
+            rootElement = ((IndexedElementAdapter)element).getAdaptee().getClass().
                 getAnnotation(JacksonXmlRootElement.class);
+        } else {
+            rootElement = element.getClass().
+                getAnnotation(JacksonXmlRootElement.class);
+        }
         if (rootElement != null) {
             String underscoreName = camelCaseToUnderscoreLowerCase(
                     rootElement.localName());
-            if (element instanceof IndexedElement) {
-                Integer id = Optional.ofNullable(((IndexedElement) element).getId()).orElseThrow(() -> 
+            if (element instanceof IndexedElementAdapter) {
+                Integer id = Optional.ofNullable(((IndexedElementAdapter) element).getId()).orElseThrow(() -> 
                         new NullPointerException(
                             "Field 'id' must not be null for element '" + underscoreName + "'!")
                 );
                 return Optional.of(
                         underscoreName + "[" + id + "]");
+            } else {
+                switch(element.getClass().getSimpleName()) {
+                    case "Assay":
+                    case "CV":
+                    case "Contact":
+                    case "Database":
+                    case "Instrument":
+                    case "MsRun":
+                    case "Parameter":
+                    case "Publication":
+                    case "Sample":
+                    case "SampleProcessing":
+                    case "Software":
+                    case "StudyVariable":
+                    case "Uri":
+                        Integer id = Optional.ofNullable((new IndexedElementAdapter(element)).getId()).orElseThrow(() -> 
+                        new NullPointerException(
+                            "Field 'id' must not be null for element '" + underscoreName + "'!")
+                        );
+                        return Optional.of(
+                                underscoreName + "[" + id + "]");
+                    default:
+                        log.debug("Default case for element name: {}", element);
+                }
             }
             return Optional.ofNullable(underscoreName);
         }
@@ -673,6 +706,22 @@ public class Serializers {
             String value) throws IOException {
         writeString(column.getHeader(), jg, value);
     }
+    
+    /**
+     * <p>
+     * writeUriString.</p>
+     *
+     * @param column a {@link uk.ac.ebi.pride.jmztab2.model.IMZTabColumn}
+     * object.
+     * @param jg a {@link com.fasterxml.jackson.core.JsonGenerator} object.
+     * @param value a {@link java.net.URI} object.
+     * @throws java.io.IOException if an operation on the JsonGenerator object
+     * fails.
+     */
+    public static void writeUriString(IMZTabColumn column, JsonGenerator jg,
+            URI value) throws IOException {
+        writeString(column.getHeader(), jg, value.toASCIIString());
+    }
 
     /**
      * <p>
@@ -795,6 +844,22 @@ public class Serializers {
     public static void writeAsStringArray(IMZTabColumn column, JsonGenerator jg,
             List<String> elements) {
         writeAsStringArray(column.getHeader(), jg, elements);
+    }
+    
+    /**
+     * <p>
+     * writeAsStringArray.</p>
+     *
+     * @param column a {@link uk.ac.ebi.pride.jmztab2.model.IMZTabColumn}
+     * object.
+     * @param jg a {@link com.fasterxml.jackson.core.JsonGenerator} object.
+     * @param elements a {@link java.util.List} object.
+     */
+    public static void writeURIListAsStringArray(IMZTabColumn column, JsonGenerator jg,
+            List<URI> elements) {
+        writeAsStringArray(column.getHeader(), jg, elements.stream().map((uri) -> {
+            return uri.toASCIIString();
+        }).collect(Collectors.toList()));
     }
 
     /**
@@ -1031,10 +1096,12 @@ public class Serializers {
                 });
     }
 
-    public static void checkIndexedElement(IndexedElement element) {
-        Integer id = Optional.ofNullable(element.getId()).orElseThrow(() ->
-            new ValidationException(
-                    "'id' field of " + element.toString() + " must not be null!"));
+    public static void checkIndexedElement(IndexedElementAdapter element) {
+        Integer id = element.getId();
+        if(id==null) {
+            throw new ValidationException(
+                    "'id' field of " + element.toString() + " must not be null!");
+        }
         if (id < 1) {
             throw new ValidationException(
                     "'id' field of " + element.toString() + " must have a value greater to equal to 1!");

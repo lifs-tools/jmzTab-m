@@ -88,7 +88,7 @@ public class CvValidatorTest {
         Metadata metadata = new Metadata();
         MZTabParserContext parserContext = new MZTabParserContext();
         CvValidator instance = new CvValidator();
-        metadata.addCvItem(new CV().id(1).fullName("").label("").version("").uri(""));
+        metadata.addCvItem(new CV().id(1).fullName("").label("").version("").uri(null));
         List<MZTabError> expResult = Arrays.asList(
                 new MZTabError(
                         LogicalErrorType.NotDefineInMetadata, -1,

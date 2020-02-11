@@ -20,12 +20,14 @@ import de.isas.mztab2.io.validators.SpectraRefValidator;
 import de.isas.mztab2.model.Metadata;
 import de.isas.mztab2.model.Parameter;
 import de.isas.mztab2.model.SpectraRef;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.SortedMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import uk.ac.ebi.pride.jmztab2.model.IMZTabColumn;
 import uk.ac.ebi.pride.jmztab2.model.MZBoolean;
@@ -493,6 +495,35 @@ public abstract class MZTabDataLineParser<T> extends MZTabLineParser {
 
         return stringList;
     }
+    
+        /**
+     * Check and translate target string into URI list which split by
+     * splitChar character.. If parse is incorrect, throws
+     * {@link uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType#StringList}
+     * error.
+     *
+     * @param column SHOULD NOT be set to null
+     * @param target SHOULD NOT be empty.
+     * @param splitChar a char.
+     * @return a {@link java.util.List} object.
+     */
+    protected List<URI> checkUriList(IMZTabColumn column, String target,
+            char splitChar) {
+        String result = checkData(column, target, true);
+
+        if (result == null || result.equalsIgnoreCase(NULL)) {
+            return new ArrayList<>(splitChar);
+        }
+
+        List<String> stringList = parseStringList(splitChar, result);
+        if (stringList.isEmpty()) {
+            this.errorList.add(new MZTabError(FormatErrorType.StringList,
+                    lineNumber, column.getHeader(), result, "" + splitChar));
+        }
+        return stringList.stream().map((uriString) -> {
+            return parseURI(uriString);
+        }).collect(Collectors.toList());
+    }
 
     /**
      * Check and translate target string into integer list which split by
@@ -776,7 +807,7 @@ public abstract class MZTabDataLineParser<T> extends MZTabLineParser {
      * @param uri a {@link java.lang.String} object, conforming to URI format.
      * @return the uri as an ASCII encoded string.
      */
-    protected String checkURI(IMZTabColumn column, String uri) {
+    protected URI checkURI(IMZTabColumn column, String uri) {
         String result_uri = checkData(column, uri, true);
 
         if (result_uri == null || result_uri.equalsIgnoreCase(NULL)) {
@@ -789,7 +820,7 @@ public abstract class MZTabDataLineParser<T> extends MZTabLineParser {
                     "Column " + column.getHeader(), result_uri));
             return null;
         } else {
-            return result.toASCIIString();
+            return result;
         }
     }
 

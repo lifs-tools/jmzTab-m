@@ -16,7 +16,7 @@
 package uk.ac.ebi.pride.jmztab2.model;
 
 import de.isas.mztab2.model.Assay;
-import de.isas.mztab2.model.IndexedElement;
+import de.isas.mztab2.model.IndexedElementAdapter;
 import de.isas.mztab2.model.Parameter;
 import de.isas.mztab2.model.StudyVariable;
 import java.util.SortedMap;
@@ -201,7 +201,7 @@ public class MZTabColumnFactory {
      * @param columnType SHOULD NOT be empty.
      * @return the column's logic position.
      */
-    public <T extends IndexedElement> String addOptionalColumn(T columnEntity,
+    public <T extends IndexedElementAdapter> String addOptionalColumn(T columnEntity,
         String name, Class columnType) {
         IMZTabColumn column = new OptionColumn(columnEntity, name, columnType,
             Integer.parseInt(getColumnOrder(columnMapping.lastKey())));
@@ -236,7 +236,7 @@ public class MZTabColumnFactory {
      * @param columnType SHOULD NOT empty.
      * @return the column's logic position.
      */
-    public <T extends IndexedElement> String addOptionalColumn(T columnEntity,
+    public <T extends IndexedElementAdapter> String addOptionalColumn(T columnEntity,
         Parameter param, Class columnType) {
         IMZTabColumn column = new ParameterOptionColumn(columnEntity, param,
             columnType, Integer.parseInt(getColumnOrder(columnMapping.lastKey())));

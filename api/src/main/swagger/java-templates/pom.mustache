@@ -13,6 +13,13 @@
         <developerConnection>{{scmDeveloperConnection}}</developerConnection>
         <url>{{scmUrl}}</url>
     </scm>
+{{#parentOverridden}}
+    <parent>
+        <groupId>{{{parentGroupId}}}</groupId>
+        <artifactId>{{{parentArtifactId}}}</artifactId>
+        <version>{{{parentVersion}}}</version>
+    </parent>
+{{/parentOverridden}}
 
     <licenses>
         <license>
@@ -114,8 +121,7 @@
                         </goals>
                         <configuration>
                             <sources>
-                                <source>
-                                src/main/java</source>
+                                <source>src/main/java</source>
                             </sources>
                         </configuration>
                     </execution>
@@ -127,8 +133,7 @@
                         </goals>
                         <configuration>
                             <sources>
-                                <source>
-                                src/test/java</source>
+                                <source>src/test/java</source>
                             </sources>
                         </configuration>
                     </execution>
@@ -139,16 +144,20 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.6.1</version>
                 <configuration>
+                    {{#supportJava6}}
+                        <source>1.6</source>
+                        <target>1.6</target>
+                    {{/supportJava6}}
+                    {{^supportJava6}}
                     {{#java8}}
-                        <source>
-                        1.8</source>
+                        <source>1.8</source>
                         <target>1.8</target>
                     {{/java8}}
                     {{^java8}}
-                        <source>
-                        1.7</source>
+                        <source>1.7</source>
                         <target>1.7</target>
                     {{/java8}}
+                    {{/supportJava6}}
                 </configuration>
             </plugin>
             <plugin>
@@ -210,6 +219,14 @@
             <artifactId>swagger-annotations</artifactId>
             <version>${swagger-annotations-version}</version>
         </dependency>
+
+        <!-- @Nullable annotation -->
+        <dependency>
+            <groupId>com.google.code.findbugs</groupId>
+            <artifactId>jsr305</artifactId>
+            <version>3.0.2</version>
+        </dependency>
+
 
         <!-- HTTP client: jersey-client -->
         <dependency>
@@ -304,6 +321,14 @@
                 <scope>provided</scope>
             </dependency>
         {{/useBeanValidation}}
+        {{#performBeanValidation}}
+            <!-- Bean Validation Impl. used to perform BeanValidation -->
+            <dependency>
+                <groupId>org.hibernate</groupId>
+                <artifactId>hibernate-validator</artifactId>
+                <version>5.4.1.Final</version>
+            </dependency>
+        {{/performBeanValidation}}
         {{#parcelableModel}}
             <!-- Needed for Parcelable support-->
             <dependency>
@@ -323,11 +348,11 @@
     </dependencies>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <swagger-annotations-version>1.5.15</swagger-annotations-version>
+        <swagger-annotations-version>1.5.21</swagger-annotations-version>
         <jersey-version>1.19.4</jersey-version>
         {{#supportJava6}}
-            <commons_io_version>2.5</commons_io_version>
-            <commons_lang3_version>3.6</commons_lang3_version>
+        <commons_io_version>2.5</commons_io_version>
+        <commons_lang3_version>3.6</commons_lang3_version>
         {{/supportJava6}}
         <jackson-version>{{^threetenbp}}2.7.5{{/threetenbp}}{{#threetenbp}}2.6.4{{/threetenbp}}</jackson-version>
         <maven-plugin-version>1.0.0</maven-plugin-version>

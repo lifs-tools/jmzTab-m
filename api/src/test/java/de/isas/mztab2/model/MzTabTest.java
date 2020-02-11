@@ -19,6 +19,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
@@ -166,15 +167,15 @@ public class MzTabTest {
             email("crick@cam.ac.uk"));
         mtd.addUriItem(new Uri().id(1).
             value(
-                "http://www.ebi.ac.uk/pride/url/to/experiment"));
+                URI.create("http://www.ebi.ac.uk/pride/url/to/experiment")));
         mtd.addUriItem(new Uri().id(2).
             value(
-                "http://proteomecentral.proteomexchange.org/cgi/GetDataset"));
+                URI.create("http://proteomecentral.proteomexchange.org/cgi/GetDataset")));
         mtd.addExternalStudyUriItem(new Uri().id(1).
             value(
-                "https://www.ebi.ac.uk/metabolights/MTBLS400"));
+                URI.create("https://www.ebi.ac.uk/metabolights/MTBLS400")));
         MsRun msRun1 = new MsRun().name("file1").id(1).
-            location("file://ftp.ebi.ac.uk/path/to/file").
+            location(URI.create("file://ftp.ebi.ac.uk/path/to/file")).
             idFormat(new Parameter().id(paramId++).cvLabel("MS").
                 cvAccession("MS:1001530").
                 name(
@@ -188,7 +189,7 @@ public class MzTabTest {
                     name("CID"));
         mtd.addMsRunItem(msRun1);
         MsRun msRun2 = new MsRun().name("file2").id(2).
-            location("ftp://ftp.ebi.ac.uk/path/to/file").
+            location(URI.create("ftp://ftp.ebi.ac.uk/path/to/file")).
             format(new Parameter().id(paramId++).cvLabel("MS").
                 cvAccession("MS:1001062").
                 name("Mascot MGF file")).
@@ -288,12 +289,12 @@ public class MzTabTest {
             label("MS").
             fullName("PSI-MS ontology").
             version("3.54.0").
-            uri("https://raw.githubusercontent.com/HUPO-PSI/psi-ms-CV/master/psi-ms.obo"));
+            uri(URI.create("https://raw.githubusercontent.com/HUPO-PSI/psi-ms-CV/master/psi-ms.obo")));
         mtd.addCvItem(new CV().id(2).
             label("SEP").
             fullName("Sample Processing and Separation Techniques Ontology").
             version("1.070708").
-            uri("http://purl.bioontology.org/ontology/SEP"));
+            uri(URI.create("http://purl.bioontology.org/ontology/SEP")));
         
         mtd.addIdConfidenceMeasureItem(new Parameter().id(paramId++).
             name("some confidence measure term"));
@@ -322,7 +323,7 @@ public class MzTabTest {
             smiles(
                 "CCCCCCCCCCCCCCCCCCCCCCCC(=O)N[C@@H](CO)[C@H](O)/C=C/CCCCCCCCCCCCC").
             theoreticalMassToCharge(649.6373).
-            uri("http://link.to.me/hj551a-2asdkj-12451").
+            uri(URI.create("http://link.to.me/hj551a-2asdkj-12451")).
             addCommentItem(new Comment().prefix(Comment.PrefixEnum.COM).
                 msg("Needs further investigation"));
         SmallMoleculeFeature smf = new SmallMoleculeFeature().smfId(1).
@@ -367,8 +368,8 @@ public class MzTabTest {
                 "CCCCCCCCCCCCCCCCCCCCCCCC(=O)N[C@@H](CO)[C@H](O)/C=C/CCCCCCCCCCCCC").
             addInchiItem(
                 "InChI=1S/C42H83NO3/c1-3-5-7-9-11-13-15-17-18-19-20-21-22-23-24-26-28-30-32-34-36-38-42(46)43-40(39-44)41(45)37-35-33-31-29-27-25-16-14-12-10-8-6-4-2/h35,37,40-41,44-45H,3-34,36,38-39H2,1-2H3,(H,43,46)/b37-35+/t40-,41+/m0/s1").
-            addUriItem(
-                "http://www.lipidmaps.org/data/LMSDRecord.php?LM_ID=LMSP02010012").
+            addUriItem(URI.create(
+                "http://www.lipidmaps.org/data/LMSDRecord.php?LM_ID=LMSP02010012")).
             addTheoreticalNeutralMassItem(649.6373).
             addAdductIonsItem("[M+H]1+").
             reliability("1").

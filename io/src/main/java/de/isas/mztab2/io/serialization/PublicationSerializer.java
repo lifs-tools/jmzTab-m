@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import static de.isas.mztab2.io.serialization.Serializers.addLine;
+import de.isas.mztab2.model.IndexedElementAdapter;
 import de.isas.mztab2.model.Metadata;
 import de.isas.mztab2.model.Publication;
 import java.io.IOException;
@@ -71,7 +72,7 @@ public class PublicationSerializer extends StdSerializer<Publication> {
     public void serialize(Publication publication, JsonGenerator jg,
         SerializerProvider sp) throws IOException {
         if (publication != null) {
-            Serializers.checkIndexedElement(publication);
+            Serializers.checkIndexedElement(new IndexedElementAdapter<Publication>(publication));
             addLine(jg, Section.Metadata.getPrefix(),
                 Metadata.Properties.publication+"[" + publication.getId() + "]", Optional.ofNullable(
                 publication.

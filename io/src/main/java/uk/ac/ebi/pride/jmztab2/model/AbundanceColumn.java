@@ -16,7 +16,8 @@
 package uk.ac.ebi.pride.jmztab2.model;
 
 import de.isas.mztab2.model.Assay;
-import de.isas.mztab2.model.IndexedElement;
+import de.isas.mztab2.model.IndexedElementAdapter;
+//import de.isas.mztab2.model.IndexedElement;
 import de.isas.mztab2.model.StudyVariable;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -62,7 +63,7 @@ public class AbundanceColumn extends MZTabColumn {
      * The column data type: {Field#columnType()}
      * The column position: always most right side, calculated by offset.
      */
-    private AbundanceColumn(Section section, Field field, IndexedElement element, int offset) {
+    private AbundanceColumn(Section section, Field field, IndexedElementAdapter element, int offset) {
         super(field.name, field.columnType, true, offset + field.position + "");
         setElement(element);
     }
@@ -86,7 +87,7 @@ public class AbundanceColumn extends MZTabColumn {
             throw new NullPointerException("Assay should not be null!");
         }
 
-        return new AbundanceColumn(Section.toDataSection(section), Field.ABUNDANCE_ASSAY, assay, offset);
+        return new AbundanceColumn(Section.toDataSection(section), Field.ABUNDANCE_ASSAY, new IndexedElementAdapter<Assay>(assay), offset);
     }
 
     /**
@@ -118,10 +119,10 @@ public class AbundanceColumn extends MZTabColumn {
 
         AbundanceColumn column;
         if(columnHeader.startsWith("study_variable")) {
-            column = new AbundanceColumn(dataSection, Field.ABUNDANCE_STUDY_VARIABLE, studyVariable, offset);
+            column = new AbundanceColumn(dataSection, Field.ABUNDANCE_STUDY_VARIABLE, new IndexedElementAdapter<StudyVariable>(studyVariable), offset);
             columns.put(column.getLogicPosition(), column);
         } else if (columnHeader.startsWith("variation_study_variable")) {
-            column = new AbundanceColumn(dataSection, Field.ABUNDANCE_VARIATION_STUDY_VARIABLE, studyVariable, offset);
+            column = new AbundanceColumn(dataSection, Field.ABUNDANCE_VARIATION_STUDY_VARIABLE, new IndexedElementAdapter<StudyVariable>(studyVariable), offset);
             columns.put(column.getLogicPosition(), column);
         } else {
             throw new IllegalArgumentException("column header "+columnHeader+" is not allowed for abundance definition!");
@@ -152,9 +153,9 @@ public class AbundanceColumn extends MZTabColumn {
         Section dataSection = Section.toDataSection(section);
 
         AbundanceColumn column;
-        column = new AbundanceColumn(dataSection, Field.ABUNDANCE_STUDY_VARIABLE, studyVariable, lastOrder);
+        column = new AbundanceColumn(dataSection, Field.ABUNDANCE_STUDY_VARIABLE, new IndexedElementAdapter<StudyVariable>(studyVariable), lastOrder);
         columns.put(column.getLogicPosition(), column);
-        column = new AbundanceColumn(dataSection, Field.ABUNDANCE_VARIATION_STUDY_VARIABLE, studyVariable, lastOrder);
+        column = new AbundanceColumn(dataSection, Field.ABUNDANCE_VARIATION_STUDY_VARIABLE, new IndexedElementAdapter<StudyVariable>(studyVariable), lastOrder);
         columns.put(column.getLogicPosition(), column);
 
         return columns;

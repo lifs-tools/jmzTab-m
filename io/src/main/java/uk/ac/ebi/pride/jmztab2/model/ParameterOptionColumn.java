@@ -17,7 +17,7 @@ package uk.ac.ebi.pride.jmztab2.model;
 
 import de.isas.mztab2.io.serialization.Serializers;
 import de.isas.mztab2.model.Assay;
-import de.isas.mztab2.model.IndexedElement;
+import de.isas.mztab2.model.IndexedElementAdapter;
 import de.isas.mztab2.model.MsRun;
 import de.isas.mztab2.model.Parameter;
 import de.isas.mztab2.model.StudyVariable;
@@ -45,7 +45,7 @@ public class ParameterOptionColumn extends OptionColumn {
      * @param columnType SHOULD not be null.
      * @param offset SHOULD be non-negative integer.
      */
-    public ParameterOptionColumn(IndexedElement element, Parameter param, Class columnType, int offset) {
+    public ParameterOptionColumn(IndexedElementAdapter element, Parameter param, Class columnType, int offset) {
         super(element, CV + param.getCvAccession() + "_" + param.getName().replaceAll(" ", "_"), columnType, offset);
         this.param = param;
     }
@@ -58,7 +58,7 @@ public class ParameterOptionColumn extends OptionColumn {
      * @param param SHOULD NOT be null.
      * @return the string representation of this column's header.
      */
-    public static String getHeader(IndexedElement element, Parameter param) {
+    public static String getHeader(IndexedElementAdapter element, Parameter param) {
         StringBuilder sb = new StringBuilder();
 
         sb.append(OPT).append("_").append(element == null ? GLOBAL : Serializers.getReference(element, element.getId()));

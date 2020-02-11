@@ -54,6 +54,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.StringWriter;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -194,7 +195,7 @@ public class MzTabWriterTest {
             addInchiItem(
                 "InChI=1S/C42H83NO3/c1-3-5-7-9-11-13-15-17-18-19-20-21-22-23-24-26-28-30-32-34-36-38-42(46)43-40(39-44)41(45)37-35-33-31-29-27-25-16-14-12-10-8-6-4-2/h35,37,40-41,44-45H,3-34,36,38-39H2,1-2H3,(H,43,46)/b37-35+/t40-,41+/m0/s1").
             addUriItem(
-                "http://www.lipidmaps.org/data/LMSDRecord.php?LM_ID=LMSP02010012").
+                URI.create("http://www.lipidmaps.org/data/LMSDRecord.php?LM_ID=LMSP02010012")).
             addTheoreticalNeutralMassItem(649.6373).
             addAdductIonsItem("[M+H]1+").
             reliability("1").
@@ -576,19 +577,19 @@ public class MzTabWriterTest {
                 value("2.6.3_nightly")));
         MsRun msrun1 = new MsRun().id(1).
             location(
-                "file://D:/Experiment1/Orbitrap_CID/negative/50/014_Ex1_Orbitrap_CID_neg_50.chrom");
+                URI.create("file://D:/Experiment1/Orbitrap_CID/negative/50/014_Ex1_Orbitrap_CID_neg_50.chrom"));
         MsRun msrun2 = new MsRun().id(2).
             location(
-                "file://D:/Experiment1/Orbitrap_CID/negative/50/015_Ex1_Orbitrap_CID_neg_50.chrom");
+                URI.create("file://D:/Experiment1/Orbitrap_CID/negative/50/015_Ex1_Orbitrap_CID_neg_50.chrom"));
         MsRun msrun3 = new MsRun().id(3).
             location(
-                "file://D:/Experiment1/Orbitrap_CID/negative/50/016_Ex1_Orbitrap_CID_neg_50.chrom");
+                URI.create("file://D:/Experiment1/Orbitrap_CID/negative/50/016_Ex1_Orbitrap_CID_neg_50.chrom"));
         MsRun msrun4 = new MsRun().id(4).
             location(
-                "file://D:/Experiment1/Orbitrap_CID/negative/50/017_Ex1_Orbitrap_CID_neg_50.chrom");
+                URI.create("file://D:/Experiment1/Orbitrap_CID/negative/50/017_Ex1_Orbitrap_CID_neg_50.chrom"));
         MsRun msrun5 = new MsRun().id(5).
             location(
-                "file://D:/Experiment1/Orbitrap_CID/negative/50/018_Ex1_Orbitrap_CID_neg_50.chrom");
+                URI.create("file://D:/Experiment1/Orbitrap_CID/negative/50/018_Ex1_Orbitrap_CID_neg_50.chrom"));
         mtd.addMsRunItem(msrun1).
             addMsRunItem(msrun2).
             addMsRunItem(msrun3).
@@ -624,7 +625,7 @@ public class MzTabWriterTest {
             addStudyVariableItem(sv2);
         mtd.addCvItem(new CV().id(1).
             label("MS").
-            uri("https://raw.githubusercontent.com/HUPO-PSI/psi-ms-CV/master/psi-ms.obo").
+            uri(URI.create("https://raw.githubusercontent.com/HUPO-PSI/psi-ms-CV/master/psi-ms.obo")).
             version("4.0.9").
             fullName("PSI-MS controlled vocabulary"));
         mtd.addDatabaseItem(new Database().id(1).

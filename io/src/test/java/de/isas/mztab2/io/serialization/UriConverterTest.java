@@ -16,6 +16,7 @@
 package de.isas.mztab2.io.serialization;
 
 import de.isas.mztab2.model.Uri;
+import java.net.URI;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -30,7 +31,7 @@ public class UriConverterTest {
     @Test
     public void testConvert() {
         UriConverter converter = new UriConverter();
-        String converted = converter.convert(new Uri().value("https://github.com/HUPO-PSI/mzTab"));
+        String converted = converter.convert(new Uri().value(URI.create("https://github.com/HUPO-PSI/mzTab")));
         Assert.assertEquals("https://github.com/HUPO-PSI/mzTab", converted);
     }
     

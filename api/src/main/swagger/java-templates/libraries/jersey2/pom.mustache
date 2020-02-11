@@ -13,6 +13,13 @@
         <developerConnection>{{scmDeveloperConnection}}</developerConnection>
         <url>{{scmUrl}}</url>
     </scm>
+{{#parentOverridden}}
+    <parent>
+        <groupId>{{{parentGroupId}}}</groupId>
+        <artifactId>{{{parentArtifactId}}}</artifactId>
+        <version>{{{parentVersion}}}</version>
+    </parent>
+{{/parentOverridden}}
 
     <licenses>
         <license>
@@ -104,6 +111,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
+                <version>1.10</version>
                 <executions>
                     <execution>
                         <id>add_sources</id>
@@ -113,8 +121,7 @@
                         </goals>
                         <configuration>
                             <sources>
-                                <source>
-                                src/main/java</source>
+                                <source>src/main/java</source>
                             </sources>
                         </configuration>
                     </execution>
@@ -126,8 +133,7 @@
                         </goals>
                         <configuration>
                             <sources>
-                                <source>
-                                src/test/java</source>
+                                <source>src/test/java</source>
                             </sources>
                         </configuration>
                     </execution>
@@ -138,16 +144,20 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.6.1</version>
                 <configuration>
+                    {{#supportJava6}}
+                        <source>1.6</source>
+                        <target>1.6</target>
+                    {{/supportJava6}}
+                    {{^supportJava6}}
                     {{#java8}}
-                        <source>
-                        1.8</source>
+                        <source>1.8</source>
                         <target>1.8</target>
                     {{/java8}}
                     {{^java8}}
-                        <source>
-                        1.7</source>
+                        <source>1.7</source>
                         <target>1.7</target>
                     {{/java8}}
+                    {{/supportJava6}}
                 </configuration>
             </plugin>
             <plugin>
@@ -162,6 +172,15 @@
                         </goals>
                     </execution>
                 </executions>
+                <configuration>
+                    <tags>
+                        <tag>
+                            <name>http.response.details</name>
+                            <placement>a</placement>
+                            <head>Http Response Details:</head>
+                        </tag>
+                    </tags>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -207,15 +226,29 @@
         <dependency>
             <groupId>io.swagger</groupId>
             <artifactId>swagger-annotations</artifactId>
-            <version>${swagger-core-version}</version>
+            <version>${swagger-annotations-version}</version>
         </dependency>
 
+        <!-- @Nullable annotation -->
+        <dependency>
+            <groupId>com.google.code.findbugs</groupId>
+            <artifactId>jsr305</artifactId>
+            <version>3.0.2</version>
+        </dependency>
+        
         <!-- HTTP client: jersey-client -->
         <dependency>
             <groupId>org.glassfish.jersey.core</groupId>
             <artifactId>jersey-client</artifactId>
             <version>${jersey-version}</version>
         </dependency>
+        {{^supportJava6}}
+        <dependency>
+            <groupId>org.glassfish.jersey.inject</groupId>
+            <artifactId>jersey-hk2</artifactId>
+            <version>${jersey-version}</version>
+        </dependency>
+        {{/supportJava6}}
         <dependency>
             <groupId>org.glassfish.jersey.media</groupId>
             <artifactId>jersey-media-multipart</artifactId>
@@ -241,7 +274,12 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>${jackson-version}</version>
+            <version>${jackson-databind-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openapitools</groupId>
+            <artifactId>jackson-databind-nullable</artifactId>
+            <version>${jackson-databind-nullable-version}</version>
         </dependency>
         {{#withXml}}
 
@@ -271,7 +309,7 @@
             <dependency>
                 <groupId>com.github.joschi.jackson</groupId>
                 <artifactId>jackson-datatype-threetenbp</artifactId>
-                <version>${jackson-version}</version>
+                <version>${threetenbp-version}</version>
             </dependency>
         {{/threetenbp}}
         {{^java8}}
@@ -313,16 +351,21 @@
     </dependencies>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <swagger-core-version>1.5.15</swagger-core-version>
+        <swagger-annotations-version>1.5.22</swagger-annotations-version>
         {{^supportJava6}}
-            <jersey-version>2.25.1</jersey-version>
+        <jersey-version>2.27</jersey-version>
         {{/supportJava6}}
         {{#supportJava6}}
-            <jersey-version>2.6</jersey-version>
-            <commons_io_version>2.5</commons_io_version>
-            <commons_lang3_version>3.6</commons_lang3_version>
+        <jersey-version>2.6</jersey-version>
+        <commons_io_version>2.5</commons_io_version>
+        <commons_lang3_version>3.6</commons_lang3_version>
         {{/supportJava6}}
-        <jackson-version>{{^threetenbp}}2.7.5{{/threetenbp}}{{#threetenbp}}2.6.4{{/threetenbp}}</jackson-version>
+        <jackson-version>2.9.10</jackson-version>
+        <jackson-databind-version>2.9.10</jackson-databind-version>
+        <jackson-databind-nullable-version>0.2.0</jackson-databind-nullable-version>
+        {{#threetenbp}}
+        <threetenbp-version>2.6.4</threetenbp-version>
+        {{/threetenbp}}
         <maven-plugin-version>1.0.0</maven-plugin-version>
         <junit-version>4.12</junit-version>
     </properties>

@@ -1,0 +1,14 @@
+Running jmztabm-cli
+ version: '1.0.4'
+ build-date: '2019-08-09T08:58:22.722Z'
+ scm-location: 'https://github.com/lifs-tools/jmztab-m/tree/master/jmztabm-cli'
+ commit: '3bb1ad5adfe40abf7ef69be02292caf224551034'
+ branch: 'master'
+
+Validator set to default level 'Info'
+Beginning validation of mztab file: /home/data/lipidomics-example-missing-feature-and-evidence.mzTab
+[Info-2037] line -1: The mzTab file should contain a small molecule feature section.
+[Info-2038] line -1: The mzTab file should contain a small molecule evidence section.
+There were 2 validation messages including 0 warnings or errors during validation your file, please check the output for details!
+Finished validation!
+

@@ -31,7 +31,11 @@ public class UriConverter extends StdConverter<Uri, String> {
      */
     @Override
     public String convert(Uri uri) {
-        return Optional.of(uri.getValue()).orElse("null");
+        Optional<Uri> opt = Optional.ofNullable(uri);
+        if(opt.isPresent()){
+            return opt.get().getValue().toASCIIString();
+        } 
+        return "null";
     }
 
 }

@@ -2,13 +2,17 @@
 
 package {{package}};
 
+{{#useReflectionEqualsHashCode}}
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+{{/useReflectionEqualsHashCode}}
 {{^supportJava6}}
 import java.util.Objects;
+import java.util.Arrays;
 {{/supportJava6}}
 {{#supportJava6}}
 import org.apache.commons.lang3.ObjectUtils;
 {{/supportJava6}}
-import java.util.Arrays;
 {{#imports}}
 import {{import}};
 {{/imports}}
@@ -16,6 +20,7 @@ import {{import}};
 import java.io.Serializable;
 {{/serializableModel}}
 {{#jackson}}
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 {{#withXml}}
 import com.fasterxml.jackson.dataformat.xml.annotation.*;
 {{/withXml}}
@@ -30,8 +35,11 @@ import android.os.Parcel;
 {{#useBeanValidation}}
 import javax.validation.constraints.*;
 import javax.validation.Valid;
-import de.isas.lipidomics.mztab2.validation.constraints.*;
 {{/useBeanValidation}}
+{{#performBeanValidation}}
+import org.hibernate.validator.constraints.*;
+{{/performBeanValidation}}
+
 {{#models}}
 {{#model}}
 {{#isEnum}}{{>modelEnum}}{{/isEnum}}{{^isEnum}}{{>pojo}}{{/isEnum}}
