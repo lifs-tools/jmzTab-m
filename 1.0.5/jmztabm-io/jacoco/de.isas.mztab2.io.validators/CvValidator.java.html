@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CvValidator.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jmztabm-io</a> &gt; <a href="index.source.html" class="el_package">de.isas.mztab2.io.validators</a> &gt; <span class="el_source">CvValidator.java</span></div><h1>CvValidator.java</h1><pre class="source lang-java linenums">/*
+ * Copyright 2019 Leibniz-Institut für Analytische Wissenschaften – ISAS – e.V..
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package de.isas.mztab2.io.validators;
+
+import de.isas.mztab2.model.CV;
+import de.isas.mztab2.model.Metadata;
+import java.util.LinkedList;
+import java.util.List;
+import uk.ac.ebi.pride.jmztab2.utils.errors.LogicalErrorType;
+import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabError;
+import uk.ac.ebi.pride.jmztab2.utils.parser.MZTabParserContext;
+
+/**
+ * Validates that the controlled vocabulary section is present in metadata and
+ * that it is correctly populated.
+ *
+ * @author nilshoffmann
+ */
+<span class="fc" id="L32">public class CvValidator implements RefiningValidator&lt;Metadata&gt; {</span>
+
+    @Override
+    public List&lt;MZTabError&gt; validateRefine(Metadata metadata, MZTabParserContext parserContext) {
+<span class="fc" id="L36">        List&lt;MZTabError&gt; errorList = new LinkedList&lt;&gt;();</span>
+<span class="pc bpc" id="L37" title="1 of 2 branches missed.">        if (metadata.getCv() == null || metadata.getCv().</span>
+<span class="fc bfc" id="L38" title="All 2 branches covered.">                isEmpty()) {</span>
+<span class="fc" id="L39">            errorList.add(new MZTabError(</span>
+                    LogicalErrorType.NotDefineInMetadata, -1,
+                    Metadata.Properties.cv + &quot;&quot;));
+        } else {
+<span class="fc bfc" id="L43" title="All 2 branches covered.">            for (CV cv : metadata.getCv()) {</span>
+<span class="fc bfc" id="L44" title="All 4 branches covered.">                if (cv.getLabel() == null || cv.getLabel().isEmpty()) {</span>
+<span class="fc" id="L45">                    errorList.add(new MZTabError(</span>
+                            LogicalErrorType.NotDefineInMetadata, -1,
+<span class="fc" id="L47">                            Metadata.Properties.cv + &quot;[&quot; + cv.getId() + &quot;]-&quot; + CV.Properties.label));</span>
+                }
+<span class="fc bfc" id="L49" title="All 4 branches covered.">                if (cv.getFullName() == null || cv.getFullName().isEmpty()) {</span>
+<span class="fc" id="L50">                    errorList.add(new MZTabError(</span>
+                            LogicalErrorType.NotDefineInMetadata, -1,
+<span class="fc" id="L52">                            Metadata.Properties.cv + &quot;[&quot; + cv.getId() + &quot;]-&quot; + CV.Properties.fullName));</span>
+                }
+<span class="fc bfc" id="L54" title="All 4 branches covered.">                if (cv.getVersion() == null || cv.getVersion().isEmpty()) {</span>
+<span class="fc" id="L55">                    errorList.add(new MZTabError(</span>
+                            LogicalErrorType.NotDefineInMetadata, -1,
+<span class="fc" id="L57">                            Metadata.Properties.cv + &quot;[&quot; + cv.getId() + &quot;]-&quot; + CV.Properties.version));</span>
+                }
+<span class="fc bfc" id="L59" title="All 4 branches covered.">                if (cv.getUri() == null || cv.getUri().isEmpty()) {</span>
+<span class="fc" id="L60">                    errorList.add(new MZTabError(</span>
+                            LogicalErrorType.NotDefineInMetadata, -1,
+<span class="fc" id="L62">                            Metadata.Properties.cv + &quot;[&quot; + cv.getId() + &quot;]-&quot; + CV.Properties.uri));</span>
+                }
+<span class="fc" id="L64">            }</span>
+        }
+<span class="fc" id="L66">        return errorList;</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

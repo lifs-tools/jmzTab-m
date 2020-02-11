@@ -1,0 +1,12 @@
+Package: rmztab
+Title: R Package Client for mzTab-M reference implementation and validation API.
+Version: 1.0.0
+Authors@R: person("Swagger Codegen community", email = "nils.hoffmann@isas.de", role = c("aut", "cre"))
+Description: This is the mzTab-M reference implementation and validation API service.
+Depends: R (>= 3.3.3)
+Encoding: UTF-8
+License: Unlicense
+LazyData: true
+Suggests: testthat
+Imports: jsonlite, httr, R6
+RoxygenNote: 6.0.1.9000

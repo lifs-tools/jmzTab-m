@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AbundanceColumn.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jmztabm-io</a> &gt; <a href="index.source.html" class="el_package">uk.ac.ebi.pride.jmztab2.model</a> &gt; <span class="el_source">AbundanceColumn.java</span></div><h1>AbundanceColumn.java</h1><pre class="source lang-java linenums">/* 
+ * Copyright 2018 Leibniz-Institut für Analytische Wissenschaften – ISAS – e.V..
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package uk.ac.ebi.pride.jmztab2.model;
+
+import de.isas.mztab2.model.Assay;
+import de.isas.mztab2.model.IndexedElement;
+import de.isas.mztab2.model.StudyVariable;
+import java.util.SortedMap;
+import java.util.TreeMap;
+
+/**
+ * If the data exporter wishes to report only final results for 'Summary' files (i.e. following averaging over replicates),
+ * then these MUST be reported as quantitative values in the columns associated with the study_variable[1-n] (e.g.
+ * abundance_study_variable[1]). mzTab allows the reporting of abundance, standard deviation, and standard error
+ * for any study_variable. The unit of values in the abundance column MUST be specified in the metadata section of the mzTab file.
+ * The reported values SHOULD represent the final result of the performed data analysis. The exact meaning of the values will
+ * thus depend on the used analysis pipeline and quantitation method and is not expected to be comparable across multiple mzTab files.
+ *
+ * @author qingwei
+ * @author nilshoffmann
+ * @since 23/05/13
+ * 
+ */
+public class AbundanceColumn extends MZTabColumn {
+<span class="fc" id="L38">    public enum Field {</span>
+<span class="fc" id="L39">        ABUNDANCE_ASSAY          (&quot;abundance_assay&quot;,              Double.class,    1),</span>
+<span class="fc" id="L40">        ABUNDANCE_STUDY_VARIABLE (&quot;abundance_study_variable&quot;,     Double.class,    2),</span>
+<span class="fc" id="L41">        ABUNDANCE_VARIATION_STUDY_VARIABLE (&quot;abundance_variation_study_variable&quot;,        Double.class,    3);</span>
+
+        private String name;
+        private Class columnType;
+        private int position;
+
+<span class="fc" id="L47">        Field(String name, Class columnType, int position) {</span>
+<span class="fc" id="L48">            this.name = name;</span>
+<span class="fc" id="L49">            this.columnType = columnType;</span>
+<span class="fc" id="L50">            this.position = position;</span>
+<span class="fc" id="L51">        }</span>
+
+        @Override
+        public String toString() {
+<span class="fc" id="L55">            return name;</span>
+        }
+    }
+
+    /**
+     * Generate a abundance column:
+     * The column header is: {Section}_{Field#name()}_{IndexedElement[id]}
+     * The column data type: {Field#columnType()}
+     * The column position: always most right side, calculated by offset.
+     */
+    private AbundanceColumn(Section section, Field field, IndexedElement element, int offset) {
+<span class="fc" id="L66">        super(field.name, field.columnType, true, offset + field.position + &quot;&quot;);</span>
+<span class="fc" id="L67">        setElement(element);</span>
+<span class="fc" id="L68">    }</span>
+
+    /**
+     * Generate a abundance optional column as measured in the given assay.The column header like
+     * protein_abundance_assay[1-n], the position always stay the most right of the tabled section,
+     * and the data type is Double.
+     *
+     * @param section SHOULD be {@link uk.ac.ebi.pride.jmztab2.model.Section#Protein}, {@link uk.ac.ebi.pride.jmztab2.model.Section#Peptide}, {@link uk.ac.ebi.pride.jmztab2.model.Section#PSM},
+     *                or {@link uk.ac.ebi.pride.jmztab2.model.Section#Small_Molecule}.
+     * @param assay SHOULD not be null.
+     * @param offset Normally the last column's position in header, {@link uk.ac.ebi.pride.jmztab2.model.MZTabColumnFactory#getColumnMapping()},
+     * @return an abundance optional column as measured in the given assay.
+     */
+    public static MZTabColumn createOptionalColumn(Section section, Assay assay, int offset) {
+<span class="pc bpc" id="L82" title="2 of 4 branches missed.">        if (section.isComment() || section.isMetadata()) {</span>
+<span class="nc" id="L83">            throw new IllegalArgumentException(&quot;Section should be Protein, Peptide, PSM or SmallMolecule.&quot;);</span>
+        }
+<span class="pc bpc" id="L85" title="1 of 2 branches missed.">        if (assay == null) {</span>
+<span class="nc" id="L86">            throw new NullPointerException(&quot;Assay should not be null!&quot;);</span>
+        }
+
+<span class="fc" id="L89">        return new AbundanceColumn(Section.toDataSection(section), Field.ABUNDANCE_ASSAY, assay, offset);</span>
+    }
+
+    /**
+     * Generate an abundance optional column as measured in the given study variable.
+     * The header can be one of abundance_study_variable[1], abundance_coeffvar_study_variable[1].
+     * The position always stay the most right of the tabled section, and the data type is Double.
+     *
+     * @param section SHOULD be {@link uk.ac.ebi.pride.jmztab2.model.Section#Protein}, {@link uk.ac.ebi.pride.jmztab2.model.Section#Peptide}, {@link uk.ac.ebi.pride.jmztab2.model.Section#PSM},
+     *                or {@link uk.ac.ebi.pride.jmztab2.model.Section#Small_Molecule}.
+     * @param studyVariable SHOULD not be null.
+     * @param order position in header for the new columns {@link uk.ac.ebi.pride.jmztab2.model.MZTabColumnFactory#getColumnMapping()}
+     * @return an abundance optional column as measured in the given study variable.
+     * @param columnHeader a processed column header with abundance_ removed.
+     * 
+     */
+    public static SortedMap&lt;String, MZTabColumn&gt; createOptionalColumns(Section section, StudyVariable studyVariable, String columnHeader, String order) {
+<span class="pc bpc" id="L106" title="2 of 4 branches missed.">        if (section.isComment() || section.isMetadata()) {</span>
+<span class="nc" id="L107">            throw new IllegalArgumentException(&quot;Section should be Protein, Peptide, PSM, SmallMolecule, SmallMoleculeFeature or SmallMoleculeEvidence.&quot;);</span>
+        }
+<span class="pc bpc" id="L109" title="1 of 2 branches missed.">        if (studyVariable == null) {</span>
+<span class="nc" id="L110">            throw new NullPointerException(&quot;Study Variable should not be null!&quot;);</span>
+        }
+
+        //In this case we know the real position in which the column need to star, so the offset is one less
+<span class="fc" id="L114">        int offset = new Integer(order)-1;</span>
+
+<span class="fc" id="L116">        SortedMap&lt;String, MZTabColumn&gt; columns = new TreeMap&lt;&gt;();</span>
+<span class="fc" id="L117">        Section dataSection = Section.toDataSection(section);</span>
+
+        AbundanceColumn column;
+<span class="fc bfc" id="L120" title="All 2 branches covered.">        if(columnHeader.startsWith(&quot;study_variable&quot;)) {</span>
+<span class="fc" id="L121">            column = new AbundanceColumn(dataSection, Field.ABUNDANCE_STUDY_VARIABLE, studyVariable, offset);</span>
+<span class="fc" id="L122">            columns.put(column.getLogicPosition(), column);</span>
+<span class="pc bpc" id="L123" title="1 of 2 branches missed.">        } else if (columnHeader.startsWith(&quot;variation_study_variable&quot;)) {</span>
+<span class="fc" id="L124">            column = new AbundanceColumn(dataSection, Field.ABUNDANCE_VARIATION_STUDY_VARIABLE, studyVariable, offset);</span>
+<span class="fc" id="L125">            columns.put(column.getLogicPosition(), column);</span>
+        } else {
+<span class="nc" id="L127">            throw new IllegalArgumentException(&quot;column header &quot;+columnHeader+&quot; is not allowed for abundance definition!&quot;);</span>
+        }
+
+<span class="fc" id="L130">        return columns;</span>
+    }
+
+    /**
+     * &lt;p&gt;createOptionalColumns.&lt;/p&gt;
+     *
+     * @param section a {@link uk.ac.ebi.pride.jmztab2.model.Section} object.
+     * @param studyVariable a {@link de.isas.mztab2.model.StudyVariable} object.
+     * @param lastOrder a {@link java.lang.Integer} object.
+     * @return a {@link java.util.SortedMap} object.
+     */
+    public static SortedMap&lt;String, MZTabColumn&gt; createOptionalColumns(Section section, StudyVariable studyVariable, Integer lastOrder) {
+<span class="nc bnc" id="L142" title="All 4 branches missed.">        if (section.isComment() || section.isMetadata()) {</span>
+<span class="nc" id="L143">            throw new IllegalArgumentException(&quot;Section should be Protein, Peptide, PSM or SmallMolecule.&quot;);</span>
+        }
+<span class="nc bnc" id="L145" title="All 2 branches missed.">        if (studyVariable == null) {</span>
+<span class="nc" id="L146">            throw new NullPointerException(&quot;Study Variable should not be null!&quot;);</span>
+        }
+
+        //In this case we know the real position in which the column need to star, so the offset is one less
+
+<span class="nc" id="L151">        SortedMap&lt;String, MZTabColumn&gt; columns = new TreeMap&lt;&gt;();</span>
+<span class="nc" id="L152">        Section dataSection = Section.toDataSection(section);</span>
+
+        AbundanceColumn column;
+<span class="nc" id="L155">        column = new AbundanceColumn(dataSection, Field.ABUNDANCE_STUDY_VARIABLE, studyVariable, lastOrder);</span>
+<span class="nc" id="L156">        columns.put(column.getLogicPosition(), column);</span>
+<span class="nc" id="L157">        column = new AbundanceColumn(dataSection, Field.ABUNDANCE_VARIATION_STUDY_VARIABLE, studyVariable, lastOrder);</span>
+<span class="nc" id="L158">        columns.put(column.getLogicPosition(), column);</span>
+
+<span class="nc" id="L160">        return columns;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

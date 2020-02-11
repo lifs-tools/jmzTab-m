@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SmallMoleculeEvidenceSerializer.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jmztabm-io</a> &gt; <a href="index.source.html" class="el_package">de.isas.mztab2.io.serialization</a> &gt; <span class="el_source">SmallMoleculeEvidenceSerializer.java</span></div><h1>SmallMoleculeEvidenceSerializer.java</h1><pre class="source lang-java linenums">/* 
+ * Copyright 2018 Leibniz-Institut für Analytische Wissenschaften – ISAS – e.V..
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package de.isas.mztab2.io.serialization;
+
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
+import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+import static de.isas.mztab2.io.serialization.Serializers.writeAsStringArray;
+import static de.isas.mztab2.io.serialization.Serializers.writeNumber;
+import static de.isas.mztab2.io.serialization.Serializers.writeObject;
+import static de.isas.mztab2.io.serialization.Serializers.writeString;
+import de.isas.mztab2.model.Metadata;
+import de.isas.mztab2.model.SmallMoleculeEvidence;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
+import uk.ac.ebi.pride.jmztab2.model.SmallMoleculeEvidenceColumn;
+import static uk.ac.ebi.pride.jmztab2.model.SmallMoleculeEvidenceColumn.Stable.columnFor;
+
+/**
+* &lt;p&gt;SmallMoleculeEvidenceSerializer implementation for {@link de.isas.mztab2.model.SmallMoleculeEvidence}.&lt;/p&gt;
+ *
+ * @author nilshoffmann
+ *
+ */
+<span class="fc" id="L42">@Slf4j</span>
+public class SmallMoleculeEvidenceSerializer extends StdSerializer&lt;SmallMoleculeEvidence&gt; {
+
+    /**
+     * &lt;p&gt;
+     * Constructor for SmallMoleculeEvidenceSerializer.&lt;/p&gt;
+     */
+    public SmallMoleculeEvidenceSerializer() {
+<span class="fc" id="L50">        this(null);</span>
+<span class="fc" id="L51">    }</span>
+
+    /**
+     * &lt;p&gt;
+     * Constructor for SmallMoleculeEvidenceSerializer.&lt;/p&gt;
+     *
+     * @param t a {@link java.lang.Class} object.
+     */
+    public SmallMoleculeEvidenceSerializer(Class&lt;SmallMoleculeEvidence&gt; t) {
+<span class="fc" id="L60">        super(t);</span>
+<span class="fc" id="L61">    }</span>
+
+    @Override
+    public void serializeWithType(SmallMoleculeEvidence value, JsonGenerator gen,
+        SerializerProvider serializers, TypeSerializer typeSer) throws IOException {
+<span class="nc" id="L66">        typeSer.writeTypePrefixForObject(value, gen);</span>
+<span class="nc" id="L67">        serialize(value, gen, serializers);</span>
+<span class="nc" id="L68">        typeSer.writeTypeSuffixForObject(value, gen);</span>
+<span class="nc" id="L69">    }</span>
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void serialize(SmallMoleculeEvidence smallMoleculeEvidence,
+        JsonGenerator jg,
+        SerializerProvider sp) throws IOException {
+<span class="pc bpc" id="L78" title="1 of 2 branches missed.">        if (smallMoleculeEvidence != null) {</span>
+<span class="fc" id="L79">            jg.writeStartObject();</span>
+<span class="fc" id="L80">            writeString(SmallMoleculeEvidence.HeaderPrefixEnum.SEH.getValue(),</span>
+                jg, SmallMoleculeEvidence.PrefixEnum.SME.
+<span class="fc" id="L82">                    getValue());</span>
+<span class="fc" id="L83">            writeNumber(columnFor(</span>
+                SmallMoleculeEvidenceColumn.Stable.SME_ID), jg,
+<span class="fc" id="L85">                smallMoleculeEvidence.getSmeId());</span>
+<span class="fc" id="L86">            writeString(columnFor(</span>
+                SmallMoleculeEvidenceColumn.Stable.EVIDENCE_INPUT_ID),
+<span class="fc" id="L88">                jg, smallMoleculeEvidence.getEvidenceInputId());</span>
+<span class="fc" id="L89">            writeString(columnFor(</span>
+                SmallMoleculeEvidenceColumn.Stable.DATABASE_IDENTIFIER),
+<span class="fc" id="L91">                jg, smallMoleculeEvidence.getDatabaseIdentifier());</span>
+<span class="fc" id="L92">            writeString(columnFor(</span>
+                SmallMoleculeEvidenceColumn.Stable.CHEMICAL_FORMULA), jg,
+<span class="fc" id="L94">                smallMoleculeEvidence.getChemicalFormula());</span>
+<span class="fc" id="L95">            writeString(columnFor(SmallMoleculeEvidenceColumn.Stable.SMILES), jg,</span>
+<span class="fc" id="L96">                smallMoleculeEvidence.getSmiles());</span>
+<span class="fc" id="L97">            writeString(columnFor(SmallMoleculeEvidenceColumn.Stable.INCHI), jg,</span>
+<span class="fc" id="L98">                smallMoleculeEvidence.getInchi());</span>
+<span class="fc" id="L99">            writeString(columnFor(</span>
+                SmallMoleculeEvidenceColumn.Stable.CHEMICAL_NAME), jg,
+<span class="fc" id="L101">                smallMoleculeEvidence.getChemicalName());</span>
+<span class="fc" id="L102">            writeString(columnFor(SmallMoleculeEvidenceColumn.Stable.URI), jg,</span>
+<span class="fc" id="L103">                smallMoleculeEvidence.getUri());</span>
+<span class="fc" id="L104">            writeObject(columnFor(</span>
+                SmallMoleculeEvidenceColumn.Stable.DERIVATIZED_FORM), jg,
+                sp,
+<span class="fc" id="L107">                smallMoleculeEvidence.getDerivatizedForm());</span>
+<span class="fc" id="L108">            writeString(columnFor(SmallMoleculeEvidenceColumn.Stable.ADDUCT_ION),</span>
+                jg,
+<span class="fc" id="L110">                smallMoleculeEvidence.getAdductIon());</span>
+<span class="fc" id="L111">            writeNumber(columnFor(</span>
+                SmallMoleculeEvidenceColumn.Stable.EXP_MASS_TO_CHARGE),
+                jg, smallMoleculeEvidence.
+<span class="fc" id="L114">                    getExpMassToCharge());</span>
+<span class="fc" id="L115">            writeNumber(columnFor(SmallMoleculeEvidenceColumn.Stable.CHARGE), jg,</span>
+<span class="fc" id="L116">                smallMoleculeEvidence.getCharge());</span>
+<span class="fc" id="L117">            writeNumber(</span>
+<span class="fc" id="L118">                columnFor(</span>
+                    SmallMoleculeEvidenceColumn.Stable.THEORETICAL_MASS_TO_CHARGE),
+                jg, smallMoleculeEvidence.
+<span class="fc" id="L121">                    getTheoreticalMassToCharge());</span>
+<span class="fc" id="L122">            writeAsStringArray(columnFor(</span>
+                SmallMoleculeEvidenceColumn.Stable.SPECTRA_REF),
+<span class="fc" id="L124">                jg, Optional.ofNullable(smallMoleculeEvidence.</span>
+<span class="fc" id="L125">                    getSpectraRef()).</span>
+<span class="fc" id="L126">                    orElse(Collections.emptyList()).</span>
+<span class="fc" id="L127">                    stream().</span>
+<span class="fc" id="L128">                    map((spectraRef) -&gt;</span>
+                    {
+<span class="fc" id="L130">                        return Metadata.Properties.msRun.getPropertyName() + &quot;[&quot; + spectraRef.</span>
+<span class="fc" id="L131">                            getMsRun().</span>
+<span class="fc" id="L132">                            getId() + &quot;]:&quot; + spectraRef.getReference();</span>
+                    }).
+<span class="fc" id="L134">                    collect(Collectors.toList()));</span>
+<span class="fc" id="L135">            writeObject(columnFor(</span>
+                SmallMoleculeEvidenceColumn.Stable.IDENTIFICATION_METHOD),
+<span class="fc" id="L137">                jg, sp, smallMoleculeEvidence.getIdentificationMethod());</span>
+<span class="fc" id="L138">            writeObject(columnFor(SmallMoleculeEvidenceColumn.Stable.MS_LEVEL),</span>
+                jg, sp,
+                smallMoleculeEvidence.
+<span class="fc" id="L141">                    getMsLevel());</span>
+<span class="fc" id="L142">            Serializers.writeIndexedDoubles(</span>
+                SmallMoleculeEvidence.Properties.idConfidenceMeasure.
+<span class="fc" id="L144">                    getPropertyName(), jg,</span>
+<span class="fc" id="L145">                Optional.ofNullable(smallMoleculeEvidence.</span>
+<span class="fc" id="L146">                    getIdConfidenceMeasure()).</span>
+<span class="fc" id="L147">                    orElse(Collections.emptyList()));</span>
+<span class="fc" id="L148">            writeNumber(columnFor(SmallMoleculeEvidenceColumn.Stable.RANK), jg,</span>
+<span class="fc" id="L149">                smallMoleculeEvidence.getRank());</span>
+<span class="fc" id="L150">            Serializers.writeOptColumnMappings(smallMoleculeEvidence.getOpt(),</span>
+                jg, sp);
+<span class="fc" id="L152">            jg.writeEndObject();</span>
+        } else {
+<span class="nc" id="L154">            log.debug(SmallMoleculeEvidence.class.getSimpleName() + &quot; is null!&quot;);</span>
+        }
+<span class="fc" id="L156">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

@@ -1,0 +1,681 @@
+################################################################################
+# testJaxbCvMapping
+################################################################################
+D|15:13:22.519|CvMappingValidator                      |Applying 1 pre validation steps.
+D|15:13:22.559|CvDefinitionValidationHandler           |Selected 10 cv parameters!
+D|15:13:22.560|CvDefinitionValidationHandler           |Checking parameter [MS, MS:1000584, mzML file, ]
+D|15:13:22.560|CvDefinitionValidationHandler           |Checking parameter [MS, MS:1001530, mzML unique identifier, ]
+D|15:13:22.560|CvDefinitionValidationHandler           |Checking parameter [MS, MS:1000129, negative scan, ]
+D|15:13:22.560|CvDefinitionValidationHandler           |Checking parameter [MS, MS:1000130, positive scan, ]
+D|15:13:22.560|CvDefinitionValidationHandler           |Checking parameter [CL, CL:0000182, hepatocyte, ]
+D|15:13:22.561|CvDefinitionValidationHandler           |Parameter [CL, CL:0000182, hepatocyte, ] uses undefined controlled vocabulary: CL
+D|15:13:22.561|CvDefinitionValidationHandler           |Checking parameter [DOID, DOID:684, hepatocellular carcinoma, ]
+D|15:13:22.561|CvDefinitionValidationHandler           |Parameter [DOID, DOID:684, hepatocellular carcinoma, ] uses undefined controlled vocabulary: DOID
+D|15:13:22.561|CvDefinitionValidationHandler           |Checking parameter [DOID, DOID:9452, alcoholic fatty liver, ]
+D|15:13:22.562|CvDefinitionValidationHandler           |Parameter [DOID, DOID:9452, alcoholic fatty liver, ] uses undefined controlled vocabulary: DOID
+D|15:13:22.562|CvDefinitionValidationHandler           |Checking parameter [NCBITaxon, NCBITaxon:9606, Homo sapiens (Human), ]
+D|15:13:22.562|CvDefinitionValidationHandler           |Parameter [NCBITaxon, NCBITaxon:9606, Homo sapiens (Human), ] uses undefined controlled vocabulary: NCBITaxon
+D|15:13:22.562|CvDefinitionValidationHandler           |Checking parameter [NCBITaxon, NCBITaxon:12134, Human rhinovirus 1, ]
+D|15:13:22.562|CvDefinitionValidationHandler           |Parameter [NCBITaxon, NCBITaxon:12134, Human rhinovirus 1, ] uses undefined controlled vocabulary: NCBITaxon
+D|15:13:22.563|CvDefinitionValidationHandler           |Checking parameter [BTO, BTO:0000759, liver, ]
+D|15:13:22.563|CvDefinitionValidationHandler           |Parameter [BTO, BTO:0000759, liver, ] uses undefined controlled vocabulary: BTO
+D|15:13:22.573|CvDefinitionValidationHandler           |Selected 10 cv parameters!
+D|15:13:22.574|CvDefinitionValidationHandler           |Checking parameter [MS, MS:1000584, mzML file, ]
+D|15:13:22.574|CvDefinitionValidationHandler           |Checking parameter [MS, MS:1001530, mzML unique identifier, ]
+D|15:13:22.574|CvDefinitionValidationHandler           |Checking parameter [MS, MS:1000129, negative scan, ]
+D|15:13:22.574|CvDefinitionValidationHandler           |Checking parameter [MS, MS:1000130, positive scan, ]
+D|15:13:22.574|CvDefinitionValidationHandler           |Checking parameter [CL, CL:0000182, hepatocyte, ]
+D|15:13:22.575|CvDefinitionValidationHandler           |Parameter [CL, CL:0000182, hepatocyte, ] uses undefined controlled vocabulary: CL
+D|15:13:22.575|CvDefinitionValidationHandler           |Checking parameter [DOID, DOID:684, hepatocellular carcinoma, ]
+D|15:13:22.575|CvDefinitionValidationHandler           |Parameter [DOID, DOID:684, hepatocellular carcinoma, ] uses undefined controlled vocabulary: DOID
+D|15:13:22.575|CvDefinitionValidationHandler           |Checking parameter [DOID, DOID:9452, alcoholic fatty liver, ]
+D|15:13:22.576|CvDefinitionValidationHandler           |Parameter [DOID, DOID:9452, alcoholic fatty liver, ] uses undefined controlled vocabulary: DOID
+D|15:13:22.576|CvDefinitionValidationHandler           |Checking parameter [NCBITaxon, NCBITaxon:9606, Homo sapiens (Human), ]
+D|15:13:22.576|CvDefinitionValidationHandler           |Parameter [NCBITaxon, NCBITaxon:9606, Homo sapiens (Human), ] uses undefined controlled vocabulary: NCBITaxon
+D|15:13:22.576|CvDefinitionValidationHandler           |Checking parameter [NCBITaxon, NCBITaxon:12134, Human rhinovirus 1, ]
+D|15:13:22.577|CvDefinitionValidationHandler           |Parameter [NCBITaxon, NCBITaxon:12134, Human rhinovirus 1, ] uses undefined controlled vocabulary: NCBITaxon
+D|15:13:22.577|CvDefinitionValidationHandler           |Checking parameter [BTO, BTO:0000759, liver, ]
+D|15:13:22.577|CvDefinitionValidationHandler           |Parameter [BTO, BTO:0000759, liver, ] uses undefined controlled vocabulary: BTO
+D|15:13:22.577|CvMappingValidator                      |Applying 28 cv rule mapping steps.
+D|15:13:22.580|ResolvingCvRuleHandler                  |Evaluating rule msrun_format_may on /metadata/msRun/@format
+D|15:13:22.580|ResolvingCvRuleHandler                  |Resolving children of MS:1000560 against MS:1000584
+D|15:13:22.581|OLSClient                               |obo_id=MS:1000584
+D|15:13:23.234|ResolvingCvRuleHandler                  |MS:1000584 is a child of MS:1000560
+D|15:13:23.239|ResolvingCvRuleHandler                  |Evaluating rule msrun_id_format_may on /metadata/msRun/@idFormat
+D|15:13:23.240|ResolvingCvRuleHandler                  |Resolving children of MS:1000767 against MS:1001530
+D|15:13:23.241|OLSClient                               |obo_id=MS:1001530
+D|15:13:23.460|ResolvingCvRuleHandler                  |MS:1001530 is not related to MS:1000767
+D|15:13:23.461|EmptyRuleHandler                        |Evaluating rule msrun_fragmentation_method_may on /metadata/msRun/@fragmentationMethod did not yield any selected elements!
+D|15:13:23.463|ResolvingCvRuleHandler                  |Evaluating rule msrun_scan_polarity_must on /metadata/msRun/@scanPolarity
+D|15:13:23.464|EmptyRuleHandler                        |Evaluating rule msrun_hash_method_may on /metadata/msRun/@hashMethod did not yield any selected elements!
+D|15:13:23.465|EmptyRuleHandler                        |Evaluating rule sample_processing_may on /metadata/sampleProcessing/@sampleProcessing did not yield any selected elements!
+D|15:13:23.466|EmptyRuleHandler                        |Evaluating rule instrument_name_may on /metadata/instrument/@name did not yield any selected elements!
+D|15:13:23.467|EmptyRuleHandler                        |Evaluating rule instrument_source_may on /metadata/instrument/@source did not yield any selected elements!
+D|15:13:23.468|EmptyRuleHandler                        |Evaluating rule instrument_analyzer_may on /metadata/instrument/@analyzer did not yield any selected elements!
+D|15:13:23.469|EmptyRuleHandler                        |Evaluating rule instrument_detector_may on /metadata/instrument/@detector did not yield any selected elements!
+D|15:13:23.472|EmptyRuleHandler                        |Evaluating rule software_must on /metadata/software/@parameter did not yield any selected elements!
+D|15:13:23.474|EmptyRuleHandler                        |Evaluating rule quantification_method_must on /metadata/@quantificationMethod did not yield any selected elements!
+D|15:13:23.477|ResolvingCvRuleHandler                  |Evaluating rule sample_species_may on /metadata/sample/@species
+D|15:13:23.477|ResolvingCvRuleHandler                  |Resolving children of PRIDE:0000033 against NCBITaxon:9606
+D|15:13:23.478|OLSClient                               |obo_id=NCBITaxon:9606
+D|15:13:24.979|ResolvingCvRuleHandler                  |NCBITaxon:9606 is not related to PRIDE:0000033
+D|15:13:24.979|ResolvingCvRuleHandler                  |Resolving children of PRIDE:0000033 against NCBITaxon:12134
+D|15:13:24.980|OLSClient                               |obo_id=NCBITaxon:12134
+D|15:13:25.421|ResolvingCvRuleHandler                  |NCBITaxon:12134 is not related to PRIDE:0000033
+D|15:13:25.421|ResolvingCvRuleHandler                  |Resolving children of NCBITaxon:1 against NCBITaxon:9606
+D|15:13:25.421|CvParameterLookupService                |Cache hit for parameter class Parameter {
+    class IndexedElement {
+        id: null
+        elementType: element_type
+    }
+    cvLabel: NCBITaxon
+    cvAccession: NCBITaxon:9606
+    name: Homo sapiens (Human)
+    value: 
+} in parent cache!
+D|15:13:25.421|ResolvingCvRuleHandler                  |NCBITaxon:9606 is a child of NCBITaxon:1
+D|15:13:25.421|ResolvingCvRuleHandler                  |Resolving children of NCBITaxon:1 against NCBITaxon:12134
+D|15:13:25.422|CvParameterLookupService                |Cache hit for parameter class Parameter {
+    class IndexedElement {
+        id: null
+        elementType: element_type
+    }
+    cvLabel: NCBITaxon
+    cvAccession: NCBITaxon:12134
+    name: Human rhinovirus 1
+    value: 
+} in parent cache!
+D|15:13:25.422|ResolvingCvRuleHandler                  |NCBITaxon:12134 is a child of NCBITaxon:1
+D|15:13:25.423|ResolvingCvRuleHandler                  |Evaluating rule sample_tissue_may on /metadata/sample/@tissue
+D|15:13:25.423|ResolvingCvRuleHandler                  |Resolving children of BTO:0000000 against BTO:0000759
+D|15:13:25.423|OLSClient                               |obo_id=BTO:0000759
+D|15:13:25.874|ResolvingCvRuleHandler                  |BTO:0000759 is a child of BTO:0000000
+D|15:13:25.875|ResolvingCvRuleHandler                  |Resolving children of PRIDE:0000442 against BTO:0000759
+D|15:13:25.875|CvParameterLookupService                |Cache hit for parameter class Parameter {
+    class IndexedElement {
+        id: null
+        elementType: element_type
+    }
+    cvLabel: BTO
+    cvAccession: BTO:0000759
+    name: liver
+    value: 
+} in parent cache!
+D|15:13:25.876|ResolvingCvRuleHandler                  |BTO:0000759 is not related to PRIDE:0000442
+D|15:13:25.877|ResolvingCvRuleHandler                  |Evaluating rule sample_cell_type_may on /metadata/sample/@cellType
+D|15:13:25.878|ResolvingCvRuleHandler                  |Resolving children of CL:0000000 against CL:0000182
+D|15:13:25.879|OLSClient                               |obo_id=CL:0000182
+D|15:13:48.860|ResolvingCvRuleHandler                  |CL:0000182 is a child of CL:0000000
+D|15:13:48.861|ResolvingCvRuleHandler                  |Evaluating rule sample_disease_may on /metadata/sample/@disease
+D|15:13:48.862|ResolvingCvRuleHandler                  |Resolving children of DOID:4 against DOID:684
+D|15:13:48.862|OLSClient                               |obo_id=DOID:684
+D|15:13:50.084|ResolvingCvRuleHandler                  |DOID:684 is a child of DOID:4
+D|15:13:50.085|ResolvingCvRuleHandler                  |Resolving children of DOID:4 against DOID:9452
+D|15:13:50.086|OLSClient                               |obo_id=DOID:9452
+D|15:13:50.392|ResolvingCvRuleHandler                  |DOID:9452 is a child of DOID:4
+D|15:13:50.393|ResolvingCvRuleHandler                  |Resolving children of PRIDE:0000018 against DOID:684
+D|15:13:50.393|CvParameterLookupService                |Cache hit for parameter class Parameter {
+    class IndexedElement {
+        id: null
+        elementType: element_type
+    }
+    cvLabel: DOID
+    cvAccession: DOID:684
+    name: hepatocellular carcinoma
+    value: 
+} in parent cache!
+D|15:13:50.393|ResolvingCvRuleHandler                  |DOID:684 is not related to PRIDE:0000018
+D|15:13:50.393|ResolvingCvRuleHandler                  |Resolving children of PRIDE:0000018 against DOID:9452
+D|15:13:50.394|CvParameterLookupService                |Cache hit for parameter class Parameter {
+    class IndexedElement {
+        id: null
+        elementType: element_type
+    }
+    cvLabel: DOID
+    cvAccession: DOID:9452
+    name: alcoholic fatty liver
+    value: 
+} in parent cache!
+D|15:13:50.394|ResolvingCvRuleHandler                  |DOID:9452 is not related to PRIDE:0000018
+D|15:13:50.395|EmptyRuleHandler                        |Evaluating rule database_must on /metadata/database/@param did not yield any selected elements!
+D|15:13:50.398|EmptyRuleHandler                        |Evaluating rule study_variable_average_function_may on /metadata/studyVariable/@averageFunction did not yield any selected elements!
+D|15:13:50.400|EmptyRuleHandler                        |Evaluating rule study_variable_variation_function_may on /metadata/studyVariable/@variationFunction did not yield any selected elements!
+D|15:13:50.402|EmptyRuleHandler                        |Evaluating rule derivatization_agent_may on /metadata/@derivatizationAgent did not yield any selected elements!
+D|15:13:50.404|EmptyRuleHandler                        |Evaluating rule small_molecule_quantification_unit_must on /metadata/@smallMoleculeQuantificationUnit did not yield any selected elements!
+D|15:13:50.406|EmptyRuleHandler                        |Evaluating rule small_molecule_feature_quantification_unit_must on /metadata/@smallMoleculeFeatureQuantificationUnit did not yield any selected elements!
+D|15:13:50.408|EmptyRuleHandler                        |Evaluating rule small_molecule_identification_reliability_may on /metadata/@smallMoleculeIdentificationReliability did not yield any selected elements!
+D|15:13:50.409|EmptyRuleHandler                        |Evaluating rule id_confidence_measure_must on /metadata/@idConfidenceMeasure did not yield any selected elements!
+D|15:13:50.411|EmptyRuleHandler                        |Evaluating rule best_id_confidence_measure_must on /smallMoleculeSummary/@bestIdConfidenceMeasure did not yield any selected elements!
+D|15:13:50.413|EmptyRuleHandler                        |Evaluating rule derivatized_form_may on /smallMoleculeEvidence/@derivatizedForm did not yield any selected elements!
+D|15:13:50.415|EmptyRuleHandler                        |Evaluating rule ms_level_must on /smallMoleculeEvidence/@msLevel did not yield any selected elements!
+D|15:13:50.417|EmptyRuleHandler                        |Evaluating rule identification_method_must on /smallMoleculeEvidence/@identificationMethod did not yield any selected elements!
+D|15:13:50.418|CvMappingValidator                      |Applying 1 post validation steps.
+class ValidationMessage {
+    code: [Error-3013] line -1: The CV with prefix "CL" for parameter "[CL, CL:0000182, hepatocyte, ]" MUST be defined in the metadata section!
+    
+    category: cross_check
+    messageType: error
+    message: The CV with prefix "CL" for parameter "[CL, CL:0000182, hepatocyte, ]" MUST be defined in the metadata section!
+    lineNumber: -1
+}
+class ValidationMessage {
+    code: [Error-3013] line -1: The CV with prefix "DOID" for parameter "[DOID, DOID:684, hepatocellular carcinoma, ]" MUST be defined in the metadata section!
+    
+    category: cross_check
+    messageType: error
+    message: The CV with prefix "DOID" for parameter "[DOID, DOID:684, hepatocellular carcinoma, ]" MUST be defined in the metadata section!
+    lineNumber: -1
+}
+class ValidationMessage {
+    code: [Error-3013] line -1: The CV with prefix "DOID" for parameter "[DOID, DOID:9452, alcoholic fatty liver, ]" MUST be defined in the metadata section!
+    
+    category: cross_check
+    messageType: error
+    message: The CV with prefix "DOID" for parameter "[DOID, DOID:9452, alcoholic fatty liver, ]" MUST be defined in the metadata section!
+    lineNumber: -1
+}
+class ValidationMessage {
+    code: [Error-3013] line -1: The CV with prefix "NCBITaxon" for parameter "[NCBITaxon, NCBITaxon:9606, Homo sapiens (Human), ]" MUST be defined in the metadata section!
+    
+    category: cross_check
+    messageType: error
+    message: The CV with prefix "NCBITaxon" for parameter "[NCBITaxon, NCBITaxon:9606, Homo sapiens (Human), ]" MUST be defined in the metadata section!
+    lineNumber: -1
+}
+class ValidationMessage {
+    code: [Error-3013] line -1: The CV with prefix "NCBITaxon" for parameter "[NCBITaxon, NCBITaxon:12134, Human rhinovirus 1, ]" MUST be defined in the metadata section!
+    
+    category: cross_check
+    messageType: error
+    message: The CV with prefix "NCBITaxon" for parameter "[NCBITaxon, NCBITaxon:12134, Human rhinovirus 1, ]" MUST be defined in the metadata section!
+    lineNumber: -1
+}
+class ValidationMessage {
+    code: [Error-3013] line -1: The CV with prefix "BTO" for parameter "[BTO, BTO:0000759, liver, ]" MUST be defined in the metadata section!
+    
+    category: cross_check
+    messageType: error
+    message: The CV with prefix "BTO" for parameter "[BTO, BTO:0000759, liver, ]" MUST be defined in the metadata section!
+    lineNumber: -1
+}
+class ValidationMessage {
+    code: [Error-3013] line -1: The CV with prefix "CL" for parameter "[CL, CL:0000182, hepatocyte, ]" MUST be defined in the metadata section!
+    
+    category: cross_check
+    messageType: error
+    message: The CV with prefix "CL" for parameter "[CL, CL:0000182, hepatocyte, ]" MUST be defined in the metadata section!
+    lineNumber: -1
+}
+class ValidationMessage {
+    code: [Error-3013] line -1: The CV with prefix "DOID" for parameter "[DOID, DOID:684, hepatocellular carcinoma, ]" MUST be defined in the metadata section!
+    
+    category: cross_check
+    messageType: error
+    message: The CV with prefix "DOID" for parameter "[DOID, DOID:684, hepatocellular carcinoma, ]" MUST be defined in the metadata section!
+    lineNumber: -1
+}
+class ValidationMessage {
+    code: [Error-3013] line -1: The CV with prefix "DOID" for parameter "[DOID, DOID:9452, alcoholic fatty liver, ]" MUST be defined in the metadata section!
+    
+    category: cross_check
+    messageType: error
+    message: The CV with prefix "DOID" for parameter "[DOID, DOID:9452, alcoholic fatty liver, ]" MUST be defined in the metadata section!
+    lineNumber: -1
+}
+class ValidationMessage {
+    code: [Error-3013] line -1: The CV with prefix "NCBITaxon" for parameter "[NCBITaxon, NCBITaxon:9606, Homo sapiens (Human), ]" MUST be defined in the metadata section!
+    
+    category: cross_check
+    messageType: error
+    message: The CV with prefix "NCBITaxon" for parameter "[NCBITaxon, NCBITaxon:9606, Homo sapiens (Human), ]" MUST be defined in the metadata section!
+    lineNumber: -1
+}
+class ValidationMessage {
+    code: [Error-3013] line -1: The CV with prefix "NCBITaxon" for parameter "[NCBITaxon, NCBITaxon:12134, Human rhinovirus 1, ]" MUST be defined in the metadata section!
+    
+    category: cross_check
+    messageType: error
+    message: The CV with prefix "NCBITaxon" for parameter "[NCBITaxon, NCBITaxon:12134, Human rhinovirus 1, ]" MUST be defined in the metadata section!
+    lineNumber: -1
+}
+class ValidationMessage {
+    code: [Error-3013] line -1: The CV with prefix "BTO" for parameter "[BTO, BTO:0000759, liver, ]" MUST be defined in the metadata section!
+    
+    category: cross_check
+    messageType: error
+    message: The CV with prefix "BTO" for parameter "[BTO, BTO:0000759, liver, ]" MUST be defined in the metadata section!
+    lineNumber: -1
+}
+class ValidationMessage {
+    code: [Warn-3005] line -1: The cv term "[MS, MS:1001530, mzML unique identifier, ]" is not allowed for "/metadata/msRun/@idFormat". Allowed terms are defined in OPTIONAL rule 'msrun_id_format_may' for path '/metadata/msRun/@idFormat' and with scope '/metadata/msRun'  matching  ALL of the terms [ 'MS:1000767' with name 'native spectrum identifier format' excluding itself but including any children.'].
+    
+    category: cross_check
+    messageType: warn
+    message: The cv term "[MS, MS:1001530, mzML unique identifier, ]" is not allowed for "/metadata/msRun/@idFormat". Allowed terms are defined in OPTIONAL rule 'msrun_id_format_may' for path '/metadata/msRun/@idFormat' and with scope '/metadata/msRun'  matching  ALL of the terms [ 'MS:1000767' with name 'native spectrum identifier format' excluding itself but including any children.'].
+    lineNumber: -1
+}
+class ValidationMessage {
+    code: [Info-3010] line -1: The object "/metadata/msRun/@fragmentationMethod" accessed by msrun_fragmentation_method_may is optional, but was null or empty. Allowed terms are defined in OPTIONAL rule 'msrun_fragmentation_method_may' for path '/metadata/msRun/@fragmentationMethod' and with scope '/metadata/msRun'  matching  ANY of the terms [ 'MS:1000044' with name 'dissociation method' excluding itself but including any children.'].
+    
+    category: cross_check
+    messageType: info
+    message: The object "/metadata/msRun/@fragmentationMethod" accessed by msrun_fragmentation_method_may is optional, but was null or empty. Allowed terms are defined in OPTIONAL rule 'msrun_fragmentation_method_may' for path '/metadata/msRun/@fragmentationMethod' and with scope '/metadata/msRun'  matching  ANY of the terms [ 'MS:1000044' with name 'dissociation method' excluding itself but including any children.'].
+    lineNumber: -1
+}
+class ValidationMessage {
+    code: [Info-3010] line -1: The object "/metadata/msRun/@hashMethod" accessed by msrun_hash_method_may is optional, but was null or empty. Allowed terms are defined in OPTIONAL rule 'msrun_hash_method_may' for path '/metadata/msRun/@hashMethod' and with scope '/metadata/msRun'  matching  ALL of the terms [ 'MS:1000561' with name 'data file checksum type' excluding itself but including any children.'].
+    
+    category: cross_check
+    messageType: info
+    message: The object "/metadata/msRun/@hashMethod" accessed by msrun_hash_method_may is optional, but was null or empty. Allowed terms are defined in OPTIONAL rule 'msrun_hash_method_may' for path '/metadata/msRun/@hashMethod' and with scope '/metadata/msRun'  matching  ALL of the terms [ 'MS:1000561' with name 'data file checksum type' excluding itself but including any children.'].
+    lineNumber: -1
+}
+class ValidationMessage {
+    code: [Info-3010] line -1: The object "/metadata/sampleProcessing/@sampleProcessing" accessed by sample_processing_may is optional, but was null or empty. Allowed terms are defined in OPTIONAL rule 'sample_processing_may' for path '/metadata/sampleProcessing/@sampleProcessing' and with scope '/metadata/sampleprocessing'  matching  ALL of the terms [ 'OBI:0000094' with name 'material processing' excluding itself but including any children.'].
+    
+    category: cross_check
+    messageType: info
+    message: The object "/metadata/sampleProcessing/@sampleProcessing" accessed by sample_processing_may is optional, but was null or empty. Allowed terms are defined in OPTIONAL rule 'sample_processing_may' for path '/metadata/sampleProcessing/@sampleProcessing' and with scope '/metadata/sampleprocessing'  matching  ALL of the terms [ 'OBI:0000094' with name 'material processing' excluding itself but including any children.'].
+    lineNumber: -1
+}
+class ValidationMessage {
+    code: [Info-3010] line -1: The object "/metadata/instrument/@name" accessed by instrument_name_may is optional, but was null or empty. Allowed terms are defined in OPTIONAL rule 'instrument_name_may' for path '/metadata/instrument/@name' and with scope '/metadata/instrument'  matching  ALL of the terms [ 'MS:1000031' with name 'instrument model' excluding itself but including any children.'].
+    
+    category: cross_check
+    messageType: info
+    message: The object "/metadata/instrument/@name" accessed by instrument_name_may is optional, but was null or empty. Allowed terms are defined in OPTIONAL rule 'instrument_name_may' for path '/metadata/instrument/@name' and with scope '/metadata/instrument'  matching  ALL of the terms [ 'MS:1000031' with name 'instrument model' excluding itself but including any children.'].
+    lineNumber: -1
+}
+class ValidationMessage {
+    code: [Info-3010] line -1: The object "/metadata/instrument/@source" accessed by instrument_source_may is optional, but was null or empty. Allowed terms are defined in OPTIONAL rule 'instrument_source_may' for path '/metadata/instrument/@source' and with scope '/metadata/instrument'  matching  ALL of the terms [ 'MS:1000458' with name 'source' excluding itself but including any children.'].
+    
+    category: cross_check
+    messageType: info
+    message: The object "/metadata/instrument/@source" accessed by instrument_source_may is optional, but was null or empty. Allowed terms are defined in OPTIONAL rule 'instrument_source_may' for path '/metadata/instrument/@source' and with scope '/metadata/instrument'  matching  ALL of the terms [ 'MS:1000458' with name 'source' excluding itself but including any children.'].
+    lineNumber: -1
+}
+class ValidationMessage {
+    code: [Info-3010] line -1: The object "/metadata/instrument/@analyzer" accessed by instrument_analyzer_may is optional, but was null or empty. Allowed terms are defined in OPTIONAL rule 'instrument_analyzer_may' for path '/metadata/instrument/@analyzer' and with scope '/metadata/instrument'  matching  ALL of the terms [ 'MS:1000451' with name 'mass analyzer' excluding itself but including any children.'].
+    
+    category: cross_check
+    messageType: info
+    message: The object "/metadata/instrument/@analyzer" accessed by instrument_analyzer_may is optional, but was null or empty. Allowed terms are defined in OPTIONAL rule 'instrument_analyzer_may' for path '/metadata/instrument/@analyzer' and with scope '/metadata/instrument'  matching  ALL of the terms [ 'MS:1000451' with name 'mass analyzer' excluding itself but including any children.'].
+    lineNumber: -1
+}
+class ValidationMessage {
+    code: [Info-3010] line -1: The object "/metadata/instrument/@detector" accessed by instrument_detector_may is optional, but was null or empty. Allowed terms are defined in OPTIONAL rule 'instrument_detector_may' for path '/metadata/instrument/@detector' and with scope '/metadata/instrument'  matching  ALL of the terms [ 'MS:1000026' with name 'detector type' excluding itself but including any children.'].
+    
+    category: cross_check
+    messageType: info
+    message: The object "/metadata/instrument/@detector" accessed by instrument_detector_may is optional, but was null or empty. Allowed terms are defined in OPTIONAL rule 'instrument_detector_may' for path '/metadata/instrument/@detector' and with scope '/metadata/instrument'  matching  ALL of the terms [ 'MS:1000026' with name 'detector type' excluding itself but including any children.'].
+    lineNumber: -1
+}
+class ValidationMessage {
+    code: [Error-3010] line -1: The object "/metadata/software/@parameter" accessed by software_must is required, but was null or empty. Allowed terms are defined in REQUIRED rule 'software_must' for path '/metadata/software/@parameter' and with scope '/metadata/software'  matching  ALL of the terms [ 'MS:1000531' with name 'software' excluding itself but including any children.'].
+    
+    category: cross_check
+    messageType: error
+    message: The object "/metadata/software/@parameter" accessed by software_must is required, but was null or empty. Allowed terms are defined in REQUIRED rule 'software_must' for path '/metadata/software/@parameter' and with scope '/metadata/software'  matching  ALL of the terms [ 'MS:1000531' with name 'software' excluding itself but including any children.'].
+    lineNumber: -1
+}
+class ValidationMessage {
+    code: [Error-3010] line -1: The object "/metadata/@quantificationMethod" accessed by quantification_method_must is required, but was null or empty. Allowed terms are defined in REQUIRED rule 'quantification_method_must' for path '/metadata/@quantificationMethod' and with scope '/metadata'  matching  ANY of the terms [ 'PRIDE:0000307' with name 'Quantification method' excluding itself but including any children.'| 'MS:1001833' with name 'quantitation analysis summary' excluding itself but including any children.'].
+    
+    category: cross_check
+    messageType: error
+    message: The object "/metadata/@quantificationMethod" accessed by quantification_method_must is required, but was null or empty. Allowed terms are defined in REQUIRED rule 'quantification_method_must' for path '/metadata/@quantificationMethod' and with scope '/metadata'  matching  ANY of the terms [ 'PRIDE:0000307' with name 'Quantification method' excluding itself but including any children.'| 'MS:1001833' with name 'quantitation analysis summary' excluding itself but including any children.'].
+    lineNumber: -1
+}
+class ValidationMessage {
+    code: [Error-3010] line -1: The object "/metadata/database/@param" accessed by database_must is required, but was null or empty. Allowed terms are defined in REQUIRED rule 'database_must' for path '/metadata/database/@param' and with scope '/metadata/database'  matching  EXACTLY ONE of the terms [ 'MS:1001013' with name 'database name' excluding itself but including any children.'| 'MS:1001347' with name 'database file formats' excluding itself but including any children.'| 'MS:1001011' with name 'search database details' excluding itself but including any children.'].
+    
+    category: cross_check
+    messageType: error
+    message: The object "/metadata/database/@param" accessed by database_must is required, but was null or empty. Allowed terms are defined in REQUIRED rule 'database_must' for path '/metadata/database/@param' and with scope '/metadata/database'  matching  EXACTLY ONE of the terms [ 'MS:1001013' with name 'database name' excluding itself but including any children.'| 'MS:1001347' with name 'database file formats' excluding itself but including any children.'| 'MS:1001011' with name 'search database details' excluding itself but including any children.'].
+    lineNumber: -1
+}
+class ValidationMessage {
+    code: [Info-3010] line -1: The object "/metadata/studyVariable/@averageFunction" accessed by study_variable_average_function_may is optional, but was null or empty. Allowed terms are defined in OPTIONAL rule 'study_variable_average_function_may' for path '/metadata/studyVariable/@averageFunction' and with scope '/metadata/studyvariable'  matching  ALL of the terms [ 'MS:1002882' with name 'study variable average function' excluding itself but including any children.'].
+    
+    category: cross_check
+    messageType: info
+    message: The object "/metadata/studyVariable/@averageFunction" accessed by study_variable_average_function_may is optional, but was null or empty. Allowed terms are defined in OPTIONAL rule 'study_variable_average_function_may' for path '/metadata/studyVariable/@averageFunction' and with scope '/metadata/studyvariable'  matching  ALL of the terms [ 'MS:1002882' with name 'study variable average function' excluding itself but including any children.'].
+    lineNumber: -1
+}
+class ValidationMessage {
+    code: [Info-3010] line -1: The object "/metadata/studyVariable/@variationFunction" accessed by study_variable_variation_function_may is optional, but was null or empty. Allowed terms are defined in OPTIONAL rule 'study_variable_variation_function_may' for path '/metadata/studyVariable/@variationFunction' and with scope '/metadata/studyvariable'  matching  ALL of the terms [ 'MS:1002884' with name 'study variable variation function' excluding itself but including any children.'].
+    
+    category: cross_check
+    messageType: info
+    message: The object "/metadata/studyVariable/@variationFunction" accessed by study_variable_variation_function_may is optional, but was null or empty. Allowed terms are defined in OPTIONAL rule 'study_variable_variation_function_may' for path '/metadata/studyVariable/@variationFunction' and with scope '/metadata/studyvariable'  matching  ALL of the terms [ 'MS:1002884' with name 'study variable variation function' excluding itself but including any children.'].
+    lineNumber: -1
+}
+class ValidationMessage {
+    code: [Info-3010] line -1: The object "/metadata/@derivatizationAgent" accessed by derivatization_agent_may is optional, but was null or empty. Allowed terms are defined in OPTIONAL rule 'derivatization_agent_may' for path '/metadata/@derivatizationAgent' and with scope '/metadata'  matching  ALL of the terms [ 'CHEBI:23367' with name 'molecular entity' excluding itself but including any children.'].
+    
+    category: cross_check
+    messageType: info
+    message: The object "/metadata/@derivatizationAgent" accessed by derivatization_agent_may is optional, but was null or empty. Allowed terms are defined in OPTIONAL rule 'derivatization_agent_may' for path '/metadata/@derivatizationAgent' and with scope '/metadata'  matching  ALL of the terms [ 'CHEBI:23367' with name 'molecular entity' excluding itself but including any children.'].
+    lineNumber: -1
+}
+class ValidationMessage {
+    code: [Error-3010] line -1: The object "/metadata/@smallMoleculeQuantificationUnit" accessed by small_molecule_quantification_unit_must is required, but was null or empty. Allowed terms are defined in REQUIRED rule 'small_molecule_quantification_unit_must' for path '/metadata/@smallMoleculeQuantificationUnit' and with scope '/metadata'  matching  EXACTLY ONE of the terms [ 'PRIDE:0000392' with name 'Quantification unit' excluding itself but including any children.'| 'UO:0000051' with name 'concentration unit' excluding itself but including any children.'| 'MS:1000043' with name 'intensity unit' excluding itself but including any children.'| 'UO:0000006' with name 'substance unit' excluding itself but including any children.'].
+    
+    category: cross_check
+    messageType: error
+    message: The object "/metadata/@smallMoleculeQuantificationUnit" accessed by small_molecule_quantification_unit_must is required, but was null or empty. Allowed terms are defined in REQUIRED rule 'small_molecule_quantification_unit_must' for path '/metadata/@smallMoleculeQuantificationUnit' and with scope '/metadata'  matching  EXACTLY ONE of the terms [ 'PRIDE:0000392' with name 'Quantification unit' excluding itself but including any children.'| 'UO:0000051' with name 'concentration unit' excluding itself but including any children.'| 'MS:1000043' with name 'intensity unit' excluding itself but including any children.'| 'UO:0000006' with name 'substance unit' excluding itself but including any children.'].
+    lineNumber: -1
+}
+class ValidationMessage {
+    code: [Error-3010] line -1: The object "/metadata/@smallMoleculeFeatureQuantificationUnit" accessed by small_molecule_feature_quantification_unit_must is required, but was null or empty. Allowed terms are defined in REQUIRED rule 'small_molecule_feature_quantification_unit_must' for path '/metadata/@smallMoleculeFeatureQuantificationUnit' and with scope '/metadata'  matching  EXACTLY ONE of the terms [ 'PRIDE:0000392' with name 'Quantification unit' excluding itself but including any children.'| 'UO:0000051' with name 'concentration unit' excluding itself but including any children.'| 'MS:1000043' with name 'intensity unit' excluding itself but including any children.'| 'UO:0000006' with name 'substance unit' excluding itself but including any children.'].
+    
+    category: cross_check
+    messageType: error
+    message: The object "/metadata/@smallMoleculeFeatureQuantificationUnit" accessed by small_molecule_feature_quantification_unit_must is required, but was null or empty. Allowed terms are defined in REQUIRED rule 'small_molecule_feature_quantification_unit_must' for path '/metadata/@smallMoleculeFeatureQuantificationUnit' and with scope '/metadata'  matching  EXACTLY ONE of the terms [ 'PRIDE:0000392' with name 'Quantification unit' excluding itself but including any children.'| 'UO:0000051' with name 'concentration unit' excluding itself but including any children.'| 'MS:1000043' with name 'intensity unit' excluding itself but including any children.'| 'UO:0000006' with name 'substance unit' excluding itself but including any children.'].
+    lineNumber: -1
+}
+class ValidationMessage {
+    code: [Info-3010] line -1: The object "/metadata/@smallMoleculeIdentificationReliability" accessed by small_molecule_identification_reliability_may is optional, but was null or empty. Allowed terms are defined in OPTIONAL rule 'small_molecule_identification_reliability_may' for path '/metadata/@smallMoleculeIdentificationReliability' and with scope '/metadata'  matching  ALL of the terms [ 'MS:1002895' with name 'small molecule identification attribute' excluding itself but including any children.'].
+    
+    category: cross_check
+    messageType: info
+    message: The object "/metadata/@smallMoleculeIdentificationReliability" accessed by small_molecule_identification_reliability_may is optional, but was null or empty. Allowed terms are defined in OPTIONAL rule 'small_molecule_identification_reliability_may' for path '/metadata/@smallMoleculeIdentificationReliability' and with scope '/metadata'  matching  ALL of the terms [ 'MS:1002895' with name 'small molecule identification attribute' excluding itself but including any children.'].
+    lineNumber: -1
+}
+class ValidationMessage {
+    code: [Error-3010] line -1: The object "/metadata/@idConfidenceMeasure" accessed by id_confidence_measure_must is required, but was null or empty. Allowed terms are defined in REQUIRED rule 'id_confidence_measure_must' for path '/metadata/@idConfidenceMeasure' and with scope '/metadata'  matching  ANY of the terms [ 'MS:1002888' with name 'small molecule confidence measure' excluding itself but including any children.'].
+    
+    category: cross_check
+    messageType: error
+    message: The object "/metadata/@idConfidenceMeasure" accessed by id_confidence_measure_must is required, but was null or empty. Allowed terms are defined in REQUIRED rule 'id_confidence_measure_must' for path '/metadata/@idConfidenceMeasure' and with scope '/metadata'  matching  ANY of the terms [ 'MS:1002888' with name 'small molecule confidence measure' excluding itself but including any children.'].
+    lineNumber: -1
+}
+class ValidationMessage {
+    code: [Error-3010] line -1: The object "/smallMoleculeSummary/@bestIdConfidenceMeasure" accessed by best_id_confidence_measure_must is required, but was null or empty. Allowed terms are defined in REQUIRED rule 'best_id_confidence_measure_must' for path '/smallMoleculeSummary/@bestIdConfidenceMeasure' and with scope '/smallMoleculeSummary'  matching  ALL of the terms [ 'MS:1002888' with name 'small molecule confidence measure' excluding itself but including any children.'].
+    
+    category: cross_check
+    messageType: error
+    message: The object "/smallMoleculeSummary/@bestIdConfidenceMeasure" accessed by best_id_confidence_measure_must is required, but was null or empty. Allowed terms are defined in REQUIRED rule 'best_id_confidence_measure_must' for path '/smallMoleculeSummary/@bestIdConfidenceMeasure' and with scope '/smallMoleculeSummary'  matching  ALL of the terms [ 'MS:1002888' with name 'small molecule confidence measure' excluding itself but including any children.'].
+    lineNumber: -1
+}
+class ValidationMessage {
+    code: [Info-3010] line -1: The object "/smallMoleculeEvidence/@derivatizedForm" accessed by derivatized_form_may is optional, but was null or empty. Allowed terms are defined in OPTIONAL rule 'derivatized_form_may' for path '/smallMoleculeEvidence/@derivatizedForm' and with scope '/smallMoleculeEvidence'  matching  ALL of the terms [ 'CHEBI:24433' with name 'group' excluding itself but including any children.'].
+    
+    category: cross_check
+    messageType: info
+    message: The object "/smallMoleculeEvidence/@derivatizedForm" accessed by derivatized_form_may is optional, but was null or empty. Allowed terms are defined in OPTIONAL rule 'derivatized_form_may' for path '/smallMoleculeEvidence/@derivatizedForm' and with scope '/smallMoleculeEvidence'  matching  ALL of the terms [ 'CHEBI:24433' with name 'group' excluding itself but including any children.'].
+    lineNumber: -1
+}
+class ValidationMessage {
+    code: [Error-3010] line -1: The object "/smallMoleculeEvidence/@msLevel" accessed by ms_level_must is required, but was null or empty. Allowed terms are defined in REQUIRED rule 'ms_level_must' for path '/smallMoleculeEvidence/@msLevel' and with scope '/smallMoleculeSummary'  matching  ALL of the terms [ 'MS:1000511' with name 'ms level' excluding itself but including any children.'].
+    
+    category: cross_check
+    messageType: error
+    message: The object "/smallMoleculeEvidence/@msLevel" accessed by ms_level_must is required, but was null or empty. Allowed terms are defined in REQUIRED rule 'ms_level_must' for path '/smallMoleculeEvidence/@msLevel' and with scope '/smallMoleculeSummary'  matching  ALL of the terms [ 'MS:1000511' with name 'ms level' excluding itself but including any children.'].
+    lineNumber: -1
+}
+class ValidationMessage {
+    code: [Error-3010] line -1: The object "/smallMoleculeEvidence/@identificationMethod" accessed by identification_method_must is required, but was null or empty. Allowed terms are defined in REQUIRED rule 'identification_method_must' for path '/smallMoleculeEvidence/@identificationMethod' and with scope '/smallMoleculeEvidence'  matching  EXACTLY ONE of the terms [ 'MS:1001058' with name 'quality estimation by manual validation' exactly.'| 'MS:1001060' with name 'search type' excluding itself but including any children.'].
+    
+    category: cross_check
+    messageType: error
+    message: The object "/smallMoleculeEvidence/@identificationMethod" accessed by identification_method_must is required, but was null or empty. Allowed terms are defined in REQUIRED rule 'identification_method_must' for path '/smallMoleculeEvidence/@identificationMethod' and with scope '/smallMoleculeEvidence'  matching  EXACTLY ONE of the terms [ 'MS:1001058' with name 'quality estimation by manual validation' exactly.'| 'MS:1001060' with name 'search type' excluding itself but including any children.'].
+    lineNumber: -1
+}
+################################################################################
+# testCustomBeanValidation
+################################################################################
+D|15:13:50.465|logging                                 |Logging Provider: org.jboss.logging.Slf4jLoggerProvider
+I|15:13:50.465|Version                                 |HV000001: Hibernate Validator 6.0.7.Final
+D|15:13:50.474|TraversableResolvers                    |Cannot find javax.persistence.Persistence on classpath. Assuming non JPA 2 environment. All properties will per default be traversable.
+D|15:13:50.484|ValidationXmlParser                     |Trying to load META-INF/validation.xml for XML based Validator configuration.
+D|15:13:50.485|ResourceLoaderHelper                    |Trying to load META-INF/validation.xml via TCCL
+D|15:13:50.486|ResourceLoaderHelper                    |Trying to load META-INF/validation.xml via Hibernate Validator's class loader
+D|15:13:50.486|ValidationXmlParser                     |No META-INF/validation.xml found. Using annotation based configuration only.
+D|15:13:50.610|ResourceBundleMessageInterpolator       |Loaded expression factory via original TCCL
+D|15:13:50.612|ValidatorFactoryImpl                    |HV000234: Using org.hibernate.validator.messageinterpolation.ResourceBundleMessageInterpolator as ValidatorFactory-scoped message interpolator.
+D|15:13:50.613|ValidatorFactoryImpl                    |HV000234: Using org.hibernate.validator.internal.engine.resolver.TraverseAllTraversableResolver as ValidatorFactory-scoped traversable resolver.
+D|15:13:50.613|ValidatorFactoryImpl                    |HV000234: Using org.hibernate.validator.internal.util.ExecutableParameterNameProvider as ValidatorFactory-scoped parameter name provider.
+D|15:13:50.613|ValidatorFactoryImpl                    |HV000234: Using org.hibernate.validator.internal.engine.DefaultClockProvider as ValidatorFactory-scoped clock provider.
+D|15:13:50.613|ValidatorFactoryImpl                    |HV000234: Using org.hibernate.validator.internal.engine.scripting.DefaultScriptEvaluatorFactory as ValidatorFactory-scoped script evaluator factory.
+D|15:13:50.825|PlatformResourceBundleLocator           |ValidationMessages found.
+D|15:13:50.832|PlatformResourceBundleLocator           |ContributorValidationMessages not found.
+D|15:13:50.837|PlatformResourceBundleLocator           |org.hibernate.validator.ValidationMessages found.
+D|15:13:51.040|PlatformResourceBundleLocator           |ValidationMessages found.
+D|15:13:51.042|PlatformResourceBundleLocator           |ContributorValidationMessages not found.
+D|15:13:51.042|PlatformResourceBundleLocator           |org.hibernate.validator.ValidationMessages found.
+class ValidationMessage {
+    code: null
+    category: format
+    messageType: error
+    message: metadata.sample[0].tissue[0].id: MUST not be null.
+    lineNumber: null
+}
+class ValidationMessage {
+    code: null
+    category: format
+    messageType: error
+    message: metadata.sample[0].species[0].id: MUST not be null.
+    lineNumber: null
+}
+class ValidationMessage {
+    code: null
+    category: format
+    messageType: error
+    message: metadata.msRun[0].name: MUST not be null.
+    lineNumber: null
+}
+class ValidationMessage {
+    code: null
+    category: format
+    messageType: error
+    message: metadata.sample[0].custom[1].id: MUST not be null.
+    lineNumber: null
+}
+class ValidationMessage {
+    code: null
+    category: format
+    messageType: error
+    message: metadata.sample[0].cellType[0].id: MUST not be null.
+    lineNumber: null
+}
+class ValidationMessage {
+    code: null
+    category: format
+    messageType: error
+    message: metadata.sample[0].disease[1].id: MUST not be null.
+    lineNumber: null
+}
+class ValidationMessage {
+    code: null
+    category: format
+    messageType: error
+    message: smallMoleculeSummary: muss zwischen 1 und 2147483647 liegen
+    lineNumber: null
+}
+class ValidationMessage {
+    code: null
+    category: format
+    messageType: error
+    message: metadata.smallMoleculeFeatureQuantificationUnit: MUST not be null.
+    lineNumber: null
+}
+class ValidationMessage {
+    code: null
+    category: format
+    messageType: error
+    message: metadata.sample[0].disease[0].id: MUST not be null.
+    lineNumber: null
+}
+class ValidationMessage {
+    code: null
+    category: format
+    messageType: error
+    message: metadata.quantificationMethod: MUST not be null.
+    lineNumber: null
+}
+class ValidationMessage {
+    code: null
+    category: format
+    messageType: error
+    message: metadata.sample[0].species[1].id: MUST not be null.
+    lineNumber: null
+}
+class ValidationMessage {
+    code: null
+    category: format
+    messageType: error
+    message: metadata.sample[0].custom[0].id: MUST not be null.
+    lineNumber: null
+}
+class ValidationMessage {
+    code: null
+    category: format
+    messageType: error
+    message: metadata.smallMoleculeQuantificationUnit: MUST not be null.
+    lineNumber: null
+}
+################################################################################
+# testDefaultMetadataBeanValidation
+################################################################################
+D|15:13:51.150|TraversableResolvers                    |Cannot find javax.persistence.Persistence on classpath. Assuming non JPA 2 environment. All properties will per default be traversable.
+D|15:13:51.151|ValidationXmlParser                     |Trying to load META-INF/validation.xml for XML based Validator configuration.
+D|15:13:51.151|ResourceLoaderHelper                    |Trying to load META-INF/validation.xml via TCCL
+D|15:13:51.151|ResourceLoaderHelper                    |Trying to load META-INF/validation.xml via Hibernate Validator's class loader
+D|15:13:51.151|ValidationXmlParser                     |No META-INF/validation.xml found. Using annotation based configuration only.
+D|15:13:51.154|ResourceBundleMessageInterpolator       |Loaded expression factory via original TCCL
+D|15:13:51.155|ValidatorFactoryImpl                    |HV000234: Using org.hibernate.validator.messageinterpolation.ResourceBundleMessageInterpolator as ValidatorFactory-scoped message interpolator.
+D|15:13:51.155|ValidatorFactoryImpl                    |HV000234: Using org.hibernate.validator.internal.engine.resolver.TraverseAllTraversableResolver as ValidatorFactory-scoped traversable resolver.
+D|15:13:51.155|ValidatorFactoryImpl                    |HV000234: Using org.hibernate.validator.internal.util.ExecutableParameterNameProvider as ValidatorFactory-scoped parameter name provider.
+D|15:13:51.155|ValidatorFactoryImpl                    |HV000234: Using org.hibernate.validator.internal.engine.DefaultClockProvider as ValidatorFactory-scoped clock provider.
+D|15:13:51.155|ValidatorFactoryImpl                    |HV000234: Using org.hibernate.validator.internal.engine.scripting.DefaultScriptEvaluatorFactory as ValidatorFactory-scoped script evaluator factory.
+D|15:13:51.167|PlatformResourceBundleLocator           |ValidationMessages found.
+D|15:13:51.167|PlatformResourceBundleLocator           |ContributorValidationMessages not found.
+D|15:13:51.167|PlatformResourceBundleLocator           |org.hibernate.validator.ValidationMessages found.
+D|15:13:51.218|PlatformResourceBundleLocator           |ValidationMessages found.
+D|15:13:51.218|PlatformResourceBundleLocator           |ContributorValidationMessages not found.
+D|15:13:51.218|PlatformResourceBundleLocator           |org.hibernate.validator.ValidationMessages found.
+Validation error at metadata.smallMoleculeQuantificationUnit: MUST not be null.
+Validation error at metadata.sample[0].custom[0].id: MUST not be null.
+Validation error at metadata.sample[0].species[1].id: MUST not be null.
+Validation error at metadata.sample[0].species[0].id: MUST not be null.
+Validation error at smallMoleculeSummary: muss zwischen 1 und 2147483647 liegen
+Validation error at metadata.sample[0].cellType[0].id: MUST not be null.
+Validation error at metadata.msRun[0].name: MUST not be null.
+Validation error at metadata.smallMoleculeFeatureQuantificationUnit: MUST not be null.
+Validation error at metadata.sample[0].disease[0].id: MUST not be null.
+Validation error at metadata.sample[0].disease[1].id: MUST not be null.
+Validation error at metadata.quantificationMethod: MUST not be null.
+Validation error at metadata.sample[0].tissue[0].id: MUST not be null.
+Validation error at metadata.sample[0].custom[1].id: MUST not be null.
+################################################################################
+# testDelegatingValidator
+################################################################################
+D|15:13:51.262|TraversableResolvers                    |Cannot find javax.persistence.Persistence on classpath. Assuming non JPA 2 environment. All properties will per default be traversable.
+D|15:13:51.264|ValidationXmlParser                     |Trying to load META-INF/validation.xml for XML based Validator configuration.
+D|15:13:51.264|ResourceLoaderHelper                    |Trying to load META-INF/validation.xml via TCCL
+D|15:13:51.264|ResourceLoaderHelper                    |Trying to load META-INF/validation.xml via Hibernate Validator's class loader
+D|15:13:51.264|ValidationXmlParser                     |No META-INF/validation.xml found. Using annotation based configuration only.
+D|15:13:51.266|ResourceBundleMessageInterpolator       |Loaded expression factory via original TCCL
+D|15:13:51.266|ValidatorFactoryImpl                    |HV000234: Using org.hibernate.validator.messageinterpolation.ResourceBundleMessageInterpolator as ValidatorFactory-scoped message interpolator.
+D|15:13:51.266|ValidatorFactoryImpl                    |HV000234: Using org.hibernate.validator.internal.engine.resolver.TraverseAllTraversableResolver as ValidatorFactory-scoped traversable resolver.
+D|15:13:51.267|ValidatorFactoryImpl                    |HV000234: Using org.hibernate.validator.internal.util.ExecutableParameterNameProvider as ValidatorFactory-scoped parameter name provider.
+D|15:13:51.267|ValidatorFactoryImpl                    |HV000234: Using org.hibernate.validator.internal.engine.DefaultClockProvider as ValidatorFactory-scoped clock provider.
+D|15:13:51.267|ValidatorFactoryImpl                    |HV000234: Using org.hibernate.validator.internal.engine.scripting.DefaultScriptEvaluatorFactory as ValidatorFactory-scoped script evaluator factory.
+D|15:13:51.271|PlatformResourceBundleLocator           |ValidationMessages found.
+D|15:13:51.271|PlatformResourceBundleLocator           |ContributorValidationMessages not found.
+D|15:13:51.271|PlatformResourceBundleLocator           |org.hibernate.validator.ValidationMessages found.
+D|15:13:51.329|PlatformResourceBundleLocator           |ValidationMessages found.
+D|15:13:51.329|PlatformResourceBundleLocator           |ContributorValidationMessages not found.
+D|15:13:51.329|PlatformResourceBundleLocator           |org.hibernate.validator.ValidationMessages found.
+class ValidationMessage {
+    code: null
+    category: format
+    messageType: error
+    message: metadata.quantificationMethod: MUST not be null.
+    lineNumber: null
+}
+class ValidationMessage {
+    code: null
+    category: format
+    messageType: error
+    message: metadata.sample[0].species[1].id: MUST not be null.
+    lineNumber: null
+}
+class ValidationMessage {
+    code: null
+    category: format
+    messageType: error
+    message: metadata.sample[0].disease[1].id: MUST not be null.
+    lineNumber: null
+}
+class ValidationMessage {
+    code: null
+    category: format
+    messageType: error
+    message: smallMoleculeSummary: muss zwischen 1 und 2147483647 liegen
+    lineNumber: null
+}
+class ValidationMessage {
+    code: null
+    category: format
+    messageType: error
+    message: metadata.sample[0].tissue[0].id: MUST not be null.
+    lineNumber: null
+}
+class ValidationMessage {
+    code: null
+    category: format
+    messageType: error
+    message: metadata.sample[0].species[0].id: MUST not be null.
+    lineNumber: null
+}
+class ValidationMessage {
+    code: null
+    category: format
+    messageType: error
+    message: metadata.sample[0].custom[0].id: MUST not be null.
+    lineNumber: null
+}
+class ValidationMessage {
+    code: null
+    category: format
+    messageType: error
+    message: metadata.smallMoleculeFeatureQuantificationUnit: MUST not be null.
+    lineNumber: null
+}
+class ValidationMessage {
+    code: null
+    category: format
+    messageType: error
+    message: metadata.sample[0].cellType[0].id: MUST not be null.
+    lineNumber: null
+}
+class ValidationMessage {
+    code: null
+    category: format
+    messageType: error
+    message: metadata.sample[0].disease[0].id: MUST not be null.
+    lineNumber: null
+}
+class ValidationMessage {
+    code: null
+    category: format
+    messageType: error
+    message: metadata.sample[0].custom[1].id: MUST not be null.
+    lineNumber: null
+}
+class ValidationMessage {
+    code: null
+    category: format
+    messageType: error
+    message: metadata.smallMoleculeQuantificationUnit: MUST not be null.
+    lineNumber: null
+}
+class ValidationMessage {
+    code: null
+    category: format
+    messageType: error
+    message: metadata.msRun[0].name: MUST not be null.
+    lineNumber: null
+}

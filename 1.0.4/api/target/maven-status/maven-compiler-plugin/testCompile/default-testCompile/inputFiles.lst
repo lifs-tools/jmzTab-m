@@ -1,0 +1,10 @@
+/home/ISAS.DE/nils.hoffmann/Projects/github.com/lifs-tools/jmzTab-m/api/src/test/java/uk/ac/ebi/pride/jmztab2/utils/errors/MZTabConversionExceptionTest.java
+/home/ISAS.DE/nils.hoffmann/Projects/github.com/lifs-tools/jmzTab-m/api/src/test/java/de/isas/lipidomics/mztab2/validation/MzTabValidatorTest.java
+/home/ISAS.DE/nils.hoffmann/Projects/github.com/lifs-tools/jmzTab-m/api/src/test/java/de/isas/lipidomics/mztab2/validation/validators/ParameterValidatorTest.java
+/home/ISAS.DE/nils.hoffmann/Projects/github.com/lifs-tools/jmzTab-m/api/src/test/java/uk/ac/ebi/pride/jmztab2/utils/errors/MZTabErrorTypeTest.java
+/home/ISAS.DE/nils.hoffmann/Projects/github.com/lifs-tools/jmzTab-m/api/src/test/java/uk/ac/ebi/pride/jmztab2/utils/errors/MZTabExceptionTest.java
+/home/ISAS.DE/nils.hoffmann/Projects/github.com/lifs-tools/jmzTab-m/api/src/test/java/uk/ac/ebi/pride/jmztab2/utils/errors/MZTabErrorTypeMapTest.java
+/home/ISAS.DE/nils.hoffmann/Projects/github.com/lifs-tools/jmzTab-m/api/src/test/java/uk/ac/ebi/pride/jmztab2/model/MZTabStringUtilsTest.java
+/home/ISAS.DE/nils.hoffmann/Projects/github.com/lifs-tools/jmzTab-m/api/src/test/java/uk/ac/ebi/pride/jmztab2/utils/MZTabPropertiesTest.java
+/home/ISAS.DE/nils.hoffmann/Projects/github.com/lifs-tools/jmzTab-m/api/src/test/java/uk/ac/ebi/pride/jmztab2/utils/errors/MZTabErrorListTest.java
+/home/ISAS.DE/nils.hoffmann/Projects/github.com/lifs-tools/jmzTab-m/api/src/test/java/de/isas/mztab2/model/MzTabTest.java

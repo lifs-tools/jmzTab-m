@@ -1,0 +1,109 @@
+
+[[_paths]]
+== Paths
+
+[[_validatemztabfile]]
+=== POST /validate
+
+==== Description
+Validates an mzTab file in XML or JSON representation and reports syntactic, structural, and semantic errors.
+
+
+==== Parameters
+
+[options="header", cols=".^2,.^3,.^9,.^4,.^2"]
+|===
+|Type|Name|Description|Schema|Default
+|**Query**|**level** +
+__optional__|The level of errors that should be reported, one of ERROR, WARN, INFO.|enum (info, warn, error)|`"info"`
+|**Query**|**maxErrors** +
+__optional__|The maximum number of errors to return.|integer (int32)|`100`
+|**Query**|**semanticValidation** +
+__optional__|Whether a semantic validation against the default rule set should be performed.|boolean|`"false"`
+|**Body**|**mztabfile** +
+__required__|mzTab file that should be validated.|<<_mztab,MzTab>>|
+|===
+
+
+==== Responses
+
+[options="header", cols=".^2,.^14,.^4"]
+|===
+|HTTP Code|Description|Schema
+|**200**|Validation Okay|< <<_validationmessage,ValidationMessage>> > array
+|**415**|Unsupported content type|No Content
+|**422**|Invalid input|< <<_validationmessage,ValidationMessage>> > array
+|**default**|Unexpected error|<<_error,Error>>
+|===
+
+
+==== Consumes
+
+* `application/json`
+* `application/xml`
+
+
+==== Produces
+
+* `application/json`
+
+
+==== Tags
+
+* validate
+
+
+[[_validateplainmztabfile]]
+=== POST /validatePlain
+
+==== Description
+Validates an mzTab file in plain text representation / tab-separated format and reports
+syntactic, structural, and semantic
+errors.
+
+
+==== Parameters
+
+[options="header", cols=".^2,.^3,.^9,.^4,.^2"]
+|===
+|Type|Name|Description|Schema|Default
+|**Query**|**level** +
+__optional__|The level of errors that should be reported, one of ERROR, WARN, INFO.|enum (info, warn, error)|`"info"`
+|**Query**|**maxErrors** +
+__optional__|The maximum number of errors to return.|integer (int32)|`100`
+|**Query**|**semanticValidation** +
+__optional__|Whether a semantic validation against the default rule set should be performed.|boolean|`"false"`
+|**Body**|**mztabfile** +
+__required__|mzTab file that should be validated.|string|
+|===
+
+
+==== Responses
+
+[options="header", cols=".^2,.^14,.^4"]
+|===
+|HTTP Code|Description|Schema
+|**200**|Validation Okay|< <<_validationmessage,ValidationMessage>> > array
+|**415**|Unsupported content type|No Content
+|**422**|Invalid input|< <<_validationmessage,ValidationMessage>> > array
+|**default**|Unexpected error|<<_error,Error>>
+|===
+
+
+==== Consumes
+
+* `text/tab-separated-values`
+* `text/plain`
+
+
+==== Produces
+
+* `application/json`
+
+
+==== Tags
+
+* validatePlain
+
+
+

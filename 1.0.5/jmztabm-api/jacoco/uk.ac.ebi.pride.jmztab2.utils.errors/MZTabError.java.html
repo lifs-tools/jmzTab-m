@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MZTabError.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jmztabm-api</a> &gt; <a href="index.source.html" class="el_package">uk.ac.ebi.pride.jmztab2.utils.errors</a> &gt; <span class="el_source">MZTabError.java</span></div><h1>MZTabError.java</h1><pre class="source lang-java linenums">package uk.ac.ebi.pride.jmztab2.utils.errors;
+
+import de.isas.mztab2.model.ValidationMessage;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import static uk.ac.ebi.pride.jmztab2.model.MZTabConstants.NEW_LINE;
+
+/**
+ * mzTab files can be validated to ensure that they comply with the latest
+ * version of the format specification. The process includes two steps: first of
+ * all the basic model architecture is created, including the metadata section
+ * and the generation of the table column headers. The second step is the
+ * validation of the column rows, which take most of the processing time. The
+ * class MZTabFileParser is used to parse and validate the mzTab files. If the
+ * validation is successful, an MZTabFile model will be then generated. A series
+ * of messages are then reported, which can help to diagnose different types of
+ * format-related (reporting format problems) and/or logical (reporting errors
+ * related to the logical relationships among the different sections in a file)
+ * errors. At the moment of writing, there are about sixty types of error
+ * messages (http://mztab.googlecode.com/wiki/jmzTab_message). The validation
+ * messages have a unique identifier and are classified in three levels: Info,
+ * Warn and Error, according to the requirements included in the specification
+ * document.
+ *
+ * @author qingwei
+ * @since 06/02/13
+ * 
+ */
+public class MZTabError implements Serializable {
+
+    private int lineNumber;
+    private MZTabErrorType type;
+    private String message;
+
+    /**
+     * System will fill a couple of values one by one, and generate a concrete
+     * error message during parse {@link #lineNumber} line in mzTab file.
+     *
+     * @param type SHOULD NOT null.
+     * @param lineNumber SHOULD be positive integer. Except &quot;-1&quot;, which means
+     * the line number unknown.
+     * @param values May be null, if no variable in error's original pattern.
+     */
+<span class="fc" id="L47">    public MZTabError(MZTabErrorType type, int lineNumber, String... values) {</span>
+<span class="pc bpc" id="L48" title="1 of 2 branches missed.">        if (type == null) {</span>
+<span class="nc" id="L49">            throw new NullPointerException(&quot;MZTabErrorType should not set null&quot;);</span>
+        }
+<span class="fc" id="L51">        this.type = type;</span>
+
+<span class="fc" id="L53">        this.lineNumber = lineNumber;</span>
+
+<span class="fc" id="L55">        List&lt;String&gt; valueList = new ArrayList&lt;String&gt;();</span>
+<span class="fc bfc" id="L56" title="All 2 branches covered.">        for (String value : values) {</span>
+<span class="pc bpc" id="L57" title="1 of 2 branches missed.">            valueList.add(value == null ? &quot;&quot; : value);</span>
+        }
+
+<span class="fc" id="L60">        this.message = fill(0, valueList, type.getOriginal());</span>
+<span class="fc" id="L61">    }</span>
+
+    /**
+     * fill &quot;{id}&quot; parameter list one by one.
+     */
+    private String fill(int count, List&lt;String&gt; values, String message) {
+<span class="fc" id="L67">        String regexp = &quot;\\{\\w\\}&quot;;</span>
+<span class="fc" id="L68">        Pattern pattern = Pattern.compile(regexp);</span>
+<span class="fc" id="L69">        Matcher matcher = pattern.matcher(message);</span>
+
+        String value;
+<span class="fc bfc" id="L72" title="All 2 branches covered.">        if (matcher.find()) {</span>
+<span class="pc bpc" id="L73" title="1 of 2 branches missed.">            if (count &gt;= values.size()) {</span>
+<span class="nc" id="L74">                throw new ArrayIndexOutOfBoundsException(</span>
+                    &quot;Tried to replace placeholder &quot; + (count + 1) + &quot; but only &quot; + values.
+<span class="nc" id="L76">                        size() + &quot; values are available for &quot; + getClass().</span>
+<span class="nc" id="L77">                        getSimpleName() + &quot; &quot; + type.toString());</span>
+            }
+<span class="fc" id="L79">            value = values.get(count);</span>
+<span class="fc" id="L80">            message = matcher.replaceFirst(Matcher.quoteReplacement(value));</span>
+<span class="fc" id="L81">            return fill(count + 1, values, message);</span>
+        } else {
+<span class="fc" id="L83">            return message;</span>
+        }
+    }
+
+    /**
+     * &lt;p&gt;Getter for the field &lt;code&gt;type&lt;/code&gt;.&lt;/p&gt;
+     *
+     * @return {@link uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorType}
+     * @see FormatErrorType
+     * @see LogicalErrorType
+     */
+    public MZTabErrorType getType() {
+<span class="fc" id="L95">        return type;</span>
+    }
+
+    /**
+     * &lt;p&gt;Getter for the field &lt;code&gt;message&lt;/code&gt;.&lt;/p&gt;
+     *
+     * @return a concrete error/warn message.
+     */
+    public String getMessage() {
+<span class="nc" id="L104">        return message;</span>
+    }
+
+    /**
+     * &lt;p&gt;Getter for the field &lt;code&gt;lineNumber&lt;/code&gt;.&lt;/p&gt;
+     *
+     * @return the line number.
+     */
+    public int getLineNumber() {
+<span class="nc" id="L113">        return lineNumber;</span>
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * Code: Unique number for error/warn Category: Currently, there are three
+     * types of messages: Format, Logical Original: Message expression pattern.
+     * &quot;{?}&quot; is a couple of parameters which can be filled during validate
+     * processing. Cause: A readable text to describe the reason why raise this
+     * error/warn. Currently, these cause message coming from mztab
+     * specification mainly.
+     */
+    @Override
+    public String toString() {
+<span class="fc" id="L128">        StringBuilder sb = new StringBuilder();</span>
+
+<span class="fc" id="L130">        sb.append(&quot;[&quot;).</span>
+<span class="fc" id="L131">            append(type.getLevel()).</span>
+<span class="fc" id="L132">            append(&quot;-&quot;).</span>
+<span class="fc" id="L133">            append(type.getCode()).</span>
+<span class="fc" id="L134">            append(&quot;] &quot;);</span>
+<span class="fc" id="L135">        sb.append(&quot;line &quot;).</span>
+<span class="fc" id="L136">            append(lineNumber).</span>
+<span class="fc" id="L137">            append(&quot;: &quot;);</span>
+<span class="fc" id="L138">        sb.append(message).</span>
+<span class="fc" id="L139">            append(NEW_LINE);</span>
+
+<span class="fc" id="L141">        return sb.toString();</span>
+    }
+    
+    public ValidationMessage toValidationMessage() throws IllegalStateException {
+<span class="nc" id="L145">        ValidationMessage.MessageTypeEnum level = ValidationMessage.MessageTypeEnum.INFO;</span>
+<span class="nc bnc" id="L146" title="All 4 branches missed.">        switch (getType().</span>
+<span class="nc" id="L147">            getLevel()) {</span>
+            case Error:
+<span class="nc" id="L149">                level = ValidationMessage.MessageTypeEnum.ERROR;</span>
+<span class="nc" id="L150">                break;</span>
+            case Info:
+<span class="nc" id="L152">                level = ValidationMessage.MessageTypeEnum.INFO;</span>
+<span class="nc" id="L153">                break;</span>
+            case Warn:
+<span class="nc" id="L155">                level = ValidationMessage.MessageTypeEnum.WARN;</span>
+<span class="nc" id="L156">                break;</span>
+            default:
+<span class="nc" id="L158">                throw new IllegalStateException(&quot;State &quot; + </span>
+<span class="nc" id="L159">                    getType().</span>
+<span class="nc" id="L160">                    getLevel() + &quot; is not handled in switch/case statement!&quot;);</span>
+        }
+<span class="nc" id="L162">        ValidationMessage.CategoryEnum category = ValidationMessage.CategoryEnum.FORMAT;</span>
+<span class="nc bnc" id="L163" title="All 4 branches missed.">        switch(getType().getCategory()) {</span>
+            case Format:
+<span class="nc" id="L165">                category = ValidationMessage.CategoryEnum.FORMAT;</span>
+<span class="nc" id="L166">                break;</span>
+            case Logical:
+<span class="nc" id="L168">                category = ValidationMessage.CategoryEnum.LOGICAL;</span>
+<span class="nc" id="L169">                break;</span>
+            case CrossCheck:
+<span class="nc" id="L171">                category = ValidationMessage.CategoryEnum.CROSS_CHECK;</span>
+<span class="nc" id="L172">                break;</span>
+            default:
+<span class="nc" id="L174">                throw new IllegalStateException(&quot;Category &quot; + </span>
+<span class="nc" id="L175">                    getType().</span>
+<span class="nc" id="L176">                    getCategory()+ &quot; is not handled in switch/case statement!&quot;);</span>
+        }
+<span class="nc" id="L178">        ValidationMessage vr = new ValidationMessage().lineNumber(</span>
+<span class="nc" id="L179">            Long.valueOf(getLineNumber())).</span>
+<span class="nc" id="L180">            category(category).</span>
+<span class="nc" id="L181">            messageType(level).</span>
+<span class="nc" id="L182">            message(getMessage()).</span>
+<span class="nc" id="L183">            code(toString());</span>
+<span class="nc" id="L184">        return vr;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

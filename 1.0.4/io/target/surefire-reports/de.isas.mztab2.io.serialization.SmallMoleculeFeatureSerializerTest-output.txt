@@ -1,0 +1,6 @@
+SFH	SMF_ID	SME_ID_REFS	SME_ID_REF_ambiguity_code	adduct_ion	isotopomer	exp_mass_to_charge	charge	retention_time_in_seconds	retention_time_in_seconds_start	retention_time_in_seconds_end	abundance_assay[1]	abundance_assay[2]	opt_global_quantifiers_SMF_ID_REFS
+SMF	1	1	null	[M+H]1+	null	650.6432	1	821.2341	756.0	954.0	4.448784E-5		3
+SMF	2	2	null	null	null	252.2677	1	821.2341	756.0	954.0	6.673176E-6		null
+SMF	3	3	null	null	null	264.2689	1	821.2341	756.0	954.0	1.3346352E-5		null
+SMF	4	3	null	null	null	282.2788	1	821.2341	756.0	954.0	9.831813E-6		null
+

@@ -1,0 +1,8 @@
+de.isas.lipidomics.mztab2.validation
+de.isas.lipidomics.mztab2.validation.constraints
+de.isas.lipidomics.mztab2.validation.validators
+de.isas.mztab2.model
+uk.ac.ebi.pride.jmztab2
+uk.ac.ebi.pride.jmztab2.model
+uk.ac.ebi.pride.jmztab2.utils
+uk.ac.ebi.pride.jmztab2.utils.errors

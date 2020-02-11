@@ -1,0 +1,293 @@
+################################################################################
+# testSmlNullEmptyHandling
+################################################################################
+MTD	mzTab-version	2.0.0-M
+MTD	mzTab-ID	1
+MTD	contact[1]-name	C1
+MTD	contact[1]-email	c1@email.com
+MTD	contact[1]-affiliation	A1
+MTD	contact[2]-name	C2
+MTD	contact[2]-email	c2@email.com
+MTD	contact[2]-affiliation	A2
+MTD	contact[3]-name	C3
+MTD	contact[3]-email	c3@email.com
+MTD	contact[3]-affiliation	A3
+MTD	contact[4]-name	C4
+MTD	contact[4]-email	c4@email.com
+MTD	contact[4]-affiliation	A4
+MTD	contact[5]-name	C5
+MTD	contact[5]-email	c5@email.com
+MTD	contact[5]-affiliation	A5
+MTD	contact[6]-name	C6
+MTD	contact[6]-email	c6@email.com
+MTD	contact[6]-affiliation	A6
+MTD	contact[7]-name	C7
+MTD	contact[7]-email	c7@email.com
+MTD	contact[7]-affiliation	A7
+MTD	contact[8]-name	C8
+MTD	contact[8]-email	c8@email.com
+MTD	contact[8]-affiliation	A8
+MTD	contact[9]-name	C9
+MTD	contact[9]-email	c9@email.com
+MTD	contact[9]-affiliation	A9
+MTD	contact[10]-name	C10
+MTD	contact[10]-email	c10@email.com
+MTD	contact[10]-affiliation	A10
+MTD	software[1]	[, , LipidDataAnalyzer, 2.6.3_nightly]
+MTD	ms_run[1]-location	file://D:/Experiment1/Orbitrap_CID/negative/50/014_Ex1_Orbitrap_CID_neg_50.chrom
+MTD	ms_run[2]-location	file://D:/Experiment1/Orbitrap_CID/negative/50/015_Ex1_Orbitrap_CID_neg_50.chrom
+MTD	ms_run[3]-location	file://D:/Experiment1/Orbitrap_CID/negative/50/016_Ex1_Orbitrap_CID_neg_50.chrom
+MTD	ms_run[4]-location	file://D:/Experiment1/Orbitrap_CID/negative/50/017_Ex1_Orbitrap_CID_neg_50.chrom
+MTD	ms_run[5]-location	file://D:/Experiment1/Orbitrap_CID/negative/50/018_Ex1_Orbitrap_CID_neg_50.chrom
+MTD	assay[1]-ms_run_ref	ms_run[1]
+MTD	assay[2]-ms_run_ref	ms_run[2]
+MTD	assay[3]-ms_run_ref	ms_run[3]
+MTD	assay[4]-ms_run_ref	ms_run[4]
+MTD	assay[5]-ms_run_ref	ms_run[5]
+MTD	study_variable[1]	Group 1
+MTD	study_variable[1]-description	Group 1
+MTD	study_variable[1]-assay_refs	assay[1]|assay[2]|assay[3]
+MTD	study_variable[2]	Group 2
+MTD	study_variable[2]-description	Group 2
+MTD	study_variable[2]-assay_refs	assay[4]|assay[5]
+MTD	cv[1]-label	MS
+MTD	cv[1]-uri	https://raw.githubusercontent.com/HUPO-PSI/psi-ms-CV/master/psi-ms.obo
+MTD	cv[1]-version	4.0.9
+MTD	cv[1]-full_name	PSI-MS controlled vocabulary
+MTD	database[1]	[, , no database, ]
+MTD	database[1]-prefix	null
+MTD	database[1]-uri	null
+MTD	database[1]-version	Undefined
+
+SMH	SML_ID	SMF_ID_REFS	database_identifier	chemical_formula	smiles	inchi	chemical_name	uri	theoretical_neutral_mass	adduct_ions	reliability	best_id_confidence_measure	best_id_confidence_value	abundance_assay[1]	abundance_assay[2]	abundance_assay[3]	abundance_assay[4]	abundance_assay[5]	abundance_study_variable[1]	abundance_study_variable[2]	abundance_variation_study_variable[1]	abundance_variation_study_variable[2]
+SML	null	null	null	null	null	null	null	null	null	[M+H]1+	2	[PRIDE, PRIDE:0000330, Arbitrary quantification unit, ]	0.02	1.1	2.1	3.1	4.1	5.1	1.2	2.2	1.1	2.1
+
+SFH	SMF_ID	SME_ID_REFS	SME_ID_REF_ambiguity_code	adduct_ion	isotopomer	exp_mass_to_charge	charge	retention_time_in_seconds	retention_time_in_seconds_start	retention_time_in_seconds_end	abundance_assay[1]	abundance_assay[2]	abundance_assay[3]	abundance_assay[4]	abundance_assay[5]
+
+SEH	SME_ID	evidence_input_id	database_identifier	chemical_formula	smiles	inchi	chemical_name	uri	derivatized_form	adduct_ion	exp_mass_to_charge	charge	theoretical_mass_to_charge	spectra_ref	identification_method	ms_level	rank
+################################################################################
+# testWriteSmallMoleculeSummaryWithNullToTsvWithJackson
+################################################################################
+Serialized SmallMoleculeSummary: 
+SMH	SML_ID	SMF_ID_REFS	database_identifier	chemical_formula	smiles	inchi	chemical_name	uri	theoretical_neutral_mass	adduct_ions	reliability	best_id_confidence_measure	best_id_confidence_value	abundance_assay[1]	abundance_assay[2]	abundance_study_variable[1]	abundance_study_variable[2]	abundance_variation_study_variable[1]	abundance_variation_study_variable[2]	opt_global_cv_LM:SP_Category	opt_global_cv_LH:XXXXX_Species	opt_global_cv_LH:XXXXX_Sub_Species
+SML	1	1|2|3|4|5	LM:LMSP02010012	null	null	InChI=1S/C42H83NO3/c1-3-5-7-9-11-13-15-17-18-19-20-21-22-23-24-26-28-30-32-34-36-38-42(46)43-40(39-44)41(45)37-35-33-31-29-27-25-16-14-12-10-8-6-4-2/h35,37,40-41,44-45H,3-34,36,38-39H2,1-2H3,(H,43,46)/b37-35+/t40-,41+/m0/s1	Cer(d18:1/24:0)|N-(tetracosanoyl)-sphing-4-enine|C24 Cer	http://www.lipidmaps.org/data/LMSDRecord.php?LM_ID=LMSP02010012	649.6373	[M+H]1+	1	[, , qualifier ions exact mass, ]	0.958	4.448784E-5	null	4.448784E-5	null	0.0	1.0E-5	Sphingolipids	Cer 42:1	Cer d18:1/24:0
+
+################################################################################
+# testReadWriteRoundtripWithJacksonLipidomicsExample
+################################################################################
+No structural or logical errors in file:/tmp/junit4851784710425762218/lipidomics-example.mzTab file!
+No structural or logical errors in file:/tmp/testReadWriteRoundtripWithJackson9002517937015891837.mztab file!
+################################################################################
+# testWriteMzTabToTsvWithJacksonInvalidEncoding
+################################################################################
+################################################################################
+# testUserParameterToString
+################################################################################
+[, , made up for testing, some arbitrary value]
+################################################################################
+# testLargeNumberOfFeaturesFromMTBLS263
+################################################################################
+No structural or logical errors in file:/tmp/junit4851784710425762218/MTBLS263.mztab file!
+################################################################################
+# testWriteJsonMapper
+################################################################################
+################################################################################
+# testWriteDefaultToString
+################################################################################
+################################################################################
+# testReadWriteRoundtripWithJacksonLda2MouseLiver
+################################################################################
+No structural or logical errors in file:/tmp/junit4851784710425762218/MouseLiver_negative.mzTab file!
+No structural or logical errors in file:/tmp/testReadWriteRoundtripWithJacksonLipidomicsMouseLiver8690516731681615326.mztab file!
+################################################################################
+# testWriteMetadataToTsvWithJackson
+################################################################################
+Serialized Metadata: 
+MTD	mzTab-version	2.0.0-M
+MTD	mzTab-ID	PRIDE_1234
+MTD	title	My first test experiment
+MTD	description	An experiment investigating the effects of Il-6.
+MTD	contact[1]-name	James D. Watson
+MTD	contact[1]-email	watson@cam.ac.uk
+MTD	contact[1]-affiliation	Cambridge University, UK
+MTD	contact[2]-name	Francis Crick
+MTD	contact[2]-email	crick@cam.ac.uk
+MTD	contact[2]-affiliation	Cambridge University, UK
+MTD	publication[1]	pubmed:21063943|doi:10.1007/978-1-60761-987-1_6
+MTD	publication[2]	pubmed:20615486|doi:10.1016/j.jprot.2010.06.008
+MTD	uri[1]	http://www.ebi.ac.uk/pride/url/to/experiment
+MTD	uri[2]	http://proteomecentral.proteomexchange.org/cgi/GetDataset
+MTD	external_study_uri[1]	https://www.ebi.ac.uk/metabolights/MTBLS400
+MTD	instrument[1]-name	[MS, MS:100049, LTQ Orbitrap, ]
+MTD	instrument[1]-source	[MS, MS:1000073, ESI, ]
+MTD	instrument[1]-analyzer[1]	[MS, MS:1000291, linear ion trap, ]
+MTD	instrument[1]-detector	[MS, MS:1000253, electron multiplier, ]
+MTD	instrument[2]-name	[MS, MS:1000031, instrument model, name of the instrument not included in the CV]
+MTD	instrument[2]-source	[MS, MS:1000598, ETD, ]
+MTD	instrument[2]-analyzer[1]	[MS, MS:1000484, orbitrap, ]
+MTD	instrument[2]-detector	[MS, MS:1000348, focal plane collector, ]
+MTD	sample[1]-description	Hepatocellular carcinoma samples.
+MTD	sample[1]-species[1]	[NEWT, 9606, Homo sapiens (Human), ]
+MTD	sample[1]-species[2]	[NEWT, 573824, Human rhinovirus 1, ]
+MTD	sample[1]-cell_type[1]	[CL, CL:0000182, hepatocyte, ]
+MTD	sample[1]-disease[1]	[DOID, DOID:684, hepatocellular carcinoma, ]
+MTD	sample[1]-disease[2]	[DOID, DOID:9451, alcoholic fatty liver, ]
+MTD	sample[1]-tissue[1]	[BTO, BTO:0000759, liver, ]
+MTD	sample[1]-custom[1]	[, , Extraction date, 2011-12-21]
+MTD	sample[1]-custom[2]	[, , Extraction reason, liver biopsy]
+MTD	sample[2]	Sample 2
+MTD	sample[2]-description	Healthy control samples.
+MTD	sample[2]-species[1]	[NEWT, 9606, Homo sapiens (Human), ]
+MTD	sample[2]-species[2]	[NEWT, 12130, Human rhinovirus 2, ]
+MTD	sample[2]-cell_type[1]	[CL, CL:0000182, hepatocyte, ]
+MTD	sample[2]-tissue[1]	[BTO, BTO:0000759, liver, ]
+MTD	sample[2]-custom[1]	[, , Extraction date, 2011-12-19]
+MTD	sample[2]-custom[2]	[, , Extraction reason, liver biopsy]
+MTD	sample_processing[1]	[SEP, SEP:00142, enzyme digestion, ]|[MS, MS:1001251, Trypsin, ]|[SEP, SEP:00173, SDS PAGE, ]
+MTD	software[1]	[MS, MS:1001207, Mascot, 2.3]
+MTD	software[1]-setting[1]	Fragment tolerance = 0.1Da
+MTD	software[1]-setting[2]	Parent tolerance = 0.5Da
+MTD	ms_run[1]-location	file://ftp.ebi.ac.uk/path/to/file
+MTD	ms_run[1]-format	[MS, MS:1000584, mzML file, ]
+MTD	ms_run[1]-fragmentation_method[1]	[MS, MS:1000133, CID, ]
+MTD	ms_run[1]-id_format	[MS, MS:1001530, mzML unique identifier, ]
+MTD	ms_run[2]-location	ftp://ftp.ebi.ac.uk/path/to/file
+MTD	ms_run[2]-hash	de9f2c7fd25e1b3afad3e85a0bd17d9b100db4b3
+MTD	ms_run[2]-hash_method	[MS, MS:1000569, SHA-1, ]
+MTD	ms_run[2]-format	[MS, MS:1001062, Mascot MGF file, ]
+MTD	ms_run[2]-fragmentation_method[1]	[MS, MS:1000422, HCD, ]
+MTD	assay[1]	Assay 1
+MTD	assay[1]-ms_run_ref	ms_run[1]
+MTD	assay[1]-sample_ref	sample[1]
+MTD	assay[2]	Assay 2
+MTD	assay[2]-ms_run_ref	ms_run[2]
+MTD	assay[2]-sample_ref	sample[2]
+MTD	study_variable[1]-description	Group A
+MTD	study_variable[1]-factors	[, , spike-in, 0.74 fmol/uL]
+MTD	study_variable[1]-assay_refs	assay[1]|assay[2]
+MTD	study_variable[2]-description	Group B
+MTD	study_variable[2]-factors	[, , spike-in, 0.74 fmol/uL]
+MTD	study_variable[2]-assay_refs	assay[1]|assay[2]
+MTD	custom[1]	[, , MS operator, Florian]
+MTD	cv[1]-label	MS
+MTD	cv[1]-uri	https://raw.githubusercontent.com/HUPO-PSI/psi-ms-CV/master/psi-ms.obo
+MTD	cv[1]-version	3.54.0
+MTD	cv[1]-full_name	PSI-MS ontology
+MTD	small_molecule-quantification_unit	[, , Progenesis QI Normalised Abundance, ]
+MTD	small_molecule_feature-quantification_unit	[, , Progenesis QI Normalised Abundance, ]
+MTD	small_molecule-identification_reliability	[, , Identification Reliability from 1 (lowest reliability) to 4 (highest reliability), ]
+MTD	id_confidence_measure[1]	[, , some confidence measure term, ]
+
+################################################################################
+# testCvParameterToString
+################################################################################
+[MS, MS:100179, made up for testing, ]
+[MS, MS:100179, made up for testing, some value]
+################################################################################
+# testWriteMzTabToTsvWithJacksonForPath
+################################################################################
+[Error-2008] line -1: "quantification_method" MUST be defined in the metadata section.
+[Error-2008] line -1: "study_variable[1]	<NAME>" MUST be defined in the metadata section.
+[Error-2008] line -1: "study_variable[2]	<NAME>" MUST be defined in the metadata section.
+[Error-2008] line -1: "ms_run[1]-scan_polarity" MUST be defined in the metadata section.
+[Error-2008] line -1: "ms_run[2]-scan_polarity" MUST be defined in the metadata section.
+[Error-2008] line -1: "database" MUST be defined in the metadata section.
+################################################################################
+# testReadWriteRoundtripWithJacksonLda2StdMix
+################################################################################
+No structural or logical errors in file:/tmp/junit4851784710425762218/StandardMix_positive_exportPositionLevel.mzTab file!
+No structural or logical errors in file:/tmp/testReadWriteRoundtripWithJacksonLipidomicsStdMix17757566982410765547.mztab file!
+################################################################################
+# testWriteMzTabToTsvWithJackson
+################################################################################
+MTD	mzTab-version	2.0.0-M
+MTD	mzTab-ID	PRIDE_1234
+MTD	title	My first test experiment
+MTD	description	An experiment investigating the effects of Il-6.
+MTD	contact[1]-name	James D. Watson
+MTD	contact[1]-email	watson@cam.ac.uk
+MTD	contact[1]-affiliation	Cambridge University, UK
+MTD	contact[2]-name	Francis Crick
+MTD	contact[2]-email	crick@cam.ac.uk
+MTD	contact[2]-affiliation	Cambridge University, UK
+MTD	publication[1]	pubmed:21063943|doi:10.1007/978-1-60761-987-1_6
+MTD	publication[2]	pubmed:20615486|doi:10.1016/j.jprot.2010.06.008
+MTD	uri[1]	http://www.ebi.ac.uk/pride/url/to/experiment
+MTD	uri[2]	http://proteomecentral.proteomexchange.org/cgi/GetDataset
+MTD	external_study_uri[1]	https://www.ebi.ac.uk/metabolights/MTBLS400
+MTD	instrument[1]-name	[MS, MS:100049, LTQ Orbitrap, ]
+MTD	instrument[1]-source	[MS, MS:1000073, ESI, ]
+MTD	instrument[1]-analyzer[1]	[MS, MS:1000291, linear ion trap, ]
+MTD	instrument[1]-detector	[MS, MS:1000253, electron multiplier, ]
+MTD	instrument[2]-name	[MS, MS:1000031, instrument model, name of the instrument not included in the CV]
+MTD	instrument[2]-source	[MS, MS:1000598, ETD, ]
+MTD	instrument[2]-analyzer[1]	[MS, MS:1000484, orbitrap, ]
+MTD	instrument[2]-detector	[MS, MS:1000348, focal plane collector, ]
+MTD	sample[1]-description	Hepatocellular carcinoma samples.
+MTD	sample[1]-species[1]	[NEWT, 9606, Homo sapiens (Human), ]
+MTD	sample[1]-species[2]	[NEWT, 573824, Human rhinovirus 1, ]
+MTD	sample[1]-cell_type[1]	[CL, CL:0000182, hepatocyte, ]
+MTD	sample[1]-disease[1]	[DOID, DOID:684, hepatocellular carcinoma, ]
+MTD	sample[1]-disease[2]	[DOID, DOID:9451, alcoholic fatty liver, ]
+MTD	sample[1]-tissue[1]	[BTO, BTO:0000759, liver, ]
+MTD	sample[1]-custom[1]	[, , Extraction date, 2011-12-21]
+MTD	sample[1]-custom[2]	[, , Extraction reason, liver biopsy]
+MTD	sample[2]	Sample 2
+MTD	sample[2]-description	Healthy control samples.
+MTD	sample[2]-species[1]	[NEWT, 9606, Homo sapiens (Human), ]
+MTD	sample[2]-species[2]	[NEWT, 12130, Human rhinovirus 2, ]
+MTD	sample[2]-cell_type[1]	[CL, CL:0000182, hepatocyte, ]
+MTD	sample[2]-tissue[1]	[BTO, BTO:0000759, liver, ]
+MTD	sample[2]-custom[1]	[, , Extraction date, 2011-12-19]
+MTD	sample[2]-custom[2]	[, , Extraction reason, liver biopsy]
+MTD	sample_processing[1]	[SEP, SEP:00142, enzyme digestion, ]|[MS, MS:1001251, Trypsin, ]|[SEP, SEP:00173, SDS PAGE, ]
+MTD	software[1]	[MS, MS:1001207, Mascot, 2.3]
+MTD	software[1]-setting[1]	Fragment tolerance = 0.1Da
+MTD	software[1]-setting[2]	Parent tolerance = 0.5Da
+MTD	ms_run[1]-location	file://ftp.ebi.ac.uk/path/to/file
+MTD	ms_run[1]-format	[MS, MS:1000584, mzML file, ]
+MTD	ms_run[1]-fragmentation_method[1]	[MS, MS:1000133, CID, ]
+MTD	ms_run[1]-id_format	[MS, MS:1001530, mzML unique identifier, ]
+MTD	ms_run[2]-location	ftp://ftp.ebi.ac.uk/path/to/file
+MTD	ms_run[2]-hash	de9f2c7fd25e1b3afad3e85a0bd17d9b100db4b3
+MTD	ms_run[2]-hash_method	[MS, MS:1000569, SHA-1, ]
+MTD	ms_run[2]-format	[MS, MS:1001062, Mascot MGF file, ]
+MTD	ms_run[2]-fragmentation_method[1]	[MS, MS:1000422, HCD, ]
+MTD	assay[1]	Assay 1
+MTD	assay[1]-ms_run_ref	ms_run[1]
+MTD	assay[1]-sample_ref	sample[1]
+MTD	assay[2]	Assay 2
+MTD	assay[2]-ms_run_ref	ms_run[2]
+MTD	assay[2]-sample_ref	sample[2]
+MTD	study_variable[1]-description	Group A
+MTD	study_variable[1]-factors	[, , spike-in, 0.74 fmol/uL]
+MTD	study_variable[1]-assay_refs	assay[1]|assay[2]
+MTD	study_variable[2]-description	Group B
+MTD	study_variable[2]-factors	[, , spike-in, 0.74 fmol/uL]
+MTD	study_variable[2]-assay_refs	assay[1]|assay[2]
+MTD	custom[1]	[, , MS operator, Florian]
+MTD	cv[1]-label	MS
+MTD	cv[1]-uri	https://raw.githubusercontent.com/HUPO-PSI/psi-ms-CV/master/psi-ms.obo
+MTD	cv[1]-version	3.54.0
+MTD	cv[1]-full_name	PSI-MS ontology
+MTD	small_molecule-quantification_unit	[, , Progenesis QI Normalised Abundance, ]
+MTD	small_molecule_feature-quantification_unit	[, , Progenesis QI Normalised Abundance, ]
+MTD	small_molecule-identification_reliability	[, , Identification Reliability from 1 (lowest reliability) to 4 (highest reliability), ]
+MTD	id_confidence_measure[1]	[, , some confidence measure term, ]
+
+SMH	SML_ID	SMF_ID_REFS	database_identifier	chemical_formula	smiles	inchi	chemical_name	uri	theoretical_neutral_mass	adduct_ions	reliability	best_id_confidence_measure	best_id_confidence_value	abundance_assay[1]	abundance_assay[2]	abundance_study_variable[1]	abundance_study_variable[2]	abundance_variation_study_variable[1]	abundance_variation_study_variable[2]
+
+SFH	SMF_ID	SME_ID_REFS	SME_ID_REF_ambiguity_code	adduct_ion	isotopomer	exp_mass_to_charge	charge	retention_time_in_seconds	retention_time_in_seconds_start	retention_time_in_seconds_end	abundance_assay[1]	abundance_assay[2]
+
+SEH	SME_ID	evidence_input_id	database_identifier	chemical_formula	smiles	inchi	chemical_name	uri	derivatized_form	adduct_ion	exp_mass_to_charge	charge	theoretical_mass_to_charge	spectra_ref	identification_method	ms_level	id_confidence_measure[1]	rank
+################################################################################
+# testWriteSmallMoleculeFeaturesToTsvWithJackson
+################################################################################
+Serialized SmallMoleculeFeatures: 
+SFH	SMF_ID	SME_ID_REFS	SME_ID_REF_ambiguity_code	adduct_ion	isotopomer	exp_mass_to_charge	charge	retention_time_in_seconds	retention_time_in_seconds_start	retention_time_in_seconds_end	abundance_assay[1]	abundance_assay[2]
+
+################################################################################
+# testReadWriteRoundtripWithJacksonMTBLS263
+################################################################################
+No structural or logical errors in file:/tmp/junit4851784710425762218/MTBLS263.mztab file!
+No structural or logical errors in file:/tmp/testReadWriteRoundtripWithJacksonMTBLS26310672554998786927132.mztab file!

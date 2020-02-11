@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SEHLineParser.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jmztabm-io</a> &gt; <a href="index.source.html" class="el_package">uk.ac.ebi.pride.jmztab2.utils.parser</a> &gt; <span class="el_source">SEHLineParser.java</span></div><h1>SEHLineParser.java</h1><pre class="source lang-java linenums">/* 
+ * Copyright 2018 Leibniz-Institut für Analytische Wissenschaften – ISAS – e.V..
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package uk.ac.ebi.pride.jmztab2.utils.parser;
+
+import de.isas.mztab2.model.Metadata;
+import de.isas.mztab2.model.Parameter;
+import de.isas.mztab2.model.SmallMoleculeEvidence;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.IntStream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import uk.ac.ebi.pride.jmztab2.model.IMZTabColumn;
+import uk.ac.ebi.pride.jmztab2.model.ISmallMoleculeColumn;
+import uk.ac.ebi.pride.jmztab2.model.MZTabColumnFactory;
+import uk.ac.ebi.pride.jmztab2.model.MZTabConstants;
+import uk.ac.ebi.pride.jmztab2.model.Section;
+import uk.ac.ebi.pride.jmztab2.model.SmallMoleculeEvidenceColumn;
+import uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType;
+import uk.ac.ebi.pride.jmztab2.utils.errors.LogicalErrorType;
+import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabError;
+import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorList;
+import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabException;
+
+/**
+ * Parse and validate Small Molecule Evidence header line into a {@link uk.ac.ebi.pride.jmztab2.model.MZTabColumnFactory}.
+ *
+ * @author nilshoffmann
+ * @since 11/09/17
+ * 
+ */
+public class SEHLineParser extends MZTabHeaderLineParser {
+
+<span class="fc" id="L48">    private static final Logger LOGGER = LoggerFactory.getLogger(SEHLineParser.class);</span>
+    private Map&lt;Integer, String&gt; physPositionToOrder;
+
+
+    /**
+     * &lt;p&gt;Constructor for SEHLineParser.&lt;/p&gt;
+     *
+     * @param context a {@link uk.ac.ebi.pride.jmztab2.utils.parser.MZTabParserContext} object.
+     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
+     */
+    public SEHLineParser(MZTabParserContext context, Metadata metadata) {
+<span class="fc" id="L59">        super(context, MZTabColumnFactory.getInstance(Section.Small_Molecule_Evidence_Header), metadata);</span>
+<span class="fc" id="L60">    }</span>
+
+    /** {@inheritDoc} */
+    @Override
+    protected int parseColumns() throws MZTabException {
+        String header;
+        Integer physicalPosition;
+
+        ISmallMoleculeColumn column;
+<span class="fc" id="L69">        SortedMap&lt;String, IMZTabColumn&gt; columnMapping = factory.getColumnMapping();</span>
+<span class="fc" id="L70">        SortedMap&lt;String, IMZTabColumn&gt; optionalMapping = factory.getOptionalColumnMapping();</span>
+<span class="fc" id="L71">        SortedMap&lt;String, IMZTabColumn&gt; stableMapping = factory.getStableColumnMapping();</span>
+
+<span class="fc" id="L73">        physPositionToOrder = generateHeaderPhysPositionToOrderMap(items);</span>
+
+        //Iterates through the tokens in the small molecule evidence header
+        //It will identify the type of column and the position accordingly
+<span class="fc bfc" id="L77" title="All 2 branches covered.">        for (physicalPosition = 1; physicalPosition &lt; items.length; physicalPosition++) {</span>
+
+<span class="fc" id="L79">            column = null;</span>
+<span class="fc" id="L80">            header = items[physicalPosition];</span>
+<span class="fc bfc" id="L81" title="All 2 branches covered.">            if (header.startsWith(SmallMoleculeEvidence.Properties.idConfidenceMeasure.getPropertyName())) {</span>
+<span class="fc" id="L82">                checkIdConfidenceMeasure(header);</span>
+<span class="fc bfc" id="L83" title="All 2 branches covered.">            } else if (header.startsWith(MZTabConstants.OPT_PREFIX)) {</span>
+<span class="fc" id="L84">                checkOptColumnName(header);</span>
+            } else {
+                try {
+<span class="fc" id="L87">                    column = SmallMoleculeEvidenceColumn.Stable.columnFor(header);</span>
+<span class="nc" id="L88">                } catch(IllegalArgumentException ex) {</span>
+<span class="nc" id="L89">                    throw new MZTabException(new MZTabError(LogicalErrorType.ColumnNotValid,lineNumber,header,section.getName()));    </span>
+<span class="fc" id="L90">                }</span>
+
+            }
+
+<span class="fc bfc" id="L94" title="All 2 branches covered.">            if (column != null) {</span>
+<span class="fc bfc" id="L95" title="All 2 branches covered.">                if (!column.getOrder().equals(physPositionToOrder.get(physicalPosition))) {</span>
+<span class="fc" id="L96">                    column.setOrder(physPositionToOrder.get(physicalPosition));</span>
+<span class="fc" id="L97">                    LOGGER.debug(column.toString());</span>
+                }
+<span class="fc bfc" id="L99" title="All 2 branches covered.">                if(column.isOptional()){</span>
+<span class="fc" id="L100">                    optionalMapping.put(column.getLogicPosition(), column);</span>
+                } else {
+<span class="fc" id="L102">                    stableMapping.put(column.getLogicPosition(), column);</span>
+                }
+<span class="fc" id="L104">                columnMapping.put(column.getLogicPosition(), column);</span>
+            }
+        }
+<span class="fc" id="L107">        return physicalPosition;</span>
+    }
+
+    private void checkIdConfidenceMeasure(String header) throws MZTabException {
+<span class="fc" id="L111">        String valueLabel = header;</span>
+        
+<span class="fc" id="L113">        Pattern pattern = Pattern.compile(SmallMoleculeEvidence.Properties.idConfidenceMeasure.getPropertyName()+MZTabConstants.REGEX_INDEXED_VALUE);</span>
+<span class="fc" id="L114">        Matcher matcher = pattern.matcher(valueLabel);</span>
+<span class="pc bpc" id="L115" title="1 of 2 branches missed.">        if (!matcher.find()) {</span>
+<span class="nc" id="L116">            MZTabError error = new MZTabError(FormatErrorType.StableColumn, lineNumber, header);</span>
+<span class="nc" id="L117">            throw new MZTabException(error);</span>
+        }
+        
+<span class="fc" id="L120">        int id = parseIndex(header, matcher.group(1));</span>
+<span class="fc" id="L121">        Parameter p = metadata.getIdConfidenceMeasure().get(id-1);</span>
+<span class="fc" id="L122">        factory.addIdConfidenceMeasureColumn(p, id, Double.class);</span>
+<span class="fc" id="L123">    }</span>
+
+    private Map&lt;Integer, String&gt; generateHeaderPhysPositionToOrderMap(String[] items) {
+        Integer physicalPosition;
+<span class="fc" id="L127">        Map&lt;Integer, String&gt; physicalPositionToOrder = new LinkedHashMap&lt;&gt;();</span>
+<span class="fc" id="L128">        int order = 0;</span>
+<span class="fc bfc" id="L129" title="All 2 branches covered.">        for (physicalPosition = 1; physicalPosition &lt; items.length; physicalPosition++) {</span>
+<span class="fc" id="L130">            physicalPositionToOrder.put(physicalPosition, fromIndexToOrder(++order));</span>
+        }
+<span class="fc" id="L132">        return physicalPositionToOrder;</span>
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * The following optional columns are mandatory:
+     * 1. id_confidence_measure[1-n]
+     * 
+     * NOTICE: this method will be called at end of parse() function.
+     * @see MZTabHeaderLineParser#parse(int, String, MZTabErrorList)
+     * @see MZTabHeaderLineParser#parse(int, String, MZTabErrorList)
+     */
+    @Override
+    protected void refine() throws MZTabException {
+        //mandatory columns
+<span class="fc" id="L148">        List&lt;String&gt; mandatoryColumnHeaders = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L149" title="All 2 branches covered.">        for(ISmallMoleculeColumn col:SmallMoleculeEvidenceColumn.Stable.columns()) {</span>
+<span class="fc" id="L150">            mandatoryColumnHeaders.add(col.getName());</span>
+<span class="fc" id="L151">        }</span>
+
+<span class="fc" id="L153">        IntStream.range(0, metadata.getIdConfidenceMeasure().size()).</span>
+<span class="fc" id="L154">        forEachOrdered(i -&gt;</span>
+        {
+<span class="fc" id="L156">            mandatoryColumnHeaders.add(SmallMoleculeEvidence.Properties.idConfidenceMeasure.getPropertyName()+&quot;[&quot;+(i+1)+&quot;]&quot;);</span>
+<span class="fc" id="L157">        });</span>
+
+<span class="fc bfc" id="L159" title="All 2 branches covered.">        for (String columnHeader : mandatoryColumnHeaders) {</span>
+<span class="pc bpc" id="L160" title="1 of 2 branches missed.">            if (factory.findColumnByHeader(columnHeader) == null) {</span>
+<span class="nc" id="L161">                throw new MZTabException(new MZTabError(FormatErrorType.StableColumn, lineNumber, columnHeader));</span>
+            }
+<span class="fc" id="L163">        }</span>
+<span class="fc" id="L164">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

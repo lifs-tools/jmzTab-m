@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: de.isas.mztab2.io.validators.SmallMoleculeFeatureQuantificationUnitValidatorTest
+-------------------------------------------------------------------------------
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.002 s - in de.isas.mztab2.io.validators.SmallMoleculeFeatureQuantificationUnitValidatorTest

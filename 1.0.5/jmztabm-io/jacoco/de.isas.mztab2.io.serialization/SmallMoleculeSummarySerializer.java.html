@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SmallMoleculeSummarySerializer.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jmztabm-io</a> &gt; <a href="index.source.html" class="el_package">de.isas.mztab2.io.serialization</a> &gt; <span class="el_source">SmallMoleculeSummarySerializer.java</span></div><h1>SmallMoleculeSummarySerializer.java</h1><pre class="source lang-java linenums">/* 
+ * Copyright 2018 Leibniz-Institut für Analytische Wissenschaften – ISAS – e.V..
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package de.isas.mztab2.io.serialization;
+
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
+import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+import static de.isas.mztab2.io.serialization.Serializers.writeAsNumberArray;
+import static de.isas.mztab2.io.serialization.Serializers.writeAsStringArray;
+import static de.isas.mztab2.io.serialization.Serializers.writeIndexedDoubles;
+import static de.isas.mztab2.io.serialization.Serializers.writeNumber;
+import static de.isas.mztab2.io.serialization.Serializers.writeObject;
+import static de.isas.mztab2.io.serialization.Serializers.writeOptColumnMappings;
+import static de.isas.mztab2.io.serialization.Serializers.writeString;
+import de.isas.mztab2.model.SmallMoleculeSummary;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.Optional;
+import lombok.extern.slf4j.Slf4j;
+import uk.ac.ebi.pride.jmztab2.model.AbundanceColumn;
+import uk.ac.ebi.pride.jmztab2.model.SmallMoleculeColumn;
+import static uk.ac.ebi.pride.jmztab2.model.SmallMoleculeColumn.Stable.columnFor;
+
+/**
+* &lt;p&gt;SmallMoleculeSummarySerializer implementation for {@link de.isas.mztab2.model.SmallMoleculeSummary}.&lt;/p&gt;
+ *
+ * @author nilshoffmann
+ *
+ */
+<span class="fc" id="L44">@Slf4j</span>
+public class SmallMoleculeSummarySerializer extends StdSerializer&lt;SmallMoleculeSummary&gt; {
+
+    /**
+     * &lt;p&gt;
+     * Constructor for SmallMoleculeSummarySerializer.&lt;/p&gt;
+     */
+    public SmallMoleculeSummarySerializer() {
+<span class="fc" id="L52">        this(null);</span>
+<span class="fc" id="L53">    }</span>
+
+    /**
+     * &lt;p&gt;
+     * Constructor for SmallMoleculeSummarySerializer.&lt;/p&gt;
+     *
+     * @param t a {@link java.lang.Class} object.
+     */
+    public SmallMoleculeSummarySerializer(Class&lt;SmallMoleculeSummary&gt; t) {
+<span class="fc" id="L62">        super(t);</span>
+<span class="fc" id="L63">    }</span>
+
+    @Override
+    public void serializeWithType(SmallMoleculeSummary value, JsonGenerator gen,
+        SerializerProvider serializers, TypeSerializer typeSer) throws IOException {
+<span class="nc" id="L68">        typeSer.writeTypePrefixForObject(value, gen);</span>
+<span class="nc" id="L69">        serialize(value, gen, serializers);</span>
+<span class="nc" id="L70">        typeSer.writeTypeSuffixForObject(value, gen);</span>
+<span class="nc" id="L71">    }</span>
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void serialize(SmallMoleculeSummary smallMoleculeSummary,
+        JsonGenerator jg,
+        SerializerProvider sp) throws IOException {
+<span class="pc bpc" id="L80" title="1 of 2 branches missed.">        if (smallMoleculeSummary != null) {</span>
+<span class="fc" id="L81">            jg.writeStartObject();</span>
+<span class="fc" id="L82">            writeString(SmallMoleculeSummary.HeaderPrefixEnum.SMH.getValue(), jg,</span>
+                SmallMoleculeSummary.PrefixEnum.SML.
+<span class="fc" id="L84">                    getValue());</span>
+<span class="fc" id="L85">            writeNumber(columnFor(SmallMoleculeColumn.Stable.SML_ID), jg,</span>
+<span class="fc" id="L86">                smallMoleculeSummary.getSmlId());</span>
+<span class="fc" id="L87">            writeAsNumberArray(columnFor(SmallMoleculeColumn.Stable.SMF_ID_REFS),</span>
+                jg,
+<span class="fc" id="L89">                Optional.ofNullable(smallMoleculeSummary.</span>
+<span class="fc" id="L90">                    getSmfIdRefs()).</span>
+<span class="fc" id="L91">                    orElse(Collections.emptyList()));</span>
+<span class="fc" id="L92">            writeAsStringArray(columnFor(</span>
+                SmallMoleculeColumn.Stable.DATABASE_IDENTIFIER),
+<span class="fc" id="L94">                jg, smallMoleculeSummary.getDatabaseIdentifier());</span>
+<span class="fc" id="L95">            writeAsStringArray(columnFor(</span>
+                SmallMoleculeColumn.Stable.CHEMICAL_FORMULA), jg,
+<span class="fc" id="L97">                smallMoleculeSummary.getChemicalFormula());</span>
+<span class="fc" id="L98">            writeAsStringArray(columnFor(SmallMoleculeColumn.Stable.SMILES), jg,</span>
+<span class="fc" id="L99">                smallMoleculeSummary.getSmiles());</span>
+<span class="fc" id="L100">            writeAsStringArray(columnFor(SmallMoleculeColumn.Stable.INCHI), jg,</span>
+<span class="fc" id="L101">                smallMoleculeSummary.getInchi());</span>
+<span class="fc" id="L102">            writeAsStringArray(columnFor(</span>
+                SmallMoleculeColumn.Stable.CHEMICAL_NAME), jg,
+<span class="fc" id="L104">                smallMoleculeSummary.getChemicalName());</span>
+<span class="fc" id="L105">            writeAsStringArray(columnFor(SmallMoleculeColumn.Stable.URI), jg,</span>
+<span class="fc" id="L106">                smallMoleculeSummary.getUri());</span>
+<span class="fc" id="L107">            writeAsNumberArray(columnFor(</span>
+                SmallMoleculeColumn.Stable.THEOR_NEUTRAL_MASS), jg,
+                smallMoleculeSummary.
+<span class="fc" id="L110">                    getTheoreticalNeutralMass());</span>
+<span class="fc" id="L111">            writeAsStringArray(columnFor(SmallMoleculeColumn.Stable.ADDUCT_IONS),</span>
+                jg,
+<span class="fc" id="L113">                smallMoleculeSummary.getAdductIons());</span>
+<span class="fc" id="L114">            writeString(columnFor(SmallMoleculeColumn.Stable.RELIABILITY), jg,</span>
+<span class="fc" id="L115">                smallMoleculeSummary.getReliability());</span>
+<span class="fc" id="L116">            writeObject(</span>
+<span class="fc" id="L117">                columnFor(SmallMoleculeColumn.Stable.BEST_ID_CONFIDENCE_MEASURE),</span>
+                jg, sp,
+                smallMoleculeSummary.
+<span class="fc" id="L120">                    getBestIdConfidenceMeasure());</span>
+<span class="fc" id="L121">            writeNumber(</span>
+<span class="fc" id="L122">                columnFor(SmallMoleculeColumn.Stable.BEST_ID_CONFIDENCE_VALUE),</span>
+                jg,
+                smallMoleculeSummary.
+<span class="fc" id="L125">                    getBestIdConfidenceValue());</span>
+<span class="fc" id="L126">            writeIndexedDoubles(AbundanceColumn.Field.ABUNDANCE_ASSAY.toString(),</span>
+<span class="fc" id="L127">                jg, Optional.ofNullable(smallMoleculeSummary.</span>
+<span class="fc" id="L128">                    getAbundanceAssay()).</span>
+<span class="fc" id="L129">                    orElse(Collections.emptyList()));</span>
+<span class="fc" id="L130">            writeIndexedDoubles(AbundanceColumn.Field.ABUNDANCE_STUDY_VARIABLE.</span>
+<span class="fc" id="L131">                toString(), jg, Optional.ofNullable(smallMoleculeSummary.</span>
+<span class="fc" id="L132">                    getAbundanceStudyVariable()).</span>
+<span class="fc" id="L133">                    orElse(Collections.emptyList()));</span>
+<span class="fc" id="L134">            writeIndexedDoubles(</span>
+                AbundanceColumn.Field.ABUNDANCE_VARIATION_STUDY_VARIABLE.
+<span class="fc" id="L136">                    toString(), jg,</span>
+<span class="fc" id="L137">                Optional.ofNullable(smallMoleculeSummary.</span>
+<span class="fc" id="L138">                    getAbundanceVariationStudyVariable()).</span>
+<span class="fc" id="L139">                    orElse(Collections.emptyList()));</span>
+
+<span class="fc" id="L141">            writeOptColumnMappings(smallMoleculeSummary.getOpt(), jg, sp);</span>
+<span class="fc" id="L142">            jg.writeEndObject();</span>
+        } else {
+<span class="nc" id="L144">            log.debug(SmallMoleculeSummary.class.getSimpleName() + &quot; is null!&quot;);</span>
+        }
+<span class="fc" id="L146">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

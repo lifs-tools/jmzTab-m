@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MZTabErrorType.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jmztabm-api</a> &gt; <a href="index.source.html" class="el_package">uk.ac.ebi.pride.jmztab2.utils.errors</a> &gt; <span class="el_source">MZTabErrorType.java</span></div><h1>MZTabErrorType.java</h1><pre class="source lang-java linenums">package uk.ac.ebi.pride.jmztab2.utils.errors;
+
+import java.io.Serializable;
+import java.util.Objects;
+import uk.ac.ebi.pride.jmztab2.model.MZTabStringUtils;
+import uk.ac.ebi.pride.jmztab2.utils.MZTabProperties;
+
+/**
+ * &lt;p&gt;MZTabErrorType class.&lt;/p&gt;
+ *
+ * @author qingwei
+ * @since 28/01/13
+ * 
+ */
+public class MZTabErrorType implements Serializable {
+<span class="fc" id="L16">    public enum Category {</span>
+<span class="fc" id="L17">        Format,                // single field format error</span>
+<span class="fc" id="L18">        Logical,               // exists logical error among fields value.</span>
+<span class="fc" id="L19">        CrossCheck             // cross check validation by calling outside files or web services.</span>
+    }
+
+    /**
+     * We classify diagnosis message types into three levels: Info, Warn and Error, all of them coming from
+     * the notational conventions of the specification. All diagnosis rules, which use &quot;MUST&quot;, &quot;MUST NOT&quot;,
+     * &quot;REQUIRED&quot; keywords, are defined for Error level; use &quot;SHALL&quot;, &quot;SHALL NOT&quot;, &quot;SHOULD&quot;,
+     * &quot;SHOULD NOT&quot; keywords are defined for Warn Level; and others keywords, such as &quot;RECOMMENDED&quot;,
+     * &quot;MAY&quot; and &quot;OPTIONAL&quot;, are defined for Info Level. 
+     * 
+     */
+<span class="fc" id="L30">    public enum Level {</span>
+<span class="fc" id="L31">        Info,</span>
+<span class="fc" id="L32">        Warn,</span>
+<span class="fc" id="L33">        Error;</span>
+    }
+
+    private Integer code;
+    private Category category;
+    private Level level;
+    private String original;
+    private String cause;
+
+    /**
+     * &lt;p&gt;Constructor for MZTabErrorType.&lt;/p&gt;
+     */
+<span class="nc" id="L45">    protected MZTabErrorType() {}</span>
+
+    /**
+     * Code: Unique number for error/warn
+     * Category: Currently, there are three types of messages: Format, Logical, CrossCheck
+     * Original: Message expression pattern. &quot;{?}&quot; is a couple of parameters which can be filled during validate processing.
+     * Cause: A readable text to describe the reason why raise this error/warn. Currently, these cause message coming from mztab specification mainly.
+     */
+<span class="fc" id="L53">    private MZTabErrorType(Integer code, Category category, Level level, String original, String cause) {</span>
+<span class="fc" id="L54">        this.code = code;</span>
+
+<span class="pc bpc" id="L56" title="1 of 2 branches missed.">        if (category == null) {</span>
+<span class="nc" id="L57">            throw new NullPointerException(&quot;MZTabErrorType category can not set null!&quot;);</span>
+        }
+<span class="fc" id="L59">        this.category = category;</span>
+
+<span class="pc bpc" id="L61" title="1 of 2 branches missed.">        this.level = level == null ? Level.Info : level;</span>
+
+<span class="pc bpc" id="L63" title="2 of 4 branches missed.">        if (original == null || original.trim().length() == 0) {</span>
+<span class="nc" id="L64">            throw new IllegalArgumentException(&quot;Original &quot; + original + &quot; is empty!&quot;);</span>
+        }
+<span class="fc" id="L66">        this.original = original.trim();</span>
+<span class="fc" id="L67">        this.cause = cause;</span>
+<span class="fc" id="L68">    }</span>
+    
+    public static MZTabErrorType forLevel(MZTabErrorType.Category category, Level level, String keyword) {
+<span class="fc" id="L71">        return MZTabErrorType.createMZTabError(category, level, keyword);</span>
+    }
+
+    /**
+     * Generate a {@link uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorType.Level#Error} by parse keyword.
+     *
+     * @param category a {@link uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorType.Category} object.
+     * @param keyword a {@link java.lang.String} object.
+     * @return a {@link uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorType} object.
+     */
+    protected static MZTabErrorType createError(MZTabErrorType.Category category, String keyword) {
+<span class="fc" id="L82">        return MZTabErrorType.createMZTabError(category, Level.Error, keyword);</span>
+    }
+
+    /**
+     * Generate a {@link uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorType.Level#Warn} by parse keyword.
+     *
+     * @param category a {@link uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorType.Category} object.
+     * @param keyword a {@link java.lang.String} object.
+     * @return a {@link uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorType} object.
+     */
+    protected static MZTabErrorType createWarn(MZTabErrorType.Category category, String keyword) {
+<span class="fc" id="L93">        return MZTabErrorType.createMZTabError(category, Level.Warn, keyword);</span>
+    }
+
+    /**
+     * Generate a {@link uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorType.Level#Info} by parse keyword.
+     *
+     * @param category a {@link uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorType.Category} object.
+     * @param keyword a {@link java.lang.String} object.
+     * @return a {@link uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorType} object.
+     */
+    protected static MZTabErrorType createInfo(MZTabErrorType.Category category, String keyword) {
+<span class="fc" id="L104">        return MZTabErrorType.createMZTabError(category, Level.Info, keyword);</span>
+    }
+
+    /**
+     *  In *_error.properties file, code_{keyword}, original_{keyword}, cause+{keyword} have
+     *  stable format. Thus, this method used to load these properties and create a error.
+     */
+    private static MZTabErrorType createMZTabError(Category category, Level level, String keyword) {
+<span class="pc bpc" id="L112" title="1 of 2 branches missed.">        if (MZTabStringUtils.isEmpty(keyword)) {</span>
+<span class="nc" id="L113">            throw new NullPointerException(keyword + &quot; can not empty!&quot;);</span>
+        }
+
+<span class="fc" id="L116">        String prefix = null;</span>
+<span class="pc bpc" id="L117" title="1 of 4 branches missed.">        switch (category) {</span>
+            case Format:
+<span class="fc" id="L119">                prefix = &quot;f_&quot;;</span>
+<span class="fc" id="L120">                break;</span>
+            case Logical:
+<span class="fc" id="L122">                prefix = &quot;l_&quot;;</span>
+<span class="fc" id="L123">                break;</span>
+            case CrossCheck:
+<span class="fc" id="L125">                prefix = &quot;c_&quot;;</span>
+                break;
+        }
+
+<span class="fc" id="L129">        Integer code = new Integer(MZTabProperties.getProperty(prefix + &quot;code_&quot; + keyword));</span>
+<span class="fc" id="L130">        String original = MZTabProperties.getProperty(prefix + &quot;original_&quot; + keyword);</span>
+<span class="fc" id="L131">        String cause = MZTabProperties.getProperty(prefix + &quot;cause_&quot; + keyword);</span>
+
+<span class="fc" id="L133">        return new MZTabErrorType(code, category, level, original, cause);</span>
+    }
+
+    /**
+     * &lt;p&gt;Getter for the field &lt;code&gt;code&lt;/code&gt;.&lt;/p&gt;
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
+    public Integer getCode() {
+<span class="fc" id="L142">        return code;</span>
+    }
+
+    /**
+     * &lt;p&gt;Getter for the field &lt;code&gt;category&lt;/code&gt;.&lt;/p&gt;
+     *
+     * @return a {@link uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorType.Category} object.
+     */
+    public Category getCategory() {
+<span class="fc" id="L151">        return category;</span>
+    }
+
+    /**
+     * &lt;p&gt;Getter for the field &lt;code&gt;level&lt;/code&gt;.&lt;/p&gt;
+     *
+     * @return a {@link uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorType.Level} object.
+     */
+    public Level getLevel() {
+<span class="fc" id="L160">        return level;</span>
+    }
+
+    /**
+     * &lt;p&gt;Getter for the field &lt;code&gt;original&lt;/code&gt;.&lt;/p&gt;
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public String getOriginal() {
+<span class="fc" id="L169">        return original;</span>
+    }
+
+    /**
+     * &lt;p&gt;Getter for the field &lt;code&gt;cause&lt;/code&gt;.&lt;/p&gt;
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public String getCause() {
+<span class="fc" id="L178">        return cause;</span>
+    }
+
+    @Override
+    public int hashCode() {
+<span class="nc" id="L183">        int hash = 3;</span>
+<span class="nc" id="L184">        hash = 29 * hash + Objects.hashCode(this.code);</span>
+<span class="nc" id="L185">        hash = 29 * hash + Objects.hashCode(this.category);</span>
+<span class="nc" id="L186">        hash = 29 * hash + Objects.hashCode(this.original);</span>
+<span class="nc" id="L187">        hash = 29 * hash + Objects.hashCode(this.cause);</span>
+<span class="nc" id="L188">        return hash;</span>
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+<span class="fc bfc" id="L193" title="All 2 branches covered.">        if (this == obj) {</span>
+<span class="fc" id="L194">            return true;</span>
+        }
+<span class="pc bpc" id="L196" title="1 of 2 branches missed.">        if (obj == null) {</span>
+<span class="nc" id="L197">            return false;</span>
+        }
+<span class="pc bpc" id="L199" title="1 of 2 branches missed.">        if (getClass() != obj.getClass()) {</span>
+<span class="nc" id="L200">            return false;</span>
+        }
+<span class="fc" id="L202">        final MZTabErrorType other = (MZTabErrorType) obj;</span>
+<span class="pc bpc" id="L203" title="1 of 2 branches missed.">        if (!Objects.equals(this.original, other.original)) {</span>
+<span class="nc" id="L204">            return false;</span>
+        }
+<span class="pc bpc" id="L206" title="1 of 2 branches missed.">        if (!Objects.equals(this.cause, other.cause)) {</span>
+<span class="nc" id="L207">            return false;</span>
+        }
+<span class="pc bpc" id="L209" title="1 of 2 branches missed.">        if (!Objects.equals(this.code, other.code)) {</span>
+<span class="nc" id="L210">            return false;</span>
+        }
+<span class="pc bpc" id="L212" title="1 of 2 branches missed.">        if (this.category != other.category) {</span>
+<span class="nc" id="L213">            return false;</span>
+        }
+<span class="fc" id="L215">        return true;</span>
+    }
+
+    /**
+     * Code: Unique number for error/warn
+     * Category: Currently, there are three types of messages: Format, Logical
+     * Original: Message expression pattern. &quot;{?}&quot; is a couple of parameters which can be filled during validate processing.
+     * Cause: A readable text to describe the reason why raise this error/warn. Currently, these cause message coming from mztab specification mainly.
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    @Override
+    public String toString() {
+<span class="nc" id="L228">        return  &quot;    Code:\t&quot; + code + &quot;\r\n&quot; +</span>
+                &quot;Category:\t&quot; + category + &quot;\r\n&quot; +
+                &quot;Original:\t&quot; + original + &quot;\r\n&quot; +
+<span class="nc bnc" id="L231" title="All 2 branches missed.">                &quot;   Cause:\t&quot; + (cause == null ? &quot;&quot; : cause) + &quot;\r\n&quot;;</span>
+    }
+
+    /**
+     * &lt;p&gt;findLevel.&lt;/p&gt;
+     *
+     * @return the {@link uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorType.Level}
+     * @param target a {@link java.lang.String} object.
+     */
+    public static Level findLevel(String target) {
+<span class="pc bpc" id="L241" title="1 of 2 branches missed.">        if (MZTabStringUtils.isEmpty(target)) {</span>
+<span class="nc" id="L242">            return null;</span>
+        }
+
+<span class="fc" id="L245">        target = MZTabStringUtils.toCapital(target.trim());</span>
+
+        Level level;
+        try {
+<span class="fc" id="L249">            level = Level.valueOf(target);</span>
+<span class="nc" id="L250">        } catch (IllegalArgumentException e) {</span>
+<span class="nc" id="L251">            level = null;</span>
+<span class="fc" id="L252">        }</span>
+
+<span class="fc" id="L254">        return level;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

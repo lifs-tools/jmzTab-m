@@ -1,0 +1,94 @@
+D|15:13:21.439|CvDefinitionValidationHandler           |Selected 15 cv parameters!
+SLF4J: A number (86) of logging calls during the initialization phase have been intercepted and are
+SLF4J: now being replayed. These are subject to the filtering rules of the underlying logging system.
+SLF4J: See also http://www.slf4j.org/codes.html#replay
+D|15:13:21.450|CvDefinitionValidationHandler           |Checking parameter [MS, MS:1000484, orbitrap, ]
+D|15:13:21.450|CvDefinitionValidationHandler           |Parameter [MS, MS:1000484, orbitrap, ] uses undefined controlled vocabulary: MS
+D|15:13:21.450|CvDefinitionValidationHandler           |Checking parameter [MS, MS:1000084, time-of-flight, ]
+D|15:13:21.451|CvDefinitionValidationHandler           |Parameter [MS, MS:1000084, time-of-flight, ] uses undefined controlled vocabulary: MS
+D|15:13:21.451|CvDefinitionValidationHandler           |Checking parameter [MS, MS:1000112, Faraday Cup, ]
+D|15:13:21.451|CvDefinitionValidationHandler           |Parameter [MS, MS:1000112, Faraday Cup, ] uses undefined controlled vocabulary: MS
+D|15:13:21.452|CvDefinitionValidationHandler           |Checking parameter [MS, MS:1001742, LTQ Orbitrap Velos, ]
+D|15:13:21.452|CvDefinitionValidationHandler           |Parameter [MS, MS:1001742, LTQ Orbitrap Velos, ] uses undefined controlled vocabulary: MS
+D|15:13:21.452|CvDefinitionValidationHandler           |Checking parameter [MS, MS:1000073, Electrospray Ionization, ]
+D|15:13:21.452|CvDefinitionValidationHandler           |Parameter [MS, MS:1000073, Electrospray Ionization, ] uses undefined controlled vocabulary: MS
+D|15:13:21.453|CvDefinitionValidationHandler           |Checking parameter [MS, MS:1000584, mzML file, ]
+D|15:13:21.453|CvDefinitionValidationHandler           |Parameter [MS, MS:1000584, mzML file, ] uses undefined controlled vocabulary: MS
+D|15:13:21.453|CvDefinitionValidationHandler           |Checking parameter [MS, MS:1001530, mzML unique identifier, ]
+D|15:13:21.453|CvDefinitionValidationHandler           |Parameter [MS, MS:1001530, mzML unique identifier, ] uses undefined controlled vocabulary: MS
+D|15:13:21.454|CvDefinitionValidationHandler           |Checking parameter [MS, MS:1000129, negative scan, ]
+D|15:13:21.455|CvDefinitionValidationHandler           |Parameter [MS, MS:1000129, negative scan, ] uses undefined controlled vocabulary: MS
+D|15:13:21.455|CvDefinitionValidationHandler           |Checking parameter [MS, MS:1000130, positive scan, ]
+D|15:13:21.455|CvDefinitionValidationHandler           |Parameter [MS, MS:1000130, positive scan, ] uses undefined controlled vocabulary: MS
+D|15:13:21.456|CvDefinitionValidationHandler           |Checking parameter [CL, CL:0000182, hepatocyte, ]
+D|15:13:21.456|CvDefinitionValidationHandler           |Parameter [CL, CL:0000182, hepatocyte, ] uses undefined controlled vocabulary: CL
+D|15:13:21.456|CvDefinitionValidationHandler           |Checking parameter [DOID, DOID:684, hepatocellular carcinoma, ]
+D|15:13:21.456|CvDefinitionValidationHandler           |Parameter [DOID, DOID:684, hepatocellular carcinoma, ] uses undefined controlled vocabulary: DOID
+D|15:13:21.456|CvDefinitionValidationHandler           |Checking parameter [DOID, DOID:9452, alcoholic fatty liver, ]
+D|15:13:21.457|CvDefinitionValidationHandler           |Parameter [DOID, DOID:9452, alcoholic fatty liver, ] uses undefined controlled vocabulary: DOID
+D|15:13:21.457|CvDefinitionValidationHandler           |Checking parameter [NCBITaxon, NCBITaxon:9606, Homo sapiens (Human), ]
+D|15:13:21.457|CvDefinitionValidationHandler           |Parameter [NCBITaxon, NCBITaxon:9606, Homo sapiens (Human), ] uses undefined controlled vocabulary: NCBITaxon
+D|15:13:21.457|CvDefinitionValidationHandler           |Checking parameter [NCBITaxon, NCBITaxon:12134, Human rhinovirus 1, ]
+D|15:13:21.458|CvDefinitionValidationHandler           |Parameter [NCBITaxon, NCBITaxon:12134, Human rhinovirus 1, ] uses undefined controlled vocabulary: NCBITaxon
+D|15:13:21.458|CvDefinitionValidationHandler           |Checking parameter [BTO, BTO:0000759, liver, ]
+D|15:13:21.458|CvDefinitionValidationHandler           |Parameter [BTO, BTO:0000759, liver, ] uses undefined controlled vocabulary: BTO
+D|15:13:21.458|CvDefinitionValidationHandler           |Selected 15 cv parameters!
+D|15:13:21.458|CvDefinitionValidationHandler           |Checking parameter [MS, MS:1000484, orbitrap, ]
+D|15:13:21.459|CvDefinitionValidationHandler           |Checking parameter [MS, MS:1000084, time-of-flight, ]
+D|15:13:21.459|CvDefinitionValidationHandler           |Checking parameter [MS, MS:1000112, Faraday Cup, ]
+D|15:13:21.459|CvDefinitionValidationHandler           |Checking parameter [MS, MS:1001742, LTQ Orbitrap Velos, ]
+D|15:13:21.459|CvDefinitionValidationHandler           |Checking parameter [MS, MS:1000073, Electrospray Ionization, ]
+D|15:13:21.459|CvDefinitionValidationHandler           |Checking parameter [MS, MS:1000584, mzML file, ]
+D|15:13:21.459|CvDefinitionValidationHandler           |Checking parameter [MS, MS:1001530, mzML unique identifier, ]
+D|15:13:21.460|CvDefinitionValidationHandler           |Checking parameter [MS, MS:1000129, negative scan, ]
+D|15:13:21.460|CvDefinitionValidationHandler           |Checking parameter [MS, MS:1000130, positive scan, ]
+D|15:13:21.460|CvDefinitionValidationHandler           |Checking parameter [CL, CL:0000182, hepatocyte, ]
+D|15:13:21.460|CvDefinitionValidationHandler           |Parameter [CL, CL:0000182, hepatocyte, ] uses undefined controlled vocabulary: CL
+D|15:13:21.460|CvDefinitionValidationHandler           |Checking parameter [DOID, DOID:684, hepatocellular carcinoma, ]
+D|15:13:21.460|CvDefinitionValidationHandler           |Parameter [DOID, DOID:684, hepatocellular carcinoma, ] uses undefined controlled vocabulary: DOID
+D|15:13:21.460|CvDefinitionValidationHandler           |Checking parameter [DOID, DOID:9452, alcoholic fatty liver, ]
+D|15:13:21.461|CvDefinitionValidationHandler           |Parameter [DOID, DOID:9452, alcoholic fatty liver, ] uses undefined controlled vocabulary: DOID
+D|15:13:21.461|CvDefinitionValidationHandler           |Checking parameter [NCBITaxon, NCBITaxon:9606, Homo sapiens (Human), ]
+D|15:13:21.461|CvDefinitionValidationHandler           |Parameter [NCBITaxon, NCBITaxon:9606, Homo sapiens (Human), ] uses undefined controlled vocabulary: NCBITaxon
+D|15:13:21.461|CvDefinitionValidationHandler           |Checking parameter [NCBITaxon, NCBITaxon:12134, Human rhinovirus 1, ]
+D|15:13:21.461|CvDefinitionValidationHandler           |Parameter [NCBITaxon, NCBITaxon:12134, Human rhinovirus 1, ] uses undefined controlled vocabulary: NCBITaxon
+D|15:13:21.461|CvDefinitionValidationHandler           |Checking parameter [BTO, BTO:0000759, liver, ]
+D|15:13:21.462|CvDefinitionValidationHandler           |Parameter [BTO, BTO:0000759, liver, ] uses undefined controlled vocabulary: BTO
+D|15:13:21.462|CvDefinitionValidationHandler           |Selected 15 cv parameters!
+D|15:13:21.462|CvDefinitionValidationHandler           |Checking parameter [MS, MS:1000484, orbitrap, ]
+D|15:13:21.462|CvDefinitionValidationHandler           |Checking parameter [MS, MS:1000084, time-of-flight, ]
+D|15:13:21.462|CvDefinitionValidationHandler           |Checking parameter [MS, MS:1000112, Faraday Cup, ]
+D|15:13:21.463|CvDefinitionValidationHandler           |Checking parameter [MS, MS:1001742, LTQ Orbitrap Velos, ]
+D|15:13:21.463|CvDefinitionValidationHandler           |Checking parameter [MS, MS:1000073, Electrospray Ionization, ]
+D|15:13:21.463|CvDefinitionValidationHandler           |Checking parameter [MS, MS:1000584, mzML file, ]
+D|15:13:21.463|CvDefinitionValidationHandler           |Checking parameter [MS, MS:1001530, mzML unique identifier, ]
+D|15:13:21.463|CvDefinitionValidationHandler           |Checking parameter [MS, MS:1000129, negative scan, ]
+D|15:13:21.463|CvDefinitionValidationHandler           |Checking parameter [MS, MS:1000130, positive scan, ]
+D|15:13:21.464|CvDefinitionValidationHandler           |Checking parameter [CL, CL:0000182, hepatocyte, ]
+D|15:13:21.464|CvDefinitionValidationHandler           |Checking parameter [DOID, DOID:684, hepatocellular carcinoma, ]
+D|15:13:21.464|CvDefinitionValidationHandler           |Checking parameter [DOID, DOID:9452, alcoholic fatty liver, ]
+D|15:13:21.464|CvDefinitionValidationHandler           |Checking parameter [NCBITaxon, NCBITaxon:9606, Homo sapiens (Human), ]
+D|15:13:21.464|CvDefinitionValidationHandler           |Checking parameter [NCBITaxon, NCBITaxon:12134, Human rhinovirus 1, ]
+D|15:13:21.464|CvDefinitionValidationHandler           |Checking parameter [BTO, BTO:0000759, liver, ]
+D|15:13:21.464|CvDefinitionValidationHandler           |Selected 15 cv parameters!
+D|15:13:21.465|CvDefinitionValidationHandler           |Checking parameter [MS, MS:1000484, orbitrap, ]
+D|15:13:21.465|CvDefinitionValidationHandler           |Checking parameter [MS, MS:1000084, time-of-flight, ]
+D|15:13:21.465|CvDefinitionValidationHandler           |Checking parameter [MS, MS:1000112, Faraday Cup, ]
+D|15:13:21.465|CvDefinitionValidationHandler           |Checking parameter [MS, MS:1001742, LTQ Orbitrap Velos, ]
+D|15:13:21.465|CvDefinitionValidationHandler           |Checking parameter [MS, MS:1000073, Electrospray Ionization, ]
+D|15:13:21.465|CvDefinitionValidationHandler           |Checking parameter [MS, MS:1000584, mzML file, ]
+D|15:13:21.466|CvDefinitionValidationHandler           |Checking parameter [MS, MS:1001530, mzML unique identifier, ]
+D|15:13:21.466|CvDefinitionValidationHandler           |Checking parameter [MS, MS:1000129, negative scan, ]
+D|15:13:21.466|CvDefinitionValidationHandler           |Checking parameter [MS, MS:1000130, positive scan, ]
+D|15:13:21.466|CvDefinitionValidationHandler           |Checking parameter [CL, CL:0000182, hepatocyte, ]
+D|15:13:21.466|CvDefinitionValidationHandler           |Checking parameter [DOID, DOID:684, hepatocellular carcinoma, ]
+D|15:13:21.466|CvDefinitionValidationHandler           |Checking parameter [DOID, DOID:9452, alcoholic fatty liver, ]
+D|15:13:21.467|CvDefinitionValidationHandler           |Checking parameter [NCBITaxon, NCBITaxon:9606, Homo sapiens (Human), ]
+D|15:13:21.467|CvDefinitionValidationHandler           |Checking parameter [NCBITaxon, NCBITaxon:12134, Human rhinovirus 1, ]
+D|15:13:21.467|CvDefinitionValidationHandler           |Checking parameter [BTO, BTO:0000759, liver, ]
+D|15:13:21.467|CvDefinitionValidationHandler           |Cv with label UO is not being used by any parameters!
+D|15:13:22.061|OLSClient                               |obo_id=MS:1000831
+D|15:13:23.418|OLSClient                               |obo_id=MS:1000539
+D|15:13:24.048|OLSClient                               |obo_id=MS:1000564
+D|15:13:24.236|OLSClient                               |obo_id=MS:1000564
+D|15:13:24.504|OLSClient                               |obo_id=MS:1000560

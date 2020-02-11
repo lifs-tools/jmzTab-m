@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: de.isas.mztab2.io.MZTabFileParserTest
+-------------------------------------------------------------------------------
+Tests run: 12, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.369 s - in de.isas.mztab2.io.MZTabFileParserTest

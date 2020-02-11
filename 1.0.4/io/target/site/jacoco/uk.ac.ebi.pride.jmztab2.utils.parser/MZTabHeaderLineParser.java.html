@@ -1,0 +1,423 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MZTabHeaderLineParser.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jmztabm-io</a> &gt; <a href="index.source.html" class="el_package">uk.ac.ebi.pride.jmztab2.utils.parser</a> &gt; <span class="el_source">MZTabHeaderLineParser.java</span></div><h1>MZTabHeaderLineParser.java</h1><pre class="source lang-java linenums">/* 
+ * Copyright 2018 Leibniz-Institut für Analytische Wissenschaften – ISAS – e.V..
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package uk.ac.ebi.pride.jmztab2.utils.parser;
+
+import de.isas.mztab2.model.Assay;
+import de.isas.mztab2.model.Metadata;
+import de.isas.mztab2.model.MsRun;
+import de.isas.mztab2.model.Parameter;
+import de.isas.mztab2.model.SmallMoleculeSummary;
+import de.isas.mztab2.model.StudyVariable;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import uk.ac.ebi.pride.jmztab2.model.MZBoolean;
+import uk.ac.ebi.pride.jmztab2.model.MZTabColumn;
+import uk.ac.ebi.pride.jmztab2.model.MZTabColumnFactory;
+import uk.ac.ebi.pride.jmztab2.model.MZTabConstants;
+import uk.ac.ebi.pride.jmztab2.model.Section;
+import uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType;
+import uk.ac.ebi.pride.jmztab2.utils.errors.LogicalErrorType;
+import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabError;
+import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorList;
+import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabException;
+
+
+/**
+ * A couple of common method used to parse a header line into {@link uk.ac.ebi.pride.jmztab2.model.MZTabColumnFactory} structure.
+ * 
+ * NOTICE: {@link uk.ac.ebi.pride.jmztab2.model.MZTabColumnFactory} maintain a couple of {@link MZTabColumn} which have internal logical
+ * position and order. In physical mzTab file, we allow user not obey this logical position organized way,
+ * and provide their date with own order. In order to distinguish them, we use physical position (a positive
+ * integer) to record the column location in mzTab file. And use {@link uk.ac.ebi.pride.jmztab2.utils.parser.PositionMapping} structure the maintain
+ * the mapping between them.
+ *
+ * @author qingwei
+ * @see SMHLineParser
+ * @see SMFLineParser
+ * @see SMELineParser
+ * @since 11/02/13
+ * 
+ */
+public abstract class MZTabHeaderLineParser extends MZTabLineParser {
+
+    protected MZTabColumnFactory factory;
+    protected Metadata metadata;
+
+    /**
+     * Parse a header line into {@link uk.ac.ebi.pride.jmztab2.model.MZTabColumnFactory} structure.
+     *
+     * @param context the parser context, keeping dynamic state and lookup associations.
+     * @param factory  SHOULD NOT set null
+     * @param metadata SHOULD NOT set null
+     */
+    protected MZTabHeaderLineParser(MZTabParserContext context, MZTabColumnFactory factory, Metadata metadata) {
+<span class="fc" id="L67">        super(context);</span>
+<span class="pc bpc" id="L68" title="1 of 2 branches missed.">        if (factory == null) {</span>
+<span class="nc" id="L69">            throw new NullPointerException(&quot;Header line should be parsed first!&quot;);</span>
+        }
+<span class="fc" id="L71">        this.factory = factory;</span>
+
+<span class="pc bpc" id="L73" title="1 of 2 branches missed.">        if (metadata == null) {</span>
+<span class="nc" id="L74">            throw new NullPointerException(&quot;Metadata should be created first!&quot;);</span>
+        }
+<span class="fc" id="L76">        this.metadata = metadata;</span>
+<span class="fc" id="L77">    }</span>
+
+    /**
+     * {@inheritDoc}
+     *
+     * Parse a header line into {@link MZTabColumnFactory} structure. There are several steps in this method:
+     * Step 1: {@link #parseColumns()} focus on validate and parse all columns. 
+     * Step 2: {@link #refine()}
+     */
+    @Override
+    public void parse(int lineNumber, String line, MZTabErrorList errorList) throws MZTabException {
+<span class="fc" id="L88">        super.parse(lineNumber, line, errorList);</span>
+
+<span class="fc" id="L90">        int offset = parseColumns();</span>
+<span class="pc bpc" id="L91" title="1 of 2 branches missed.">        if (offset != items.length) {</span>
+<span class="nc" id="L92">            this.errorList.add(new MZTabError(LogicalErrorType.HeaderLine, lineNumber, section.getName(), &quot;&quot; + offset, &quot;&quot; + items.length));</span>
+        }
+
+<span class="fc" id="L95">        refine();</span>
+
+<span class="fc" id="L97">    }</span>
+
+    /**
+     * This methods delegates to the subclasses the parsing of the columns. All of the columns are defined in 
+     * {@link uk.ac.ebi.pride.jmztab2.model.SmallMoleculeColumn}, {@link uk.ac.ebi.pride.jmztab2.model.SmallMoleculeFeatureColumn}, or {@link uk.ac.ebi.pride.jmztab2.model.SmallMoleculeEvidenceColumn}.
+     *
+     * @return the next physical index of column available after the parsing.
+     * @throws uk.ac.ebi.pride.jmztab2.utils.errors.MZTabException if any structural or logical errors are encountered that prohibit further processing.
+     */
+    protected abstract int parseColumns() throws MZTabException;
+
+
+    /**
+     * Some validate operation need to be done after the whole {@link uk.ac.ebi.pride.jmztab2.model.MZTabColumnFactory} created.
+     * Thus, user can add them, and called at the end of the
+     * {@link #parse(int, String, MZTabErrorList)} method.
+     *
+     * @throws uk.ac.ebi.pride.jmztab2.utils.errors.MZTabException if any structural or logical errors are encountered that prohibit further processing.
+     */
+    protected abstract void refine() throws MZTabException;
+
+
+    /**
+     * Refine optional columns and check, whether they were properly defined.
+     * These re-validate operation will called in {@link #refine()} method.
+     *
+     * @param section a {@link Section} object defining the part of the document.
+     * @param columnHeader a {@link java.lang.String} object.
+     * @throws uk.ac.ebi.pride.jmztab2.utils.errors.MZTabException if any structural or logical errors are encountered that prohibit further processing.
+     */
+    protected void refineOptionalColumn(Section section, String columnHeader) throws MZTabException {
+<span class="pc bpc" id="L128" title="1 of 2 branches missed.">        if (factory.findColumnByHeader(columnHeader) == null) {</span>
+<span class="nc" id="L129">            throw new MZTabException(new MZTabError(LogicalErrorType.NotDefineInHeader, lineNumber, columnHeader, section.getName()));</span>
+        }
+<span class="fc" id="L131">    }</span>
+
+    /**
+     * &lt;p&gt;fromIndexToOrder.&lt;/p&gt;
+     *
+     * @param index a {@link java.lang.Integer} object.
+     * @return a {@link java.lang.String} object.
+     */
+    protected String fromIndexToOrder(Integer index) {
+<span class="fc" id="L140">        return String.format(&quot;%02d&quot;, index);</span>
+    }
+
+    /**
+     * Additional columns can be added to the end of the protein table. These column headers MUST start with the prefix &quot;opt_&quot;.
+     * Column names MUST only contain the following characters: 'A'-'Z', 'a'-'z', '0'-'9', '_', '-', '[', ']', and ':'.
+     * 
+     * the format: opt_{IndexedElement[id]}_{value}. Spaces within the parameter's name MUST be replaced by '_'.
+     *
+     * @param nameLabel a {@link java.lang.String} object.
+     * @return a boolean.
+     * @throws uk.ac.ebi.pride.jmztab2.utils.errors.MZTabException if any structural or logical errors are encountered that prohibit further processing.
+     */
+    protected boolean checkOptColumnName(String nameLabel) throws MZTabException {
+<span class="fc" id="L154">        nameLabel = nameLabel.trim();</span>
+
+<span class="fc" id="L156">        String regexp = MZTabConstants.REGEX_OPT_COLUMN_NAME;</span>
+<span class="fc" id="L157">        Pattern pattern = Pattern.compile(regexp);</span>
+<span class="fc" id="L158">        Matcher matcher = pattern.matcher(nameLabel);</span>
+
+        Integer id;
+        String object_id;
+        String value;
+        MZTabError error;
+<span class="pc bpc" id="L164" title="1 of 2 branches missed.">        if (matcher.find()) {</span>
+<span class="fc" id="L165">            object_id = matcher.group(1);</span>
+<span class="fc" id="L166">            value = matcher.group(4);</span>
+
+<span class="fc" id="L168">            Parameter param = null;</span>
+<span class="pc bpc" id="L169" title="1 of 2 branches missed.">            if (value.startsWith(MZTabConstants.CV_PREFIX)) {</span>
+<span class="nc" id="L170">                param = checkCVParamOptColumnName(nameLabel, value);</span>
+            }
+
+<span class="fc" id="L173">            Class dataType = getDataType(param);</span>
+
+<span class="pc bpc" id="L175" title="1 of 2 branches missed.">            if (object_id.contains(MZTabConstants.GLOBAL)) {</span>
+<span class="pc bpc" id="L176" title="1 of 2 branches missed.">                if (param == null) {</span>
+<span class="fc" id="L177">                    factory.addOptionalColumn(value, dataType);</span>
+                } else {
+<span class="nc" id="L179">                    factory.addOptionalColumn(param, dataType);</span>
+                }
+            } else {
+<span class="nc" id="L182">                id = parseIndex(nameLabel, matcher.group(3));</span>
+
+<span class="nc bnc" id="L184" title="All 2 branches missed.">                if (object_id.contains(Metadata.Properties.assay.getPropertyName())) {</span>
+<span class="nc" id="L185">                    Assay element = context.getAssayMap().get(id);</span>
+                    // not found assay_id in metadata.
+<span class="nc bnc" id="L187" title="All 2 branches missed.">                    if (element == null) {</span>
+<span class="nc" id="L188">                        error = new MZTabError(LogicalErrorType.AssayNotDefined, lineNumber, nameLabel);</span>
+<span class="nc" id="L189">                        throw new MZTabException(error);</span>
+<span class="nc bnc" id="L190" title="All 2 branches missed.">                    } else if (param == null) {</span>
+<span class="nc" id="L191">                        factory.addOptionalColumn(element, value, dataType);</span>
+                    } else {
+<span class="nc" id="L193">                        factory.addOptionalColumn(element, param, dataType);</span>
+                    }
+<span class="nc bnc" id="L195" title="All 2 branches missed.">                } else if (object_id.contains(Metadata.Properties.studyVariable.getPropertyName())) {</span>
+<span class="nc" id="L196">                    StudyVariable element = context.getStudyVariableMap().get(id);</span>
+                    // not found study_variable_id in metadata.
+<span class="nc bnc" id="L198" title="All 2 branches missed.">                    if (element == null) {</span>
+<span class="nc" id="L199">                        error = new MZTabError(LogicalErrorType.StudyVariableNotDefined, lineNumber, nameLabel);</span>
+<span class="nc" id="L200">                        throw new MZTabException(error);</span>
+<span class="nc bnc" id="L201" title="All 2 branches missed.">                    } else if (param == null) {</span>
+<span class="nc" id="L202">                        factory.addOptionalColumn(element, value, dataType);</span>
+                    } else {
+<span class="nc" id="L204">                        factory.addOptionalColumn(element, param, dataType);</span>
+                    }
+<span class="nc bnc" id="L206" title="All 2 branches missed.">                } else if (object_id.contains(Metadata.Properties.msRun.getPropertyName())) {</span>
+                    // not found ms_run_id in metadata.
+<span class="nc" id="L208">                    MsRun element = context.getMsRunMap().get(id);</span>
+<span class="nc bnc" id="L209" title="All 2 branches missed.">                    if (element == null) {</span>
+<span class="nc" id="L210">                        error = new MZTabError(LogicalErrorType.MsRunNotDefined, lineNumber, nameLabel);</span>
+<span class="nc" id="L211">                        throw new MZTabException(error);</span>
+<span class="nc bnc" id="L212" title="All 2 branches missed.">                    } else if (param == null) {</span>
+<span class="nc" id="L213">                        factory.addOptionalColumn(element, value, dataType);</span>
+                    } else {
+<span class="nc" id="L215">                        factory.addOptionalColumn(element, param, dataType);</span>
+                    }
+                }
+            }
+
+<span class="fc" id="L220">            return true;</span>
+        } else {
+<span class="nc" id="L222">            throw new MZTabException(new MZTabError(FormatErrorType.OptionalCVParamColumn, lineNumber, nameLabel));</span>
+        }
+    }
+
+    /**
+     * An kind of {@link CVParamOptionColumn} which use CV parameter accessions in following the format:
+     * opt_{OBJECT_ID}_cv_{accession}_{parameter name}. Spaces within the parameter' s name MUST be replaced by '_'.
+     */
+    private Parameter checkCVParamOptColumnName(String nameLabel, String valueLabel) throws MZTabException {
+<span class="nc" id="L231">        nameLabel = nameLabel.trim();</span>
+<span class="nc" id="L232">        valueLabel = valueLabel.trim();</span>
+
+<span class="nc" id="L234">        String regexp = MZTabConstants.REGEX_CV_PARAM_OPT_COLUMN_NAME;</span>
+<span class="nc" id="L235">        Pattern pattern = Pattern.compile(regexp);</span>
+<span class="nc" id="L236">        Matcher matcher = pattern.matcher(valueLabel);</span>
+
+        Parameter param;
+<span class="nc bnc" id="L239" title="All 4 branches missed.">        if (!matcher.find() || matcher.end() != valueLabel.length()) {</span>
+<span class="nc" id="L240">            throw new MZTabException(new MZTabError(FormatErrorType.OptionalCVParamColumn, lineNumber, nameLabel));</span>
+        } else {
+<span class="nc" id="L242">            String accession = matcher.group(2);</span>
+<span class="nc" id="L243">            String name = matcher.group(4);</span>
+<span class="nc bnc" id="L244" title="All 4 branches missed.">            if (name == null || name.trim().length() == 0) {</span>
+<span class="nc" id="L245">                throw new MZTabException(new MZTabError(FormatErrorType.OptionalCVParamColumn, lineNumber, nameLabel));</span>
+            }
+
+<span class="nc bnc" id="L248" title="All 2 branches missed.">            param = matcher.group(4) == null ? null : new Parameter().cvAccession(accession).name(name);</span>
+        }
+
+<span class="nc" id="L251">        return param;</span>
+    }
+
+    /**
+     * Some {@link CVParamOptionColumn}, their data type have defined. Currently, we provide two {@link Parameter}
+     * which defined in the mzTab specification. One is &quot;emPAI value&quot; (MS:1001905), data type is Double;
+     * another is &quot;decoy peptide&quot; (MS:1002217), the data type is Boolean (0/1). Besides them, &quot;opt_&quot; start optional
+     * column data type is String.
+     *
+     * @see #checkOptColumnName(String)
+     */
+    private Class getDataType(Parameter param) {
+        Class dataType;
+
+<span class="pc bpc" id="L265" title="1 of 2 branches missed.">        if (param == null) {</span>
+<span class="fc" id="L266">            dataType = String.class;</span>
+<span class="nc bnc" id="L267" title="All 2 branches missed.">        } else if (param.getCvAccession().equals(&quot;MS:1001905&quot;)) {</span>
+<span class="nc" id="L268">            dataType = Double.class;</span>
+<span class="nc bnc" id="L269" title="All 2 branches missed.">        } else if (param.getCvAccession().equals(&quot;MS:1002217&quot;)) {</span>
+<span class="nc" id="L270">            dataType = MZBoolean.class;</span>
+<span class="nc bnc" id="L271" title="All 2 branches missed.">        } else if (param.getCvAccession().equals(&quot;PRIDE:0000303&quot;)) {</span>
+<span class="nc" id="L272">            dataType = MZBoolean.class;</span>
+        } else {
+<span class="nc" id="L274">            dataType = String.class;</span>
+        }
+
+<span class="fc" id="L277">        return dataType;</span>
+    }
+
+    /**
+     * &lt;p&gt;checkAbundanceColumns.&lt;/p&gt;
+     *
+     * @param offset a int.
+     * @param order a {@link java.lang.String} object.
+     * @return a int.
+     * @throws uk.ac.ebi.pride.jmztab2.utils.errors.MZTabException if any structural or logical errors are encountered that prohibit further processing.
+     */
+    protected int checkAbundanceColumns(int offset, String order) throws MZTabException {
+<span class="fc" id="L289">        String headerString = items[offset];</span>
+<span class="fc bfc" id="L290" title="All 2 branches covered.">        if (headerString.contains(SmallMoleculeSummary.Properties.abundanceAssay.getPropertyName())) {</span>
+<span class="fc" id="L291">            checkAbundanceAssayColumn(headerString, order);</span>
+<span class="fc" id="L292">            return offset;</span>
+<span class="pc bpc" id="L293" title="1 of 4 branches missed.">        } else if (headerString.contains(SmallMoleculeSummary.Properties.abundanceStudyVariable.getPropertyName()) || headerString.contains(SmallMoleculeSummary.Properties.abundanceVariationStudyVariable.getPropertyName())) {</span>
+<span class="fc" id="L294">            checkAbundanceStudyVariableColumns(headerString, order);</span>
+<span class="fc" id="L295">            return offset;</span>
+        } else {
+<span class="nc" id="L297">            MZTabError error = new MZTabError(FormatErrorType.AbundanceColumn, lineNumber, headerString);</span>
+<span class="nc" id="L298">            throw new MZTabException(error);</span>
+        }
+    }
+
+    /**
+     * Check (protein|peptide|smallmolecule)_abundance is correct, and return object value label.
+     * For example, protein_abundance_std_error_study_variable[id], return study_variable[id].
+     */
+    private String checkAbundanceSection(String abundanceHeader) throws MZTabException {
+<span class="fc" id="L307">        abundanceHeader = abundanceHeader.trim().toLowerCase();</span>
+
+<span class="fc" id="L309">        Pattern pattern = Pattern.compile(MZTabConstants.REGEX_ABUNDANCE_COLUMN_NAME);</span>
+<span class="fc" id="L310">        Matcher matcher = pattern.matcher(abundanceHeader);</span>
+
+<span class="pc bpc" id="L312" title="1 of 2 branches missed.">        if (matcher.find()) {</span>
+//            String sectionName = matcher.group(1);
+//            if (sectionName != null &amp;&amp;
+//                    !(sectionName.equals(Section.Protein.getName()) &amp;&amp; section != Section.Protein_Header) &amp;&amp;
+//                    !(sectionName.equals(Section.Peptide.getName()) &amp;&amp; section != Section.Peptide_Header) &amp;&amp;
+//                    !(sectionName.equals(Section.Small_Molecule.getName()) &amp;&amp; section != Section.Small_Molecule_Header)) {
+<span class="fc" id="L318">                return matcher.group(1);</span>
+//            }
+
+//            MZTabError error = new MZTabError(FormatErrorType.AbundanceColumn, lineNumber, abundanceHeader);
+//            throw new MZTabException(error);
+        } else {
+<span class="nc" id="L324">            MZTabError error = new MZTabError(FormatErrorType.AbundanceColumn, lineNumber, abundanceHeader);</span>
+<span class="nc" id="L325">            throw new MZTabException(error);</span>
+        }
+    }
+
+    private void checkAbundanceAssayColumn(String abundanceHeader, String order) throws MZTabException {
+<span class="fc" id="L330">        String valueLabel = checkAbundanceSection(abundanceHeader);</span>
+
+<span class="fc" id="L332">        Pattern pattern = Pattern.compile(MZTabConstants.REGEX_ABUNDANCE_ASSAY_COLUMN_NAME);</span>
+<span class="fc" id="L333">        Matcher matcher = pattern.matcher(valueLabel);</span>
+<span class="pc bpc" id="L334" title="1 of 2 branches missed.">        if (!matcher.find()) {</span>
+<span class="nc" id="L335">            MZTabError error = new MZTabError(FormatErrorType.AbundanceColumn, lineNumber, abundanceHeader);</span>
+<span class="nc" id="L336">            throw new MZTabException(error);</span>
+        }
+
+<span class="fc" id="L339">        int id = parseIndex(abundanceHeader, matcher.group(1));</span>
+<span class="fc" id="L340">        Assay assay = context.getAssayMap().get(id);</span>
+<span class="pc bpc" id="L341" title="1 of 2 branches missed.">        if (assay == null) {</span>
+<span class="nc" id="L342">            MZTabError error = new MZTabError(LogicalErrorType.AssayNotDefined, lineNumber, abundanceHeader);</span>
+<span class="nc" id="L343">            throw new MZTabException(error);</span>
+        }
+
+<span class="fc" id="L346">        factory.addAbundanceOptionalColumn(assay, order);</span>
+<span class="fc" id="L347">    }</span>
+
+
+    private void checkAbundanceStudyVariableColumns(String header,
+                                                    String order) throws MZTabException {
+<span class="fc" id="L352">        header = header.trim().toLowerCase();</span>
+
+<span class="fc bfc" id="L354" title="All 2 branches covered.">        if (!header.contains(SmallMoleculeSummary.Properties.abundanceStudyVariable.getPropertyName()</span>
+<span class="pc bpc" id="L355" title="1 of 2 branches missed.">            ) &amp;&amp; !header.contains(SmallMoleculeSummary.Properties.abundanceVariationStudyVariable.getPropertyName())) {</span>
+<span class="nc" id="L356">            MZTabError error = new MZTabError(FormatErrorType.AbundanceColumn, lineNumber, header);</span>
+<span class="nc" id="L357">            throw new MZTabException(error);</span>
+        } else {
+<span class="fc" id="L359">            StudyVariable abundanceStudyVariable = checkAbundanceStudyVariableColumn(header);</span>
+
+            //adds both abundance_study_variable and abundance_coeffvar_study_variable columns
+<span class="fc" id="L362">            factory.addAbundanceOptionalColumn(abundanceStudyVariable, checkAbundanceSection(header), order);</span>
+
+        }
+<span class="fc" id="L365">    }</span>
+
+    /**
+     * Check XXXX_abundance_study_variable[id], XXXX_abundance_stdev_study_variable[id], XXXX_abundance_std_error_study_variable[id]
+     * column header. If parse error, stop validate and raise {@link MZTabException}.
+     */
+    private StudyVariable checkAbundanceStudyVariableColumn(String abundanceHeader) throws MZTabException {
+<span class="fc" id="L372">        String valueLabel = checkAbundanceSection(abundanceHeader);</span>
+
+<span class="fc" id="L374">        Pattern pattern = Pattern.compile(MZTabConstants.REGEX_STUDY_VARIABLE_COLUMN_NAME);</span>
+<span class="fc" id="L375">        Matcher matcher = pattern.matcher(valueLabel);</span>
+<span class="pc bpc" id="L376" title="1 of 2 branches missed.">        if (!matcher.find()) {</span>
+<span class="nc" id="L377">            MZTabError error = new MZTabError(FormatErrorType.AbundanceColumn, lineNumber, abundanceHeader);</span>
+<span class="nc" id="L378">            throw new MZTabException(error);</span>
+        }
+
+<span class="fc" id="L381">        int id = parseIndex(abundanceHeader, matcher.group(1));</span>
+<span class="fc" id="L382">        StudyVariable studyVariable = context.getStudyVariableMap().get(id);</span>
+<span class="pc bpc" id="L383" title="1 of 2 branches missed.">        if (studyVariable == null) {</span>
+<span class="nc" id="L384">            MZTabError error = new MZTabError(LogicalErrorType.StudyVariableNotDefined, lineNumber, abundanceHeader);</span>
+<span class="nc" id="L385">            throw new MZTabException(error);</span>
+        }
+
+<span class="fc" id="L388">        return studyVariable;</span>
+    }
+
+    /**
+     * Parse header to a index id number.
+     * If exists parse error, stop validate and throw {@link uk.ac.ebi.pride.jmztab2.utils.errors.MZTabException} directly.
+     *
+     * @param header a {@link java.lang.String} object.
+     * @param id a {@link java.lang.String} object.
+     * @return a int.
+     * @throws uk.ac.ebi.pride.jmztab2.utils.errors.MZTabException if any structural or logical errors are encountered that prohibit further processing.
+     */
+    protected int parseIndex(String header, String id) throws MZTabException {
+        try {
+<span class="fc" id="L402">            Integer index = Integer.parseInt(id);</span>
+<span class="pc bpc" id="L403" title="1 of 2 branches missed.">            if (index &lt; 1) {</span>
+<span class="nc" id="L404">                throw new NumberFormatException();</span>
+            }
+
+<span class="fc" id="L407">            return index;</span>
+<span class="nc" id="L408">        } catch (NumberFormatException e) {</span>
+<span class="nc" id="L409">            MZTabError error = new MZTabError(LogicalErrorType.IdNumber, lineNumber, header, id);</span>
+<span class="nc" id="L410">            throw new MZTabException(error);</span>
+        }
+    }
+
+    /**
+     * &lt;p&gt;Getter for the field &lt;code&gt;factory&lt;/code&gt;.&lt;/p&gt;
+     *
+     * @return a {@link uk.ac.ebi.pride.jmztab2.model.MZTabColumnFactory} object.
+     */
+    public MZTabColumnFactory getFactory() {
+<span class="fc" id="L420">        return factory;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

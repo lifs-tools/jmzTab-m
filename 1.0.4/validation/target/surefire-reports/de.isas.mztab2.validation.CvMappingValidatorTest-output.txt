@@ -1,0 +1,3 @@
+D|15:13:22.034|ResolvingCvRuleHandler                  |Evaluating rule instrument_name_may on /metadata/instrument/@instrumentName
+D|15:13:22.075|ResolvingCvRuleHandler                  |Evaluating rule instrument_name_may on /metadata/instrument/@instrumentName
+D|15:13:22.083|EmptyRuleHandler                        |Evaluating rule instrument_name_may on /metadata/instrument/@instrumentName did not yield any selected elements!

@@ -1,0 +1,6 @@
+[Warn-2021] line 0: Column "spectra_ref" value "ms_run[1]:controllerType=0 controllerNumber=1 scan=1", "ms_run[1]-location" is "null". The use of "null" is allowed here however its use is discouraged.
+
+[Error-1026] line 0: Column "spectra_ref" value "" is not a valid spectra reference, the ms_run[1-n]-location is not defined in the metadata section, or it is referenced before its definition.
+
+[Warn-2051] line 0: The spectra_ref element "databasekey=1231" for column "spectra_ref" uses an ms_run[1-n]-id_format not supported by the validator.
+

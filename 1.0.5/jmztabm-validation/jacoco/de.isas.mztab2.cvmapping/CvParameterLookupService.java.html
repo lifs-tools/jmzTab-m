@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CvParameterLookupService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jmztabm-validation</a> &gt; <a href="index.source.html" class="el_package">de.isas.mztab2.cvmapping</a> &gt; <span class="el_source">CvParameterLookupService.java</span></div><h1>CvParameterLookupService.java</h1><pre class="source lang-java linenums">/* 
+ * Copyright 2018 Leibniz-Institut für Analytische Wissenschaften – ISAS – e.V..
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package de.isas.mztab2.cvmapping;
+
+import de.isas.mztab2.model.Parameter;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
+import uk.ac.ebi.pride.utilities.ols.web.service.client.OLSClient;
+import uk.ac.ebi.pride.utilities.ols.web.service.config.OLSWsConfig;
+import uk.ac.ebi.pride.utilities.ols.web.service.model.Identifier;
+
+/**
+ * Abstraction over OLSClient to autoconvert Terms to Parameters and to allow
+ * easy matching of Parameters against parent terms and their children.
+ *
+ * @author nilshoffmann
+ */
+<span class="fc" id="L34">@Slf4j</span>
+public class CvParameterLookupService {
+
+    private final OLSClient client;
+    private final Map&lt;Parameter, List&lt;Parameter&gt;&gt; childCache;
+    private final Map&lt;Parameter, List&lt;Parameter&gt;&gt; parentCache;
+
+    private static &lt;K, V&gt; Map&lt;K, V&gt; lruCache(final int maxSize) {
+<span class="fc" id="L42">        return new LinkedHashMap&lt;K, V&gt;(maxSize * 4 / 3, 0.75f, true) {</span>
+            @Override
+            protected boolean removeEldestEntry(Map.Entry&lt;K, V&gt; eldest) {
+<span class="pc bpc" id="L45" title="1 of 2 branches missed.">                return size() &gt; maxSize;</span>
+            }
+        };
+    }
+
+    /**
+     * Create a new instance of the lookup service with default OLS configuration.
+     */
+    public CvParameterLookupService() {
+<span class="fc" id="L54">        this(new OLSClient(new OLSWsConfig()));</span>
+<span class="fc" id="L55">    }</span>
+
+    /**
+     * Create a new instance of the lookup service with a custom OLSClient.
+     * @param client the custom OLS client
+     */
+<span class="fc" id="L61">    public CvParameterLookupService(OLSClient client) {</span>
+<span class="fc" id="L62">        this.client = client;</span>
+<span class="fc" id="L63">        this.childCache = lruCache(4096);</span>
+<span class="fc" id="L64">        this.parentCache = lruCache(4096);</span>
+<span class="fc" id="L65">    }</span>
+
+    /**
+     * Create a new instance of the lookup service with a custom OLSWsConfig configuration.
+     * @param config the custom configuration
+     */
+    public CvParameterLookupService(OLSWsConfig config) {
+<span class="nc" id="L72">        this(new OLSClient(config));</span>
+<span class="nc" id="L73">    }</span>
+    
+    /**
+     * Clears all query result caches (parent and child).
+     */
+    public void clearCaches() {
+<span class="nc" id="L79">        this.childCache.clear();</span>
+<span class="nc" id="L80">        this.parentCache.clear();</span>
+<span class="nc" id="L81">    }</span>
+
+    /**
+     * Resolve all parents of parameter up to an arbitrary depth (actually height, since we go from bottom to top).
+     * Use at your own risk, the OLS service may terminate your connection if the response is too large or takes too long.
+     * @param parameter the parameter to start from
+     * @return a list of all parent parameters for the given parameter
+     * @throws org.springframework.web.client.HttpClientErrorException 
+     */
+    public List&lt;Parameter&gt; resolveParents(Parameter parameter) throws org.springframework.web.client.HttpClientErrorException {
+<span class="fc" id="L91">        return resolveParents(parameter, -1);</span>
+    }
+
+    /**
+     * Resolve all parents of a parameter up to a given maximum depth (1 meaning the immediate parents, -1 meaning all).
+     * @param parameter the parameter to start from
+     * @param levels maximum levels to query
+     * @return a list of all parent parameters for the given parameter
+     * @throws org.springframework.web.client.HttpClientErrorException 
+     */
+    public List&lt;Parameter&gt; resolveParents(Parameter parameter, int levels) throws org.springframework.web.client.HttpClientErrorException {
+<span class="pc bpc" id="L102" title="2 of 4 branches missed.">        if (parameter.getCvAccession() == null || parameter.getCvLabel() == null) {</span>
+<span class="nc" id="L103">            throw new IllegalArgumentException(</span>
+                &quot;Parameter must provide cvAccession and cvLabel!&quot;);
+        }
+<span class="fc bfc" id="L106" title="All 2 branches covered.">        if(parentCache.containsKey(parameter)) {</span>
+<span class="fc" id="L107">            log.debug(&quot;Cache hit for parameter &quot;+parameter+&quot; in parent cache!&quot;);</span>
+<span class="fc" id="L108">            return parentCache.get(parameter);</span>
+        }
+<span class="fc" id="L110">        Identifier ident = new Identifier(parameter.getCvAccession(),</span>
+            Identifier.IdentifierType.OBO);
+<span class="fc" id="L112">        List&lt;Parameter&gt; parents = client.getTermParents(ident, parameter.getCvLabel(), levels).</span>
+<span class="fc" id="L113">            stream().</span>
+<span class="fc" id="L114">            map(CvMappingUtils::asParameter).</span>
+<span class="fc" id="L115">            collect(Collectors.toList());</span>
+<span class="fc" id="L116">        parentCache.put(parameter, parents);</span>
+<span class="fc" id="L117">        return parents;</span>
+    }
+
+    /**
+     * Resolve all children of a parameter up to a given maximum depth (1 meaning immediate children, -1 meaning all).
+     * @param parameter the parameter to start from
+     * @param levels maximum levels to query
+     * @return a list of all child parameters for the given parameter
+     * @throws org.springframework.web.client.HttpClientErrorException 
+     */
+    public List&lt;Parameter&gt; resolveChildren(Parameter parameter, int levels) throws org.springframework.web.client.HttpClientErrorException {
+<span class="pc bpc" id="L128" title="2 of 4 branches missed.">        if (parameter.getCvAccession() == null || parameter.getCvLabel() == null) {</span>
+<span class="nc" id="L129">            throw new IllegalArgumentException(</span>
+                &quot;Parameter must provide cvAccession and cvLabel!&quot;);
+        }
+<span class="pc bpc" id="L132" title="1 of 2 branches missed.">        if(childCache.containsKey(parameter)) {</span>
+<span class="nc" id="L133">            log.debug(&quot;Cache hit for parameter &quot;+parameter+&quot; in child cache!&quot;);</span>
+<span class="nc" id="L134">            return childCache.get(parameter);</span>
+        }
+<span class="fc" id="L136">        Identifier ident = new Identifier(parameter.getCvAccession(),</span>
+            Identifier.IdentifierType.OBO);
+<span class="fc" id="L138">        List&lt;Parameter&gt; children = client.getTermChildren(ident, parameter.getCvLabel(), levels).</span>
+<span class="fc" id="L139">            stream().</span>
+<span class="fc" id="L140">            map(CvMappingUtils::asParameter).</span>
+<span class="fc" id="L141">            collect(Collectors.toList());</span>
+<span class="fc" id="L142">        childCache.put(parameter, children);</span>
+<span class="fc" id="L143">        return children;</span>
+    }
+
+    /**
+     * Resolve all children of a parameter up to an arbitrary depth.
+     * Use at your own risk, the OLS service may terminate your connection if the response is too large or takes too long.
+     * @param parameter the parameter to start from
+     * @return a list of all child parameters for the given parameter
+     * @throws org.springframework.web.client.HttpClientErrorException 
+     */
+    public List&lt;Parameter&gt; resolveChildren(Parameter parameter) throws org.springframework.web.client.HttpClientErrorException {
+<span class="fc" id="L154">        return resolveChildren(parameter, -1);</span>
+    }
+
+    /**
+     * Compares two parameters for their parent to child relationship. The result can be one of: IDENTICAL, if parent and potential child are the same node,
+     * CHILD_OF, if potentialChild is a child of parent (at least 1 level away), or NOT_RELATED, if there is no path from child to parent.
+     * @param parent
+     * @param potentialChild
+     * @return the comparison result
+     * @throws org.springframework.web.client.HttpClientErrorException 
+     */
+    public ParameterComparisonResult isChildOfOrSame(Parameter parent,
+        Parameter potentialChild) throws org.springframework.web.client.HttpClientErrorException {
+<span class="fc" id="L167">        if (parent.getCvAccession().</span>
+<span class="fc" id="L168">            toUpperCase().</span>
+<span class="fc bfc" id="L169" title="All 2 branches covered.">            equals(potentialChild.getCvAccession().</span>
+<span class="fc" id="L170">                toUpperCase())) {</span>
+<span class="fc" id="L171">            return ParameterComparisonResult.IDENTICAL;</span>
+        }
+<span class="fc" id="L173">        List&lt;Parameter&gt; parentsOf = resolveParents(potentialChild);</span>
+<span class="fc" id="L174">        boolean result = parentsOf.stream().</span>
+<span class="fc" id="L175">            anyMatch((potentialParent) -&gt;</span>
+            {
+<span class="fc" id="L177">                return CvMappingUtils.isEqualTo(potentialParent, parent);</span>
+            });
+<span class="fc bfc" id="L179" title="All 2 branches covered.">        if (result) {</span>
+<span class="fc" id="L180">            return ParameterComparisonResult.CHILD_OF;</span>
+        }
+<span class="fc" id="L182">        return ParameterComparisonResult.NOT_RELATED;</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>
