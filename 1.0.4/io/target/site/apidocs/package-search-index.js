@@ -1,1 +1,0 @@
-packageSearchIndex = [{"l":"All Packages","url":"allpackages-index.html"},{"l":"de.isas.mztab2.io"},{"l":"de.isas.mztab2.io.formats"},{"l":"de.isas.mztab2.io.serialization"},{"l":"de.isas.mztab2.io.validators"},{"l":"uk.ac.ebi.pride.jmztab2.model"},{"l":"uk.ac.ebi.pride.jmztab2.utils.parser"}]

@@ -1,1 +1,0 @@
-typeSearchIndex = [{"l":"All Classes","url":"allclasses-index.html"},{"p":"de.isas.mztab2.cli","l":"MZTabCommandLine"}]
