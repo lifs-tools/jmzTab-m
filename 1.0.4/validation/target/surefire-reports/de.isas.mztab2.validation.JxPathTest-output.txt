@@ -1,1 +1,0 @@
-Path: /metadata/msRun[1]/@location to object: file:///path/to/file1.mzML

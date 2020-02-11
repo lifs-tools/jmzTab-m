@@ -1,4 +1,0 @@
--------------------------------------------------------------------------------
-Test set: de.isas.mztab2.cvmapping.OlsLookupServiceTest
--------------------------------------------------------------------------------
-Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 3.642 s - in de.isas.mztab2.cvmapping.OlsLookupServiceTest
