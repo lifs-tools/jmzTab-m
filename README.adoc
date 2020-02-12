@@ -21,7 +21,9 @@ mzTab-M has been developed with a view to support the following general tasks:
 
 The Maven site with JavaDoc is available https://lifs-tools.github.io/jmzTab-m[here].
 
-The latest draft version of the mzTab spec is available https://github.com/HUPO-PSI/mzTab[here].
+The latest aggregated, browseable JavaDoc is available https://lifs-tools.github.io/jmzTab-m/1.0.5/apidocs/index.html[here].
+
+The latest version of the mzTab spec is available https://github.com/HUPO-PSI/mzTab[here].
 
 The web-based validator application is available https://github.com/lifs-tools/jmzTab-m-webapp[here].
 
