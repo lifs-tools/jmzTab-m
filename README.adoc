@@ -19,19 +19,17 @@ mzTab-M has been developed with a view to support the following general tasks:
 . Act as an output format of (web-) services that report MS-based results and thus can produce standardized result pages.
 . Be able to link to the external experimental evidence e.g. by referencing back to mzML files.
 
-The Maven site with JavaDoc is available https://lifs-tools.github.io/jmzTab-m[here].
+---
 
-The latest aggregated, browseable JavaDoc is available https://lifs-tools.github.io/jmzTab-m/1.0.5/apidocs/index.html[here].
+* The Maven site with JavaDoc is available https://lifs-tools.github.io/jmzTab-m[here].
+* The latest aggregated, browseable JavaDoc is available https://lifs-tools.github.io/jmzTab-m/1.0.5/apidocs/index.html[here].
+* The latest version of the mzTab spec is available https://github.com/HUPO-PSI/mzTab[here].
+* The web-based validator application is available https://github.com/lifs-tools/jmzTab-m-webapp[here].
+* The Swagger / OpenAPI object and operations model definition file is https://github.com/lifs-tools/jmzTab-m/blob/master/api/src/main/resources/mzTab_m_swagger.yml[here].
+* The controlled vocabulary (CV) mapping file bundled with jmzTab-M is https://github.com/lifs-tools/jmzTab-m/blob/master/validation/src/main/resources/mappings/mzTab-M-mapping.xml[here].
+* Information on validation messages is available in <<validation-message-templates-and-ids>>.
 
-The latest version of the mzTab spec is available https://github.com/HUPO-PSI/mzTab[here].
-
-The web-based validator application is available https://github.com/lifs-tools/jmzTab-m-webapp[here].
-
-The Swagger / OpenAPI object and operations model definition file is https://github.com/lifs-tools/jmzTab-m/blob/master/api/src/main/resources/mzTab_m_swagger.yml[here].
-
-The controlled vocabulary (CV) mapping file bundled with jmzTab-M is https://github.com/lifs-tools/jmzTab-m/blob/master/validation/src/main/resources/mappings/mzTab-M-mapping.xml[here].
-
-Information on validation messages is available in <<validation-message-templates-and-ids>>.
+---
 
 toc::[]
 
