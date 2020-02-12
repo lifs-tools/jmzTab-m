@@ -25,7 +25,7 @@ The latest draft version of the mzTab spec is available https://github.com/HUPO-
 
 The web-based validator application is available https://github.com/lifs-tools/jmzTab-m-webapp[here].
 
-The Swagger definition file is https://github.com/lifs-tools/jmzTab-m/blob/master/api/src/main/resources/mzTab_m_swagger.yml[here].
+The Swagger / OpenAPI object and operations model definition file is https://github.com/lifs-tools/jmzTab-m/blob/master/api/src/main/resources/mzTab_m_swagger.yml[here].
 
 The controlled vocabulary (CV) mapping file bundled with jmzTab-M is https://github.com/lifs-tools/jmzTab-m/blob/master/validation/src/main/resources/mappings/mzTab-M-mapping.xml[here].
 
