@@ -401,4 +401,11 @@ public class MzTabTest {
         MzTab restoredFile = mapper.readValue(testFile, MzTab.class);
         Assert.assertEquals(testMzTab, restoredFile);
     }
+    
+    @Test
+    public void testIndexedElementProxy() {
+        MsRun mr = new MsRun().id(1).location("location");
+        IndexedElement ie = IndexedElement.of(mr);
+        Assert.assertEquals(mr.getId(), ie.getId());
+    }
 }

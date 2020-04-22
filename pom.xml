@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>de.isas.mztab</groupId>
     <artifactId>jmztabm</artifactId>
-    <version>1.0.5-SNAPSHOT</version>
+    <version>1.0.6-SNAPSHOT</version>
     <packaging>pom</packaging>
     <description>A reader, writer and validator reference implementation for the mzTab format for metabolomics from version 2.0 onwards.</description>
     <name>MzTab-M 2.0 reference implementation.</name>	
@@ -288,7 +288,7 @@
                         </execution>
                         <execution>
                             <id>report</id>
-<!--                            <phase>post-integration-test</phase>-->
+                            <!--                            <phase>post-integration-test</phase>-->
                             <goals>
                                 <goal>report</goal>
                             </goals>
@@ -305,7 +305,7 @@
                                 <goal>report-integration</goal>
                             </goals>
                         </execution>
-<!--                        <execution>
+                        <!--                        <execution>
                             <id>post-unit-test</id>
                             <phase>test</phase>
                             <goals>
@@ -350,6 +350,24 @@
                         </execution>
                     </executions>
                 </plugin>
+                <plugin>
+                    <groupId>com.google.cloud.tools</groupId>
+                    <artifactId>jib-maven-plugin</artifactId>
+                    <version>${jib.plugin.version}</version>
+                    <executions>
+                        <execution>
+                            <id>docker-push</id>
+                            <phase>install</phase>
+                            <goals>
+                                <goal>build</goal>
+                            </goals>
+                            <configuration>
+                                <!--<skip>${skip.docker}</skip>-->
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+
             </plugins>
         </pluginManagement>
     </build>
@@ -561,6 +579,7 @@
         <javax.annotation-api.version>1.3.2</javax.annotation-api.version>
         <assembly.dir>${project.artifactId}</assembly.dir>
         <javax.activation-api.version>1.2.0</javax.activation-api.version>
+        <jib.plugin.version>2.2.0</jib.plugin.version>
     </properties>
 
     <modules>

@@ -1,4 +1,4 @@
-FROM fabric8/java-alpine-openjdk8-jre:1.5.1
+FROM openjdk:11-jre-slim
 MAINTAINER Nils Hoffmann &lt;nils.hoffmann@isas.de&gt;
 VOLUME /tmp
 # receive jar file to host via argument
@@ -7,7 +7,7 @@ ARG APP_NAME
 ARG APP_PORT
 ARG APP_VERSION
 
-LABEL base.image="fabric8/java-alpine-openjdk8-jre:1.5.1"
+LABEL base.image="openjdk:11-jre-slim"
 LABEL version="${APP_VERSION}"
 LABEL software="jmztab-m-cli"
 LABEL software.version="${APP_VERSION}"

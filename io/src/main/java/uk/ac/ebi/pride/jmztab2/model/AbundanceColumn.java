@@ -62,7 +62,7 @@ public class AbundanceColumn extends MZTabColumn {
      * The column data type: {Field#columnType()}
      * The column position: always most right side, calculated by offset.
      */
-    private AbundanceColumn(Section section, Field field, IndexedElement element, int offset) {
+    private AbundanceColumn(Section section, Field field, Object element, int offset) {
         super(field.name, field.columnType, true, offset + field.position + "");
         setElement(element);
     }

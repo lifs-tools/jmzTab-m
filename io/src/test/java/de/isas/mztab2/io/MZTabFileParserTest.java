@@ -19,6 +19,7 @@ import de.isas.mztab2.model.MzTab;
 import de.isas.mztab2.test.utils.ClassPathFile;
 import static de.isas.mztab2.test.utils.ClassPathFile.GCXGC_MS_EXAMPLE;
 import static de.isas.mztab2.test.utils.ClassPathFile.LIPIDOMICS_EXAMPLE;
+import static de.isas.mztab2.test.utils.ClassPathFile.LIPIDOMICS_EXAMPLE_WRONG_MSSCAN_REF;
 import static de.isas.mztab2.test.utils.ClassPathFile.MINIMAL_EXAMPLE;
 import static de.isas.mztab2.test.utils.ClassPathFile.MOUSELIVER_NEGATIVE;
 import static de.isas.mztab2.test.utils.ClassPathFile.MOUSELIVER_NEGATIVE_MZTAB_NULL_COLUNIT;
@@ -72,30 +73,33 @@ public class MZTabFileParserTest {
         STANDARDMIX_POSITIVE_EXPORTSPECIESLEVEL,
         GCXGC_MS_EXAMPLE,
         LIPIDOMICS_EXAMPLE,
+        LIPIDOMICS_EXAMPLE_WRONG_MSSCAN_REF,
         MINIMAL_EXAMPLE);
 
     @Parameterized.Parameters(
-        name = "{index}: semantic validation of '{0}' on level '{1}' expecting '{2}' structural/logical errors")
+        name = "{index}: semantic validation of '{0}' on level '{1}' expecting '{2}' structural/logical errors and MzTab to be null: '{3}'")
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][]{
-            {MTBLS263, MZTabErrorType.Level.Warn, 0},
-            {MOUSELIVER_NEGATIVE, MZTabErrorType.Level.Warn, 0},
+            {MTBLS263, MZTabErrorType.Level.Warn, 0, false},
+            {MOUSELIVER_NEGATIVE, MZTabErrorType.Level.Warn, 0, false},
             {MOUSELIVER_NEGATIVE_MZTAB_NULL_COLUNIT,
-                MZTabErrorType.Level.Error, 1},
+                MZTabErrorType.Level.Error, 1, false},
             {STANDARDMIX_NEGATIVE_EXPORTPOSITIONLEVEL,
-                MZTabErrorType.Level.Warn, 0},
+                MZTabErrorType.Level.Warn, 0, false},
             {STANDARDMIX_NEGATIVE_EXPORTSPECIESLEVEL,
-                MZTabErrorType.Level.Warn, 0},
+                MZTabErrorType.Level.Warn, 0, false},
             {STANDARDMIX_POSITIVE_EXPORTPOSITIONLEVEL,
-                MZTabErrorType.Level.Warn, 0},
+                MZTabErrorType.Level.Warn, 0, false},
             {STANDARDMIX_POSITIVE_EXPORTSPECIESLEVEL,
-                MZTabErrorType.Level.Warn, 0},
+                MZTabErrorType.Level.Warn, 0, false},
             {LIPIDOMICS_EXAMPLE, MZTabErrorType.Level.Warn,
-                0},
-            {GCXGC_MS_EXAMPLE, MZTabErrorType.Level.Warn, 0},
-            {MINIMAL_EXAMPLE, MZTabErrorType.Level.Error, 1},
-            {MINIMAL_EXAMPLE, MZTabErrorType.Level.Warn, 1},
-            {MINIMAL_EXAMPLE, MZTabErrorType.Level.Info, 1},});
+                0, false},
+            {LIPIDOMICS_EXAMPLE_WRONG_MSSCAN_REF, MZTabErrorType.Level.Error,
+                1, true},
+            {GCXGC_MS_EXAMPLE, MZTabErrorType.Level.Warn, 0, false},
+            {MINIMAL_EXAMPLE, MZTabErrorType.Level.Error, 1, false},
+            {MINIMAL_EXAMPLE, MZTabErrorType.Level.Warn, 1, false},
+            {MINIMAL_EXAMPLE, MZTabErrorType.Level.Info, 1, false},});
     }
 
     @Parameterized.Parameter(0)
@@ -104,31 +108,39 @@ public class MZTabFileParserTest {
     public MZTabErrorType.Level validationLevel;
     @Parameterized.Parameter(2)
     public int expectedStructuralLogicalErrors;
+    @Parameterized.Parameter(3)
+    public boolean mzTabMustBeNull;
 
     @Test
     public void testExamples() throws MZTabException, JAXBException {
         testExample(EXTRACT_FILES.getBaseDir(), resource,
-            validationLevel, expectedStructuralLogicalErrors);
+            validationLevel, expectedStructuralLogicalErrors, mzTabMustBeNull);
     }
 
     void testExample(File tf, ClassPathFile resource,
         MZTabErrorType.Level level,
-        Integer expectedErrors) throws MZTabException {
+        Integer expectedErrors,
+        boolean mzTabMustBeNull) throws MZTabException {
         System.out.println("Testing example: " + resource.fileName());
         try {
             MzTab mzTab = TestResources.parseResource(tf, resource.fileName(), level,
-                expectedErrors);
-            Assert.assertNotNull(mzTab);
-            Assert.assertNotNull(mzTab.getMetadata());
-            MzTabNonValidatingWriter writer = new MzTabNonValidatingWriter();
-            System.out.println("JACKSON serialized: " + resource);
-            try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-                try (OutputStreamWriter osw = new OutputStreamWriter(
-                    baos, Charset.forName("UTF8"))) {
-                    writer.write(osw, mzTab);
-                    osw.flush();
-                    Logger.getLogger(MZTabFileParserTest.class.getName()).
-                        log(Level.INFO, baos.toString());
+                expectedErrors, mzTabMustBeNull);
+            if(mzTabMustBeNull) {
+                Assert.assertNull(mzTab);
+                System.out.println("Example was null");
+            } else {
+                Assert.assertNotNull(mzTab);
+                Assert.assertNotNull(mzTab.getMetadata());
+                MzTabNonValidatingWriter writer = new MzTabNonValidatingWriter();
+                System.out.println("JACKSON serialized: " + resource);
+                try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+                    try (OutputStreamWriter osw = new OutputStreamWriter(
+                        baos, Charset.forName("UTF8"))) {
+                        writer.write(osw, mzTab);
+                        osw.flush();
+                        Logger.getLogger(MZTabFileParserTest.class.getName()).
+                            log(Level.INFO, baos.toString());
+                    }
                 }
             }
         } catch (URISyntaxException ex) {

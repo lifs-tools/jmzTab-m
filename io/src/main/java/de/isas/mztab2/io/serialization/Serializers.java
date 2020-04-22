@@ -27,11 +27,14 @@ import de.isas.mztab2.model.Parameter;
 import de.isas.mztab2.model.StudyVariable;
 import de.isas.mztab2.model.Uri;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -132,7 +135,7 @@ public class Serializers {
     public static String printOptColumnMapping(OptColumnMapping ocm) {
         StringBuilder sb = new StringBuilder();
         log.debug("Identifier={}; OptColumnMapping: {}", ocm.getIdentifier(), ocm);
-        if ("global".equals(ocm.getIdentifier())||ocm.getIdentifier().startsWith("global")) {
+        if ("global".equals(ocm.getIdentifier()) || ocm.getIdentifier().startsWith("global")) {
             sb.append("opt_");
             sb.append(ocm.getIdentifier());
             if (ocm.getParam() != null) {
@@ -169,7 +172,7 @@ public class Serializers {
      * @param element a {@link java.lang.Object} object.
      * @param indexedElement a {@link de.isas.mztab2.model.Parameter} object.
      */
-    public static <T extends IndexedElement> void addIndexedLine(
+    public static <T extends Object> void addIndexedLine(
             JsonGenerator jg, SerializerProvider sp, String prefix,
             Object element, T indexedElement) {
         addIndexedLine(jg, sp, prefix, element, Arrays.asList(indexedElement));
@@ -188,7 +191,7 @@ public class Serializers {
      * @param element a {@link java.lang.Object} object.
      * @param indexedElementList a {@link java.util.List} object.
      */
-    public static <T extends IndexedElement> void addIndexedLine(
+    public static <T extends Object> void addIndexedLine(
             JsonGenerator jg, SerializerProvider sp, String prefix,
             Object element,
             List<T> indexedElementList) {
@@ -451,13 +454,23 @@ public class Serializers {
             String underscoreName = camelCaseToUnderscoreLowerCase(
                     rootElement.localName());
             if (element instanceof IndexedElement) {
-                Integer id = Optional.ofNullable(((IndexedElement) element).getId()).orElseThrow(() -> 
-                        new NullPointerException(
-                            "Field 'id' must not be null for element '" + underscoreName + "'!")
+                Integer id = Optional.ofNullable(((IndexedElement) element).getId()).orElseThrow(()
+                        -> new NullPointerException(
+                                "Field 'id' must not be null for element '" + underscoreName + "'!")
+                );
+                return Optional.of(
+                        underscoreName + "[" + id + "]");
+            } 
+            IndexedElement ielement = IndexedElement.of(element);
+            if(ielement!=null) {
+                Integer id = Optional.ofNullable((ielement).getId()).orElseThrow(()
+                        -> new NullPointerException(
+                                "Field 'id' must not be null for element '" + underscoreName + "'!")
                 );
                 return Optional.of(
                         underscoreName + "[" + id + "]");
             }
+                
             return Optional.ofNullable(underscoreName);
         }
         return Optional.empty();
@@ -993,9 +1006,9 @@ public class Serializers {
             // write global or indexed element param objects
             if (ocm.getParam() != null) {
                 writeObject(Serializers.printOptColumnMapping(ocm), jg, sp, ocm.
-                        getValue() == null ? 
-                        (ocm.getParam().getValue() == null || ocm.getParam().getValue().isEmpty() ? 
-                                NULL : ocm.getParam().getValue()) : ocm.getValue());
+                        getValue() == null
+                                ? (ocm.getParam().getValue() == null || ocm.getParam().getValue().isEmpty()
+                                ? NULL : ocm.getParam().getValue()) : ocm.getValue());
             } else { // write global opt column objects with the value
                 writeObject(Serializers.printOptColumnMapping(ocm), jg, sp, ocm.
                         getValue() == null ? NULL : ocm.getValue());
@@ -1031,10 +1044,12 @@ public class Serializers {
                 });
     }
 
-    public static void checkIndexedElement(IndexedElement element) {
-        Integer id = Optional.ofNullable(element.getId()).orElseThrow(() ->
-            new ValidationException(
-                    "'id' field of " + element.toString() + " must not be null!"));
+    public static void checkIndexedElement(Object element) {
+        Integer id = IndexedElement.of(element).getId();
+        if (id == null) {
+            throw new ValidationException(
+                    "'id' field of " + element.toString() + " must not be null!");
+        }
         if (id < 1) {
             throw new ValidationException(
                     "'id' field of " + element.toString() + " must have a value greater to equal to 1!");

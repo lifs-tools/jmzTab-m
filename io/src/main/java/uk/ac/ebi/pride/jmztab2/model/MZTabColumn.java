@@ -45,7 +45,7 @@ public class MZTabColumn implements IMZTabColumn {
     private Class dataType;
     private boolean optional;
 
-    private IndexedElement element;
+    private Object element;
 
     /**
      * Create a column header object. Default, the column header keep the same value with name, and logical position keep
@@ -113,7 +113,7 @@ public class MZTabColumn implements IMZTabColumn {
         }
 
         if (element != null) {
-            sb.append(String.format("%02d", element.getId()));
+            sb.append(String.format("%02d", IndexedElement.of(element).getId()));
         } else {
             sb.append("00");
         }
@@ -256,7 +256,7 @@ public class MZTabColumn implements IMZTabColumn {
      * @see #getLogicPosition()
      */
     @Override
-    public IndexedElement getElement() {
+    public Object getElement() {
         return element;
     }
 
@@ -273,7 +273,7 @@ public class MZTabColumn implements IMZTabColumn {
      * @see #getHeader()
      * @see #getLogicPosition()
      */
-    public void setElement(IndexedElement element) {
+    public void setElement(Object element) {
         if (element == null) {
             throw new NullPointerException("Can not set null indexed element for optional column!");
         }
@@ -283,10 +283,10 @@ public class MZTabColumn implements IMZTabColumn {
         StringBuilder sb = new StringBuilder();
         if(this instanceof AbundanceColumn) {
             sb.append(this.header).append("[").
-            append(element.getId()).
+            append(IndexedElement.of(element).getId()).
             append("]");
         } else {
-            sb.append(this.header).append("_").append(Serializers.getReference(element, element.getId()));
+            sb.append(this.header).append("_").append(Serializers.getReference(element, IndexedElement.of(element).getId()));
         }
         this.header = sb.toString();
     }

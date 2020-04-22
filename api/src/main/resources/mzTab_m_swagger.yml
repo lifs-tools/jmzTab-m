@@ -258,25 +258,25 @@ definitions:
       line_number:
         type: integer
         format: int32
-  IndexedElement:
-    type: object
-    description: Indexed elements (IDs) define a unique ID for a collection of multiple metadata elements of the same type within the mzTab-M document, e.g. for sample, assay, study variable etc.
-    x-mztab-example: |
-        MTD	sample[1]-species[1]	[NCBITaxon, NCBITaxon:9606, Homo sapiens, ]
-        MTD	assay[1]	first assay description
-        MTD	study_variable[1]	Group B (spike-in 0.74 fmol/uL)
-    discriminator: elementType
-    required:
-      - id
-      - elementType
-    properties:
-      id:
-        type: integer
-        format: int32
-        minimum: 1
-      elementType:
-        type: string
-        default: element_type
+#  IndexedElement:
+#    type: object
+#    description: Indexed elements (IDs) define a unique ID for a collection of multiple metadata elements of the same type within the mzTab-M document, e.g. for sample, assay, study variable etc.
+#    x-mztab-example: |
+#        MTD	sample[1]-species[1]	[NCBITaxon, NCBITaxon:9606, Homo sapiens, ]
+#        MTD	assay[1]	first assay description
+#        MTD	study_variable[1]	Group B (spike-in 0.74 fmol/uL)
+#    discriminator: elementType
+#    required:
+#      - id
+#      - elementType
+#    properties:
+#      id:
+#        type: integer
+#        format: int32
+#        minimum: 1
+#      elementType:
+#        type: string
+#        default: element_type
   Metadata:
     type: object
     description: |
@@ -1235,24 +1235,26 @@ definitions:
     x-mztab-example: |
         [MS, MS:1001477, SpectraST,]
         [,,A user parameter, The value]
-    allOf:
-      - $ref: '#/definitions/IndexedElement'
-      - type: object
-        required:
-          - name
-          - value
-        properties:
-          cv_label:
-            type: string
-            default: ''
-          cv_accession:
-            type: string
-            default: ''
-          name:
-            type: string
-          value:
-            type: string
-            default: ''
+    type: object
+    required:
+      - name
+      - value
+    properties:
+      id:
+        type: integer
+        format: int32
+        minimum: 1
+      cv_label:
+        type: string
+        default: ''
+      cv_accession:
+        type: string
+        default: ''
+      name:
+        type: string
+      value:
+        type: string
+        default: ''
   Instrument:
     description: The name, source, analyzer and detector of the instruments used in the experiment. Multiple instruments are numbered [1-n].
     x-mztab-example: |
@@ -1266,24 +1268,26 @@ definitions:
         MTD	instrument[1]-detector	[MS, MS:1000253, electron multiplier,]
         …
         MTD	instrument[2]-detector	[MS, MS:1000348, focal plane collector,]
-    allOf:
-      - $ref: '#/definitions/IndexedElement'
-      - type: object
-        properties:
-          name:
+    type: object
+    properties:
+        id:
+          type: integer
+          format: int32
+          minimum: 1
+        name:
+          $ref: '#/definitions/Parameter'
+        source:
+          description: The instrument's source, as defined by the parameter.
+          $ref: '#/definitions/Parameter'
+        analyzer:
+          type: array
+          description: The instrument's mass analyzer, as defined by the parameter.
+          default: []
+          items:
             $ref: '#/definitions/Parameter'
-          source:
-            description: The instrument's source, as defined by the parameter.
-            $ref: '#/definitions/Parameter'
-          analyzer:
-            type: array
-            description: The instrument's mass analyzer, as defined by the parameter.
-            default: []
-            items:
-              $ref: '#/definitions/Parameter'
-          detector:
-            description: The instrument's detector, as defined by the parameter.
-            $ref: '#/definitions/Parameter'
+        detector:
+          description: The instrument's detector, as defined by the parameter.
+          $ref: '#/definitions/Parameter'
   SampleProcessing:
     description: |
         A list of parameters describing a sample processing, preparation or handling step similar to a biological or analytical methods report. The order of the sample_processing items should reflect the order these processing steps were performed in. If multiple parameters are given for a step these MUST be separated by a “|”. If derivatization was performed, it MUST be reported here as a general step, e.g. 'silylation' and the actual derivatization agens MUST be specified in the Section 6.2.54 part.      
@@ -1292,16 +1296,18 @@ definitions:
         MTD	sample_processing[2]	[MSIO, MSIO:0000146, centrifugation,]
         MTD	sample_processing[3]	[MSIO, MSIO:0000141, metabolite extraction,]
         MTD	sample_processing[4]	[MSIO, MSIO:0000141, silylation,]
-    allOf:
-      - $ref: '#/definitions/IndexedElement'
-      - type: object
-        properties:
-          sampleProcessing:
-            type: array
-            default: []
-            description: Parameters specifiying sample processing that was applied within one step.
-            items:
-              $ref: '#/definitions/Parameter'
+    type: object
+    properties:
+        id:
+          type: integer
+          format: int32
+          minimum: 1
+        sampleProcessing:
+          type: array
+          default: []
+          description: Parameters specifiying sample processing that was applied within one step.
+          items:
+            $ref: '#/definitions/Parameter'
   Software:
     description: |
       Software used to analyze the data and obtain the reported results. The parameter’s value SHOULD contain the software’s version. The order (numbering) should reflect the order in which the tools were used. A software setting used. This field MAY occur multiple times for a single software. The value of this field is deliberately set as a String, since there currently do not exist CV terms for every possible setting.
@@ -1310,41 +1316,45 @@ definitions:
         MTD	software[1]-setting	Fragment tolerance = 0.1 Da
         …
         MTD	software[2]-setting	Parent tolerance = 0.5 Da
-    allOf:
-      - $ref: '#/definitions/IndexedElement'
-      - type: object
-        properties:
-          parameter:
-            description: Parameter defining the software being used.
-            $ref: '#/definitions/Parameter'
-          setting:
-            type: array
-            default: []
-            description: |
-              A software setting used. This field MAY occur multiple times for a
-              single software. The value of this field is deliberately set as a
-              String, since there currently do not exist cvParams for every
-              possible setting.
-            items:
-              type: string
+    type: object
+    properties:
+        id:
+          type: integer
+          format: int32
+          minimum: 1
+        parameter:
+          description: Parameter defining the software being used.
+          $ref: '#/definitions/Parameter'
+        setting:
+          type: array
+          default: []
+          description: |
+            A software setting used. This field MAY occur multiple times for a
+            single software. The value of this field is deliberately set as a
+            String, since there currently do not exist cvParams for every
+            possible setting.
+          items:
+            type: string
   Publication:
     description: |
       A publication associated with this file. Several publications can be given by indicating the number in the square brackets after “publication”. PubMed ids must be prefixed by “pubmed:”, DOIs by “doi:”. Multiple identifiers MUST be separated by “|”.
     x-mztab-example: |
         MTD	publication[1]	pubmed:21063943|doi:10.1007/978-1-60761-987-1_6
         MTD	publication[2]	pubmed:20615486|doi:10.1016/j.jprot.2010.06.008
-    allOf:
-      - $ref: '#/definitions/IndexedElement'
-      - type: object
-        required:
-          - publicationItems
-        properties:
-          publicationItems:
-            type: array
-            description: The publication item ids referenced by this publication.
-            default: []
-            items:
-              $ref: '#/definitions/PublicationItem'
+    type: object
+    required:
+      - publicationItems
+    properties:
+        id:
+          type: integer
+          format: int32
+          minimum: 1
+        publicationItems:
+          type: array
+          description: The publication item ids referenced by this publication.
+          default: []
+          items:
+            $ref: '#/definitions/PublicationItem'
   PublicationItem:
     type: object
     required:
@@ -1400,34 +1410,38 @@ definitions:
         MTD	contact[2]-name	Francis Crick
         MTD	contact[2]-affiliation	Cambridge University, UK
         MTD	contact[2]-email	crick@cam.ac.uk
-    allOf:
-      - $ref: '#/definitions/IndexedElement'
-      - type: object
-        properties:
-          name:
-            description: The contact's name.
-            type: string
-          affiliation:
-            description: The contact's affiliation.
-            type: string
-          email:
-            description: The contact's e-mail address.
-            type: string
-            pattern: '^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$'
+    type: object
+    properties:
+        id:
+          type: integer
+          format: int32
+          minimum: 1
+        name:
+          description: The contact's name.
+          type: string
+        affiliation:
+          description: The contact's affiliation.
+          type: string
+        email:
+          description: The contact's e-mail address.
+          type: string
+          pattern: '^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$'
   Uri:
     description: A URI pointing to the file’s source data (e.g., a MetaboLights records) or an external file with more details about the study design.
     x-mztab-example: |
         MTD	uri[1]	https://www.ebi.ac.uk/metabolights/MTBLS517
         …
         MTD	external_study_uri[1]	https://www.ebi.ac.uk/metabolights/MTBLS517/files/i_Investigation.txt
-    allOf:
-      - $ref: '#/definitions/IndexedElement'
-      - type: object
-        properties:
-          value:
-            type: string
-            description: The URI pointing to the external resource.
-            format: uri
+    type: object
+    properties:
+        id:
+          type: integer
+          format: int32
+          minimum: 1
+        value:
+          type: string
+          description: The URI pointing to the external resource.
+          format: uri
   Sample:
     description: |
         Specification of sample.
@@ -1454,46 +1468,48 @@ definitions:
         MTD	sample[2]-tissue[1]	[BTO, BTO:0000759, liver, ]
         MTD	sample[2]-cell_type[1]	[CL, CL:0000182, hepatocyte, ]
         MTD	sample[2]-description	Healthy control samples.
-    allOf:
-      - $ref: '#/definitions/IndexedElement'
-      - type: object
-        properties:
-          name:
-            type: string
-            description: The sample's name.
-          custom:
-            type: array
-            description: Additional user or cv parameters.
-            default: []
-            items:
-              $ref: '#/definitions/Parameter'
-          species:
-            type: array
-            description: Biological species information on the sample.
-            default: []
-            items:
-              $ref: '#/definitions/Parameter'
-          tissue:
-            type: array
-            description: Biological tissue information on the sample.
-            default: []
-            items:
-              $ref: '#/definitions/Parameter'
-          cell_type:
-            type: array
-            description: Biological cell type information on the sample.
-            default: []
-            items:
-              $ref: '#/definitions/Parameter'
-          disease:
-            type: array
-            description: Disease information on the sample.
-            default: []
-            items:
-              $ref: '#/definitions/Parameter'
-          description:
-            description: A free form description of the sample.
-            type: string
+    type: object
+    properties:
+        id:
+          type: integer
+          format: int32
+          minimum: 1
+        name:
+          type: string
+          description: The sample's name.
+        custom:
+          type: array
+          description: Additional user or cv parameters.
+          default: []
+          items:
+            $ref: '#/definitions/Parameter'
+        species:
+          type: array
+          description: Biological species information on the sample.
+          default: []
+          items:
+            $ref: '#/definitions/Parameter'
+        tissue:
+          type: array
+          description: Biological tissue information on the sample.
+          default: []
+          items:
+            $ref: '#/definitions/Parameter'
+        cell_type:
+          type: array
+          description: Biological cell type information on the sample.
+          default: []
+          items:
+            $ref: '#/definitions/Parameter'
+        disease:
+          type: array
+          description: Disease information on the sample.
+          default: []
+          items:
+            $ref: '#/definitions/Parameter'
+        description:
+          description: A free form description of the sample.
+          type: string
   MsRun:
     description: |
         Specification of ms_run. 
@@ -1517,48 +1533,50 @@ definitions:
        MTD	ms_run[1]-scan_polarity[2]	[MS, MS:1000129, negative scan, ]
        MTD	ms_run[1]-hash_method	[MS, MS:1000569, SHA-1, ]
        MTD	ms_run[1]-hash	de9f2c7fd25e1b3afad3e85a0bd17d9b100db4b3
-    allOf:
-      - $ref: '#/definitions/IndexedElement'
-      - type: object
-        required:
-          - id
-          - location
-          - name
-        properties:
-          name:
-            type: string
-            description: The msRun's name.
-          location:
-            type: string
-            format: uri
-            description: The msRun's location URI.
-          instrument_ref:
-            $ref: '#/definitions/Instrument'
-            description: The instrument on which this msRun was measured.
-          format:
+    type: object
+    required:
+      - id
+      - location
+      - name
+    properties:
+        id:
+          type: integer
+          format: int32
+          minimum: 1
+        name:
+          type: string
+          description: The msRun's name.
+        location:
+          type: string
+          format: uri
+          description: The msRun's location URI.
+        instrument_ref:
+          $ref: '#/definitions/Instrument'
+          description: The instrument on which this msRun was measured.
+        format:
+          $ref: '#/definitions/Parameter'
+          description: The msRun's file format.
+        id_format:
+          $ref: '#/definitions/Parameter'
+          description: The msRun's mass spectra id format.
+        fragmentation_method:
+          type: array
+          default: []
+          items:
             $ref: '#/definitions/Parameter'
-            description: The msRun's file format.
-          id_format:
+          description: The fragmentation methods applied during this msRun.
+        scan_polarity:
+          type: array
+          default: []
+          items:
             $ref: '#/definitions/Parameter'
-            description: The msRun's mass spectra id format.
-          fragmentation_method:
-            type: array
-            default: []
-            items:
-              $ref: '#/definitions/Parameter'
-            description: The fragmentation methods applied during this msRun.
-          scan_polarity:
-            type: array
-            default: []
-            items:
-              $ref: '#/definitions/Parameter'
-            description: The scan polarity/polarities used during this msRun.
-          hash:
-            type: string
-            description: The file hash value of this msRun's data file.
-          hash_method:
-            $ref: '#/definitions/Parameter'
-            description: The hash method used to calculate the file hash.
+          description: The scan polarity/polarities used during this msRun.
+        hash:
+          type: string
+          description: The file hash value of this msRun's data file.
+        hash_method:
+          $ref: '#/definitions/Parameter'
+          description: The hash method used to calculate the file hash.
   StudyVariable:
     description: |
       Specification of study_variable.
@@ -1576,37 +1594,39 @@ definitions:
       MTD	study_variable[1]-description	Group B (spike-in 0.74 fmol/uL)
       MTD	study_variable[1]-factors	[,,time point, 1 minute]|[,,rapamycin dose,0.5mg]
       MTD	study_variable[2]	1 minute 0.5mg rapamycin
-    allOf:
-      - $ref: '#/definitions/IndexedElement'
-      - type: object
-        required:
-          - id
-          - name
-        properties:
-          name:
-            type: string
-            description: The study variable name.
-          assay_refs:
-            type: array
-            default: []
-            items:
-              $ref: '#/definitions/Assay'
-            description: The assays referenced by this study variable.
-          average_function:
+    type: object
+    required:
+        - id
+        - name
+    properties:
+        id:
+          type: integer
+          format: int32
+          minimum: 1
+        name:
+          type: string
+          description: The study variable name.
+        assay_refs:
+          type: array
+          default: []
+          items:
+            $ref: '#/definitions/Assay'
+          description: The assays referenced by this study variable.
+        average_function:
+          $ref: '#/definitions/Parameter'
+          description: The function used to calculate summarised small molecule quantities over the assays referenced by this study variable.
+        variation_function:
+          $ref: '#/definitions/Parameter'
+          description: The function used to calculate the variation of small molecule quantities over the assays referenced by this study variable.
+        description:
+          type: string
+          description: A free-form description of this study variable.
+        factors:
+          type: array
+          default: []
+          items:
             $ref: '#/definitions/Parameter'
-            description: The function used to calculate summarised small molecule quantities over the assays referenced by this study variable.
-          variation_function:
-            $ref: '#/definitions/Parameter'
-            description: The function used to calculate the variation of small molecule quantities over the assays referenced by this study variable.
-          description:
-            type: string
-            description: A free-form description of this study variable.
-          factors:
-            type: array
-            default: []
-            items:
-              $ref: '#/definitions/Parameter'
-            description: Parameters indicating which factors were used for the assays referenced by this study variable, and at which levels.
+          description: Parameters indicating which factors were used for the assays referenced by this study variable, and at which levels.
   Assay:
     description: |
       Specification of assay.
@@ -1615,36 +1635,38 @@ definitions:
       external_uri: An external reference uri to further information about the assay, for example via a reference to an object within an ISA-TAB file. 
       sample_ref: An association from a given assay to the sample analysed. 
       ms_run_ref: An association from a given assay to the source MS run. All assays MUST reference exactly one ms_run unless a workflow with pre-fractionation is being encoded, in which case each assay MUST reference n ms_runs where n fractions have been collected. Multiple assays SHOULD reference the same ms_run to capture multiplexed experimental designs.      
-    allOf:
-      - $ref: '#/definitions/IndexedElement'
-      - type: object
-        required:
-          - name
-          - ms_run_ref
-        properties:
-          name:
-            type: string
-            description: The assay name.
-          custom:
-            type: array
-            default: []
-            items:
-              $ref: '#/definitions/Parameter'
-            description: Additional user or cv parameters.
-          external_uri:
-            type: string
-            format: uri
-            description: An external URI to further information about this assay.
-          sample_ref:
-            $ref: '#/definitions/Sample'
-            description: The sample referenced by this assay.
-          ms_run_ref:
-            type: array
-            default: []
-            minItems: 1
-            items:
-              $ref: '#/definitions/MsRun'
-            description: The ms run(s) referenced by this assay.
+    type: object
+    required:
+        - name
+        - ms_run_ref
+    properties:
+        id:
+          type: integer
+          format: int32
+          minimum: 1
+        name:
+          type: string
+          description: The assay name.
+        custom:
+          type: array
+          default: []
+          items:
+            $ref: '#/definitions/Parameter'
+          description: Additional user or cv parameters.
+        external_uri:
+          type: string
+          format: uri
+          description: An external URI to further information about this assay.
+        sample_ref:
+          $ref: '#/definitions/Sample'
+          description: The sample referenced by this assay.
+        ms_run_ref:
+          type: array
+          default: []
+          minItems: 1
+          items:
+            $ref: '#/definitions/MsRun'
+          description: The ms run(s) referenced by this assay.
   CV:
     description: |
         Specification of controlled vocabularies.
@@ -1657,28 +1679,30 @@ definitions:
         MTD	cv[1]-full_name	PSI-MS controlled vocabulary
         MTD	cv[1]-version	4.1.11
         MTD	cv[1]-uri	https://raw.githubusercontent.com/HUPO-PSI/psi-ms-CV/master/psi-ms.obo
-    allOf:
-      - $ref: '#/definitions/IndexedElement'
-      - type: object
-        required:
-          - label
-          - full_name
-          - version
-          - uri
-        properties:
-          label:
-            type: string
-            description: The abbreviated CV label.
-          full_name:
-            type: string
-            description: The full name of this CV, for humans.
-          version:
-            type: string
-            description: The CV version used when the file was generated.
-          uri:
-            type: string
-            format: uri
-            description: A URI to the CV definition.
+    type: object
+    required:
+        - label
+        - full_name
+        - version
+        - uri
+    properties:
+        id:
+          type: integer
+          format: int32
+          minimum: 1
+        label:
+          type: string
+          description: The abbreviated CV label.
+        full_name:
+          type: string
+          description: The full name of this CV, for humans.
+        version:
+          type: string
+          description: The CV version used when the file was generated.
+        uri:
+          type: string
+          format: uri
+          description: A URI to the CV definition.
   Database:
     description: |
       Specification of databases.
@@ -1699,29 +1723,31 @@ definitions:
       MTD	database[3]-prefix	null
       MTD	database[3]-version	Unknown
       MTD	database[3]-uri	null
-    allOf:
-      - $ref: '#/definitions/IndexedElement'
-      - type: object
-        required:
-          - param
-          - prefix
-          - version
-          - uri
-        properties:
-          param:
-            $ref: '#/definitions/Parameter'
-            description: The parameter to identify this database.
-          prefix:
-            type: string
-            default: 'null'
-            description: The database prefix.
-          version:
-            type: string
-            description: The database version.
-          uri:
-            type: string
-            format: uri
-            description: The URI to the online database.
+    type: object
+    required:
+        - param
+        - prefix
+        - version
+        - uri
+    properties:
+        id:
+          type: integer
+          format: int32
+          minimum: 1
+        param:
+          $ref: '#/definitions/Parameter'
+          description: The parameter to identify this database.
+        prefix:
+          type: string
+          default: 'null'
+          description: The database prefix.
+        version:
+          type: string
+          description: The database version.
+        uri:
+          type: string
+          format: uri
+          description: The URI to the online database.
   ColumnParameterMapping:
     type: object
     required:
