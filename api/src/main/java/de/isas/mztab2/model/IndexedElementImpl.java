@@ -19,8 +19,8 @@ import java.util.Objects;
  * limitations under the License.
  */
 /**
- * Implementation of IndexedElement. Wraps the actual object and exposes it via
- * getPayload.
+ * Implementation of IndexedElement where more information is required than just
+ * the id. Wraps the actual object and exposes it via {@link #getPayload()}.
  *
  * @author nilshoffmann
  */
@@ -30,6 +30,14 @@ public class IndexedElementImpl implements IndexedElement {
     private final String elementType;
     private final Object payload;
 
+    /**
+     * Create a new indexed element implementation for the provided id, element
+     * type and payload.
+     *
+     * @param id the id.
+     * @param elementType the element type string. {@link MetadataElement}.
+     * @param payload the payload, any indexed domain object.
+     */
     public IndexedElementImpl(Integer id, String elementType, Object payload) {
         this.id = id;
         this.elementType = elementType;
@@ -41,10 +49,21 @@ public class IndexedElementImpl implements IndexedElement {
         return id;
     }
 
+    /**
+     * Returns the element type string.
+     *
+     * @return the element type string.
+     * @see MetadataElement
+     */
     public String getElementType() {
         return elementType;
     }
 
+    /**
+     * Returns the wrapped object.
+     *
+     * @return the payload.
+     */
     public Object getPayload() {
         return payload;
     }

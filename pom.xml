@@ -362,7 +362,32 @@
                                 <goal>build</goal>
                             </goals>
                             <configuration>
-                                <!--<skip>${skip.docker}</skip>-->
+                                <from>
+                                    <image>openjdk:11-jre-slim</image>
+                                </from>
+                                <to>
+                                    <image>${docker.image.prefix}/${docker.service.prefix}-${project.artifactId}</image>
+                                    <tags>
+                                        <tag>${project.version}</tag>
+                                        <!-- <tag>${project.version}${deploy.env}</tag> -->
+                                    </tags>
+                                </to>
+                                <container>
+                                    <jvmFlags>
+                                        <jvmFlag>-Djava.security.egd=file:/dev/./urandom</jvmFlag>
+                                    </jvmFlags>
+                                    <ports>
+                                        <port>${app.port}</port>
+                                    </ports>
+                                    <volumes>
+                                        <volume>/tmp</volume>
+                                    </volumes>
+                                    
+                                    <!--<user>1000:1000</user>-->
+                                    <useCurrentTimestamp>true</useCurrentTimestamp>
+                                </container>
+                                <skip>true</skip>
+                                <allowInsecureRegistries>true</allowInsecureRegistries>
                             </configuration>
                         </execution>
                     </executions>
@@ -580,6 +605,8 @@
         <assembly.dir>${project.artifactId}</assembly.dir>
         <javax.activation-api.version>1.2.0</javax.activation-api.version>
         <jib.plugin.version>2.2.0</jib.plugin.version>
+        <docker.service.prefix>jmztabm</docker.service.prefix>
+        <docker.image.prefix>lifs</docker.image.prefix>
     </properties>
 
     <modules>

@@ -28,8 +28,21 @@ import javax.validation.ValidationException;
  */
 public interface IndexedElement {
 
+    /**
+     * Returns the id of the indexed element. May be null.
+     *
+     * @return the id.
+     */
     public Integer getId();
 
+    /**
+     * Create a new indexed element as a proxy of the provided element.
+     *
+     * @param element the element with a getId, hashCode and toString method to
+     * proxy.
+     * @return the indexed element proxy.
+     * @throws ValidationException if the passed in element can not be proxied.
+     */
     public static IndexedElement of(Object element) {
         IndexedElement proxyInstance = (IndexedElement) Proxy.newProxyInstance(
                 IndexedElement.class.getClassLoader(),

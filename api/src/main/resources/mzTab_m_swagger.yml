@@ -10,6 +10,8 @@ info:
     url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
 host: apps.lifs.isas.de
 basePath: /mztabvalidator/rest/v2/
+x-global-options:
+  go_package: mztabm
 schemes:
   - https
 tags:
@@ -1268,6 +1270,7 @@ definitions:
         MTD	instrument[1]-detector	[MS, MS:1000253, electron multiplier,]
         …
         MTD	instrument[2]-detector	[MS, MS:1000348, focal plane collector,]
+    x-mztab-serialize-by-id: 'true'
     type: object
     properties:
         id:
@@ -1296,6 +1299,7 @@ definitions:
         MTD	sample_processing[2]	[MSIO, MSIO:0000146, centrifugation,]
         MTD	sample_processing[3]	[MSIO, MSIO:0000141, metabolite extraction,]
         MTD	sample_processing[4]	[MSIO, MSIO:0000141, silylation,]
+    x-mztab-serialize-by-id: 'true'
     type: object
     properties:
         id:
@@ -1316,6 +1320,7 @@ definitions:
         MTD	software[1]-setting	Fragment tolerance = 0.1 Da
         …
         MTD	software[2]-setting	Parent tolerance = 0.5 Da
+    x-mztab-serialize-by-id: 'true'
     type: object
     properties:
         id:
@@ -1341,6 +1346,7 @@ definitions:
     x-mztab-example: |
         MTD	publication[1]	pubmed:21063943|doi:10.1007/978-1-60761-987-1_6
         MTD	publication[2]	pubmed:20615486|doi:10.1016/j.jprot.2010.06.008
+    x-mztab-serialize-by-id: 'true'
     type: object
     required:
       - publicationItems
@@ -1410,6 +1416,7 @@ definitions:
         MTD	contact[2]-name	Francis Crick
         MTD	contact[2]-affiliation	Cambridge University, UK
         MTD	contact[2]-email	crick@cam.ac.uk
+    x-mztab-serialize-by-id: 'true'
     type: object
     properties:
         id:
@@ -1433,6 +1440,7 @@ definitions:
         …
         MTD	external_study_uri[1]	https://www.ebi.ac.uk/metabolights/MTBLS517/files/i_Investigation.txt
     type: object
+    x-mztab-serialize-by-id: 'true'
     properties:
         id:
           type: integer
@@ -1468,6 +1476,7 @@ definitions:
         MTD	sample[2]-tissue[1]	[BTO, BTO:0000759, liver, ]
         MTD	sample[2]-cell_type[1]	[CL, CL:0000182, hepatocyte, ]
         MTD	sample[2]-description	Healthy control samples.
+    x-mztab-serialize-by-id: 'true'
     type: object
     properties:
         id:
@@ -1533,6 +1542,7 @@ definitions:
        MTD	ms_run[1]-scan_polarity[2]	[MS, MS:1000129, negative scan, ]
        MTD	ms_run[1]-hash_method	[MS, MS:1000569, SHA-1, ]
        MTD	ms_run[1]-hash	de9f2c7fd25e1b3afad3e85a0bd17d9b100db4b3
+    x-mztab-serialize-by-id: 'true'
     type: object
     required:
       - id
@@ -1594,6 +1604,7 @@ definitions:
       MTD	study_variable[1]-description	Group B (spike-in 0.74 fmol/uL)
       MTD	study_variable[1]-factors	[,,time point, 1 minute]|[,,rapamycin dose,0.5mg]
       MTD	study_variable[2]	1 minute 0.5mg rapamycin
+    x-mztab-serialize-by-id: 'true'
     type: object
     required:
         - id
@@ -1634,7 +1645,14 @@ definitions:
       custom: Additional custom parameters or values for a given assay. 
       external_uri: An external reference uri to further information about the assay, for example via a reference to an object within an ISA-TAB file. 
       sample_ref: An association from a given assay to the sample analysed. 
-      ms_run_ref: An association from a given assay to the source MS run. All assays MUST reference exactly one ms_run unless a workflow with pre-fractionation is being encoded, in which case each assay MUST reference n ms_runs where n fractions have been collected. Multiple assays SHOULD reference the same ms_run to capture multiplexed experimental designs.      
+      ms_run_ref: An association from a given assay to the source MS run. All assays MUST reference exactly one ms_run unless a workflow with pre-fractionation is being encoded, in which case each assay MUST reference n ms_runs where n fractions have been collected. Multiple assays SHOULD reference the same ms_run to capture multiplexed experimental designs.
+    x-mztab-example: |
+        MTD	assay[1]	first assay
+        MTD	assay[1]-custom[1]	[MS, , Assay operator, Fred Blogs]
+        MTD	assay[1]-external_uri	https://www.ebi.ac.uk/metabolights/MTBLS517/files/i_Investigation.txt?STUDYASSAY=a_e04_c18pos.txt
+        MTD	assay[1]-sample_ref	sample[1]
+        MTD	assay[1]-ms_run_ref	ms_run[1]
+    x-mztab-serialize-by-id: 'true'
     type: object
     required:
         - name
@@ -1679,6 +1697,7 @@ definitions:
         MTD	cv[1]-full_name	PSI-MS controlled vocabulary
         MTD	cv[1]-version	4.1.11
         MTD	cv[1]-uri	https://raw.githubusercontent.com/HUPO-PSI/psi-ms-CV/master/psi-ms.obo
+    x-mztab-serialize-by-id: 'true'
     type: object
     required:
         - label
@@ -1723,6 +1742,7 @@ definitions:
       MTD	database[3]-prefix	null
       MTD	database[3]-version	Unknown
       MTD	database[3]-uri	null
+    x-mztab-serialize-by-id: 'true'
     type: object
     required:
         - param

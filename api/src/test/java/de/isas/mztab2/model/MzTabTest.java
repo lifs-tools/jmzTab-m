@@ -170,7 +170,7 @@ public class MzTabTest {
         mtd.addUriItem(new Uri().id(2).
             value(
                 "http://proteomecentral.proteomexchange.org/cgi/GetDataset"));
-        mtd.addExternalStudyUriItem(new Uri().id(1).
+        mtd.addExternalStudyUriItem(new Uri().id(3).
             value(
                 "https://www.ebi.ac.uk/metabolights/MTBLS400"));
         MsRun msRun1 = new MsRun().name("file1").id(1).
