@@ -199,7 +199,7 @@ public class MetadataSerializer extends StdSerializer<Metadata> {
                         Comparator.nullsFirst(Comparator.naturalOrder())));
             } else {
                 
-                    log.debug( "External Study is null!");
+                    log.debug( "URI is null!");
             }
             //external study uri
             if (t.getExternalStudyUri() != null) {
@@ -210,7 +210,7 @@ public class MetadataSerializer extends StdSerializer<Metadata> {
                             Comparator.nullsFirst(Comparator.naturalOrder())));
             } else {
                 
-                    log.debug( "External Study is null!");
+                    log.debug( "External Study URI is null!");
             }
             //instruments
             if (t.getInstrument() != null) {

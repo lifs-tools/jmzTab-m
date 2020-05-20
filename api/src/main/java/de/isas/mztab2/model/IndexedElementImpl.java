@@ -35,7 +35,7 @@ public class IndexedElementImpl implements IndexedElement {
      * type and payload.
      *
      * @param id the id.
-     * @param elementType the element type string. {@link MetadataElement}.
+     * @param elementType the element type string.
      * @param payload the payload, any indexed domain object.
      */
     public IndexedElementImpl(Integer id, String elementType, Object payload) {
@@ -51,9 +51,9 @@ public class IndexedElementImpl implements IndexedElement {
 
     /**
      * Returns the element type string.
+     * This is used by MetadataElement in the <pre>jmztabm-io</pre> module.
      *
      * @return the element type string.
-     * @see MetadataElement
      */
     public String getElementType() {
         return elementType;

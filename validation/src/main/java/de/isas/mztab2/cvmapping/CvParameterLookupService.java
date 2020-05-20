@@ -157,8 +157,8 @@ public class CvParameterLookupService {
     /**
      * Compares two parameters for their parent to child relationship. The result can be one of: IDENTICAL, if parent and potential child are the same node,
      * CHILD_OF, if potentialChild is a child of parent (at least 1 level away), or NOT_RELATED, if there is no path from child to parent.
-     * @param parent
-     * @param potentialChild
+     * @param parent the parent term to start from
+     * @param potentialChild the potential child term to check against parent
      * @return the comparison result
      * @throws org.springframework.web.client.HttpClientErrorException on http related errors
      */
