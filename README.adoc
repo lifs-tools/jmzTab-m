@@ -227,7 +227,7 @@ The following snippet will parse an mzTabFile from a file on disk:
   //inspect the output of the parse and errors
   MZTabErrorList errors = parser.getErrorList();
   //converting the MZTabErrorList into a list of ValidationMessage
-  List<ValidationMessage> messages = errors.toValidationMessages()
+  List<ValidationMessage> messages = errors.convertToValidationMessages();
   //access the file after parsing
   MzTab mzTab = parser.getMZTabFile();
 
