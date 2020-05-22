@@ -9,12 +9,13 @@ language: java
 jdk:
   - oraclejdk8
   - openjdk11
-script:
-  # JaCoCo is used to have code coverage, the agent has to be activated
-  - ./mvnw clean org.jacoco:jacoco-maven-plugin:prepare-agent verify install sonar:sonar -Dsonar.organization=lifs-tools_jmzTab-m
 addons:
   sonarcloud:
     organization: "lifs-tools"
     token:
         secure: "LwzlDNiCtDhXXaOm9I7HaI02iYuOw1H2tqEHIt7vKZpNWwAKYe7RofTTlTBcQP5PtogXzxJxcnpmWtcVIL7ylP95q0mcy+/ZTaLuP9AILS8W/76iG5shrGn/GOImTx10Yv+oJBeMmos6rrBM9J9NxI8RzyWeLb0XJQAUstekakzZP2CiQSJqTY4rIZGNSMgXvPnkxyh1q2IOJ/Ze9NO2rj8itvD2AWMkUNGwwW05jgbL3VQ3YRWUvWOZ8VHTbcO3k2XTOBxHqH0IMxmJAC8MqGcUEWqzF+5l3kUP4nS1tJt9nxuNNtCKA0A9zO846PC3Vr59kWTNyeGYj45cA68Hz1C2j62aQzcEEO75OMauShdFUjrG4wGJnS9hemQFZY2qCC56M7BbvhYU1iQOg0YycMymmQSGXBQLkCMFk5uCPUAalZvf+rUB15zL3k9/+zNvyeUr4UoStoFywW/rEx2mb4xKP0G0/oDys5Ss5e+MtPLMdDblJwHTvDPzloueUSqCOgHBhYqzS+rebih7b4A4tbEa0Z6vmnYhq/4gucv2uQn+Bj/fCNRA1YyYS0YpBFT/StaIeEC5ehtN5lDnZhmoYpwPWXTTMx+vp2zETs0Ld9v6rNKO/gnguqcqlUwrveNNWs3KQTVsnDJMZzj14ISTYKDbbYyk4gyV4iRD5q4Ig4s="
+
+script:
+  # the following command line builds the project, runs the tests with coverage and then execute the SonarCloud analysis
+  - mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent verify install sonar:sonar -Dsonar.projectKey=lifs-tools_jmzTab-m   
     
