@@ -15,8 +15,14 @@
  */
 package de.isas.mztab2.model;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import static uk.ac.ebi.pride.jmztab2.model.MZTabConstants.REGEX_ABUNDANCE_ASSAY_COLUMN_NAME;
 
 /**
  *
@@ -43,7 +49,7 @@ public class MzTabAccess {
             return smeIds.contains(t.getSmeId());
         }).collect(Collectors.toList());
     }
-    
+
     public List<SmallMoleculeEvidence> getEvidencesByEvidenceInputId(String evidenceInputId) {
         return mzTab.getSmallMoleculeEvidence().stream().filter((t) -> {
             return t.getEvidenceInputId().equals(evidenceInputId);
@@ -66,4 +72,49 @@ public class MzTabAccess {
         return sms.getAbundanceAssay().get(assay.getId() - 1);
     }
 
+    public Optional<Assay> getAssayFor(Integer id, Metadata metadata) {
+        return metadata.getAssay().stream().filter((t) -> {
+            return t.getId().equals(id);
+        }).findFirst();
+    }
+
+    public Optional<StudyVariable> getStudyVariableFor(Integer id, Metadata metadata) {
+        return metadata.getStudyVariable().stream().filter((t) -> {
+            return t.getId().equals(id);
+        }).findFirst();
+    }
+
+    public Optional<MsRun> getMsRunFor(Integer id, Metadata metadata) {
+        return metadata.getMsRun().stream().filter((t) -> {
+            return t.getId().equals(id);
+        }).findFirst();
+    }
+
+    public Optional<Database> getDatabaseFor(Integer id, Metadata metadata) {
+        return metadata.getDatabase().stream().filter((t) -> {
+            return t.getId().equals(id);
+        }).findFirst();
+    }
+
+    /**
+     * Tries to locate the assay referenced by id from the columnMapping
+     * identifier. Returns an empty optional if either the identifier was null
+     * or not an assay, or no matching assay was found.
+     *
+     * @param columnMapping the column mapping.
+     * @param metadata the metadata used to locate the assay.
+     * @return an optional with the assay object, or en empty optional.
+     */
+    public Optional<Assay> getAssayFor(OptColumnMapping columnMapping, Metadata metadata) {
+        String identifier = columnMapping.getIdentifier();
+        if (identifier != null) {
+            Pattern p = Pattern.compile(REGEX_ABUNDANCE_ASSAY_COLUMN_NAME);
+            Matcher m = p.matcher(identifier);
+            if (m.matches()) {
+                Integer assayId = Integer.parseInt(m.group(1));
+                return getAssayFor(assayId, metadata);
+            }
+        }
+        return Optional.empty();
+    }
 }
