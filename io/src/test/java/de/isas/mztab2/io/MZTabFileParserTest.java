@@ -42,6 +42,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.bind.JAXBException;
 import org.junit.Assert;
+import static org.junit.Assert.assertEquals;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -64,20 +65,20 @@ public class MZTabFileParserTest {
 
     @ClassRule
     public static final ExtractClassPathFiles EXTRACT_FILES = new ExtractClassPathFiles(
-        MTBLS263,
-        MOUSELIVER_NEGATIVE,
-        MOUSELIVER_NEGATIVE_MZTAB_NULL_COLUNIT,
-        STANDARDMIX_NEGATIVE_EXPORTPOSITIONLEVEL,
-        STANDARDMIX_NEGATIVE_EXPORTSPECIESLEVEL,
-        STANDARDMIX_POSITIVE_EXPORTPOSITIONLEVEL,
-        STANDARDMIX_POSITIVE_EXPORTSPECIESLEVEL,
-        GCXGC_MS_EXAMPLE,
-        LIPIDOMICS_EXAMPLE,
-        LIPIDOMICS_EXAMPLE_WRONG_MSSCAN_REF,
-        MINIMAL_EXAMPLE);
+            MTBLS263,
+            MOUSELIVER_NEGATIVE,
+            MOUSELIVER_NEGATIVE_MZTAB_NULL_COLUNIT,
+            STANDARDMIX_NEGATIVE_EXPORTPOSITIONLEVEL,
+            STANDARDMIX_NEGATIVE_EXPORTSPECIESLEVEL,
+            STANDARDMIX_POSITIVE_EXPORTPOSITIONLEVEL,
+            STANDARDMIX_POSITIVE_EXPORTSPECIESLEVEL,
+            GCXGC_MS_EXAMPLE,
+            LIPIDOMICS_EXAMPLE,
+            LIPIDOMICS_EXAMPLE_WRONG_MSSCAN_REF,
+            MINIMAL_EXAMPLE);
 
     @Parameterized.Parameters(
-        name = "{index}: semantic validation of '{0}' on level '{1}' expecting '{2}' structural/logical errors and MzTab to be null: '{3}'")
+            name = "{index}: semantic validation of '{0}' on level '{1}' expecting '{2}' structural/logical errors and MzTab to be null: '{3}'")
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][]{
             {MTBLS263, MZTabErrorType.Level.Warn, 0, false},
@@ -114,18 +115,18 @@ public class MZTabFileParserTest {
     @Test
     public void testExamples() throws MZTabException, JAXBException {
         testExample(EXTRACT_FILES.getBaseDir(), resource,
-            validationLevel, expectedStructuralLogicalErrors, mzTabMustBeNull);
+                validationLevel, expectedStructuralLogicalErrors, mzTabMustBeNull);
     }
 
     void testExample(File tf, ClassPathFile resource,
-        MZTabErrorType.Level level,
-        Integer expectedErrors,
-        boolean mzTabMustBeNull) throws MZTabException {
+            MZTabErrorType.Level level,
+            Integer expectedErrors,
+            boolean mzTabMustBeNull) throws MZTabException {
         System.out.println("Testing example: " + resource.fileName());
         try {
             MzTab mzTab = TestResources.parseResource(tf, resource.fileName(), level,
-                expectedErrors, mzTabMustBeNull);
-            if(mzTabMustBeNull) {
+                    expectedErrors, mzTabMustBeNull);
+            if (mzTabMustBeNull) {
                 Assert.assertNull(mzTab);
                 System.out.println("Example was null");
             } else {
@@ -135,25 +136,25 @@ public class MZTabFileParserTest {
                 System.out.println("JACKSON serialized: " + resource);
                 try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
                     try (OutputStreamWriter osw = new OutputStreamWriter(
-                        baos, Charset.forName("UTF8"))) {
+                            baos, Charset.forName("UTF8"))) {
                         writer.write(osw, mzTab);
                         osw.flush();
                         Logger.getLogger(MZTabFileParserTest.class.getName()).
-                            log(Level.INFO, baos.toString());
+                                log(Level.INFO, baos.toString());
                     }
                 }
             }
         } catch (URISyntaxException ex) {
             Logger.getLogger(MZTabFileParserTest.class.getName()).
-                log(Level.SEVERE, null, ex);
+                    log(Level.SEVERE, null, ex);
             Assert.fail(ex.getMessage());
         } catch (IOException | IndexOutOfBoundsException ex) {
             Logger.getLogger(MZTabFileParserTest.class.getName()).
-                log(Level.SEVERE, null, ex);
+                    log(Level.SEVERE, null, ex);
             Assert.fail(ex.getMessage());
         } catch (MZTabException | MZTabErrorOverflowException e) {
             Logger.getLogger(MZTabFileParserTest.class.getName()).
-                log(Level.SEVERE, null, e);
+                    log(Level.SEVERE, null, e);
             throw e;
         }
     }
