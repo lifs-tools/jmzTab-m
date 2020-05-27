@@ -265,6 +265,7 @@ public class MZTabUtils {
 
     /**
      * Parse the target into a {@link de.isas.mztab2.model.IndexedElement} list.
+     * target is a '|' separated list of entries.
      *
      * @param target a {@link java.lang.String} object.
      * @param element a {@link uk.ac.ebi.pride.jmztab2.model.MetadataElement}
@@ -273,7 +274,7 @@ public class MZTabUtils {
      */
     public static List<IndexedElement> parseRefList(String target,
         MetadataElement element) {
-        List<String> list = parseStringList(MZTabConstants.COMMA, target);
+        List<String> list = parseStringList(MZTabConstants.BAR, target);
         
         List<IndexedElement> indexedElementList = new ArrayList<>();
         IndexedElement indexedElement;

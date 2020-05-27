@@ -60,6 +60,6 @@ public class MZTabFileParserExtTest {
                 MTBLS263.fileName(),
                 MZTabErrorType.Level.Info,
                 0, false);
-        assertEquals(2, mzTab.getMetadata().getStudyVariable().get(0).getAssayRefs().size());
+        assertEquals(3, mzTab.getMetadata().getStudyVariable().get(0).getAssayRefs().size());
     }
 }
