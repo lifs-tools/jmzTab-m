@@ -101,7 +101,7 @@ public class MzTabAccessTest {
         Assay assay = new Assay().id(1).name("first assay");
         Metadata metadata = new Metadata();
         metadata.addAssayItem(assay);
-        OptColumnMapping mapping = new OptColumnMapping().identifier("assay[1]").param(new Parameter().cvAccession("MS").cvLabel("MS:123456").value("just for testing"));
+        OptColumnMapping mapping = new OptColumnMapping().identifier("opt_assay[1]_cv_MS:128712_made_up_for_testing").param(new Parameter().cvAccession("MS").cvLabel("MS:123456").value("just for testing"));
         MzTab mzTab = new MzTab().metadata(metadata);
         MzTabAccess access = new MzTabAccess(mzTab);
         Optional<Assay> foundAssay = access.getAssayFor(mapping, metadata);
