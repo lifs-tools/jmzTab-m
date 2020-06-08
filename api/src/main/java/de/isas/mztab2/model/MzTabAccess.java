@@ -110,7 +110,7 @@ public class MzTabAccess {
         if (identifier != null) {
             Pattern p = Pattern.compile(REGEX_ABUNDANCE_ASSAY_COLUMN_NAME);
             Matcher m = p.matcher(identifier);
-            if (m.matches()) {
+            if (m.find()) {
                 Integer assayId = Integer.parseInt(m.group(1));
                 return getAssayFor(assayId, metadata);
             }
