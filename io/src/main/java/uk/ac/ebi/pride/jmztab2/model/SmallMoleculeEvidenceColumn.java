@@ -178,7 +178,7 @@ public class SmallMoleculeEvidenceColumn implements ISmallMoleculeEvidenceColumn
      * {@inheritDoc}
      */
     @Override
-    public IndexedElement getElement() {
+    public Object getElement() {
         return this.column.getElement();
     }
 
@@ -250,7 +250,7 @@ public class SmallMoleculeEvidenceColumn implements ISmallMoleculeEvidenceColumn
      * {@inheritDoc}
      */
     @Override
-    public void setElement(IndexedElement element) {
+    public void setElement(Object element) {
         this.column.setElement(element);
     }
 }

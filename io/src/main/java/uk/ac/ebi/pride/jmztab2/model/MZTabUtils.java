@@ -16,6 +16,7 @@
 package uk.ac.ebi.pride.jmztab2.model;
 
 import de.isas.mztab2.model.IndexedElement;
+import de.isas.mztab2.model.IndexedElementImpl;
 import de.isas.mztab2.model.Metadata;
 import de.isas.mztab2.model.MsRun;
 import de.isas.mztab2.model.Parameter;
@@ -254,9 +255,8 @@ public class MZTabUtils {
         Pattern pattern = Pattern.compile(element + "\\[(\\d+)\\]");
         Matcher matcher = pattern.matcher(target);
         if (matcher.find()) {
-            Integer id = new Integer(matcher.group(1));
-            IndexedElement p = new IndexedElement().id(id);
-            p.elementType(element.getName());
+            Integer id = Integer.parseInt(matcher.group(1));
+            IndexedElement p = new IndexedElementImpl(id, element.getName(), element);
             return p;
         } else {
             return null;
@@ -265,6 +265,7 @@ public class MZTabUtils {
 
     /**
      * Parse the target into a {@link de.isas.mztab2.model.IndexedElement} list.
+     * target is a '|' separated list of entries.
      *
      * @param target a {@link java.lang.String} object.
      * @param element a {@link uk.ac.ebi.pride.jmztab2.model.MetadataElement}
@@ -273,7 +274,7 @@ public class MZTabUtils {
      */
     public static List<IndexedElement> parseRefList(String target,
         MetadataElement element) {
-        List<String> list = parseStringList(MZTabConstants.COMMA, target);
+        List<String> list = parseStringList(MZTabConstants.BAR, target);
         
         List<IndexedElement> indexedElementList = new ArrayList<>();
         IndexedElement indexedElement;

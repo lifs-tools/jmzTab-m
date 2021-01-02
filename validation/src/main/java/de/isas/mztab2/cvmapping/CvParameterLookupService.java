@@ -85,7 +85,7 @@ public class CvParameterLookupService {
      * Use at your own risk, the OLS service may terminate your connection if the response is too large or takes too long.
      * @param parameter the parameter to start from
      * @return a list of all parent parameters for the given parameter
-     * @throws org.springframework.web.client.HttpClientErrorException 
+     * @throws org.springframework.web.client.HttpClientErrorException on http related errors
      */
     public List<Parameter> resolveParents(Parameter parameter) throws org.springframework.web.client.HttpClientErrorException {
         return resolveParents(parameter, -1);
@@ -96,7 +96,7 @@ public class CvParameterLookupService {
      * @param parameter the parameter to start from
      * @param levels maximum levels to query
      * @return a list of all parent parameters for the given parameter
-     * @throws org.springframework.web.client.HttpClientErrorException 
+     * @throws org.springframework.web.client.HttpClientErrorException on http related errors
      */
     public List<Parameter> resolveParents(Parameter parameter, int levels) throws org.springframework.web.client.HttpClientErrorException {
         if (parameter.getCvAccession() == null || parameter.getCvLabel() == null) {
@@ -122,7 +122,7 @@ public class CvParameterLookupService {
      * @param parameter the parameter to start from
      * @param levels maximum levels to query
      * @return a list of all child parameters for the given parameter
-     * @throws org.springframework.web.client.HttpClientErrorException 
+     * @throws org.springframework.web.client.HttpClientErrorException on http related errors
      */
     public List<Parameter> resolveChildren(Parameter parameter, int levels) throws org.springframework.web.client.HttpClientErrorException {
         if (parameter.getCvAccession() == null || parameter.getCvLabel() == null) {
@@ -148,7 +148,7 @@ public class CvParameterLookupService {
      * Use at your own risk, the OLS service may terminate your connection if the response is too large or takes too long.
      * @param parameter the parameter to start from
      * @return a list of all child parameters for the given parameter
-     * @throws org.springframework.web.client.HttpClientErrorException 
+     * @throws org.springframework.web.client.HttpClientErrorException on http related errors
      */
     public List<Parameter> resolveChildren(Parameter parameter) throws org.springframework.web.client.HttpClientErrorException {
         return resolveChildren(parameter, -1);
@@ -157,10 +157,10 @@ public class CvParameterLookupService {
     /**
      * Compares two parameters for their parent to child relationship. The result can be one of: IDENTICAL, if parent and potential child are the same node,
      * CHILD_OF, if potentialChild is a child of parent (at least 1 level away), or NOT_RELATED, if there is no path from child to parent.
-     * @param parent
-     * @param potentialChild
+     * @param parent the parent term to start from
+     * @param potentialChild the potential child term to check against parent
      * @return the comparison result
-     * @throws org.springframework.web.client.HttpClientErrorException 
+     * @throws org.springframework.web.client.HttpClientErrorException on http related errors
      */
     public ParameterComparisonResult isChildOfOrSame(Parameter parent,
         Parameter potentialChild) throws org.springframework.web.client.HttpClientErrorException {

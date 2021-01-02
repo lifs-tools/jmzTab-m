@@ -4,12 +4,12 @@
     <parent>
         <groupId>de.isas.mztab</groupId>
         <artifactId>jmztabm</artifactId>
-        <version>1.0.5-SNAPSHOT</version>
+        <version>1.0.6</version>
     </parent>
     <artifactId>jmztabm-validation</artifactId>
     <packaging>jar</packaging>
     <build>
-        <pluginManagement>
+<!--        <pluginManagement>
             <plugins>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -20,7 +20,7 @@
                     </configuration>
                 </plugin>
             </plugins>
-        </pluginManagement>
+        </pluginManagement>-->
         <plugins>
             <plugin>
                 <groupId>org.apache.cxf</groupId>

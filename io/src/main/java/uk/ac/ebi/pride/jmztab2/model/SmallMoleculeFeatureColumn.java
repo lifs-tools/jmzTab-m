@@ -170,7 +170,7 @@ public class SmallMoleculeFeatureColumn implements ISmallMoleculeFeatureColumn {
      * {@inheritDoc}
      */
     @Override
-    public IndexedElement getElement() {
+    public Object getElement() {
         return this.column.getElement();
     }
 
@@ -242,7 +242,7 @@ public class SmallMoleculeFeatureColumn implements ISmallMoleculeFeatureColumn {
      * {@inheritDoc}
      */
     @Override
-    public void setElement(IndexedElement element) {
+    public void setElement(Object element) {
         this.column.setElement(element);
     }
 }

@@ -48,6 +48,7 @@ public enum ClassPathFile {
         "StandardMix_positive_exportSpeciesLevel.mzTab"),
     GCXGC_MS_EXAMPLE("/metabolomics/", "gcxgc-ms-example.mztab"),
     LIPIDOMICS_EXAMPLE("/metabolomics/", "lipidomics-example.mzTab"),
+    LIPIDOMICS_EXAMPLE_WRONG_MSSCAN_REF("/metabolomics/", "lipidomics-example-wrong-msscan-ref.mzTab"),
     MINIMAL_EXAMPLE("/metabolomics/", "minimal-m-2.0.mztab");
 
     private final String resourcePathPrefix;

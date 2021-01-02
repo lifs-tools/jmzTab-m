@@ -201,7 +201,7 @@ public class MZTabColumnFactory {
      * @param columnType SHOULD NOT be empty.
      * @return the column's logic position.
      */
-    public <T extends IndexedElement> String addOptionalColumn(T columnEntity,
+    public <T extends Object> String addOptionalColumn(T columnEntity,
         String name, Class columnType) {
         IMZTabColumn column = new OptionColumn(columnEntity, name, columnType,
             Integer.parseInt(getColumnOrder(columnMapping.lastKey())));
@@ -236,7 +236,7 @@ public class MZTabColumnFactory {
      * @param columnType SHOULD NOT empty.
      * @return the column's logic position.
      */
-    public <T extends IndexedElement> String addOptionalColumn(T columnEntity,
+    public <T extends Object> String addOptionalColumn(T columnEntity,
         Parameter param, Class columnType) {
         IMZTabColumn column = new ParameterOptionColumn(columnEntity, param,
             columnType, Integer.parseInt(getColumnOrder(columnMapping.lastKey())));

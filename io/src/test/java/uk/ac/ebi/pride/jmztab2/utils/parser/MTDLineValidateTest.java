@@ -265,11 +265,11 @@ public class MTDLineValidateTest {
         context.addAssay(metadata, assay1);
         context.addAssay(metadata, assay2);
 
-        parser.parse(1, "MTD\tstudy_variable[1]-assay_refs\tassay[1], assay[2]",
+        parser.parse(1, "MTD\tstudy_variable[1]-assay_refs\tassay[1] | assay[2]",
             errorList);
         assertTrue(errorList.isEmpty());
 
-        parser.parse(1, "MTD\tstudy_variable[1]-assay_refs\tassay[1], assay[1]",
+        parser.parse(1, "MTD\tstudy_variable[1]-assay_refs\tassay[1] | assay[1]",
             errorList);
         assertTrue(errorList.getError(0).
             getType() == LogicalErrorType.DuplicationID);

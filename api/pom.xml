@@ -4,10 +4,10 @@
     <parent>
         <artifactId>jmztabm</artifactId>
         <groupId>de.isas.mztab</groupId>
-        <version>1.0.5-SNAPSHOT</version>
+        <version>1.0.6</version>
     </parent>
     <artifactId>jmztabm-api</artifactId>
-    <version>1.0.5-SNAPSHOT</version>
+    <version>1.0.6</version>
     <packaging>jar</packaging>
     <properties>
         <swagger.api.spec>mzTab_m_swagger.yml</swagger.api.spec>
@@ -17,7 +17,7 @@
             <plugin>
                 <groupId>io.swagger</groupId>
                 <artifactId>swagger-codegen-maven-plugin</artifactId>
-                <version>2.4.1</version> <!-- 2.3.1 -->
+                <version>2.4.1</version>
                 <executions>
                     <execution>
                         <id>generate-java-client-lib</id>
@@ -88,13 +88,13 @@
                             <addCompileSourceRoot>true</addCompileSourceRoot>
                         </configuration>
                     </execution>-->
-                    <execution>
+<!--                    <execution>
                         <id>generate-python-client-lib</id>
                         <goals>
                             <goal>generate</goal>
                         </goals>
                         <configuration>
-                            <!-- target to generate python client code -->
+                             target to generate python client code 
                             <inputSpec>${project.basedir}/src/main/resources/${swagger.api.spec}</inputSpec>
                             <language>python</language>
                             <withXml>true</withXml>
@@ -111,7 +111,7 @@
                             <goal>generate</goal>
                         </goals>
                         <configuration>
-                            <!--target to generate r client code--> 
+                            target to generate r client code 
                             <inputSpec>${project.basedir}/src/main/resources/${swagger.api.spec}</inputSpec>
                             <language>r</language>
                             <templateDirectory>${project.basedir}/src/main/swagger/r-templates</templateDirectory>
@@ -128,7 +128,7 @@
                             <apiPackage>mztab-r</apiPackage>
                             <invokerPackage>mztab-r</invokerPackage>
                         </configuration>
-                    </execution>
+                    </execution>-->
                 </executions>
             </plugin>
             <plugin>
@@ -166,34 +166,6 @@
                                 <descriptor>src/assembly/asciidoc-zip.xml</descriptor> <!-- path to the descriptor -->
                             </descriptors>
                             <finalName>mztab-api-adoc-${project.version}</finalName>
-                            <appendAssemblyId>true</appendAssemblyId>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>make-python-assembly</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                        <configuration>
-                            <descriptors>
-                                <descriptor>src/assembly/python-zip.xml</descriptor> <!-- path to the descriptor -->
-                            </descriptors>
-                            <finalName>mztab-api-python-${project.version}</finalName>
-                            <appendAssemblyId>true</appendAssemblyId>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>make-r-assembly</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                        <configuration>
-                            <descriptors>
-                                <descriptor>src/assembly/r-zip.xml</descriptor> <!-- path to the descriptor -->
-                            </descriptors>
-                            <finalName>mztab-api-r-${project.version}</finalName>
                             <appendAssemblyId>true</appendAssemblyId>
                         </configuration>
                     </execution>
@@ -286,6 +258,24 @@
         <dependency>
             <groupId>javax.annotation</groupId>
             <artifactId>javax.annotation-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.seleniumhq.selenium</groupId>
+            <artifactId>selenium-java</artifactId>
+            <scope>test</scope>
+            <version>2.53.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.opera</groupId>
+            <artifactId>operadriver</artifactId>
+            <scope>test</scope>
+            <version>1.5</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.seleniumhq.selenium</groupId>
+                    <artifactId>selenium-remote-driver</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
     <description>The data model for the mzTab-M 2.0 data standard format for metabolomics.</description>

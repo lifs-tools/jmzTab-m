@@ -89,7 +89,7 @@ public class MetadataSerializer extends StdSerializer<Metadata> {
      * @param comparator a {@link java.util.Comparator} object.
      * @param <T> a T object.
      */
-    public static <T extends IndexedElement> void serializeListWithMetadataElement(
+    public static <T extends Object> void serializeListWithMetadataElement(
         List<T> list, MetadataElement mtdElement, JsonGenerator jg,
         SerializerProvider sp, Comparator<? super T> comparator) {
         list.stream().
@@ -98,7 +98,7 @@ public class MetadataSerializer extends StdSerializer<Metadata> {
             {
                 if (object != null) {
                     addIndexedLine(jg, sp, Section.Metadata.getPrefix(),
-                        mtdElement.getName() + "[" + object.getId() + "]",
+                        mtdElement.getName() + "[" + IndexedElement.of(object).getId() + "]",
                         object);
                 } else {
                     throw new NullPointerException(
@@ -199,7 +199,7 @@ public class MetadataSerializer extends StdSerializer<Metadata> {
                         Comparator.nullsFirst(Comparator.naturalOrder())));
             } else {
                 
-                    log.debug( "External Study is null!");
+                    log.debug( "URI is null!");
             }
             //external study uri
             if (t.getExternalStudyUri() != null) {
@@ -210,7 +210,7 @@ public class MetadataSerializer extends StdSerializer<Metadata> {
                             Comparator.nullsFirst(Comparator.naturalOrder())));
             } else {
                 
-                    log.debug( "External Study is null!");
+                    log.debug( "External Study URI is null!");
             }
             //instruments
             if (t.getInstrument() != null) {

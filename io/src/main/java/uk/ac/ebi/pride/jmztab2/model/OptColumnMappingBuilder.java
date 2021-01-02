@@ -136,7 +136,7 @@ public class OptColumnMappingBuilder implements IOptColumnMappingBuilder {
      */
     public static class IndexedElementOptColumnMappingBuilder extends NameParamOptColumnMappingBuilder {
 
-        private final IndexedElement indexedElement;
+        private final Object indexedElement;
 
         @Override
         public IndexedElementOptColumnMappingBuilder withName(String name) {
@@ -159,7 +159,7 @@ public class OptColumnMappingBuilder implements IOptColumnMappingBuilder {
          * @param indexedElement the indexed element to reference in this
          * optional column.
          */
-        public IndexedElementOptColumnMappingBuilder(IndexedElement indexedElement) {
+        public IndexedElementOptColumnMappingBuilder(Object indexedElement) {
             this.indexedElement = indexedElement;
         }
 
@@ -198,7 +198,7 @@ public class OptColumnMappingBuilder implements IOptColumnMappingBuilder {
      * @param indexedElement the object to reference.
      * @return the builder instance for an indexed element opt column.
      */
-    public static IndexedElementOptColumnMappingBuilder forIndexedElement(IndexedElement indexedElement) {
+    public static IndexedElementOptColumnMappingBuilder forIndexedElement(Object indexedElement) {
         return new IndexedElementOptColumnMappingBuilder(indexedElement);
     }
 }

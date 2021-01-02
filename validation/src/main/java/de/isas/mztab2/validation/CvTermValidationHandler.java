@@ -29,7 +29,7 @@ public interface CvTermValidationHandler {
      * even if it is empty.
      * @param result the validation messages produced by this handler.
      * @param errorOnTermNotInRule flag to signal, whether unknown terms should yield an error.
-     * @return 
+     * @return a list of validation messages.
      */
     List<ValidationMessage> handleParameters(RuleEvaluationResult result,
         boolean errorOnTermNotInRule);

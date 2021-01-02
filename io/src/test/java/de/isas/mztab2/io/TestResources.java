@@ -41,6 +41,11 @@ public class TestResources {
 
     public static MzTab parseResource(File tf, String resource,
         MZTabErrorType.Level level, Integer expectedErrors) throws URISyntaxException, IOException, MZTabException, MZTabErrorOverflowException {
+        return parseResource(tf, resource, level, expectedErrors, false);
+    }
+    
+    public static MzTab parseResource(File tf, String resource,
+        MZTabErrorType.Level level, Integer expectedErrors, boolean mzTabMustBeNull) throws URISyntaxException, IOException, MZTabException, MZTabErrorOverflowException {
         File testFile = new File(tf, resource);
         Assert.assertTrue(testFile.exists() && testFile.isFile());
         MzTabFileParser parser = new MzTabFileParser(testFile);
@@ -50,7 +55,7 @@ public class TestResources {
             Assert.fail(parser.getErrorList().
                 toString());
         }
-        if (parser.getMZTabFile() == null) {
+        if (parser.getMZTabFile() == null && !mzTabMustBeNull) {
             Assert.fail(parser.getErrorList().
                 toString());
         }

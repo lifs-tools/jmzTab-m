@@ -49,7 +49,7 @@ public class OptionColumn extends MZTabColumn {
      * @param name SHOULD NOT be empty.
      * @return a {@link java.lang.String} object.
      */
-    public static String getHeader(IndexedElement element, String name) {
+    public static String getHeader(Object element, String name) {
         if (MZTabStringUtils.isEmpty(name)) {
             throw new IllegalArgumentException(
                     "Optional column's name should not be empty.");
@@ -76,7 +76,7 @@ public class OptionColumn extends MZTabColumn {
      * @param columnType SHOULD NOT be empty.
      * @param offset SHOULD be positive integer.
      */
-    public OptionColumn(IndexedElement element, String value, Class columnType,
+    public OptionColumn(Object element, String value, Class columnType,
             int offset) {
         super(getHeader(element, value), columnType, true, offset + 1 + "");
     }

@@ -1,5 +1,5 @@
 = Release Management for jmzTab-m
-Nils Hoffmann <nils.hoffmann@isas.de>
+Nils Hoffmann https://github.com/nilshoffmann
 
 == Read the docs
 
@@ -35,4 +35,4 @@ Again, follow the Guides from above. If everything looks good, publish the relea
 
   ./mvnw -Possrh-release nexus-staging:release -DstagingRepositoryId=deisasmztab-<NUMBER>
 
-Finally, create a release from the tag at https://github.com/nilshoffmann/jmzTab-m/releases[GitHub].
+Finally, create a release from the tag at https://github.com/lifs-tools/jmzTab-m/releases[GitHub].

@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>de.isas.mztab</groupId>
     <artifactId>jmztabm</artifactId>
-    <version>1.0.5-SNAPSHOT</version>
+    <version>1.0.6</version>
     <packaging>pom</packaging>
     <description>A reader, writer and validator reference implementation for the mzTab format for metabolomics from version 2.0 onwards.</description>
     <name>MzTab-M 2.0 reference implementation.</name>	
@@ -120,7 +120,7 @@
                 <plugin>
                     <groupId>org.owasp</groupId>
                     <artifactId>dependency-check-maven</artifactId>
-                    <version>5.3.0</version>
+                    <version>6.0.4</version>
                     <configuration>
                         <cveValidForHours>12</cveValidForHours>
                         <failBuildOnCVSS>4</failBuildOnCVSS>
@@ -222,13 +222,12 @@
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>3.8.1</version>
                     <configuration>
-                        <source>${java.version}</source>
-                        <target>${java.version}</target>
+                        <release>${java.version}</release>
                     </configuration>
                 </plugin>
                 <plugin>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>3.0.0-M4</version>
+                    <version>3.0.0-M5</version>
                     <configuration>
                         <redirectTestOutputToFile>true</redirectTestOutputToFile>
                         <parallel>classes</parallel>
@@ -240,7 +239,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-failsafe-plugin</artifactId>
-                    <version>3.0.0-M4</version>
+                    <version>3.0.0-M5</version>
                     <configuration>
                         <redirectTestOutputToFile>true</redirectTestOutputToFile>
                         <parallel>classes</parallel>
@@ -260,7 +259,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-shade-plugin</artifactId>
-                    <version>3.2.1</version>
+                    <version>3.2.4</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -288,7 +287,7 @@
                         </execution>
                         <execution>
                             <id>report</id>
-<!--                            <phase>post-integration-test</phase>-->
+                            <!--                            <phase>post-integration-test</phase>-->
                             <goals>
                                 <goal>report</goal>
                             </goals>
@@ -305,7 +304,7 @@
                                 <goal>report-integration</goal>
                             </goals>
                         </execution>
-<!--                        <execution>
+                        <!--                        <execution>
                             <id>post-unit-test</id>
                             <phase>test</phase>
                             <goals>
@@ -350,6 +349,49 @@
                         </execution>
                     </executions>
                 </plugin>
+                <plugin>
+                    <groupId>com.google.cloud.tools</groupId>
+                    <artifactId>jib-maven-plugin</artifactId>
+                    <version>${jib.plugin.version}</version>
+                    <executions>
+                        <execution>
+                            <id>docker-push</id>
+                            <phase>install</phase>
+                            <goals>
+                                <goal>build</goal>
+                            </goals>
+                            <configuration>
+                                <from>
+                                    <image>openjdk:11-jre-slim</image>
+                                </from>
+                                <to>
+                                    <image>${docker.image.prefix}/${docker.service.prefix}-${project.artifactId}</image>
+                                    <tags>
+                                        <tag>${project.version}</tag>
+                                        <!-- <tag>${project.version}${deploy.env}</tag> -->
+                                    </tags>
+                                </to>
+                                <container>
+                                    <jvmFlags>
+                                        <jvmFlag>-Djava.security.egd=file:/dev/./urandom</jvmFlag>
+                                    </jvmFlags>
+                                    <ports>
+                                        <port>${app.port}</port>
+                                    </ports>
+                                    <volumes>
+                                        <volume>/tmp</volume>
+                                    </volumes>
+                                    
+                                    <!--<user>1000:1000</user>-->
+                                    <useCurrentTimestamp>true</useCurrentTimestamp>
+                                </container>
+                                <skip>true</skip>
+                                <allowInsecureRegistries>true</allowInsecureRegistries>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+
             </plugins>
         </pluginManagement>
     </build>
@@ -442,7 +484,7 @@
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-databind</artifactId>
-                <version>${jackson.core.version}</version>
+                <version>${jackson.databind.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.dataformat</groupId>
@@ -524,33 +566,35 @@
     </dependencies>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
-        <java.version>1.8</java.version>
+        <!--<maven.compiler.source>1.8</maven.compiler.source>-->
+        <!--<maven.compiler.target>1.8</maven.compiler.target>-->
+        <java.version>11</java.version>
+        <maven.compiler.release>${java.version}</maven.compiler.release>
         <lombok.version>1.18.4</lombok.version>
-        <junit.version>4.12</junit.version>
+        <junit.version>4.13.1</junit.version>
         <hamcrest.version>1.3</hamcrest.version>
         <javax.validation.version>2.0.0.Final</javax.validation.version>
         <junit.jupiter.version>5.0.3</junit.jupiter.version>
-        <junit.vintage.version>4.12.3</junit.vintage.version>
+        <junit.vintage.version>4.13.1</junit.vintage.version>
         <junit.platform.version>1.0.3</junit.platform.version>
         <swagger.version>1.5.24</swagger.version>
         <jersey.version>2.22.4</jersey.version>
-        <jackson.version>2.10.2</jackson.version>
-        <jackson.core.version>2.10.2</jackson.core.version>
+        <jackson.version>2.10.5</jackson.version>
+        <jackson.databind.version>2.10.5.1</jackson.databind.version>
+        <jackson.core.version>2.10.5</jackson.core.version>
         <jodatime.version>2.9.9</jodatime.version>
-        <hibernate.validator.version>6.0.7.Final</hibernate.validator.version>
+        <hibernate.validator.version>6.0.22.Final</hibernate.validator.version>
         <slf4j.version>1.7.30</slf4j.version>
         <commons-cli.version>1.2</commons-cli.version>
         <javax.el.version>3.0.1-b09</javax.el.version>
         <migbase.version>2.2</migbase.version>
         <swagger2markup.version>1.3.3</swagger2markup.version>
         <maven-plugin-version>1.0.0</maven-plugin-version>
-        <jacoco.version>0.8.5</jacoco.version>
-        <mockito.version>2.19.0</mockito.version>
+        <jacoco.version>0.8.6</jacoco.version>
+        <mockito.version>3.6.28</mockito.version><!--2.19.0-->
         <olsclient.version>2.11</olsclient.version>
         <jxpath.version>1.3</jxpath.version>
-        <spring.version>4.3.25.RELEASE</spring.version>
+        <spring.version>4.3.30.RELEASE</spring.version>
         <logback.version>1.2.3</logback.version>
         <diffutils.version>2.2</diffutils.version>
         <javaobjectdiff.version>0.95</javaobjectdiff.version>
@@ -561,6 +605,9 @@
         <javax.annotation-api.version>1.3.2</javax.annotation-api.version>
         <assembly.dir>${project.artifactId}</assembly.dir>
         <javax.activation-api.version>1.2.0</javax.activation-api.version>
+        <jib.plugin.version>2.7.0</jib.plugin.version>
+        <docker.service.prefix>jmztabm</docker.service.prefix>
+        <docker.image.prefix>lifs</docker.image.prefix>
     </properties>
 
     <modules>

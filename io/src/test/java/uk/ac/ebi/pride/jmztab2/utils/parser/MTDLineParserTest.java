@@ -579,7 +579,7 @@ public class MTDLineParserTest {
         assay2.id(2);
         context.addAssay(metadata, assay1);
         context.addAssay(metadata, assay2);
-        parser.parse(1, "MTD\tstudy_variable[2]-assay_refs\tassay[1], assay[2]",
+        parser.parse(1, "MTD\tstudy_variable[2]-assay_refs\tassay[1]|assay[2]",
             errorList);
         assertTrue(context.getStudyVariableMap().
             get(2).
@@ -589,6 +589,10 @@ public class MTDLineParserTest {
             get(2).
             getAssayRefs().
             get(0) == assay1);
+        assertTrue(context.getStudyVariableMap().
+            get(2).
+            getAssayRefs().
+            get(1) == assay2);
     }
 
     public Metadata parseMetadata(File mtdFile) throws Exception {
