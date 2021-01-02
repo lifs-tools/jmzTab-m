@@ -37,15 +37,26 @@ import uk.ac.ebi.pride.utilities.ols.web.service.model.Term;
 public class OlsLookupServiceTest {
 
     @Test
+    public void checkChildTermLookupInvalidPrefix() {
+        OLSWsConfig config = new OLSWsConfig();
+        OLSClient client = new OLSClient(config);
+        Identifier ident = new Identifier("chmo:0000524",
+            Identifier.IdentifierType.OBO);
+        List<Term> children = client.searchTermById(ident.getIdentifier(), "CHMO");
+        Assert.assertTrue(children.isEmpty());
+        ident.setIdentifier("chmo:0000524");
+        children = client.searchTermById(ident.getIdentifier(), "chmo");
+        Assert.assertTrue(children.size() > 0);
+    }
+
+    @Test
     public void checkChildTermLookup() {
-        
         OLSWsConfig config = new OLSWsConfig();
         OLSClient client = new OLSClient(config);
         Identifier ident = new Identifier("MS:1000831",
             Identifier.IdentifierType.OBO);
         List<Term> children = client.getTermChildren(ident, "MS", 5);
         Assert.assertTrue(children.size() > 0);
-        System.out.println(children);
     }
 
     @Test

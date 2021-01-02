@@ -1547,7 +1547,6 @@ definitions:
     required:
       - id
       - location
-      - name
     properties:
         id:
           type: integer

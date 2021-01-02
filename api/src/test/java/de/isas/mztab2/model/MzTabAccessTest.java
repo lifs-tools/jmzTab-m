@@ -21,6 +21,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
+ * Tests for MzTabAccess.
  *
  * @author nilshoffmann
  */
@@ -61,7 +62,17 @@ public class MzTabAccessTest {
 
     @Test
     public void testGetEvidencesByEvidenceInputId() {
-        
+        SmallMoleculeEvidence sme1 = new SmallMoleculeEvidence().smeId(1).charge(1).evidenceInputId("inputId1");
+        SmallMoleculeEvidence sme2 = new SmallMoleculeEvidence().smeId(2).charge(3).evidenceInputId("inputId1");
+        SmallMoleculeFeature smf = new SmallMoleculeFeature().smfId(1).addSmeIdRefsItem(sme1.getSmeId()).addSmeIdRefsItem(sme2.getSmeId());
+        MzTab mzTab = new MzTab().addSmallMoleculeFeatureItem(smf).addSmallMoleculeEvidenceItem(sme1).addSmallMoleculeEvidenceItem(sme2);
+        MzTabAccess mzTabAccess = new MzTabAccess(mzTab);
+        List<SmallMoleculeEvidence> features = mzTabAccess.getEvidencesByEvidenceInputId("inputId1");
+        assertEquals(2, features.size());
+        assertEquals(Integer.valueOf(1), features.get(0).getSmeId());
+        assertEquals(Integer.valueOf(1), features.get(0).getCharge());
+        assertEquals(Integer.valueOf(2), features.get(1).getSmeId());
+        assertEquals(Integer.valueOf(3), features.get(1).getCharge());
     }
 
     @Test
@@ -78,22 +89,55 @@ public class MzTabAccessTest {
 
     @Test
     public void testGetAbundanceFor_Assay_SmallMoleculeSummary() {
+        
     }
 
     @Test
     public void testGetAssayFor_Integer_Metadata() {
+        Assay assay = new Assay().id(1).name("123");
+        Metadata metadata = new Metadata();
+        metadata.addAssayItem(assay);
+        MzTab mzTab = new MzTab().metadata(metadata);
+        MzTabAccess access = new MzTabAccess(mzTab);
+        Optional<Assay> foundAssay = access.getAssayFor(1, metadata);
+        assertTrue(foundAssay.isPresent());
+        assertEquals(assay.getId(), foundAssay.get().getId());
     }
 
     @Test
     public void testGetStudyVariableFor() {
+        StudyVariable studyVariable = new StudyVariable().id(1).name("123");
+        Metadata metadata = new Metadata();
+        metadata.addStudyVariableItem(studyVariable);
+        MzTab mzTab = new MzTab().metadata(metadata);
+        MzTabAccess access = new MzTabAccess(mzTab);
+        Optional<StudyVariable> foundStudyVariable = access.getStudyVariableFor(1, metadata);
+        assertTrue(foundStudyVariable.isPresent());
+        assertEquals(studyVariable.getId(), foundStudyVariable.get().getId());
     }
 
     @Test
     public void testGetMsRunFor() {
+        MsRun msRun = new MsRun().id(1).location("123");
+        Metadata metadata = new Metadata();
+        metadata.addMsRunItem(msRun);
+        MzTab mzTab = new MzTab().metadata(metadata);
+        MzTabAccess access = new MzTabAccess(mzTab);
+        Optional<MsRun> foundMsRun = access.getMsRunFor(1, metadata);
+        assertTrue(foundMsRun.isPresent());
+        assertEquals(msRun.getId(), foundMsRun.get().getId());
     }
 
     @Test
     public void testGetDatabaseFor() {
+        Database db = new Database().id(1).version("123");
+        Metadata metadata = new Metadata();
+        metadata.addDatabaseItem(db);
+        MzTab mzTab = new MzTab().metadata(metadata);
+        MzTabAccess access = new MzTabAccess(mzTab);
+        Optional<Database> foundDb = access.getDatabaseFor(1, metadata);
+        assertTrue(foundDb.isPresent());
+        assertEquals(db.getId(), foundDb.get().getId());
     }
 
     @Test

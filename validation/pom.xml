@@ -9,7 +9,7 @@
     <artifactId>jmztabm-validation</artifactId>
     <packaging>jar</packaging>
     <build>
-        <pluginManagement>
+<!--        <pluginManagement>
             <plugins>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -20,7 +20,7 @@
                     </configuration>
                 </plugin>
             </plugins>
-        </pluginManagement>
+        </pluginManagement>-->
         <plugins>
             <plugin>
                 <groupId>org.apache.cxf</groupId>
