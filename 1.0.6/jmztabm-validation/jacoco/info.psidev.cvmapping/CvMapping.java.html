@@ -1,0 +1,355 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="de"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CvMapping.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jmztabm-validation</a> &gt; <a href="index.source.html" class="el_package">info.psidev.cvmapping</a> &gt; <span class="el_source">CvMapping.java</span></div><h1>CvMapping.java</h1><pre class="source lang-java linenums">//
+// Diese Datei wurde mit der JavaTM Architecture for XML Binding(JAXB) Reference Implementation, v2.3.0 generiert 
+// Siehe &lt;a href=&quot;https://javaee.github.io/jaxb-v2/&quot;&gt;https://javaee.github.io/jaxb-v2/&lt;/a&gt; 
+// Änderungen an dieser Datei gehen bei einer Neukompilierung des Quellschemas verloren. 
+// Generiert: 2021.01.02 um 05:50:33 PM CET 
+//
+
+
+package info.psidev.cvmapping;
+
+import java.util.ArrayList;
+import java.util.List;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlSchemaType;
+import javax.xml.bind.annotation.XmlType;
+
+
+/**
+ * &lt;p&gt;Java-Klasse für anonymous complex type.
+ * 
+ * &lt;p&gt;Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
+ * 
+ * &lt;pre&gt;
+ * &amp;lt;complexType&amp;gt;
+ *   &amp;lt;complexContent&amp;gt;
+ *     &amp;lt;restriction base=&quot;{http://www.w3.org/2001/XMLSchema}anyType&quot;&amp;gt;
+ *       &amp;lt;sequence&amp;gt;
+ *         &amp;lt;element name=&quot;CvReferenceList&quot;&amp;gt;
+ *           &amp;lt;complexType&amp;gt;
+ *             &amp;lt;complexContent&amp;gt;
+ *               &amp;lt;restriction base=&quot;{http://www.w3.org/2001/XMLSchema}anyType&quot;&amp;gt;
+ *                 &amp;lt;sequence&amp;gt;
+ *                   &amp;lt;element ref=&quot;{}CvReference&quot; maxOccurs=&quot;unbounded&quot;/&amp;gt;
+ *                 &amp;lt;/sequence&amp;gt;
+ *                 &amp;lt;attribute name=&quot;cvSourceVersion&quot; type=&quot;{http://www.w3.org/2001/XMLSchema}anySimpleType&quot; /&amp;gt;
+ *               &amp;lt;/restriction&amp;gt;
+ *             &amp;lt;/complexContent&amp;gt;
+ *           &amp;lt;/complexType&amp;gt;
+ *         &amp;lt;/element&amp;gt;
+ *         &amp;lt;element name=&quot;CvMappingRuleList&quot;&amp;gt;
+ *           &amp;lt;complexType&amp;gt;
+ *             &amp;lt;complexContent&amp;gt;
+ *               &amp;lt;restriction base=&quot;{http://www.w3.org/2001/XMLSchema}anyType&quot;&amp;gt;
+ *                 &amp;lt;sequence&amp;gt;
+ *                   &amp;lt;element ref=&quot;{}CvMappingRule&quot; maxOccurs=&quot;unbounded&quot;/&amp;gt;
+ *                 &amp;lt;/sequence&amp;gt;
+ *               &amp;lt;/restriction&amp;gt;
+ *             &amp;lt;/complexContent&amp;gt;
+ *           &amp;lt;/complexType&amp;gt;
+ *         &amp;lt;/element&amp;gt;
+ *       &amp;lt;/sequence&amp;gt;
+ *       &amp;lt;attribute name=&quot;modelName&quot; use=&quot;required&quot; type=&quot;{http://www.w3.org/2001/XMLSchema}string&quot; /&amp;gt;
+ *       &amp;lt;attribute name=&quot;modelURI&quot; use=&quot;required&quot; type=&quot;{http://www.w3.org/2001/XMLSchema}anyURI&quot; /&amp;gt;
+ *       &amp;lt;attribute name=&quot;modelVersion&quot; use=&quot;required&quot; type=&quot;{http://www.w3.org/2001/XMLSchema}string&quot; /&amp;gt;
+ *     &amp;lt;/restriction&amp;gt;
+ *   &amp;lt;/complexContent&amp;gt;
+ * &amp;lt;/complexType&amp;gt;
+ * &lt;/pre&gt;
+ * 
+ * 
+ */
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = &quot;&quot;, propOrder = {
+    &quot;cvReferenceList&quot;,
+    &quot;cvMappingRuleList&quot;
+})
+@XmlRootElement(name = &quot;CvMapping&quot;)
+<span class="nc" id="L72">public class CvMapping {</span>
+
+    @XmlElement(name = &quot;CvReferenceList&quot;, required = true)
+    protected CvMapping.CvReferenceList cvReferenceList;
+    @XmlElement(name = &quot;CvMappingRuleList&quot;, required = true)
+    protected CvMapping.CvMappingRuleList cvMappingRuleList;
+    @XmlAttribute(name = &quot;modelName&quot;, required = true)
+    protected String modelName;
+    @XmlAttribute(name = &quot;modelURI&quot;, required = true)
+    @XmlSchemaType(name = &quot;anyURI&quot;)
+    protected String modelURI;
+    @XmlAttribute(name = &quot;modelVersion&quot;, required = true)
+    protected String modelVersion;
+
+    /**
+     * Ruft den Wert der cvReferenceList-Eigenschaft ab.
+     * 
+     * @return
+     *     possible object is
+     *     {@link CvMapping.CvReferenceList }
+     *     
+     */
+    public CvMapping.CvReferenceList getCvReferenceList() {
+<span class="nc" id="L95">        return cvReferenceList;</span>
+    }
+
+    /**
+     * Legt den Wert der cvReferenceList-Eigenschaft fest.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link CvMapping.CvReferenceList }
+     *     
+     */
+    public void setCvReferenceList(CvMapping.CvReferenceList value) {
+<span class="nc" id="L107">        this.cvReferenceList = value;</span>
+<span class="nc" id="L108">    }</span>
+
+    /**
+     * Ruft den Wert der cvMappingRuleList-Eigenschaft ab.
+     * 
+     * @return
+     *     possible object is
+     *     {@link CvMapping.CvMappingRuleList }
+     *     
+     */
+    public CvMapping.CvMappingRuleList getCvMappingRuleList() {
+<span class="nc" id="L119">        return cvMappingRuleList;</span>
+    }
+
+    /**
+     * Legt den Wert der cvMappingRuleList-Eigenschaft fest.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link CvMapping.CvMappingRuleList }
+     *     
+     */
+    public void setCvMappingRuleList(CvMapping.CvMappingRuleList value) {
+<span class="nc" id="L131">        this.cvMappingRuleList = value;</span>
+<span class="nc" id="L132">    }</span>
+
+    /**
+     * Ruft den Wert der modelName-Eigenschaft ab.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getModelName() {
+<span class="nc" id="L143">        return modelName;</span>
+    }
+
+    /**
+     * Legt den Wert der modelName-Eigenschaft fest.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setModelName(String value) {
+<span class="nc" id="L155">        this.modelName = value;</span>
+<span class="nc" id="L156">    }</span>
+
+    /**
+     * Ruft den Wert der modelURI-Eigenschaft ab.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getModelURI() {
+<span class="nc" id="L167">        return modelURI;</span>
+    }
+
+    /**
+     * Legt den Wert der modelURI-Eigenschaft fest.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setModelURI(String value) {
+<span class="nc" id="L179">        this.modelURI = value;</span>
+<span class="nc" id="L180">    }</span>
+
+    /**
+     * Ruft den Wert der modelVersion-Eigenschaft ab.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getModelVersion() {
+<span class="nc" id="L191">        return modelVersion;</span>
+    }
+
+    /**
+     * Legt den Wert der modelVersion-Eigenschaft fest.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setModelVersion(String value) {
+<span class="nc" id="L203">        this.modelVersion = value;</span>
+<span class="nc" id="L204">    }</span>
+
+
+    /**
+     * &lt;p&gt;Java-Klasse für anonymous complex type.
+     * 
+     * &lt;p&gt;Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
+     * 
+     * &lt;pre&gt;
+     * &amp;lt;complexType&amp;gt;
+     *   &amp;lt;complexContent&amp;gt;
+     *     &amp;lt;restriction base=&quot;{http://www.w3.org/2001/XMLSchema}anyType&quot;&amp;gt;
+     *       &amp;lt;sequence&amp;gt;
+     *         &amp;lt;element ref=&quot;{}CvMappingRule&quot; maxOccurs=&quot;unbounded&quot;/&amp;gt;
+     *       &amp;lt;/sequence&amp;gt;
+     *     &amp;lt;/restriction&amp;gt;
+     *   &amp;lt;/complexContent&amp;gt;
+     * &amp;lt;/complexType&amp;gt;
+     * &lt;/pre&gt;
+     * 
+     * 
+     */
+    @XmlAccessorType(XmlAccessType.FIELD)
+    @XmlType(name = &quot;&quot;, propOrder = {
+        &quot;cvMappingRule&quot;
+    })
+<span class="nc" id="L230">    public static class CvMappingRuleList {</span>
+
+        @XmlElement(name = &quot;CvMappingRule&quot;, required = true)
+        protected List&lt;CvMappingRule&gt; cvMappingRule;
+
+        /**
+         * Single mapping rule between a specific elements of the model and to controlled vocabularies listed on the CvTerm element.Gets the value of the cvMappingRule property.
+         * 
+         * &lt;p&gt;
+         * This accessor method returns a reference to the live list,
+         * not a snapshot. Therefore any modification you make to the
+         * returned list will be present inside the JAXB object.
+         * This is why there is not a &lt;CODE&gt;set&lt;/CODE&gt; method for the cvMappingRule property.
+         * 
+         * &lt;p&gt;
+         * For example, to add a new item, do as follows:
+         * &lt;pre&gt;
+         *    getCvMappingRule().add(newItem);
+         * &lt;/pre&gt;
+         * 
+         * 
+         * &lt;p&gt;
+         * Objects of the following type(s) are allowed in the list
+         * {@link CvMappingRule }
+         * 
+         * 
+         */
+        public List&lt;CvMappingRule&gt; getCvMappingRule() {
+<span class="nc bnc" id="L258" title="All 2 branches missed.">            if (cvMappingRule == null) {</span>
+<span class="nc" id="L259">                cvMappingRule = new ArrayList&lt;CvMappingRule&gt;();</span>
+            }
+<span class="nc" id="L261">            return this.cvMappingRule;</span>
+        }
+
+    }
+
+
+    /**
+     * &lt;p&gt;Java-Klasse für anonymous complex type.
+     * 
+     * &lt;p&gt;Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
+     * 
+     * &lt;pre&gt;
+     * &amp;lt;complexType&amp;gt;
+     *   &amp;lt;complexContent&amp;gt;
+     *     &amp;lt;restriction base=&quot;{http://www.w3.org/2001/XMLSchema}anyType&quot;&amp;gt;
+     *       &amp;lt;sequence&amp;gt;
+     *         &amp;lt;element ref=&quot;{}CvReference&quot; maxOccurs=&quot;unbounded&quot;/&amp;gt;
+     *       &amp;lt;/sequence&amp;gt;
+     *       &amp;lt;attribute name=&quot;cvSourceVersion&quot; type=&quot;{http://www.w3.org/2001/XMLSchema}anySimpleType&quot; /&amp;gt;
+     *     &amp;lt;/restriction&amp;gt;
+     *   &amp;lt;/complexContent&amp;gt;
+     * &amp;lt;/complexType&amp;gt;
+     * &lt;/pre&gt;
+     * 
+     * 
+     */
+    @XmlAccessorType(XmlAccessType.FIELD)
+    @XmlType(name = &quot;&quot;, propOrder = {
+        &quot;cvReference&quot;
+    })
+<span class="nc" id="L291">    public static class CvReferenceList {</span>
+
+        @XmlElement(name = &quot;CvReference&quot;, required = true)
+        protected List&lt;CvReference&gt; cvReference;
+        @XmlAttribute(name = &quot;cvSourceVersion&quot;)
+        @XmlSchemaType(name = &quot;anySimpleType&quot;)
+        protected String cvSourceVersion;
+
+        /**
+         * Description of a CV or ontology resource.Gets the value of the cvReference property.
+         * 
+         * &lt;p&gt;
+         * This accessor method returns a reference to the live list,
+         * not a snapshot. Therefore any modification you make to the
+         * returned list will be present inside the JAXB object.
+         * This is why there is not a &lt;CODE&gt;set&lt;/CODE&gt; method for the cvReference property.
+         * 
+         * &lt;p&gt;
+         * For example, to add a new item, do as follows:
+         * &lt;pre&gt;
+         *    getCvReference().add(newItem);
+         * &lt;/pre&gt;
+         * 
+         * 
+         * &lt;p&gt;
+         * Objects of the following type(s) are allowed in the list
+         * {@link CvReference }
+         * 
+         * 
+         */
+        public List&lt;CvReference&gt; getCvReference() {
+<span class="nc bnc" id="L322" title="All 2 branches missed.">            if (cvReference == null) {</span>
+<span class="nc" id="L323">                cvReference = new ArrayList&lt;CvReference&gt;();</span>
+            }
+<span class="nc" id="L325">            return this.cvReference;</span>
+        }
+
+        /**
+         * Ruft den Wert der cvSourceVersion-Eigenschaft ab.
+         * 
+         * @return
+         *     possible object is
+         *     {@link String }
+         *     
+         */
+        public String getCvSourceVersion() {
+<span class="nc" id="L337">            return cvSourceVersion;</span>
+        }
+
+        /**
+         * Legt den Wert der cvSourceVersion-Eigenschaft fest.
+         * 
+         * @param value
+         *     allowed object is
+         *     {@link String }
+         *     
+         */
+        public void setCvSourceVersion(String value) {
+<span class="nc" id="L349">            this.cvSourceVersion = value;</span>
+<span class="nc" id="L350">        }</span>
+
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

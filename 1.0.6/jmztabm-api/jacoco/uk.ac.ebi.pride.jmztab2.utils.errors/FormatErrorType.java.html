@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>FormatErrorType.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jmztabm-api</a> &gt; <a href="index.source.html" class="el_package">uk.ac.ebi.pride.jmztab2.utils.errors</a> &gt; <span class="el_source">FormatErrorType.java</span></div><h1>FormatErrorType.java</h1><pre class="source lang-java linenums">package uk.ac.ebi.pride.jmztab2.utils.errors;
+
+import java.util.Arrays;
+import static uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorType.Category.Format;
+
+/**
+ * Diagnose different types of format-related (reporting format problems).
+ * Reference: http://code.google.com/p/mztab/wiki/jmzTab_message for details.
+ *
+ * @author qingwei
+ * @since 29/01/13
+ *
+ */
+public final class FormatErrorType extends MZTabErrorType {
+
+    private FormatErrorType() {
+
+    }
+
+    /**
+     * Constant &lt;code&gt;LinePrefix&lt;/code&gt;
+     */
+<span class="fc" id="L23">    public static final MZTabErrorType LinePrefix = createError(Format, &quot;LinePrefix&quot;);</span>
+    /**
+     * Constant &lt;code&gt;CountMatch&lt;/code&gt;
+     */
+<span class="fc" id="L27">    public static final MZTabErrorType CountMatch = createError(Format, &quot;CountMatch&quot;);</span>
+
+    /**
+     * Constant &lt;code&gt;IndexedElement&lt;/code&gt;
+     */
+<span class="fc" id="L32">    public static final MZTabErrorType IndexedElement = createError(Format,</span>
+            &quot;IndexedElement&quot;);
+    /**
+     * Constant &lt;code&gt;AbundanceColumn&lt;/code&gt;
+     */
+<span class="fc" id="L37">    public static final MZTabErrorType AbundanceColumn = createError(Format,</span>
+            &quot;AbundanceColumn&quot;);
+    /**
+     * Constant &lt;code&gt;MsRunOptionalColumn&lt;/code&gt;
+     */
+<span class="fc" id="L42">    public static final MZTabErrorType MsRunOptionalColumn = createError(Format,</span>
+            &quot;MsRunOptionalColumn&quot;);
+    /**
+     * Constant &lt;code&gt;OptionalCVParamColumn&lt;/code&gt;
+     */
+<span class="fc" id="L47">    public static final MZTabErrorType OptionalCVParamColumn = createError(Format,</span>
+            &quot;OptionalCVParamColumn&quot;);
+    /**
+     * Constant &lt;code&gt;StableColumn&lt;/code&gt;
+     */
+<span class="fc" id="L52">    public static final MZTabErrorType StableColumn = createError(Format,</span>
+            &quot;StableColumn&quot;);
+
+    /**
+     * Constant &lt;code&gt;MTDLine&lt;/code&gt;
+     */
+<span class="fc" id="L58">    public static final MZTabErrorType MTDLine = createError(Format, &quot;MTDLine&quot;);</span>
+    /**
+     * Constant &lt;code&gt;MTDDefineLabel&lt;/code&gt;
+     */
+<span class="fc" id="L62">    public static final MZTabErrorType MTDDefineLabel = createError(Format,</span>
+            &quot;MTDDefineLabel&quot;);
+    /**
+     * Constant &lt;code&gt;MZTabMode&lt;/code&gt;
+     */
+<span class="fc" id="L67">    public static final MZTabErrorType MZTabMode = createError(Format, &quot;MZTabMode&quot;);</span>
+    /**
+     * Constant &lt;code&gt;MZTabType&lt;/code&gt;
+     */
+<span class="fc" id="L71">    public static final MZTabErrorType MZTabType = createError(Format, &quot;MZTabType&quot;);</span>
+    /**
+     * Constant &lt;code&gt;MZTabType&lt;/code&gt;
+     */
+<span class="fc" id="L75">    public static final MZTabErrorType MZTabId = createError(Format, &quot;MZTabId&quot;);</span>
+    /**
+     * Constant &lt;code&gt;MZTabVersion&lt;/code&gt;
+     */
+<span class="fc" id="L79">    public static final MZTabErrorType MZTabVersion = createError(Format,</span>
+            &quot;MZTabVersion&quot;);
+    /**
+     * Constant &lt;code&gt;Param&lt;/code&gt;
+     */
+<span class="fc" id="L84">    public static final MZTabErrorType Param = createError(Format, &quot;Param&quot;);</span>
+    /**
+     * Constant &lt;code&gt;ParamList&lt;/code&gt;
+     */
+<span class="fc" id="L88">    public static final MZTabErrorType ParamList = createError(Format, &quot;ParamList&quot;);</span>
+    /**
+     * Constant &lt;code&gt;Publication&lt;/code&gt;
+     */
+<span class="fc" id="L92">    public static final MZTabErrorType Publication = createError(Format, &quot;Publication&quot;);</span>
+    /**
+     * Constant &lt;code&gt;URI&lt;/code&gt;
+     */
+<span class="fc" id="L96">    public static final MZTabErrorType URI = createError(Format, &quot;URI&quot;);</span>
+    /**
+     * Constant &lt;code&gt;URL&lt;/code&gt;
+     */
+<span class="fc" id="L100">    public static final MZTabErrorType URL = createError(Format, &quot;URL&quot;);</span>
+    /**
+     * Constant &lt;code&gt;Email&lt;/code&gt;
+     */
+<span class="fc" id="L104">    public static final MZTabErrorType Email = createError(Format, &quot;Email&quot;);</span>
+
+    /**
+     * Constant &lt;code&gt;Integer&lt;/code&gt;
+     */
+<span class="fc" id="L109">    public static final MZTabErrorType Integer = createError(Format, &quot;Integer&quot;);</span>
+    /**
+     * Constant &lt;code&gt;Double&lt;/code&gt;
+     */
+<span class="fc" id="L113">    public static final MZTabErrorType Double = createError(Format, &quot;Double&quot;);</span>
+    /**
+     * Constant &lt;code&gt;Reliability&lt;/code&gt;
+     */
+<span class="fc" id="L117">    public static final MZTabErrorType Reliability = createError(Format, &quot;Reliability&quot;);</span>
+    /**
+     * Constant &lt;code&gt;StringList&lt;/code&gt;
+     */
+<span class="fc" id="L121">    public static final MZTabErrorType StringList = createError(Format, &quot;StringList&quot;);</span>
+    /**
+     * Constant &lt;code&gt;DoubleList&lt;/code&gt;
+     */
+<span class="fc" id="L125">    public static final MZTabErrorType DoubleList = createError(Format, &quot;DoubleList&quot;);</span>
+    /**
+     * Constant &lt;code&gt;ModificationList&lt;/code&gt;
+     */
+<span class="fc" id="L129">    public static final MZTabErrorType ModificationList = createError(Format,</span>
+            &quot;ModificationList&quot;);
+    /**
+     * Constant &lt;code&gt;GOTermList&lt;/code&gt;
+     */
+<span class="fc" id="L134">    public static final MZTabErrorType GOTermList = createError(Format, &quot;GOTermList&quot;);</span>
+    /**
+     * Constant &lt;code&gt;MZBoolean&lt;/code&gt;
+     */
+<span class="fc" id="L138">    public static final MZTabErrorType MZBoolean = createError(Format, &quot;MZBoolean&quot;);</span>
+    /**
+     * Constant &lt;code&gt;SpectraRef&lt;/code&gt;
+     */
+<span class="fc" id="L142">    public static final MZTabErrorType SpectraRef = createError(Format, &quot;SpectraRef&quot;);</span>
+    /**
+     * Constant &lt;code&gt;CHEMMODSAccession&lt;/code&gt;
+     */
+<span class="fc" id="L146">    public static final MZTabErrorType CHEMMODSAccession = createError(Format,</span>
+            &quot;CHEMMODSAccession&quot;);
+    /**
+     * Constant &lt;code&gt;SearchEngineScore&lt;/code&gt;
+     */
+<span class="fc" id="L151">    public static final MZTabErrorType SearchEngineScore = createWarn(Format,</span>
+            &quot;SearchEngineScore&quot;);
+    /**
+     * Constant &lt;code&gt;Sequence&lt;/code&gt;
+     */
+<span class="fc" id="L156">    public static final MZTabErrorType Sequence = createWarn(Format,</span>
+            &quot;SearchEngineScore&quot;);
+
+    /**
+     * Constant &lt;code&gt;ColUnit&lt;/code&gt;
+     */
+<span class="fc" id="L162">    public static final MZTabErrorType ColUnit = createError(Format, &quot;ColUnit&quot;);</span>
+
+    /**
+     * Constant &lt;code&gt;IntegerList&lt;/code&gt;
+     */
+<span class="fc" id="L167">    public static final MZTabErrorType IntegerList = createError(Format, &quot;IntegerList&quot;);</span>
+
+    /**
+     * Constant &lt;code&gt;RegexMismatch&lt;/code&gt;
+     */
+<span class="fc" id="L172">    public static final MZTabErrorType RegexMismatch = createError(Format, &quot;RegexMismatch&quot;);</span>
+
+    /**
+     * Constant &lt;code&gt;ParamAccessionNotNamespaced&lt;/code&gt;
+     */
+<span class="fc" id="L177">    public static final MZTabErrorType ParamAccessionNotNamespaced = createWarn(Format, &quot;ParamAccessionNotNamespaced&quot;);</span>
+
+    /**
+     * Constant &lt;code&gt;InvalidColunitFormat&lt;/code&gt;
+     */
+<span class="fc" id="L182">    public static final MZTabErrorType InvalidColunitFormat = createError(Format, &quot;InvalidColunitFormat&quot;);</span>
+
+<span class="fc" id="L184">    private static final MZTabErrorType[] VALUES = {</span>
+        LinePrefix, CountMatch, IndexedElement, AbundanceColumn, MsRunOptionalColumn, OptionalCVParamColumn, StableColumn, MTDLine, MTDDefineLabel, MZTabMode,
+        MZTabType, MZTabId, MZTabVersion, Param, ParamList, Publication, URI, URL, Email, Integer, Double, Reliability, StringList, DoubleList, ModificationList, GOTermList,
+        MZBoolean, SpectraRef, CHEMMODSAccession, SearchEngineScore, Sequence, ColUnit, IntegerList, RegexMismatch, ParamAccessionNotNamespaced, InvalidColunitFormat
+    };
+
+    public static MZTabErrorType[] getValues() {
+<span class="fc" id="L191">        return Arrays.copyOf(VALUES, VALUES.length);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

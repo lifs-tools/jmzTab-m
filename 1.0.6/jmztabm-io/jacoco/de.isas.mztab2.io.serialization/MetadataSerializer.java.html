@@ -1,0 +1,427 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MetadataSerializer.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jmztabm-io</a> &gt; <a href="index.source.html" class="el_package">de.isas.mztab2.io.serialization</a> &gt; <span class="el_source">MetadataSerializer.java</span></div><h1>MetadataSerializer.java</h1><pre class="source lang-java linenums">/* 
+ * Copyright 2018 Leibniz-Institut für Analytische Wissenschaften – ISAS – e.V..
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package de.isas.mztab2.io.serialization;
+
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+import static de.isas.mztab2.io.serialization.Serializers.addIndexedLine;
+import static de.isas.mztab2.io.serialization.Serializers.addLine;
+import static de.isas.mztab2.io.serialization.Serializers.addLineWithMetadataProperty;
+import static de.isas.mztab2.io.serialization.Serializers.addLineWithParameters;
+import de.isas.mztab2.model.Assay;
+import de.isas.mztab2.model.CV;
+import de.isas.mztab2.model.Contact;
+import de.isas.mztab2.model.Database;
+import de.isas.mztab2.model.IndexedElement;
+import de.isas.mztab2.model.Instrument;
+import de.isas.mztab2.model.Metadata;
+import de.isas.mztab2.model.MsRun;
+import de.isas.mztab2.model.Parameter;
+import de.isas.mztab2.model.Publication;
+import de.isas.mztab2.model.Sample;
+import de.isas.mztab2.model.SampleProcessing;
+import de.isas.mztab2.model.Software;
+import de.isas.mztab2.model.StudyVariable;
+import de.isas.mztab2.model.Uri;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import lombok.extern.slf4j.Slf4j;
+import uk.ac.ebi.pride.jmztab2.model.MZTabConstants;
+import uk.ac.ebi.pride.jmztab2.model.MetadataElement;
+import uk.ac.ebi.pride.jmztab2.model.MetadataProperty;
+import uk.ac.ebi.pride.jmztab2.model.Section;
+
+/**
+ * &lt;p&gt;
+ * MetadataSerializer class. Implements a custom, partially delegating serializer for {@link de.isas.mztab2.model.Metadata} objects 
+ * based on Jackson CSV.&lt;/p&gt;
+ *
+ * @author nilshoffmann
+ *
+ */
+<span class="fc" id="L58">@Slf4j</span>
+public class MetadataSerializer extends StdSerializer&lt;Metadata&gt; {
+
+    /**
+     * &lt;p&gt;
+     * Constructor for MetadataSerializer.&lt;/p&gt;
+     */
+    public MetadataSerializer() {
+<span class="fc" id="L66">        this(null);</span>
+<span class="fc" id="L67">    }</span>
+
+    /**
+     * &lt;p&gt;
+     * Constructor for MetadataSerializer.&lt;/p&gt;
+     *
+     * @param t a {@link java.lang.Class} object.
+     */
+    public MetadataSerializer(Class&lt;Metadata&gt; t) {
+<span class="fc" id="L76">        super(t);</span>
+<span class="fc" id="L77">    }</span>
+
+    /**
+     * &lt;p&gt;
+     * Serialize a list of Parameters for the provided metadata element.&lt;/p&gt;
+     *
+     * @param list a {@link java.util.List} object.
+     * @param mtdElement a
+     * {@link uk.ac.ebi.pride.jmztab2.model.MetadataElement} object.
+     * @param jg a {@link com.fasterxml.jackson.core.JsonGenerator} object.
+     * @param sp a {@link com.fasterxml.jackson.databind.SerializerProvider}
+     * object.
+     * @param comparator a {@link java.util.Comparator} object.
+     * @param &lt;T&gt; a T object.
+     */
+    public static &lt;T extends Object&gt; void serializeListWithMetadataElement(
+        List&lt;T&gt; list, MetadataElement mtdElement, JsonGenerator jg,
+        SerializerProvider sp, Comparator&lt;? super T&gt; comparator) {
+<span class="fc" id="L95">        list.stream().</span>
+<span class="fc" id="L96">            sorted(comparator).</span>
+<span class="fc" id="L97">            forEach((object) -&gt;</span>
+            {
+<span class="pc bpc" id="L99" title="1 of 2 branches missed.">                if (object != null) {</span>
+<span class="fc" id="L100">                    addIndexedLine(jg, sp, Section.Metadata.getPrefix(),</span>
+<span class="fc" id="L101">                        mtdElement.getName() + &quot;[&quot; + IndexedElement.of(object).getId() + &quot;]&quot;,</span>
+                        object);
+                } else {
+<span class="nc" id="L104">                    throw new NullPointerException(</span>
+                        &quot;Object in list for metadata element &quot; + mtdElement.
+<span class="nc" id="L106">                            getName() + &quot; must not be null!&quot;);</span>
+                }
+<span class="fc" id="L108">            });</span>
+<span class="fc" id="L109">    }</span>
+
+    /**
+     * &lt;p&gt;
+     * serializeList.&lt;/p&gt;
+     *
+     * @param list a {@link java.util.List} object.
+     * @param jg a {@link com.fasterxml.jackson.core.JsonGenerator} object.
+     * @param sp a {@link com.fasterxml.jackson.databind.SerializerProvider}
+     * object.
+     * @param comparator a {@link java.util.Comparator} object.
+     * @param &lt;T&gt; a T object.
+     */
+    public static &lt;T&gt; void serializeList(List&lt;T&gt; list, JsonGenerator jg,
+        SerializerProvider sp, Comparator&lt;? super T&gt; comparator) {
+<span class="fc" id="L124">        list.stream().</span>
+<span class="fc" id="L125">            sorted(comparator).</span>
+<span class="fc" id="L126">            forEach((object) -&gt;</span>
+            {
+<span class="fc" id="L128">                serializeObject(object, jg, sp);</span>
+<span class="fc" id="L129">            });</span>
+<span class="fc" id="L130">    }</span>
+
+    /**
+     * &lt;p&gt;
+     * serializeObject.&lt;/p&gt;
+     *
+     * @param object a {@link java.lang.Object} object.
+     * @param jg a {@link com.fasterxml.jackson.core.JsonGenerator} object.
+     * @param sp a {@link com.fasterxml.jackson.databind.SerializerProvider}
+     * object.
+     */
+    public static void serializeObject(Object object, JsonGenerator jg,
+        SerializerProvider sp) {
+        try {
+            
+<span class="fc" id="L145">                log.debug(</span>
+                    &quot;Serializing element &quot; + Serializers.
+<span class="fc" id="L147">                        getElementName(object).</span>
+<span class="fc" id="L148">                        orElse(&quot;undefined&quot;));</span>
+<span class="fc" id="L149">            sp.findValueSerializer(object.getClass()).</span>
+<span class="fc" id="L150">                serialize(object, jg, sp);</span>
+<span class="nc" id="L151">        } catch (IOException ex) {</span>
+<span class="nc" id="L152">                log.error(&quot;Caught IO exception while trying to serialize &quot;+object, ex);</span>
+<span class="fc" id="L153">        }</span>
+<span class="fc" id="L154">    }</span>
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void serialize(Metadata t, JsonGenerator jg, SerializerProvider sp) throws IOException {
+<span class="pc bpc" id="L161" title="1 of 2 branches missed.">        if (t != null) {</span>
+<span class="fc" id="L162">            String prefix = t.getPrefix().</span>
+<span class="fc" id="L163">                name();</span>
+<span class="pc bpc" id="L164" title="1 of 4 branches missed.">            if(t.getMzTabVersion()==null || t.getMzTabVersion().isEmpty()) {</span>
+<span class="fc" id="L165">                t.setMzTabVersion(MZTabConstants.VERSION_MZTAB_M);</span>
+            }
+<span class="fc" id="L167">            addLine(jg, prefix, Metadata.Properties.mzTabVersion.getPropertyName(), t.getMzTabVersion());</span>
+<span class="fc" id="L168">            addLine(jg, prefix, Metadata.Properties.mzTabID.getPropertyName(), t.</span>
+<span class="fc" id="L169">                getMzTabID());</span>
+<span class="fc" id="L170">            addLine(jg, prefix, Metadata.Properties.title.getPropertyName(), t.</span>
+<span class="fc" id="L171">                getTitle());</span>
+<span class="fc" id="L172">            addLine(jg, prefix, Metadata.Properties.description.getPropertyName(), t.</span>
+<span class="fc" id="L173">                getDescription());</span>
+            //contacts
+<span class="fc bfc" id="L175" title="All 2 branches covered.">            if (t.getContact() != null) {</span>
+<span class="fc" id="L176">                serializeList(t.getContact(), jg, sp, Comparator.comparing(</span>
+                    Contact::getId,
+<span class="fc" id="L178">                    Comparator.nullsFirst(Comparator.naturalOrder())</span>
+                ));
+            } else {
+                
+<span class="fc" id="L182">                    log.debug( &quot;Contacts are null!&quot;);</span>
+            }
+            //publications
+<span class="fc bfc" id="L185" title="All 2 branches covered.">            if (t.getPublication() != null) {</span>
+<span class="fc" id="L186">                serializeList(t.getPublication(), jg, sp, Comparator.comparing(</span>
+                    Publication::getId,
+<span class="fc" id="L188">                    Comparator.nullsFirst(Comparator.naturalOrder())</span>
+                ));
+            } else {
+                
+<span class="fc" id="L192">                    log.debug( &quot;Publications are null!&quot;);</span>
+            }
+            //file uri
+<span class="fc bfc" id="L195" title="All 2 branches covered.">            if (t.getUri() != null) {</span>
+<span class="fc" id="L196">                serializeListWithMetadataElement(t.getUri(),</span>
+<span class="fc" id="L197">                    MetadataElement.URI, jg, sp, Comparator.comparing(</span>
+                        Uri::getId,
+<span class="fc" id="L199">                        Comparator.nullsFirst(Comparator.naturalOrder())));</span>
+            } else {
+                
+<span class="fc" id="L202">                    log.debug( &quot;URI is null!&quot;);</span>
+            }
+            //external study uri
+<span class="fc bfc" id="L205" title="All 2 branches covered.">            if (t.getExternalStudyUri() != null) {</span>
+<span class="fc" id="L206">                serializeListWithMetadataElement(t.getExternalStudyUri(),</span>
+                    MetadataElement.EXTERNAL_STUDY_URI, jg, sp, Comparator.
+<span class="fc" id="L208">                        comparing(</span>
+                            Uri::getId,
+<span class="fc" id="L210">                            Comparator.nullsFirst(Comparator.naturalOrder())));</span>
+            } else {
+                
+<span class="fc" id="L213">                    log.debug( &quot;External Study URI is null!&quot;);</span>
+            }
+            //instruments
+<span class="fc bfc" id="L216" title="All 2 branches covered.">            if (t.getInstrument() != null) {</span>
+<span class="fc" id="L217">                serializeList(</span>
+<span class="fc" id="L218">                    t.getInstrument(), jg, sp, Comparator.comparing(</span>
+                    Instrument::getId,
+<span class="fc" id="L220">                    Comparator.nullsFirst(Comparator.naturalOrder())</span>
+                ));
+            } else {
+                
+<span class="fc" id="L224">                    log.debug( &quot;Instruments are null!&quot;);</span>
+            }
+            //quantification method
+<span class="fc bfc" id="L227" title="All 2 branches covered.">            if (t.getQuantificationMethod() != null) {</span>
+<span class="fc" id="L228">                addLineWithParameters(jg, prefix, &quot;quantification_method&quot;,</span>
+<span class="fc" id="L229">                    Arrays.asList(t.getQuantificationMethod()));</span>
+            } else {
+                
+<span class="fc" id="L232">                    log.debug( &quot;Quantification method is null!&quot;);</span>
+            }
+            //sample
+<span class="fc bfc" id="L235" title="All 2 branches covered.">            if (t.getSample() != null) {</span>
+<span class="fc" id="L236">                serializeList(</span>
+<span class="fc" id="L237">                    t.getSample(), jg, sp, Comparator.comparing(Sample::getId,</span>
+<span class="fc" id="L238">                    Comparator.nullsFirst(Comparator.naturalOrder())</span>
+                ));
+            } else {
+                
+<span class="fc" id="L242">                    log.debug( &quot;Samples are null!&quot;);</span>
+            }
+            //sample processing
+<span class="fc bfc" id="L245" title="All 2 branches covered.">            if (t.getSampleProcessing() != null) {</span>
+<span class="fc" id="L246">                serializeList(</span>
+<span class="fc" id="L247">                    t.getSampleProcessing(), jg, sp, Comparator.comparing(</span>
+                    SampleProcessing::getId,
+<span class="fc" id="L249">                    Comparator.nullsFirst(Comparator.naturalOrder())</span>
+                ));
+            } else {
+                
+<span class="fc" id="L253">                    log.debug( &quot;Sample processing is null!&quot;);</span>
+            }
+            //software
+<span class="pc bpc" id="L256" title="1 of 2 branches missed.">            if (t.getSoftware() != null) {</span>
+<span class="fc" id="L257">                serializeList(</span>
+<span class="fc" id="L258">                    t.getSoftware(), jg, sp, Comparator.comparing(</span>
+                    Software::getId,
+<span class="fc" id="L260">                    Comparator.nullsFirst(Comparator.naturalOrder())</span>
+                ));
+            } else {
+                
+<span class="nc" id="L264">                    log.debug( &quot;Software is null!&quot;);</span>
+            }
+            //derivatization agent
+<span class="fc bfc" id="L267" title="All 2 branches covered.">            if (t.getDerivatizationAgent() != null) {</span>
+<span class="fc" id="L268">                serializeListWithMetadataElement(t.getDerivatizationAgent(),</span>
+                    MetadataElement.DERIVATIZATION_AGENT, jg, sp, Comparator.
+<span class="fc" id="L270">                        comparing(</span>
+                            Parameter::getId,
+<span class="fc" id="L272">                            Comparator.nullsFirst(Comparator.naturalOrder())</span>
+                        ));
+            } else {
+                
+<span class="fc" id="L276">                    log.debug( &quot;Derivatization agent is null!&quot;);</span>
+            }
+            //ms run
+<span class="pc bpc" id="L279" title="1 of 2 branches missed.">            if (t.getMsRun() != null) {</span>
+<span class="fc" id="L280">                serializeList(t.getMsRun(), jg, sp, Comparator.comparing(</span>
+                    MsRun::getId,
+<span class="fc" id="L282">                    Comparator.nullsFirst(Comparator.naturalOrder())</span>
+                ));
+            } else {
+                
+<span class="nc" id="L286">                    log.debug( &quot;MS runs are null!&quot;);</span>
+            }
+            //assay
+<span class="pc bpc" id="L289" title="1 of 2 branches missed.">            if (t.getAssay() != null) {</span>
+<span class="fc" id="L290">                serializeList(t.getAssay(), jg, sp, Comparator.comparing(</span>
+                    Assay::getId,
+<span class="fc" id="L292">                    Comparator.nullsFirst(Comparator.naturalOrder())</span>
+                ));
+            } else {
+                
+<span class="nc" id="L296">                    log.debug( &quot;Assays are null!&quot;);</span>
+            }
+            //study variable
+<span class="pc bpc" id="L299" title="1 of 2 branches missed.">            if (t.getStudyVariable() != null) {</span>
+<span class="fc" id="L300">                serializeList(</span>
+<span class="fc" id="L301">                    t.getStudyVariable(), jg, sp, Comparator.comparing(</span>
+                    StudyVariable::getId,
+<span class="fc" id="L303">                    Comparator.nullsFirst(Comparator.naturalOrder())</span>
+                ));
+            } else {
+                
+<span class="nc" id="L307">                    log.debug( &quot;Study Variable is null!&quot;);</span>
+            }
+            //custom
+<span class="fc bfc" id="L310" title="All 2 branches covered.">            if (t.getCustom() != null) {</span>
+<span class="fc" id="L311">                serializeListWithMetadataElement(t.getCustom(),</span>
+<span class="fc" id="L312">                    MetadataElement.CUSTOM, jg, sp, Comparator.comparing(</span>
+<span class="fc" id="L313">                        Parameter::getId, Comparator.nullsFirst(Comparator.</span>
+<span class="fc" id="L314">                            naturalOrder())));</span>
+            } else {
+                
+<span class="fc" id="L317">                    log.debug( &quot;Custom is null!&quot;);</span>
+            }
+            //cv
+<span class="pc bpc" id="L320" title="1 of 2 branches missed.">            if (t.getCv() != null) {</span>
+<span class="fc" id="L321">                serializeList(t.getCv(), jg, sp, Comparator.comparing(</span>
+                    CV::getId,
+<span class="fc" id="L323">                    Comparator.nullsFirst(Comparator.naturalOrder())</span>
+                ));
+            } else {
+                
+<span class="nc" id="L327">                    log.debug( &quot;CVs are null!&quot;);</span>
+            }
+            //small molecule quantification unit
+<span class="fc bfc" id="L330" title="All 2 branches covered.">            if (t.getSmallMoleculeQuantificationUnit() != null) {</span>
+<span class="fc" id="L331">                addLineWithMetadataProperty(jg, prefix,</span>
+                    MetadataProperty.SMALL_MOLECULE_QUANTIFICATION_UNIT,
+                    MetadataElement.SMALL_MOLECULE, t.
+<span class="fc" id="L334">                        getSmallMoleculeQuantificationUnit());</span>
+            } else {
+                
+<span class="fc" id="L337">                    log.debug(</span>
+                        &quot;Small molecule quantification unit is null!&quot;);
+            }
+            //small molecule feature quantification unit
+<span class="fc bfc" id="L341" title="All 2 branches covered.">            if (t.getSmallMoleculeFeatureQuantificationUnit() != null) {</span>
+<span class="fc" id="L342">                addLineWithMetadataProperty(jg, prefix,</span>
+                    MetadataProperty.SMALL_MOLECULE_FEATURE_QUANTIFICATION_UNIT,
+                    MetadataElement.SMALL_MOLECULE_FEATURE, t.
+<span class="fc" id="L345">                        getSmallMoleculeFeatureQuantificationUnit());</span>
+            } else {
+                
+<span class="fc" id="L348">                    log.debug(</span>
+                        &quot;Small molecule feature quantification unit is null!&quot;);
+            }
+            //small molecule identification reliability
+<span class="fc bfc" id="L352" title="All 2 branches covered.">            if (t.getSmallMoleculeIdentificationReliability() != null) {</span>
+<span class="fc" id="L353">                addLineWithMetadataProperty(jg, prefix,</span>
+                    MetadataProperty.SMALL_MOLECULE_IDENTIFICATION_RELIABILITY,
+                    MetadataElement.SMALL_MOLECULE, t.
+<span class="fc" id="L356">                        getSmallMoleculeIdentificationReliability());</span>
+            } else {
+                
+<span class="fc" id="L359">                    log.debug(</span>
+                        &quot;Small molecule identification reliability is null!&quot;);
+            }
+            //database
+<span class="pc bpc" id="L363" title="1 of 2 branches missed.">            if (t.getDatabase() != null) {</span>
+<span class="fc" id="L364">                serializeList(t.getDatabase(), jg, sp, Comparator.comparing(</span>
+                    Database::getId,
+<span class="fc" id="L366">                    Comparator.nullsFirst(Comparator.naturalOrder())</span>
+                ));
+            } else {
+                
+<span class="nc" id="L370">                    log.debug( &quot;Databases are null!&quot;);</span>
+            }
+<span class="pc bpc" id="L372" title="1 of 2 branches missed.">            if (t.getIdConfidenceMeasure() != null) {</span>
+<span class="fc" id="L373">                serializeListWithMetadataElement(t.getIdConfidenceMeasure(),</span>
+                    MetadataElement.ID_CONFIDENCE_MEASURE, jg, sp, Comparator.
+<span class="fc" id="L375">                        comparing(</span>
+<span class="fc" id="L376">                            Parameter::getId, Comparator.nullsFirst(Comparator.</span>
+<span class="fc" id="L377">                                naturalOrder())));</span>
+            } else {
+                
+<span class="nc" id="L380">                    log.debug( &quot;Id confidence measure is null!&quot;);</span>
+            }
+<span class="fc bfc" id="L382" title="All 2 branches covered.">            if (t.getColunitSmallMolecule() != null) {</span>
+<span class="fc" id="L383">                t.getColunitSmallMolecule().</span>
+<span class="fc" id="L384">                    forEach((colUnit) -&gt;</span>
+                    {
+<span class="fc" id="L386">                        addLine(jg, prefix,</span>
+                            MetadataElement.COLUNIT_SMALL_MOLECULE, colUnit.
+<span class="fc" id="L388">                                getColumnName() + &quot;=&quot; + new ParameterConverter().</span>
+<span class="fc" id="L389">                                convert(colUnit.getParam()));</span>
+<span class="fc" id="L390">                    });</span>
+            } else {
+                
+<span class="fc" id="L393">                    log.debug( &quot;Colunit small molecule is null!&quot;);</span>
+            }
+<span class="pc bpc" id="L395" title="1 of 2 branches missed.">            if (t.getColunitSmallMoleculeFeature() != null) {</span>
+<span class="nc" id="L396">                t.getColunitSmallMoleculeFeature().</span>
+<span class="nc" id="L397">                    forEach((colUnit) -&gt;</span>
+                    {
+<span class="nc" id="L399">                        addLine(jg, prefix,</span>
+                            MetadataElement.COLUNIT_SMALL_MOLECULE_FEATURE,
+                            colUnit.
+<span class="nc" id="L402">                                getColumnName() + &quot;=&quot; + new ParameterConverter().</span>
+<span class="nc" id="L403">                                convert(colUnit.getParam()));</span>
+<span class="nc" id="L404">                    });</span>
+            } else {
+                
+<span class="fc" id="L407">                    log.debug( &quot;Colunit small molecule feature is null!&quot;);</span>
+            }
+<span class="fc bfc" id="L409" title="All 2 branches covered.">            if (t.getColunitSmallMoleculeEvidence() != null) {</span>
+<span class="fc" id="L410">                t.getColunitSmallMoleculeEvidence().</span>
+<span class="fc" id="L411">                    forEach((colUnit) -&gt;</span>
+                    {
+<span class="fc" id="L413">                        addLine(jg, prefix,</span>
+                            MetadataElement.COLUNIT_SMALL_MOLECULE_EVIDENCE,
+                            colUnit.
+<span class="fc" id="L416">                                getColumnName() + &quot;=&quot; + new ParameterConverter().</span>
+<span class="fc" id="L417">                                convert(colUnit.getParam()));</span>
+<span class="fc" id="L418">                    });</span>
+            } else {
+                
+<span class="fc" id="L421">                    log.debug( &quot;Colunit small molecule evidence is null!&quot;);</span>
+            }
+        }
+<span class="fc" id="L424">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

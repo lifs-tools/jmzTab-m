@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MetadataElement.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jmztabm-io</a> &gt; <a href="index.source.html" class="el_package">uk.ac.ebi.pride.jmztab2.model</a> &gt; <span class="el_source">MetadataElement.java</span></div><h1>MetadataElement.java</h1><pre class="source lang-java linenums">/* 
+ * Copyright 2018 Leibniz-Institut für Analytische Wissenschaften – ISAS – e.V..
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package uk.ac.ebi.pride.jmztab2.model;
+
+/**
+ * Define all elements used in metadata.
+ *
+ * @author qingwei
+ * @author nilshoffmann
+ * @since 23/05/13
+ * 
+ */
+<span class="fc" id="L26">public enum MetadataElement {</span>
+<span class="fc" id="L27">    MZTAB                             (&quot;mzTab&quot;),</span>
+<span class="fc" id="L28">    TITLE                             (&quot;title&quot;),</span>
+<span class="fc" id="L29">    DESCRIPTION                       (&quot;description&quot;),</span>
+<span class="fc" id="L30">    SAMPLE_PROCESSING                 (&quot;sample_processing&quot;),</span>
+<span class="fc" id="L31">    INSTRUMENT                        (&quot;instrument&quot;),</span>
+<span class="fc" id="L32">    SOFTWARE                          (&quot;software&quot;),</span>
+<span class="fc" id="L33">    PUBLICATION                       (&quot;publication&quot;),</span>
+<span class="fc" id="L34">    CONTACT                           (&quot;contact&quot;),</span>
+<span class="fc" id="L35">    URI                               (&quot;uri&quot;),</span>
+<span class="fc" id="L36">    EXTERNAL_STUDY_URI                (&quot;external_study_uri&quot;),</span>
+<span class="fc" id="L37">    DERIVATIZATION_AGENT              (&quot;derivatization_agent&quot;),</span>
+<span class="fc" id="L38">    QUANTIFICATION_METHOD             (&quot;quantification_method&quot;),</span>
+<span class="fc" id="L39">    SMALL_MOLECULE                    (&quot;small_molecule&quot;),</span>
+<span class="fc" id="L40">    SMALL_MOLECULE_FEATURE            (&quot;small_molecule_feature&quot;),</span>
+<span class="fc" id="L41">    MS_RUN                            (&quot;ms_run&quot;),</span>
+<span class="fc" id="L42">    CUSTOM                            (&quot;custom&quot;),</span>
+<span class="fc" id="L43">    SAMPLE                            (&quot;sample&quot;),</span>
+<span class="fc" id="L44">    ASSAY                             (&quot;assay&quot;),</span>
+<span class="fc" id="L45">    STUDY_VARIABLE                    (&quot;study_variable&quot;),</span>
+<span class="fc" id="L46">    CV                                (&quot;cv&quot;),</span>
+<span class="fc" id="L47">    COLUNIT                           (&quot;colunit&quot;),</span>
+<span class="fc" id="L48">    COLUNIT_SMALL_MOLECULE            (&quot;colunit-small_molecule&quot;),</span>
+<span class="fc" id="L49">    COLUNIT_SMALL_MOLECULE_FEATURE    (&quot;colunit-small_molecule_feature&quot;),</span>
+<span class="fc" id="L50">    COLUNIT_SMALL_MOLECULE_EVIDENCE   (&quot;colunit-small_molecule_evidence&quot;),</span>
+<span class="fc" id="L51">    ID_CONFIDENCE_MEASURE             (&quot;id_confidence_measure&quot;),</span>
+<span class="fc" id="L52">    DATABASE                          (&quot;database&quot;),</span>
+<span class="fc" id="L53">    SMALLMOLECULE_QUANTIFICATION_UNIT (&quot;small_molecule-quantification_unit&quot;),</span>
+<span class="fc" id="L54">    SMALLMOLECULE_FEATURE_QUANTIFICATION_UNIT (&quot;small_molecule_feature-quantification_unit&quot;),</span>
+<span class="fc" id="L55">    SMALLMOLECULE_IDENTIFICATION_RELIABILITY (&quot;small_molecule-identification_reliability&quot;);</span>
+
+    private final String name;
+
+<span class="fc" id="L59">    MetadataElement(String name) {</span>
+<span class="fc" id="L60">        this.name = name;</span>
+<span class="fc" id="L61">    }</span>
+
+    /**
+     * &lt;p&gt;Getter for the field &lt;code&gt;name&lt;/code&gt;.&lt;/p&gt;
+     *
+     * @return element name.
+     */
+    public String getName() {
+<span class="fc" id="L69">        return name;</span>
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public String toString() {
+<span class="fc" id="L75">        return name;</span>
+    }
+
+    /**
+     * Find element by name with case-insensitive match. If not find, return null.
+     *
+     * @param name a {@link java.lang.String} object.
+     * @return a {@link uk.ac.ebi.pride.jmztab2.model.MetadataElement} object.
+     */
+    public static MetadataElement findElement(String name) {
+<span class="pc bpc" id="L85" title="1 of 2 branches missed.">        if (name == null) {</span>
+<span class="nc" id="L86">            return null;</span>
+        }
+
+        MetadataElement element;
+        try {
+<span class="fc" id="L91">            element = MetadataElement.valueOf(name.trim().toUpperCase());</span>
+<span class="nc" id="L92">        } catch (IllegalArgumentException e) {</span>
+<span class="nc" id="L93">            element = null;</span>
+<span class="fc" id="L94">        }</span>
+
+<span class="fc" id="L96">        return element;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

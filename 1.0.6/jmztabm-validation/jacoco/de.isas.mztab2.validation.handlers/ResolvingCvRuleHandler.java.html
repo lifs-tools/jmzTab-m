@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ResolvingCvRuleHandler.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jmztabm-validation</a> &gt; <a href="index.source.html" class="el_package">de.isas.mztab2.validation.handlers</a> &gt; <span class="el_source">ResolvingCvRuleHandler.java</span></div><h1>ResolvingCvRuleHandler.java</h1><pre class="source lang-java linenums">/*
+ * Copyright 2018 Leibniz-Institut für Analytische Wissenschaften – ISAS – e.V..
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package de.isas.mztab2.validation.handlers;
+
+import de.isas.mztab2.cvmapping.CvMappingUtils;
+import de.isas.mztab2.cvmapping.CvParameterLookupService;
+import de.isas.mztab2.cvmapping.ParameterComparisonResult;
+import de.isas.mztab2.cvmapping.RuleEvaluationResult;
+import de.isas.mztab2.model.Parameter;
+import de.isas.mztab2.validation.CvRuleHandler;
+import info.psidev.cvmapping.CvMappingRule;
+import info.psidev.cvmapping.CvTerm;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.jxpath.Pointer;
+import org.apache.commons.lang3.tuple.Pair;
+
+/**
+ * Implements resolution of cv parameters using the provided lookup service.
+ * @author nilshoffmann
+ */
+<span class="fc" id="L37">@Slf4j</span>
+public class ResolvingCvRuleHandler implements CvRuleHandler {
+
+    private final CvParameterLookupService client;
+
+<span class="fc" id="L42">    public ResolvingCvRuleHandler(CvParameterLookupService client) {</span>
+<span class="fc" id="L43">        this.client = client;</span>
+<span class="fc" id="L44">    }</span>
+
+    @Override
+    public RuleEvaluationResult handleRule(CvMappingRule rule,
+        List&lt;Pair&lt;Pointer, Parameter&gt;&gt; filteredSelection) {
+
+<span class="fc" id="L50">        final Map&lt;String, Parameter&gt; allowedParameters = new LinkedHashMap&lt;&gt;();</span>
+<span class="fc" id="L51">        final Map&lt;String, Pair&lt;Pointer, Parameter&gt;&gt; foundParameters = new LinkedHashMap&lt;&gt;();</span>
+
+<span class="fc" id="L53">        log.debug(&quot;Evaluating rule &quot; + rule.getId() + &quot; on &quot; + rule.</span>
+<span class="fc" id="L54">            getCvElementPath());</span>
+<span class="fc bfc" id="L55" title="All 2 branches covered.">        if (rule.getCvTermsCombinationLogic() == CvMappingRule.CvTermsCombinationLogic.AND) {</span>
+<span class="fc" id="L56">            if (rule.getCvTerm().</span>
+<span class="pc bpc" id="L57" title="1 of 2 branches missed.">                size() &gt; 1) {</span>
+<span class="nc bnc" id="L58" title="All 2 branches missed.">                for (CvTerm term : rule.getCvTerm()) {</span>
+<span class="nc bnc" id="L59" title="All 2 branches missed.">                    if (term.isAllowChildren()) {</span>
+<span class="nc" id="L60">                        throw new IllegalArgumentException(</span>
+<span class="nc" id="L61">                            CvMappingUtils.niceToString(rule) + &quot; uses 'AND' combination logic with multiple CvTerms and allowChildren=true! Please change to OR or XOR logic!&quot;);</span>
+                    }
+<span class="nc" id="L63">                }</span>
+            }
+        }
+<span class="fc" id="L66">        rule.getCvTerm().</span>
+<span class="fc" id="L67">            forEach((cvTerm) -&gt;</span>
+            {
+<span class="fc bfc" id="L69" title="All 2 branches covered.">                for (Pair&lt;Pointer, Parameter&gt; pair : filteredSelection) {</span>
+<span class="fc bfc" id="L70" title="All 2 branches covered.">                    if (cvTerm.isAllowChildren()) {</span>
+<span class="fc" id="L71">                        log.debug(&quot;Resolving children of &quot; + cvTerm.</span>
+<span class="fc" id="L72">                            getTermAccession() + &quot; against &quot; + pair.getValue().</span>
+<span class="fc" id="L73">                                getCvAccession());</span>
+                        //resolve children
+                        try {
+<span class="fc" id="L76">                            ParameterComparisonResult result = client.</span>
+<span class="fc" id="L77">                                isChildOfOrSame(CvMappingUtils.asParameter(</span>
+                                    cvTerm),
+<span class="fc" id="L79">                                    pair.getValue());</span>
+<span class="pc bpc" id="L80" title="2 of 4 branches missed.">                            switch (result) {</span>
+                                case CHILD_OF:
+<span class="fc" id="L82">                                    log.debug(pair.getValue().</span>
+<span class="fc" id="L83">                                        getCvAccession() + &quot; is a child of &quot; + cvTerm.</span>
+<span class="fc" id="L84">                                            getTermAccession());</span>
+                                    //use key of found parameter, since it is a child of cvTerm / cvTerm is a parent of the child
+<span class="fc" id="L86">                                    allowedParameters.put(pair.getValue().</span>
+<span class="fc" id="L87">                                        getCvAccession().</span>
+<span class="fc" id="L88">                                        toUpperCase(), CvMappingUtils.</span>
+<span class="fc" id="L89">                                            asParameter(</span>
+                                                cvTerm));
+<span class="fc" id="L91">                                    foundParameters.put(pair.getValue().</span>
+<span class="fc" id="L92">                                        getCvAccession().</span>
+<span class="fc" id="L93">                                        toUpperCase(), pair);</span>
+<span class="fc" id="L94">                                    break;</span>
+                                case IDENTICAL:
+<span class="nc bnc" id="L96" title="All 2 branches missed.">                                    if (cvTerm.isUseTerm()) {</span>
+<span class="nc" id="L97">                                        log.debug(pair.getValue().</span>
+<span class="nc" id="L98">                                            getCvAccession() + &quot; is identical to &quot; + cvTerm.</span>
+<span class="nc" id="L99">                                                getTermAccession());</span>
+                                        //use key of found parameter, since both are identical
+<span class="nc" id="L101">                                        allowedParameters.put(pair.getValue().</span>
+<span class="nc" id="L102">                                            getCvAccession().</span>
+<span class="nc" id="L103">                                            toUpperCase(), CvMappingUtils.</span>
+<span class="nc" id="L104">                                                asParameter(cvTerm));</span>
+<span class="nc" id="L105">                                        foundParameters.put(pair.getValue().</span>
+<span class="nc" id="L106">                                            getCvAccession().</span>
+<span class="nc" id="L107">                                            toUpperCase(), pair);</span>
+                                    }
+                                    break;
+                                case NOT_RELATED:
+<span class="fc" id="L111">                                    log.debug(pair.getValue().</span>
+<span class="fc" id="L112">                                        getCvAccession() + &quot; is not related to &quot; + cvTerm.</span>
+<span class="fc" id="L113">                                            getTermAccession());</span>
+                                    //add found parameter as is
+<span class="fc" id="L115">                                    foundParameters.put(pair.getValue().</span>
+<span class="fc" id="L116">                                        getCvAccession().</span>
+<span class="fc" id="L117">                                        toUpperCase(), pair);</span>
+                                    break;
+                            }
+<span class="nc" id="L120">                        } catch (org.springframework.web.client.HttpClientErrorException ex) {</span>
+<span class="nc" id="L121">                            throw new IllegalArgumentException(</span>
+                                &quot;Could not retrieve parents for cv with label '&quot; + pair.
+<span class="nc" id="L123">                                    getValue().</span>
+<span class="nc" id="L124">                                    getCvLabel() + &quot;' and term accession '&quot; + pair.</span>
+<span class="nc" id="L125">                                    getValue().</span>
+<span class="nc" id="L126">                                    getCvAccession() + &quot;' at path &quot; + pair.</span>
+<span class="nc" id="L127">                                    getKey().</span>
+<span class="nc" id="L128">                                    asPath() + &quot;! Please check, whether the cv label and term accession in your file contain a typo or use lowercase/uppercase! Check https://www.ebi.ac.uk/ols/search?q=&quot; + pair.</span>
+<span class="nc" id="L129">                                    getValue().</span>
+<span class="nc" id="L130">                                    getCvAccession() + &quot; for details on the term!&quot;,</span>
+                                ex);
+<span class="fc" id="L132">                        }</span>
+<span class="pc bpc" id="L133" title="1 of 2 branches missed.">                    } else if (cvTerm.isUseTermName()) {</span>
+<span class="nc" id="L134">                        throw new IllegalArgumentException(</span>
+                            &quot;isUseTermName on cvTerm &quot; + cvTerm + &quot; is not supported for rule &quot; + CvMappingUtils.
+<span class="nc" id="L136">                                niceToString(rule) + &quot; at path &quot; + pair.</span>
+<span class="nc" id="L137">                            getKey().</span>
+<span class="nc" id="L138">                            asPath() + &quot;!&quot;);</span>
+                    } else {
+<span class="fc" id="L140">                        if (cvTerm.getTermAccession().</span>
+<span class="fc" id="L141">                            toUpperCase().</span>
+<span class="fc bfc" id="L142" title="All 2 branches covered.">                            equals(pair.getValue().</span>
+<span class="fc" id="L143">                                getCvAccession().</span>
+<span class="fc" id="L144">                                toUpperCase())) {</span>
+<span class="fc" id="L145">                            allowedParameters.put(pair.getValue().</span>
+<span class="fc" id="L146">                                getCvAccession().</span>
+<span class="fc" id="L147">                                toUpperCase(), CvMappingUtils.</span>
+<span class="fc" id="L148">                                    asParameter(cvTerm));</span>
+<span class="fc" id="L149">                            foundParameters.put(pair.getValue().</span>
+<span class="fc" id="L150">                                getCvAccession().</span>
+<span class="fc" id="L151">                                toUpperCase(), pair);</span>
+                        }
+                    }
+<span class="fc" id="L154">                }</span>
+<span class="fc" id="L155">            });</span>
+<span class="fc" id="L156">        return new RuleEvaluationResult(rule, filteredSelection,</span>
+            allowedParameters, foundParameters);
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

@@ -1,0 +1,212 @@
+<!DOCTYPE HTML>
+<html lang="de">
+<head>
+<title>Source code</title>
+<link rel="stylesheet" type="text/css" href="../../../../../../stylesheet.css" title="Style">
+</head>
+<body>
+<main role="main">
+<div class="sourceContainer">
+<pre><span class="sourceLineNo">001</span><a id="line.1">/*</a>
+<span class="sourceLineNo">002</span><a id="line.2"> * Copyright 2019 Leibniz-Institut für Analytische Wissenschaften – ISAS – e.V..</a>
+<span class="sourceLineNo">003</span><a id="line.3"> *</a>
+<span class="sourceLineNo">004</span><a id="line.4"> * Licensed under the Apache License, Version 2.0 (the "License");</a>
+<span class="sourceLineNo">005</span><a id="line.5"> * you may not use this file except in compliance with the License.</a>
+<span class="sourceLineNo">006</span><a id="line.6"> * You may obtain a copy of the License at</a>
+<span class="sourceLineNo">007</span><a id="line.7"> *</a>
+<span class="sourceLineNo">008</span><a id="line.8"> *      http://www.apache.org/licenses/LICENSE-2.0</a>
+<span class="sourceLineNo">009</span><a id="line.9"> *</a>
+<span class="sourceLineNo">010</span><a id="line.10"> * Unless required by applicable law or agreed to in writing, software</a>
+<span class="sourceLineNo">011</span><a id="line.11"> * distributed under the License is distributed on an "AS IS" BASIS,</a>
+<span class="sourceLineNo">012</span><a id="line.12"> * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</a>
+<span class="sourceLineNo">013</span><a id="line.13"> * See the License for the specific language governing permissions and</a>
+<span class="sourceLineNo">014</span><a id="line.14"> * limitations under the License.</a>
+<span class="sourceLineNo">015</span><a id="line.15"> */</a>
+<span class="sourceLineNo">016</span><a id="line.16">package de.isas.mztab2.io.validators;</a>
+<span class="sourceLineNo">017</span><a id="line.17"></a>
+<span class="sourceLineNo">018</span><a id="line.18">import de.isas.mztab2.model.MsRun;</a>
+<span class="sourceLineNo">019</span><a id="line.19">import de.isas.mztab2.model.Parameter;</a>
+<span class="sourceLineNo">020</span><a id="line.20">import de.isas.mztab2.model.SpectraRef;</a>
+<span class="sourceLineNo">021</span><a id="line.21">import java.util.LinkedList;</a>
+<span class="sourceLineNo">022</span><a id="line.22">import java.util.List;</a>
+<span class="sourceLineNo">023</span><a id="line.23">import java.util.Optional;</a>
+<span class="sourceLineNo">024</span><a id="line.24">import java.util.regex.Matcher;</a>
+<span class="sourceLineNo">025</span><a id="line.25">import java.util.regex.Pattern;</a>
+<span class="sourceLineNo">026</span><a id="line.26">import uk.ac.ebi.pride.jmztab2.model.IMZTabColumn;</a>
+<span class="sourceLineNo">027</span><a id="line.27">import uk.ac.ebi.pride.jmztab2.model.MZTabConstants;</a>
+<span class="sourceLineNo">028</span><a id="line.28">import uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType;</a>
+<span class="sourceLineNo">029</span><a id="line.29">import uk.ac.ebi.pride.jmztab2.utils.errors.LogicalErrorType;</a>
+<span class="sourceLineNo">030</span><a id="line.30">import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabError;</a>
+<span class="sourceLineNo">031</span><a id="line.31">import uk.ac.ebi.pride.jmztab2.utils.parser.MZTabParserContext;</a>
+<span class="sourceLineNo">032</span><a id="line.32"></a>
+<span class="sourceLineNo">033</span><a id="line.33">/**</a>
+<span class="sourceLineNo">034</span><a id="line.34"> *</a>
+<span class="sourceLineNo">035</span><a id="line.35"> * @author nilshoffmann</a>
+<span class="sourceLineNo">036</span><a id="line.36"> */</a>
+<span class="sourceLineNo">037</span><a id="line.37">public class SpectraRefValidator implements FieldValidator&lt;List&lt;SpectraRef&gt;&gt; {</a>
+<span class="sourceLineNo">038</span><a id="line.38"></a>
+<span class="sourceLineNo">039</span><a id="line.39">    @Override</a>
+<span class="sourceLineNo">040</span><a id="line.40">    public List&lt;MZTabError&gt; validateLine(int lineNumber, MZTabParserContext parserContext, IMZTabColumn column, String field, List&lt;SpectraRef&gt; refList) {</a>
+<span class="sourceLineNo">041</span><a id="line.41">        List&lt;MZTabError&gt; errorList = new LinkedList&lt;&gt;();</a>
+<span class="sourceLineNo">042</span><a id="line.42">        if (refList.isEmpty()) {</a>
+<span class="sourceLineNo">043</span><a id="line.43">            errorList.add(new MZTabError(FormatErrorType.SpectraRef,</a>
+<span class="sourceLineNo">044</span><a id="line.44">                    lineNumber, column.getHeader(), field));</a>
+<span class="sourceLineNo">045</span><a id="line.45">        } else {</a>
+<span class="sourceLineNo">046</span><a id="line.46">            for (SpectraRef ref : refList) {</a>
+<span class="sourceLineNo">047</span><a id="line.47">                MsRun run = ref.getMsRun();</a>
+<span class="sourceLineNo">048</span><a id="line.48">                if (!Optional.ofNullable(run.getLocation()).isPresent()) {</a>
+<span class="sourceLineNo">049</span><a id="line.49">                    //As the location can be null and the field is mandatory, this is not an error, it is a warning</a>
+<span class="sourceLineNo">050</span><a id="line.50">                    errorList.add(new MZTabError(</a>
+<span class="sourceLineNo">051</span><a id="line.51">                            LogicalErrorType.SpectraRef, lineNumber, column.</a>
+<span class="sourceLineNo">052</span><a id="line.52">                                    getHeader(), field, "ms_run[" + run.</a>
+<span class="sourceLineNo">053</span><a id="line.53">                                    getId() + "]-location"));</a>
+<span class="sourceLineNo">054</span><a id="line.54">                } else {</a>
+<span class="sourceLineNo">055</span><a id="line.55">                    String referenceString = ref.getReference();</a>
+<span class="sourceLineNo">056</span><a id="line.56">                    Parameter idFormatParam = run.getIdFormat();</a>
+<span class="sourceLineNo">057</span><a id="line.57">                    if (idFormatParam == null) {</a>
+<span class="sourceLineNo">058</span><a id="line.58">                        //fall back to scan= if nothing else is given</a>
+<span class="sourceLineNo">059</span><a id="line.59">                    } else {</a>
+<span class="sourceLineNo">060</span><a id="line.60">                        if (idFormatParam.getCvAccession() == null || idFormatParam.getCvAccession().isEmpty()) {</a>
+<span class="sourceLineNo">061</span><a id="line.61">                            //user param</a>
+<span class="sourceLineNo">062</span><a id="line.62">                        } else {</a>
+<span class="sourceLineNo">063</span><a id="line.63">                            //cv param</a>
+<span class="sourceLineNo">064</span><a id="line.64">                            String validationPattern = "";</a>
+<span class="sourceLineNo">065</span><a id="line.65">                            switch (idFormatParam.getCvAccession()) {</a>
+<span class="sourceLineNo">066</span><a id="line.66">                                case "MS:1000768": //Thermo nativeId</a>
+<span class="sourceLineNo">067</span><a id="line.67">                                    // "controllerType=0 controllerNumber=1 scan=1"</a>
+<span class="sourceLineNo">068</span><a id="line.68">                                    validationPattern = MZTabConstants.REGEX_SPECTRA_REF_THERMO_NATIVE;</a>
+<span class="sourceLineNo">069</span><a id="line.69">                                    break;</a>
+<span class="sourceLineNo">070</span><a id="line.70">                                case "MS:1000769": //Waters nativeId</a>
+<span class="sourceLineNo">071</span><a id="line.71">                                    // "function=0 process=0 scan=0"</a>
+<span class="sourceLineNo">072</span><a id="line.72">                                    validationPattern = MZTabConstants.REGEX_SPECTRA_REF_WATERS_NATIVE;</a>
+<span class="sourceLineNo">073</span><a id="line.73">                                    break;</a>
+<span class="sourceLineNo">074</span><a id="line.74">                                case "MS:1000770": //WIFF nativeId</a>
+<span class="sourceLineNo">075</span><a id="line.75">                                    // "sample=0 period=0 cycle=0 experiment=0"</a>
+<span class="sourceLineNo">076</span><a id="line.76">                                    validationPattern = MZTabConstants.REGEX_SPECTRA_REF_WIFF_NATIVE;</a>
+<span class="sourceLineNo">077</span><a id="line.77">                                    break;</a>
+<span class="sourceLineNo">078</span><a id="line.78">                                case "MS:1000774": //multiple peak list nativeID, MGF, PKL, merged DTA</a>
+<span class="sourceLineNo">079</span><a id="line.79">                                    // index=0</a>
+<span class="sourceLineNo">080</span><a id="line.80">                                    validationPattern = MZTabConstants.REGEX_SPECTRA_REF_INDEX;</a>
+<span class="sourceLineNo">081</span><a id="line.81">                                    break;</a>
+<span class="sourceLineNo">082</span><a id="line.82">                                case "MS:1000773": // Bruker FID nativeId</a>
+<span class="sourceLineNo">083</span><a id="line.83">                                case "MS:1000775": //file single peak list nativeId</a>
+<span class="sourceLineNo">084</span><a id="line.84">                                    //file=xsd:IDREF</a>
+<span class="sourceLineNo">085</span><a id="line.85">                                    validationPattern = MZTabConstants.REGEX_SPECTRA_REF_FILE;</a>
+<span class="sourceLineNo">086</span><a id="line.86">                                    break;</a>
+<span class="sourceLineNo">087</span><a id="line.87">                                case "MS:1000777": // spectrum identifier nativeId</a>
+<span class="sourceLineNo">088</span><a id="line.88">                                    //spectrum=0</a>
+<span class="sourceLineNo">089</span><a id="line.89">                                    validationPattern = MZTabConstants.REGEX_SPECTRA_REF_SPECTRUM;</a>
+<span class="sourceLineNo">090</span><a id="line.90">                                    break;</a>
+<span class="sourceLineNo">091</span><a id="line.91">                                case "MS:1001530": // mzML unique identifier</a>
+<span class="sourceLineNo">092</span><a id="line.92">                                    //xsd:string</a>
+<span class="sourceLineNo">093</span><a id="line.93">                                    validationPattern = MZTabConstants.REGEX_SPECTRA_REF_MZML_UNIQUE;</a>
+<span class="sourceLineNo">094</span><a id="line.94">                                    break;</a>
+<span class="sourceLineNo">095</span><a id="line.95">                                //scan instances below</a>
+<span class="sourceLineNo">096</span><a id="line.96">                                case "MS:1000771": //Bruker/Agilent YEP nativeId</a>
+<span class="sourceLineNo">097</span><a id="line.97">                                case "MS:1000772": //Bruker BAF nativeId    </a>
+<span class="sourceLineNo">098</span><a id="line.98">                                case "MS:1000776": //mzML scan ref</a>
+<span class="sourceLineNo">099</span><a id="line.99">                                    // scan=0</a>
+<span class="sourceLineNo">100</span><a id="line.100">                                    validationPattern = MZTabConstants.REGEX_SPECTRA_REF_SCAN;</a>
+<span class="sourceLineNo">101</span><a id="line.101">                                    break;</a>
+<span class="sourceLineNo">102</span><a id="line.102">                                default:</a>
+<span class="sourceLineNo">103</span><a id="line.103">                                    //As the given idFormat may be unsupported by this validator, we issue a warning!</a>
+<span class="sourceLineNo">104</span><a id="line.104">                                    errorList.add(new MZTabError(</a>
+<span class="sourceLineNo">105</span><a id="line.105">                                            LogicalErrorType.SpectraIdFormatNotSupported, lineNumber, referenceString, column.</a>
+<span class="sourceLineNo">106</span><a id="line.106">                                                    getHeader()));</a>
+<span class="sourceLineNo">107</span><a id="line.107">                            }</a>
+<span class="sourceLineNo">108</span><a id="line.108">                            if(!validationPattern.isEmpty()) {</a>
+<span class="sourceLineNo">109</span><a id="line.109">                                Optional&lt;MZTabError&gt; error = validatePattern(Pattern.compile(validationPattern), referenceString, lineNumber, column, field, run);</a>
+<span class="sourceLineNo">110</span><a id="line.110">                                if (error.isPresent()) {</a>
+<span class="sourceLineNo">111</span><a id="line.111">                                    errorList.add(error.get());</a>
+<span class="sourceLineNo">112</span><a id="line.112">                                }</a>
+<span class="sourceLineNo">113</span><a id="line.113">                            }</a>
+<span class="sourceLineNo">114</span><a id="line.114">                        }</a>
+<span class="sourceLineNo">115</span><a id="line.115">                    }</a>
+<span class="sourceLineNo">116</span><a id="line.116">                }</a>
+<span class="sourceLineNo">117</span><a id="line.117">            }</a>
+<span class="sourceLineNo">118</span><a id="line.118">        }</a>
+<span class="sourceLineNo">119</span><a id="line.119">        return errorList;</a>
+<span class="sourceLineNo">120</span><a id="line.120">    }</a>
+<span class="sourceLineNo">121</span><a id="line.121"></a>
+<span class="sourceLineNo">122</span><a id="line.122">    protected Optional&lt;MZTabError&gt; validatePattern(Pattern pattern, String reference, int lineNumber, IMZTabColumn column, String field, MsRun run) {</a>
+<span class="sourceLineNo">123</span><a id="line.123">        Matcher matcher = pattern.matcher(reference);</a>
+<span class="sourceLineNo">124</span><a id="line.124"></a>
+<span class="sourceLineNo">125</span><a id="line.125">        if (matcher.find()) {</a>
+<span class="sourceLineNo">126</span><a id="line.126">            return Optional.empty();</a>
+<span class="sourceLineNo">127</span><a id="line.127">        }</a>
+<span class="sourceLineNo">128</span><a id="line.128">        return Optional.of(new MZTabError(</a>
+<span class="sourceLineNo">129</span><a id="line.129">                LogicalErrorType.SpectraIdFormatNotValid,</a>
+<span class="sourceLineNo">130</span><a id="line.130">                lineNumber,</a>
+<span class="sourceLineNo">131</span><a id="line.131">                reference,</a>
+<span class="sourceLineNo">132</span><a id="line.132">                column.getHeader(),</a>
+<span class="sourceLineNo">133</span><a id="line.133">                pattern.toString()</a>
+<span class="sourceLineNo">134</span><a id="line.134">            )</a>
+<span class="sourceLineNo">135</span><a id="line.135">        );</a>
+<span class="sourceLineNo">136</span><a id="line.136">    }</a>
+<span class="sourceLineNo">137</span><a id="line.137"></a>
+<span class="sourceLineNo">138</span><a id="line.138">}</a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+</div>
+</main>
+</body>
+</html>

@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MzTabAccess.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jmztabm-api</a> &gt; <a href="index.source.html" class="el_package">de.isas.mztab2.model</a> &gt; <span class="el_source">MzTabAccess.java</span></div><h1>MzTabAccess.java</h1><pre class="source lang-java linenums">/*
+ * Copyright 2020 Leibniz-Institut für Analytische Wissenschaften – ISAS – e.V..
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package de.isas.mztab2.model;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import static uk.ac.ebi.pride.jmztab2.model.MZTabConstants.REGEX_ABUNDANCE_ASSAY_COLUMN_NAME;
+
+/**
+ * Utility class for easier access to linked information within an mztab-M data
+ * object.
+ *
+ * @author nilshoffmann
+ */
+public class MzTabAccess {
+
+    private final MzTab mzTab;
+
+    /**
+     * Create an MzTabAccess object for the provided mzTab object.
+     *
+     * @param mzTab
+     */
+<span class="fc" id="L40">    public MzTabAccess(MzTab mzTab) {</span>
+<span class="fc" id="L41">        this.mzTab = mzTab;</span>
+<span class="fc" id="L42">    }</span>
+
+    /**
+     * Retrieve all small molecule features in order of definition for the
+     * provided small molecule summary.
+     *
+     * @param sms the small molecule summary.
+     * @return the list of small molecule features.
+     */
+    public List&lt;SmallMoleculeFeature&gt; getFeatures(SmallMoleculeSummary sms) {
+<span class="fc" id="L52">        List&lt;Integer&gt; smfIds = sms.getSmfIdRefs();</span>
+<span class="fc" id="L53">        return mzTab.getSmallMoleculeFeature().stream().filter((t) -&gt; {</span>
+<span class="fc" id="L54">            return smfIds.contains(t.getSmfId());</span>
+<span class="fc" id="L55">        }).collect(Collectors.toList());</span>
+    }
+
+    /**
+     * Retrieve all small molecule evidences in order of definition for the
+     * provided small molecule feature.
+     *
+     * @param smf the small molecule feature.
+     * @return the list of small molecule evidences.
+     */
+    public List&lt;SmallMoleculeEvidence&gt; getEvidences(SmallMoleculeFeature smf) {
+<span class="fc" id="L66">        List&lt;Integer&gt; smeIds = smf.getSmeIdRefs();</span>
+<span class="fc" id="L67">        return mzTab.getSmallMoleculeEvidence().stream().filter((t) -&gt; {</span>
+<span class="fc" id="L68">            return smeIds.contains(t.getSmeId());</span>
+<span class="fc" id="L69">        }).collect(Collectors.toList());</span>
+    }
+
+    /**
+     * Retrieve all small molecule evidences for the provided evidence input id.
+     *
+     * @param evidenceInputId the evidence input it.
+     * @return the list of small molecule evidences.
+     */
+    public List&lt;SmallMoleculeEvidence&gt; getEvidencesByEvidenceInputId(String evidenceInputId) {
+<span class="fc" id="L79">        return mzTab.getSmallMoleculeEvidence().stream().filter((t) -&gt; {</span>
+<span class="fc" id="L80">            return t.getEvidenceInputId().equals(evidenceInputId);</span>
+<span class="fc" id="L81">        }).collect(Collectors.toList());</span>
+    }
+
+    /**
+     * Retrieves the abundance value for the provided assay and small molecule
+     * feature object.
+     *
+     * @param assay the assay.
+     * @param smf the small molecule feature object.
+     * @return the feature abundance. May be null.
+     */
+    public Double getAbundanceFor(Assay assay, SmallMoleculeFeature smf) {
+<span class="nc" id="L93">        return smf.getAbundanceAssay().get(assay.getId() - 1);</span>
+    }
+
+    /**
+     * Retrieves the abundance value for the provided study variable and small
+     * molecule summary object.
+     *
+     * @param studyVariable the study variable.
+     * @param sms the small molecule summary object.
+     * @return the study variable abundance. May be null.
+     */
+    public Double getAbundanceFor(StudyVariable studyVariable, SmallMoleculeSummary sms) {
+<span class="nc" id="L105">        return sms.getAbundanceStudyVariable().get(studyVariable.getId() - 1);</span>
+    }
+
+    /**
+     * Retrieves the abundance variation value for the provided study variable
+     * and small molecule summary object.
+     *
+     * @param studyVariable the study variable.
+     * @param sms the small molecule summary object.
+     * @return the study variable abundance variation. May be null.
+     */
+    public Double getAbundanceVariationFor(StudyVariable studyVariable, SmallMoleculeSummary sms) {
+<span class="nc" id="L117">        return sms.getAbundanceVariationStudyVariable().get(studyVariable.getId() - 1);</span>
+    }
+
+    /**
+     * Retrieves the abundance value for the provided assay and small molecule
+     * summary object.
+     *
+     * @param assay the assay.
+     * @param sms the small molecule summary object.
+     * @return the assay abundance. May be null.
+     */
+    public Double getAbundanceFor(Assay assay, SmallMoleculeSummary sms) {
+<span class="nc" id="L129">        return sms.getAbundanceAssay().get(assay.getId() - 1);</span>
+    }
+
+    /**
+     * Tries to locate the assay referenced by id from the metadata section.
+     *
+     * @param id the assay id.
+     * @param metadata the metadata used to locate the assay.
+     * @return an optional with the assay object, or an empty optiona
+     */
+    public Optional&lt;Assay&gt; getAssayFor(Integer id, Metadata metadata) {
+<span class="fc" id="L140">        return metadata.getAssay().stream().filter((t) -&gt; {</span>
+<span class="fc" id="L141">            return t.getId().equals(id);</span>
+<span class="fc" id="L142">        }).findFirst();</span>
+    }
+
+    /**
+     * Tries to locate the study variable referenced by id from the metadata
+     * section.
+     *
+     * @param id the study variable id.
+     * @param metadata the metadata used to locate the study variable.
+     * @return an optional with the study variable object, or an empty optiona
+     */
+    public Optional&lt;StudyVariable&gt; getStudyVariableFor(Integer id, Metadata metadata) {
+<span class="fc" id="L154">        return metadata.getStudyVariable().stream().filter((t) -&gt; {</span>
+<span class="fc" id="L155">            return t.getId().equals(id);</span>
+<span class="fc" id="L156">        }).findFirst();</span>
+    }
+
+    /**
+     * Tries to locate the ms run referenced by id from the metadata section.
+     *
+     * @param id the ms run id.
+     * @param metadata the metadata used to locate the ms run.
+     * @return an optional with the ms run object, or an empty optional.
+     */
+    public Optional&lt;MsRun&gt; getMsRunFor(Integer id, Metadata metadata) {
+<span class="fc" id="L167">        return metadata.getMsRun().stream().filter((t) -&gt; {</span>
+<span class="fc" id="L168">            return t.getId().equals(id);</span>
+<span class="fc" id="L169">        }).findFirst();</span>
+    }
+
+    /**
+     * Tries to locate the database referenced by id from the metadata section.
+     *
+     * @param id the database id.
+     * @param metadata the metadata used to locate the database.
+     * @return an optional with the database object, or an empty optional.
+     */
+    public Optional&lt;Database&gt; getDatabaseFor(Integer id, Metadata metadata) {
+<span class="fc" id="L180">        return metadata.getDatabase().stream().filter((t) -&gt; {</span>
+<span class="fc" id="L181">            return t.getId().equals(id);</span>
+<span class="fc" id="L182">        }).findFirst();</span>
+    }
+
+    /**
+     * Tries to locate the assay referenced by id from the columnMapping
+     * identifier. Returns an empty optional if either the identifier was null
+     * or not an assay, or no matching assay was found.
+     *
+     * @param columnMapping the column mapping.
+     * @param metadata the metadata used to locate the assay.
+     * @return an optional with the assay object, or an empty optional.
+     */
+    public Optional&lt;Assay&gt; getAssayFor(OptColumnMapping columnMapping, Metadata metadata) {
+<span class="fc" id="L195">        String identifier = columnMapping.getIdentifier();</span>
+<span class="pc bpc" id="L196" title="1 of 2 branches missed.">        if (identifier != null) {</span>
+<span class="fc" id="L197">            Pattern p = Pattern.compile(REGEX_ABUNDANCE_ASSAY_COLUMN_NAME);</span>
+<span class="fc" id="L198">            Matcher m = p.matcher(identifier);</span>
+<span class="pc bpc" id="L199" title="1 of 2 branches missed.">            if (m.find()) {</span>
+<span class="fc" id="L200">                Integer assayId = Integer.parseInt(m.group(1));</span>
+<span class="fc" id="L201">                return getAssayFor(assayId, metadata);</span>
+            }
+        }
+<span class="nc" id="L204">        return Optional.empty();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

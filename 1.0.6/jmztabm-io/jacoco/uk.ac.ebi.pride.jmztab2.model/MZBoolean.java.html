@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MZBoolean.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jmztabm-io</a> &gt; <a href="index.source.html" class="el_package">uk.ac.ebi.pride.jmztab2.model</a> &gt; <span class="el_source">MZBoolean.java</span></div><h1>MZBoolean.java</h1><pre class="source lang-java linenums">/* 
+ * Copyright 2018 Leibniz-Institut für Analytische Wissenschaften – ISAS – e.V..
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package uk.ac.ebi.pride.jmztab2.model;
+
+/**
+ * In mzTab, using 0-false, 1-true to express the boolean value.
+ *
+ * @author qingwei
+ * @since 06/02/13
+ * 
+ */
+<span class="nc" id="L25">public enum MZBoolean {</span>
+<span class="nc" id="L26">    True(&quot;1&quot;), False(&quot;0&quot;);</span>
+    private String value;
+
+    /**
+     * &quot;0&quot; for false, &quot;1&quot; for true.
+     * @param value
+     */
+<span class="nc" id="L33">    MZBoolean(String value) {</span>
+<span class="nc" id="L34">        this.value = value;</span>
+<span class="nc" id="L35">    }</span>
+
+    /** {@inheritDoc} */
+    @Override
+    public String toString() {
+<span class="nc" id="L40">        return value;</span>
+    }
+    
+    /**
+     * &lt;p&gt;Convert to a native Boolean.&lt;/p&gt;
+     *
+     * @return a {@link java.lang.Boolean} object.
+     */
+    public Boolean toBoolean() {
+<span class="nc bnc" id="L49" title="All 2 branches missed.">        if(this == MZBoolean.True) {</span>
+<span class="nc" id="L50">            return Boolean.TRUE;</span>
+        }
+<span class="nc" id="L52">        return Boolean.FALSE;</span>
+    }
+
+    /**
+     * &lt;p&gt;Find the MZBoolean for the given string representation.&lt;/p&gt;
+     *
+     * @param booleanLabel &quot;0&quot; or &quot;1&quot; which used to define a boolean used in mzTab.
+     * @return null if can not recognize the boolean label.
+     */
+    public static MZBoolean findBoolean(String booleanLabel) {
+<span class="nc" id="L62">        booleanLabel = booleanLabel.trim();</span>
+        try {
+<span class="nc" id="L64">            Integer id = new Integer(booleanLabel);</span>
+<span class="nc" id="L65">            MZBoolean mzBoolean = null;</span>
+<span class="nc bnc" id="L66" title="All 3 branches missed.">            switch (id) {</span>
+                case 0:
+<span class="nc" id="L68">                    mzBoolean = MZBoolean.False;</span>
+<span class="nc" id="L69">                    break;</span>
+                case 1:
+<span class="nc" id="L71">                    mzBoolean = MZBoolean.True;</span>
+                    break;
+            }
+<span class="nc" id="L74">            return mzBoolean;</span>
+<span class="nc" id="L75">        } catch (NumberFormatException e) {</span>
+<span class="nc" id="L76">            return null;</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

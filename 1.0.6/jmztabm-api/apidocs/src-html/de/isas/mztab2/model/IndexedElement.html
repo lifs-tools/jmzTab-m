@@ -1,0 +1,157 @@
+<!DOCTYPE HTML>
+<html lang="de">
+<head>
+<title>Source code</title>
+<link rel="stylesheet" type="text/css" href="../../../../../stylesheet.css" title="Style">
+</head>
+<body>
+<main role="main">
+<div class="sourceContainer">
+<pre><span class="sourceLineNo">001</span><a id="line.1">/*</a>
+<span class="sourceLineNo">002</span><a id="line.2"> * Copyright 2020 Leibniz-Institut für Analytische Wissenschaften – ISAS – e.V..</a>
+<span class="sourceLineNo">003</span><a id="line.3"> *</a>
+<span class="sourceLineNo">004</span><a id="line.4"> * Licensed under the Apache License, Version 2.0 (the "License");</a>
+<span class="sourceLineNo">005</span><a id="line.5"> * you may not use this file except in compliance with the License.</a>
+<span class="sourceLineNo">006</span><a id="line.6"> * You may obtain a copy of the License at</a>
+<span class="sourceLineNo">007</span><a id="line.7"> *</a>
+<span class="sourceLineNo">008</span><a id="line.8"> *      http://www.apache.org/licenses/LICENSE-2.0</a>
+<span class="sourceLineNo">009</span><a id="line.9"> *</a>
+<span class="sourceLineNo">010</span><a id="line.10"> * Unless required by applicable law or agreed to in writing, software</a>
+<span class="sourceLineNo">011</span><a id="line.11"> * distributed under the License is distributed on an "AS IS" BASIS,</a>
+<span class="sourceLineNo">012</span><a id="line.12"> * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</a>
+<span class="sourceLineNo">013</span><a id="line.13"> * See the License for the specific language governing permissions and</a>
+<span class="sourceLineNo">014</span><a id="line.14"> * limitations under the License.</a>
+<span class="sourceLineNo">015</span><a id="line.15"> */</a>
+<span class="sourceLineNo">016</span><a id="line.16">package de.isas.mztab2.model;</a>
+<span class="sourceLineNo">017</span><a id="line.17"></a>
+<span class="sourceLineNo">018</span><a id="line.18">import java.lang.reflect.InvocationTargetException;</a>
+<span class="sourceLineNo">019</span><a id="line.19">import java.lang.reflect.Proxy;</a>
+<span class="sourceLineNo">020</span><a id="line.20">import javax.validation.ValidationException;</a>
+<span class="sourceLineNo">021</span><a id="line.21"></a>
+<span class="sourceLineNo">022</span><a id="line.22">/**</a>
+<span class="sourceLineNo">023</span><a id="line.23"> * Indexed elements (IDs) define a unique ID for a collection of multiple</a>
+<span class="sourceLineNo">024</span><a id="line.24"> * metadata elements of the same type within the mzTab-M document, e.g. for</a>
+<span class="sourceLineNo">025</span><a id="line.25"> * sample, assay, study variable etc.</a>
+<span class="sourceLineNo">026</span><a id="line.26"> *</a>
+<span class="sourceLineNo">027</span><a id="line.27"> * @author nilshoffmann</a>
+<span class="sourceLineNo">028</span><a id="line.28"> */</a>
+<span class="sourceLineNo">029</span><a id="line.29">public interface IndexedElement {</a>
+<span class="sourceLineNo">030</span><a id="line.30"></a>
+<span class="sourceLineNo">031</span><a id="line.31">    /**</a>
+<span class="sourceLineNo">032</span><a id="line.32">     * Returns the id of the indexed element. May be null.</a>
+<span class="sourceLineNo">033</span><a id="line.33">     *</a>
+<span class="sourceLineNo">034</span><a id="line.34">     * @return the id.</a>
+<span class="sourceLineNo">035</span><a id="line.35">     */</a>
+<span class="sourceLineNo">036</span><a id="line.36">    public Integer getId();</a>
+<span class="sourceLineNo">037</span><a id="line.37"></a>
+<span class="sourceLineNo">038</span><a id="line.38">    /**</a>
+<span class="sourceLineNo">039</span><a id="line.39">     * Create a new indexed element as a proxy of the provided element.</a>
+<span class="sourceLineNo">040</span><a id="line.40">     *</a>
+<span class="sourceLineNo">041</span><a id="line.41">     * @param element the element with a getId, hashCode and toString method to</a>
+<span class="sourceLineNo">042</span><a id="line.42">     * proxy.</a>
+<span class="sourceLineNo">043</span><a id="line.43">     * @return the indexed element proxy.</a>
+<span class="sourceLineNo">044</span><a id="line.44">     * @throws ValidationException if the passed in element can not be proxied.</a>
+<span class="sourceLineNo">045</span><a id="line.45">     */</a>
+<span class="sourceLineNo">046</span><a id="line.46">    public static IndexedElement of(Object element) {</a>
+<span class="sourceLineNo">047</span><a id="line.47">        IndexedElement proxyInstance = (IndexedElement) Proxy.newProxyInstance(</a>
+<span class="sourceLineNo">048</span><a id="line.48">                IndexedElement.class.getClassLoader(),</a>
+<span class="sourceLineNo">049</span><a id="line.49">                new Class[]{IndexedElement.class},</a>
+<span class="sourceLineNo">050</span><a id="line.50">                (proxy, method, methodArgs) -&gt; {</a>
+<span class="sourceLineNo">051</span><a id="line.51">                    if (method.getName().equals("getId")) {</a>
+<span class="sourceLineNo">052</span><a id="line.52"></a>
+<span class="sourceLineNo">053</span><a id="line.53">                        try {</a>
+<span class="sourceLineNo">054</span><a id="line.54">                            Integer id = (Integer) element.getClass().getMethod("getId").invoke(element);</a>
+<span class="sourceLineNo">055</span><a id="line.55">                            return id;</a>
+<span class="sourceLineNo">056</span><a id="line.56">                        } catch (NoSuchMethodException ex) {</a>
+<span class="sourceLineNo">057</span><a id="line.57">                            throw new ValidationException(</a>
+<span class="sourceLineNo">058</span><a id="line.58">                                    "'id' field of " + element.toString() + " was not accessible by method getId! Missing method!");</a>
+<span class="sourceLineNo">059</span><a id="line.59">                        } catch (SecurityException ex) {</a>
+<span class="sourceLineNo">060</span><a id="line.60">                            throw new ValidationException(</a>
+<span class="sourceLineNo">061</span><a id="line.61">                                    "'id' field of " + element.toString() + " was not accessible by method getId! Access denied!");</a>
+<span class="sourceLineNo">062</span><a id="line.62">                        } catch (IllegalAccessException ex) {</a>
+<span class="sourceLineNo">063</span><a id="line.63">                            throw new ValidationException(</a>
+<span class="sourceLineNo">064</span><a id="line.64">                                    "'id' field of " + element.toString() + " was not accessible by method getId! Illegal access!");</a>
+<span class="sourceLineNo">065</span><a id="line.65">                        } catch (IllegalArgumentException ex) {</a>
+<span class="sourceLineNo">066</span><a id="line.66">                            throw new ValidationException(</a>
+<span class="sourceLineNo">067</span><a id="line.67">                                    "'id' field of " + element.toString() + " was not accessible by method getId! Illegal argument!");</a>
+<span class="sourceLineNo">068</span><a id="line.68">                        } catch (InvocationTargetException ex) {</a>
+<span class="sourceLineNo">069</span><a id="line.69">                            throw new ValidationException(</a>
+<span class="sourceLineNo">070</span><a id="line.70">                                    "'id' field of " + element.toString() + " was not accessible by method getId! Invalid invocation target!");</a>
+<span class="sourceLineNo">071</span><a id="line.71">                        }</a>
+<span class="sourceLineNo">072</span><a id="line.72">                    } else if (method.getName().equals("hashCode")) {</a>
+<span class="sourceLineNo">073</span><a id="line.73">                        return element.getClass().getMethod("hashCode").invoke(element);</a>
+<span class="sourceLineNo">074</span><a id="line.74">                    } else if (method.getName().equals("toString")) {</a>
+<span class="sourceLineNo">075</span><a id="line.75">                        return element.getClass().getMethod("toString").invoke(element);</a>
+<span class="sourceLineNo">076</span><a id="line.76">                    } else {</a>
+<span class="sourceLineNo">077</span><a id="line.77">                        throw new ValidationException(</a>
+<span class="sourceLineNo">078</span><a id="line.78">                                "Unsupported method: " + method.getName() + " on element of type " + element.getClass().getName());</a>
+<span class="sourceLineNo">079</span><a id="line.79">                    }</a>
+<span class="sourceLineNo">080</span><a id="line.80">                });</a>
+<span class="sourceLineNo">081</span><a id="line.81">        return proxyInstance;</a>
+<span class="sourceLineNo">082</span><a id="line.82">    }</a>
+<span class="sourceLineNo">083</span><a id="line.83">}</a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+</div>
+</main>
+</body>
+</html>

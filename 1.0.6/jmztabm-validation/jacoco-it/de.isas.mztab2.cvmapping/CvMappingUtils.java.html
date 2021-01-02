@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="de"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CvMappingUtils.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jmztabm-validation</a> &gt; <a href="index.source.html" class="el_package">de.isas.mztab2.cvmapping</a> &gt; <span class="el_source">CvMappingUtils.java</span></div><h1>CvMappingUtils.java</h1><pre class="source lang-java linenums">/* 
+ * Copyright 2018 Leibniz-Institut für Analytische Wissenschaften – ISAS – e.V..
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package de.isas.mztab2.cvmapping;
+
+import de.isas.mztab2.model.Parameter;
+import info.psidev.cvmapping.CvMappingRule;
+import info.psidev.cvmapping.CvTerm;
+import java.util.List;
+import java.util.stream.Collectors;
+import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorType;
+import uk.ac.ebi.pride.utilities.ols.web.service.model.Term;
+
+/**
+ * Utility methods for conversion between the mapping file domain and the mzTab
+ * domain.
+ *
+ * @author nilshoffmann
+ */
+<span class="nc" id="L32">public class CvMappingUtils {</span>
+
+    /**
+     * Maps the provided requirement level to the corresponding MZTabErrorType.Level.
+     * @param requirementLevel the requirement level
+     * @return the corresponding error type level
+     */
+    public static MZTabErrorType.Level toErrorLevel(
+        CvMappingRule.RequirementLevel requirementLevel) {
+<span class="nc bnc" id="L41" title="All 4 branches missed.">        switch (requirementLevel) {</span>
+            case MAY:
+<span class="nc" id="L43">                return MZTabErrorType.Level.Info;</span>
+            case SHOULD:
+<span class="nc" id="L45">                return MZTabErrorType.Level.Warn;</span>
+            case MUST:
+<span class="nc" id="L47">                return MZTabErrorType.Level.Error;</span>
+            default:
+<span class="nc" id="L49">                throw new IllegalArgumentException(</span>
+                    &quot;Unhandled case: &quot; + requirementLevel);
+        }
+    }
+
+    /**
+     * Creates a user-friendly string of a mapping rule.
+     * @param rule the cv mapping rule
+     * @return the string representation
+     */
+    public static String niceToString(CvMappingRule rule) {
+<span class="fc" id="L60">        StringBuilder sb = new StringBuilder();</span>
+<span class="pc bpc" id="L61" title="3 of 4 branches missed.">        switch (rule.getRequirementLevel()) {</span>
+            case MAY:
+<span class="fc" id="L63">                sb.append(&quot;OPTIONAL &quot;);</span>
+<span class="fc" id="L64">                break;</span>
+            case SHOULD:
+<span class="nc" id="L66">                sb.append(&quot;RECOMMENDED &quot;);</span>
+<span class="nc" id="L67">                break;</span>
+            case MUST:
+<span class="nc" id="L69">                sb.append(&quot;REQUIRED &quot;);</span>
+                break;
+        }
+
+<span class="fc" id="L73">        sb.append(&quot;rule '&quot;).</span>
+<span class="fc" id="L74">            append(rule.getId()).</span>
+<span class="fc" id="L75">            append(&quot;' for path '&quot;).</span>
+<span class="fc" id="L76">            append(rule.getCvElementPath()).</span>
+<span class="fc" id="L77">            append(&quot;' and with scope '&quot;).</span>
+<span class="fc" id="L78">            append(rule.getScopePath()).</span>
+<span class="fc" id="L79">            append(&quot;' &quot;);</span>
+
+<span class="fc" id="L81">        sb.append(&quot; matching &quot;);</span>
+<span class="pc bpc" id="L82" title="2 of 4 branches missed.">        switch (rule.getCvTermsCombinationLogic()) {</span>
+            case AND:
+<span class="fc" id="L84">                sb.append(&quot; ALL of&quot;);</span>
+<span class="fc" id="L85">                break;</span>
+            case OR:
+<span class="fc" id="L87">                sb.append(&quot; ANY of&quot;);</span>
+<span class="fc" id="L88">                break;</span>
+            case XOR:
+<span class="nc" id="L90">                sb.append(&quot; EXACTLY ONE of&quot;);</span>
+                break;
+        }
+<span class="fc" id="L93">        sb.append(&quot; the terms &quot;);</span>
+<span class="fc" id="L94">        sb.append(rule.getCvTerm().</span>
+<span class="fc" id="L95">            stream().</span>
+<span class="fc" id="L96">            map((term) -&gt;</span>
+            {
+<span class="fc" id="L98">                StringBuilder termString = new StringBuilder();</span>
+<span class="fc" id="L99">                termString.append(&quot; '&quot;).</span>
+<span class="fc" id="L100">                    append(term.getTermAccession()).</span>
+<span class="fc" id="L101">                    append(&quot;' with name '&quot;).</span>
+<span class="fc" id="L102">                    append(term.getTermName()).</span>
+<span class="fc" id="L103">                    append(&quot;'&quot;);</span>
+
+<span class="pc bpc" id="L105" title="1 of 2 branches missed.">                if (term.isAllowChildren()) {</span>
+<span class="fc bfc" id="L106" title="All 2 branches covered.">                    if (term.isUseTerm()) {</span>
+<span class="fc" id="L107">                        termString.append(</span>
+                            &quot; including itself or any of its children.&quot;);
+                    } else {
+<span class="fc" id="L110">                        termString.append(</span>
+                            &quot; excluding itself but including any children.&quot;);
+                    }
+                } else {
+<span class="nc bnc" id="L114" title="All 2 branches missed.">                    if (term.isUseTerm()) {</span>
+<span class="nc" id="L115">                        termString.append(&quot; exactly.&quot;);</span>
+                    }
+                }
+
+<span class="fc" id="L119">                return termString.append(&quot;'&quot;).</span>
+<span class="fc" id="L120">                    toString();</span>
+            }).
+<span class="fc" id="L122">            collect(Collectors.joining(&quot;|&quot;, &quot;[&quot;, &quot;]&quot;)));</span>
+<span class="fc" id="L123">        return sb.toString();</span>
+    }
+
+    /**
+     * Creates a string representation of a mapping rule.
+     * @param rule the cv mapping rule
+     * @return the string representation
+     * @see niceToString for a nicer string intended for humans
+     */
+    public static String toString(CvMappingRule rule) {
+<span class="nc" id="L133">        StringBuilder sb = new StringBuilder();</span>
+<span class="nc" id="L134">        return sb.append(&quot;Rule{&quot;).</span>
+<span class="nc" id="L135">            append(&quot;id='&quot;).</span>
+<span class="nc" id="L136">            append(rule.getId()).</span>
+<span class="nc" id="L137">            append(&quot;', &quot;).</span>
+<span class="nc" id="L138">            append(&quot;name='&quot;).</span>
+<span class="nc" id="L139">            append(rule.getName()).</span>
+<span class="nc" id="L140">            append(&quot;', &quot;).</span>
+<span class="nc" id="L141">            append(&quot;cvElementPath='&quot;).</span>
+<span class="nc" id="L142">            append(rule.getCvElementPath()).</span>
+<span class="nc" id="L143">            append(&quot;', &quot;).</span>
+<span class="nc" id="L144">            append(&quot;scopePath='&quot;).</span>
+<span class="nc" id="L145">            append(rule.getScopePath()).</span>
+<span class="nc" id="L146">            append(&quot;', &quot;).</span>
+<span class="nc" id="L147">            append(&quot;requirementLevel='&quot;).</span>
+<span class="nc" id="L148">            append(rule.getRequirementLevel()).</span>
+<span class="nc" id="L149">            append(&quot;', &quot;).</span>
+<span class="nc" id="L150">            append(&quot;combinationLogic='&quot;).</span>
+<span class="nc" id="L151">            append(rule.getCvTermsCombinationLogic()).</span>
+<span class="nc" id="L152">            append(&quot;', &quot;).</span>
+<span class="nc" id="L153">            append(&quot;terms='&quot;).</span>
+<span class="nc" id="L154">            append(</span>
+<span class="nc" id="L155">                toString(rule.getCvTerm())</span>
+            ).
+<span class="nc" id="L157">            append(&quot;'}&quot;).</span>
+<span class="nc" id="L158">            toString();</span>
+    }
+
+    public static String toString(List&lt;CvTerm&gt; terms) {
+<span class="nc" id="L162">        StringBuilder sb = new StringBuilder();</span>
+<span class="nc" id="L163">        terms.forEach((term) -&gt;</span>
+        {
+<span class="nc" id="L165">            sb.append(&quot;Term{&quot;).</span>
+<span class="nc" id="L166">                append(&quot;cv='&quot;).</span>
+<span class="nc" id="L167">                append(term.getCvIdentifierRef().</span>
+<span class="nc" id="L168">                    getCvIdentifier()).</span>
+<span class="nc" id="L169">                append(&quot;', &quot;).</span>
+<span class="nc" id="L170">                append(&quot;accession='&quot;).</span>
+<span class="nc" id="L171">                append(term.getTermAccession()).</span>
+<span class="nc" id="L172">                append(&quot;', &quot;).</span>
+<span class="nc" id="L173">                append(&quot;allowChildren='&quot;).</span>
+<span class="nc" id="L174">                append(term.isAllowChildren()).</span>
+<span class="nc" id="L175">                append(&quot;', &quot;).</span>
+<span class="nc" id="L176">                append(&quot;repeatable='&quot;).</span>
+<span class="nc" id="L177">                append(term.isIsRepeatable()).</span>
+<span class="nc" id="L178">                append(&quot;', &quot;).</span>
+<span class="nc" id="L179">                append(&quot;useTerm='&quot;).</span>
+<span class="nc" id="L180">                append(term.isUseTerm()).</span>
+<span class="nc" id="L181">                append(&quot;', &quot;).</span>
+<span class="nc" id="L182">                append(&quot;useTermName='&quot;).</span>
+<span class="nc" id="L183">                append(term.isUseTermName()).</span>
+<span class="nc" id="L184">                append(&quot;'}&quot;);</span>
+<span class="nc" id="L185">        });</span>
+<span class="nc" id="L186">        return sb.toString();</span>
+    }
+
+    public static boolean isEqualTo(Term term, Parameter param) {
+<span class="nc" id="L190">        if (param.getCvLabel().</span>
+<span class="nc bnc" id="L191" title="All 2 branches missed.">            equals(term.getOntologyPrefix())) {</span>
+<span class="nc" id="L192">            if (param.getCvAccession().</span>
+<span class="nc bnc" id="L193" title="All 2 branches missed.">                equals(term.getOboId().</span>
+<span class="nc" id="L194">                    getIdentifier())) {</span>
+<span class="nc" id="L195">                if (param.getName().</span>
+<span class="nc bnc" id="L196" title="All 2 branches missed.">                    equals(term.getLabel())) {</span>
+<span class="nc" id="L197">                    return true;</span>
+                }
+            }
+        }
+<span class="nc" id="L201">        return false;</span>
+    }
+
+    public static Parameter asParameter(Term term) {
+<span class="fc" id="L205">        return new Parameter().cvLabel(term.getOntologyPrefix()).</span>
+<span class="fc" id="L206">            cvAccession(term.getOboId().</span>
+<span class="fc" id="L207">                getIdentifier()).</span>
+<span class="fc" id="L208">            name(term.getLabel());</span>
+    }
+
+    public static boolean isEqualTo(Parameter one, Parameter two) {
+<span class="fc" id="L212">        if (one.getCvLabel().</span>
+<span class="fc" id="L213">            toUpperCase().</span>
+<span class="fc bfc" id="L214" title="All 2 branches covered.">            equals(two.getCvLabel().</span>
+<span class="fc" id="L215">                toUpperCase())) {</span>
+<span class="fc" id="L216">            if (one.getCvAccession().</span>
+<span class="fc" id="L217">                toUpperCase().</span>
+<span class="fc bfc" id="L218" title="All 2 branches covered.">                equals(two.getCvAccession().</span>
+<span class="fc" id="L219">                    toUpperCase())) {</span>
+<span class="pc bpc" id="L220" title="2 of 4 branches missed.">                if (one.getName() != null &amp;&amp; two.getName() != null) {</span>
+<span class="fc" id="L221">                    return one.getName().</span>
+<span class="fc" id="L222">                        toUpperCase().</span>
+<span class="fc" id="L223">                        equals(two.getName().</span>
+<span class="fc" id="L224">                            toUpperCase());</span>
+                } else { // equal if one or both names are null
+<span class="nc" id="L226">                    return true;</span>
+                }
+            } else {
+<span class="fc" id="L229">                return false;</span>
+            }
+
+        } else {
+<span class="fc" id="L233">            return false;</span>
+        }
+    }
+
+    public static Parameter asParameter(CvTerm term) {
+<span class="fc" id="L238">        return new Parameter().cvAccession(term.getTermAccession()).</span>
+<span class="fc" id="L239">            cvLabel(term.getCvIdentifierRef().</span>
+<span class="fc" id="L240">                getCvIdentifier()).</span>
+<span class="fc" id="L241">            name(term.getTermName());</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

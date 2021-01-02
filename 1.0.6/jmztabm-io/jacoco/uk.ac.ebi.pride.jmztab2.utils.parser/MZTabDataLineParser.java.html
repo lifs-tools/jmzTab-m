@@ -1,0 +1,1200 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MZTabDataLineParser.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jmztabm-io</a> &gt; <a href="index.source.html" class="el_package">uk.ac.ebi.pride.jmztab2.utils.parser</a> &gt; <span class="el_source">MZTabDataLineParser.java</span></div><h1>MZTabDataLineParser.java</h1><pre class="source lang-java linenums">/* 
+ * Copyright 2018 Leibniz-Institut für Analytische Wissenschaften – ISAS – e.V..
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package uk.ac.ebi.pride.jmztab2.utils.parser;
+
+import de.isas.mztab2.io.serialization.ParameterConverter;
+import de.isas.mztab2.io.validators.SpectraRefValidator;
+import de.isas.mztab2.model.Metadata;
+import de.isas.mztab2.model.Parameter;
+import de.isas.mztab2.model.SpectraRef;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.SortedMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import lombok.extern.slf4j.Slf4j;
+import uk.ac.ebi.pride.jmztab2.model.IMZTabColumn;
+import uk.ac.ebi.pride.jmztab2.model.MZBoolean;
+import uk.ac.ebi.pride.jmztab2.model.MZTabColumnFactory;
+import uk.ac.ebi.pride.jmztab2.model.MZTabConstants;
+import static uk.ac.ebi.pride.jmztab2.model.MZTabConstants.*;
+import uk.ac.ebi.pride.jmztab2.model.MZTabUtils;
+import static uk.ac.ebi.pride.jmztab2.model.MZTabUtils.*;
+import uk.ac.ebi.pride.jmztab2.model.SplitList;
+import uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType;
+import uk.ac.ebi.pride.jmztab2.utils.errors.LogicalErrorType;
+import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabError;
+import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorList;
+import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabException;
+
+/**
+ * This class allows the validation and loading of the data into mzTab domain
+ * objects.
+ *
+ * NOTICE: {@link uk.ac.ebi.pride.jmztab2.model.MZTabColumnFactory} maintain a
+ * couple of {@link uk.ac.ebi.pride.jmztab2.model.IMZTabColumn} which have
+ * internal logical position and order. In physical mzTab file, we allow user
+ * not obey this logical position organized way, and provide their date with own
+ * order. In order to distinguish them, we use physical position (a positive
+ * integer) to record the column location in mzTab file. And use
+ * {@link uk.ac.ebi.pride.jmztab2.utils.parser.PositionMapping} structure to
+ * maintain the mapping between them.
+ *
+ * @param &lt;T&gt; the type of domain object the parser creates.
+ * @see SMLLineParser
+ * @see SMFLineParser
+ * @see SMELineParser
+ * @author qingwei
+ * @since 14/02/13
+ *
+ */
+<span class="fc" id="L65">@Slf4j</span>
+public abstract class MZTabDataLineParser&lt;T&gt; extends MZTabLineParser {
+
+    protected MZTabColumnFactory factory;
+    protected PositionMapping positionMapping;
+    protected SortedMap&lt;String, Integer&gt; exchangeMapping; // reverse the key and value of positionMapping.
+
+    protected SortedMap&lt;Integer, IMZTabColumn&gt; mapping;   // logical position --&gt; offset
+    protected Metadata metadata;
+
+    /**
+     * &lt;p&gt;
+     * Constructor for MZTabDataLineParser.&lt;/p&gt;
+     *
+     * @param context a
+     * {@link uk.ac.ebi.pride.jmztab2.utils.parser.MZTabParserContext} object.
+     */
+    protected MZTabDataLineParser(MZTabParserContext context) {
+<span class="fc" id="L83">        super(context);</span>
+<span class="fc" id="L84">    }</span>
+
+    /**
+     * Generate a mzTab data line parser.
+     *
+     * NOTICE: {@link uk.ac.ebi.pride.jmztab2.model.MZTabColumnFactory} maintain
+     * a couple of {@link uk.ac.ebi.pride.jmztab2.model.IMZTabColumn} which have
+     * internal logical position and order. In physical mzTab file, we allow
+     * user not obey this logical position organized way, and provide their date
+     * with own order. In order to distinguish them, we use physical position (a
+     * positive integer) to record the column location in mzTab file. And use
+     * {@link uk.ac.ebi.pride.jmztab2.utils.parser.PositionMapping} structure
+     * the maintain the mapping between them.
+     *
+     * @param context the parser context, keeping dynamic state and lookup
+     * associations.
+     * @param factory SHOULD NOT be set to null
+     * @param positionMapping SHOULD NOT be set to null
+     * @param metadata SHOULD NOT be set to null
+     * @param errorList a
+     * {@link uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorList} object.
+     */
+    protected MZTabDataLineParser(MZTabParserContext context,
+            MZTabColumnFactory factory, PositionMapping positionMapping,
+            Metadata metadata, MZTabErrorList errorList) {
+<span class="fc" id="L109">        this(context);</span>
+<span class="pc bpc" id="L110" title="1 of 2 branches missed.">        if (factory == null) {</span>
+<span class="nc" id="L111">            throw new NullPointerException(</span>
+                    &quot;Column header factory should be created first.&quot;);
+        }
+<span class="fc" id="L114">        this.factory = factory;</span>
+
+<span class="fc" id="L116">        this.positionMapping = positionMapping;</span>
+<span class="fc" id="L117">        this.exchangeMapping = positionMapping.reverse();</span>
+<span class="fc" id="L118">        this.mapping = factory.getOffsetColumnsMap();</span>
+
+<span class="pc bpc" id="L120" title="1 of 2 branches missed.">        if (metadata == null) {</span>
+<span class="nc" id="L121">            throw new NullPointerException(&quot;Metadata should be parsed first.&quot;);</span>
+        }
+<span class="fc" id="L123">        this.metadata = metadata;</span>
+<span class="pc bpc" id="L124" title="1 of 2 branches missed.">        this.errorList = errorList == null ? new MZTabErrorList() : errorList;</span>
+<span class="fc" id="L125">    }</span>
+
+    /**
+     * {@inheritDoc}
+     *
+     * Validate and parse the data line, if there exist errors, add them into
+     * {@link MZTabErrorList}.
+     */
+    @Override
+    public void parse(int lineNumber, String line, MZTabErrorList errorList) throws MZTabException {
+<span class="fc" id="L135">        super.parse(lineNumber, line, errorList);</span>
+<span class="fc" id="L136">        checkCount();</span>
+
+<span class="fc" id="L138">        int offset = checkData();</span>
+<span class="pc bpc" id="L139" title="1 of 2 branches missed.">        if (offset != items.length) {</span>
+<span class="nc" id="L140">            log.error(</span>
+                    &quot;Number of expected items after parsing header is: {} but data line has: {} items!&quot;,
+<span class="nc" id="L142">                    offset,</span>
+<span class="nc" id="L143">                    items.length);</span>
+<span class="nc" id="L144">            log.error(&quot;Current mapping is: {}&quot;, mapping);</span>
+<span class="nc" id="L145">            log.error(&quot;Items given: {} expected: {}&quot;, Arrays.toString(items),</span>
+<span class="nc" id="L146">                    Arrays.toString(line.split(&quot;\\t&quot;)));</span>
+<span class="nc" id="L147">            this.errorList.add(new MZTabError(FormatErrorType.CountMatch,</span>
+                    lineNumber, &quot;&quot; + offset, &quot;&quot; + items.length));
+        }
+<span class="fc" id="L150">    }</span>
+
+    /**
+     * Check header line items size equals data line items size. The number of
+     * Data line items does not match with the number of Header line items.
+     * Normally, the user has not used the Unicode Horizontal Tab character
+     * (Unicode codepoint 0009) as the column delimiter, there is a file
+     * encoding error, or the user has not provided the definition of optional
+     * columns in the header line.
+     */
+    private void checkCount() {
+<span class="fc" id="L161">        int headerCount = mapping.size();</span>
+<span class="fc" id="L162">        int dataCount = items.length - 1;</span>
+
+<span class="pc bpc" id="L164" title="1 of 2 branches missed.">        if (headerCount != dataCount) {</span>
+<span class="nc" id="L165">            log.error(</span>
+                    &quot;Number of expected items after parsing header is: {} but data line has: {} items!&quot;,
+<span class="nc" id="L167">                    headerCount,</span>
+<span class="nc" id="L168">                    dataCount);</span>
+<span class="nc" id="L169">            log.error(&quot;Current mapping is: {}&quot;, mapping);</span>
+<span class="nc" id="L170">            log.error(&quot;Items given: {} expected: {}&quot;, Arrays.toString(items),</span>
+<span class="nc" id="L171">                    Arrays.toString(line.split(&quot;\\t&quot;)));</span>
+<span class="nc" id="L172">            this.errorList.add(new MZTabError(FormatErrorType.CountMatch,</span>
+                    lineNumber, &quot;&quot; + dataCount, &quot;&quot; + headerCount));
+        }
+<span class="fc" id="L175">    }</span>
+
+    /**
+     * Retrieve the data line to a type mzTab domain object.
+     *
+     * @return a typed mzTab domain object.
+     */
+    public abstract T getRecord();
+
+    /**
+     * Check and translate the columns into mzTab elements.
+     *
+     * @return a int.
+     */
+    protected abstract int checkData();
+
+    /**
+     * load best_search_engine_score[id], read id value.
+     *
+     * @param bestSearchEngineScoreLabel a {@link java.lang.String} object.
+     * @return a {@link java.lang.Integer} object.
+     */
+    protected Integer loadBestSearchEngineScoreId(
+            String bestSearchEngineScoreLabel) {
+<span class="nc" id="L199">        Pattern pattern = Pattern.compile(</span>
+                &quot;search_engine_score\\[(\\d+)\\](\\w+)?&quot;);
+<span class="nc" id="L201">        Matcher matcher = pattern.matcher(bestSearchEngineScoreLabel);</span>
+
+<span class="nc bnc" id="L203" title="All 2 branches missed.">        if (matcher.find()) {</span>
+<span class="nc" id="L204">            return new Integer(matcher.group(1));</span>
+        }
+
+<span class="nc" id="L207">        return null;</span>
+    }
+
+    /**
+     * load search_engine_score[id]_ms_run[..], read id value.
+     *
+     * @param searchEngineLabel a {@link java.lang.String} object.
+     * @return a {@link java.lang.Integer} object.
+     */
+    protected Integer loadSearchEngineScoreId(String searchEngineLabel) {
+<span class="nc" id="L217">        Pattern pattern = Pattern.compile(&quot;search_engine_score\\[(\\d+)\\]\\w*&quot;);</span>
+<span class="nc" id="L218">        Matcher matcher = pattern.matcher(searchEngineLabel);</span>
+
+<span class="nc bnc" id="L220" title="All 2 branches missed.">        if (matcher.find()) {</span>
+<span class="nc" id="L221">            return new Integer(matcher.group(1));</span>
+        }
+
+<span class="nc" id="L224">        return null;</span>
+    }
+
+    /**
+     * In the table-based sections (protein, peptide, and small molecule) there
+     * MUST NOT be any empty cells. Some field not allow &quot;null&quot; value, for
+     * example unit_id, accession and so on. In &quot;Complete&quot; file, in general
+     * &quot;null&quot; values SHOULD not be given.
+     *
+     * @param column SHOULD NOT be set to null
+     * @param target SHOULD NOT be empty.
+     * @param allowNull a boolean.
+     * @return a {@link java.lang.String} object.
+     */
+    protected String checkData(IMZTabColumn column, String target,
+            boolean allowNull) {
+<span class="pc bpc" id="L240" title="3 of 4 branches missed.">        if (target == null &amp;&amp; allowNull) {</span>
+<span class="nc" id="L241">            return null;</span>
+        }
+<span class="pc bpc" id="L243" title="1 of 2 branches missed.">        if (target == null) {</span>
+<span class="nc" id="L244">            this.errorList.add(new MZTabError(LogicalErrorType.NULL, lineNumber,</span>
+<span class="nc" id="L245">                    column.getHeader()));</span>
+<span class="nc" id="L246">            return null;</span>
+        }
+
+<span class="fc" id="L249">        target = target.trim();</span>
+<span class="pc bpc" id="L250" title="1 of 2 branches missed.">        if (target.isEmpty()) {</span>
+<span class="nc" id="L251">            this.errorList.add(new MZTabError(LogicalErrorType.NULL, lineNumber,</span>
+<span class="nc" id="L252">                    column.getHeader()));</span>
+<span class="nc" id="L253">            return null;</span>
+        }
+<span class="pc bpc" id="L255" title="1 of 4 branches missed.">        if (MZTabConstants.NULL.equals(target) &amp;&amp; !allowNull) {</span>
+<span class="nc" id="L256">            this.errorList.add(new MZTabError(LogicalErrorType.NULL, lineNumber,</span>
+<span class="nc" id="L257">                    column.getHeader()));</span>
+<span class="nc" id="L258">            return null;</span>
+        }
+
+<span class="fc" id="L261">        return target;</span>
+    }
+
+    /**
+     * In the table-based sections (protein, peptide, and small molecule) there
+     * MUST NOT be any empty cells. Some field not allow &quot;null&quot; value, for
+     * example unit_id, accession and so on. In &quot;Complete&quot; file, in general
+     * &quot;null&quot; values SHOULD not be given.
+     *
+     * @param column SHOULD NOT be set to null
+     * @param target SHOULD NOT be empty.
+     * @return a {@link java.lang.String} object.
+     */
+    protected String checkString(IMZTabColumn column, String target) {
+<span class="fc" id="L275">        return checkData(column, target, true);</span>
+    }
+
+    /**
+     * In the table-based sections (protein, peptide, and small molecule) there
+     * MUST NOT be any empty cells. Some field not allow &quot;null&quot; value, for
+     * example unit_id, accession and so on. In &quot;Complete&quot; file, in general
+     * &quot;null&quot; values SHOULD not be given.
+     *
+     * @param column SHOULD NOT be set to null
+     * @param target SHOULD NOT be empty.
+     * @param allowNull if true, null target values will pass the check, if
+     * false, the check will raise an error in the error list.
+     * @return a {@link java.lang.String} object.
+     */
+    protected String checkString(IMZTabColumn column, String target,
+            boolean allowNull) {
+<span class="fc" id="L292">        return checkData(column, target, allowNull);</span>
+    }
+
+    /**
+     * Check and translate target string into Integer. If parse is incorrect,
+     * throws
+     * {@link uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType#Integer}
+     * error.
+     *
+     * @param column SHOULD NOT be set to null
+     * @param target SHOULD NOT be empty.
+     * @return a {@link java.lang.Integer} object.
+     */
+    protected Integer checkInteger(IMZTabColumn column, String target) {
+<span class="fc" id="L306">        return checkInteger(column, target, true);</span>
+    }
+
+    /**
+     * Check and translate target string into Integer. If parse is incorrect,
+     * throws
+     * {@link uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType#Integer}
+     * error.
+     *
+     * @param column SHOULD NOT be set to null
+     * @param target SHOULD NOT be empty.
+     * @param allowNull if true, null target values will pass the check, if
+     * false, the check will raise an error in the error list.
+     * @return a {@link java.lang.Integer} object.
+     */
+    protected Integer checkInteger(IMZTabColumn column, String target,
+            boolean allowNull) {
+<span class="fc" id="L323">        String result = checkData(column, target, allowNull);</span>
+
+<span class="pc bpc" id="L325" title="1 of 4 branches missed.">        if (result == null || result.equalsIgnoreCase(NULL)) {</span>
+<span class="fc" id="L326">            return null;</span>
+        }
+
+<span class="fc" id="L329">        Integer value = parseInteger(result);</span>
+<span class="pc bpc" id="L330" title="1 of 2 branches missed.">        if (value == null) {</span>
+<span class="nc" id="L331">            this.errorList.add(new MZTabError(FormatErrorType.Integer,</span>
+<span class="nc" id="L332">                    lineNumber, column.getHeader(), target));</span>
+        }
+
+<span class="fc" id="L335">        return value;</span>
+    }
+
+    /**
+     * Check and translate target string into Double. If parse is incorrect,
+     * throws
+     * {@link uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType#Double}
+     * error.
+     *
+     * NOTICE: If ratios are included and the denominator is zero, the &quot;INF&quot;
+     * value MUST be used. If the result leads to calculation errors (for
+     * example 0/0), this MUST be reported as &quot;not a number&quot; (&quot;NaN&quot;).
+     *
+     * @param column SHOULD NOT be set to null
+     * @param target SHOULD NOT be empty.
+     * @return a {@link java.lang.Double} object.
+     */
+    protected Double checkDouble(IMZTabColumn column, String target) {
+<span class="fc" id="L353">        return checkDouble(column, target, true);</span>
+    }
+
+    /**
+     * Check and translate target string into Double. If parse is incorrect,
+     * throws
+     * {@link uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType#Double}
+     * error.
+     *
+     * NOTICE: If ratios are included and the denominator is zero, the &quot;INF&quot;
+     * value MUST be used. If the result leads to calculation errors (for
+     * example 0/0), this MUST be reported as &quot;not a number&quot; (&quot;NaN&quot;).
+     *
+     * @param column SHOULD NOT be set to null
+     * @param target SHOULD NOT be empty.
+     * @param allowNull if true, null target values will pass the check, if
+     * false, the check will raise an error in the error list.
+     * @return a {@link java.lang.Double} object.
+     */
+    protected Double checkDouble(IMZTabColumn column, String target,
+            boolean allowNull) {
+<span class="fc" id="L374">        String result = checkData(column, target, allowNull);</span>
+
+<span class="pc bpc" id="L376" title="1 of 4 branches missed.">        if (result == null || result.equalsIgnoreCase(NULL)) {</span>
+<span class="fc" id="L377">            return null;</span>
+        }
+
+<span class="fc" id="L380">        Double value = parseDouble(result);</span>
+<span class="pc bpc" id="L381" title="1 of 2 branches missed.">        if (value == null) {</span>
+<span class="nc" id="L382">            this.errorList.add(</span>
+                    new MZTabError(FormatErrorType.Double, lineNumber, column.
+<span class="nc" id="L384">                            getHeader(), target));</span>
+<span class="nc" id="L385">            return null;</span>
+        }
+<span class="pc bpc" id="L387" title="1 of 4 branches missed.">        if (value.equals(Double.NaN) || value.equals(Double.POSITIVE_INFINITY)) {</span>
+<span class="fc" id="L388">            return value;</span>
+        }
+
+<span class="fc" id="L391">        return value;</span>
+    }
+
+    /**
+     * Check and translate target string into parameter list which split by '|'
+     * character.. If parse is incorrect, throws
+     * {@link uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType#ParamList}
+     * error.
+     *
+     * @param column SHOULD NOT be set to null
+     * @param target SHOULD NOT be empty.
+     * @return a {@link java.util.List} object.
+     */
+    protected List&lt;Parameter&gt; checkParamList(IMZTabColumn column, String target) {
+<span class="nc" id="L405">        String result = checkData(column, target, true);</span>
+
+<span class="nc bnc" id="L407" title="All 4 branches missed.">        if (result == null || result.equalsIgnoreCase(NULL)) {</span>
+<span class="nc" id="L408">            return new ArrayList&lt;&gt;(BAR);</span>
+        }
+
+<span class="nc" id="L411">        List&lt;Parameter&gt; paramList = parseParamList(result);</span>
+<span class="nc bnc" id="L412" title="All 2 branches missed.">        if (paramList.isEmpty()) {</span>
+<span class="nc" id="L413">            this.errorList.add(new MZTabError(FormatErrorType.ParamList,</span>
+<span class="nc" id="L414">                    lineNumber, &quot;Column &quot; + column.getHeader(), target));</span>
+        }
+<span class="nc bnc" id="L416" title="All 2 branches missed.">        for (Parameter param : paramList) {</span>
+<span class="nc bnc" id="L417" title="All 4 branches missed.">            if (param != null &amp;&amp; param.getCvAccession() != null &amp;&amp; !param.</span>
+<span class="nc" id="L418">                    getCvAccession().</span>
+<span class="nc bnc" id="L419" title="All 2 branches missed.">                    isEmpty()) {</span>
+<span class="nc" id="L420">                if (!param.getCvAccession().</span>
+<span class="nc bnc" id="L421" title="All 2 branches missed.">                        contains(&quot;:&quot;)) {</span>
+<span class="nc" id="L422">                    this.errorList.add(new MZTabError(</span>
+                            FormatErrorType.ParamAccessionNotNamespaced, lineNumber,
+<span class="nc" id="L424">                            column.getHeader(), param.getCvAccession(),</span>
+<span class="nc" id="L425">                            new ParameterConverter().convert(param)));</span>
+                }
+            }
+<span class="nc" id="L428">        }</span>
+
+<span class="nc" id="L430">        return paramList;</span>
+    }
+
+    /**
+     * &lt;p&gt;
+     * checkParameter.&lt;/p&gt;
+     *
+     * @param column a {@link uk.ac.ebi.pride.jmztab2.model.IMZTabColumn}
+     * object.
+     * @param target a {@link java.lang.String} object.
+     * @param allowNull a boolean.
+     * @return a {@link de.isas.mztab2.model.Parameter} object.
+     */
+    protected Parameter checkParameter(IMZTabColumn column, String target,
+            boolean allowNull) {
+<span class="fc" id="L445">        String result = checkData(column, target, true);</span>
+<span class="pc bpc" id="L446" title="2 of 6 branches missed.">        if (result == null || (result.equalsIgnoreCase(NULL) &amp;&amp; !allowNull)) {</span>
+<span class="nc" id="L447">            this.errorList.add(new MZTabError(FormatErrorType.Param, lineNumber,</span>
+<span class="nc" id="L448">                    &quot;Column &quot; + column.getHeader(), target));</span>
+        }
+<span class="fc" id="L450">        Parameter param = MZTabUtils.parseParam(target);</span>
+<span class="pc bpc" id="L451" title="1 of 4 branches missed.">        if (param != null &amp;&amp; param.getCvAccession() != null &amp;&amp; !param.</span>
+<span class="fc" id="L452">                getCvAccession().</span>
+<span class="fc bfc" id="L453" title="All 2 branches covered.">                isEmpty()) {</span>
+<span class="fc" id="L454">            if (!param.getCvAccession().</span>
+<span class="pc bpc" id="L455" title="1 of 2 branches missed.">                    contains(&quot;:&quot;)) {</span>
+<span class="nc" id="L456">                this.errorList.add(new MZTabError(</span>
+                        FormatErrorType.ParamAccessionNotNamespaced, lineNumber,
+<span class="nc" id="L458">                        column.getHeader(), param.getCvAccession(),</span>
+<span class="nc" id="L459">                        new ParameterConverter().convert(param)));</span>
+            }
+<span class="pc bpc" id="L461" title="2 of 6 branches missed.">        } else if (param == null &amp;&amp; result != null &amp;&amp; !result.isEmpty() &amp;&amp; !(result.</span>
+<span class="pc bpc" id="L462" title="1 of 2 branches missed.">                equalsIgnoreCase(NULL))) {</span>
+<span class="nc" id="L463">            this.errorList.add(new MZTabError(FormatErrorType.Param, lineNumber,</span>
+<span class="nc" id="L464">                    &quot;Column &quot; + column.getHeader(), target));</span>
+        }
+<span class="fc" id="L466">        return param;</span>
+    }
+
+    /**
+     * Check and translate target string into parameter list which split by
+     * splitChar character.. If parse is incorrect, throws
+     * {@link uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType#StringList}
+     * error.
+     *
+     * @param column SHOULD NOT be set to null
+     * @param target SHOULD NOT be empty.
+     * @param splitChar a char.
+     * @return a {@link java.util.List} object.
+     */
+    protected List&lt;String&gt; checkStringList(IMZTabColumn column, String target,
+            char splitChar) {
+<span class="fc" id="L482">        String result = checkData(column, target, true);</span>
+
+<span class="pc bpc" id="L484" title="1 of 4 branches missed.">        if (result == null || result.equalsIgnoreCase(NULL)) {</span>
+<span class="fc" id="L485">            return new ArrayList&lt;&gt;(splitChar);</span>
+        }
+
+<span class="fc" id="L488">        List&lt;String&gt; stringList = parseStringList(splitChar, result);</span>
+<span class="pc bpc" id="L489" title="1 of 2 branches missed.">        if (stringList.isEmpty()) {</span>
+<span class="nc" id="L490">            this.errorList.add(new MZTabError(FormatErrorType.StringList,</span>
+<span class="nc" id="L491">                    lineNumber, column.getHeader(), result, &quot;&quot; + splitChar));</span>
+        }
+
+<span class="fc" id="L494">        return stringList;</span>
+    }
+
+    /**
+     * Check and translate target string into integer list which split by
+     * splitChar character.. If parse is incorrect, throws
+     * {@link uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType#StringList}
+     * error.
+     *
+     * @param column SHOULD NOT be set to null
+     * @param target SHOULD NOT be empty.
+     * @param splitChar a char.
+     * @return a {@link java.util.List} object.
+     */
+    protected List&lt;Integer&gt; checkIntegerList(IMZTabColumn column, String target,
+            char splitChar) {
+<span class="fc" id="L510">        return checkIntegerList(column, target, splitChar, true);</span>
+    }
+
+    /**
+     * Check and translate target string into integer list which split by
+     * splitChar character.. If parse is incorrect, throws
+     * {@link uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType#StringList}
+     * error.
+     *
+     * @param column SHOULD NOT be set to null
+     * @param target SHOULD NOT be empty.
+     * @param splitChar a char.
+     * @param allowNull if true, null will be treated as a valid element of the
+     * list. Otherwise, an error will be added to the error list.
+     * @return a {@link java.util.List} object.
+     */
+    protected List&lt;Integer&gt; checkIntegerList(IMZTabColumn column, String target,
+            char splitChar, boolean allowNull) {
+<span class="fc" id="L528">        String result = checkData(column, target, allowNull);</span>
+
+<span class="pc bpc" id="L530" title="1 of 4 branches missed.">        if (result == null || result.equalsIgnoreCase(NULL)) {</span>
+<span class="fc" id="L531">            return new ArrayList&lt;&gt;(splitChar);</span>
+        }
+
+<span class="fc" id="L534">        List&lt;Integer&gt; stringList = parseIntegerList(result);</span>
+<span class="pc bpc" id="L535" title="1 of 2 branches missed.">        if (stringList.isEmpty()) {</span>
+<span class="nc" id="L536">            this.errorList.add(new MZTabError(FormatErrorType.IntegerList,</span>
+<span class="nc" id="L537">                    lineNumber, column.getHeader(), result, &quot;&quot; + splitChar));</span>
+        }
+
+<span class="fc" id="L540">        return stringList;</span>
+    }
+
+    /**
+     * Check and translate target string into parameter list which split by
+     * splitChar character.. If parse is incorrect, throws
+     * {@link uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType#StringList}
+     * error.
+     *
+     * @param column SHOULD NOT be set to null
+     * @param target SHOULD NOT be empty.
+     * @return a {@link java.util.List} object.
+     */
+    protected List&lt;Double&gt; checkDoubleList(IMZTabColumn column, String target) {
+<span class="fc" id="L554">        String result = checkData(column, target, true);</span>
+
+<span class="pc bpc" id="L556" title="2 of 4 branches missed.">        if (result == null || result.equalsIgnoreCase(NULL)) {</span>
+<span class="nc" id="L557">            return new ArrayList&lt;&gt;(MZTabConstants.BAR);</span>
+        }
+
+<span class="fc" id="L560">        List&lt;Double&gt; doubleList = parseDoubleList(target);</span>
+<span class="pc bpc" id="L561" title="1 of 2 branches missed.">        if (doubleList.isEmpty()) {</span>
+<span class="nc" id="L562">            this.errorList.add(new MZTabError(FormatErrorType.DoubleList,</span>
+<span class="nc" id="L563">                    lineNumber, column.getHeader(), result, &quot;&quot; + MZTabConstants.BAR));</span>
+        }
+
+<span class="fc" id="L566">        return doubleList;</span>
+    }
+
+    /**
+     * Check and translate target to
+     * {@link uk.ac.ebi.pride.jmztab2.model.MZBoolean}. Only &quot;0&quot; and &quot;1&quot; allow
+     * used in express Boolean (0/1). If parse is incorrect, throws
+     * {@link uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType#MZBoolean}
+     * error.
+     *
+     * @param column SHOULD NOT be set to null
+     * @param target SHOULD NOT be empty.
+     * @return a {@link uk.ac.ebi.pride.jmztab2.model.MZBoolean} object.
+     */
+    protected MZBoolean checkMZBoolean(IMZTabColumn column, String target) {
+<span class="nc" id="L581">        String result = checkData(column, target, true);</span>
+
+<span class="nc bnc" id="L583" title="All 4 branches missed.">        if (result == null || result.equalsIgnoreCase(NULL)) {</span>
+<span class="nc" id="L584">            return null;</span>
+        }
+
+<span class="nc" id="L587">        MZBoolean value = MZBoolean.findBoolean(result);</span>
+<span class="nc bnc" id="L588" title="All 2 branches missed.">        if (value == null) {</span>
+<span class="nc" id="L589">            this.errorList.add(new MZTabError(FormatErrorType.MZBoolean,</span>
+<span class="nc" id="L590">                    lineNumber, column.getHeader(), result));</span>
+        }
+
+<span class="nc" id="L593">        return value;</span>
+    }
+
+    /**
+     * Check target string. Normally, description can set &quot;null&quot;. But in
+     * &quot;Complete&quot; file, in general &quot;null&quot; values SHOULD not be given.
+     *
+     * @see #checkData(IMZTabColumn, String, boolean)
+     * @param column SHOULD NOT be set to null
+     * @param description SHOULD NOT be empty.
+     * @return a {@link java.lang.String} object.
+     */
+    protected String checkDescription(IMZTabColumn column, String description) {
+<span class="nc" id="L606">        return checkData(column, description, true);</span>
+    }
+
+    /**
+     * Check and translate taxid string into Integer. If exists error during
+     * parse, raise
+     * {@link uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType#Integer}
+     * error. Normally, taxid may be set to &quot;null&quot;; in general &quot;null&quot; values
+     * SHOULD not be given.
+     *
+     * @param column SHOULD NOT be set to null
+     * @param taxid SHOULD NOT be empty.
+     * @return a {@link java.lang.Integer} object.
+     */
+    protected Integer checkTaxid(IMZTabColumn column, String taxid) {
+<span class="nc" id="L621">        return checkInteger(column, taxid);</span>
+    }
+
+    /**
+     * Check target string. Normally, species can set &quot;null&quot;. But in &quot;Complete&quot;
+     * file, in general &quot;null&quot; values SHOULD not be given.
+     *
+     * @see #checkData(IMZTabColumn, String, boolean)
+     * @param column SHOULD NOT be set to null
+     * @param species SHOULD NOT be empty.
+     * @return a {@link java.lang.String} object.
+     */
+    protected String checkSpecies(IMZTabColumn column, String species) {
+<span class="nc" id="L634">        return checkData(column, species, true);</span>
+    }
+
+    /**
+     * Check target string. Normally, database can set &quot;null&quot;. But in &quot;Complete&quot;
+     * file, in general &quot;null&quot; values SHOULD not be given.
+     *
+     * @see #checkData(IMZTabColumn, String, boolean)
+     * @param column SHOULD NOT be set to null
+     * @param database SHOULD NOT be empty.
+     * @return a {@link java.lang.String} object.
+     */
+    protected String checkDatabase(IMZTabColumn column, String database) {
+<span class="nc" id="L647">        return checkData(column, database, true);</span>
+    }
+
+    /**
+     * Check target string. Normally, databaseVersion can set &quot;null&quot;. But in
+     * &quot;Complete&quot; file, in general &quot;null&quot; values SHOULD not be given.
+     *
+     * @see #checkData(IMZTabColumn, String, boolean)
+     * @param column SHOULD NOT be set to null
+     * @param databaseVersion SHOULD NOT be empty.
+     * @return a {@link java.lang.String} object.
+     */
+    protected String checkDatabaseVersion(IMZTabColumn column,
+            String databaseVersion) {
+<span class="nc" id="L661">        return checkData(column, databaseVersion, true);</span>
+    }
+
+    /**
+     * Check and translate searchEngine string into parameter list which split
+     * by '|' character.. If parse is incorrect, throws
+     * {@link uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType#ParamList}
+     * error. Normally, searchEngine may be set to &quot;null&quot;; in general &quot;null&quot;
+     * values SHOULD not be given.
+     *
+     * @param column SHOULD NOT be set to null
+     * @param searchEngine SHOULD NOT be empty.
+     * @return a {@link java.util.List} object.
+     */
+    protected List&lt;Parameter&gt; checkSearchEngine(IMZTabColumn column,
+            String searchEngine) {
+<span class="nc" id="L677">        return checkParamList(column, searchEngine);</span>
+    }
+
+    /**
+     * The best search engine score (for this type of score) for the given
+     * peptide across all replicates reported. The type of score MUST be defined
+     * in the metadata section. If the peptide was not identified by the
+     * specified search engine, “null” MUST be reported.
+     *
+     * @param column SHOULD NOT be set to null
+     * @param bestSearchEngineScore SHOULD NOT be empty.
+     * @return a {@link java.lang.Double} object.
+     */
+    protected Double checkBestSearchEngineScore(IMZTabColumn column,
+            String bestSearchEngineScore) {
+<span class="nc" id="L692">        return checkDouble(column, bestSearchEngineScore);</span>
+    }
+
+    /**
+     * The search engine score for the given peptide in the defined ms run. The
+     * type of score MUST be defined in the metadata section. If the peptide was
+     * not identified by the specified search engine “null” must be reported.
+     *
+     * @param column SHOULD NOT be set to null
+     * @param searchEngineScore SHOULD NOT be empty.
+     * @return a {@link java.lang.Double} object.
+     */
+    protected Double checkSearchEngineScore(IMZTabColumn column,
+            String searchEngineScore) {
+<span class="nc" id="L706">        return checkDouble(column, searchEngineScore);</span>
+    }
+
+    /**
+     * Check and translate numPSMs string into Integer. If exists error during
+     * parse, raise
+     * {@link uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType#Integer}
+     * error. Normally, numPSMs may be set to &quot;null&quot;; in general &quot;null&quot; values
+     * SHOULD not be given.
+     *
+     * @param column SHOULD NOT be set to null
+     * @param numPSMs SHOULD NOT be empty.
+     * @return a {@link java.lang.Integer} object.
+     */
+    protected Integer checkNumPSMs(IMZTabColumn column, String numPSMs) {
+<span class="nc" id="L721">        return checkInteger(column, numPSMs);</span>
+    }
+
+    /**
+     * Check and translate numPeptidesDistinct string into Integer. If exists
+     * error during parse, raise
+     * {@link uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType#Integer}
+     * error. Normally, numPeptidesDistinct can set &quot;null&quot;, but in &quot;Complete&quot;
+     * file, in general &quot;null&quot; values SHOULD not be given.
+     *
+     * @param column SHOULD NOT be set to null
+     * @param numPeptidesDistinct SHOULD NOT be empty.
+     * @return a {@link java.lang.Integer} object.
+     */
+    protected Integer checkNumPeptidesDistinct(IMZTabColumn column,
+            String numPeptidesDistinct) {
+<span class="nc" id="L737">        return checkInteger(column, numPeptidesDistinct);</span>
+    }
+
+    /**
+     * Check and translate numPeptidesUnique string into Integer. If exists
+     * error during parse, raise
+     * {@link uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType#Integer}
+     * error. Normally, numPeptidesUnique can set &quot;null&quot;, but in &quot;Complete&quot;
+     * file, in general &quot;null&quot; values SHOULD not be given.
+     *
+     * @param column SHOULD NOT be set to null
+     * @param numPeptidesUnique SHOULD NOT be empty.
+     * @return a {@link java.lang.Integer} object.
+     */
+    protected Integer checkNumPeptidesUnique(IMZTabColumn column,
+            String numPeptidesUnique) {
+<span class="nc" id="L753">        return checkInteger(column, numPeptidesUnique);</span>
+    }
+
+    /**
+     * Check and translate target string into parameter list which split by ','
+     * character.. If parse is incorrect, throws
+     * {@link uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType#StringList}
+     * error. Normally, ambiguityMembers may be set to &quot;null&quot;; in general &quot;null&quot;
+     * values SHOULD not be given.
+     *
+     * @param column SHOULD NOT be set to null
+     * @param ambiguityMembers SHOULD NOT be empty.
+     * @return a {@link java.util.List} object.
+     */
+    protected List&lt;String&gt; checkAmbiguityMembers(IMZTabColumn column,
+            String ambiguityMembers) {
+<span class="nc" id="L769">        return checkStringList(column, ambiguityMembers, COMMA);</span>
+    }
+
+    /**
+     * Checks the provided URI string.
+     *
+     * @param column SHOULD NOT be set to null
+     * @param uri a {@link java.lang.String} object, conforming to URI format.
+     * @return the uri as an ASCII encoded string.
+     */
+    protected String checkURI(IMZTabColumn column, String uri) {
+<span class="fc" id="L780">        String result_uri = checkData(column, uri, true);</span>
+
+<span class="pc bpc" id="L782" title="1 of 4 branches missed.">        if (result_uri == null || result_uri.equalsIgnoreCase(NULL)) {</span>
+<span class="fc" id="L783">            return null;</span>
+        }
+
+<span class="fc" id="L786">        java.net.URI result = parseURI(result_uri);</span>
+<span class="pc bpc" id="L787" title="1 of 2 branches missed.">        if (result == null) {</span>
+<span class="nc" id="L788">            this.errorList.add(new MZTabError(FormatErrorType.URI, lineNumber,</span>
+<span class="nc" id="L789">                    &quot;Column &quot; + column.getHeader(), result_uri));</span>
+<span class="nc" id="L790">            return null;</span>
+        } else {
+<span class="fc" id="L792">            return result.toASCIIString();</span>
+        }
+    }
+
+    /**
+     * Check and translate spectraRef string into
+     * {@link de.isas.mztab2.model.SpectraRef} list. If parse incorrect, or
+     * ms_run not defined in metadata raise
+     * {@link uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType#SpectraRef}
+     * error. Normally, spectraRef may be set to &quot;null&quot;; in general &quot;null&quot;
+     * values SHOULD not be given.
+     *
+     * @param column SHOULD NOT be set to null
+     * @param spectraRef SHOULD NOT be empty.
+     * @param context a
+     * {@link uk.ac.ebi.pride.jmztab2.utils.parser.MZTabParserContext} object.
+     * @param allowNull if true, allow null for value. Otherwise, an error will
+     * be added to the error list.
+     * @return a {@link java.util.List} object.
+     */
+    protected List&lt;SpectraRef&gt; checkSpectraRef(MZTabParserContext context,
+            IMZTabColumn column, String spectraRef, boolean allowNull) {
+<span class="fc" id="L814">        String result_spectraRef = checkData(column, spectraRef, allowNull);</span>
+
+<span class="pc bpc" id="L816" title="1 of 2 branches missed.">        if (result_spectraRef == null || result_spectraRef.</span>
+<span class="pc bpc" id="L817" title="1 of 2 branches missed.">                equalsIgnoreCase(NULL)) {</span>
+<span class="nc" id="L818">            return new SplitList&lt;&gt;(BAR);</span>
+        }
+
+<span class="fc" id="L821">        List&lt;SpectraRef&gt; refList = parseSpectraRefList(context, metadata,</span>
+                result_spectraRef);
+<span class="fc" id="L823">        SpectraRefValidator validator = new SpectraRefValidator();</span>
+<span class="fc" id="L824">        this.errorList.addAll(</span>
+<span class="fc" id="L825">            validator.validateLine(</span>
+                lineNumber, 
+                context, 
+                column, 
+                result_spectraRef, 
+                refList
+            )
+        );
+<span class="fc" id="L833">        return refList;</span>
+    }
+
+    /**
+     * Check target string. Normally, pre can set &quot;null&quot;. &quot;null&quot; values should
+     * only be given, if no value is available and where the specification
+     * allows for &quot;null&quot; explicitly.&quot;
+     *
+     * @see #checkData(IMZTabColumn, String, boolean)
+     * @param column SHOULD NOT be set to null
+     * @param pre SHOULD NOT be empty.
+     * @return a {@link java.lang.String} object.
+     */
+    protected String checkPre(IMZTabColumn column, String pre) {
+<span class="nc" id="L847">        return checkData(column, pre, true);</span>
+    }
+
+    /**
+     * Check target string. Normally, post can set &quot;null&quot;. But in &quot;Complete&quot;
+     * file, in general &quot;null&quot; values SHOULD not be given.
+     *
+     * @see #checkData(IMZTabColumn, String, boolean)
+     * @param column SHOULD NOT be set to null
+     * @param post SHOULD NOT be empty.
+     * @return a {@link java.lang.String} object.
+     */
+    protected String checkPost(IMZTabColumn column, String post) {
+<span class="nc" id="L860">        return checkData(column, post, true);</span>
+    }
+
+    /**
+     * Check target string. Normally, start can set &quot;null&quot;. But in &quot;Complete&quot;
+     * file, in general &quot;null&quot; values SHOULD not be given.
+     *
+     * @see #checkData(IMZTabColumn, String, boolean)
+     * @param column SHOULD NOT be set to null
+     * @param start SHOULD NOT be empty.
+     * @return a {@link java.lang.String} object.
+     */
+    protected String checkStart(IMZTabColumn column, String start) {
+<span class="nc" id="L873">        return checkData(column, start, true);</span>
+    }
+
+    /**
+     * Check target string. Normally, end can set &quot;null&quot;. But in &quot;Complete&quot;
+     * file, in general &quot;null&quot; values SHOULD not be given.
+     *
+     * @see #checkData(IMZTabColumn, String, boolean)
+     * @param column SHOULD NOT be set to null
+     * @param end SHOULD NOT be empty.
+     * @return a {@link java.lang.String} object.
+     */
+    protected String checkEnd(IMZTabColumn column, String end) {
+<span class="nc" id="L886">        return checkData(column, end, true);</span>
+    }
+
+    /**
+     * Check and translate target string into string list which split by ','
+     * character.. If parse is incorrect, throws
+     * {@link uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType#StringList}
+     * error. Besides, each item in list should be start with &quot;GO:&quot;, otherwise
+     * system raise
+     * {@link uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType#GOTermList}
+     * error. Normally, go_terms may be set to &quot;null&quot;; in general &quot;null&quot; values
+     * SHOULD not be given.
+     *
+     * @param column SHOULD NOT be set to null
+     * @param go_terms SHOULD NOT be empty.
+     * @return a {@link java.util.List} object.
+     */
+    protected List&lt;String&gt; checkGOTerms(IMZTabColumn column, String go_terms) {
+<span class="nc" id="L904">        String result_go_terms = checkData(column, go_terms, true);</span>
+
+<span class="nc bnc" id="L906" title="All 4 branches missed.">        if (result_go_terms == null || result_go_terms.equalsIgnoreCase(NULL)) {</span>
+<span class="nc" id="L907">            return new ArrayList&lt;&gt;(COMMA);</span>
+        }
+
+<span class="nc" id="L910">        List&lt;String&gt; stringList = parseGOTermList(result_go_terms);</span>
+<span class="nc bnc" id="L911" title="All 2 branches missed.">        if (stringList.isEmpty()) {</span>
+<span class="nc" id="L912">            this.errorList.add(new MZTabError(FormatErrorType.GOTermList,</span>
+<span class="nc" id="L913">                    lineNumber, column.getHeader(), result_go_terms));</span>
+        }
+
+<span class="nc" id="L916">        return stringList;</span>
+    }
+
+    /**
+     * Check and translate protein_coverage string into Double. If parse is
+     * incorrect, throws
+     * {@link uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType#Double}
+     * error. protein_coverage range should be in the [0, 1), otherwise raise
+     * {@link uk.ac.ebi.pride.jmztab2.utils.errors.LogicalErrorType#ProteinCoverage}
+     * error.
+     *
+     * NOTICE: If ratios are included and the denominator is zero, the &quot;INF&quot;
+     * value MUST be used. If the result leads to calculation errors (for
+     * example 0/0), this MUST be reported as &quot;not a number&quot; (&quot;NaN&quot;).
+     *
+     * @param column SHOULD NOT be set to null
+     * @param protein_coverage SHOULD NOT be empty.
+     * @return a {@link java.lang.Double} object.
+     */
+    protected Double checkProteinCoverage(IMZTabColumn column,
+            String protein_coverage) {
+<span class="nc" id="L937">        Double result = checkDouble(column, protein_coverage);</span>
+
+<span class="nc bnc" id="L939" title="All 2 branches missed.">        if (result == null) {</span>
+<span class="nc" id="L940">            return null;</span>
+        }
+
+<span class="nc bnc" id="L943" title="All 4 branches missed.">        if (result &lt; 0 || result &gt; 1) {</span>
+<span class="nc" id="L944">            this.errorList.add(new MZTabError(LogicalErrorType.ProteinCoverage,</span>
+<span class="nc" id="L945">                    lineNumber, column.getHeader(), printDouble(result)));</span>
+<span class="nc" id="L946">            return null;</span>
+        }
+
+<span class="nc" id="L949">        return result;</span>
+    }
+
+    /**
+     * Check and translate peptide sequence. 'O' and 'U' are encoded by codons
+     * that are usually interpreted as stop codons, which can not displayed in
+     * the sequence. So, if find it, system raise
+     * {@link uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType#Sequence}
+     * error.
+     *
+     * @param column SHOULD NOT be set to null
+     * @param sequence SHOULD NOT be empty.
+     * @return a {@link java.lang.String} object.
+     */
+    protected String checkSequence(IMZTabColumn column, String sequence) {
+<span class="nc" id="L964">        String result = checkData(column, sequence, true);</span>
+
+<span class="nc bnc" id="L966" title="All 2 branches missed.">        if (result == null) {</span>
+<span class="nc" id="L967">            return null;</span>
+        }
+
+<span class="nc" id="L970">        result = result.toUpperCase();</span>
+
+<span class="nc" id="L972">        Pattern pattern = Pattern.compile(&quot;[OU]&quot;);</span>
+<span class="nc" id="L973">        Matcher matcher = pattern.matcher(result);</span>
+<span class="nc bnc" id="L974" title="All 2 branches missed.">        if (matcher.find()) {</span>
+<span class="nc" id="L975">            this.errorList.add(new MZTabError(FormatErrorType.Sequence,</span>
+<span class="nc" id="L976">                    lineNumber, column.getHeader(), sequence));</span>
+        }
+
+<span class="nc" id="L979">        return result;</span>
+    }
+
+    /**
+     * Check and translate psm_id string into Integer. If exists error during
+     * parse, raise
+     * {@link uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType#Integer}
+     * error. Normally, psm_id may be set to &quot;null&quot;; in general &quot;null&quot; values
+     * SHOULD not be given.
+     *
+     * @param column SHOULD NOT be set to null
+     * @param psm_id SHOULD NOT be empty.
+     * @return a {@link java.lang.Integer} object.
+     */
+    protected Integer checkPSMID(IMZTabColumn column, String psm_id) {
+<span class="nc" id="L994">        return checkInteger(column, psm_id);</span>
+    }
+
+    /**
+     * Check and translate unique to
+     * {@link uk.ac.ebi.pride.jmztab2.model.MZBoolean}. Only &quot;0&quot; and &quot;1&quot; allow
+     * used in express Boolean (0/1). If parse is incorrect, throws
+     * {@link uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType#MZBoolean}
+     * error.
+     *
+     * @param column SHOULD NOT be set to null
+     * @param unique SHOULD NOT be empty.
+     * @return a {@link uk.ac.ebi.pride.jmztab2.model.MZBoolean} object.
+     */
+    protected MZBoolean checkUnique(IMZTabColumn column, String unique) {
+<span class="nc" id="L1009">        return checkMZBoolean(column, unique);</span>
+    }
+
+    /**
+     * Check and translate charge string into Integer. If exists error during
+     * parse, raise
+     * {@link uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType#Integer}
+     * error. Normally, charge may be set to &quot;null&quot;; in general &quot;null&quot; values
+     * SHOULD not be given.
+     *
+     * @param column SHOULD NOT be set to null
+     * @param charge SHOULD NOT be empty.
+     * @return a {@link java.lang.Integer} object.
+     */
+    protected Integer checkCharge(IMZTabColumn column, String charge) {
+<span class="nc" id="L1024">        return checkInteger(column, charge);</span>
+    }
+
+    /**
+     * Check and translate mass_to_charge string into Double. If parse is
+     * incorrect, throws
+     * {@link uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType#Double}
+     * error.
+     *
+     * NOTICE: If ratios are included and the denominator is zero, the &quot;INF&quot;
+     * value MUST be used. If the result leads to calculation errors (for
+     * example 0/0), this MUST be reported as &quot;not a number&quot; (&quot;NaN&quot;).
+     *
+     * @param column SHOULD NOT be set to null
+     * @param mass_to_charge SHOULD NOT be empty.
+     * @return a {@link java.lang.Double} object.
+     */
+    protected Double checkMassToCharge(IMZTabColumn column,
+            String mass_to_charge) {
+<span class="nc" id="L1043">        return checkDouble(column, mass_to_charge);</span>
+    }
+
+    /**
+     * Check and translate exp_mass_to_charge string into Double. If parse is
+     * incorrect, throws
+     * {@link uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType#Double}
+     * error.
+     *
+     * NOTICE: If ratios are included and the denominator is zero, the &quot;INF&quot;
+     * value MUST be used. If the result leads to calculation errors (for
+     * example 0/0), this MUST be reported as &quot;not a number&quot; (&quot;NaN&quot;).
+     *
+     * @param column SHOULD NOT be set to null
+     * @param exp_mass_to_charge SHOULD NOT be empty.
+     * @return a {@link java.lang.Double} object.
+     */
+    protected Double checkExpMassToCharge(IMZTabColumn column,
+            String exp_mass_to_charge) {
+<span class="nc" id="L1062">        return checkDouble(column, exp_mass_to_charge);</span>
+    }
+
+    /**
+     * Check and translate calc_mass_to_charge string into Double. If parse is
+     * incorrect, throws
+     * {@link uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType#Double}
+     * error.
+     *
+     * NOTICE: If ratios are included and the denominator is zero, the &quot;INF&quot;
+     * value MUST be used. If the result leads to calculation errors (for
+     * example 0/0), this MUST be reported as &quot;not a number&quot; (&quot;NaN&quot;).
+     *
+     * @param column SHOULD NOT be set to null
+     * @param calc_mass_to_charge SHOULD NOT be empty.
+     * @return a {@link java.lang.Double} object.
+     */
+    protected Double checkCalcMassToCharge(IMZTabColumn column,
+            String calc_mass_to_charge) {
+<span class="nc" id="L1081">        return checkDouble(column, calc_mass_to_charge);</span>
+    }
+
+    /**
+     * Check and translate identifier string into string list which split by '|'
+     * character.. If parse is incorrect, throws
+     * {@link uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType#StringList}
+     * error. Normally, identifier may be set to &quot;null&quot;; in general &quot;null&quot;
+     * values SHOULD not be given.
+     *
+     * @param column SHOULD NOT be set to null
+     * @param identifier SHOULD NOT be empty.
+     * @return a {@link java.util.List} object.
+     */
+    protected List&lt;String&gt; checkIdentifier(IMZTabColumn column,
+            String identifier) {
+<span class="nc" id="L1097">        return checkStringList(column, identifier, BAR);</span>
+    }
+
+    /**
+     * Check chemical_formula string. Normally, chemical_formula can set &quot;null&quot;.
+     * But in &quot;Complete&quot; file, in general &quot;null&quot; values SHOULD not be given.
+     *
+     * @see #checkData(IMZTabColumn, String, boolean)
+     * @param column SHOULD NOT be set to null
+     * @param chemical_formula SHOULD NOT be empty.
+     * @return a {@link java.lang.String} object.
+     */
+    protected String checkChemicalFormula(IMZTabColumn column,
+            String chemical_formula) {
+<span class="nc" id="L1111">        return checkData(column, chemical_formula, true);</span>
+    }
+
+    /**
+     * Check and translate smiles string into parameter list which split by '|'
+     * character.. If parse is incorrect, throws
+     * {@link uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType#StringList}
+     * error. Normally, smiles may be set to &quot;null&quot;; in general &quot;null&quot; values
+     * SHOULD not be given.
+     *
+     * @param column SHOULD NOT be set to null
+     * @param smiles SHOULD NOT be empty.
+     * @return a {@link java.util.List} object.
+     */
+    protected List&lt;String&gt; checkSmiles(IMZTabColumn column, String smiles) {
+<span class="fc" id="L1126">        return checkStringList(column, smiles, BAR);</span>
+    }
+
+    /**
+     * Check and translate inchi_key string into parameter list which split by
+     * '|' character.. If parse is incorrect, throws
+     * {@link uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType#StringList}
+     * error. Normally, inchi_key may be set to &quot;null&quot;; in general &quot;null&quot; values
+     * SHOULD not be given.
+     *
+     * @param column SHOULD NOT be set to null
+     * @param inchi_key SHOULD NOT be empty.
+     * @return a {@link java.util.List} object.
+     */
+    protected List&lt;String&gt; checkInchiKey(IMZTabColumn column, String inchi_key) {
+<span class="nc" id="L1141">        return checkStringList(column, inchi_key, BAR);</span>
+    }
+
+    /**
+     * Check and translate retention_time string into Double list which split by
+     * '|' character.. If parse is incorrect, throws
+     * {@link uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType#DoubleList}
+     * error. Normally, retention_time may be set to &quot;null&quot;; in general &quot;null&quot;
+     * values SHOULD not be given.
+     *
+     * @param column SHOULD NOT be set to null
+     * @param retention_time SHOULD NOT be empty.
+     * @return a {@link java.util.List} object.
+     */
+    protected List&lt;Double&gt; checkRetentionTime(IMZTabColumn column,
+            String retention_time) {
+<span class="nc" id="L1157">        String result = checkData(column, retention_time, true);</span>
+
+<span class="nc bnc" id="L1159" title="All 4 branches missed.">        if (result == null || result.equalsIgnoreCase(NULL)) {</span>
+<span class="nc" id="L1160">            return new SplitList&lt;&gt;(BAR);</span>
+        }
+
+<span class="nc" id="L1163">        List&lt;Double&gt; valueList = parseDoubleList(result);</span>
+<span class="nc bnc" id="L1164" title="All 2 branches missed.">        if (valueList.isEmpty()) {</span>
+<span class="nc" id="L1165">            this.errorList.add(new MZTabError(FormatErrorType.DoubleList,</span>
+<span class="nc" id="L1166">                    lineNumber, column.getHeader(), result, &quot;&quot; + BAR));</span>
+        }
+
+<span class="nc" id="L1169">        return valueList;</span>
+    }
+
+    /**
+     * Check and translate retention_time_window string into Double list which
+     * split by '|' character.. If parse is incorrect, throws
+     * {@link uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType#DoubleList}
+     * error. Normally, retention_time_window can set &quot;null&quot;, but in &quot;Complete&quot;
+     * file, in general &quot;null&quot; values SHOULD not be given.
+     *
+     * @param column SHOULD NOT be set to null
+     * @param retention_time_window SHOULD NOT be empty.
+     * @return a {@link java.util.List} object.
+     */
+    protected List&lt;Double&gt; checkRetentionTimeWindow(IMZTabColumn column,
+            String retention_time_window) {
+<span class="nc" id="L1185">        String result = checkData(column, retention_time_window, true);</span>
+
+<span class="nc bnc" id="L1187" title="All 4 branches missed.">        if (result == null || result.equalsIgnoreCase(NULL)) {</span>
+<span class="nc" id="L1188">            return new SplitList&lt;&gt;(BAR);</span>
+        }
+
+<span class="nc" id="L1191">        List&lt;Double&gt; valueList = parseDoubleList(result);</span>
+<span class="nc bnc" id="L1192" title="All 2 branches missed.">        if (valueList.isEmpty()) {</span>
+<span class="nc" id="L1193">            this.errorList.add(new MZTabError(FormatErrorType.DoubleList,</span>
+<span class="nc" id="L1194">                    lineNumber, column.getHeader(), result, &quot;&quot; + BAR));</span>
+        }
+
+<span class="nc" id="L1197">        return valueList;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

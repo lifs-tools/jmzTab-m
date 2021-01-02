@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MZTabConstants.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jmztabm-api</a> &gt; <a href="index.source.html" class="el_package">uk.ac.ebi.pride.jmztab2.model</a> &gt; <span class="el_source">MZTabConstants.java</span></div><h1>MZTabConstants.java</h1><pre class="source lang-java linenums">package uk.ac.ebi.pride.jmztab2.model;
+
+/**
+ * Define a couple of constants used in the jmzTab API.
+ *
+ * @author qingwei
+ * @author nilshoffmann
+ * @since 08/03/13
+ * 
+ */
+<span class="nc" id="L11">public final class MZTabConstants {</span>
+    /** Constant &lt;code&gt;NEW_LINE=&quot;System.getProperty(line.separator)&quot;&lt;/code&gt; */
+    public static final String NEW_LINE = &quot;\r\n&quot;;//System.getProperty(&quot;line.separator&quot;);
+    /** Constant &lt;code&gt;NULL=&quot;null&quot;&lt;/code&gt; */
+    public static final String NULL = &quot;null&quot;;
+    /** Constant &lt;code&gt;INFINITY=&quot;INF&quot;&lt;/code&gt; */
+    public static final String INFINITY = &quot;INF&quot;;
+    /** Constant &lt;code&gt;CALCULATE_ERROR=&quot;NaN&quot;&lt;/code&gt; */
+    public static final String CALCULATE_ERROR = &quot;NaN&quot;;
+
+    /** Constant &lt;code&gt;TAB='\u0009'&lt;/code&gt; */
+    public static final char TAB = '\u0009';
+    /** Constant &lt;code&gt;TABs=&quot;&quot;+'\u0009'&lt;/code&gt; */
+    public static final String TAB_STRING = &quot;&quot;+TAB;
+    /** Constant &lt;code&gt;MINUS='-'&lt;/code&gt; */
+    public static final char MINUS = '-';
+    /** Constant &lt;code&gt;BAR='\u007c'&lt;/code&gt; */
+    public static final char BAR = '\u007c';
+    /** Constant &lt;code&gt;BAR='\u007c'&lt;/code&gt; */
+    public static final String BAR_S = &quot;&quot;+BAR;
+    /** Constant &lt;code&gt;COLON=':'&lt;/code&gt; */
+    public static final char COLON = ':';
+    /** Constant &lt;code&gt;COMMA=','&lt;/code&gt; */
+    public static final char COMMA = ',';
+    /** Constant &lt;code&gt;VERSION=&quot;2.0.0-M&quot;&lt;/code&gt; */
+    public static final String VERSION_MZTAB_M = &quot;2.0.0-M&quot;;
+    /** Constant &lt;code&gt;OPT_PREFIX=&quot;opt_&quot;&lt;/code&gt; */
+    public static final String OPT_PREFIX = &quot;opt_&quot;;
+    /** Constant &lt;code&gt;ABUNDANCE_PREFIX=&quot;abundance_&quot;&lt;/code&gt; */
+    public static final String ABUNDANCE_PREFIX = &quot;abundance_&quot;;
+    /** Constant &lt;code&gt;GLOBAL=&quot;global&quot;&lt;/code&gt; */
+    public static final String GLOBAL = &quot;global&quot;;
+    /** Constant &lt;code&gt;CV_PREFIX=&quot;cv_&quot;&lt;/code&gt; */
+    public static final String CV_PREFIX = &quot;cv_&quot;;
+    
+    /*
+     Regular expressions that are not directly applicable to domain objects.
+    */
+    /** Constant &lt;code&gt;REGEX_INDEXED_VALUE=&quot;\\[(\\d+)\\]&quot;&lt;/code&gt; */
+    public static final String REGEX_INDEXED_VALUE = &quot;\\[(\\d+)\\]&quot;;
+    /** Constant &lt;code&gt;REGEX_CV_PARAM_OPT_COLUMN_NAME=&quot;cv(_([A-Za-z0-9\\-\\[\\]:\\.]+))?(_([A-Za-z0-9_\\-\\[\\]:\\.]+)*)&quot;&lt;/code&gt; */
+    public static final String REGEX_CV_PARAM_OPT_COLUMN_NAME = &quot;cv(_([A-Za-z0-9\\-\\[\\]:\\.]+))?(_([A-Za-z0-9_\\-\\[\\]:\\.]+)*)&quot;;
+    /** Constant &lt;code&gt;REGEX_OPT_COLUMN_NAME=&quot;opt_((assay|study_variable|ms_run)\\[(\\w+)\\]|global)_([A-Za-z0-9_\\-\\[\\]:\\.]+)&quot;&lt;/code&gt; */
+    public static final String REGEX_OPT_COLUMN_NAME = &quot;opt_((assay|study_variable|ms_run)\\[(\\w+)\\]|global)_([A-Za-z0-9_\\-\\[\\]:\\.]+)&quot;;
+    /** Constant &lt;code&gt;REGEX_ABUNDANCE_COLUMN_NAME=&quot;abundance_(.+)&quot;&lt;/code&gt; */
+    public static final String REGEX_ABUNDANCE_COLUMN_NAME = &quot;abundance_(.+)&quot;;
+    /** Constant &lt;code&gt;REGEX_ABUNDANCE_ASSAY_COLUMN_NAME=&quot;assay\\[(\\d+)\\]&quot;&lt;/code&gt; */
+    public static final String REGEX_ABUNDANCE_ASSAY_COLUMN_NAME = &quot;assay&quot;+REGEX_INDEXED_VALUE;
+    /** Constant &lt;code&gt;REGEX_STUDY_VARIABLE_COLUMN_NAME=&quot;study_variable\\[(\\d+)\\]&quot;&lt;/code&gt; */
+    public static final String REGEX_STUDY_VARIABLE_COLUMN_NAME = &quot;study_variable&quot;+REGEX_INDEXED_VALUE;
+    /** Constant &lt;code&gt;REGEX_NORMAL_METADATA=&quot;(\\w+)(\\[(\\w+)\\])?(-(\\w+)(\\[(\\w+)\\])?)?(-(\\w+))?&quot;&lt;/code&gt; */
+    public static final String REGEX_NORMAL_METADATA = &quot;(\\w+)(\\[(\\w+)\\])?(-(\\w+)(\\[(\\w+)\\])?)?(-(\\w+))?&quot;;
+    /** Constant &lt;code&gt;REGEX_EMAIL=&quot;[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-']+)*@[A-Za-z0-9]+(?:[-.][A-Za-z0-9]+)*(\\.[A-Za-z]{2,})&quot;&lt;/code&gt; */
+    public static final String REGEX_EMAIL = &quot;[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-']+)*@[A-Za-z0-9]+(?:[-.][A-Za-z0-9]+)*(\\.[A-Za-z]{2,})&quot;;
+    /** Constant {@code REGEX_MZTAB_M=&quot;(?&lt;major&gt;[2]{1})\\.(?&lt;minor&gt;\\d{1})\\.(?&lt;micro&gt;\\d{1})-(?&lt;profile&gt;[M]{1})&quot;} */
+    public static final String REGEX_MZTAB_M = &quot;(?&lt;major&gt;[2]{1})\\.(?&lt;minor&gt;\\d{1})\\.(?&lt;micro&gt;\\d{1})-(?&lt;profile&gt;[M]{1})&quot;;
+    /** Constant &lt;code&gt;REGEX_PARAM_SPLIT=&quot;,(?=([^\&quot;]*\&quot;[^\&quot;]*\&quot;)*[^\&quot;]*$)&quot;&lt;/code&gt; */
+    public static final String REGEX_PARAM_SPLIT = &quot;,(?=([^\&quot;]*\&quot;[^\&quot;]*\&quot;)*[^\&quot;]*$)&quot;;
+    /** Constant &lt;code&gt;REGEX_DEFAULT_RELIABILITY=&quot;[1234]{1}&quot;&lt;/code&gt; */
+    public static final String REGEX_DEFAULT_RELIABILITY = &quot;[1234]{1}&quot;;
+    /** More complex for isotopes: \[\d*M([\w\d]+)*([+-][\w\d]+)*\]\d*[+-] **/
+    /** Constant &lt;code&gt;REGEX_ADDUCT=&quot;^\[\d*M([+-][\w\d]+)*\]\d*[+-]$&quot;&lt;/code&gt; */
+    public static final String REGEX_ADDUCT = &quot;^\\[\\d*M([+-][\\w\\d]+)*\\]\\d*[+-]$&quot;;
+    
+    /** Constant &lt;code&gt;REGEX_SPECTRA_REF_THERMO_NATIVE = &quot;controllerType=[\\d]+ controllerNumber=[1-9]\\d* scan=[1-9]\\d*&quot;&lt;/code&gt; */
+    public static final String REGEX_SPECTRA_REF_THERMO_NATIVE = &quot;controllerType=[\\d]+ controllerNumber=[1-9]\\d* scan=[1-9]\\d*&quot;;
+    /** Constant &lt;code&gt;REGEX_SPECTRA_REF_WATERS_NATIVE = &quot;function=[1-9]\\d* process=[\\d]+ scan=[\\d]+&quot;&lt;/code&gt; */
+    public static final String REGEX_SPECTRA_REF_WATERS_NATIVE = &quot;function=[1-9]\\d* process=[\\d]+ scan=[\\d]+&quot;;
+    /** Constant &lt;code&gt;REGEX_SPECTRA_REF_WIFF_NATIVE = &quot;sample=[\\d]+ period=[\\d]+ cycle=[\\d]+ experiment=[\\d]+&quot;&lt;/code&gt; */
+    public static final String REGEX_SPECTRA_REF_WIFF_NATIVE = &quot;sample=[\\d]+ period=[\\d]+ cycle=[\\d]+ experiment=[\\d]+&quot;;
+//    /** Constant &lt;code&gt;REGEX_SPECTRA_REF_SCIEX_TOF_TOF_NATIVE = &quot;jobRun=[\\d]+ spotLabel=[\\d]+ spectrum=[\\d]+&quot;&lt;/code&gt; */
+//    public static final String REGEX_SPECTRA_REF_SCIEX_TOF_TOF_NATIVE = &quot;jobRun=[\\d]+ spotLabel=[\\w]+ spectrum=[\\d]+&quot;;
+    /** Constant &lt;code&gt;REGEX_SPECTRA_REF_INDEX = &quot;index=[\\d]+&quot;&lt;/code&gt; */
+    public static final String REGEX_SPECTRA_REF_INDEX = &quot;index=[\\d]+&quot;;
+    /** Constant &lt;code&gt;REGEX_SPECTRA_REF_FILE = &quot;file=[\\w]+&quot;&lt;/code&gt; */
+    public static final String REGEX_SPECTRA_REF_FILE = &quot;file=[\\w]+&quot;;
+    /** Constant &lt;code&gt;REGEX_SPECTRA_REF_SPECTRUM = &quot;spectrum=[\\d]+&quot;&lt;/code&gt; */
+    public static final String REGEX_SPECTRA_REF_SPECTRUM = &quot;spectrum=[\\d]+&quot;;
+    /** Constant &lt;code&gt;REGEX_SPECTRA_REF_MZML_UNIQUE = &quot;[\\w]+&quot;&lt;/code&gt; */
+    public static final String REGEX_SPECTRA_REF_MZML_UNIQUE = &quot;[\\w]+&quot;;
+    /** Constant &lt;code&gt;REGEX_SPECTRA_REF_SCAN = &quot;scan=[\\d]+&quot;&lt;/code&gt; */
+    public static final String REGEX_SPECTRA_REF_SCAN = &quot;scan=[\\d]+&quot;;
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

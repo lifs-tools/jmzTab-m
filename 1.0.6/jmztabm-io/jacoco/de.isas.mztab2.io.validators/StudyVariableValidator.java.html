@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>StudyVariableValidator.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jmztabm-io</a> &gt; <a href="index.source.html" class="el_package">de.isas.mztab2.io.validators</a> &gt; <span class="el_source">StudyVariableValidator.java</span></div><h1>StudyVariableValidator.java</h1><pre class="source lang-java linenums">/*
+ * Copyright 2019 Leibniz-Institut für Analytische Wissenschaften – ISAS – e.V..
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package de.isas.mztab2.io.validators;
+
+import de.isas.mztab2.model.Assay;
+import de.isas.mztab2.model.Metadata;
+import de.isas.mztab2.model.StudyVariable;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.SortedMap;
+import uk.ac.ebi.pride.jmztab2.utils.errors.LogicalErrorType;
+import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabError;
+import uk.ac.ebi.pride.jmztab2.utils.parser.MZTabParserContext;
+
+/**
+ * Validates that the study variable section is present in metadata and is
+ * linked to all assays and ms runs.
+ *
+ * @author nilshoffmann
+ */
+<span class="fc" id="L34">public class StudyVariableValidator implements RefiningValidator&lt;Metadata&gt; {</span>
+
+    @Override
+    public List&lt;MZTabError&gt; validateRefine(Metadata metadata, MZTabParserContext parserContext) {
+<span class="fc" id="L38">        SortedMap&lt;Integer, Assay&gt; assayMap = parserContext.getAssayMap();</span>
+<span class="fc" id="L39">        SortedMap&lt;Integer, StudyVariable&gt; svMap = parserContext.getStudyVariableMap();</span>
+<span class="fc" id="L40">        List&lt;MZTabError&gt; errorList = new LinkedList&lt;&gt;();</span>
+<span class="fc bfc" id="L41" title="All 2 branches covered.">        if (svMap.isEmpty()) {</span>
+<span class="fc" id="L42">            errorList.add(new MZTabError(</span>
+                    LogicalErrorType.SingleStudyVariableName, -1));
+        } else {
+<span class="fc bfc" id="L45" title="All 4 branches covered.">            if (svMap.size() == 1 &amp;&amp; assayMap.size() &gt; 0) {</span>
+<span class="fc" id="L46">                StudyVariable sv = svMap.get(Integer.valueOf(1));</span>
+<span class="pc bpc" id="L47" title="1 of 4 branches missed.">                if (sv.getName() == null || sv.getName().isEmpty()) {</span>
+<span class="fc" id="L48">                    errorList.add(new MZTabError(</span>
+                            LogicalErrorType.SingleStudyVariableName, -1));
+                }
+<span class="fc" id="L51">            } else {</span>
+<span class="fc" id="L52">                boolean undefinedDefined = false;</span>
+<span class="fc bfc" id="L53" title="All 2 branches covered.">                for (Integer id : svMap.keySet()) {</span>
+<span class="fc" id="L54">                    StudyVariable sv = svMap.get(id);</span>
+<span class="pc bpc" id="L55" title="1 of 2 branches missed.">                    if (sv == null) {</span>
+<span class="nc" id="L56">                        errorList.add(new MZTabError(</span>
+                                LogicalErrorType.NotDefineInMetadata, -1,
+                                Metadata.Properties.studyVariable + &quot;[&quot; + id + &quot;]&quot; + &quot;\t&quot; + &quot;&lt;NAME&gt;&quot;));
+                    } else {
+<span class="fc bfc" id="L60" title="All 2 branches covered.">                        if (sv.getName() == null) {</span>
+<span class="fc" id="L61">                            errorList.add(new MZTabError(</span>
+                                    LogicalErrorType.NotDefineInMetadata, -1,
+                                    Metadata.Properties.studyVariable + &quot;[&quot; + id + &quot;]&quot; + &quot;\t&quot; + &quot;&lt;NAME&gt;&quot;));
+                        } else {
+<span class="fc bfc" id="L65" title="All 2 branches covered.">                            if (sv.getName().equals(&quot;undefined&quot;)) {</span>
+<span class="fc bfc" id="L66" title="All 2 branches covered.">                                if (undefinedDefined) {</span>
+<span class="fc" id="L67">                                    errorList.add(new MZTabError(</span>
+                                            LogicalErrorType.UndefinedStudyVariableNameOnceOnly, -1,
+                                            Metadata.Properties.studyVariable + &quot;[&quot; + id + &quot;]&quot; + &quot;\t&quot; + &quot;&lt;NAME&gt;&quot;));
+                                } else {
+<span class="fc" id="L71">                                    undefinedDefined = true;</span>
+                                }
+                            }
+                        }
+<span class="fc" id="L75">                        if (sv.</span>
+<span class="fc bfc" id="L76" title="All 2 branches covered.">                                getDescription() == null) {</span>
+<span class="fc" id="L77">                            errorList.add(new MZTabError(</span>
+                                    LogicalErrorType.NotDefineInMetadata, -1,
+                                    Metadata.Properties.studyVariable + &quot;[&quot; + id + &quot;]-&quot; + StudyVariable.Properties.description + &quot;\t&quot; + &quot;&lt;DESCRIPTION&gt;&quot;));
+                        }
+<span class="fc" id="L81">                        if (sv.</span>
+<span class="fc bfc" id="L82" title="All 2 branches covered.">                                getAssayRefs() == null || sv.getAssayRefs().</span>
+<span class="pc bpc" id="L83" title="1 of 2 branches missed.">                                        isEmpty()) {</span>
+<span class="fc" id="L84">                            errorList.add(new MZTabError(</span>
+                                    LogicalErrorType.AssayRefs, -1,
+                                    Metadata.Properties.studyVariable + &quot;[&quot; + id + &quot;]-&quot; + StudyVariable.Properties.assayRefs));
+                        }
+                    }
+<span class="fc" id="L89">                }</span>
+            }
+        }
+
+<span class="fc" id="L93">        return errorList;</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

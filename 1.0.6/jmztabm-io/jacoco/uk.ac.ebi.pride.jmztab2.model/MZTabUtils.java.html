@@ -1,0 +1,848 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MZTabUtils.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jmztabm-io</a> &gt; <a href="index.source.html" class="el_package">uk.ac.ebi.pride.jmztab2.model</a> &gt; <span class="el_source">MZTabUtils.java</span></div><h1>MZTabUtils.java</h1><pre class="source lang-java linenums">/* 
+ * Copyright 2018 Leibniz-Institut für Analytische Wissenschaften – ISAS – e.V..
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package uk.ac.ebi.pride.jmztab2.model;
+
+import de.isas.mztab2.model.IndexedElement;
+import de.isas.mztab2.model.IndexedElementImpl;
+import de.isas.mztab2.model.Metadata;
+import de.isas.mztab2.model.MsRun;
+import de.isas.mztab2.model.Parameter;
+import de.isas.mztab2.model.Publication;
+import de.isas.mztab2.model.PublicationItem;
+import de.isas.mztab2.model.SpectraRef;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import static uk.ac.ebi.pride.jmztab2.model.MZTabConstants.*;
+import static uk.ac.ebi.pride.jmztab2.model.MZTabStringUtils.*;
+import uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType;
+import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabError;
+import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabException;
+import uk.ac.ebi.pride.jmztab2.utils.parser.MZTabParserContext;
+
+/**
+ * Provide a couple of functions for translating, parsing and printing formatted strings
+ * defined in the mzTab specification.
+ *
+ * @author qingwei
+ * @author nilshoffmann
+ * @since 30/01/13
+ *
+ */
+<span class="nc" id="L52">public class MZTabUtils {</span>
+    
+<span class="fc" id="L54">    private static final Logger LOGGER = LoggerFactory.getLogger(</span>
+        MZTabUtils.class);
+
+    /**
+     * If ratios are included and the denominator is zero, the &quot;INF&quot; value MUST
+     * be used. If the result leads to calculation errors (for example 0/0),
+     * this MUST be reported as &quot;not a number&quot; (&quot;NaN&quot;).
+     *
+     * @see #parseDouble(String)
+     * @param value a {@link java.lang.Double} object.
+     * @return a {@link java.lang.String} object.
+     */
+    public static String printDouble(Double value) {
+<span class="nc bnc" id="L67" title="All 2 branches missed.">        if (value == null) {</span>
+<span class="nc" id="L68">            return NULL;</span>
+<span class="nc bnc" id="L69" title="All 2 branches missed.">        } else if (value.equals(Double.NaN)) {</span>
+<span class="nc" id="L70">            return CALCULATE_ERROR;</span>
+<span class="nc bnc" id="L71" title="All 2 branches missed.">        } else if (value.equals(Double.POSITIVE_INFINITY)) {</span>
+<span class="nc" id="L72">            return INFINITY;</span>
+        } else {
+<span class="nc" id="L74">            return value.toString();</span>
+        }
+    }
+
+    /**
+     * Parse the target string, and check is obey the email format or not. If
+     * not, return null.
+     *
+     * @param target a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
+    public static String parseEmail(String target) {
+<span class="fc" id="L86">        target = parseString(target);</span>
+<span class="pc bpc" id="L87" title="1 of 2 branches missed.">        if (target == null) {</span>
+<span class="nc" id="L88">            return null;</span>
+        }
+        
+<span class="fc" id="L91">        String regexp = REGEX_EMAIL;</span>
+<span class="fc" id="L92">        Pattern pattern = Pattern.compile(regexp);</span>
+<span class="fc" id="L93">        Matcher matcher = pattern.matcher(target);</span>
+        
+<span class="pc bpc" id="L95" title="1 of 2 branches missed.">        return matcher.find() ? target : null;</span>
+    }
+
+    /**
+     * Parse the target string, and check it follows the mzTab Version format.
+     * If not, return null.
+     *
+     * @param target a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
+    public static String parseMzTabVersion(String target) {
+<span class="fc" id="L106">        target = parseString(target);</span>
+<span class="pc bpc" id="L107" title="1 of 2 branches missed.">        if (target == null) {</span>
+<span class="nc" id="L108">            return null;</span>
+        }
+        
+<span class="fc" id="L111">        Pattern versionPattern = Pattern.compile(MZTabConstants.REGEX_MZTAB_M);</span>
+<span class="fc" id="L112">        Matcher m = versionPattern.matcher(target);</span>
+<span class="fc bfc" id="L113" title="All 2 branches covered.">        if (m.matches()) {</span>
+<span class="fc" id="L114">            Integer major = Integer.parseInt(m.group(&quot;major&quot;));</span>
+<span class="fc" id="L115">            Integer minor = Integer.parseInt(m.group(&quot;minor&quot;));</span>
+<span class="fc" id="L116">            Integer micro = Integer.parseInt(m.group(&quot;micro&quot;));</span>
+<span class="pc bpc" id="L117" title="1 of 2 branches missed.">            if (major != 2) {</span>
+<span class="nc" id="L118">                return null;</span>
+            }
+<span class="pc bpc" id="L120" title="1 of 2 branches missed.">            if (!&quot;M&quot;.equals(m.group(&quot;profile&quot;))) {</span>
+<span class="nc" id="L121">                return null;</span>
+            }
+<span class="fc" id="L123">            return target;</span>
+        }
+<span class="fc" id="L125">        return null;</span>
+    }
+
+    /**
+     * Parameters are always reported as [CV label, accession, name, value]. Any
+     * field that is not available MUST be left empty.
+     *
+     * If the name or value of param contains comma, quotes MUST be added to
+     * avoid problems. Nested double quotes are not supported.
+     *
+     * Notice: name cell never set null.
+     *
+     * @param target a {@link java.lang.String} object.
+     * @return a {@link de.isas.mztab2.model.Parameter} object.
+     */
+    public static Parameter parseParam(String target) {
+<span class="fc" id="L141">        target = parseString(target);</span>
+<span class="fc bfc" id="L142" title="All 2 branches covered.">        if (target == null) {</span>
+<span class="fc" id="L143">            return null;</span>
+        }
+        
+        try {
+<span class="fc" id="L147">            target = target.substring(target.indexOf(&quot;[&quot;) + 1, target.</span>
+<span class="fc" id="L148">                lastIndexOf(&quot;]&quot;));</span>
+<span class="fc" id="L149">            String[] tokens = target.split(REGEX_PARAM_SPLIT, -1);</span>
+            
+<span class="fc bfc" id="L151" title="All 2 branches covered.">            if (tokens.length == 4) {</span>
+<span class="fc" id="L152">                String cvLabel = tokens[0].trim();</span>
+                
+<span class="fc" id="L154">                String accession = tokens[1].trim();</span>
+                
+<span class="fc" id="L156">                String name = tokens[2].trim();</span>
+<span class="fc bfc" id="L157" title="All 2 branches covered.">                if (name.contains(&quot;\&quot;&quot;)) {  //We remove the escaping because it will be written back in the writer</span>
+<span class="fc" id="L158">                    name = removeDoubleQuotes(name);</span>
+                }
+                
+<span class="fc bfc" id="L161" title="All 2 branches covered.">                if (isEmpty(name)) {</span>
+<span class="fc" id="L162">                    return null;</span>
+                }
+                
+<span class="fc" id="L165">                String value = tokens[3].trim();</span>
+<span class="pc bpc" id="L166" title="1 of 2 branches missed.">                if (value.contains(&quot;\&quot;&quot;)) {  //We remove the escaping because it will be written back in the writer</span>
+<span class="nc" id="L167">                    value = removeDoubleQuotes(value);</span>
+                }
+<span class="fc bfc" id="L169" title="All 2 branches covered.">                if (isEmpty(value)) {</span>
+<span class="fc" id="L170">                    value = null;</span>
+                }
+                
+<span class="pc bpc" id="L173" title="1 of 4 branches missed.">                if (isEmpty(cvLabel) &amp;&amp; isEmpty(accession)) {</span>
+<span class="fc" id="L174">                    return new Parameter().name(name).</span>
+<span class="fc" id="L175">                        value(value);</span>
+                } else {
+<span class="fc" id="L177">                    return new Parameter().cvLabel(cvLabel).</span>
+<span class="fc" id="L178">                        cvAccession(accession).</span>
+<span class="fc" id="L179">                        name(name).</span>
+<span class="fc" id="L180">                        value(value);</span>
+                }
+            }
+<span class="nc" id="L183">        } catch (IndexOutOfBoundsException e) {</span>
+<span class="nc" id="L184">            return null;</span>
+<span class="fc" id="L185">        }</span>
+        
+<span class="fc" id="L187">        return null;</span>
+        
+    }
+
+    /**
+     * Multiple identifiers MUST be separated by splitChar.
+     *
+     * @param splitChar a char.
+     * @param target a {@link java.lang.String} object.
+     * @return a {@link java.util.List} object.
+     */
+    public static List&lt;String&gt; parseStringList(char splitChar, String target) {
+<span class="fc" id="L199">        List&lt;String&gt; list = new ArrayList&lt;&gt;(splitChar);</span>
+        
+<span class="fc" id="L201">        target = parseString(target);</span>
+<span class="pc bpc" id="L202" title="1 of 2 branches missed.">        if (target == null) {</span>
+<span class="nc" id="L203">            return list;</span>
+        }
+
+        // regular express reserved keywords escape
+<span class="fc" id="L207">        StringBuilder sb = new StringBuilder();</span>
+<span class="pc bpc" id="L208" title="1 of 2 branches missed.">        switch (splitChar) {</span>
+            case '.':
+            case '$':
+            case '^':
+            case '{':
+            case '}':
+            case '[':
+            case ']':
+            case '(':
+            case ')':
+            case '|':
+            case '*':
+            case '+':
+            case '?':
+            case '\\':
+<span class="fc" id="L223">                sb.append(&quot;\\&quot;).</span>
+<span class="fc" id="L224">                    append(splitChar);</span>
+<span class="fc" id="L225">                break;</span>
+            default:
+<span class="nc" id="L227">                sb.append(splitChar);</span>
+        }
+        
+<span class="fc" id="L230">        String[] items = target.split(sb.toString());</span>
+<span class="fc" id="L231">        Collections.addAll(list, items);</span>
+        
+<span class="fc" id="L233">        return list.stream().</span>
+<span class="fc" id="L234">            map(value -&gt;</span>
+<span class="fc" id="L235">                value.trim()).</span>
+<span class="fc" id="L236">            collect(Collectors.toList());</span>
+    }
+
+    /**
+     * parse the target into a {@link de.isas.mztab2.model.IndexedElement}
+     * object.
+     *
+     * @param target a {@link java.lang.String} object.
+     * @param element a {@link uk.ac.ebi.pride.jmztab2.model.MetadataElement}
+     * object.
+     * @return a {@link de.isas.mztab2.model.IndexedElement} object.
+     */
+    public static IndexedElement parseIndexedElement(String target,
+        MetadataElement element) {
+<span class="fc" id="L250">        target = parseString(target);</span>
+<span class="pc bpc" id="L251" title="1 of 2 branches missed.">        if (target == null) {</span>
+<span class="nc" id="L252">            return null;</span>
+        }
+        
+<span class="fc" id="L255">        Pattern pattern = Pattern.compile(element + &quot;\\[(\\d+)\\]&quot;);</span>
+<span class="fc" id="L256">        Matcher matcher = pattern.matcher(target);</span>
+<span class="pc bpc" id="L257" title="1 of 2 branches missed.">        if (matcher.find()) {</span>
+<span class="fc" id="L258">            Integer id = Integer.parseInt(matcher.group(1));</span>
+<span class="fc" id="L259">            IndexedElement p = new IndexedElementImpl(id, element.getName(), element);</span>
+<span class="fc" id="L260">            return p;</span>
+        } else {
+<span class="nc" id="L262">            return null;</span>
+        }
+    }
+
+    /**
+     * Parse the target into a {@link de.isas.mztab2.model.IndexedElement} list.
+     * target is a '|' separated list of entries.
+     *
+     * @param target a {@link java.lang.String} object.
+     * @param element a {@link uk.ac.ebi.pride.jmztab2.model.MetadataElement}
+     * object.
+     * @return a {@link java.util.List} object.
+     */
+    public static List&lt;IndexedElement&gt; parseRefList(String target,
+        MetadataElement element) {
+<span class="fc" id="L277">        List&lt;String&gt; list = parseStringList(MZTabConstants.BAR, target);</span>
+        
+<span class="fc" id="L279">        List&lt;IndexedElement&gt; indexedElementList = new ArrayList&lt;&gt;();</span>
+        IndexedElement indexedElement;
+<span class="fc bfc" id="L281" title="All 2 branches covered.">        for (String item : list) {</span>
+<span class="fc" id="L282">            indexedElement = parseIndexedElement(item, element);</span>
+<span class="pc bpc" id="L283" title="1 of 2 branches missed.">            if (indexedElement == null) {</span>
+<span class="nc" id="L284">                indexedElementList.clear();</span>
+<span class="nc" id="L285">                return indexedElementList;</span>
+            }
+<span class="fc" id="L287">            indexedElementList.add(indexedElement);</span>
+<span class="fc" id="L288">        }</span>
+<span class="fc" id="L289">        return indexedElementList;</span>
+    }
+
+    /**
+     * A list of '|' separated parameters
+     *
+     * @param target a {@link java.lang.String} object.
+     * @return a {@link java.util.List} object.
+     */
+    public static List&lt;Parameter&gt; parseParamList(String target) {
+<span class="fc" id="L299">        List&lt;String&gt; list = parseStringList(BAR, target);</span>
+        
+        Parameter param;
+<span class="fc" id="L302">        SplitList&lt;Parameter&gt; paramList = new SplitList&lt;&gt;(BAR);</span>
+<span class="fc bfc" id="L303" title="All 2 branches covered.">        for (String item : list) {</span>
+<span class="fc" id="L304">            param = parseParam(item);</span>
+<span class="fc bfc" id="L305" title="All 2 branches covered.">            if (param == null) {</span>
+<span class="fc" id="L306">                paramList.clear();</span>
+<span class="fc" id="L307">                return paramList;</span>
+            } else {
+<span class="fc" id="L309">                paramList.add(param);</span>
+            }
+<span class="fc" id="L311">        }</span>
+        
+<span class="fc" id="L313">        return paramList;</span>
+    }
+
+    /**
+     * A '|' delimited list of GO accessions
+     *
+     * @param target a {@link java.lang.String} object.
+     * @return a {@link java.util.List} object.
+     */
+    public static List&lt;String&gt; parseGOTermList(String target) {
+<span class="nc" id="L323">        List&lt;String&gt; list = parseStringList(COMMA, target);</span>
+        
+<span class="nc" id="L325">        List&lt;String&gt; goList = new SplitList&lt;&gt;(COMMA);</span>
+<span class="nc bnc" id="L326" title="All 2 branches missed.">        for (String item : list) {</span>
+<span class="nc" id="L327">            item = parseString(item);</span>
+<span class="nc bnc" id="L328" title="All 2 branches missed.">            if (item.startsWith(&quot;GO:&quot;)) {</span>
+<span class="nc" id="L329">                goList.add(item);</span>
+            } else {
+<span class="nc" id="L331">                goList.clear();</span>
+<span class="nc" id="L332">                break;</span>
+            }
+<span class="nc" id="L334">        }</span>
+        
+<span class="nc" id="L336">        return goList;</span>
+    }
+
+    /**
+     * &lt;p&gt;
+     * parseInteger.&lt;/p&gt;
+     *
+     * @param target a {@link java.lang.String} object.
+     * @return a {@link java.lang.Integer} object.
+     */
+    public static Integer parseInteger(String target) {
+<span class="fc" id="L347">        target = parseString(target);</span>
+<span class="pc bpc" id="L348" title="1 of 2 branches missed.">        if (target == null) {</span>
+<span class="nc" id="L349">            return null;</span>
+        }
+        
+        Integer integer;
+        
+        try {
+<span class="fc" id="L355">            integer = new Integer(target);</span>
+<span class="nc" id="L356">        } catch (NumberFormatException e) {</span>
+<span class="nc" id="L357">            integer = null;</span>
+<span class="fc" id="L358">        }</span>
+        
+<span class="fc" id="L360">        return integer;</span>
+    }
+
+    /**
+     * NOTICE: If ratios are included and the denominator is zero, the &quot;INF&quot;
+     * value MUST be used. If the result leads to calculation errors (for
+     * example 0/0), this MUST be reported as &quot;not a number&quot; (&quot;NaN&quot;).
+     *
+     * @param target a {@link java.lang.String} object.
+     * @return a {@link java.lang.Double} object.
+     */
+    public static Double parseDouble(String target) {
+<span class="fc" id="L372">        target = parseString(target);</span>
+<span class="pc bpc" id="L373" title="1 of 2 branches missed.">        if (target == null) {</span>
+<span class="nc" id="L374">            return null;</span>
+        }
+        
+        Double value;
+        try {
+<span class="fc" id="L379">            value = new Double(target);</span>
+<span class="nc" id="L380">        } catch (NumberFormatException e) {</span>
+<span class="nc bnc" id="L381" title="All 3 branches missed.">            switch (target) {</span>
+                case CALCULATE_ERROR:
+<span class="nc" id="L383">                    value = Double.NaN;</span>
+<span class="nc" id="L384">                    break;</span>
+                case INFINITY:
+<span class="nc" id="L386">                    value = Double.POSITIVE_INFINITY;</span>
+<span class="nc" id="L387">                    break;</span>
+                default:
+<span class="nc" id="L389">                    value = null;</span>
+                    break;
+            }
+<span class="fc" id="L392">        }</span>
+        
+<span class="fc" id="L394">        return value;</span>
+    }
+
+    /**
+     * &lt;p&gt;
+     * parseLong.&lt;/p&gt;
+     *
+     * @param target a {@link java.lang.String} object.
+     * @return a {@link java.lang.Long} object.
+     */
+    public static Long parseLong(String target) {
+<span class="nc" id="L405">        target = parseString(target);</span>
+<span class="nc bnc" id="L406" title="All 2 branches missed.">        if (target == null) {</span>
+<span class="nc" id="L407">            return null;</span>
+        }
+        
+        try {
+<span class="nc" id="L411">            return new Long(target);</span>
+<span class="nc" id="L412">        } catch (NumberFormatException e) {</span>
+<span class="nc" id="L413">            return null;</span>
+        }
+    }
+
+    /**
+     * &lt;p&gt;
+     * parseDoubleList.&lt;/p&gt;
+     *
+     * @param target a {@link java.lang.String} object.
+     * @return a {@link java.util.List} object.
+     */
+    public static List&lt;Double&gt; parseDoubleList(String target) {
+<span class="fc" id="L425">        List&lt;String&gt; list = parseStringList(BAR, target);</span>
+        
+        Double value;
+<span class="fc" id="L428">        List&lt;Double&gt; valueList = new ArrayList&lt;&gt;(BAR);</span>
+<span class="fc bfc" id="L429" title="All 2 branches covered.">        for (String item : list) {</span>
+<span class="fc" id="L430">            value = parseDouble(item);</span>
+<span class="pc bpc" id="L431" title="1 of 2 branches missed.">            if (value == null) {</span>
+<span class="nc" id="L432">                valueList.clear();</span>
+<span class="nc" id="L433">                break;</span>
+            } else {
+<span class="fc" id="L435">                valueList.add(value);</span>
+            }
+<span class="fc" id="L437">        }</span>
+        
+<span class="fc" id="L439">        return valueList;</span>
+    }
+
+    /**
+     * &lt;p&gt;
+     * parseIntegerList.&lt;/p&gt;
+     *
+     * @param target a {@link java.lang.String} object.
+     * @return a {@link java.util.List} object.
+     */
+    public static List&lt;Integer&gt; parseIntegerList(String target) {
+<span class="fc" id="L450">        List&lt;String&gt; list = parseStringList(BAR, target);</span>
+        
+        Integer value;
+<span class="fc" id="L453">        List&lt;Integer&gt; valueList = new ArrayList&lt;&gt;(BAR);</span>
+<span class="fc bfc" id="L454" title="All 2 branches covered.">        for (String item : list) {</span>
+<span class="fc" id="L455">            value = parseInteger(item);</span>
+<span class="pc bpc" id="L456" title="1 of 2 branches missed.">            if (value == null) {</span>
+<span class="nc" id="L457">                valueList.clear();</span>
+<span class="nc" id="L458">                break;</span>
+            } else {
+<span class="fc" id="L460">                valueList.add(value);</span>
+            }
+<span class="fc" id="L462">        }</span>
+        
+<span class="fc" id="L464">        return valueList;</span>
+    }
+
+    /**
+     * &lt;p&gt;
+     * parseURI.&lt;/p&gt;
+     *
+     * @param target a {@link java.lang.String} object.
+     * @return a {@link java.net.URI} object.
+     */
+    public static URI parseURI(String target) {
+<span class="fc" id="L475">        target = parseString(target);</span>
+<span class="pc bpc" id="L476" title="1 of 2 branches missed.">        if (target == null) {</span>
+<span class="nc" id="L477">            return null;</span>
+        }
+        
+        URI uri;
+        
+        try {
+<span class="fc" id="L483">            uri = new URI(target);</span>
+<span class="nc" id="L484">        } catch (URISyntaxException e) {</span>
+<span class="nc" id="L485">            uri = null;</span>
+<span class="fc" id="L486">        }</span>
+        
+<span class="fc" id="L488">        return uri;</span>
+    }
+
+    /**
+     * A publication on this unit. PubMed ids must be prefixed by &quot;pubmed:&quot;,
+     * DOIs by &quot;doi:&quot;. Multiple identifiers MUST be separated by &quot;|&quot;.
+     *
+     * @param publication a {@link de.isas.mztab2.model.Publication} object.
+     * @param lineNumber the line number while parsing.
+     * @param target a {@link java.lang.String} object.
+     * @return a {@link de.isas.mztab2.model.Publication} object.
+     * @throws uk.ac.ebi.pride.jmztab2.utils.errors.MZTabException in case of
+     * parsing or formatting issues of the publication string.
+     */
+    public static Publication parsePublicationItems(Publication publication,
+        int lineNumber, String target) throws MZTabException {
+<span class="fc" id="L504">        List&lt;String&gt; list = parseStringList(BAR, target);</span>
+        
+        PublicationItem.TypeEnum type;
+        String accession;
+        PublicationItem item;
+<span class="fc bfc" id="L509" title="All 2 branches covered.">        for (String pub : list) {</span>
+<span class="fc" id="L510">            pub = parseString(pub).</span>
+<span class="fc" id="L511">                toLowerCase();</span>
+<span class="pc bpc" id="L512" title="1 of 2 branches missed.">            if (pub == null) {</span>
+<span class="nc" id="L513">                publication.getPublicationItems().</span>
+<span class="nc" id="L514">                    clear();</span>
+<span class="nc" id="L515">                return publication;</span>
+            }
+<span class="fc" id="L517">            String[] items = pub.split(&quot;&quot; + COLON);</span>
+<span class="fc bfc" id="L518" title="All 2 branches covered.">            if (items.length == 2) {</span>
+<span class="fc" id="L519">                type = PublicationItem.TypeEnum.fromValue(items[0]);</span>
+<span class="fc bfc" id="L520" title="All 2 branches covered.">                if (type == null) {</span>
+<span class="fc" id="L521">                    throw new MZTabException(new MZTabError(</span>
+                        FormatErrorType.Publication, lineNumber, target, pub));
+                }
+<span class="fc" id="L524">                accession = items[1].trim();</span>
+<span class="fc" id="L525">                item = new PublicationItem().type(type).</span>
+<span class="fc" id="L526">                    accession(accession);</span>
+<span class="fc" id="L527">                publication.addPublicationItemsItem(item);</span>
+            } else {
+<span class="fc" id="L529">                throw new MZTabException(new MZTabError(</span>
+                    FormatErrorType.Publication, lineNumber, target, pub));
+            }
+            
+<span class="fc" id="L533">        }</span>
+        
+<span class="fc" id="L535">        return publication;</span>
+    }
+
+    /**
+     * Parse a {@link de.isas.mztab2.model.SpectraRef} list.
+     *
+     * @param context a
+     * {@link uk.ac.ebi.pride.jmztab2.utils.parser.MZTabParserContext} object.
+     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
+     * @param target a {@link java.lang.String} object.
+     * @return a {@link java.util.List} object.
+     */
+    public static List&lt;SpectraRef&gt; parseSpectraRefList(
+        MZTabParserContext context, Metadata metadata, String target) {
+<span class="fc" id="L549">        List&lt;String&gt; list = parseStringList(BAR, target);</span>
+<span class="fc" id="L550">        List&lt;SpectraRef&gt; refList = new ArrayList&lt;&gt;();</span>
+        
+<span class="fc" id="L552">        Pattern pattern = Pattern.compile(&quot;ms_run\\[(\\d+)\\]:(.*)&quot;);</span>
+        Matcher matcher;
+        Integer ms_file_id;
+        String reference;
+        SpectraRef ref;
+<span class="fc bfc" id="L557" title="All 2 branches covered.">        for (String item : list) {</span>
+<span class="fc" id="L558">            matcher = pattern.matcher(item.trim());</span>
+<span class="pc bpc" id="L559" title="1 of 2 branches missed.">            if (matcher.find()) {</span>
+<span class="fc" id="L560">                ms_file_id = new Integer(matcher.group(1));</span>
+<span class="fc" id="L561">                reference = matcher.group(2);</span>
+                
+<span class="fc" id="L563">                MsRun msRun = context.getMsRunMap().</span>
+<span class="fc" id="L564">                    get(ms_file_id);</span>
+<span class="pc bpc" id="L565" title="1 of 2 branches missed.">                if (msRun == null) {</span>
+<span class="nc" id="L566">                    ref = null;</span>
+                } else {
+<span class="fc" id="L568">                    ref = new SpectraRef().msRun(msRun).</span>
+<span class="fc" id="L569">                        reference(reference);</span>
+                }
+                
+<span class="pc bpc" id="L572" title="1 of 2 branches missed.">                if (ref == null) {</span>
+<span class="nc" id="L573">                    refList.clear();</span>
+<span class="nc" id="L574">                    break;</span>
+                } else {
+<span class="fc" id="L576">                    refList.add(ref);</span>
+                }
+            }
+<span class="fc" id="L579">        }</span>
+        
+<span class="fc" id="L581">        return refList;</span>
+    }
+
+    /**
+     * Solve the conflict about minus char between modification position and
+     * CHEMMOD charge. For example: 13-CHEMMOD:-159
+     *
+     * @param target a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
+    public static String translateMinusToUnicode(String target) {
+<span class="nc" id="L592">        Pattern pattern = Pattern.compile(&quot;(CHEMMOD:.*)(-)(.*)&quot;);</span>
+<span class="nc" id="L593">        Matcher matcher = pattern.matcher(target);</span>
+<span class="nc" id="L594">        StringBuilder sb = new StringBuilder();</span>
+<span class="nc bnc" id="L595" title="All 2 branches missed.">        if (matcher.find()) {</span>
+<span class="nc" id="L596">            sb.append(matcher.group(1));</span>
+<span class="nc" id="L597">            sb.append(&quot;&amp;minus;&quot;);</span>
+<span class="nc" id="L598">            sb.append(matcher.group(3));</span>
+            
+        } else {
+<span class="nc" id="L601">            sb.append(target);</span>
+        }
+<span class="nc" id="L603">        return sb.toString();</span>
+    }
+
+    /**
+     * &lt;p&gt;
+     * translateMinusInCVtoUnicode.&lt;/p&gt;
+     *
+     * @param target a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
+    public static String translateMinusInCVtoUnicode(String target) {
+<span class="nc" id="L614">        Pattern pattern = Pattern.compile(&quot;\\[([^\\[\\]]+)\\]&quot;);</span>
+<span class="nc" id="L615">        Matcher matcher = pattern.matcher(target);</span>
+        
+<span class="nc" id="L617">        StringBuilder sb = new StringBuilder();</span>
+        
+<span class="nc" id="L619">        int start = 0;</span>
+        int end;
+<span class="nc bnc" id="L621" title="All 2 branches missed.">        while (matcher.find()) {</span>
+<span class="nc" id="L622">            end = matcher.start(1);</span>
+<span class="nc" id="L623">            sb.append(target.substring(start, end));</span>
+<span class="nc" id="L624">            sb.append(matcher.group(1).</span>
+<span class="nc" id="L625">                replaceAll(&quot;-&quot;, &quot;&amp;minus;&quot;));</span>
+<span class="nc" id="L626">            start = matcher.end(1);</span>
+        }
+<span class="nc" id="L628">        sb.append(target.substring(start, target.length()));</span>
+        
+<span class="nc" id="L630">        return sb.toString();</span>
+    }
+
+    /**
+     * &lt;p&gt;
+     * translateUnicodeCVTermMinus.&lt;/p&gt;
+     *
+     * @param target a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
+    public static String translateUnicodeCVTermMinus(String target) {
+<span class="nc" id="L641">        return target.replaceAll(&quot;&amp;minus;&quot;, &quot;-&quot;);</span>
+    }
+
+    /**
+     * Solve the conflict about minus char between modification position and
+     * CHEMMOD charge. For example: 13-CHEMMOD:-159
+     *
+     * @param target a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
+    public static String translateUnicodeToMinus(String target) {
+<span class="nc" id="L652">        Pattern pattern = Pattern.compile(&quot;(.*CHEMMOD:.*)(&amp;minus;)(.*)&quot;);</span>
+<span class="nc" id="L653">        Matcher matcher = pattern.matcher(target);</span>
+<span class="nc bnc" id="L654" title="All 2 branches missed.">        if (matcher.find()) {</span>
+<span class="nc" id="L655">            StringBuilder sb = new StringBuilder();</span>
+            
+<span class="nc" id="L657">            sb.append(matcher.group(1));</span>
+<span class="nc" id="L658">            sb.append(&quot;-&quot;);</span>
+<span class="nc" id="L659">            sb.append(matcher.group(3));</span>
+            
+<span class="nc" id="L661">            return sb.toString();</span>
+        } else {
+<span class="nc" id="L663">            return target;</span>
+        }
+    }
+
+    /**
+     * locate param label [label, accession, name, value], translate ',' to '\t'
+     *
+     * @param target a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
+    public static String translateCommaToTab(String target) {
+<span class="nc" id="L674">        Pattern pattern = Pattern.compile(&quot;\\[([^\\[\\]]+)\\]&quot;);</span>
+<span class="nc" id="L675">        Matcher matcher = pattern.matcher(target);</span>
+        
+<span class="nc" id="L677">        StringBuilder sb = new StringBuilder();</span>
+        
+<span class="nc" id="L679">        int start = 0;</span>
+        int end;
+<span class="nc bnc" id="L681" title="All 2 branches missed.">        while (matcher.find()) {</span>
+<span class="nc" id="L682">            end = matcher.start(1);</span>
+<span class="nc" id="L683">            sb.append(target.substring(start, end));</span>
+<span class="nc" id="L684">            sb.append(matcher.group(1).</span>
+<span class="nc" id="L685">                replaceAll(&quot;,&quot;, &quot;\t&quot;));</span>
+<span class="nc" id="L686">            start = matcher.end(1);</span>
+        }
+<span class="nc" id="L688">        sb.append(target.substring(start, target.length()));</span>
+        
+<span class="nc" id="L690">        return sb.toString();</span>
+    }
+
+    /**
+     * solve the conflict about comma char which used in split modification and
+     * split cv param components.
+     *
+     * @param target a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
+    public static String translateTabToComma(String target) {
+<span class="nc" id="L701">        Pattern pattern = Pattern.compile(&quot;\\[([^\\[\\]]+)\\]&quot;);</span>
+<span class="nc" id="L702">        Matcher matcher = pattern.matcher(target);</span>
+        
+<span class="nc" id="L704">        StringBuilder sb = new StringBuilder();</span>
+        
+<span class="nc" id="L706">        int start = 0;</span>
+        int end;
+<span class="nc bnc" id="L708" title="All 2 branches missed.">        while (matcher.find()) {</span>
+<span class="nc" id="L709">            end = matcher.start(1);</span>
+<span class="nc" id="L710">            sb.append(target.substring(start, end));</span>
+<span class="nc" id="L711">            sb.append(matcher.group(1).</span>
+<span class="nc" id="L712">                replaceAll(&quot;\t&quot;, &quot;,&quot;));</span>
+<span class="nc" id="L713">            start = matcher.end(1);</span>
+        }
+<span class="nc" id="L715">        sb.append(target.substring(start, target.length()));</span>
+        
+<span class="nc" id="L717">        return sb.toString();</span>
+    }
+
+    //Solve the problem for Neutral losses in CvTerm format
+    /**
+     * &lt;p&gt;
+     * translateMinusToTab.&lt;/p&gt;
+     *
+     * @param target a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
+    public static String translateMinusToTab(String target) {
+<span class="nc" id="L729">        Pattern pattern = Pattern.compile(&quot;\\[([^\\[\\]]+)\\]&quot;);</span>
+<span class="nc" id="L730">        Matcher matcher = pattern.matcher(target);</span>
+        
+<span class="nc" id="L732">        StringBuilder sb = new StringBuilder();</span>
+        
+<span class="nc" id="L734">        int start = 0;</span>
+        int end;
+<span class="nc bnc" id="L736" title="All 2 branches missed.">        while (matcher.find()) {</span>
+<span class="nc" id="L737">            end = matcher.start(1);</span>
+<span class="nc" id="L738">            sb.append(target.substring(start, end));</span>
+<span class="nc" id="L739">            sb.append(matcher.group(1).</span>
+<span class="nc" id="L740">                replaceAll(&quot;-&quot;, &quot;\t&quot;));</span>
+<span class="nc" id="L741">            start = matcher.end(1);</span>
+        }
+<span class="nc" id="L743">        sb.append(target.substring(start, target.length()));</span>
+        
+<span class="nc" id="L745">        return sb.toString();</span>
+        
+    }
+    
+    private static String replaceLast(String string, String toReplace,
+        String replacement) {
+<span class="nc" id="L751">        int pos = string.lastIndexOf(toReplace);</span>
+<span class="nc bnc" id="L752" title="All 2 branches missed.">        if (pos &gt; -1) {</span>
+<span class="nc" id="L753">            return string.substring(0, pos)</span>
+                + replacement
+<span class="nc" id="L755">                + string.substring(pos + toReplace.length(), string.length());</span>
+        }
+<span class="nc" id="L757">        return string;</span>
+    }
+
+    /**
+     * &lt;p&gt;
+     * translateLastToTab.&lt;/p&gt;
+     *
+     * @param target a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
+    public static String translateLastToTab(String target) {
+<span class="nc" id="L768">        Pattern pattern = Pattern.compile(&quot;\\[([^\\[\\]]+)\\]&quot;);</span>
+<span class="nc" id="L769">        Matcher matcher = pattern.matcher(target);</span>
+        
+<span class="nc" id="L771">        StringBuilder sb = new StringBuilder();</span>
+        
+<span class="nc" id="L773">        int start = 0;</span>
+        int end;
+<span class="nc bnc" id="L775" title="All 2 branches missed.">        while (matcher.find()) {</span>
+<span class="nc" id="L776">            end = matcher.start(1);</span>
+<span class="nc" id="L777">            sb.append(target.substring(start, end));</span>
+<span class="nc" id="L778">            sb.append(replaceLast(matcher.group(1), &quot;-&quot;, &quot;\t&quot;));</span>
+<span class="nc" id="L779">            start = matcher.end(1);</span>
+        }
+<span class="nc" id="L781">        sb.append(target.substring(start, target.length()));</span>
+        
+<span class="nc" id="L783">        return sb.toString();</span>
+        
+    }
+
+    /**
+     * solve the conflict about comma char which used in split modification and
+     * split cv param components.
+     *
+     * @param target a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
+    public static String translateTabToMinus(String target) {
+<span class="nc" id="L795">        Pattern pattern = Pattern.compile(&quot;\\[([^\\[\\]]+)\\]&quot;);</span>
+<span class="nc" id="L796">        Matcher matcher = pattern.matcher(target);</span>
+        
+<span class="nc" id="L798">        StringBuilder sb = new StringBuilder();</span>
+        
+<span class="nc" id="L800">        int start = 0;</span>
+        int end;
+<span class="nc bnc" id="L802" title="All 2 branches missed.">        while (matcher.find()) {</span>
+<span class="nc" id="L803">            end = matcher.start(1);</span>
+<span class="nc" id="L804">            sb.append(target.substring(start, end));</span>
+<span class="nc" id="L805">            sb.append(matcher.group(1).</span>
+<span class="nc" id="L806">                replaceAll(&quot;\t&quot;, &quot;-&quot;));</span>
+<span class="nc" id="L807">            start = matcher.end(1);</span>
+        }
+<span class="nc" id="L809">        sb.append(target.substring(start, target.length()));</span>
+        
+<span class="nc" id="L811">        return sb.toString();</span>
+    }
+
+    /**
+     * If there exists reserved characters in value, like comma, the string need
+     * to be escape. However the escaping char is not store because it will be
+     * write back in the writer. Nested double quotes are not supported.
+     *
+     * @param value a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
+    public static String removeDoubleQuotes(String value) {
+        
+<span class="pc bpc" id="L824" title="1 of 2 branches missed.">        if (value != null) {</span>
+            int length;
+            int count;
+            
+<span class="fc" id="L828">            value = value.trim();</span>
+<span class="fc" id="L829">            length = value.length();</span>
+            
+<span class="fc" id="L831">            value = value.replace(&quot;\&quot;&quot;, &quot;&quot;);</span>
+<span class="fc" id="L832">            count = length - value.length();</span>
+            
+<span class="pc bpc" id="L834" title="1 of 2 branches missed.">            if (isEmpty(value)) {</span>
+<span class="nc" id="L835">                value = null;</span>
+            }
+            
+<span class="pc bpc" id="L838" title="1 of 2 branches missed.">            if (count &gt; 2) {</span>
+<span class="nc" id="L839">                LOGGER.warn(</span>
+                    &quot;Nested double quotes in value, &quot; + count + &quot; occurrences have been replaced.&quot;);
+            }
+        }
+        
+<span class="fc" id="L844">        return value;</span>
+    }
+    
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

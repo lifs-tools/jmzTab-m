@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="de"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EmptyRuleHandler.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jmztabm-validation</a> &gt; <a href="index.source.html" class="el_package">de.isas.mztab2.validation.handlers</a> &gt; <span class="el_source">EmptyRuleHandler.java</span></div><h1>EmptyRuleHandler.java</h1><pre class="source lang-java linenums">/*
+ * Copyright 2018 Leibniz-Institut für Analytische Wissenschaften – ISAS – e.V..
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package de.isas.mztab2.validation.handlers;
+
+import de.isas.mztab2.cvmapping.CvMappingUtils;
+import de.isas.mztab2.model.Parameter;
+import de.isas.mztab2.model.ValidationMessage;
+import info.psidev.cvmapping.CvMappingRule;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.jxpath.Pointer;
+import org.apache.commons.lang3.tuple.Pair;
+import uk.ac.ebi.pride.jmztab2.utils.errors.CrossCheckErrorType;
+import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabError;
+
+/**
+ * Implements handling of rules that have no cv parameter match. Depending on
+ * the requirement level, this may raise an Info, Warning or Error level
+ * message.
+ *
+ * @author nilshoffmann
+ */
+<span class="fc" id="L38">@Slf4j</span>
+<span class="fc" id="L39">public class EmptyRuleHandler {</span>
+
+    public List&lt;ValidationMessage&gt; handleRule(CvMappingRule rule,
+            List&lt;Pair&lt;Pointer, Parameter&gt;&gt; selection) {
+<span class="fc bfc" id="L43" title="All 2 branches covered.">        if (selection.isEmpty()) {</span>
+<span class="fc" id="L44">            log.debug(</span>
+<span class="fc" id="L45">                    &quot;Evaluating rule &quot; + rule.getId() + &quot; on &quot; + rule.</span>
+<span class="fc" id="L46">                    getCvElementPath() + &quot; did not yield any selected elements!&quot;);</span>
+<span class="pc bpc" id="L47" title="3 of 4 branches missed.">            switch (rule.getRequirementLevel()) {</span>
+                case MAY:
+<span class="fc" id="L49">                    return Arrays.asList(new MZTabError(</span>
+                            CrossCheckErrorType.RulePointerObjectNullOptional, -1,
+<span class="fc" id="L51">                            rule.getCvElementPath(), rule.getId(), &quot;optional&quot;,</span>
+<span class="fc" id="L52">                            CvMappingUtils.niceToString(rule)).</span>
+<span class="fc" id="L53">                            toValidationMessage());</span>
+                case SHOULD:
+<span class="nc" id="L55">                    return Arrays.asList(new MZTabError(</span>
+                            CrossCheckErrorType.RulePointerObjectNullRecommended, -1,
+<span class="nc" id="L57">                            rule.getCvElementPath(), rule.getId(), &quot;recommended&quot;,</span>
+<span class="nc" id="L58">                            CvMappingUtils.niceToString(rule)).</span>
+<span class="nc" id="L59">                            toValidationMessage());</span>
+                case MUST:
+                    //The object &quot;{0}&quot; accessed by {1} is {2}, but was null or empty. Allowed terms are defined in {3}
+<span class="nc" id="L62">                    return Arrays.asList(new MZTabError(</span>
+                            CrossCheckErrorType.RulePointerObjectNullRequired, -1,
+<span class="nc" id="L64">                            rule.getCvElementPath(), rule.getId(), &quot;required&quot;,</span>
+<span class="nc" id="L65">                            CvMappingUtils.niceToString(rule)).</span>
+<span class="nc" id="L66">                            toValidationMessage());</span>
+                default:
+<span class="nc" id="L68">                    throw new IllegalArgumentException(</span>
+                            &quot;Unknown requirement level value: &quot; + rule.
+<span class="nc" id="L70">                                    getRequirementLevel() + &quot;! Supported are: &quot; + Arrays.</span>
+<span class="nc" id="L71">                                    toString(CvMappingRule.RequirementLevel.</span>
+<span class="nc" id="L72">                                            values()));</span>
+
+            }
+        } else {
+<span class="fc" id="L76">            return new ArrayList&lt;&gt;();</span>
+        }
+
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

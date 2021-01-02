@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>LogicalErrorType.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jmztabm-api</a> &gt; <a href="index.source.html" class="el_package">uk.ac.ebi.pride.jmztab2.utils.errors</a> &gt; <span class="el_source">LogicalErrorType.java</span></div><h1>LogicalErrorType.java</h1><pre class="source lang-java linenums">package uk.ac.ebi.pride.jmztab2.utils.errors;
+
+import java.util.Arrays;
+
+/**
+ * Reporting errors related to the logical relationships among the different
+ * sections in a file. Reference:
+ * http://code.google.com/p/mztab/wiki/jmzTab_message for details.
+ *
+ * @author qingwei
+ * @since 29/01/13
+ *
+ */
+public final class LogicalErrorType extends MZTabErrorType {
+
+    private LogicalErrorType() {
+
+    }
+
+    /**
+     * Constant &lt;code&gt;NULL&lt;/code&gt;
+     */
+<span class="fc" id="L23">    public static final MZTabErrorType NULL = createError(Category.Logical, &quot;NULL&quot;);</span>
+    /**
+     * Constant &lt;code&gt;NotNULL&lt;/code&gt;
+     */
+<span class="fc" id="L27">    public static final MZTabErrorType NotNULL = createWarn(Category.Logical, &quot;NotNULL&quot;);</span>
+
+    /**
+     * Constant &lt;code&gt;LineOrder&lt;/code&gt;
+     */
+<span class="fc" id="L32">    public static final MZTabErrorType LineOrder = createError(Category.Logical, &quot;LineOrder&quot;);</span>
+    /**
+     * Constant &lt;code&gt;HeaderLine&lt;/code&gt;
+     */
+<span class="fc" id="L36">    public static final MZTabErrorType HeaderLine = createError(Category.Logical, &quot;HeaderLine&quot;);</span>
+    /**
+     * Constant &lt;code&gt;NoHeaderLine&lt;/code&gt;
+     */
+<span class="fc" id="L40">    public static final MZTabErrorType NoHeaderLine = createError(Category.Logical, &quot;NoHeaderLine&quot;);</span>
+
+    // not defined in metadata.
+    /**
+     * Constant &lt;code&gt;MsRunNotDefined&lt;/code&gt;
+     */
+<span class="fc" id="L46">    public static final MZTabErrorType MsRunNotDefined = createError(Category.Logical, &quot;MsRunNotDefined&quot;);</span>
+    /**
+     * Constant &lt;code&gt;AssayNotDefined&lt;/code&gt;
+     */
+<span class="fc" id="L50">    public static final MZTabErrorType AssayNotDefined = createError(Category.Logical, &quot;AssayNotDefined&quot;);</span>
+    /**
+     * Constant &lt;code&gt;StudyVariableNotDefined&lt;/code&gt;
+     */
+<span class="fc" id="L54">    public static final MZTabErrorType StudyVariableNotDefined = createError(Category.Logical, &quot;StudyVariableNotDefined&quot;);</span>
+    /**
+     * Constant &lt;code&gt;ProteinSearchEngineScoreNotDefined&lt;/code&gt;
+     */
+<span class="fc" id="L58">    public static final MZTabErrorType ProteinSearchEngineScoreNotDefined = createWarn(Category.Logical, &quot;ProteinSearchEngineScoreNotDefined&quot;);</span>
+    /**
+     * Constant &lt;code&gt;PeptideSearchEngineScoreNotDefined&lt;/code&gt;
+     */
+<span class="fc" id="L62">    public static final MZTabErrorType PeptideSearchEngineScoreNotDefined = createWarn(Category.Logical, &quot;PeptideSearchEngineScoreNotDefined&quot;);</span>
+    /**
+     * Constant &lt;code&gt;PSMSearchEngineScoreNotDefined&lt;/code&gt;
+     */
+<span class="fc" id="L66">    public static final MZTabErrorType PSMSearchEngineScoreNotDefined = createWarn(Category.Logical, &quot;PSMSearchEngineScoreNotDefined&quot;);</span>
+    /**
+     * Constant &lt;code&gt;SmallMoleculeSearchEngineScoreNotDefined&lt;/code&gt;
+     */
+<span class="fc" id="L70">    public static final MZTabErrorType SmallMoleculeSearchEngineScoreNotDefined = createWarn(Category.Logical, &quot;SmallMoleculeSearchEngineScoreNotDefined&quot;);</span>
+
+    /**
+     * Constant &lt;code&gt;MsRunHashMethodNotDefined&lt;/code&gt;
+     */
+<span class="fc" id="L75">    public static final MZTabErrorType MsRunHashMethodNotDefined = createError(Category.Logical, &quot;MsRunHashMethodNotDefined&quot;);</span>
+
+    /**
+     * Constant &lt;code&gt;NotDefineInMetadata&lt;/code&gt;
+     */
+<span class="fc" id="L80">    public static final MZTabErrorType NotDefineInMetadata = createError(Category.Logical, &quot;NotDefineInMetadata&quot;);</span>
+    /**
+     * Constant &lt;code&gt;NotDefineInHeader&lt;/code&gt;
+     */
+<span class="fc" id="L84">    public static final MZTabErrorType NotDefineInHeader = createError(Category.Logical, &quot;NotDefineInHeader&quot;);</span>
+    /**
+     * Constant &lt;code&gt;DuplicationDefine&lt;/code&gt;
+     */
+<span class="fc" id="L88">    public static final MZTabErrorType DuplicationDefine = createError(Category.Logical, &quot;DuplicationDefine&quot;);</span>
+    /**
+     * Constant &lt;code&gt;DuplicationAccession&lt;/code&gt;
+     */
+<span class="fc" id="L92">    public static final MZTabErrorType DuplicationAccession = createError(Category.Logical, &quot;DuplicationAccession&quot;);</span>
+    /**
+     * Constant &lt;code&gt;AssayRefs&lt;/code&gt;
+     */
+<span class="fc" id="L96">    public static final MZTabErrorType AssayRefs = createError(Category.Logical, &quot;AssayRefs&quot;);</span>
+
+    /**
+     * Constant &lt;code&gt;ProteinCoverage&lt;/code&gt;
+     */
+<span class="fc" id="L101">    public static final MZTabErrorType ProteinCoverage = createError(Category.Logical, &quot;ProteinCoverage&quot;);</span>
+    /**
+     * Constant &lt;code&gt;IdNumber&lt;/code&gt;
+     */
+<span class="fc" id="L105">    public static final MZTabErrorType IdNumber = createError(Category.Logical, &quot;IdNumber&quot;);</span>
+    /**
+     * Constant &lt;code&gt;ModificationPosition&lt;/code&gt;
+     */
+<span class="fc" id="L109">    public static final MZTabErrorType ModificationPosition = createError(Category.Logical, &quot;ModificationPosition&quot;);</span>
+    /**
+     * Constant &lt;code&gt;CHEMMODS&lt;/code&gt;
+     */
+<span class="fc" id="L113">    public static final MZTabErrorType CHEMMODS = createWarn(Category.Logical, &quot;CHEMMODS&quot;);</span>
+    /**
+     * Constant &lt;code&gt;SubstituteIdentifier&lt;/code&gt;
+     */
+<span class="fc" id="L117">    public static final MZTabErrorType SubstituteIdentifier = createError(Category.Logical, &quot;SubstituteIdentifier&quot;);</span>
+    /**
+     * Constant &lt;code&gt;SoftwareVersion&lt;/code&gt;
+     */
+<span class="fc" id="L121">    public static final MZTabErrorType SoftwareVersion = createWarn(Category.Logical, &quot;SoftwareVersion&quot;);</span>
+
+    /**
+     * Constant &lt;code&gt;AbundanceColumnTogether&lt;/code&gt;
+     */
+<span class="fc" id="L126">    public static final MZTabErrorType AbundanceColumnTogether = createError(Category.Logical, &quot;AbundanceColumnTogether&quot;);</span>
+    /**
+     * Constant &lt;code&gt;AbundanceColumnSameId&lt;/code&gt;
+     */
+<span class="fc" id="L130">    public static final MZTabErrorType AbundanceColumnSameId = createError(Category.Logical, &quot;AbundanceColumnSameId&quot;);</span>
+
+    /**
+     * Constant &lt;code&gt;SpectraRef&lt;/code&gt;
+     */
+<span class="fc" id="L135">    public static final MZTabErrorType SpectraRef = createWarn(Category.Logical, &quot;SpectraRef&quot;);</span>
+    /**
+     * Constant &lt;code&gt;AmbiguityMod&lt;/code&gt;
+     */
+<span class="fc" id="L139">    public static final MZTabErrorType AmbiguityMod = createWarn(Category.Logical, &quot;AmbiguityMod&quot;);</span>
+    /**
+     * Constant &lt;code&gt;MsRunLocation&lt;/code&gt;
+     */
+<span class="fc" id="L143">    public static final MZTabErrorType MsRunLocation = createWarn(Category.Logical, &quot;MsRunLocation&quot;);</span>
+
+    /**
+     * Constant &lt;code&gt;FixedMod&lt;/code&gt;
+     */
+<span class="fc" id="L148">    public static final MZTabErrorType FixedMod = createError(Category.Logical, &quot;FixedMod&quot;);</span>
+    /**
+     * Constant &lt;code&gt;VariableMod&lt;/code&gt;
+     */
+<span class="fc" id="L152">    public static final MZTabErrorType VariableMod = createError(Category.Logical, &quot;VariableMod&quot;);</span>
+
+    /**
+     * Constant &lt;code&gt;PeptideSection&lt;/code&gt;
+     */
+<span class="fc" id="L157">    public static final MZTabErrorType PeptideSection = createWarn(Category.Logical, &quot;PeptideSection&quot;);</span>
+
+    /**
+     * Constant &lt;code&gt;QuantificationAbundance&lt;/code&gt;
+     */
+<span class="fc" id="L162">    public static final MZTabErrorType QuantificationAbundance = createError(Category.Logical, &quot;QuantificationAbundance&quot;);</span>
+    /**
+     * Constant &lt;code&gt;DuplicationID&lt;/code&gt;
+     */
+<span class="fc" id="L166">    public static final MZTabErrorType DuplicationID = createError(Category.Logical, &quot;DuplicationID&quot;);</span>
+
+    /**
+     * Constant &lt;code&gt;ColumnNotValid&lt;/code&gt;
+     */
+<span class="fc" id="L171">    public static final MZTabErrorType ColumnNotValid = createError(Category.Logical, &quot;ColumnNotValid&quot;);</span>
+    /**
+     * Constant &lt;code&gt;HeaderNotValid&lt;/code&gt;
+     */
+<span class="fc" id="L175">    public static final MZTabErrorType HeaderNotValid = createError(Category.Logical, &quot;HeaderNotValid&quot;);</span>
+
+    /**
+     * Constant &lt;code&gt;NoMetadataSection&lt;/code&gt;
+     */
+<span class="fc" id="L180">    public static final MZTabErrorType NoMetadataSection = createError(Category.Logical, &quot;NoMetadataSection&quot;);</span>
+    /**
+     * Constant &lt;code&gt;NoSmallMoleculeEvidenceSection&lt;/code&gt;
+     */
+<span class="fc" id="L184">    public static final MZTabErrorType NoSmallMoleculeEvidenceSection = createInfo(Category.Logical, &quot;NoSmallMoleculeEvidenceSection&quot;);</span>
+    /**
+     * Constant &lt;code&gt;NoSmallMoleculeFeatureSection&lt;/code&gt;
+     */
+<span class="fc" id="L188">    public static final MZTabErrorType NoSmallMoleculeFeatureSection = createInfo(Category.Logical, &quot;NoSmallMoleculeFeatureSection&quot;);</span>
+    /**
+     * Constant &lt;code&gt;NoSmallMoleculeSummarySection&lt;/code&gt;
+     */
+<span class="fc" id="L192">    public static final MZTabErrorType NoSmallMoleculeSummarySection = createError(Category.Logical, &quot;NoSmallMoleculeSummarySection&quot;);</span>
+
+    /**
+     * Constant &lt;code&gt;NoSmallMoleculeQuantificationUnit&lt;/code&gt;
+     */
+<span class="fc" id="L197">    public static final MZTabErrorType NoSmallMoleculeQuantificationUnit = createError(Category.Logical, &quot;NoSmallMoleculeQuantificationUnit&quot;);</span>
+    /**
+     * Constant &lt;code&gt;NoSmallMoleculeFeatureQuantificationUnit&lt;/code&gt;
+     */
+<span class="fc" id="L201">    public static final MZTabErrorType NoSmallMoleculeFeatureQuantificationUnit = createError(Category.Logical, &quot;NoSmallMoleculeFeatureQuantificationUnit&quot;);</span>
+    /**
+     * Constant &lt;code&gt;NoSmallMoleculeIdentificationReliability&lt;/code&gt;
+     */
+<span class="fc" id="L205">    public static final MZTabErrorType NoSmallMoleculeIdentificationReliability = createInfo(Category.Logical, &quot;NoSmallMoleculeIdentificationReliability&quot;);</span>
+
+    /**
+     * Constant &lt;code&gt;ExternalStudyIdFormatNotDefined&lt;/code&gt;
+     */
+<span class="fc" id="L210">    public static final MZTabErrorType ExternalStudyIdFormatNotDefined = createError(Category.Logical, &quot;ExternalStudyIdFormatNotDefined&quot;);</span>
+    /**
+     * Constant &lt;code&gt;ExternalStudyFormatNotDefined&lt;/code&gt;
+     */
+<span class="fc" id="L214">    public static final MZTabErrorType ExternalStudyFormatNotDefined = createError(Category.Logical, &quot;ExternalStudyFormatNotDefined&quot;);</span>
+
+    /**
+     * Constant &lt;code&gt;NoDatabaseMustHaveNullPrefix&lt;/code&gt;
+     */
+<span class="fc" id="L219">    public static final MZTabErrorType NoDatabaseMustHaveNullPrefix = createError(Category.Logical, &quot;NoDatabaseMustHaveNullPrefix&quot;);</span>
+
+    /**
+     * Constant &lt;code&gt;ItemNumberMismatch&lt;/code&gt;
+     */
+<span class="fc" id="L224">    public static final MZTabErrorType ItemNumberMismatch = createError(Category.Logical, &quot;ItemNumberMismatch&quot;);</span>
+
+    /**
+     * Constant &lt;code&gt;UnknownRefId&lt;/code&gt;
+     */
+<span class="fc" id="L229">    public static final MZTabErrorType UnknownRefId = createError(Category.Logical, &quot;UnknownRefId&quot;);</span>
+    
+    /**
+     * Constant &lt;code&gt;SingleStudyVariableName&lt;/code&gt;
+     */
+<span class="fc" id="L234">    public static final MZTabErrorType SingleStudyVariableName = createError(Category.Logical, &quot;SingleStudyVariableName&quot;);</span>
+    
+    /**
+     * Constant &lt;code&gt;UndefinedStudyVariableNameOnceOnly&lt;/code&gt;
+     */
+<span class="fc" id="L239">    public static final MZTabErrorType UndefinedStudyVariableNameOnceOnly = createError(Category.Logical, &quot;UndefinedStudyVariableNameOnceOnly&quot;);</span>
+    
+    /**
+     * Constant &lt;code&gt;SpectraIdFormatNotValid&lt;/code&gt;
+     */
+<span class="fc" id="L244">    public static final MZTabErrorType SpectraIdFormatNotValid = createError(Category.Logical, &quot;SpectraIdFormatNotValid&quot;);</span>
+    
+    /**
+     * Constant &lt;code&gt;SpectraIdFormatNotSupported&lt;/code&gt;
+     */
+<span class="fc" id="L249">    public static final MZTabErrorType SpectraIdFormatNotSupported = createWarn(Category.Logical, &quot;SpectraIdFormatNotSupported&quot;);</span>
+
+<span class="fc" id="L251">    private static final MZTabErrorType[] VALUES = {</span>
+        NULL, NotNULL, LineOrder, HeaderLine, NoHeaderLine,
+        MsRunNotDefined, AssayNotDefined, StudyVariableNotDefined, ProteinSearchEngineScoreNotDefined, PeptideSearchEngineScoreNotDefined, PSMSearchEngineScoreNotDefined, SmallMoleculeSearchEngineScoreNotDefined,
+        MsRunHashMethodNotDefined, NotDefineInMetadata, NotDefineInHeader, DuplicationDefine, DuplicationAccession, AssayRefs, ProteinCoverage, IdNumber, ModificationPosition, CHEMMODS, SubstituteIdentifier,
+        SoftwareVersion, AbundanceColumnTogether, AbundanceColumnSameId, SpectraRef, AmbiguityMod, MsRunLocation, FixedMod, VariableMod, PeptideSection, QuantificationAbundance, DuplicationID, ColumnNotValid,
+        HeaderNotValid, NoMetadataSection, NoSmallMoleculeEvidenceSection, NoSmallMoleculeFeatureSection, NoSmallMoleculeSummarySection, NoSmallMoleculeQuantificationUnit, NoSmallMoleculeFeatureQuantificationUnit,
+        NoSmallMoleculeIdentificationReliability, ExternalStudyIdFormatNotDefined, ExternalStudyFormatNotDefined, NoDatabaseMustHaveNullPrefix, ItemNumberMismatch, UnknownRefId, SingleStudyVariableName, UndefinedStudyVariableNameOnceOnly,
+        SpectraIdFormatNotValid, SpectraIdFormatNotSupported
+    };
+    
+    public static MZTabErrorType[] getValues() {
+<span class="fc" id="L262">        return Arrays.copyOf(VALUES, VALUES.length);</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

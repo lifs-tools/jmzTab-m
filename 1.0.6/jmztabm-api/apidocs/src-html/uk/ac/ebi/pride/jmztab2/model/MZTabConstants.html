@@ -1,0 +1,167 @@
+<!DOCTYPE HTML>
+<html lang="de">
+<head>
+<title>Source code</title>
+<link rel="stylesheet" type="text/css" href="../../../../../../../stylesheet.css" title="Style">
+</head>
+<body>
+<main role="main">
+<div class="sourceContainer">
+<pre><span class="sourceLineNo">001</span><a id="line.1">package uk.ac.ebi.pride.jmztab2.model;</a>
+<span class="sourceLineNo">002</span><a id="line.2"></a>
+<span class="sourceLineNo">003</span><a id="line.3">/**</a>
+<span class="sourceLineNo">004</span><a id="line.4"> * Define a couple of constants used in the jmzTab API.</a>
+<span class="sourceLineNo">005</span><a id="line.5"> *</a>
+<span class="sourceLineNo">006</span><a id="line.6"> * @author qingwei</a>
+<span class="sourceLineNo">007</span><a id="line.7"> * @author nilshoffmann</a>
+<span class="sourceLineNo">008</span><a id="line.8"> * @since 08/03/13</a>
+<span class="sourceLineNo">009</span><a id="line.9"> * </a>
+<span class="sourceLineNo">010</span><a id="line.10"> */</a>
+<span class="sourceLineNo">011</span><a id="line.11">public final class MZTabConstants {</a>
+<span class="sourceLineNo">012</span><a id="line.12">    /** Constant &lt;code&gt;NEW_LINE="System.getProperty(line.separator)"&lt;/code&gt; */</a>
+<span class="sourceLineNo">013</span><a id="line.13">    public static final String NEW_LINE = "\r\n";//System.getProperty("line.separator");</a>
+<span class="sourceLineNo">014</span><a id="line.14">    /** Constant &lt;code&gt;NULL="null"&lt;/code&gt; */</a>
+<span class="sourceLineNo">015</span><a id="line.15">    public static final String NULL = "null";</a>
+<span class="sourceLineNo">016</span><a id="line.16">    /** Constant &lt;code&gt;INFINITY="INF"&lt;/code&gt; */</a>
+<span class="sourceLineNo">017</span><a id="line.17">    public static final String INFINITY = "INF";</a>
+<span class="sourceLineNo">018</span><a id="line.18">    /** Constant &lt;code&gt;CALCULATE_ERROR="NaN"&lt;/code&gt; */</a>
+<span class="sourceLineNo">019</span><a id="line.19">    public static final String CALCULATE_ERROR = "NaN";</a>
+<span class="sourceLineNo">020</span><a id="line.20"></a>
+<span class="sourceLineNo">021</span><a id="line.21">    /** Constant &lt;code&gt;TAB='\u0009'&lt;/code&gt; */</a>
+<span class="sourceLineNo">022</span><a id="line.22">    public static final char TAB = '\u0009';</a>
+<span class="sourceLineNo">023</span><a id="line.23">    /** Constant &lt;code&gt;TABs=""+'\u0009'&lt;/code&gt; */</a>
+<span class="sourceLineNo">024</span><a id="line.24">    public static final String TAB_STRING = ""+TAB;</a>
+<span class="sourceLineNo">025</span><a id="line.25">    /** Constant &lt;code&gt;MINUS='-'&lt;/code&gt; */</a>
+<span class="sourceLineNo">026</span><a id="line.26">    public static final char MINUS = '-';</a>
+<span class="sourceLineNo">027</span><a id="line.27">    /** Constant &lt;code&gt;BAR='\u007c'&lt;/code&gt; */</a>
+<span class="sourceLineNo">028</span><a id="line.28">    public static final char BAR = '\u007c';</a>
+<span class="sourceLineNo">029</span><a id="line.29">    /** Constant &lt;code&gt;BAR='\u007c'&lt;/code&gt; */</a>
+<span class="sourceLineNo">030</span><a id="line.30">    public static final String BAR_S = ""+BAR;</a>
+<span class="sourceLineNo">031</span><a id="line.31">    /** Constant &lt;code&gt;COLON=':'&lt;/code&gt; */</a>
+<span class="sourceLineNo">032</span><a id="line.32">    public static final char COLON = ':';</a>
+<span class="sourceLineNo">033</span><a id="line.33">    /** Constant &lt;code&gt;COMMA=','&lt;/code&gt; */</a>
+<span class="sourceLineNo">034</span><a id="line.34">    public static final char COMMA = ',';</a>
+<span class="sourceLineNo">035</span><a id="line.35">    /** Constant &lt;code&gt;VERSION="2.0.0-M"&lt;/code&gt; */</a>
+<span class="sourceLineNo">036</span><a id="line.36">    public static final String VERSION_MZTAB_M = "2.0.0-M";</a>
+<span class="sourceLineNo">037</span><a id="line.37">    /** Constant &lt;code&gt;OPT_PREFIX="opt_"&lt;/code&gt; */</a>
+<span class="sourceLineNo">038</span><a id="line.38">    public static final String OPT_PREFIX = "opt_";</a>
+<span class="sourceLineNo">039</span><a id="line.39">    /** Constant &lt;code&gt;ABUNDANCE_PREFIX="abundance_"&lt;/code&gt; */</a>
+<span class="sourceLineNo">040</span><a id="line.40">    public static final String ABUNDANCE_PREFIX = "abundance_";</a>
+<span class="sourceLineNo">041</span><a id="line.41">    /** Constant &lt;code&gt;GLOBAL="global"&lt;/code&gt; */</a>
+<span class="sourceLineNo">042</span><a id="line.42">    public static final String GLOBAL = "global";</a>
+<span class="sourceLineNo">043</span><a id="line.43">    /** Constant &lt;code&gt;CV_PREFIX="cv_"&lt;/code&gt; */</a>
+<span class="sourceLineNo">044</span><a id="line.44">    public static final String CV_PREFIX = "cv_";</a>
+<span class="sourceLineNo">045</span><a id="line.45">    </a>
+<span class="sourceLineNo">046</span><a id="line.46">    /*</a>
+<span class="sourceLineNo">047</span><a id="line.47">     Regular expressions that are not directly applicable to domain objects.</a>
+<span class="sourceLineNo">048</span><a id="line.48">    */</a>
+<span class="sourceLineNo">049</span><a id="line.49">    /** Constant &lt;code&gt;REGEX_INDEXED_VALUE="\\[(\\d+)\\]"&lt;/code&gt; */</a>
+<span class="sourceLineNo">050</span><a id="line.50">    public static final String REGEX_INDEXED_VALUE = "\\[(\\d+)\\]";</a>
+<span class="sourceLineNo">051</span><a id="line.51">    /** Constant &lt;code&gt;REGEX_CV_PARAM_OPT_COLUMN_NAME="cv(_([A-Za-z0-9\\-\\[\\]:\\.]+))?(_([A-Za-z0-9_\\-\\[\\]:\\.]+)*)"&lt;/code&gt; */</a>
+<span class="sourceLineNo">052</span><a id="line.52">    public static final String REGEX_CV_PARAM_OPT_COLUMN_NAME = "cv(_([A-Za-z0-9\\-\\[\\]:\\.]+))?(_([A-Za-z0-9_\\-\\[\\]:\\.]+)*)";</a>
+<span class="sourceLineNo">053</span><a id="line.53">    /** Constant &lt;code&gt;REGEX_OPT_COLUMN_NAME="opt_((assay|study_variable|ms_run)\\[(\\w+)\\]|global)_([A-Za-z0-9_\\-\\[\\]:\\.]+)"&lt;/code&gt; */</a>
+<span class="sourceLineNo">054</span><a id="line.54">    public static final String REGEX_OPT_COLUMN_NAME = "opt_((assay|study_variable|ms_run)\\[(\\w+)\\]|global)_([A-Za-z0-9_\\-\\[\\]:\\.]+)";</a>
+<span class="sourceLineNo">055</span><a id="line.55">    /** Constant &lt;code&gt;REGEX_ABUNDANCE_COLUMN_NAME="abundance_(.+)"&lt;/code&gt; */</a>
+<span class="sourceLineNo">056</span><a id="line.56">    public static final String REGEX_ABUNDANCE_COLUMN_NAME = "abundance_(.+)";</a>
+<span class="sourceLineNo">057</span><a id="line.57">    /** Constant &lt;code&gt;REGEX_ABUNDANCE_ASSAY_COLUMN_NAME="assay\\[(\\d+)\\]"&lt;/code&gt; */</a>
+<span class="sourceLineNo">058</span><a id="line.58">    public static final String REGEX_ABUNDANCE_ASSAY_COLUMN_NAME = "assay"+REGEX_INDEXED_VALUE;</a>
+<span class="sourceLineNo">059</span><a id="line.59">    /** Constant &lt;code&gt;REGEX_STUDY_VARIABLE_COLUMN_NAME="study_variable\\[(\\d+)\\]"&lt;/code&gt; */</a>
+<span class="sourceLineNo">060</span><a id="line.60">    public static final String REGEX_STUDY_VARIABLE_COLUMN_NAME = "study_variable"+REGEX_INDEXED_VALUE;</a>
+<span class="sourceLineNo">061</span><a id="line.61">    /** Constant &lt;code&gt;REGEX_NORMAL_METADATA="(\\w+)(\\[(\\w+)\\])?(-(\\w+)(\\[(\\w+)\\])?)?(-(\\w+))?"&lt;/code&gt; */</a>
+<span class="sourceLineNo">062</span><a id="line.62">    public static final String REGEX_NORMAL_METADATA = "(\\w+)(\\[(\\w+)\\])?(-(\\w+)(\\[(\\w+)\\])?)?(-(\\w+))?";</a>
+<span class="sourceLineNo">063</span><a id="line.63">    /** Constant &lt;code&gt;REGEX_EMAIL="[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-']+)*@[A-Za-z0-9]+(?:[-.][A-Za-z0-9]+)*(\\.[A-Za-z]{2,})"&lt;/code&gt; */</a>
+<span class="sourceLineNo">064</span><a id="line.64">    public static final String REGEX_EMAIL = "[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-']+)*@[A-Za-z0-9]+(?:[-.][A-Za-z0-9]+)*(\\.[A-Za-z]{2,})";</a>
+<span class="sourceLineNo">065</span><a id="line.65">    /** Constant {@code REGEX_MZTAB_M="(?&lt;major&gt;[2]{1})\\.(?&lt;minor&gt;\\d{1})\\.(?&lt;micro&gt;\\d{1})-(?&lt;profile&gt;[M]{1})"} */</a>
+<span class="sourceLineNo">066</span><a id="line.66">    public static final String REGEX_MZTAB_M = "(?&lt;major&gt;[2]{1})\\.(?&lt;minor&gt;\\d{1})\\.(?&lt;micro&gt;\\d{1})-(?&lt;profile&gt;[M]{1})";</a>
+<span class="sourceLineNo">067</span><a id="line.67">    /** Constant &lt;code&gt;REGEX_PARAM_SPLIT=",(?=([^\"]*\"[^\"]*\")*[^\"]*$)"&lt;/code&gt; */</a>
+<span class="sourceLineNo">068</span><a id="line.68">    public static final String REGEX_PARAM_SPLIT = ",(?=([^\"]*\"[^\"]*\")*[^\"]*$)";</a>
+<span class="sourceLineNo">069</span><a id="line.69">    /** Constant &lt;code&gt;REGEX_DEFAULT_RELIABILITY="[1234]{1}"&lt;/code&gt; */</a>
+<span class="sourceLineNo">070</span><a id="line.70">    public static final String REGEX_DEFAULT_RELIABILITY = "[1234]{1}";</a>
+<span class="sourceLineNo">071</span><a id="line.71">    /** More complex for isotopes: \[\d*M([\w\d]+)*([+-][\w\d]+)*\]\d*[+-] **/</a>
+<span class="sourceLineNo">072</span><a id="line.72">    /** Constant &lt;code&gt;REGEX_ADDUCT="^\[\d*M([+-][\w\d]+)*\]\d*[+-]$"&lt;/code&gt; */</a>
+<span class="sourceLineNo">073</span><a id="line.73">    public static final String REGEX_ADDUCT = "^\\[\\d*M([+-][\\w\\d]+)*\\]\\d*[+-]$";</a>
+<span class="sourceLineNo">074</span><a id="line.74">    </a>
+<span class="sourceLineNo">075</span><a id="line.75">    /** Constant &lt;code&gt;REGEX_SPECTRA_REF_THERMO_NATIVE = "controllerType=[\\d]+ controllerNumber=[1-9]\\d* scan=[1-9]\\d*"&lt;/code&gt; */</a>
+<span class="sourceLineNo">076</span><a id="line.76">    public static final String REGEX_SPECTRA_REF_THERMO_NATIVE = "controllerType=[\\d]+ controllerNumber=[1-9]\\d* scan=[1-9]\\d*";</a>
+<span class="sourceLineNo">077</span><a id="line.77">    /** Constant &lt;code&gt;REGEX_SPECTRA_REF_WATERS_NATIVE = "function=[1-9]\\d* process=[\\d]+ scan=[\\d]+"&lt;/code&gt; */</a>
+<span class="sourceLineNo">078</span><a id="line.78">    public static final String REGEX_SPECTRA_REF_WATERS_NATIVE = "function=[1-9]\\d* process=[\\d]+ scan=[\\d]+";</a>
+<span class="sourceLineNo">079</span><a id="line.79">    /** Constant &lt;code&gt;REGEX_SPECTRA_REF_WIFF_NATIVE = "sample=[\\d]+ period=[\\d]+ cycle=[\\d]+ experiment=[\\d]+"&lt;/code&gt; */</a>
+<span class="sourceLineNo">080</span><a id="line.80">    public static final String REGEX_SPECTRA_REF_WIFF_NATIVE = "sample=[\\d]+ period=[\\d]+ cycle=[\\d]+ experiment=[\\d]+";</a>
+<span class="sourceLineNo">081</span><a id="line.81">//    /** Constant &lt;code&gt;REGEX_SPECTRA_REF_SCIEX_TOF_TOF_NATIVE = "jobRun=[\\d]+ spotLabel=[\\d]+ spectrum=[\\d]+"&lt;/code&gt; */</a>
+<span class="sourceLineNo">082</span><a id="line.82">//    public static final String REGEX_SPECTRA_REF_SCIEX_TOF_TOF_NATIVE = "jobRun=[\\d]+ spotLabel=[\\w]+ spectrum=[\\d]+";</a>
+<span class="sourceLineNo">083</span><a id="line.83">    /** Constant &lt;code&gt;REGEX_SPECTRA_REF_INDEX = "index=[\\d]+"&lt;/code&gt; */</a>
+<span class="sourceLineNo">084</span><a id="line.84">    public static final String REGEX_SPECTRA_REF_INDEX = "index=[\\d]+";</a>
+<span class="sourceLineNo">085</span><a id="line.85">    /** Constant &lt;code&gt;REGEX_SPECTRA_REF_FILE = "file=[\\w]+"&lt;/code&gt; */</a>
+<span class="sourceLineNo">086</span><a id="line.86">    public static final String REGEX_SPECTRA_REF_FILE = "file=[\\w]+";</a>
+<span class="sourceLineNo">087</span><a id="line.87">    /** Constant &lt;code&gt;REGEX_SPECTRA_REF_SPECTRUM = "spectrum=[\\d]+"&lt;/code&gt; */</a>
+<span class="sourceLineNo">088</span><a id="line.88">    public static final String REGEX_SPECTRA_REF_SPECTRUM = "spectrum=[\\d]+";</a>
+<span class="sourceLineNo">089</span><a id="line.89">    /** Constant &lt;code&gt;REGEX_SPECTRA_REF_MZML_UNIQUE = "[\\w]+"&lt;/code&gt; */</a>
+<span class="sourceLineNo">090</span><a id="line.90">    public static final String REGEX_SPECTRA_REF_MZML_UNIQUE = "[\\w]+";</a>
+<span class="sourceLineNo">091</span><a id="line.91">    /** Constant &lt;code&gt;REGEX_SPECTRA_REF_SCAN = "scan=[\\d]+"&lt;/code&gt; */</a>
+<span class="sourceLineNo">092</span><a id="line.92">    public static final String REGEX_SPECTRA_REF_SCAN = "scan=[\\d]+";</a>
+<span class="sourceLineNo">093</span><a id="line.93">}</a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+</div>
+</main>
+</body>
+</html>

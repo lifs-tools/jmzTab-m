@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MetadataProperty.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jmztabm-io</a> &gt; <a href="index.source.html" class="el_package">uk.ac.ebi.pride.jmztab2.model</a> &gt; <span class="el_source">MetadataProperty.java</span></div><h1>MetadataProperty.java</h1><pre class="source lang-java linenums">/* 
+ * Copyright 2018 Leibniz-Institut für Analytische Wissenschaften – ISAS – e.V..
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package uk.ac.ebi.pride.jmztab2.model;
+
+import java.util.Optional;
+
+/**
+ * Define a property in metadata, which depend on the {@link uk.ac.ebi.pride.jmztab2.model.MetadataElement}.
+ *
+ * @author qingwei
+ * @author nilshoffmann
+ * @since 23/05/13
+ * 
+ */
+<span class="fc" id="L28">public enum MetadataProperty {</span>
+<span class="fc" id="L29">    MZTAB_VERSION                         (MetadataElement.MZTAB,                               &quot;version&quot;),</span>
+<span class="fc" id="L30">    MZTAB_ID                              (MetadataElement.MZTAB,                               &quot;ID&quot;),</span>
+
+<span class="fc" id="L32">    INSTRUMENT_NAME                       (MetadataElement.INSTRUMENT,                          &quot;name&quot;),</span>
+<span class="fc" id="L33">    INSTRUMENT_SOURCE                     (MetadataElement.INSTRUMENT,                          &quot;source&quot;),</span>
+<span class="fc" id="L34">    INSTRUMENT_ANALYZER                   (MetadataElement.INSTRUMENT,                          &quot;analyzer&quot;),</span>
+<span class="fc" id="L35">    INSTRUMENT_DETECTOR                   (MetadataElement.INSTRUMENT,                          &quot;detector&quot;),</span>
+
+<span class="fc" id="L37">    SOFTWARE_SETTING                      (MetadataElement.SOFTWARE,                            &quot;setting&quot;),</span>
+
+<span class="fc" id="L39">    CONTACT_NAME                          (MetadataElement.CONTACT,                             &quot;name&quot;),</span>
+<span class="fc" id="L40">    CONTACT_AFFILIATION                   (MetadataElement.CONTACT,                             &quot;affiliation&quot;),</span>
+<span class="fc" id="L41">    CONTACT_EMAIL                         (MetadataElement.CONTACT,                             &quot;email&quot;),</span>
+
+<span class="fc" id="L43">    SMALL_MOLECULE_QUANTIFICATION_UNIT    (MetadataElement.SMALL_MOLECULE,                      &quot;quantification_unit&quot;),</span>
+<span class="fc" id="L44">    SMALL_MOLECULE_IDENTIFICATION_RELIABILITY(MetadataElement.SMALL_MOLECULE,                   &quot;identification_reliability&quot;),</span>
+<span class="fc" id="L45">    SMALL_MOLECULE_FEATURE_QUANTIFICATION_UNIT(MetadataElement.SMALL_MOLECULE_FEATURE,          &quot;quantification_unit&quot;),</span>
+
+<span class="fc" id="L47">    MS_RUN_FORMAT                         (MetadataElement.MS_RUN,                              &quot;format&quot;),</span>
+<span class="fc" id="L48">    MS_RUN_LOCATION                       (MetadataElement.MS_RUN,                              &quot;location&quot;),</span>
+<span class="fc" id="L49">    MS_RUN_INSTRUMENT_REF                 (MetadataElement.MS_RUN,                              &quot;instrument_ref&quot;),</span>
+<span class="fc" id="L50">    MS_RUN_ID_FORMAT                      (MetadataElement.MS_RUN,                              &quot;id_format&quot;),</span>
+<span class="fc" id="L51">    MS_RUN_FRAGMENTATION_METHOD           (MetadataElement.MS_RUN,                              &quot;fragmentation_method&quot;),</span>
+<span class="fc" id="L52">    MS_RUN_HASH                           (MetadataElement.MS_RUN,                              &quot;hash&quot;),</span>
+<span class="fc" id="L53">    MS_RUN_HASH_METHOD                    (MetadataElement.MS_RUN,                              &quot;hash_method&quot;),</span>
+<span class="fc" id="L54">    MS_RUN_SCAN_POLARITY                  (MetadataElement.MS_RUN,                              &quot;scan_polarity&quot;),</span>
+
+<span class="fc" id="L56">    SAMPLE_SPECIES                        (MetadataElement.SAMPLE,                              &quot;species&quot;),</span>
+<span class="fc" id="L57">    SAMPLE_TISSUE                         (MetadataElement.SAMPLE,                              &quot;tissue&quot;),</span>
+<span class="fc" id="L58">    SAMPLE_CELL_TYPE                      (MetadataElement.SAMPLE,                              &quot;cell_type&quot;),</span>
+<span class="fc" id="L59">    SAMPLE_DISEASE                        (MetadataElement.SAMPLE,                              &quot;disease&quot;),</span>
+<span class="fc" id="L60">    SAMPLE_DESCRIPTION                    (MetadataElement.SAMPLE,                              &quot;description&quot;),</span>
+<span class="fc" id="L61">    SAMPLE_CUSTOM                         (MetadataElement.SAMPLE,                              &quot;custom&quot;),</span>
+
+<span class="fc" id="L63">    ASSAY_SAMPLE_REF                      (MetadataElement.ASSAY,                               &quot;sample_ref&quot;),</span>
+<span class="fc" id="L64">    ASSAY_MS_RUN_REF                      (MetadataElement.ASSAY,                               &quot;ms_run_ref&quot;),</span>
+<span class="fc" id="L65">    ASSAY_CUSTOM                          (MetadataElement.ASSAY,                               &quot;custom&quot;),</span>
+<span class="fc" id="L66">    ASSAY_EXTERNAL_URI                    (MetadataElement.ASSAY,                               &quot;external_uri&quot;),</span>
+
+<span class="fc" id="L68">    STUDY_VARIABLE_ASSAY_REFS             (MetadataElement.STUDY_VARIABLE,                      &quot;assay_refs&quot;),</span>
+<span class="fc" id="L69">    STUDY_VARIABLE_DESCRIPTION            (MetadataElement.STUDY_VARIABLE,                      &quot;description&quot;),</span>
+<span class="fc" id="L70">    STUDY_VARIABLE_AVERAGE_FUNCTION       (MetadataElement.STUDY_VARIABLE,                      &quot;average_function&quot;),</span>
+<span class="fc" id="L71">    STUDY_VARIABLE_VARIATION_FUNCTION     (MetadataElement.STUDY_VARIABLE,                      &quot;variation_function&quot;),</span>
+<span class="fc" id="L72">    STUDY_VARIABLE_FACTORS                (MetadataElement.STUDY_VARIABLE,                      &quot;factors&quot;),</span>
+
+<span class="fc" id="L74">    CV_LABEL                              (MetadataElement.CV,                                  &quot;label&quot;),</span>
+<span class="fc" id="L75">    CV_FULL_NAME                          (MetadataElement.CV,                                  &quot;full_name&quot;),</span>
+<span class="fc" id="L76">    CV_VERSION                            (MetadataElement.CV,                                  &quot;version&quot;),</span>
+<span class="fc" id="L77">    CV_URI                                (MetadataElement.CV,                                  &quot;uri&quot;),</span>
+    
+<span class="fc" id="L79">    DATABASE_PREFIX                       (MetadataElement.DATABASE,                             &quot;prefix&quot;),</span>
+<span class="fc" id="L80">    DATABASE_VERSION                      (MetadataElement.DATABASE,                             &quot;version&quot;),</span>
+<span class="fc" id="L81">    DATABASE_URI                          (MetadataElement.DATABASE,                             &quot;uri&quot;);</span>
+    
+    private String name;
+    private MetadataElement element;
+
+    /**
+     * Define a property depend on {@link MetadataElement}
+     * For example: assay[1-n]-sample_ref, assay[1-n] is {@link MetadataElement#ASSAY},
+     * sample_ref is {@link MetadataProperty#ASSAY_SAMPLE_REF}
+     */
+<span class="fc" id="L91">    MetadataProperty(MetadataElement element, String name) {</span>
+<span class="fc" id="L92">        this.element = element;</span>
+<span class="fc" id="L93">        this.name = name;</span>
+<span class="fc" id="L94">    }</span>
+
+    /**
+     * &lt;p&gt;Getter for the field &lt;code&gt;element&lt;/code&gt;.&lt;/p&gt;
+     *
+     * @return dependent {@link uk.ac.ebi.pride.jmztab2.model.MetadataElement}
+     */
+    public MetadataElement getElement() {
+<span class="nc" id="L102">        return element;</span>
+    }
+
+    /**
+     * &lt;p&gt;Getter for the field &lt;code&gt;name&lt;/code&gt;.&lt;/p&gt;
+     *
+     * @return property name
+     */
+    public String getName() {
+<span class="fc" id="L111">        return name;</span>
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public String toString() {
+<span class="nc" id="L117">        return name;</span>
+    }
+
+    /**
+     * Find property by {@link uk.ac.ebi.pride.jmztab2.model.MetadataElement} and property name with case-insensitive. If not find, return null.
+     *
+     * @param element a {@link uk.ac.ebi.pride.jmztab2.model.MetadataElement} object.
+     * @param propertyName a {@link java.lang.String} object.
+     * @return an optional {@link uk.ac.ebi.pride.jmztab2.model.MetadataProperty} object.
+     */
+    public static Optional&lt;MetadataProperty&gt; findProperty(MetadataElement element, String propertyName) {
+<span class="pc bpc" id="L128" title="2 of 4 branches missed.">        if (element == null || propertyName == null) {</span>
+<span class="nc" id="L129">            return Optional.empty();</span>
+        }
+
+        MetadataProperty property;
+        try {
+<span class="fc" id="L134">            property = MetadataProperty.valueOf((element.getName() + &quot;_&quot; + propertyName).toUpperCase());</span>
+<span class="fc" id="L135">        } catch (IllegalArgumentException e) {</span>
+<span class="fc" id="L136">            property = null;</span>
+<span class="fc" id="L137">        }</span>
+
+<span class="fc" id="L139">        return Optional.ofNullable(property);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>
