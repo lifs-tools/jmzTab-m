@@ -111,6 +111,15 @@ https://biocontainers.pro/#/tools/jmztab-m
 Alternatively, you can build and run a custom Docker image with the instructions 
 in the following sections.
 
+== Running the Bioconda Docker Container
+
+The Bioconda Docker container works slightly different from the one we provide instructions for further down.
+First, go to the quai.io page (user account required) to check for available tags: https://quay.io/repository/biocontainers/jmztab-m?tab=tags
+Then, run jmztab-m (the cli) as follows, mounting the local directory to '/home/data' within the container, with read and write permissions.
+The rest of the arguments follow those of the regular jmztab-m CLI (this example converts an input mzTab-M file into json, stores validation output in the file  'validation.txt', and applies semantic validation following the rules described in a custom mapping file):
+
+    docker run -v "${PWD}":/home/data:rw quay.io/biocontainers/jmztab-m:1.0.6--0 jmztab-m -c "/home/data/$i" -s --toJson -o "/home/data/validation.txt" -s mzTab_2_0-M_summary-mapping.xml
+
 == Building the Plain Docker Image
 
 In order to build a Docker image of the command line interface application, run 
