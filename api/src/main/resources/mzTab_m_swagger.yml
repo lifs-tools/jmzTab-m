@@ -348,6 +348,7 @@ definitions:
             MTD	contact[2]-name	Francis Crick
             MTD	contact[2]-affiliation	Cambridge University, UK
             MTD	contact[2]-email	crick@cam.ac.uk
+            MTD contact[2]-orcid        0000-0002-1825-0097
       publication:
         type: array
         description: A publication associated with this file. Several publications can be given by indicating the number in the square brackets after “publication”. PubMed ids must be prefixed by “pubmed:”, DOIs by “doi:”. Multiple identifiers MUST be separated by “|”.
@@ -1416,6 +1417,7 @@ definitions:
         MTD	contact[2]-name	Francis Crick
         MTD	contact[2]-affiliation	Cambridge University, UK
         MTD	contact[2]-email	crick@cam.ac.uk
+        MTD	contact[2]-orcid	0000-0002-1825-0097
     x-mztab-serialize-by-id: 'true'
     type: object
     properties:
@@ -1433,6 +1435,10 @@ definitions:
           description: The contact's e-mail address.
           type: string
           pattern: '^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$'
+        orcid:
+          description: The contact's orcid id, without https prefix.
+          type: string
+          pattern: '^[0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{3}[0-9X]{1}'
   Uri:
     description: A URI pointing to the file’s source data (e.g., a MetaboLights records) or an external file with more details about the study design.
     x-mztab-example: |
