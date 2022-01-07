@@ -598,7 +598,7 @@
         <logback.version>1.2.3</logback.version>
         <diffutils.version>2.2</diffutils.version>
         <javaobjectdiff.version>0.95</javaobjectdiff.version>
-        <dockerfile.plugin.version>1.4.10</dockerfile.plugin.version>
+        <dockerfile.plugin.version>1.4.13</dockerfile.plugin.version>
         <jaxb.api-version>2.3.1</jaxb.api-version>
         <jaxb.core-version>2.3.0.1</jaxb.core-version>
         <jaxb.version>2.3.2</jaxb.version>
