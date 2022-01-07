@@ -586,7 +586,7 @@
         <hibernate.validator.version>6.0.22.Final</hibernate.validator.version>
         <slf4j.version>1.7.30</slf4j.version>
         <commons-cli.version>1.2</commons-cli.version>
-        <javax.el.version>3.0.1-b09</javax.el.version>
+        <javax.el.version>3.0.1-b12</javax.el.version>
         <migbase.version>2.2</migbase.version>
         <swagger2markup.version>1.3.3</swagger2markup.version>
         <maven-plugin-version>1.0.0</maven-plugin-version>
