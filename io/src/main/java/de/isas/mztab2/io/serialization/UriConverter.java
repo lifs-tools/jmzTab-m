@@ -18,6 +18,7 @@ package de.isas.mztab2.io.serialization;
 import com.fasterxml.jackson.databind.util.StdConverter;
 import de.isas.mztab2.model.Uri;
 import java.util.Optional;
+import static uk.ac.ebi.pride.jmztab2.model.MZTabConstants.NULL;
 
 /**
  * Converter from Uri to String.
@@ -31,7 +32,7 @@ public class UriConverter extends StdConverter<Uri, String> {
      */
     @Override
     public String convert(Uri uri) {
-        return Optional.of(uri.getValue()).orElse("null");
+        return Optional.ofNullable(uri).map(u -> u.getValue()).orElse(NULL);
     }
 
 }

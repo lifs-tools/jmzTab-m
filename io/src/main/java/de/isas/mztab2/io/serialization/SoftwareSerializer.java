@@ -26,7 +26,9 @@ import lombok.extern.slf4j.Slf4j;
 import uk.ac.ebi.pride.jmztab2.model.Section;
 
 /**
-* <p>SoftwareSerializer implementation for {@link de.isas.mztab2.model.Software}.</p>
+ * <p>
+ * SoftwareSerializer implementation for
+ * {@link de.isas.mztab2.model.Software}.</p>
  *
  * @author nilshoffmann
  *
@@ -54,7 +56,7 @@ public class SoftwareSerializer extends StdSerializer<Software> {
 
     @Override
     public void serializeWithType(Software value, JsonGenerator gen,
-        SerializerProvider serializers, TypeSerializer typeSer) throws IOException {
+            SerializerProvider serializers, TypeSerializer typeSer) throws IOException {
         typeSer.writeTypePrefixForObject(value, gen);
         serialize(value, gen, serializers);
         typeSer.writeTypeSuffixForObject(value, gen);
@@ -65,15 +67,17 @@ public class SoftwareSerializer extends StdSerializer<Software> {
      */
     @Override
     public void serialize(Software software, JsonGenerator jg,
-        SerializerProvider sp) throws IOException {
+            SerializerProvider sp) throws IOException {
         if (software != null) {
             Serializers.checkIndexedElement(software);
-            Serializers.addIndexedLine(jg, sp, Section.Metadata.getPrefix(),
-                software,
-                software.getParameter());
-            addSubElementStrings(jg, Section.Metadata.getPrefix(), software,
-                Software.Properties.setting.getPropertyName(),
-                software.getSetting(), false);
+            if (software.getParameter() != null && software.getSetting() != null) {
+                Serializers.addIndexedLine(jg, sp, Section.Metadata.getPrefix(),
+                        software,
+                        software.getParameter());
+                addSubElementStrings(jg, Section.Metadata.getPrefix(), software,
+                        Software.Properties.setting.getPropertyName(),
+                        software.getSetting(), false);
+            }
         } else {
             log.debug(Software.class.getSimpleName() + " is null!");
         }
