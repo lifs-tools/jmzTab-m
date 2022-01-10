@@ -26,6 +26,6 @@ Any value defined here will override the pom.xml file value but is only applicab
         <de-markiewb-netbeans-plugins-eclipse-formatter46.enableFormatAsSaveAction>false</de-markiewb-netbeans-plugins-eclipse-formatter46.enableFormatAsSaveAction>
         <de-markiewb-netbeans-plugins-eclipse-formatter46.sourcelevel/>
         <de-markiewb-netbeans-plugins-eclipse-formatter46.useProjectSettings>false</de-markiewb-netbeans-plugins-eclipse-formatter46.useProjectSettings>
-        <netbeans.hint.jdkPlatform>JDK_11</netbeans.hint.jdkPlatform>
+        <netbeans.hint.jdkPlatform>JDK_17</netbeans.hint.jdkPlatform>
     </properties>
 </project-shared-configuration>
