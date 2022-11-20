@@ -577,7 +577,7 @@
         <junit.jupiter.version>5.0.3</junit.jupiter.version>
         <junit.vintage.version>4.13.1</junit.vintage.version>
         <junit.platform.version>1.0.3</junit.platform.version>
-        <swagger.version>1.5.24</swagger.version>
+        <swagger.version>1.6.9</swagger.version>
         <jersey.version>2.22.4</jersey.version>
         <jackson.version>2.10.5</jackson.version>
         <jackson.databind.version>2.10.5.1</jackson.databind.version>
