@@ -41,7 +41,7 @@
             <plugin>
                 <groupId>com.github.ferstl</groupId>
                 <artifactId>depgraph-maven-plugin</artifactId>
-                <version>3.3.0</version>
+                <version>4.0.2</version>
                 <configuration>
                     <graphFormat>gml</graphFormat>
                     <excludes>:::test</excludes>
@@ -62,7 +62,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-site-plugin</artifactId>
-                <version>3.9.1</version>
+                <version>3.12.1</version>
                 <dependencies>
                     <dependency><!-- add Asciidoctor Doxia Parser Module -->
                         <groupId>org.asciidoctor</groupId>
@@ -85,22 +85,22 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-clean-plugin</artifactId>
-                    <version>3.1.0</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-site-plugin</artifactId>
-                    <version>3.9.1</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-resources-plugin</artifactId>
                     <version>3.2.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-site-plugin</artifactId>
+                    <version>3.12.1</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-resources-plugin</artifactId>
+                    <version>3.3.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-enforcer-plugin</artifactId>
-                    <version>3.0.0</version>
+                    <version>3.1.0</version>
                     <executions>
                         <execution>
                             <id>enforce-maven</id>
@@ -120,7 +120,7 @@
                 <plugin>
                     <groupId>org.owasp</groupId>
                     <artifactId>dependency-check-maven</artifactId>
-                    <version>6.5.3</version>
+                    <version>7.3.2</version>
                     <configuration>
                         <cveValidForHours>12</cveValidForHours>
                         <failBuildOnCVSS>4</failBuildOnCVSS>
@@ -138,7 +138,7 @@
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>buildnumber-maven-plugin</artifactId>
-                    <version>1.4</version>
+                    <version>3.0.0</version>
                     <executions>
                         <execution>
                             <phase>validate</phase>
@@ -327,30 +327,6 @@
                             <jacoco-agent.destfile>target/jacoco.exec</jacoco-agent.destfile>
                         </systemPropertyVariables>
                     </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>com.spotify</groupId>
-                    <artifactId>dockerfile-maven-plugin</artifactId>
-                    <version>${dockerfile.plugin.version}</version>
-                    <configuration>
-                        <repository>${docker.image.prefix}/${project.artifactId}</repository>
-                        <tag>${project.version}</tag>
-                        <buildArgs>
-                            <APP_NAME>${project.artifactId}</APP_NAME>
-                            <JAR_FILE>${project.build.finalName}.jar</JAR_FILE>
-                            <APP_VERSION>${project.version}</APP_VERSION>
-                        </buildArgs>
-                    </configuration>
-                    <executions>
-                        <execution>
-                            <id>default</id>
-                            <phase>install</phase>
-                            <goals>
-                                <goal>build</goal>
-                                <goal>tag</goal>
-                            </goals>
-                        </execution>
-                    </executions>
                 </plugin>
                 <plugin>
                     <groupId>com.google.cloud.tools</groupId>
