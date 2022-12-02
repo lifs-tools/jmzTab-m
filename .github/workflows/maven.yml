@@ -40,10 +40,10 @@ jobs:
         path: ~/.m2
         key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
         restore-keys: ${{ runner.os }}-m2        
-    - name: Setup Maven settings.xml
-      uses: whelk-io/maven-settings-xml-action@v14
-      with:
-        servers: '[{ "id": "lifstools-jfrog", "username": "github-deployer", "password": "${env.ARTIFACTORY_TOKEN_REF}" }]'
+          #    - name: Setup Maven settings.xml
+          #      uses: whelk-io/maven-settings-xml-action@v14
+          #      with:
+          #        servers: '[{ "id": "lifstools-jfrog", "username": "github-deployer", "password": "${env.ARTIFACTORY_TOKEN_REF}" }]'
     - name: Set Release version env variable
       env:
         USERNAME: ${{ github.actor }}
@@ -60,14 +60,14 @@ jobs:
       if: always()
       with:
         files: "**/*-reports/*.xml"
-    - name: Publish Jar
-      env:
-        ARTIFACTORY_USERNAME_REF: github-deployer 
-        ARTIFACTORY_TOKEN_REF: ${{ secrets.ARTIFACTORY_TOKEN }}
-        BUILD_ENV: 'github-actions'
-        DEFAULT_BRANCH: master
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: ./mvnw -B deploy -DskipTests -Pjfrog --file pom.xml
+          #    - name: Publish Jar
+          #      env:
+          #        ARTIFACTORY_USERNAME_REF: github-deployer 
+          #        ARTIFACTORY_TOKEN_REF: ${{ secrets.ARTIFACTORY_TOKEN }}
+          #        BUILD_ENV: 'github-actions'
+          #        DEFAULT_BRANCH: master
+          #        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          #      run: ./mvnw -B deploy -DskipTests -Possrh-snapshot --file pom.xml
     - name: Build and analyze
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
