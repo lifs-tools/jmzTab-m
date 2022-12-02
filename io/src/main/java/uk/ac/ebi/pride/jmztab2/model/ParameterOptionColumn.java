@@ -15,12 +15,12 @@
  */
 package uk.ac.ebi.pride.jmztab2.model;
 
-import de.isas.mztab2.io.serialization.Serializers;
-import de.isas.mztab2.model.Assay;
-import de.isas.mztab2.model.IndexedElement;
-import de.isas.mztab2.model.MsRun;
-import de.isas.mztab2.model.Parameter;
-import de.isas.mztab2.model.StudyVariable;
+import org.lifstools.mztab2.io.serialization.Serializers;
+import org.lifstools.mztab2.model.Assay;
+import org.lifstools.mztab2.model.IndexedElement;
+import org.lifstools.mztab2.model.MsRun;
+import org.lifstools.mztab2.model.Parameter;
+import org.lifstools.mztab2.model.StudyVariable;
 
 /**
  * An kind of {@link uk.ac.ebi.pride.jmztab2.model.OptionColumn} which use CV parameter accessions in following the format:

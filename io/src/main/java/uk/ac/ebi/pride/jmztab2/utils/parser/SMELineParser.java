@@ -15,9 +15,9 @@
  */
 package uk.ac.ebi.pride.jmztab2.utils.parser;
 
-import de.isas.mztab2.model.Metadata;
-import de.isas.mztab2.model.OptColumnMapping;
-import de.isas.mztab2.model.SmallMoleculeEvidence;
+import org.lifstools.mztab2.model.Metadata;
+import org.lifstools.mztab2.model.OptColumnMapping;
+import org.lifstools.mztab2.model.SmallMoleculeEvidence;
 import uk.ac.ebi.pride.jmztab2.model.IMZTabColumn;
 import uk.ac.ebi.pride.jmztab2.model.ISmallMoleculeEvidenceColumn;
 import uk.ac.ebi.pride.jmztab2.model.MZBoolean;
@@ -46,7 +46,7 @@ public class SMELineParser extends MZTabDataLineParser<SmallMoleculeEvidence> {
      * @param context a {@link uk.ac.ebi.pride.jmztab2.utils.parser.MZTabParserContext} object.
      * @param factory a {@link uk.ac.ebi.pride.jmztab2.model.MZTabColumnFactory} object.
      * @param positionMapping a {@link uk.ac.ebi.pride.jmztab2.utils.parser.PositionMapping} object.
-     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
+     * @param metadata a {@link org.lifstools.mztab2.model.Metadata} object.
      * @param errorList a {@link uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorList} object.
      */
     public SMELineParser(MZTabParserContext context, MZTabColumnFactory factory, PositionMapping positionMapping,

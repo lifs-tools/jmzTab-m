@@ -3,8 +3,9 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <artifactId>jmztabm</artifactId>
-        <groupId>de.isas.mztab</groupId>
+        <groupId>org.lifs-tools</groupId>
         <version>1.0.7-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>jmztabm-api</artifactId>
     <version>1.0.7-SNAPSHOT</version>
@@ -17,7 +18,7 @@
             <plugin>
                 <groupId>io.swagger</groupId>
                 <artifactId>swagger-codegen-maven-plugin</artifactId>
-                <version>2.4.25</version>
+                <version>2.4.29</version>
                 <executions>
                     <execution>
                         <id>generate-java-client-lib</id>
@@ -30,9 +31,9 @@
                             <language>java</language>
                             <templateDirectory>${project.basedir}/src/main/swagger/java-templates</templateDirectory>
                             <library>jersey2</library>
-                            <modelPackage>de.isas.mztab2.model</modelPackage>
-                            <apiPackage>de.isas.mztab2.api</apiPackage>
-                            <invokerPackage>de.isas.mztab2.invoker</invokerPackage>
+                            <modelPackage>org.lifstools.mztab2.model</modelPackage>
+                            <apiPackage>org.lifstools.mztab2.api</apiPackage>
+                            <invokerPackage>org.lifstools.mztab2.invoker</invokerPackage>
                             <withXml>true</withXml>
                             <generateApis>false</generateApis>
                             <generateModelTests>true</generateModelTests>

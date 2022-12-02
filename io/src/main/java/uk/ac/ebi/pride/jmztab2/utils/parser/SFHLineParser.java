@@ -15,9 +15,9 @@
  */
 package uk.ac.ebi.pride.jmztab2.utils.parser;
 
-import de.isas.mztab2.model.Assay;
-import de.isas.mztab2.model.Metadata;
-import de.isas.mztab2.model.Parameter;
+import org.lifstools.mztab2.model.Assay;
+import org.lifstools.mztab2.model.Metadata;
+import org.lifstools.mztab2.model.Parameter;
 import java.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,7 +50,7 @@ public class SFHLineParser extends MZTabHeaderLineParser {
      * <p>Constructor for SFHLineParser.</p>
      *
      * @param context a {@link uk.ac.ebi.pride.jmztab2.utils.parser.MZTabParserContext} object.
-     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
+     * @param metadata a {@link org.lifstools.mztab2.model.Metadata} object.
      */
     public SFHLineParser(MZTabParserContext context, Metadata metadata) {
         super(context, MZTabColumnFactory.getInstance(Section.Small_Molecule_Feature_Header), metadata);

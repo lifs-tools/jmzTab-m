@@ -15,9 +15,9 @@
  */
 package uk.ac.ebi.pride.jmztab2.utils.parser;
 
-import de.isas.mztab2.model.Metadata;
-import de.isas.mztab2.model.Parameter;
-import de.isas.mztab2.model.SmallMoleculeEvidence;
+import org.lifstools.mztab2.model.Metadata;
+import org.lifstools.mztab2.model.Parameter;
+import org.lifstools.mztab2.model.SmallMoleculeEvidence;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -53,7 +53,7 @@ public class SEHLineParser extends MZTabHeaderLineParser {
      * <p>Constructor for SEHLineParser.</p>
      *
      * @param context a {@link uk.ac.ebi.pride.jmztab2.utils.parser.MZTabParserContext} object.
-     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
+     * @param metadata a {@link org.lifstools.mztab2.model.Metadata} object.
      */
     public SEHLineParser(MZTabParserContext context, Metadata metadata) {
         super(context, MZTabColumnFactory.getInstance(Section.Small_Molecule_Evidence_Header), metadata);

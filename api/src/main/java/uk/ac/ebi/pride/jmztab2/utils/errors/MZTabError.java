@@ -1,6 +1,6 @@
 package uk.ac.ebi.pride.jmztab2.utils.errors;
 
-import de.isas.mztab2.model.ValidationMessage;
+import org.lifstools.mztab2.model.ValidationMessage;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;

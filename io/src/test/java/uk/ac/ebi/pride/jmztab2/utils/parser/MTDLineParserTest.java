@@ -15,15 +15,15 @@
  */
 package uk.ac.ebi.pride.jmztab2.utils.parser;
 
-import de.isas.mztab2.model.Assay;
-import de.isas.mztab2.model.Metadata;
-import static de.isas.mztab2.model.Metadata.Properties.uri;
-import de.isas.mztab2.model.MsRun;
-import de.isas.mztab2.model.Parameter;
-import de.isas.mztab2.model.Sample;
-import static de.isas.mztab2.test.utils.ClassPathFile.MTDFILE;
-import de.isas.mztab2.test.utils.ExtractClassPathFiles;
-import de.isas.mztab2.test.utils.LogMethodName;
+import org.lifstools.mztab2.model.Assay;
+import org.lifstools.mztab2.model.Metadata;
+import static org.lifstools.mztab2.model.Metadata.Properties.uri;
+import org.lifstools.mztab2.model.MsRun;
+import org.lifstools.mztab2.model.Parameter;
+import org.lifstools.mztab2.model.Sample;
+import static org.lifstools.mztab2.test.utils.ClassPathFile.MTDFILE;
+import org.lifstools.mztab2.test.utils.ExtractClassPathFiles;
+import org.lifstools.mztab2.test.utils.LogMethodName;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;

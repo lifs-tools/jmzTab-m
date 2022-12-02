@@ -15,9 +15,9 @@
  */
 package uk.ac.ebi.pride.jmztab2.utils.parser;
 
-import de.isas.mztab2.model.Metadata;
-import de.isas.mztab2.model.OptColumnMapping;
-import de.isas.mztab2.model.SmallMoleculeFeature;
+import org.lifstools.mztab2.model.Metadata;
+import org.lifstools.mztab2.model.OptColumnMapping;
+import org.lifstools.mztab2.model.SmallMoleculeFeature;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -57,7 +57,7 @@ public class SMFLineParser extends MZTabDataLineParser<SmallMoleculeFeature> {
      * object.
      * @param positionMapping a
      * {@link uk.ac.ebi.pride.jmztab2.utils.parser.PositionMapping} object.
-     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
+     * @param metadata a {@link org.lifstools.mztab2.model.Metadata} object.
      * @param errorList a
      * {@link uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorList} object.
      */

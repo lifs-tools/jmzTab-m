@@ -15,14 +15,8 @@
  */
 package uk.ac.ebi.pride.jmztab2.model;
 
-import de.isas.mztab2.model.IndexedElement;
-import de.isas.mztab2.model.IndexedElementImpl;
-import de.isas.mztab2.model.Metadata;
-import de.isas.mztab2.model.MsRun;
-import de.isas.mztab2.model.Parameter;
-import de.isas.mztab2.model.Publication;
-import de.isas.mztab2.model.PublicationItem;
-import de.isas.mztab2.model.SpectraRef;
+import org.lifstools.mztab2.model.IndexedElement;
+import org.lifstools.mztab2.model.IndexedElementImpl;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -31,6 +25,12 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import org.lifstools.mztab2.model.Metadata;
+import org.lifstools.mztab2.model.MsRun;
+import org.lifstools.mztab2.model.Parameter;
+import org.lifstools.mztab2.model.Publication;
+import org.lifstools.mztab2.model.PublicationItem;
+import org.lifstools.mztab2.model.SpectraRef;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import static uk.ac.ebi.pride.jmztab2.model.MZTabConstants.*;
@@ -92,6 +92,26 @@ public class MZTabUtils {
         Pattern pattern = Pattern.compile(regexp);
         Matcher matcher = pattern.matcher(target);
         
+        return matcher.find() ? target : null;
+    }
+    
+    /**
+     * Parse the target string, and check is obey the orcid format or not. If
+     * not, return null.
+     *
+     * @param target a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
+    public static String parseOrcid(String target) {
+        target = parseString(target);
+        if (target == null) {
+            return null;
+        }
+        
+        String regexp = REGEX_ORCID;
+        Pattern pattern = Pattern.compile(regexp);
+        Matcher matcher = pattern.matcher(target);
+
         return matcher.find() ? target : null;
     }
 
@@ -237,13 +257,13 @@ public class MZTabUtils {
     }
 
     /**
-     * parse the target into a {@link de.isas.mztab2.model.IndexedElement}
+     * parse the target into a {@link org.lifstools.mztab2.model.IndexedElement}
      * object.
      *
      * @param target a {@link java.lang.String} object.
      * @param element a {@link uk.ac.ebi.pride.jmztab2.model.MetadataElement}
      * object.
-     * @return a {@link de.isas.mztab2.model.IndexedElement} object.
+     * @return a {@link org.lifstools.mztab2.model.IndexedElement} object.
      */
     public static IndexedElement parseIndexedElement(String target,
         MetadataElement element) {
@@ -264,7 +284,7 @@ public class MZTabUtils {
     }
 
     /**
-     * Parse the target into a {@link de.isas.mztab2.model.IndexedElement} list.
+     * Parse the target into a {@link org.lifstools.mztab2.model.IndexedElement} list.
      * target is a '|' separated list of entries.
      *
      * @param target a {@link java.lang.String} object.

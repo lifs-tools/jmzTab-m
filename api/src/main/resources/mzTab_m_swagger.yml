@@ -4,11 +4,11 @@ info:
   version: 2.0.0
   title: mzTab-M reference implementation and validation API.
   contact:
-    email: nils.hoffmann@isas.de
+    email: nils.hoffmann@cebitec.uni-bielefeld.de
   license:
     name: Apache 2.0
     url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
-host: apps.lifs.isas.de
+host: apps.lifs-tools.org
 basePath: /mztabvalidator/rest/v2/
 x-global-options:
   go_package: mztabm
@@ -163,6 +163,68 @@ paths:
           description: Unexpected error
           schema:
             $ref: '#/definitions/Error'
+  /convertPlain:
+    post:
+      description: >
+        Converts an mzTab file in tab separated format to XML or JSON representation.
+        If this method returns an error code 422, the provided file did not pass validation.
+      operationId: convertPlainMzTabFile
+      tags:
+        - convertPlain
+      consumes:
+        - application/json
+        - application/xml
+      produces:
+        - text/tab-separated-values
+      parameters:
+        - in: body
+          name: mztabfile
+          description: mzTab file that should be converted.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Conversion Okay
+          schema:
+            $ref: '#/definitions/MzTab'
+        '415':
+          description: Unsupported content type
+        '422':
+          description: Invalid input
+        default:
+          description: Unexpected error
+  /convert:
+    post:
+      description: >
+        Converts an mzTab file in JSON or XML format to the tab-separated representation.
+        If this method returns an error code 422, the provided file did not pass validation.
+      operationId: convertMzTabFile
+      tags:
+        - convert
+      consumes:
+        - text/tab-separated-values
+        - text/plain
+      produces:
+        - application/json
+      parameters:
+        - name: mztabfile
+          in: body
+          description: mzTab file that should be validated.
+          required: true
+          schema:
+            $ref: '#/definitions/MzTab'
+      responses:
+        '200':
+          description: Conversion Okay
+          schema:
+            type: string
+        '415':
+          description: Unsupported content type
+        '422':
+          description: Invalid input
+        default:
+          description: Unexpected error
 definitions:
   MzTab:
     type: object

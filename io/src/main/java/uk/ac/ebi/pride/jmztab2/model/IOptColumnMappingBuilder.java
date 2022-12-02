@@ -15,7 +15,7 @@
  */
 package uk.ac.ebi.pride.jmztab2.model;
 
-import de.isas.mztab2.model.OptColumnMapping;
+import org.lifstools.mztab2.model.OptColumnMapping;
 
 /**
  * Interface for optional column mapping builders.

@@ -102,6 +102,10 @@ public final class FormatErrorType extends MZTabErrorType {
      * Constant <code>Email</code>
      */
     public static final MZTabErrorType Email = createError(Format, "Email");
+    /**
+     * Constant <code>Orcid</code>
+     */
+    public static final MZTabErrorType Orcid = createError(Format, "Orcid");
 
     /**
      * Constant <code>Integer</code>
@@ -183,7 +187,7 @@ public final class FormatErrorType extends MZTabErrorType {
 
     private static final MZTabErrorType[] VALUES = {
         LinePrefix, CountMatch, IndexedElement, AbundanceColumn, MsRunOptionalColumn, OptionalCVParamColumn, StableColumn, MTDLine, MTDDefineLabel, MZTabMode,
-        MZTabType, MZTabId, MZTabVersion, Param, ParamList, Publication, URI, URL, Email, Integer, Double, Reliability, StringList, DoubleList, ModificationList, GOTermList,
+        MZTabType, MZTabId, MZTabVersion, Param, ParamList, Publication, URI, URL, Email, Orcid, Integer, Double, Reliability, StringList, DoubleList, ModificationList, GOTermList,
         MZBoolean, SpectraRef, CHEMMODSAccession, SearchEngineScore, Sequence, ColUnit, IntegerList, RegexMismatch, ParamAccessionNotNamespaced, InvalidColunitFormat
     };
 

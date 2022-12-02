@@ -15,9 +15,9 @@
  */
 package uk.ac.ebi.pride.jmztab2.model;
 
-import de.isas.mztab2.model.IndexedElement;
-import de.isas.mztab2.model.OptColumnMapping;
-import de.isas.mztab2.model.Parameter;
+import org.lifstools.mztab2.model.IndexedElement;
+import org.lifstools.mztab2.model.OptColumnMapping;
+import org.lifstools.mztab2.model.Parameter;
 
 /**
  * Builder for reusable {@link OptColumnMapping} creation for multiple rows.
@@ -37,7 +37,7 @@ public class OptColumnMappingBuilder implements IOptColumnMappingBuilder {
 
         /**
          * Configure this builder to create an optional column mapping with the
-         * provided name. Mutually exclusive with {@link #withParameter(de.isas.mztab2.model.Parameter)
+         * provided name. Mutually exclusive with {@link #withParameter(org.lifstools.mztab2.model.Parameter)
          * }.
          *
          * @param name the name of this optional column.
@@ -153,8 +153,8 @@ public class OptColumnMappingBuilder implements IOptColumnMappingBuilder {
         /**
          * Configure this builder to create optional column mapping for an
          * indexed element, such as
-         * {@link de.isas.mztab2.model.Assay}, {@link de.isas.mztab2.model.StudyVariable},
-         * or {@link de.isas.mztab2.model.MsRun}.
+         * {@link org.lifstools.mztab2.model.Assay}, {@link org.lifstools.mztab2.model.StudyVariable},
+         * or {@link org.lifstools.mztab2.model.MsRun}.
          *
          * @param indexedElement the indexed element to reference in this
          * optional column.

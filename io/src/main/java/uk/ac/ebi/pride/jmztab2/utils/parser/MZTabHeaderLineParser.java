@@ -15,12 +15,12 @@
  */
 package uk.ac.ebi.pride.jmztab2.utils.parser;
 
-import de.isas.mztab2.model.Assay;
-import de.isas.mztab2.model.Metadata;
-import de.isas.mztab2.model.MsRun;
-import de.isas.mztab2.model.Parameter;
-import de.isas.mztab2.model.SmallMoleculeSummary;
-import de.isas.mztab2.model.StudyVariable;
+import org.lifstools.mztab2.model.Assay;
+import org.lifstools.mztab2.model.Metadata;
+import org.lifstools.mztab2.model.MsRun;
+import org.lifstools.mztab2.model.Parameter;
+import org.lifstools.mztab2.model.SmallMoleculeSummary;
+import org.lifstools.mztab2.model.StudyVariable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import uk.ac.ebi.pride.jmztab2.model.MZBoolean;

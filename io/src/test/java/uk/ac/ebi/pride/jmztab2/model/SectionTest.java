@@ -15,7 +15,7 @@
  */
 package uk.ac.ebi.pride.jmztab2.model;
 
-import de.isas.mztab2.test.utils.LogMethodName;
+import org.lifstools.mztab2.test.utils.LogMethodName;
 import org.junit.Assert;
 import static org.junit.Assert.*;
 import org.junit.Rule;

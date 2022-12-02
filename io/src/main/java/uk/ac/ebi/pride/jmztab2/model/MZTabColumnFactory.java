@@ -15,10 +15,10 @@
  */
 package uk.ac.ebi.pride.jmztab2.model;
 
-import de.isas.mztab2.model.Assay;
-import de.isas.mztab2.model.IndexedElement;
-import de.isas.mztab2.model.Parameter;
-import de.isas.mztab2.model.StudyVariable;
+import org.lifstools.mztab2.model.Assay;
+import org.lifstools.mztab2.model.IndexedElement;
+import org.lifstools.mztab2.model.Parameter;
+import org.lifstools.mztab2.model.StudyVariable;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -49,7 +49,7 @@ import java.util.TreeMap;
  * column name, data type or order. In this factory, we use
  * {@link #addOptionalColumn(String, Class)} to create
  * {@link uk.ac.ebi.pride.jmztab2.model.OptionColumn}; and
- * {@link #addOptionalColumn(de.isas.mztab2.model.IndexedElement, java.lang.String, java.lang.Class)}
+ * {@link #addOptionalColumn(org.lifstools.mztab2.model.IndexedElement, java.lang.String, java.lang.Class)}
  * or {@link #addOptionalColumn(IndexedElement, Parameter, Class)} to create
  * {@link uk.ac.ebi.pride.jmztab2.model.ParameterOptionColumn}.
  * </li>
@@ -247,7 +247,7 @@ public class MZTabColumnFactory {
      * <p>
      * addAbundanceOptionalColumn.</p>
      *
-     * @param assay a {@link de.isas.mztab2.model.Assay} object.
+     * @param assay a {@link org.lifstools.mztab2.model.Assay} object.
      * @param order the order string for this column.
      * @return the column's logic position.
      */
@@ -266,7 +266,7 @@ public class MZTabColumnFactory {
      *
      * @see
      * AbundanceColumn#createOptionalColumns(uk.ac.ebi.pride.jmztab2.model.Section,
-     * de.isas.mztab2.model.StudyVariable, java.lang.String, java.lang.String)
+     * org.lifstools.mztab2.model.StudyVariable, java.lang.String, java.lang.String)
      * @param studyVariable SHOULD NOT empty.
      * @param columnHeader the column header without the 'abundance_' prefix.
      * @param order the order string for this column.
@@ -287,7 +287,7 @@ public class MZTabColumnFactory {
      * <p>
      * addIdConfidenceMeasureColumn.</p>
      *
-     * @param parameter a {@link de.isas.mztab2.model.Parameter} object.
+     * @param parameter a {@link org.lifstools.mztab2.model.Parameter} object.
      * @param index a {@link java.lang.Integer} object.
      * @param columnType the class of values in this column.
      * @return the column's logic position.

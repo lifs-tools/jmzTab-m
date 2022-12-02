@@ -15,7 +15,7 @@
  */
 package uk.ac.ebi.pride.jmztab2.utils.parser;
 
-import de.isas.mztab2.model.Comment;
+import org.lifstools.mztab2.model.Comment;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorList;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabException;
 
@@ -49,7 +49,7 @@ public class COMLineParser extends MZTabLineParser {
     /**
      * <p>getComment.</p>
      *
-     * @return a {@link de.isas.mztab2.model.Comment} object.
+     * @return a {@link org.lifstools.mztab2.model.Comment} object.
      */
     public Comment getComment() {
         String msg = items.length == 1 ? "" : items[1];

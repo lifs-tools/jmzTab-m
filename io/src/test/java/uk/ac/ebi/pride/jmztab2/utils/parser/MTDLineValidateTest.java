@@ -15,10 +15,10 @@
  */
 package uk.ac.ebi.pride.jmztab2.utils.parser;
 
-import de.isas.mztab2.model.Assay;
-import de.isas.mztab2.model.Metadata;
-import de.isas.mztab2.model.Sample;
-import de.isas.mztab2.test.utils.LogMethodName;
+import org.lifstools.mztab2.model.Assay;
+import org.lifstools.mztab2.model.Metadata;
+import org.lifstools.mztab2.model.Sample;
+import org.lifstools.mztab2.test.utils.LogMethodName;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import org.junit.Before;

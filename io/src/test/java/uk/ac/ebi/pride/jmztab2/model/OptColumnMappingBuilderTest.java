@@ -15,9 +15,9 @@
  */
 package uk.ac.ebi.pride.jmztab2.model;
 
-import de.isas.mztab2.model.Assay;
-import de.isas.mztab2.model.OptColumnMapping;
-import de.isas.mztab2.model.Parameter;
+import org.lifstools.mztab2.model.Assay;
+import org.lifstools.mztab2.model.OptColumnMapping;
+import org.lifstools.mztab2.model.Parameter;
 import org.junit.Assert;
 import static org.junit.Assert.*;
 import org.junit.Test;

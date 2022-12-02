@@ -15,8 +15,8 @@
  */
 package uk.ac.ebi.pride.jmztab2.model;
 
-import de.isas.mztab2.io.serialization.Serializers;
-import de.isas.mztab2.model.IndexedElement;
+import org.lifstools.mztab2.io.serialization.Serializers;
+import org.lifstools.mztab2.model.IndexedElement;
 
 /**
  * Additional columns can be added to the end of the protein table. These column

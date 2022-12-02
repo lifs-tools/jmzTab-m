@@ -15,9 +15,9 @@
  */
 package uk.ac.ebi.pride.jmztab2.utils.parser;
 
-import de.isas.mztab2.model.Metadata;
-import de.isas.mztab2.model.OptColumnMapping;
-import de.isas.mztab2.model.SmallMoleculeSummary;
+import org.lifstools.mztab2.model.Metadata;
+import org.lifstools.mztab2.model.OptColumnMapping;
+import org.lifstools.mztab2.model.SmallMoleculeSummary;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -58,7 +58,7 @@ public class SMLLineParser extends MZTabDataLineParser<SmallMoleculeSummary> {
      * object.
      * @param positionMapping a
      * {@link uk.ac.ebi.pride.jmztab2.utils.parser.PositionMapping} object.
-     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
+     * @param metadata a {@link org.lifstools.mztab2.model.Metadata} object.
      * @param errorList a
      * {@link uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorList} object.
      */
@@ -264,7 +264,7 @@ public class SMLLineParser extends MZTabDataLineParser<SmallMoleculeSummary> {
      * <p>
      * getRecord.</p>
      *
-     * @return a {@link de.isas.mztab2.model.SmallMoleculeSummary} object.
+     * @return a {@link org.lifstools.mztab2.model.SmallMoleculeSummary} object.
      */
     @Override
     public SmallMoleculeSummary getRecord() {

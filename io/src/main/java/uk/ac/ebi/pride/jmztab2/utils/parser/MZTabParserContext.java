@@ -15,21 +15,21 @@
  */
 package uk.ac.ebi.pride.jmztab2.utils.parser;
 
-import de.isas.mztab2.model.Assay;
-import de.isas.mztab2.model.CV;
-import de.isas.mztab2.model.ColumnParameterMapping;
-import de.isas.mztab2.model.Contact;
-import de.isas.mztab2.model.Database;
-import de.isas.mztab2.model.Instrument;
-import de.isas.mztab2.model.Metadata;
-import de.isas.mztab2.model.MsRun;
-import de.isas.mztab2.model.Parameter;
-import de.isas.mztab2.model.Publication;
-import de.isas.mztab2.model.PublicationItem;
-import de.isas.mztab2.model.Sample;
-import de.isas.mztab2.model.SampleProcessing;
-import de.isas.mztab2.model.Software;
-import de.isas.mztab2.model.StudyVariable;
+import org.lifstools.mztab2.model.Assay;
+import org.lifstools.mztab2.model.CV;
+import org.lifstools.mztab2.model.ColumnParameterMapping;
+import org.lifstools.mztab2.model.Contact;
+import org.lifstools.mztab2.model.Database;
+import org.lifstools.mztab2.model.Instrument;
+import org.lifstools.mztab2.model.Metadata;
+import org.lifstools.mztab2.model.MsRun;
+import org.lifstools.mztab2.model.Parameter;
+import org.lifstools.mztab2.model.Publication;
+import org.lifstools.mztab2.model.PublicationItem;
+import org.lifstools.mztab2.model.Sample;
+import org.lifstools.mztab2.model.SampleProcessing;
+import org.lifstools.mztab2.model.Software;
+import org.lifstools.mztab2.model.StudyVariable;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -79,8 +79,8 @@ public class MZTabParserContext {
      * type of sample was analysed (e.g. whether biological or technical replication was performed).
      *
      * @param sample SHOULD NOT be null.
-     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
-     * @return a {@link de.isas.mztab2.model.Sample} object.
+     * @param metadata a {@link org.lifstools.mztab2.model.Metadata} object.
+     * @return a {@link org.lifstools.mztab2.model.Sample} object.
      */
     public Sample addSample(Metadata metadata, Sample sample) {
         if (sample == null) {
@@ -97,8 +97,8 @@ public class MZTabParserContext {
      *
      * @param id SHOULD be positive integer.
      * @param species if null ignore operation.
-     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
-     * @return a {@link de.isas.mztab2.model.Sample} object.
+     * @param metadata a {@link org.lifstools.mztab2.model.Metadata} object.
+     * @return a {@link org.lifstools.mztab2.model.Sample} object.
      */
     public Sample addSampleSpecies(Metadata metadata, Integer id, Parameter species) {
         if (id <= 0) {
@@ -126,8 +126,8 @@ public class MZTabParserContext {
      *
      * @param id SHOULD be positive integer.
      * @param tissue if null ignore operation.
-     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
-     * @return a {@link de.isas.mztab2.model.Sample} object.
+     * @param metadata a {@link org.lifstools.mztab2.model.Metadata} object.
+     * @return a {@link org.lifstools.mztab2.model.Sample} object.
      */
     public Sample addSampleTissue(Metadata metadata, Integer id, Parameter tissue) {
         if (id <= 0) {
@@ -155,8 +155,8 @@ public class MZTabParserContext {
      *
      * @param id SHOULD be positive integer.
      * @param cellType if null ignore operation.
-     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
-     * @return a {@link de.isas.mztab2.model.Sample} object.
+     * @param metadata a {@link org.lifstools.mztab2.model.Metadata} object.
+     * @return a {@link org.lifstools.mztab2.model.Sample} object.
      */
     public Sample addSampleCellType(Metadata metadata, Integer id, Parameter cellType) {
         if (id <= 0) {
@@ -184,8 +184,8 @@ public class MZTabParserContext {
      *
      * @param id SHOULD be positive integer.
      * @param disease if null ignore operation.
-     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
-     * @return a {@link de.isas.mztab2.model.Sample} object.
+     * @param metadata a {@link org.lifstools.mztab2.model.Metadata} object.
+     * @return a {@link org.lifstools.mztab2.model.Sample} object.
      */
     public Sample addSampleDisease(Metadata metadata, Integer id, Parameter disease) {
         if (id <= 0) {
@@ -213,8 +213,8 @@ public class MZTabParserContext {
      *
      * @param id SHOULD be positive integer.
      * @param description if empty ignore operation.
-     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
-     * @return a {@link de.isas.mztab2.model.Sample} object.
+     * @param metadata a {@link org.lifstools.mztab2.model.Metadata} object.
+     * @return a {@link org.lifstools.mztab2.model.Sample} object.
      */
     public Sample addSampleDescription(Metadata metadata, Integer id, String description) {
         if (id <= 0) {
@@ -243,8 +243,8 @@ public class MZTabParserContext {
      *
      * @param id SHOULD be positive integer.
      * @param custom if null ignore operation.
-     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
-     * @return a {@link de.isas.mztab2.model.Sample} object.
+     * @param metadata a {@link org.lifstools.mztab2.model.Metadata} object.
+     * @return a {@link org.lifstools.mztab2.model.Sample} object.
      */
     public Sample addSampleCustom(Metadata metadata, Integer id, Parameter custom) {
         if (id <= 0) {
@@ -274,8 +274,8 @@ public class MZTabParserContext {
      *
      * @param id SHOULD be positive integer.
      * @param sampleProcessing if null ignore operation.
-     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
-     * @return a {@link de.isas.mztab2.model.SampleProcessing} object.
+     * @param metadata a {@link org.lifstools.mztab2.model.Metadata} object.
+     * @return a {@link org.lifstools.mztab2.model.SampleProcessing} object.
      */
     public SampleProcessing addSampleProcessing(Metadata metadata, Integer id, List<Parameter> sampleProcessing) {
         if (id <= 0) {
@@ -299,8 +299,8 @@ public class MZTabParserContext {
      *
      * @param id SHOULD be positive integer.
      * @param param if null ignore operation.
-     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
-     * @return a {@link de.isas.mztab2.model.SampleProcessing} object.
+     * @param metadata a {@link org.lifstools.mztab2.model.Metadata} object.
+     * @return a {@link org.lifstools.mztab2.model.SampleProcessing} object.
      */
     public SampleProcessing addSampleProcessingParameter(Metadata metadata, Integer id, Parameter param) {
         if (id <= 0) {
@@ -327,8 +327,8 @@ public class MZTabParserContext {
      * Add a instrument[id] to metadata.
      *
      * @param instrument SHOULD NOT be null.
-     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
-     * @return a {@link de.isas.mztab2.model.Instrument} object.
+     * @param metadata a {@link org.lifstools.mztab2.model.Metadata} object.
+     * @return a {@link org.lifstools.mztab2.model.Instrument} object.
      */
     public Instrument addInstrument(Metadata metadata, Instrument instrument) {
         if (instrument == null) {
@@ -344,8 +344,8 @@ public class MZTabParserContext {
      *
      * @param id SHOULD be positive integer.
      * @param name if null ignore operation.
-     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
-     * @return a {@link de.isas.mztab2.model.Instrument} object.
+     * @param metadata a {@link org.lifstools.mztab2.model.Metadata} object.
+     * @return a {@link org.lifstools.mztab2.model.Instrument} object.
      */
     public Instrument addInstrumentName(Metadata metadata, Integer id, Parameter name) {
         if (id <= 0) {
@@ -373,8 +373,8 @@ public class MZTabParserContext {
      *
      * @param id SHOULD be positive integer.
      * @param source if null ignore operation.
-     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
-     * @return a {@link de.isas.mztab2.model.Instrument} object.
+     * @param metadata a {@link org.lifstools.mztab2.model.Metadata} object.
+     * @return a {@link org.lifstools.mztab2.model.Instrument} object.
      */
     public Instrument addInstrumentSource(Metadata metadata, Integer id, Parameter source) {
         if (id <= 0) {
@@ -402,8 +402,8 @@ public class MZTabParserContext {
      *
      * @param id SHOULD be positive integer.
      * @param analyzer if null ignore operation.
-     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
-     * @return a {@link de.isas.mztab2.model.Instrument} object.
+     * @param metadata a {@link org.lifstools.mztab2.model.Metadata} object.
+     * @return a {@link org.lifstools.mztab2.model.Instrument} object.
      */
     public Instrument addInstrumentAnalyzer(Metadata metadata, Integer id, Parameter analyzer) {
         if (id <= 0) {
@@ -431,8 +431,8 @@ public class MZTabParserContext {
      *
      * @param id SHOULD be positive integer.
      * @param detector if null ignore operation.
-     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
-     * @return a {@link de.isas.mztab2.model.Instrument} object.
+     * @param metadata a {@link org.lifstools.mztab2.model.Metadata} object.
+     * @return a {@link org.lifstools.mztab2.model.Instrument} object.
      */
     public Instrument addInstrumentDetector(Metadata metadata, Integer id, Parameter detector) {
         if (id <= 0) {
@@ -460,8 +460,8 @@ public class MZTabParserContext {
      * Add a software to metadata, which used to analyze the data and obtain the reported results.
      *
      * @param software SHOULD NOT be null
-     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
-     * @return a {@link de.isas.mztab2.model.Software} object.
+     * @param metadata a {@link org.lifstools.mztab2.model.Metadata} object.
+     * @return a {@link org.lifstools.mztab2.model.Software} object.
      */
     public Software addSoftware(Metadata metadata, Software software) {
         if (software == null) {
@@ -479,8 +479,8 @@ public class MZTabParserContext {
      *
      * @param id SHOULD be positive integer.
      * @param param if null ignore operation.
-     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
-     * @return a {@link de.isas.mztab2.model.Software} object.
+     * @param metadata a {@link org.lifstools.mztab2.model.Metadata} object.
+     * @return a {@link org.lifstools.mztab2.model.Software} object.
      */
     public Software addSoftwareParameter(Metadata metadata, Integer id, Parameter param) {
         if (id <= 0) {
@@ -510,8 +510,8 @@ public class MZTabParserContext {
      *
      * @param id SHOULD be positive integer.
      * @param setting if empty ignore operation.
-     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
-     * @return a {@link de.isas.mztab2.model.Software} object.
+     * @param metadata a {@link org.lifstools.mztab2.model.Metadata} object.
+     * @return a {@link org.lifstools.mztab2.model.Software} object.
      */
     public Software addSoftwareSetting(Metadata metadata, Integer id, String setting) {
         if (id <= 0) {
@@ -540,8 +540,8 @@ public class MZTabParserContext {
      * DOIs by "doi:". Multiple identifiers MUST be separated by "|".
      *
      * @param publication SHOULD NOT be null.
-     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
-     * @return a {@link de.isas.mztab2.model.Publication} object.
+     * @param metadata a {@link org.lifstools.mztab2.model.Metadata} object.
+     * @return a {@link org.lifstools.mztab2.model.Publication} object.
      */
     public Publication addPublication(Metadata metadata, Publication publication) {
         if (publication == null) {
@@ -559,8 +559,8 @@ public class MZTabParserContext {
      * @param id SHOULD be positive integer.
      * @param type SHOULD NOT be null.
      * @param accession SHOULD NOT set empty.
-     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
-     * @return a {@link de.isas.mztab2.model.Publication} object.
+     * @param metadata a {@link org.lifstools.mztab2.model.Metadata} object.
+     * @return a {@link org.lifstools.mztab2.model.Publication} object.
      */
     public Publication addPublicationItem(Metadata metadata, Integer id, PublicationItem.TypeEnum type, String accession) {
         if (id <= 0) {
@@ -593,8 +593,8 @@ public class MZTabParserContext {
      *
      * @param id SHOULD be positive integer.
      * @param items SHOULD NOT be null.
-     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
-     * @return a {@link de.isas.mztab2.model.Publication} object.
+     * @param metadata a {@link org.lifstools.mztab2.model.Metadata} object.
+     * @return a {@link org.lifstools.mztab2.model.Publication} object.
      */
     public Publication addPublicationItems(Metadata metadata, Integer id, Collection<PublicationItem> items) {
         if (id <= 0) {
@@ -621,8 +621,8 @@ public class MZTabParserContext {
      * Add a contact into metadata.
      *
      * @param contact SHOULD NOT be null.
-     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
-     * @return a {@link de.isas.mztab2.model.Contact} object.
+     * @param metadata a {@link org.lifstools.mztab2.model.Metadata} object.
+     * @return a {@link org.lifstools.mztab2.model.Contact} object.
      */
     public Contact addContact(Metadata metadata, Contact contact) {
         if (contact == null) {
@@ -640,8 +640,8 @@ public class MZTabParserContext {
      *
      * @param id SHOULD be positive integer.
      * @param name SHOULD NOT set empty.
-     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
-     * @return a {@link de.isas.mztab2.model.Contact} object.
+     * @param metadata a {@link org.lifstools.mztab2.model.Metadata} object.
+     * @return a {@link org.lifstools.mztab2.model.Contact} object.
      */
     public Contact addContactName(Metadata metadata, Integer id, String name) {
         if (id <= 0) {
@@ -669,8 +669,8 @@ public class MZTabParserContext {
      *
      * @param id SHOULD be positive integer.
      * @param affiliation SHOULD NOT set empty.
-     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
-     * @return a {@link de.isas.mztab2.model.Contact} object.
+     * @param metadata a {@link org.lifstools.mztab2.model.Metadata} object.
+     * @return a {@link org.lifstools.mztab2.model.Contact} object.
      */
     public Contact addContactAffiliation(Metadata metadata, Integer id, String affiliation) {
         if (id <= 0) {
@@ -698,8 +698,8 @@ public class MZTabParserContext {
      *
      * @param id SHOULD be positive integer.
      * @param email SHOULD NOT set empty.
-     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
-     * @return a {@link de.isas.mztab2.model.Contact} object.
+     * @param metadata a {@link org.lifstools.mztab2.model.Metadata} object.
+     * @return a {@link org.lifstools.mztab2.model.Contact} object.
      */
     public Contact addContactEmail(Metadata metadata, Integer id, String email) {
         if (id <= 0) {
@@ -721,14 +721,40 @@ public class MZTabParserContext {
         }
         return contact;
     }
+    
+        /**
+     * Add contact[id]-email
+     *
+     * @param id SHOULD be positive integer.
+     * @param orcid SHOULD NOT set empty.
+     * @param metadata a {@link org.lifstools.mztab2.model.Metadata} object.
+     * @return a {@link org.lifstools.mztab2.model.Contact} object.
+     */
+    public Contact addContactOrcid(Metadata metadata, Integer id, String orcid) {
+        if (id <= 0) {
+            throw new IllegalArgumentException("Contact id should be greater than 0!");
+        }
+
+        Contact contact = contactMap.get(id);
+        if (contact == null) {
+            contact = new Contact();
+            contact.id(id);
+            contact.setOrcid(orcid);
+            contactMap.put(id, contact);
+            metadata.addContactItem(contact);
+        } else {
+            contact.setOrcid(orcid);
+        }
+        return contact;
+    }
 
     /**
      * Add a ms_run[id] into metadata. An MS run is effectively one run (or set of runs on pre-fractionated samples)
      * on an MS instrument, and is referenced from assay in different contexts.
      *
      * @param msRun SHOULD NOT be null.
-     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
-     * @return a {@link de.isas.mztab2.model.MsRun} object.
+     * @param metadata a {@link org.lifstools.mztab2.model.Metadata} object.
+     * @return a {@link org.lifstools.mztab2.model.MsRun} object.
      */
     public MsRun addMsRun(Metadata metadata, MsRun msRun) {
         if (msRun == null) {
@@ -745,8 +771,8 @@ public class MZTabParserContext {
      *
      * @param id SHOULD be positive integer.
      * @param format if null ignore operation.
-     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
-     * @return a {@link de.isas.mztab2.model.MsRun} object.
+     * @param metadata a {@link org.lifstools.mztab2.model.Metadata} object.
+     * @return a {@link org.lifstools.mztab2.model.MsRun} object.
      */
     public MsRun addMsRunFormat(Metadata metadata, Integer id, Parameter format) {
         if (id <= 0) {
@@ -775,8 +801,8 @@ public class MZTabParserContext {
      *
      * @param id SHOULD be positive integer.
      * @param location if null ignore operation.
-     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
-     * @return a {@link de.isas.mztab2.model.MsRun} object.
+     * @param metadata a {@link org.lifstools.mztab2.model.Metadata} object.
+     * @return a {@link org.lifstools.mztab2.model.MsRun} object.
      */
     public MsRun addMsRunLocation(Metadata metadata, Integer id, URI location) {
         if (id <= 0) {
@@ -799,10 +825,10 @@ public class MZTabParserContext {
     /**
      * Add ms_run[id]-instrument_ref into metadata. Reference to a commonly used instrument.
      * 
-     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
+     * @param metadata a {@link org.lifstools.mztab2.model.Metadata} object.
      * @param id SHOULD be positive integer.
      * @param instrument if null ignore operation.
-     * @return a {@link de.isas.mztab2.model.MsRun} object.
+     * @return a {@link org.lifstools.mztab2.model.MsRun} object.
      */
     public MsRun addMsRunInstrumentRef(Metadata metadata, Integer id, Instrument instrument) {
         if (id <= 0) {
@@ -831,8 +857,8 @@ public class MZTabParserContext {
      *
      * @param id SHOULD be positive integer.
      * @param idFormat if null ignore operation.
-     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
-     * @return a {@link de.isas.mztab2.model.MsRun} object.
+     * @param metadata a {@link org.lifstools.mztab2.model.Metadata} object.
+     * @return a {@link org.lifstools.mztab2.model.MsRun} object.
      */
     public MsRun addMsRunIdFormat(Metadata metadata, Integer id, Parameter idFormat) {
         if (id <= 0) {
@@ -861,8 +887,8 @@ public class MZTabParserContext {
      *
      * @param id SHOULD be positive integer.
      * @param fragmentationMethod if null ignore operation.
-     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
-     * @return a {@link de.isas.mztab2.model.MsRun} object.
+     * @param metadata a {@link org.lifstools.mztab2.model.Metadata} object.
+     * @return a {@link org.lifstools.mztab2.model.MsRun} object.
      */
     public MsRun addMsRunFragmentationMethod(Metadata metadata, Integer id, Parameter fragmentationMethod) {
         if (id <= 0) {
@@ -888,10 +914,10 @@ public class MZTabParserContext {
     /**
      * <p>addMsRunHash.</p>
      *
-     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
+     * @param metadata a {@link org.lifstools.mztab2.model.Metadata} object.
      * @param id a {@link java.lang.Integer} object.
      * @param hash a {@link java.lang.String} object.
-     * @return a {@link de.isas.mztab2.model.MsRun} object.
+     * @return a {@link org.lifstools.mztab2.model.MsRun} object.
      */
     public MsRun addMsRunHash(Metadata metadata, Integer id, String hash) {
         if (id <= 0) {
@@ -917,10 +943,10 @@ public class MZTabParserContext {
     /**
      * <p>addMsRunHashMethod.</p>
      *
-     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
+     * @param metadata a {@link org.lifstools.mztab2.model.Metadata} object.
      * @param id a {@link java.lang.Integer} object.
-     * @param hashMethod a {@link de.isas.mztab2.model.Parameter} object.
-     * @return a {@link de.isas.mztab2.model.MsRun} object.
+     * @param hashMethod a {@link org.lifstools.mztab2.model.Parameter} object.
+     * @return a {@link org.lifstools.mztab2.model.MsRun} object.
      */
     public MsRun addMsRunHashMethod(Metadata metadata, Integer id, Parameter hashMethod) {
         if (id <= 0) {
@@ -946,10 +972,10 @@ public class MZTabParserContext {
     /**
      * <p>addMsRunScanPolarity.</p>
      *
-     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
+     * @param metadata a {@link org.lifstools.mztab2.model.Metadata} object.
      * @param id a {@link java.lang.Integer} object.
-     * @param scanPolarity a {@link de.isas.mztab2.model.Parameter} object.
-     * @return a {@link de.isas.mztab2.model.MsRun} object.
+     * @param scanPolarity a {@link org.lifstools.mztab2.model.Parameter} object.
+     * @return a {@link org.lifstools.mztab2.model.MsRun} object.
      */
     public MsRun addMsRunScanPolarity(Metadata metadata, Integer id, Parameter scanPolarity) {
         if (id <= 0) {
@@ -979,8 +1005,8 @@ public class MZTabParserContext {
      * along with a description of the label or tag applied.
      *
      * @param assay SHOULD NOT be null.
-     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
-     * @return a {@link de.isas.mztab2.model.Assay} object.
+     * @param metadata a {@link org.lifstools.mztab2.model.Metadata} object.
+     * @return a {@link org.lifstools.mztab2.model.Assay} object.
      */
     public Assay addAssay(Metadata metadata, Assay assay) {
         if (assay == null) {
@@ -998,10 +1024,10 @@ public class MZTabParserContext {
      * in the case of label-free MS analysis or multiple assays are mapped to one MS run for multiplexed techniques,
      * along with a description of the label or tag applied.
      *
-     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
+     * @param metadata a {@link org.lifstools.mztab2.model.Metadata} object.
      * @param id SHOULD NOT be null.
      * @param param the parameter.
-     * @return a {@link de.isas.mztab2.model.Assay} object.
+     * @return a {@link org.lifstools.mztab2.model.Assay} object.
      */
     public Assay addAssayCustom(Metadata metadata, Integer id, Parameter param) {
         if (id <= 0) {
@@ -1027,10 +1053,10 @@ public class MZTabParserContext {
      * in the case of label-free MS analysis or multiple assays are mapped to one MS run for multiplexed techniques,
      * along with a description of the label or tag applied.
      *
-     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
+     * @param metadata a {@link org.lifstools.mztab2.model.Metadata} object.
      * @param id the id of the assay element.
      * @param location SHOULD NOT be null.
-     * @return a {@link de.isas.mztab2.model.Assay} object.
+     * @return a {@link org.lifstools.mztab2.model.Assay} object.
      */
     public Assay addAssayExternalUri(Metadata metadata, Integer id, URI location) {
         if (id <= 0) {
@@ -1055,8 +1081,8 @@ public class MZTabParserContext {
      *
      * @param id SHOULD be positive integer.
      * @param sample SHOULD NOT be null, and SHOULD be defined in metadata first.
-     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
-     * @return a {@link de.isas.mztab2.model.Assay} object.
+     * @param metadata a {@link org.lifstools.mztab2.model.Metadata} object.
+     * @return a {@link org.lifstools.mztab2.model.Assay} object.
      */
     public Assay addAssaySample(Metadata metadata, Integer id, Sample sample) {
         if (id <= 0) {
@@ -1087,8 +1113,8 @@ public class MZTabParserContext {
      *
      * @param id SHOULD be positive integer.
      * @param msRun SHOULD NOT be null, and SHOULD be defined in metadata first.
-     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
-     * @return a {@link de.isas.mztab2.model.Assay} object.
+     * @param metadata a {@link org.lifstools.mztab2.model.Metadata} object.
+     * @return a {@link org.lifstools.mztab2.model.Assay} object.
      */
     public Assay addAssayMsRun(Metadata metadata, Integer id, MsRun msRun) {
         if (id <= 0) {
@@ -1120,8 +1146,8 @@ public class MZTabParserContext {
      * are reported, study variables have references to assays. The same concept has been defined by others as "experimental factor".
      *
      * @param studyVariable SHOULD NOT be null.
-     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
-     * @return a {@link de.isas.mztab2.model.StudyVariable} object.
+     * @param metadata a {@link org.lifstools.mztab2.model.Metadata} object.
+     * @return a {@link org.lifstools.mztab2.model.StudyVariable} object.
      */
     public StudyVariable addStudyVariable(Metadata metadata, StudyVariable studyVariable) {
         if (studyVariable == null) {
@@ -1137,8 +1163,8 @@ public class MZTabParserContext {
      *
      * @param id SHOULD be positive integer.
      * @param assay SHOULD NOT be null, and should be defined in metadata first.
-     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
-     * @return a {@link de.isas.mztab2.model.StudyVariable} object.
+     * @param metadata a {@link org.lifstools.mztab2.model.Metadata} object.
+     * @return a {@link org.lifstools.mztab2.model.StudyVariable} object.
      */
     public StudyVariable addStudyVariableAssay(Metadata metadata, Integer id, Assay assay) {
         if (id <= 0) {
@@ -1167,10 +1193,10 @@ public class MZTabParserContext {
     /**
      * Add a study_variable[id]-description. A textual description of the study variable.
      *
-     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
+     * @param metadata a {@link org.lifstools.mztab2.model.Metadata} object.
      * @param id SHOULD be positive integer.
      * @param description if empty ignore operation.
-     * @return a {@link de.isas.mztab2.model.StudyVariable} object.
+     * @return a {@link org.lifstools.mztab2.model.StudyVariable} object.
      */
     public StudyVariable addStudyVariableDescription(Metadata metadata, Integer id, String description) {
         if (id <= 0) {
@@ -1195,10 +1221,10 @@ public class MZTabParserContext {
     /**
      * Add a study_variable[id]-factor. A Parameter further refining what is known about the study design.
      * 
-     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
+     * @param metadata a {@link org.lifstools.mztab2.model.Metadata} object.
      * @param id id SHOULD be positive integer.
      * @param checkParameter the study variable factor Parameter to add.
-     * @return a {@link de.isas.mztab2.model.StudyVariable} object.
+     * @return a {@link org.lifstools.mztab2.model.StudyVariable} object.
      */
     public StudyVariable addStudyVariableFactors(Metadata metadata, Integer id, Parameter checkParameter) {
         if (id <= 0) {
@@ -1224,10 +1250,10 @@ public class MZTabParserContext {
      * Add a study_variable[id]-variation_function. This is a Parameter detailing how the
      * reported study variable abundances have been calculated.
      *
-     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
+     * @param metadata a {@link org.lifstools.mztab2.model.Metadata} object.
      * @param id SHOULD be positive integer.
      * @param checkParameter the parameter.
-     * @return a {@link de.isas.mztab2.model.StudyVariable} object.
+     * @return a {@link org.lifstools.mztab2.model.StudyVariable} object.
      */
     public StudyVariable addStudyVariableVariationFunction(Metadata metadata, Integer id,
         Parameter checkParameter) {
@@ -1254,10 +1280,10 @@ public class MZTabParserContext {
      * Add a study_variable[id]-average_function. This is a Parameter detailing how the
      * reported study variable abundances have been calculated.
      *
-     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
+     * @param metadata a {@link org.lifstools.mztab2.model.Metadata} object.
      * @param id SHOULD be positive integer.
      * @param checkParameter the parameter.
-     * @return a {@link de.isas.mztab2.model.StudyVariable} object.
+     * @return a {@link org.lifstools.mztab2.model.StudyVariable} object.
      */
     public StudyVariable addStudyVariableAverageFunction(Metadata metadata, Integer id,
         Parameter checkParameter) {
@@ -1285,8 +1311,8 @@ public class MZTabParserContext {
      * used in the mzTab file.
      *
      * @param cv SHOULD NOT be null.
-     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
-     * @return a {@link de.isas.mztab2.model.CV} object.
+     * @param metadata a {@link org.lifstools.mztab2.model.Metadata} object.
+     * @return a {@link org.lifstools.mztab2.model.CV} object.
      */
     public CV addCV(Metadata metadata, CV cv) {
         if (cv == null) {
@@ -1302,9 +1328,9 @@ public class MZTabParserContext {
      * Add a cv[id]-label. A string describing the labels of the controlled vocabularies/ontologies used in the mzTab file
      *
      * @param id SHOULD be positive integer.
-     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
+     * @param metadata a {@link org.lifstools.mztab2.model.Metadata} object.
      * @param label a {@link java.lang.String} object.
-     * @return a {@link de.isas.mztab2.model.CV} object.
+     * @return a {@link org.lifstools.mztab2.model.CV} object.
      */
     public CV addCVLabel(Metadata metadata, Integer id, String label) {
         if (id <= 0) {
@@ -1327,9 +1353,9 @@ public class MZTabParserContext {
      * the mzTab file
      *
      * @param id SHOULD be positive integer.
-     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
+     * @param metadata a {@link org.lifstools.mztab2.model.Metadata} object.
      * @param fullName a {@link java.lang.String} object.
-     * @return a {@link de.isas.mztab2.model.CV} object.
+     * @return a {@link org.lifstools.mztab2.model.CV} object.
      */
     public CV addCVFullName(Metadata metadata, Integer id, String fullName) {
         if (id <= 0) {
@@ -1352,9 +1378,9 @@ public class MZTabParserContext {
      * the mzTab file
      *
      * @param id SHOULD be positive integer.
-     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
+     * @param metadata a {@link org.lifstools.mztab2.model.Metadata} object.
      * @param version a {@link java.lang.String} object.
-     * @return a {@link de.isas.mztab2.model.CV} object.
+     * @return a {@link org.lifstools.mztab2.model.CV} object.
      */
     public CV addCVVersion(Metadata metadata, Integer id, String version) {
         if (id <= 0) {
@@ -1377,9 +1403,9 @@ public class MZTabParserContext {
      * mzTab file
      *
      * @param id SHOULD be positive integer.
-     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
+     * @param metadata a {@link org.lifstools.mztab2.model.Metadata} object.
      * @param uri a {@link java.lang.String} object.
-     * @return a {@link de.isas.mztab2.model.CV} object.
+     * @return a {@link org.lifstools.mztab2.model.CV} object.
      */
     public CV addCVURI(Metadata metadata, Integer id, String uri) {
         if (id <= 0) {
@@ -1403,7 +1429,7 @@ public class MZTabParserContext {
      * This field MUST NOT be used to define a unit for quantification columns. The unit used for small molecule quantification
      * values MUST be set in small_molecule-quantification_unit.
      *
-     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
+     * @param metadata a {@link org.lifstools.mztab2.model.Metadata} object.
      * @param columnName SHOULD NOT be null
      * @param param SHOULD NOT be null
      */
@@ -1420,7 +1446,7 @@ public class MZTabParserContext {
      * This field MUST NOT be used to define a unit for quantification columns. The unit used for small molecule quantification
      * values MUST be set in small_molecule-quantification_unit.
      *
-     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
+     * @param metadata a {@link org.lifstools.mztab2.model.Metadata} object.
      * @param columnName SHOULD NOT be null
      * @param param SHOULD NOT be null
      */
@@ -1437,7 +1463,7 @@ public class MZTabParserContext {
      * This field MUST NOT be used to define a unit for quantification columns. The unit used for small molecule quantification
      * values MUST be set in small_molecule-quantification_unit.
      *
-     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
+     * @param metadata a {@link org.lifstools.mztab2.model.Metadata} object.
      * @param columnName SHOULD NOT be null
      * @param param SHOULD NOT be null
      */
@@ -1511,9 +1537,9 @@ public class MZTabParserContext {
     /**
      * <p>addDatabase.</p>
      *
-     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
-     * @param database a {@link de.isas.mztab2.model.Database} object.
-     * @return a {@link de.isas.mztab2.model.Database} object.
+     * @param metadata a {@link org.lifstools.mztab2.model.Metadata} object.
+     * @param database a {@link org.lifstools.mztab2.model.Database} object.
+     * @return a {@link org.lifstools.mztab2.model.Database} object.
      */
     public Database addDatabase(Metadata metadata, Database database) {
         if (database == null) {
@@ -1527,10 +1553,10 @@ public class MZTabParserContext {
     /**
      * <p>addDatabasePrefix.</p>
      *
-     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
+     * @param metadata a {@link org.lifstools.mztab2.model.Metadata} object.
      * @param id a {@link java.lang.Integer} object.
      * @param valueLabel a {@link java.lang.String} object.
-     * @return a {@link de.isas.mztab2.model.Database} object.
+     * @return a {@link org.lifstools.mztab2.model.Database} object.
      */
     public Database addDatabasePrefix(Metadata metadata, Integer id, String valueLabel) {
         if (id <= 0) {
@@ -1553,10 +1579,10 @@ public class MZTabParserContext {
     /**
      * <p>addDatabaseVersion.</p>
      *
-     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
+     * @param metadata a {@link org.lifstools.mztab2.model.Metadata} object.
      * @param id a {@link java.lang.Integer} object.
      * @param version a {@link java.lang.String} object.
-     * @return a {@link de.isas.mztab2.model.Database} object.
+     * @return a {@link org.lifstools.mztab2.model.Database} object.
      */
     public Database addDatabaseVersion(Metadata metadata, Integer id, String version) {
         if (id <= 0) {
@@ -1579,10 +1605,10 @@ public class MZTabParserContext {
     /**
      * <p>addDatabaseUri.</p>
      *
-     * @param metadata a {@link de.isas.mztab2.model.Metadata} object.
+     * @param metadata a {@link org.lifstools.mztab2.model.Metadata} object.
      * @param id a {@link java.lang.Integer} object.
      * @param checkURI a {@link java.net.URI} object.
-     * @return a {@link de.isas.mztab2.model.Database} object.
+     * @return a {@link org.lifstools.mztab2.model.Database} object.
      */
     public Database addDatabaseUri(Metadata metadata, Integer id, URI checkURI) {
         if (id <= 0) {

@@ -1,12 +1,12 @@
 package uk.ac.ebi.pride.jmztab2.model;
 
-import de.isas.mztab2.io.MzTabNonValidatingWriter;
-import de.isas.mztab2.model.Assay;
-import de.isas.mztab2.model.Metadata;
-import de.isas.mztab2.model.MsRun;
-import de.isas.mztab2.model.MzTab;
-import de.isas.mztab2.model.SmallMoleculeSummary;
-import de.isas.mztab2.model.StudyVariable;
+import org.lifstools.mztab2.io.MzTabNonValidatingWriter;
+import org.lifstools.mztab2.model.Assay;
+import org.lifstools.mztab2.model.Metadata;
+import org.lifstools.mztab2.model.MsRun;
+import org.lifstools.mztab2.model.MzTab;
+import org.lifstools.mztab2.model.SmallMoleculeSummary;
+import org.lifstools.mztab2.model.StudyVariable;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;

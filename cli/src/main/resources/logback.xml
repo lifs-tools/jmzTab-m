@@ -11,7 +11,7 @@
         </encoder>
     </appender>
 
-    <logger name="de.isas.lipidomics" level="info"/>
+    <logger name="org.lifstools" level="info"/>
 
     <root level="info">
         <appender-ref ref="console"/>

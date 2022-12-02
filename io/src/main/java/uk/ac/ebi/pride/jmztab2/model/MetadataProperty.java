@@ -39,6 +39,7 @@ public enum MetadataProperty {
     CONTACT_NAME                          (MetadataElement.CONTACT,                             "name"),
     CONTACT_AFFILIATION                   (MetadataElement.CONTACT,                             "affiliation"),
     CONTACT_EMAIL                         (MetadataElement.CONTACT,                             "email"),
+    CONTACT_ORCID                         (MetadataElement.CONTACT,                               "orcid"),
 
     SMALL_MOLECULE_QUANTIFICATION_UNIT    (MetadataElement.SMALL_MOLECULE,                      "quantification_unit"),
     SMALL_MOLECULE_IDENTIFICATION_RELIABILITY(MetadataElement.SMALL_MOLECULE,                   "identification_reliability"),

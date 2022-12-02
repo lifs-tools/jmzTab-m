@@ -15,7 +15,7 @@
  */
 package uk.ac.ebi.pride.jmztab2.model;
 
-import de.isas.mztab2.model.IndexedElement;
+import org.lifstools.mztab2.model.IndexedElement;
 
 /**
  * <p>IMZTabColumn interface.</p>
@@ -46,7 +46,7 @@ public interface IMZTabColumn {
      * @see #getLogicPosition()
      * @see #getHeader()
      * @see #getLogicPosition()
-     * @return a {@link de.isas.mztab2.model.IndexedElement} object.
+     * @return a {@link org.lifstools.mztab2.model.IndexedElement} object.
      */
     Object getElement();
 

@@ -15,10 +15,10 @@
  */
 package uk.ac.ebi.pride.jmztab2.model;
 
-import de.isas.mztab2.model.IndexedElement;
-import de.isas.mztab2.model.Parameter;
-import de.isas.mztab2.model.SmallMoleculeSummary;
-import static de.isas.mztab2.model.SmallMoleculeSummary.Properties.*;
+import org.lifstools.mztab2.model.IndexedElement;
+import org.lifstools.mztab2.model.Parameter;
+import org.lifstools.mztab2.model.SmallMoleculeSummary;
+import static org.lifstools.mztab2.model.SmallMoleculeSummary.Properties.*;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;

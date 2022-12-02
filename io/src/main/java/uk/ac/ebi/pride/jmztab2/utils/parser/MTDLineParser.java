@@ -15,32 +15,32 @@
  */
 package uk.ac.ebi.pride.jmztab2.utils.parser;
 
-import de.isas.mztab2.io.validators.AssayValidator;
-import de.isas.mztab2.io.validators.CvValidator;
-import de.isas.mztab2.io.validators.DatabaseValidator;
-import de.isas.mztab2.io.validators.MsRunValidator;
-import de.isas.mztab2.io.validators.MzTabIdValidator;
-import de.isas.mztab2.io.validators.MzTabVersionValidator;
-import de.isas.mztab2.io.validators.QuantificationMethodValidator;
-import de.isas.mztab2.io.validators.SmallMoleculeFeatureQuantificationUnitValidator;
-import de.isas.mztab2.io.validators.SmallMoleculeQuantificationUnitValidator;
-import de.isas.mztab2.io.validators.SoftwareValidator;
-import de.isas.mztab2.io.validators.StudyVariableValidator;
-import de.isas.mztab2.model.Assay;
-import de.isas.mztab2.model.CV;
-import de.isas.mztab2.model.Contact;
-import de.isas.mztab2.model.Database;
-import de.isas.mztab2.model.IndexedElement;
-import de.isas.mztab2.model.Instrument;
-import de.isas.mztab2.model.Metadata;
-import de.isas.mztab2.model.MsRun;
-import de.isas.mztab2.model.Parameter;
-import de.isas.mztab2.model.Publication;
-import de.isas.mztab2.model.Sample;
-import de.isas.mztab2.model.SampleProcessing;
-import de.isas.mztab2.model.Software;
-import de.isas.mztab2.model.StudyVariable;
-import de.isas.mztab2.model.Uri;
+import org.lifstools.mztab2.io.validators.AssayValidator;
+import org.lifstools.mztab2.io.validators.CvValidator;
+import org.lifstools.mztab2.io.validators.DatabaseValidator;
+import org.lifstools.mztab2.io.validators.MsRunValidator;
+import org.lifstools.mztab2.io.validators.MzTabIdValidator;
+import org.lifstools.mztab2.io.validators.MzTabVersionValidator;
+import org.lifstools.mztab2.io.validators.QuantificationMethodValidator;
+import org.lifstools.mztab2.io.validators.SmallMoleculeFeatureQuantificationUnitValidator;
+import org.lifstools.mztab2.io.validators.SmallMoleculeQuantificationUnitValidator;
+import org.lifstools.mztab2.io.validators.SoftwareValidator;
+import org.lifstools.mztab2.io.validators.StudyVariableValidator;
+import org.lifstools.mztab2.model.Assay;
+import org.lifstools.mztab2.model.CV;
+import org.lifstools.mztab2.model.Contact;
+import org.lifstools.mztab2.model.Database;
+import org.lifstools.mztab2.model.IndexedElement;
+import org.lifstools.mztab2.model.Instrument;
+import org.lifstools.mztab2.model.Metadata;
+import org.lifstools.mztab2.model.MsRun;
+import org.lifstools.mztab2.model.Parameter;
+import org.lifstools.mztab2.model.Publication;
+import org.lifstools.mztab2.model.Sample;
+import org.lifstools.mztab2.model.SampleProcessing;
+import org.lifstools.mztab2.model.Software;
+import org.lifstools.mztab2.model.StudyVariable;
+import org.lifstools.mztab2.model.Uri;
 import java.net.URI;
 import java.util.*;
 import java.util.function.Consumer;
@@ -59,7 +59,7 @@ import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorList;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorOverflowException;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorType;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabException;
-import de.isas.mztab2.io.validators.RefiningValidator;
+import org.lifstools.mztab2.io.validators.RefiningValidator;
 
 /**
  * Parse a metadata line into a element. Metadata Element start with MTD, its
@@ -127,6 +127,21 @@ public class MTDLineParser extends MZTabLineParser {
         }
 
         return email;
+    }
+    
+/**
+     * Parse valueLabel based on ORCID iD format. If exists parse error, add it
+     * into {@link MZTabErrorList}.
+     */
+    private String checkOrcid(String defineLabel, String valueLabel) {
+        String orcid = parseOrcid(valueLabel);
+
+        if (orcid == null) {
+            errorList.add(new MZTabError(FormatErrorType.Orcid, lineNumber,
+                Error_Header + defineLabel, valueLabel));
+        }
+
+        return orcid;
     }
 
     /**
@@ -753,7 +768,7 @@ public class MTDLineParser extends MZTabLineParser {
      * <p>
      * Getter for the field <code>metadata</code>.</p>
      *
-     * @return a {@link de.isas.mztab2.model.Metadata} object.
+     * @return a {@link org.lifstools.mztab2.model.Metadata} object.
      */
     public Metadata getMetadata() {
         return metadata;
@@ -896,6 +911,10 @@ public class MTDLineParser extends MZTabLineParser {
                 checkEmail(defineLabel, valueLabel);
                 contact = context.addContactEmail(metadata, id, valueLabel);
                 break;
+            case CONTACT_ORCID:
+                checkOrcid(defineLabel, valueLabel);
+                contact = context.addContactOrcid(metadata, id, valueLabel);
+                break;    
             default:
                 MZTabError error = new MZTabError(
                     FormatErrorType.MTDDefineLabel,

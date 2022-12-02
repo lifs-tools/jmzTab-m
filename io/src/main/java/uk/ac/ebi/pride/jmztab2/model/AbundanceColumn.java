@@ -15,9 +15,9 @@
  */
 package uk.ac.ebi.pride.jmztab2.model;
 
-import de.isas.mztab2.model.Assay;
-import de.isas.mztab2.model.IndexedElement;
-import de.isas.mztab2.model.StudyVariable;
+import org.lifstools.mztab2.model.Assay;
+import org.lifstools.mztab2.model.IndexedElement;
+import org.lifstools.mztab2.model.StudyVariable;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -134,7 +134,7 @@ public class AbundanceColumn extends MZTabColumn {
      * <p>createOptionalColumns.</p>
      *
      * @param section a {@link uk.ac.ebi.pride.jmztab2.model.Section} object.
-     * @param studyVariable a {@link de.isas.mztab2.model.StudyVariable} object.
+     * @param studyVariable a {@link org.lifstools.mztab2.model.StudyVariable} object.
      * @param lastOrder a {@link java.lang.Integer} object.
      * @return a {@link java.util.SortedMap} object.
      */

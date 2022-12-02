@@ -15,11 +15,10 @@
  */
 package uk.ac.ebi.pride.jmztab2.utils.parser;
 
-import de.isas.mztab2.io.serialization.ParameterConverter;
-import de.isas.mztab2.io.validators.SpectraRefValidator;
-import de.isas.mztab2.model.Metadata;
-import de.isas.mztab2.model.Parameter;
-import de.isas.mztab2.model.SpectraRef;
+import org.lifstools.mztab2.io.validators.SpectraRefValidator;
+import org.lifstools.mztab2.model.Metadata;
+import org.lifstools.mztab2.model.Parameter;
+import org.lifstools.mztab2.model.SpectraRef;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -27,6 +26,7 @@ import java.util.SortedMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import lombok.extern.slf4j.Slf4j;
+import org.lifstools.mztab2.io.serialization.ParameterConverter;
 import uk.ac.ebi.pride.jmztab2.model.IMZTabColumn;
 import uk.ac.ebi.pride.jmztab2.model.MZBoolean;
 import uk.ac.ebi.pride.jmztab2.model.MZTabColumnFactory;
@@ -438,7 +438,7 @@ public abstract class MZTabDataLineParser<T> extends MZTabLineParser {
      * object.
      * @param target a {@link java.lang.String} object.
      * @param allowNull a boolean.
-     * @return a {@link de.isas.mztab2.model.Parameter} object.
+     * @return a {@link org.lifstools.mztab2.model.Parameter} object.
      */
     protected Parameter checkParameter(IMZTabColumn column, String target,
             boolean allowNull) {
@@ -795,7 +795,7 @@ public abstract class MZTabDataLineParser<T> extends MZTabLineParser {
 
     /**
      * Check and translate spectraRef string into
-     * {@link de.isas.mztab2.model.SpectraRef} list. If parse incorrect, or
+     * {@link org.lifstools.mztab2.model.SpectraRef} list. If parse incorrect, or
      * ms_run not defined in metadata raise
      * {@link uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType#SpectraRef}
      * error. Normally, spectraRef may be set to "null"; in general "null"

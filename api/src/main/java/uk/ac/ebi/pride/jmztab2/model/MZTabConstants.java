@@ -62,6 +62,8 @@ public final class MZTabConstants {
     public static final String REGEX_NORMAL_METADATA = "(\\w+)(\\[(\\w+)\\])?(-(\\w+)(\\[(\\w+)\\])?)?(-(\\w+))?";
     /** Constant <code>REGEX_EMAIL="[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-']+)*@[A-Za-z0-9]+(?:[-.][A-Za-z0-9]+)*(\\.[A-Za-z]{2,})"</code> */
     public static final String REGEX_EMAIL = "[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-']+)*@[A-Za-z0-9]+(?:[-.][A-Za-z0-9]+)*(\\.[A-Za-z]{2,})";
+    /** Constant <code>REGEX_ORCID="([0-9]{4})-?([0-9]{4})-?([0-9]{4})-?([0-9]{3}[0-9X]{1})"</code> */
+    public static final String REGEX_ORCID = "([0-9]{4})-?([0-9]{4})-?([0-9]{4})-?([0-9]{3}[0-9X]{1})";
     /** Constant {@code REGEX_MZTAB_M="(?<major>[2]{1})\\.(?<minor>\\d{1})\\.(?<micro>\\d{1})-(?<profile>[M]{1})"} */
     public static final String REGEX_MZTAB_M = "(?<major>[2]{1})\\.(?<minor>\\d{1})\\.(?<micro>\\d{1})-(?<profile>[M]{1})";
     /** Constant <code>REGEX_PARAM_SPLIT=",(?=([^\"]*\"[^\"]*\")*[^\"]*$)"</code> */
