@@ -155,22 +155,22 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-install-plugin</artifactId>
-                    <version>3.0.0-M1</version>
+                    <version>3.1.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-deploy-plugin</artifactId>
-                    <version>3.0.0-M2</version>
+                    <version>3.0.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-dependency-plugin</artifactId>
-                    <version>3.2.0</version>
+                    <version>3.3.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-jar-plugin</artifactId>
-                    <version>3.2.0</version>
+                    <version>3.3.0</version>
                     <configuration>
                         <archive>
                             <manifest>
@@ -188,12 +188,12 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-assembly-plugin</artifactId>
-                    <version>3.3.0</version>
+                    <version>3.4.2</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>3.3.1</version>
+                    <version>3.4.1</version>
                     <executions>
                         <execution>
                             <id>attach-javadocs</id>
@@ -220,14 +220,14 @@
                 </plugin>
                 <plugin>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.8.1</version>
+                    <version>3.10.1</version>
                     <configuration>
                         <release>${java.version}</release>
                     </configuration>
                 </plugin>
                 <plugin>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>3.0.0-M5</version>
+                    <version>3.0.0-M7</version>
                     <configuration>
                         <redirectTestOutputToFile>true</redirectTestOutputToFile>
                         <parallel>classes</parallel>
@@ -239,13 +239,16 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-failsafe-plugin</artifactId>
-                    <version>3.0.0-M5</version>
+                    <version>3.0.0-M7</version>
                     <configuration>
                         <redirectTestOutputToFile>true</redirectTestOutputToFile>
                         <parallel>classes</parallel>
-                        <threadCount>1</threadCount>
+                        <threadCount>2</threadCount>
                         <trimStackTrace>false</trimStackTrace>
                         <workingDirectory>${project.build.directory}/failsafe-files</workingDirectory>
+                        <additionalClasspathElements>
+                            <additionalClasspathElement>${basedir}/target/classes</additionalClasspathElement>
+                        </additionalClasspathElements>
                     </configuration>
                     <executions>
                         <execution>
@@ -259,7 +262,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-shade-plugin</artifactId>
-                    <version>3.2.4</version>
+                    <version>3.4.1</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -362,7 +365,7 @@
                             </goals>
                             <configuration>
                                 <from>
-                                    <image>openjdk:11-jre-slim</image>
+                                    <image>openjdk:17-jre-slim</image>
                                 </from>
                                 <to>
                                     <image>${docker.image.prefix}/${docker.service.prefix}-${project.artifactId}</image>
@@ -570,27 +573,27 @@
         <!--<maven.compiler.target>1.8</maven.compiler.target>-->
         <java.version>17</java.version>
         <maven.compiler.release>${java.version}</maven.compiler.release>
-        <lombok.version>1.18.22</lombok.version>
+        <lombok.version>1.18.24</lombok.version>
         <junit.version>4.13.2</junit.version>
-        <hamcrest.version>1.3</hamcrest.version>
+        <hamcrest.version>2.2</hamcrest.version>
         <javax.validation.version>2.0.1.Final</javax.validation.version>
         <junit.jupiter.version>5.0.3</junit.jupiter.version>
         <junit.vintage.version>4.13.1</junit.vintage.version>
         <junit.platform.version>1.0.3</junit.platform.version>
         <swagger.version>1.6.9</swagger.version>
-        <jersey.version>2.22.4</jersey.version>
-        <jackson.version>2.12.7</jackson.version>
-        <jackson.databind.version>2.12.7.1</jackson.databind.version>
-        <jackson.core.version>2.12.7</jackson.core.version>
+        <jersey.version>2.37</jersey.version>
+        <jackson.version>2.14.1</jackson.version>
+        <jackson.databind.version>2.14.1</jackson.databind.version>
+        <jackson.core.version>2.14.1</jackson.core.version>
         <jodatime.version>2.12.1</jodatime.version>
         <hibernate.validator.version>6.0.22.Final</hibernate.validator.version>
         <slf4j.version>1.7.36</slf4j.version>
-        <commons-cli.version>1.2</commons-cli.version>
+        <commons-cli.version>1.5</commons-cli.version>
         <javax.el.version>3.0.1-b12</javax.el.version>
         <migbase.version>2.2</migbase.version>
         <swagger2markup.version>1.3.7</swagger2markup.version>
         <maven-plugin-version>1.0.0</maven-plugin-version>
-        <jacoco.version>0.8.7</jacoco.version>
+        <jacoco.version>0.8.8</jacoco.version>
         <mockito.version>3.6.28</mockito.version><!--2.19.0-->
         <olsclient.version>2.11</olsclient.version>
         <jxpath.version>1.3</jxpath.version>
@@ -601,7 +604,7 @@
         <dockerfile.plugin.version>1.4.13</dockerfile.plugin.version>
         <jaxb.api-version>2.3.1</jaxb.api-version>
         <jaxb.core-version>2.3.0.1</jaxb.core-version>
-        <jaxb.version>2.3.5</jaxb.version>
+        <jaxb.version>2.3.7</jaxb.version>
         <javax.annotation-api.version>1.3.2</javax.annotation-api.version>
         <assembly.dir>${project.artifactId}</assembly.dir>
         <javax.activation-api.version>1.2.0</javax.activation-api.version>
