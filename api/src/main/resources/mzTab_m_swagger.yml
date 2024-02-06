@@ -1500,7 +1500,7 @@ definitions:
         orcid:
           description: The contact's orcid id, without https prefix.
           type: string
-          pattern: '^[0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{3}[0-9X]{1}'
+          pattern: '^[0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{3}[0-9X]{1}$'
   Uri:
     description: A URI pointing to the file’s source data (e.g., a MetaboLights records) or an external file with more details about the study design.
     x-mztab-example: |

@@ -52,6 +52,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameter;
 import org.junit.runners.Parameterized.Parameters;
+import static org.lifstools.mztab2.test.utils.ClassPathFile.XCMS_EXAMPLE;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorOverflowException;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorType;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabException;
@@ -85,12 +86,15 @@ public class ExampleFilesValidationTestIT {
         STANDARDMIX_POSITIVE_EXPORTSPECIESLEVEL,
         GCXGC_MS_EXAMPLE,
         LIPIDOMICS_EXAMPLE,
-        MINIMAL_EXAMPLE);
+        MINIMAL_EXAMPLE,
+        XCMS_EXAMPLE
+    );
 
     @Parameters(
         name = "{index}: semantic validation of ''{0}'' on level ''{1}'' expecting ''{2}'' structural/logical errors and ''{3}'' cross check/semantic errors.")
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][]{
+            {XCMS_EXAMPLE, MZTabErrorType.Level.Warn, 1, 0},
             {LIPIDOMICS_EXAMPLE, MZTabErrorType.Level.Info,
                 0, 8},
             {MTBLS263, MZTabErrorType.Level.Info, 0, 15},

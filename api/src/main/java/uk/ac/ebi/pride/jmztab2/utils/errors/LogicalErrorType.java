@@ -189,7 +189,7 @@ public final class LogicalErrorType extends MZTabErrorType {
     /**
      * Constant <code>NoSmallMoleculeSummarySection</code>
      */
-    public static final MZTabErrorType NoSmallMoleculeSummarySection = createError(Category.Logical, "NoSmallMoleculeSummarySection");
+    public static final MZTabErrorType NoSmallMoleculeSummarySection = createInfo(Category.Logical, "NoSmallMoleculeSummarySection");
 
     /**
      * Constant <code>NoSmallMoleculeQuantificationUnit</code>

@@ -147,7 +147,7 @@ public class SMHLineParser extends MZTabHeaderLineParser {
             new MZTabException(new MZTabError(LogicalErrorType.NoSmallMoleculeQuantificationUnit, lineNumber)));
 
         if (metadata.getSmallMoleculeIdentificationReliability() == null) {
-            throw new MZTabException(new MZTabError(LogicalErrorType.NoSmallMoleculeIdentificationReliability, lineNumber));
+            errorList.add(new MZTabError(LogicalErrorType.NoSmallMoleculeIdentificationReliability, lineNumber));
         }
         for (StudyVariable studyVariable : metadata.getStudyVariable()) {
             String svLabel = "_"+Metadata.Properties.studyVariable+"[" + studyVariable.getId() + "]";

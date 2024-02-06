@@ -92,7 +92,7 @@
                 <configuration>
                     <transformers>
                         <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                            <mainClass>de.isas.mztab2.cli.MZTabCommandLine</mainClass>
+                            <mainClass>org.lifstools.mztab2.cli.MZTabCommandLine</mainClass>
                         </transformer>
                     </transformers>
                 </configuration>

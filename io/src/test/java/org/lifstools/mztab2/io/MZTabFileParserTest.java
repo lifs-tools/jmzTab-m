@@ -48,6 +48,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import static org.lifstools.mztab2.test.utils.ClassPathFile.XCMS_EXAMPLE;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorOverflowException;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorType;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabException;
@@ -75,7 +76,9 @@ public class MZTabFileParserTest {
             GCXGC_MS_EXAMPLE,
             LIPIDOMICS_EXAMPLE,
             LIPIDOMICS_EXAMPLE_WRONG_MSSCAN_REF,
-            MINIMAL_EXAMPLE);
+            MINIMAL_EXAMPLE,
+            XCMS_EXAMPLE
+    );
 
     @Parameterized.Parameters(
             name = "{index}: semantic validation of '{0}' on level '{1}' expecting '{2}' structural/logical errors and MzTab to be null: '{3}'")
@@ -100,7 +103,9 @@ public class MZTabFileParserTest {
             {GCXGC_MS_EXAMPLE, MZTabErrorType.Level.Warn, 0, false},
             {MINIMAL_EXAMPLE, MZTabErrorType.Level.Error, 1, false},
             {MINIMAL_EXAMPLE, MZTabErrorType.Level.Warn, 1, false},
-            {MINIMAL_EXAMPLE, MZTabErrorType.Level.Info, 1, false},});
+            {MINIMAL_EXAMPLE, MZTabErrorType.Level.Info, 1, false},
+            {XCMS_EXAMPLE, MZTabErrorType.Level.Info, 1, false}
+        });
     }
 
     @Parameterized.Parameter(0)

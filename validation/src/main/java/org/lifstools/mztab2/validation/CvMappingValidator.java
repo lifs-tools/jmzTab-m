@@ -90,7 +90,9 @@ public class CvMappingValidator implements Validator<MzTab> {
      */
     public static CvMappingValidator of(File mappingFile,
         boolean errorIfTermNotInRule) throws JAXBException {
-        OLSWsConfig config = new OLSWsConfig();
+        OLSWsConfig config = new OLSWsConfig(
+            "https://www.ebi.ac.uk/ols4/api"
+        );
         OLSClient client = new OLSClient(config);
         CvParameterLookupService service = new CvParameterLookupService(client);
         return of(mappingFile, service, errorIfTermNotInRule);

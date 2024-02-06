@@ -147,7 +147,11 @@ public class MzTabFileParser {
             try (PrintStream ps = new PrintStream(out)) {
                 e.printStackTrace(ps);
             }
-            out.write(e.getMessage().getBytes());
+            if(e.getMessage() != null) {
+                out.write(e.getMessage().getBytes());
+            } else {
+                out.write(("Error Overflow exception did not contain a message!" + NEW_LINE).getBytes());
+            }
         }
 
         errorList.print(out);

@@ -22,17 +22,6 @@ package org.lifstools.mztab2.test.utils;
  */
 public enum ClassPathFile {
 
-//    "/metabolomics/MTBLS263.mztab",
-//        "/metabolomics/MouseLiver_negative.mzTab",
-//        "/metabolomics/MouseLiver_negative_mztab_null-colunit.txt",
-//        "/metabolomics/StandardMix_negative_exportPositionLevel.mzTab",
-//        "/metabolomics/StandardMix_negative_exportSpeciesLevel.mzTab",
-//        "/metabolomics/StandardMix_positive_exportPositionLevel.mzTab",
-//        "/metabolomics/StandardMix_positive_exportSpeciesLevel.mzTab",
-//        "/metabolomics/gcxgc-ms-example.mztab",
-//        "/metabolomics/lipidomics-example.mzTab",
-//        "/metabolomics/minimal-m-2.0.mztab"
-///testset/mtdFile.txt
     MTDFILE("/testset/", "mtdFile.txt"),
     MTBLS263("/metabolomics/", "MTBLS263.mztab"),
     MOUSELIVER_NEGATIVE("/metabolomics/", "MouseLiver_negative.mzTab"),
@@ -49,7 +38,8 @@ public enum ClassPathFile {
     GCXGC_MS_EXAMPLE("/metabolomics/", "gcxgc-ms-example.mztab"),
     LIPIDOMICS_EXAMPLE("/metabolomics/", "lipidomics-example.mzTab"),
     LIPIDOMICS_EXAMPLE_WRONG_MSSCAN_REF("/metabolomics/", "lipidomics-example-wrong-msscan-ref.mzTab"),
-    MINIMAL_EXAMPLE("/metabolomics/", "minimal-m-2.0.mztab");
+    MINIMAL_EXAMPLE("/metabolomics/", "minimal-m-2.0.mztab"),
+    XCMS_EXAMPLE("/metabolomics/", "xcms-test-export.mztab");
 
     private final String resourcePathPrefix;
     private final String fileName;
