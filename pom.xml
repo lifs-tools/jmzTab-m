@@ -570,7 +570,7 @@
         <swagger2markup.version>1.3.7</swagger2markup.version>
         <maven-plugin-version>1.0.0</maven-plugin-version>
         <jacoco.version>0.8.10</jacoco.version>
-        <mockito.version>3.6.28</mockito.version><!--2.19.0-->
+        <mockito.version>3.12.4</mockito.version><!--2.19.0-->
         <olsclient.version>2.11</olsclient.version>
         <jxpath.version>1.3</jxpath.version>
         <spring.version>5.3.24</spring.version>
