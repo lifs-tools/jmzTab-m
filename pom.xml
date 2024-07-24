@@ -562,7 +562,7 @@
         <jackson.databind.version>2.14.1</jackson.databind.version>
         <jackson.core.version>2.14.1</jackson.core.version>
         <jodatime.version>2.12.1</jodatime.version>
-        <hibernate.validator.version>6.0.22.Final</hibernate.validator.version>
+        <hibernate.validator.version>6.2.5.Final</hibernate.validator.version>
         <slf4j.version>2.0.6</slf4j.version>
         <commons-cli.version>1.5.0</commons-cli.version>
         <javax.el.version>3.0.1-b12</javax.el.version>
