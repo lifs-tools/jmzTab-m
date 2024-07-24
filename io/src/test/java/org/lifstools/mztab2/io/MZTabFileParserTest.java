@@ -49,6 +49,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import static org.lifstools.mztab2.test.utils.ClassPathFile.XCMS_EXAMPLE;
+import static org.lifstools.mztab2.test.utils.ClassPathFile.XCMS_NO_SML_EXAMPLE;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorOverflowException;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorType;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabException;
@@ -77,7 +78,8 @@ public class MZTabFileParserTest {
             LIPIDOMICS_EXAMPLE,
             LIPIDOMICS_EXAMPLE_WRONG_MSSCAN_REF,
             MINIMAL_EXAMPLE,
-            XCMS_EXAMPLE
+            XCMS_EXAMPLE,
+            XCMS_NO_SML_EXAMPLE
     );
 
     @Parameterized.Parameters(
@@ -101,10 +103,11 @@ public class MZTabFileParserTest {
             {LIPIDOMICS_EXAMPLE_WRONG_MSSCAN_REF, MZTabErrorType.Level.Error,
                 1, true},
             {GCXGC_MS_EXAMPLE, MZTabErrorType.Level.Warn, 0, false},
-            {MINIMAL_EXAMPLE, MZTabErrorType.Level.Error, 1, false},
-            {MINIMAL_EXAMPLE, MZTabErrorType.Level.Warn, 1, false},
+            {MINIMAL_EXAMPLE, MZTabErrorType.Level.Error, 0, false},
+            {MINIMAL_EXAMPLE, MZTabErrorType.Level.Warn, 0, false},
             {MINIMAL_EXAMPLE, MZTabErrorType.Level.Info, 1, false},
-            {XCMS_EXAMPLE, MZTabErrorType.Level.Info, 1, false}
+            {XCMS_EXAMPLE, MZTabErrorType.Level.Info, 1, false},
+            {XCMS_NO_SML_EXAMPLE, MZTabErrorType.Level.Warn, 0, false}
         });
     }
 

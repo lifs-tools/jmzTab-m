@@ -9,10 +9,6 @@
   </parent>
   <artifactId>jmztabm-test-utils</artifactId>
   <packaging>jar</packaging>
-  <organization>
-    <name>Leibniz-Institut für Analytische Wissenschaften – ISAS – e.V.</name>
-    <url>https://www.isas.de</url>
-  </organization>
   <dependencies>
     <dependency>
       <groupId>junit</groupId>

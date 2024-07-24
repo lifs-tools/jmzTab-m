@@ -1,0 +1,202 @@
+{
+  "description": "Specification of sample.\n(empty) name: A name for each sample to serve as a list of the samples that MUST be reported in the following tables. Samples MUST be reported if a statistical design is being captured (i.e. bio or tech replicates). If the type of replicates are not known, samples SHOULD NOT be reported. \nspecies: The respective species of the samples analysed. For more complex cases, such as metagenomics, optional columns and userParams should be used. \ntissue: The respective tissue(s) of the sample. \ncell_type: The respective cell type(s) of the sample. \ndisease: The respective disease(s) of the sample. \ndescription: A human readable description of the sample. \ncustom: Custom parameters describing the sample's additional properties. Dates MUST be provided in ISO-8601 format.\n",
+  "x-mztab-example": "COM\tExperiment where all samples consisted of the same two species\nMTD\tsample[1]\tindividual number 1\nMTD\tsample[1]-species[1]\t[NCBITaxon, NCBITaxon:9606, Homo sapiens, ]\nMTD\tsample[1]-tissue[1]\t[BTO, BTO:0000759, liver, ]\nMTD\tsample[1]-cell_type[1]\t[CL, CL:0000182, hepatocyte, ]\nMTD\tsample[1]-disease[1]\t[DOID, DOID:684, hepatocellular carcinoma, ]\nMTD\tsample[1]-disease[2]\t[DOID, DOID:9451, alcoholic fatty liver, ]\nMTD\tsample[1]-description\tHepatocellular carcinoma samples.\nMTD\tsample[1]-custom[1]\t[,,Extraction date, 2011-12-21]\nMTD\tsample[1]-custom[2]\t[,,Extraction reason, liver biopsy]\nMTD\tsample[2]\tindividual number 2\nMTD\tsample[2]-species[1]\t[NCBITaxon, NCBITaxon:9606, Homo sapiens, ]\nMTD\tsample[2]-tissue[1]\t[BTO, BTO:0000759, liver, ]\nMTD\tsample[2]-cell_type[1]\t[CL, CL:0000182, hepatocyte, ]\nMTD\tsample[2]-description\tHealthy control samples.\n",
+  "x-mztab-serialize-by-id": "true",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "integer",
+      "format": "int32",
+      "minimum": 1
+    },
+    "name": {
+      "type": "string",
+      "description": "The sample's name."
+    },
+    "custom": {
+      "type": "array",
+      "description": "Additional user or cv parameters.",
+      "default": [],
+      "items": {
+        "description": "mzTab makes use of CV parameters. As mzTab is expected to be used in several experimental environments where parameters might not yet be available for the generated scores etc. all parameters can either report CV parameters or user parameters that only contain a name and a value.\nParameters are always reported as [CV label, accession, name, value]. Any field that is not available MUST be left empty.\n",
+        "x-mztab-example": "[MS, MS:1001477, SpectraST,]\n[,,A user parameter, The value]\n",
+        "type": "object",
+        "required": [
+          "name",
+          "value"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1
+          },
+          "cv_label": {
+            "type": "string",
+            "default": ""
+          },
+          "cv_accession": {
+            "type": "string",
+            "default": ""
+          },
+          "name": {
+            "type": "string"
+          },
+          "value": {
+            "type": "string",
+            "default": ""
+          }
+        }
+      }
+    },
+    "species": {
+      "type": "array",
+      "description": "Biological species information on the sample.",
+      "default": [],
+      "items": {
+        "description": "mzTab makes use of CV parameters. As mzTab is expected to be used in several experimental environments where parameters might not yet be available for the generated scores etc. all parameters can either report CV parameters or user parameters that only contain a name and a value.\nParameters are always reported as [CV label, accession, name, value]. Any field that is not available MUST be left empty.\n",
+        "x-mztab-example": "[MS, MS:1001477, SpectraST,]\n[,,A user parameter, The value]\n",
+        "type": "object",
+        "required": [
+          "name",
+          "value"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1
+          },
+          "cv_label": {
+            "type": "string",
+            "default": ""
+          },
+          "cv_accession": {
+            "type": "string",
+            "default": ""
+          },
+          "name": {
+            "type": "string"
+          },
+          "value": {
+            "type": "string",
+            "default": ""
+          }
+        }
+      }
+    },
+    "tissue": {
+      "type": "array",
+      "description": "Biological tissue information on the sample.",
+      "default": [],
+      "items": {
+        "description": "mzTab makes use of CV parameters. As mzTab is expected to be used in several experimental environments where parameters might not yet be available for the generated scores etc. all parameters can either report CV parameters or user parameters that only contain a name and a value.\nParameters are always reported as [CV label, accession, name, value]. Any field that is not available MUST be left empty.\n",
+        "x-mztab-example": "[MS, MS:1001477, SpectraST,]\n[,,A user parameter, The value]\n",
+        "type": "object",
+        "required": [
+          "name",
+          "value"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1
+          },
+          "cv_label": {
+            "type": "string",
+            "default": ""
+          },
+          "cv_accession": {
+            "type": "string",
+            "default": ""
+          },
+          "name": {
+            "type": "string"
+          },
+          "value": {
+            "type": "string",
+            "default": ""
+          }
+        }
+      }
+    },
+    "cell_type": {
+      "type": "array",
+      "description": "Biological cell type information on the sample.",
+      "default": [],
+      "items": {
+        "description": "mzTab makes use of CV parameters. As mzTab is expected to be used in several experimental environments where parameters might not yet be available for the generated scores etc. all parameters can either report CV parameters or user parameters that only contain a name and a value.\nParameters are always reported as [CV label, accession, name, value]. Any field that is not available MUST be left empty.\n",
+        "x-mztab-example": "[MS, MS:1001477, SpectraST,]\n[,,A user parameter, The value]\n",
+        "type": "object",
+        "required": [
+          "name",
+          "value"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1
+          },
+          "cv_label": {
+            "type": "string",
+            "default": ""
+          },
+          "cv_accession": {
+            "type": "string",
+            "default": ""
+          },
+          "name": {
+            "type": "string"
+          },
+          "value": {
+            "type": "string",
+            "default": ""
+          }
+        }
+      }
+    },
+    "disease": {
+      "type": "array",
+      "description": "Disease information on the sample.",
+      "default": [],
+      "items": {
+        "description": "mzTab makes use of CV parameters. As mzTab is expected to be used in several experimental environments where parameters might not yet be available for the generated scores etc. all parameters can either report CV parameters or user parameters that only contain a name and a value.\nParameters are always reported as [CV label, accession, name, value]. Any field that is not available MUST be left empty.\n",
+        "x-mztab-example": "[MS, MS:1001477, SpectraST,]\n[,,A user parameter, The value]\n",
+        "type": "object",
+        "required": [
+          "name",
+          "value"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1
+          },
+          "cv_label": {
+            "type": "string",
+            "default": ""
+          },
+          "cv_accession": {
+            "type": "string",
+            "default": ""
+          },
+          "name": {
+            "type": "string"
+          },
+          "value": {
+            "type": "string",
+            "default": ""
+          }
+        }
+      }
+    },
+    "description": {
+      "description": "A free form description of the sample.",
+      "type": "string"
+    }
+  },
+  "$schema": "http://json-schema.org/schema#"
+}

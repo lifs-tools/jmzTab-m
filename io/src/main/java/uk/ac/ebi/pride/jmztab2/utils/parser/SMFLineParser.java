@@ -103,7 +103,7 @@ public class SMFLineParser extends MZTabDataLineParser<SmallMoleculeFeature> {
                             break;
                         case CHARGE:
                             smallMoleculeFeature.charge(checkInteger(column,
-                                checkData(column, target, false)));
+                                checkData(column, target, true)));
                             break;
                         case EXP_MASS_TO_CHARGE:
                             smallMoleculeFeature.expMassToCharge(

@@ -1,0 +1,37 @@
+{
+  "type": "object",
+  "required": [
+    "code",
+    "category",
+    "message"
+  ],
+  "properties": {
+    "code": {
+      "type": "string"
+    },
+    "category": {
+      "enum": [
+        "format",
+        "logical",
+        "cross_check"
+      ],
+      "default": "format"
+    },
+    "message_type": {
+      "enum": [
+        "error",
+        "warn",
+        "info"
+      ],
+      "default": "info"
+    },
+    "message": {
+      "type": "string"
+    },
+    "line_number": {
+      "type": "integer",
+      "format": "int64"
+    }
+  },
+  "$schema": "http://json-schema.org/schema#"
+}

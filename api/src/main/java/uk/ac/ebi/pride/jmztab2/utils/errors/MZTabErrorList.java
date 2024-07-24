@@ -104,15 +104,17 @@ public class MZTabErrorList {
         }
         
         switch(error.getType().getLevel()) {
-            case Info:
+            case Info -> {
                 if(level==MZTabErrorType.Level.Warn || level==MZTabErrorType.Level.Error) {
                     return false;
                 }
-                break;
-            case Warn:
+            }
+            case Warn -> {
                 if(level==MZTabErrorType.Level.Error) {
                     return false;
                 }
+                //ERROR is always being reported
+            }
             //ERROR is always being reported
         }
 
@@ -183,16 +185,16 @@ public class MZTabErrorList {
         return level;
     }
 
-    /**
-     * Define the level of the errors that are going to be store in the list.
-     * The incoming errors with an equal or highest level will be stored.
-     *
-     * @param level
-     * {@link uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorType#level}
-     */
-    public void setLevel(MZTabErrorType.Level level) {
-        this.level = level;
-    }
+//    /**
+//     * Define the level of the errors that are going to be store in the list.
+//     * The incoming errors with an equal or highest level will be stored.
+//     *
+//     * @param level
+//     * {@link uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorType#level}
+//     */
+//    public void setLevel(MZTabErrorType.Level level) {
+//        this.level = level;
+//    }
 
     /**
      * Clear all errors stored in the error list.

@@ -110,23 +110,17 @@ public class MZTabErrorType implements Serializable {
      */
     private static MZTabErrorType createMZTabError(Category category, Level level, String keyword) {
         if (MZTabStringUtils.isEmpty(keyword)) {
-            throw new NullPointerException(keyword + " can not empty!");
+            throw new NullPointerException(keyword + " can not be empty!");
         }
 
         String prefix = null;
         switch (category) {
-            case Format:
-                prefix = "f_";
-                break;
-            case Logical:
-                prefix = "l_";
-                break;
-            case CrossCheck:
-                prefix = "c_";
-                break;
+            case Format -> prefix = "f_";
+            case Logical -> prefix = "l_";
+            case CrossCheck -> prefix = "c_";
         }
 
-        Integer code = new Integer(MZTabProperties.getProperty(prefix + "code_" + keyword));
+        Integer code = Integer.valueOf(MZTabProperties.getProperty(prefix + "code_" + keyword));
         String original = MZTabProperties.getProperty(prefix + "original_" + keyword);
         String cause = MZTabProperties.getProperty(prefix + "cause_" + keyword);
 

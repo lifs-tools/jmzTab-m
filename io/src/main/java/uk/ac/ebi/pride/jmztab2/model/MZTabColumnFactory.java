@@ -186,6 +186,7 @@ public class MZTabColumnFactory {
     public String addOptionalColumn(String name, Class columnType) {
         IMZTabColumn column = new OptionColumn(null, name, columnType,
             Integer.parseInt(getColumnOrder(columnMapping.lastKey())));
+        
         return addOptionColumn(column);
     }
 

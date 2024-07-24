@@ -145,33 +145,19 @@ public class MZTabError implements Serializable {
         ValidationMessage.MessageTypeEnum level = ValidationMessage.MessageTypeEnum.INFO;
         switch (getType().
             getLevel()) {
-            case Error:
-                level = ValidationMessage.MessageTypeEnum.ERROR;
-                break;
-            case Info:
-                level = ValidationMessage.MessageTypeEnum.INFO;
-                break;
-            case Warn:
-                level = ValidationMessage.MessageTypeEnum.WARN;
-                break;
-            default:
-                throw new IllegalStateException("State " + 
+            case Error -> level = ValidationMessage.MessageTypeEnum.ERROR;
+            case Info -> level = ValidationMessage.MessageTypeEnum.INFO;
+            case Warn -> level = ValidationMessage.MessageTypeEnum.WARN;
+            default -> throw new IllegalStateException("State " + 
                     getType().
                     getLevel() + " is not handled in switch/case statement!");
         }
         ValidationMessage.CategoryEnum category = ValidationMessage.CategoryEnum.FORMAT;
         switch(getType().getCategory()) {
-            case Format:
-                category = ValidationMessage.CategoryEnum.FORMAT;
-                break;
-            case Logical:
-                category = ValidationMessage.CategoryEnum.LOGICAL;
-                break;
-            case CrossCheck:
-                category = ValidationMessage.CategoryEnum.CROSS_CHECK;
-                break;
-            default:
-                throw new IllegalStateException("Category " + 
+            case Format -> category = ValidationMessage.CategoryEnum.FORMAT;
+            case Logical -> category = ValidationMessage.CategoryEnum.LOGICAL;
+            case CrossCheck -> category = ValidationMessage.CategoryEnum.CROSS_CHECK;
+            default -> throw new IllegalStateException("Category " + 
                     getType().
                     getCategory()+ " is not handled in switch/case statement!");
         }

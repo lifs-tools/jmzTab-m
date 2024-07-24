@@ -1,0 +1,82 @@
+{
+  "oneOf": [
+    {
+      "$ref": "_definitions.json#/definitions/MzTab"
+    },
+    {
+      "$ref": "_definitions.json#/definitions/Comment"
+    },
+    {
+      "$ref": "_definitions.json#/definitions/Metadata"
+    },
+    {
+      "$ref": "_definitions.json#/definitions/SmallMoleculeSummary"
+    },
+    {
+      "$ref": "_definitions.json#/definitions/SmallMoleculeFeature"
+    },
+    {
+      "$ref": "_definitions.json#/definitions/SmallMoleculeEvidence"
+    },
+    {
+      "$ref": "_definitions.json#/definitions/Parameter"
+    },
+    {
+      "$ref": "_definitions.json#/definitions/Instrument"
+    },
+    {
+      "$ref": "_definitions.json#/definitions/SampleProcessing"
+    },
+    {
+      "$ref": "_definitions.json#/definitions/Software"
+    },
+    {
+      "$ref": "_definitions.json#/definitions/Publication"
+    },
+    {
+      "$ref": "_definitions.json#/definitions/PublicationItem"
+    },
+    {
+      "$ref": "_definitions.json#/definitions/SpectraRef"
+    },
+    {
+      "$ref": "_definitions.json#/definitions/StringList"
+    },
+    {
+      "$ref": "_definitions.json#/definitions/Contact"
+    },
+    {
+      "$ref": "_definitions.json#/definitions/Uri"
+    },
+    {
+      "$ref": "_definitions.json#/definitions/Sample"
+    },
+    {
+      "$ref": "_definitions.json#/definitions/MsRun"
+    },
+    {
+      "$ref": "_definitions.json#/definitions/StudyVariable"
+    },
+    {
+      "$ref": "_definitions.json#/definitions/Assay"
+    },
+    {
+      "$ref": "_definitions.json#/definitions/CV"
+    },
+    {
+      "$ref": "_definitions.json#/definitions/Database"
+    },
+    {
+      "$ref": "_definitions.json#/definitions/ColumnParameterMapping"
+    },
+    {
+      "$ref": "_definitions.json#/definitions/OptColumnMapping"
+    },
+    {
+      "$ref": "_definitions.json#/definitions/Error"
+    },
+    {
+      "$ref": "_definitions.json#/definitions/ValidationMessage"
+    }
+  ]
+}

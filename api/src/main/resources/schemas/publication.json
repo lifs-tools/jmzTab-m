@@ -1,0 +1,46 @@
+{
+  "description": "A publication associated with this file. Several publications can be given by indicating the number in the square brackets after \u201cpublication\u201d. PubMed ids must be prefixed by \u201cpubmed:\u201d, DOIs by \u201cdoi:\u201d. Multiple identifiers MUST be separated by \u201c|\u201d.\n",
+  "x-mztab-example": "MTD\tpublication[1]\tpubmed:21063943|doi:10.1007/978-1-60761-987-1_6\nMTD\tpublication[2]\tpubmed:20615486|doi:10.1016/j.jprot.2010.06.008\n",
+  "x-mztab-serialize-by-id": "true",
+  "type": "object",
+  "required": [
+    "publicationItems"
+  ],
+  "properties": {
+    "id": {
+      "type": "integer",
+      "format": "int32",
+      "minimum": 1
+    },
+    "publicationItems": {
+      "type": "array",
+      "description": "The publication item ids referenced by this publication.",
+      "default": [],
+      "items": {
+        "type": "object",
+        "required": [
+          "type",
+          "accession"
+        ],
+        "description": "A publication item, defined by a qualifier and a native accession, e.g. pubmed id.",
+        "properties": {
+          "type": {
+            "type": "string",
+            "description": "The type qualifier of this publication item.",
+            "enum": [
+              "doi",
+              "pubmed",
+              "uri"
+            ],
+            "default": "doi"
+          },
+          "accession": {
+            "type": "string",
+            "description": "The native accession id for this publication item."
+          }
+        }
+      }
+    }
+  },
+  "$schema": "http://json-schema.org/schema#"
+}
