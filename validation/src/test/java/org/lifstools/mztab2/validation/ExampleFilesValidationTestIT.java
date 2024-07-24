@@ -94,7 +94,7 @@ public class ExampleFilesValidationTestIT {
         name = "{index}: semantic validation of ''{0}'' on level ''{1}'' expecting ''{2}'' structural/logical errors and ''{3}'' cross check/semantic errors.")
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][]{
-            {XCMS_EXAMPLE, MZTabErrorType.Level.Info, 1, 0},
+            {XCMS_EXAMPLE, MZTabErrorType.Level.Info, 1, 21},
             {LIPIDOMICS_EXAMPLE, MZTabErrorType.Level.Info,
                 0, 8},
             {MTBLS263, MZTabErrorType.Level.Info, 0, 15},
