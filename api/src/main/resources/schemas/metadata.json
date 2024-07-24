@@ -1,0 +1,2856 @@
+{
+  "type": "object",
+  "description": "The metadata section provides additional information about the dataset(s) reported in the mzTab file. All fields in the metadata section are optional apart from those noted as mandatory. The fields in the metadata section MUST be reported in order of the various fields listed here. The field\u2019s name and value MUST be separated by a tab character. \n",
+  "x-mztab-example": "MTD\tmzTab-version\t2.0.0-M\nMTD\tmzTab-ID\tMTBL1234\nMTD\ttitle\tEffects of Rapamycin on metabolite profile\n...\n",
+  "required": [
+    "prefix",
+    "fileDescription",
+    "mzTab-version",
+    "mzTab-ID",
+    "quantification_method",
+    "software",
+    "ms_run",
+    "assay",
+    "study_variable",
+    "cv",
+    "database",
+    "small_molecule-quantification_unit",
+    "small_molecule_feature-quantification_unit",
+    "id_confidence_measure"
+  ],
+  "properties": {
+    "prefix": {
+      "type": "string",
+      "description": "The metadata section prefix. MUST always be MTD.\n",
+      "enum": [
+        "MTD"
+      ],
+      "default": "MTD",
+      "example": "MTD"
+    },
+    "mzTab-version": {
+      "type": "string",
+      "description": "The version of the mzTab file. The suffix MUST be \"-M\" for mzTab for metabolomics (mzTab-M).\n",
+      "pattern": "^\\d{1}\\.\\d{1}\\.\\d{1}-[A-Z]{1}$",
+      "x-mztab-example": "MTD\tmzTab-version\t2.0.0-M\nMTD\tmzTab-version\t2.0.1-M\n"
+    },
+    "mzTab-ID": {
+      "type": "string",
+      "description": "The ID of the mzTab file, this could be supplied by the repository from which it is downloaded or a local identifier from the lab producing the file. It is not intended to be a globally unique ID but carry some locally useful meaning.\n",
+      "example": "MTD mzTab-ID MTBLS214"
+    },
+    "title": {
+      "type": "string",
+      "description": "The file\u2019s human readable title.\n",
+      "example": "MTD title My first test experiment"
+    },
+    "description": {
+      "type": "string",
+      "description": "The file\u2019s human readable description.\n",
+      "example": "MTD description An experiment investigating the effects of Il-6."
+    },
+    "contact": {
+      "type": "array",
+      "description": "The contact\u2019s name, affiliation and e-mail. Several contacts can be given by indicating the number in the square brackets after \"contact\". A contact has to be supplied in the format [first name] [initials] [last name].",
+      "default": [],
+      "items": {
+        "description": "The contact\u2019s name, affiliation and e-mail. Several contacts can be given by indicating the number in the square brackets after \"contact\". A contact has to be supplied in the format [first name] [initials] [last name].\n",
+        "x-mztab-example": "MTD\tcontact[1]-name\tJames D. Watson\nMTD\tcontact[1]-affiliation\tCambridge University, UK\nMTD\tcontact[1]-email\twatson@cam.ac.uk\nMTD\tcontact[2]-name\tFrancis Crick\nMTD\tcontact[2]-affiliation\tCambridge University, UK\nMTD\tcontact[2]-email\tcrick@cam.ac.uk\nMTD\tcontact[2]-orcid\t0000-0002-1825-0097\n",
+        "x-mztab-serialize-by-id": "true",
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1
+          },
+          "name": {
+            "description": "The contact's name.",
+            "type": "string"
+          },
+          "affiliation": {
+            "description": "The contact's affiliation.",
+            "type": "string"
+          },
+          "email": {
+            "description": "The contact's e-mail address.",
+            "type": "string",
+            "pattern": "^\\w+([\\.-]?\\w+)*@\\w+([\\.-]?\\w+)*(\\.\\w{2,3})+$"
+          },
+          "orcid": {
+            "description": "The contact's orcid id, without https prefix.",
+            "type": "string",
+            "pattern": "^[0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{3}[0-9X]{1}"
+          }
+        }
+      },
+      "x-mztab-example": "MTD\tcontact[1]-name\tJames D. Watson\nMTD\tcontact[1]-affiliation\tCambridge University, UK\nMTD\tcontact[1]-email\twatson@cam.ac.uk\nMTD\tcontact[2]-name\tFrancis Crick\nMTD\tcontact[2]-affiliation\tCambridge University, UK\nMTD\tcontact[2]-email\tcrick@cam.ac.uk\nMTD contact[2]-orcid        0000-0002-1825-0097\n"
+    },
+    "publication": {
+      "type": "array",
+      "description": "A publication associated with this file. Several publications can be given by indicating the number in the square brackets after \u201cpublication\u201d. PubMed ids must be prefixed by \u201cpubmed:\u201d, DOIs by \u201cdoi:\u201d. Multiple identifiers MUST be separated by \u201c|\u201d.",
+      "default": [],
+      "items": {
+        "description": "A publication associated with this file. Several publications can be given by indicating the number in the square brackets after \u201cpublication\u201d. PubMed ids must be prefixed by \u201cpubmed:\u201d, DOIs by \u201cdoi:\u201d. Multiple identifiers MUST be separated by \u201c|\u201d.\n",
+        "x-mztab-example": "MTD\tpublication[1]\tpubmed:21063943|doi:10.1007/978-1-60761-987-1_6\nMTD\tpublication[2]\tpubmed:20615486|doi:10.1016/j.jprot.2010.06.008\n",
+        "x-mztab-serialize-by-id": "true",
+        "type": "object",
+        "required": [
+          "publicationItems"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1
+          },
+          "publicationItems": {
+            "type": "array",
+            "description": "The publication item ids referenced by this publication.",
+            "default": [],
+            "items": {
+              "type": "object",
+              "required": [
+                "type",
+                "accession"
+              ],
+              "description": "A publication item, defined by a qualifier and a native accession, e.g. pubmed id.",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "description": "The type qualifier of this publication item.",
+                  "enum": [
+                    "doi",
+                    "pubmed",
+                    "uri"
+                  ],
+                  "default": "doi"
+                },
+                "accession": {
+                  "type": "string",
+                  "description": "The native accession id for this publication item."
+                }
+              }
+            }
+          }
+        }
+      },
+      "x-mztab-example": "MTD\tpublication[1]\tpubmed:21063943|doi:10.1007/978-1-60761-987-1_6\nMTD\tpublication[2]\tpubmed:20615486|doi:10.1016/j.jprot.2010.06.008\n"
+    },
+    "uri": {
+      "type": "array",
+      "description": "A URI pointing to the file\u2019s source data (e.g., a MetaboLights records).",
+      "default": [],
+      "items": {
+        "description": "A URI pointing to the file\u2019s source data (e.g., a MetaboLights records) or an external file with more details about the study design.",
+        "x-mztab-example": "MTD\turi[1]\thttps://www.ebi.ac.uk/metabolights/MTBLS517\n\u2026\nMTD\texternal_study_uri[1]\thttps://www.ebi.ac.uk/metabolights/MTBLS517/files/i_Investigation.txt\n",
+        "type": "object",
+        "x-mztab-serialize-by-id": "true",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1
+          },
+          "value": {
+            "type": "string",
+            "description": "The URI pointing to the external resource.",
+            "format": "uri"
+          }
+        }
+      },
+      "x-mztab-example": "MTD\turi[1]\thttps://www.ebi.ac.uk/metabolights/MTBLS517\n"
+    },
+    "external_study_uri": {
+      "type": "array",
+      "description": "A URI pointing to an external file with more details about the study design (e.g., an ISA-TAB file).",
+      "default": [],
+      "items": {
+        "description": "A URI pointing to the file\u2019s source data (e.g., a MetaboLights records) or an external file with more details about the study design.",
+        "x-mztab-example": "MTD\turi[1]\thttps://www.ebi.ac.uk/metabolights/MTBLS517\n\u2026\nMTD\texternal_study_uri[1]\thttps://www.ebi.ac.uk/metabolights/MTBLS517/files/i_Investigation.txt\n",
+        "type": "object",
+        "x-mztab-serialize-by-id": "true",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1
+          },
+          "value": {
+            "type": "string",
+            "description": "The URI pointing to the external resource.",
+            "format": "uri"
+          }
+        }
+      },
+      "x-mztab-example": "MTD\texternal_study_uri[1]\thttps://www.ebi.ac.uk/metabolights/MTBLS517/files/i_Investigation.txt\n"
+    },
+    "instrument": {
+      "type": "array",
+      "description": "The name, source, analyzer and detector of the instruments used in the experiment. Multiple instruments are numbered [1-n].",
+      "default": [],
+      "items": {
+        "description": "The name, source, analyzer and detector of the instruments used in the experiment. Multiple instruments are numbered [1-n].",
+        "x-mztab-example": "MTD\tinstrument[1]-name\t[MS, MS:1000449, LTQ Orbitrap,]\nMTD\tinstrument[1]-source\t[MS, MS:1000073, ESI,]\n\u2026\nMTD\tinstrument[2]-source\t[MS, MS:1000598, ETD,]\nMTD\tinstrument[1]-analyzer[1]\t[MS, MS:1000291, linear ion trap,]\n\u2026\nMTD\tinstrument[2]-analyzer[1]\t[MS, MS:1000484, orbitrap,]\nMTD\tinstrument[1]-detector\t[MS, MS:1000253, electron multiplier,]\n\u2026\nMTD\tinstrument[2]-detector\t[MS, MS:1000348, focal plane collector,]\n",
+        "x-mztab-serialize-by-id": "true",
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1
+          },
+          "name": {
+            "description": "mzTab makes use of CV parameters. As mzTab is expected to be used in several experimental environments where parameters might not yet be available for the generated scores etc. all parameters can either report CV parameters or user parameters that only contain a name and a value.\nParameters are always reported as [CV label, accession, name, value]. Any field that is not available MUST be left empty.\n",
+            "x-mztab-example": "[MS, MS:1001477, SpectraST,]\n[,,A user parameter, The value]\n",
+            "type": "object",
+            "required": [
+              "name",
+              "value"
+            ],
+            "properties": {
+              "id": {
+                "type": "integer",
+                "format": "int32",
+                "minimum": 1
+              },
+              "cv_label": {
+                "type": "string",
+                "default": ""
+              },
+              "cv_accession": {
+                "type": "string",
+                "default": ""
+              },
+              "name": {
+                "type": "string"
+              },
+              "value": {
+                "type": "string",
+                "default": ""
+              }
+            }
+          },
+          "source": {
+            "description": "mzTab makes use of CV parameters. As mzTab is expected to be used in several experimental environments where parameters might not yet be available for the generated scores etc. all parameters can either report CV parameters or user parameters that only contain a name and a value.\nParameters are always reported as [CV label, accession, name, value]. Any field that is not available MUST be left empty.\n",
+            "x-mztab-example": "[MS, MS:1001477, SpectraST,]\n[,,A user parameter, The value]\n",
+            "type": "object",
+            "required": [
+              "name",
+              "value"
+            ],
+            "properties": {
+              "id": {
+                "type": "integer",
+                "format": "int32",
+                "minimum": 1
+              },
+              "cv_label": {
+                "type": "string",
+                "default": ""
+              },
+              "cv_accession": {
+                "type": "string",
+                "default": ""
+              },
+              "name": {
+                "type": "string"
+              },
+              "value": {
+                "type": "string",
+                "default": ""
+              }
+            }
+          },
+          "analyzer": {
+            "type": "array",
+            "description": "The instrument's mass analyzer, as defined by the parameter.",
+            "default": [],
+            "items": {
+              "description": "mzTab makes use of CV parameters. As mzTab is expected to be used in several experimental environments where parameters might not yet be available for the generated scores etc. all parameters can either report CV parameters or user parameters that only contain a name and a value.\nParameters are always reported as [CV label, accession, name, value]. Any field that is not available MUST be left empty.\n",
+              "x-mztab-example": "[MS, MS:1001477, SpectraST,]\n[,,A user parameter, The value]\n",
+              "type": "object",
+              "required": [
+                "name",
+                "value"
+              ],
+              "properties": {
+                "id": {
+                  "type": "integer",
+                  "format": "int32",
+                  "minimum": 1
+                },
+                "cv_label": {
+                  "type": "string",
+                  "default": ""
+                },
+                "cv_accession": {
+                  "type": "string",
+                  "default": ""
+                },
+                "name": {
+                  "type": "string"
+                },
+                "value": {
+                  "type": "string",
+                  "default": ""
+                }
+              }
+            }
+          },
+          "detector": {
+            "description": "mzTab makes use of CV parameters. As mzTab is expected to be used in several experimental environments where parameters might not yet be available for the generated scores etc. all parameters can either report CV parameters or user parameters that only contain a name and a value.\nParameters are always reported as [CV label, accession, name, value]. Any field that is not available MUST be left empty.\n",
+            "x-mztab-example": "[MS, MS:1001477, SpectraST,]\n[,,A user parameter, The value]\n",
+            "type": "object",
+            "required": [
+              "name",
+              "value"
+            ],
+            "properties": {
+              "id": {
+                "type": "integer",
+                "format": "int32",
+                "minimum": 1
+              },
+              "cv_label": {
+                "type": "string",
+                "default": ""
+              },
+              "cv_accession": {
+                "type": "string",
+                "default": ""
+              },
+              "name": {
+                "type": "string"
+              },
+              "value": {
+                "type": "string",
+                "default": ""
+              }
+            }
+          }
+        }
+      },
+      "x-mztab-example": "MTD\tinstrument[1]-name\t[MS, MS:1000449, LTQ Orbitrap,]\nMTD\tinstrument[1]-source\t[MS, MS:1000073, ESI,]\n\u2026\nMTD\tinstrument[2]-source\t[MS, MS:1000598, ETD,]\nMTD\tinstrument[1]-analyzer[1]\t[MS, MS:1000291, linear ion trap,]\n\u2026\nMTD\tinstrument[2]-analyzer[1]\t[MS, MS:1000484, orbitrap,]\nMTD\tinstrument[1]-detector\t[MS, MS:1000253, electron multiplier,]\n\u2026\nMTD\tinstrument[2]-detector\t[MS, MS:1000348, focal plane collector,]\n"
+    },
+    "quantification_method": {
+      "description": "mzTab makes use of CV parameters. As mzTab is expected to be used in several experimental environments where parameters might not yet be available for the generated scores etc. all parameters can either report CV parameters or user parameters that only contain a name and a value.\nParameters are always reported as [CV label, accession, name, value]. Any field that is not available MUST be left empty.\n",
+      "x-mztab-example": "[MS, MS:1001477, SpectraST,]\n[,,A user parameter, The value]\n",
+      "type": "object",
+      "required": [
+        "name",
+        "value"
+      ],
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 1
+        },
+        "cv_label": {
+          "type": "string",
+          "default": ""
+        },
+        "cv_accession": {
+          "type": "string",
+          "default": ""
+        },
+        "name": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string",
+          "default": ""
+        }
+      }
+    },
+    "sample": {
+      "type": "array",
+      "description": "Specification of sample.\n(empty) name: A name for each sample to serve as a list of the samples that MUST be reported in the following tables. Samples MUST be reported if a statistical design is being captured (i.e. bio or tech replicates). If the type of replicates are not known, samples SHOULD NOT be reported. \nspecies: The respective species of the samples analysed. For more complex cases, such as metagenomics, optional columns and userParams should be used. \ntissue: The respective tissue(s) of the sample. \ncell_type: The respective cell type(s) of the sample. \ndisease: The respective disease(s) of the sample. \ndescription: A human readable description of the sample. \ncustom: Custom parameters describing the sample\u2019s additional properties. Dates MUST be provided in ISO-8601 format.\n",
+      "default": [],
+      "items": {
+        "description": "Specification of sample.\n(empty) name: A name for each sample to serve as a list of the samples that MUST be reported in the following tables. Samples MUST be reported if a statistical design is being captured (i.e. bio or tech replicates). If the type of replicates are not known, samples SHOULD NOT be reported. \nspecies: The respective species of the samples analysed. For more complex cases, such as metagenomics, optional columns and userParams should be used. \ntissue: The respective tissue(s) of the sample. \ncell_type: The respective cell type(s) of the sample. \ndisease: The respective disease(s) of the sample. \ndescription: A human readable description of the sample. \ncustom: Custom parameters describing the sample's additional properties. Dates MUST be provided in ISO-8601 format.\n",
+        "x-mztab-example": "COM\tExperiment where all samples consisted of the same two species\nMTD\tsample[1]\tindividual number 1\nMTD\tsample[1]-species[1]\t[NCBITaxon, NCBITaxon:9606, Homo sapiens, ]\nMTD\tsample[1]-tissue[1]\t[BTO, BTO:0000759, liver, ]\nMTD\tsample[1]-cell_type[1]\t[CL, CL:0000182, hepatocyte, ]\nMTD\tsample[1]-disease[1]\t[DOID, DOID:684, hepatocellular carcinoma, ]\nMTD\tsample[1]-disease[2]\t[DOID, DOID:9451, alcoholic fatty liver, ]\nMTD\tsample[1]-description\tHepatocellular carcinoma samples.\nMTD\tsample[1]-custom[1]\t[,,Extraction date, 2011-12-21]\nMTD\tsample[1]-custom[2]\t[,,Extraction reason, liver biopsy]\nMTD\tsample[2]\tindividual number 2\nMTD\tsample[2]-species[1]\t[NCBITaxon, NCBITaxon:9606, Homo sapiens, ]\nMTD\tsample[2]-tissue[1]\t[BTO, BTO:0000759, liver, ]\nMTD\tsample[2]-cell_type[1]\t[CL, CL:0000182, hepatocyte, ]\nMTD\tsample[2]-description\tHealthy control samples.\n",
+        "x-mztab-serialize-by-id": "true",
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1
+          },
+          "name": {
+            "type": "string",
+            "description": "The sample's name."
+          },
+          "custom": {
+            "type": "array",
+            "description": "Additional user or cv parameters.",
+            "default": [],
+            "items": {
+              "description": "mzTab makes use of CV parameters. As mzTab is expected to be used in several experimental environments where parameters might not yet be available for the generated scores etc. all parameters can either report CV parameters or user parameters that only contain a name and a value.\nParameters are always reported as [CV label, accession, name, value]. Any field that is not available MUST be left empty.\n",
+              "x-mztab-example": "[MS, MS:1001477, SpectraST,]\n[,,A user parameter, The value]\n",
+              "type": "object",
+              "required": [
+                "name",
+                "value"
+              ],
+              "properties": {
+                "id": {
+                  "type": "integer",
+                  "format": "int32",
+                  "minimum": 1
+                },
+                "cv_label": {
+                  "type": "string",
+                  "default": ""
+                },
+                "cv_accession": {
+                  "type": "string",
+                  "default": ""
+                },
+                "name": {
+                  "type": "string"
+                },
+                "value": {
+                  "type": "string",
+                  "default": ""
+                }
+              }
+            }
+          },
+          "species": {
+            "type": "array",
+            "description": "Biological species information on the sample.",
+            "default": [],
+            "items": {
+              "description": "mzTab makes use of CV parameters. As mzTab is expected to be used in several experimental environments where parameters might not yet be available for the generated scores etc. all parameters can either report CV parameters or user parameters that only contain a name and a value.\nParameters are always reported as [CV label, accession, name, value]. Any field that is not available MUST be left empty.\n",
+              "x-mztab-example": "[MS, MS:1001477, SpectraST,]\n[,,A user parameter, The value]\n",
+              "type": "object",
+              "required": [
+                "name",
+                "value"
+              ],
+              "properties": {
+                "id": {
+                  "type": "integer",
+                  "format": "int32",
+                  "minimum": 1
+                },
+                "cv_label": {
+                  "type": "string",
+                  "default": ""
+                },
+                "cv_accession": {
+                  "type": "string",
+                  "default": ""
+                },
+                "name": {
+                  "type": "string"
+                },
+                "value": {
+                  "type": "string",
+                  "default": ""
+                }
+              }
+            }
+          },
+          "tissue": {
+            "type": "array",
+            "description": "Biological tissue information on the sample.",
+            "default": [],
+            "items": {
+              "description": "mzTab makes use of CV parameters. As mzTab is expected to be used in several experimental environments where parameters might not yet be available for the generated scores etc. all parameters can either report CV parameters or user parameters that only contain a name and a value.\nParameters are always reported as [CV label, accession, name, value]. Any field that is not available MUST be left empty.\n",
+              "x-mztab-example": "[MS, MS:1001477, SpectraST,]\n[,,A user parameter, The value]\n",
+              "type": "object",
+              "required": [
+                "name",
+                "value"
+              ],
+              "properties": {
+                "id": {
+                  "type": "integer",
+                  "format": "int32",
+                  "minimum": 1
+                },
+                "cv_label": {
+                  "type": "string",
+                  "default": ""
+                },
+                "cv_accession": {
+                  "type": "string",
+                  "default": ""
+                },
+                "name": {
+                  "type": "string"
+                },
+                "value": {
+                  "type": "string",
+                  "default": ""
+                }
+              }
+            }
+          },
+          "cell_type": {
+            "type": "array",
+            "description": "Biological cell type information on the sample.",
+            "default": [],
+            "items": {
+              "description": "mzTab makes use of CV parameters. As mzTab is expected to be used in several experimental environments where parameters might not yet be available for the generated scores etc. all parameters can either report CV parameters or user parameters that only contain a name and a value.\nParameters are always reported as [CV label, accession, name, value]. Any field that is not available MUST be left empty.\n",
+              "x-mztab-example": "[MS, MS:1001477, SpectraST,]\n[,,A user parameter, The value]\n",
+              "type": "object",
+              "required": [
+                "name",
+                "value"
+              ],
+              "properties": {
+                "id": {
+                  "type": "integer",
+                  "format": "int32",
+                  "minimum": 1
+                },
+                "cv_label": {
+                  "type": "string",
+                  "default": ""
+                },
+                "cv_accession": {
+                  "type": "string",
+                  "default": ""
+                },
+                "name": {
+                  "type": "string"
+                },
+                "value": {
+                  "type": "string",
+                  "default": ""
+                }
+              }
+            }
+          },
+          "disease": {
+            "type": "array",
+            "description": "Disease information on the sample.",
+            "default": [],
+            "items": {
+              "description": "mzTab makes use of CV parameters. As mzTab is expected to be used in several experimental environments where parameters might not yet be available for the generated scores etc. all parameters can either report CV parameters or user parameters that only contain a name and a value.\nParameters are always reported as [CV label, accession, name, value]. Any field that is not available MUST be left empty.\n",
+              "x-mztab-example": "[MS, MS:1001477, SpectraST,]\n[,,A user parameter, The value]\n",
+              "type": "object",
+              "required": [
+                "name",
+                "value"
+              ],
+              "properties": {
+                "id": {
+                  "type": "integer",
+                  "format": "int32",
+                  "minimum": 1
+                },
+                "cv_label": {
+                  "type": "string",
+                  "default": ""
+                },
+                "cv_accession": {
+                  "type": "string",
+                  "default": ""
+                },
+                "name": {
+                  "type": "string"
+                },
+                "value": {
+                  "type": "string",
+                  "default": ""
+                }
+              }
+            }
+          },
+          "description": {
+            "description": "A free form description of the sample.",
+            "type": "string"
+          }
+        }
+      },
+      "x-mztab-example": "COM\tExperiment where all samples consisted of the same two species\nMTD\tsample[1]\tindividual number 1\nMTD\tsample[1]-species[1]\t[NCBITaxon, NCBITaxon:9606, Homo sapiens, ]\nMTD\tsample[1]-tissue[1]\t[BTO, BTO:0000759, liver, ]\nMTD\tsample[1]-cell_type[1]\t[CL, CL:0000182, hepatocyte, ]\nMTD\tsample[1]-disease[1]\t[DOID, DOID:684, hepatocellular carcinoma, ]\nMTD\tsample[1]-disease[2]\t[DOID, DOID:9451, alcoholic fatty liver, ]\nMTD\tsample[1]-description\tHepatocellular carcinoma samples.\nMTD\tsample[1]-custom[1]\t[,,Extraction date, 2011-12-21]\nMTD\tsample[1]-custom[2]\t[,,Extraction reason, liver biopsy]\nMTD\tsample[2]\tindividual number 2\nMTD\tsample[2]-species[1]\t[NCBITaxon, NCBITaxon:9606, Homo sapiens, ]\nMTD\tsample[2]-tissue[1]\t[BTO, BTO:0000759, liver, ]\nMTD\tsample[2]-cell_type[1]\t[CL, CL:0000182, hepatocyte, ]\nMTD\tsample[2]-description\tHealthy control samples.\n"
+    },
+    "sample_processing": {
+      "type": "array",
+      "description": "A list of parameters describing a sample processing, preparation or handling step similar to a biological or analytical methods report. The order of the sample_processing items should reflect the order these processing steps were performed in. If multiple parameters are given for a step these MUST be separated by a \u201c|\u201d. If derivatization was performed, it MUST be reported here as a general step, e.g. 'silylation' and the actual derivatization agens MUST be specified in the Section 6.2.54 part.\n",
+      "default": [],
+      "items": {
+        "description": "A list of parameters describing a sample processing, preparation or handling step similar to a biological or analytical methods report. The order of the sample_processing items should reflect the order these processing steps were performed in. If multiple parameters are given for a step these MUST be separated by a \u201c|\u201d. If derivatization was performed, it MUST be reported here as a general step, e.g. 'silylation' and the actual derivatization agens MUST be specified in the Section 6.2.54 part.      \n",
+        "x-mztab-example": "MTD\tsample_processing[1]\t[MSIO, MSIO:0000107, metabolism quenching using precooled 60 percent methanol ammonium bicarbonate buffer,]\nMTD\tsample_processing[2]\t[MSIO, MSIO:0000146, centrifugation,]\nMTD\tsample_processing[3]\t[MSIO, MSIO:0000141, metabolite extraction,]\nMTD\tsample_processing[4]\t[MSIO, MSIO:0000141, silylation,]\n",
+        "x-mztab-serialize-by-id": "true",
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1
+          },
+          "sampleProcessing": {
+            "type": "array",
+            "default": [],
+            "description": "Parameters specifiying sample processing that was applied within one step.",
+            "items": {
+              "description": "mzTab makes use of CV parameters. As mzTab is expected to be used in several experimental environments where parameters might not yet be available for the generated scores etc. all parameters can either report CV parameters or user parameters that only contain a name and a value.\nParameters are always reported as [CV label, accession, name, value]. Any field that is not available MUST be left empty.\n",
+              "x-mztab-example": "[MS, MS:1001477, SpectraST,]\n[,,A user parameter, The value]\n",
+              "type": "object",
+              "required": [
+                "name",
+                "value"
+              ],
+              "properties": {
+                "id": {
+                  "type": "integer",
+                  "format": "int32",
+                  "minimum": 1
+                },
+                "cv_label": {
+                  "type": "string",
+                  "default": ""
+                },
+                "cv_accession": {
+                  "type": "string",
+                  "default": ""
+                },
+                "name": {
+                  "type": "string"
+                },
+                "value": {
+                  "type": "string",
+                  "default": ""
+                }
+              }
+            }
+          }
+        }
+      },
+      "x-mztab-example": "MTD\tsample_processing[1]\t[MSIO, MSIO:0000107, metabolism quenching using precooled 60 percent methanol ammonium bicarbonate buffer,]\nMTD\tsample_processing[2]\t[MSIO, MSIO:0000146, centrifugation,]\nMTD\tsample_processing[3]\t[MSIO, MSIO:0000141, metabolite extraction,]\nMTD\tsample_processing[4]\t[MSIO, MSIO:0000141, silylation,]\n"
+    },
+    "software": {
+      "type": "array",
+      "description": "Software used to analyze the data and obtain the reported results. The parameter\u2019s value SHOULD contain the software\u2019s version. The order (numbering) should reflect the order in which the tools were used. A software setting used. This field MAY occur multiple times for a single software. The value of this field is deliberately set as a String, since there currently do not exist CV terms for every possible setting.",
+      "default": [],
+      "items": {
+        "description": "Software used to analyze the data and obtain the reported results. The parameter\u2019s value SHOULD contain the software\u2019s version. The order (numbering) should reflect the order in which the tools were used. A software setting used. This field MAY occur multiple times for a single software. The value of this field is deliberately set as a String, since there currently do not exist CV terms for every possible setting.\n",
+        "x-mztab-example": "MTD\tsoftware[1]\t[MS, MS:1002879, Progenesis QI, 3.0]\nMTD\tsoftware[1]-setting\tFragment tolerance = 0.1 Da\n\u2026\nMTD\tsoftware[2]-setting\tParent tolerance = 0.5 Da\n",
+        "x-mztab-serialize-by-id": "true",
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1
+          },
+          "parameter": {
+            "description": "mzTab makes use of CV parameters. As mzTab is expected to be used in several experimental environments where parameters might not yet be available for the generated scores etc. all parameters can either report CV parameters or user parameters that only contain a name and a value.\nParameters are always reported as [CV label, accession, name, value]. Any field that is not available MUST be left empty.\n",
+            "x-mztab-example": "[MS, MS:1001477, SpectraST,]\n[,,A user parameter, The value]\n",
+            "type": "object",
+            "required": [
+              "name",
+              "value"
+            ],
+            "properties": {
+              "id": {
+                "type": "integer",
+                "format": "int32",
+                "minimum": 1
+              },
+              "cv_label": {
+                "type": "string",
+                "default": ""
+              },
+              "cv_accession": {
+                "type": "string",
+                "default": ""
+              },
+              "name": {
+                "type": "string"
+              },
+              "value": {
+                "type": "string",
+                "default": ""
+              }
+            }
+          },
+          "setting": {
+            "type": "array",
+            "default": [],
+            "description": "A software setting used. This field MAY occur multiple times for a\nsingle software. The value of this field is deliberately set as a\nString, since there currently do not exist cvParams for every\npossible setting.\n",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "x-mztab-example": "MTD\tsoftware[1]\t[MS, MS:1002879, Progenesis QI, 3.0]\nMTD\tsoftware[1]-setting\tFragment tolerance = 0.1 Da\n\u2026\nMTD\tsoftware[2]-setting\tParent tolerance = 0.5 Da\n"
+    },
+    "derivatization_agent": {
+      "type": "array",
+      "description": "A description of derivatization agents applied to small molecules, using userParams or CV terms where possible.",
+      "default": [],
+      "items": {
+        "description": "mzTab makes use of CV parameters. As mzTab is expected to be used in several experimental environments where parameters might not yet be available for the generated scores etc. all parameters can either report CV parameters or user parameters that only contain a name and a value.\nParameters are always reported as [CV label, accession, name, value]. Any field that is not available MUST be left empty.\n",
+        "x-mztab-example": "[MS, MS:1001477, SpectraST,]\n[,,A user parameter, The value]\n",
+        "type": "object",
+        "required": [
+          "name",
+          "value"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1
+          },
+          "cv_label": {
+            "type": "string",
+            "default": ""
+          },
+          "cv_accession": {
+            "type": "string",
+            "default": ""
+          },
+          "name": {
+            "type": "string"
+          },
+          "value": {
+            "type": "string",
+            "default": ""
+          }
+        }
+      },
+      "x-mztab-example": "MTD\tderivatization_agent[1]\t[XLMOD, XLMOD:07014, N-methyl-N-t-butyldimethylsilyltrifluoroacetamide, ]\n"
+    },
+    "ms_run": {
+      "type": "array",
+      "description": "Specification of ms_run. \nlocation: Location of the external data file e.g. raw files on which analysis has been performed. If the actual location of the MS run is unknown, a \u201cnull\u201d MUST be used as a place holder value, since the [1-n] cardinality is referenced elsewhere. If pre-fractionation has been performed, then [1-n] ms_runs SHOULD be created per assay. \ninstrument_ref: If different instruments are used in different runs, instrument_ref can be used to link a specific instrument to a specific run. \nformat: Parameter specifying the data format of the external MS data file. If ms_run[1-n]-format is present, ms_run[1-n]-id_format SHOULD also be present, following the parameters specified in Table 1. \nid_format: Parameter specifying the id format used in the external data file. If ms_run[1-n]-id_format is present, ms_run[1-n]-format SHOULD also be present.\nfragmentation_method: The type(s) of fragmentation used in a given ms run.\nscan_polarity: The polarity mode of a given run. Usually only one value SHOULD be given here except for the case of mixed polarity runs.\nhash: Hash value of the corresponding external MS data file defined in ms_run[1-n]-location. If ms_run[1-n]-hash is present, ms_run[1-n]-hash_method SHOULD also be present.\nhash_method: A parameter specifying the hash methods used to generate the String in ms_run[1-n]-hash. Specifics of the hash method used MAY follow the definitions of the mzML format. If ms_run[1-n]-hash is present, ms_run[1-n]-hash_method SHOULD also be present.\n",
+      "default": [],
+      "items": {
+        "description": "Specification of ms_run. \nlocation: Location of the external data file e.g. raw files on which analysis has been performed. If the actual location of the MS run is unknown, a \u201cnull\u201d MUST be used as a place holder value, since the [1-n] cardinality is referenced elsewhere. If pre-fractionation has been performed, then [1-n] ms_runs SHOULD be created per assay. \ninstrument_ref: If different instruments are used in different runs, instrument_ref can be used to link a specific instrument to a specific run. \nformat: Parameter specifying the data format of the external MS data file. If ms_run[1-n]-format is present, ms_run[1-n]-id_format SHOULD also be present, following the parameters specified in Table 1. \nid_format: Parameter specifying the id format used in the external data file. If ms_run[1-n]-id_format is present, ms_run[1-n]-format SHOULD also be present.\nfragmentation_method: The type(s) of fragmentation used in a given ms run.\nscan_polarity: The polarity mode of a given run. Usually only one value SHOULD be given here except for the case of mixed polarity runs.\nhash: Hash value of the corresponding external MS data file defined in ms_run[1-n]-location. If ms_run[1-n]-hash is present, ms_run[1-n]-hash_method SHOULD also be present.\nhash_method: A parameter specifying the hash methods used to generate the String in ms_run[1-n]-hash. Specifics of the hash method used MAY follow the definitions of the mzML format. If ms_run[1-n]-hash is present, ms_run[1-n]-hash_method SHOULD also be present.\n",
+        "x-mztab-example": "COM\tlocation can be a local or remote URI\nMTD\tms_run[1]-location\tfile:///C:/path/to/my/file.mzML\nMTD\tms_run[1]-instrument_ref\tinstrument[1]\nMTD\tms_run[1]-format\t[MS, MS:1000584, mzML file, ]\nMTD\tms_run[1]-id_format\t[MS, MS:1000530, mzML unique identifier, ]\nMTD\tms_run[1]-fragmentation_method[1]\t[MS, MS:1000133, CID, ]\nCOM\tfor mixed polarity scan scenarios\nMTD\tms_run[1]-scan_polarity[1]\t[MS, MS:1000130, positive scan, ]\nMTD\tms_run[1]-scan_polarity[2]\t[MS, MS:1000129, negative scan, ]\nMTD\tms_run[1]-hash_method\t[MS, MS:1000569, SHA-1, ]\nMTD\tms_run[1]-hash\tde9f2c7fd25e1b3afad3e85a0bd17d9b100db4b3\n",
+        "x-mztab-serialize-by-id": "true",
+        "type": "object",
+        "required": [
+          "id",
+          "location"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1
+          },
+          "name": {
+            "type": "string",
+            "description": "The msRun's name."
+          },
+          "location": {
+            "type": "string",
+            "format": "uri",
+            "description": "The msRun's location URI."
+          },
+          "instrument_ref": {
+            "description": "The name, source, analyzer and detector of the instruments used in the experiment. Multiple instruments are numbered [1-n].",
+            "x-mztab-example": "MTD\tinstrument[1]-name\t[MS, MS:1000449, LTQ Orbitrap,]\nMTD\tinstrument[1]-source\t[MS, MS:1000073, ESI,]\n\u2026\nMTD\tinstrument[2]-source\t[MS, MS:1000598, ETD,]\nMTD\tinstrument[1]-analyzer[1]\t[MS, MS:1000291, linear ion trap,]\n\u2026\nMTD\tinstrument[2]-analyzer[1]\t[MS, MS:1000484, orbitrap,]\nMTD\tinstrument[1]-detector\t[MS, MS:1000253, electron multiplier,]\n\u2026\nMTD\tinstrument[2]-detector\t[MS, MS:1000348, focal plane collector,]\n",
+            "x-mztab-serialize-by-id": "true",
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "integer",
+                "format": "int32",
+                "minimum": 1
+              },
+              "name": {
+                "description": "mzTab makes use of CV parameters. As mzTab is expected to be used in several experimental environments where parameters might not yet be available for the generated scores etc. all parameters can either report CV parameters or user parameters that only contain a name and a value.\nParameters are always reported as [CV label, accession, name, value]. Any field that is not available MUST be left empty.\n",
+                "x-mztab-example": "[MS, MS:1001477, SpectraST,]\n[,,A user parameter, The value]\n",
+                "type": "object",
+                "required": [
+                  "name",
+                  "value"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "integer",
+                    "format": "int32",
+                    "minimum": 1
+                  },
+                  "cv_label": {
+                    "type": "string",
+                    "default": ""
+                  },
+                  "cv_accession": {
+                    "type": "string",
+                    "default": ""
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "value": {
+                    "type": "string",
+                    "default": ""
+                  }
+                }
+              },
+              "source": {
+                "description": "mzTab makes use of CV parameters. As mzTab is expected to be used in several experimental environments where parameters might not yet be available for the generated scores etc. all parameters can either report CV parameters or user parameters that only contain a name and a value.\nParameters are always reported as [CV label, accession, name, value]. Any field that is not available MUST be left empty.\n",
+                "x-mztab-example": "[MS, MS:1001477, SpectraST,]\n[,,A user parameter, The value]\n",
+                "type": "object",
+                "required": [
+                  "name",
+                  "value"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "integer",
+                    "format": "int32",
+                    "minimum": 1
+                  },
+                  "cv_label": {
+                    "type": "string",
+                    "default": ""
+                  },
+                  "cv_accession": {
+                    "type": "string",
+                    "default": ""
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "value": {
+                    "type": "string",
+                    "default": ""
+                  }
+                }
+              },
+              "analyzer": {
+                "type": "array",
+                "description": "The instrument's mass analyzer, as defined by the parameter.",
+                "default": [],
+                "items": {
+                  "description": "mzTab makes use of CV parameters. As mzTab is expected to be used in several experimental environments where parameters might not yet be available for the generated scores etc. all parameters can either report CV parameters or user parameters that only contain a name and a value.\nParameters are always reported as [CV label, accession, name, value]. Any field that is not available MUST be left empty.\n",
+                  "x-mztab-example": "[MS, MS:1001477, SpectraST,]\n[,,A user parameter, The value]\n",
+                  "type": "object",
+                  "required": [
+                    "name",
+                    "value"
+                  ],
+                  "properties": {
+                    "id": {
+                      "type": "integer",
+                      "format": "int32",
+                      "minimum": 1
+                    },
+                    "cv_label": {
+                      "type": "string",
+                      "default": ""
+                    },
+                    "cv_accession": {
+                      "type": "string",
+                      "default": ""
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "value": {
+                      "type": "string",
+                      "default": ""
+                    }
+                  }
+                }
+              },
+              "detector": {
+                "description": "mzTab makes use of CV parameters. As mzTab is expected to be used in several experimental environments where parameters might not yet be available for the generated scores etc. all parameters can either report CV parameters or user parameters that only contain a name and a value.\nParameters are always reported as [CV label, accession, name, value]. Any field that is not available MUST be left empty.\n",
+                "x-mztab-example": "[MS, MS:1001477, SpectraST,]\n[,,A user parameter, The value]\n",
+                "type": "object",
+                "required": [
+                  "name",
+                  "value"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "integer",
+                    "format": "int32",
+                    "minimum": 1
+                  },
+                  "cv_label": {
+                    "type": "string",
+                    "default": ""
+                  },
+                  "cv_accession": {
+                    "type": "string",
+                    "default": ""
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "value": {
+                    "type": "string",
+                    "default": ""
+                  }
+                }
+              }
+            }
+          },
+          "format": {
+            "description": "mzTab makes use of CV parameters. As mzTab is expected to be used in several experimental environments where parameters might not yet be available for the generated scores etc. all parameters can either report CV parameters or user parameters that only contain a name and a value.\nParameters are always reported as [CV label, accession, name, value]. Any field that is not available MUST be left empty.\n",
+            "x-mztab-example": "[MS, MS:1001477, SpectraST,]\n[,,A user parameter, The value]\n",
+            "type": "object",
+            "required": [
+              "name",
+              "value"
+            ],
+            "properties": {
+              "id": {
+                "type": "integer",
+                "format": "int32",
+                "minimum": 1
+              },
+              "cv_label": {
+                "type": "string",
+                "default": ""
+              },
+              "cv_accession": {
+                "type": "string",
+                "default": ""
+              },
+              "name": {
+                "type": "string"
+              },
+              "value": {
+                "type": "string",
+                "default": ""
+              }
+            }
+          },
+          "id_format": {
+            "description": "mzTab makes use of CV parameters. As mzTab is expected to be used in several experimental environments where parameters might not yet be available for the generated scores etc. all parameters can either report CV parameters or user parameters that only contain a name and a value.\nParameters are always reported as [CV label, accession, name, value]. Any field that is not available MUST be left empty.\n",
+            "x-mztab-example": "[MS, MS:1001477, SpectraST,]\n[,,A user parameter, The value]\n",
+            "type": "object",
+            "required": [
+              "name",
+              "value"
+            ],
+            "properties": {
+              "id": {
+                "type": "integer",
+                "format": "int32",
+                "minimum": 1
+              },
+              "cv_label": {
+                "type": "string",
+                "default": ""
+              },
+              "cv_accession": {
+                "type": "string",
+                "default": ""
+              },
+              "name": {
+                "type": "string"
+              },
+              "value": {
+                "type": "string",
+                "default": ""
+              }
+            }
+          },
+          "fragmentation_method": {
+            "type": "array",
+            "default": [],
+            "items": {
+              "description": "mzTab makes use of CV parameters. As mzTab is expected to be used in several experimental environments where parameters might not yet be available for the generated scores etc. all parameters can either report CV parameters or user parameters that only contain a name and a value.\nParameters are always reported as [CV label, accession, name, value]. Any field that is not available MUST be left empty.\n",
+              "x-mztab-example": "[MS, MS:1001477, SpectraST,]\n[,,A user parameter, The value]\n",
+              "type": "object",
+              "required": [
+                "name",
+                "value"
+              ],
+              "properties": {
+                "id": {
+                  "type": "integer",
+                  "format": "int32",
+                  "minimum": 1
+                },
+                "cv_label": {
+                  "type": "string",
+                  "default": ""
+                },
+                "cv_accession": {
+                  "type": "string",
+                  "default": ""
+                },
+                "name": {
+                  "type": "string"
+                },
+                "value": {
+                  "type": "string",
+                  "default": ""
+                }
+              }
+            },
+            "description": "The fragmentation methods applied during this msRun."
+          },
+          "scan_polarity": {
+            "type": "array",
+            "default": [],
+            "items": {
+              "description": "mzTab makes use of CV parameters. As mzTab is expected to be used in several experimental environments where parameters might not yet be available for the generated scores etc. all parameters can either report CV parameters or user parameters that only contain a name and a value.\nParameters are always reported as [CV label, accession, name, value]. Any field that is not available MUST be left empty.\n",
+              "x-mztab-example": "[MS, MS:1001477, SpectraST,]\n[,,A user parameter, The value]\n",
+              "type": "object",
+              "required": [
+                "name",
+                "value"
+              ],
+              "properties": {
+                "id": {
+                  "type": "integer",
+                  "format": "int32",
+                  "minimum": 1
+                },
+                "cv_label": {
+                  "type": "string",
+                  "default": ""
+                },
+                "cv_accession": {
+                  "type": "string",
+                  "default": ""
+                },
+                "name": {
+                  "type": "string"
+                },
+                "value": {
+                  "type": "string",
+                  "default": ""
+                }
+              }
+            },
+            "description": "The scan polarity/polarities used during this msRun."
+          },
+          "hash": {
+            "type": "string",
+            "description": "The file hash value of this msRun's data file."
+          },
+          "hash_method": {
+            "description": "mzTab makes use of CV parameters. As mzTab is expected to be used in several experimental environments where parameters might not yet be available for the generated scores etc. all parameters can either report CV parameters or user parameters that only contain a name and a value.\nParameters are always reported as [CV label, accession, name, value]. Any field that is not available MUST be left empty.\n",
+            "x-mztab-example": "[MS, MS:1001477, SpectraST,]\n[,,A user parameter, The value]\n",
+            "type": "object",
+            "required": [
+              "name",
+              "value"
+            ],
+            "properties": {
+              "id": {
+                "type": "integer",
+                "format": "int32",
+                "minimum": 1
+              },
+              "cv_label": {
+                "type": "string",
+                "default": ""
+              },
+              "cv_accession": {
+                "type": "string",
+                "default": ""
+              },
+              "name": {
+                "type": "string"
+              },
+              "value": {
+                "type": "string",
+                "default": ""
+              }
+            }
+          }
+        }
+      },
+      "x-mztab-example": "COM\tlocation can be a local or remote URI\nMTD\tms_run[1]-location\tfile:///C:/path/to/my/file.mzML\nMTD\tms_run[1]-instrument_ref\tinstrument[1]\nMTD\tms_run[1]-format\t[MS, MS:1000584, mzML file, ]\nMTD\tms_run[1]-id_format\t[MS, MS:1000530, mzML unique identifier, ]\nMTD\tms_run[1]-fragmentation_method[1]\t[MS, MS:1000133, CID, ]\nCOM\tfor mixed polarity scan scenarios\nMTD\tms_run[1]-scan_polarity[1]\t[MS, MS:1000130, positive scan, ]\nMTD\tms_run[1]-scan_polarity[2]\t[MS, MS:1000129, negative scan, ]\nMTD\tms_run[1]-hash_method\t[MS, MS:1000569, SHA-1, ]\nMTD\tms_run[1]-hash\tde9f2c7fd25e1b3afad3e85a0bd17d9b100db4b3\n"
+    },
+    "assay": {
+      "type": "array",
+      "description": "Specification of assay.\n(empty) name: A name for each assay, to serve as a list of the assays that MUST be reported in the following tables. \ncustom: Additional custom parameters or values for a given assay. \nexternal_uri: An external reference uri to further information about the assay, for example via a reference to an object within an ISA-TAB file. \nsample_ref: An association from a given assay to the sample analysed. \nms_run_ref: An association from a given assay to the source MS run. All assays MUST reference exactly one ms_run unless a workflow with pre-fractionation is being encoded, in which case each assay MUST reference n ms_runs where n fractions have been collected. Multiple assays SHOULD reference the same ms_run to capture multiplexed experimental designs.\n",
+      "default": [],
+      "items": {
+        "description": "Specification of assay.\n(empty) name: A name for each assay, to serve as a list of the assays that MUST be reported in the following tables. \ncustom: Additional custom parameters or values for a given assay. \nexternal_uri: An external reference uri to further information about the assay, for example via a reference to an object within an ISA-TAB file. \nsample_ref: An association from a given assay to the sample analysed. \nms_run_ref: An association from a given assay to the source MS run. All assays MUST reference exactly one ms_run unless a workflow with pre-fractionation is being encoded, in which case each assay MUST reference n ms_runs where n fractions have been collected. Multiple assays SHOULD reference the same ms_run to capture multiplexed experimental designs.\n",
+        "x-mztab-example": "MTD\tassay[1]\tfirst assay\nMTD\tassay[1]-custom[1]\t[MS, , Assay operator, Fred Blogs]\nMTD\tassay[1]-external_uri\thttps://www.ebi.ac.uk/metabolights/MTBLS517/files/i_Investigation.txt?STUDYASSAY=a_e04_c18pos.txt\nMTD\tassay[1]-sample_ref\tsample[1]\nMTD\tassay[1]-ms_run_ref\tms_run[1]\n",
+        "x-mztab-serialize-by-id": "true",
+        "type": "object",
+        "required": [
+          "name",
+          "ms_run_ref"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1
+          },
+          "name": {
+            "type": "string",
+            "description": "The assay name."
+          },
+          "custom": {
+            "type": "array",
+            "default": [],
+            "items": {
+              "description": "mzTab makes use of CV parameters. As mzTab is expected to be used in several experimental environments where parameters might not yet be available for the generated scores etc. all parameters can either report CV parameters or user parameters that only contain a name and a value.\nParameters are always reported as [CV label, accession, name, value]. Any field that is not available MUST be left empty.\n",
+              "x-mztab-example": "[MS, MS:1001477, SpectraST,]\n[,,A user parameter, The value]\n",
+              "type": "object",
+              "required": [
+                "name",
+                "value"
+              ],
+              "properties": {
+                "id": {
+                  "type": "integer",
+                  "format": "int32",
+                  "minimum": 1
+                },
+                "cv_label": {
+                  "type": "string",
+                  "default": ""
+                },
+                "cv_accession": {
+                  "type": "string",
+                  "default": ""
+                },
+                "name": {
+                  "type": "string"
+                },
+                "value": {
+                  "type": "string",
+                  "default": ""
+                }
+              }
+            },
+            "description": "Additional user or cv parameters."
+          },
+          "external_uri": {
+            "type": "string",
+            "format": "uri",
+            "description": "An external URI to further information about this assay."
+          },
+          "sample_ref": {
+            "description": "Specification of sample.\n(empty) name: A name for each sample to serve as a list of the samples that MUST be reported in the following tables. Samples MUST be reported if a statistical design is being captured (i.e. bio or tech replicates). If the type of replicates are not known, samples SHOULD NOT be reported. \nspecies: The respective species of the samples analysed. For more complex cases, such as metagenomics, optional columns and userParams should be used. \ntissue: The respective tissue(s) of the sample. \ncell_type: The respective cell type(s) of the sample. \ndisease: The respective disease(s) of the sample. \ndescription: A human readable description of the sample. \ncustom: Custom parameters describing the sample's additional properties. Dates MUST be provided in ISO-8601 format.\n",
+            "x-mztab-example": "COM\tExperiment where all samples consisted of the same two species\nMTD\tsample[1]\tindividual number 1\nMTD\tsample[1]-species[1]\t[NCBITaxon, NCBITaxon:9606, Homo sapiens, ]\nMTD\tsample[1]-tissue[1]\t[BTO, BTO:0000759, liver, ]\nMTD\tsample[1]-cell_type[1]\t[CL, CL:0000182, hepatocyte, ]\nMTD\tsample[1]-disease[1]\t[DOID, DOID:684, hepatocellular carcinoma, ]\nMTD\tsample[1]-disease[2]\t[DOID, DOID:9451, alcoholic fatty liver, ]\nMTD\tsample[1]-description\tHepatocellular carcinoma samples.\nMTD\tsample[1]-custom[1]\t[,,Extraction date, 2011-12-21]\nMTD\tsample[1]-custom[2]\t[,,Extraction reason, liver biopsy]\nMTD\tsample[2]\tindividual number 2\nMTD\tsample[2]-species[1]\t[NCBITaxon, NCBITaxon:9606, Homo sapiens, ]\nMTD\tsample[2]-tissue[1]\t[BTO, BTO:0000759, liver, ]\nMTD\tsample[2]-cell_type[1]\t[CL, CL:0000182, hepatocyte, ]\nMTD\tsample[2]-description\tHealthy control samples.\n",
+            "x-mztab-serialize-by-id": "true",
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "integer",
+                "format": "int32",
+                "minimum": 1
+              },
+              "name": {
+                "type": "string",
+                "description": "The sample's name."
+              },
+              "custom": {
+                "type": "array",
+                "description": "Additional user or cv parameters.",
+                "default": [],
+                "items": {
+                  "description": "mzTab makes use of CV parameters. As mzTab is expected to be used in several experimental environments where parameters might not yet be available for the generated scores etc. all parameters can either report CV parameters or user parameters that only contain a name and a value.\nParameters are always reported as [CV label, accession, name, value]. Any field that is not available MUST be left empty.\n",
+                  "x-mztab-example": "[MS, MS:1001477, SpectraST,]\n[,,A user parameter, The value]\n",
+                  "type": "object",
+                  "required": [
+                    "name",
+                    "value"
+                  ],
+                  "properties": {
+                    "id": {
+                      "type": "integer",
+                      "format": "int32",
+                      "minimum": 1
+                    },
+                    "cv_label": {
+                      "type": "string",
+                      "default": ""
+                    },
+                    "cv_accession": {
+                      "type": "string",
+                      "default": ""
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "value": {
+                      "type": "string",
+                      "default": ""
+                    }
+                  }
+                }
+              },
+              "species": {
+                "type": "array",
+                "description": "Biological species information on the sample.",
+                "default": [],
+                "items": {
+                  "description": "mzTab makes use of CV parameters. As mzTab is expected to be used in several experimental environments where parameters might not yet be available for the generated scores etc. all parameters can either report CV parameters or user parameters that only contain a name and a value.\nParameters are always reported as [CV label, accession, name, value]. Any field that is not available MUST be left empty.\n",
+                  "x-mztab-example": "[MS, MS:1001477, SpectraST,]\n[,,A user parameter, The value]\n",
+                  "type": "object",
+                  "required": [
+                    "name",
+                    "value"
+                  ],
+                  "properties": {
+                    "id": {
+                      "type": "integer",
+                      "format": "int32",
+                      "minimum": 1
+                    },
+                    "cv_label": {
+                      "type": "string",
+                      "default": ""
+                    },
+                    "cv_accession": {
+                      "type": "string",
+                      "default": ""
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "value": {
+                      "type": "string",
+                      "default": ""
+                    }
+                  }
+                }
+              },
+              "tissue": {
+                "type": "array",
+                "description": "Biological tissue information on the sample.",
+                "default": [],
+                "items": {
+                  "description": "mzTab makes use of CV parameters. As mzTab is expected to be used in several experimental environments where parameters might not yet be available for the generated scores etc. all parameters can either report CV parameters or user parameters that only contain a name and a value.\nParameters are always reported as [CV label, accession, name, value]. Any field that is not available MUST be left empty.\n",
+                  "x-mztab-example": "[MS, MS:1001477, SpectraST,]\n[,,A user parameter, The value]\n",
+                  "type": "object",
+                  "required": [
+                    "name",
+                    "value"
+                  ],
+                  "properties": {
+                    "id": {
+                      "type": "integer",
+                      "format": "int32",
+                      "minimum": 1
+                    },
+                    "cv_label": {
+                      "type": "string",
+                      "default": ""
+                    },
+                    "cv_accession": {
+                      "type": "string",
+                      "default": ""
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "value": {
+                      "type": "string",
+                      "default": ""
+                    }
+                  }
+                }
+              },
+              "cell_type": {
+                "type": "array",
+                "description": "Biological cell type information on the sample.",
+                "default": [],
+                "items": {
+                  "description": "mzTab makes use of CV parameters. As mzTab is expected to be used in several experimental environments where parameters might not yet be available for the generated scores etc. all parameters can either report CV parameters or user parameters that only contain a name and a value.\nParameters are always reported as [CV label, accession, name, value]. Any field that is not available MUST be left empty.\n",
+                  "x-mztab-example": "[MS, MS:1001477, SpectraST,]\n[,,A user parameter, The value]\n",
+                  "type": "object",
+                  "required": [
+                    "name",
+                    "value"
+                  ],
+                  "properties": {
+                    "id": {
+                      "type": "integer",
+                      "format": "int32",
+                      "minimum": 1
+                    },
+                    "cv_label": {
+                      "type": "string",
+                      "default": ""
+                    },
+                    "cv_accession": {
+                      "type": "string",
+                      "default": ""
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "value": {
+                      "type": "string",
+                      "default": ""
+                    }
+                  }
+                }
+              },
+              "disease": {
+                "type": "array",
+                "description": "Disease information on the sample.",
+                "default": [],
+                "items": {
+                  "description": "mzTab makes use of CV parameters. As mzTab is expected to be used in several experimental environments where parameters might not yet be available for the generated scores etc. all parameters can either report CV parameters or user parameters that only contain a name and a value.\nParameters are always reported as [CV label, accession, name, value]. Any field that is not available MUST be left empty.\n",
+                  "x-mztab-example": "[MS, MS:1001477, SpectraST,]\n[,,A user parameter, The value]\n",
+                  "type": "object",
+                  "required": [
+                    "name",
+                    "value"
+                  ],
+                  "properties": {
+                    "id": {
+                      "type": "integer",
+                      "format": "int32",
+                      "minimum": 1
+                    },
+                    "cv_label": {
+                      "type": "string",
+                      "default": ""
+                    },
+                    "cv_accession": {
+                      "type": "string",
+                      "default": ""
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "value": {
+                      "type": "string",
+                      "default": ""
+                    }
+                  }
+                }
+              },
+              "description": {
+                "description": "A free form description of the sample.",
+                "type": "string"
+              }
+            }
+          },
+          "ms_run_ref": {
+            "type": "array",
+            "default": [],
+            "minItems": 1,
+            "items": {
+              "description": "Specification of ms_run. \nlocation: Location of the external data file e.g. raw files on which analysis has been performed. If the actual location of the MS run is unknown, a \u201cnull\u201d MUST be used as a place holder value, since the [1-n] cardinality is referenced elsewhere. If pre-fractionation has been performed, then [1-n] ms_runs SHOULD be created per assay. \ninstrument_ref: If different instruments are used in different runs, instrument_ref can be used to link a specific instrument to a specific run. \nformat: Parameter specifying the data format of the external MS data file. If ms_run[1-n]-format is present, ms_run[1-n]-id_format SHOULD also be present, following the parameters specified in Table 1. \nid_format: Parameter specifying the id format used in the external data file. If ms_run[1-n]-id_format is present, ms_run[1-n]-format SHOULD also be present.\nfragmentation_method: The type(s) of fragmentation used in a given ms run.\nscan_polarity: The polarity mode of a given run. Usually only one value SHOULD be given here except for the case of mixed polarity runs.\nhash: Hash value of the corresponding external MS data file defined in ms_run[1-n]-location. If ms_run[1-n]-hash is present, ms_run[1-n]-hash_method SHOULD also be present.\nhash_method: A parameter specifying the hash methods used to generate the String in ms_run[1-n]-hash. Specifics of the hash method used MAY follow the definitions of the mzML format. If ms_run[1-n]-hash is present, ms_run[1-n]-hash_method SHOULD also be present.\n",
+              "x-mztab-example": "COM\tlocation can be a local or remote URI\nMTD\tms_run[1]-location\tfile:///C:/path/to/my/file.mzML\nMTD\tms_run[1]-instrument_ref\tinstrument[1]\nMTD\tms_run[1]-format\t[MS, MS:1000584, mzML file, ]\nMTD\tms_run[1]-id_format\t[MS, MS:1000530, mzML unique identifier, ]\nMTD\tms_run[1]-fragmentation_method[1]\t[MS, MS:1000133, CID, ]\nCOM\tfor mixed polarity scan scenarios\nMTD\tms_run[1]-scan_polarity[1]\t[MS, MS:1000130, positive scan, ]\nMTD\tms_run[1]-scan_polarity[2]\t[MS, MS:1000129, negative scan, ]\nMTD\tms_run[1]-hash_method\t[MS, MS:1000569, SHA-1, ]\nMTD\tms_run[1]-hash\tde9f2c7fd25e1b3afad3e85a0bd17d9b100db4b3\n",
+              "x-mztab-serialize-by-id": "true",
+              "type": "object",
+              "required": [
+                "id",
+                "location"
+              ],
+              "properties": {
+                "id": {
+                  "type": "integer",
+                  "format": "int32",
+                  "minimum": 1
+                },
+                "name": {
+                  "type": "string",
+                  "description": "The msRun's name."
+                },
+                "location": {
+                  "type": "string",
+                  "format": "uri",
+                  "description": "The msRun's location URI."
+                },
+                "instrument_ref": {
+                  "description": "The name, source, analyzer and detector of the instruments used in the experiment. Multiple instruments are numbered [1-n].",
+                  "x-mztab-example": "MTD\tinstrument[1]-name\t[MS, MS:1000449, LTQ Orbitrap,]\nMTD\tinstrument[1]-source\t[MS, MS:1000073, ESI,]\n\u2026\nMTD\tinstrument[2]-source\t[MS, MS:1000598, ETD,]\nMTD\tinstrument[1]-analyzer[1]\t[MS, MS:1000291, linear ion trap,]\n\u2026\nMTD\tinstrument[2]-analyzer[1]\t[MS, MS:1000484, orbitrap,]\nMTD\tinstrument[1]-detector\t[MS, MS:1000253, electron multiplier,]\n\u2026\nMTD\tinstrument[2]-detector\t[MS, MS:1000348, focal plane collector,]\n",
+                  "x-mztab-serialize-by-id": "true",
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer",
+                      "format": "int32",
+                      "minimum": 1
+                    },
+                    "name": {
+                      "description": "mzTab makes use of CV parameters. As mzTab is expected to be used in several experimental environments where parameters might not yet be available for the generated scores etc. all parameters can either report CV parameters or user parameters that only contain a name and a value.\nParameters are always reported as [CV label, accession, name, value]. Any field that is not available MUST be left empty.\n",
+                      "x-mztab-example": "[MS, MS:1001477, SpectraST,]\n[,,A user parameter, The value]\n",
+                      "type": "object",
+                      "required": [
+                        "name",
+                        "value"
+                      ],
+                      "properties": {
+                        "id": {
+                          "type": "integer",
+                          "format": "int32",
+                          "minimum": 1
+                        },
+                        "cv_label": {
+                          "type": "string",
+                          "default": ""
+                        },
+                        "cv_accession": {
+                          "type": "string",
+                          "default": ""
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "value": {
+                          "type": "string",
+                          "default": ""
+                        }
+                      }
+                    },
+                    "source": {
+                      "description": "mzTab makes use of CV parameters. As mzTab is expected to be used in several experimental environments where parameters might not yet be available for the generated scores etc. all parameters can either report CV parameters or user parameters that only contain a name and a value.\nParameters are always reported as [CV label, accession, name, value]. Any field that is not available MUST be left empty.\n",
+                      "x-mztab-example": "[MS, MS:1001477, SpectraST,]\n[,,A user parameter, The value]\n",
+                      "type": "object",
+                      "required": [
+                        "name",
+                        "value"
+                      ],
+                      "properties": {
+                        "id": {
+                          "type": "integer",
+                          "format": "int32",
+                          "minimum": 1
+                        },
+                        "cv_label": {
+                          "type": "string",
+                          "default": ""
+                        },
+                        "cv_accession": {
+                          "type": "string",
+                          "default": ""
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "value": {
+                          "type": "string",
+                          "default": ""
+                        }
+                      }
+                    },
+                    "analyzer": {
+                      "type": "array",
+                      "description": "The instrument's mass analyzer, as defined by the parameter.",
+                      "default": [],
+                      "items": {
+                        "description": "mzTab makes use of CV parameters. As mzTab is expected to be used in several experimental environments where parameters might not yet be available for the generated scores etc. all parameters can either report CV parameters or user parameters that only contain a name and a value.\nParameters are always reported as [CV label, accession, name, value]. Any field that is not available MUST be left empty.\n",
+                        "x-mztab-example": "[MS, MS:1001477, SpectraST,]\n[,,A user parameter, The value]\n",
+                        "type": "object",
+                        "required": [
+                          "name",
+                          "value"
+                        ],
+                        "properties": {
+                          "id": {
+                            "type": "integer",
+                            "format": "int32",
+                            "minimum": 1
+                          },
+                          "cv_label": {
+                            "type": "string",
+                            "default": ""
+                          },
+                          "cv_accession": {
+                            "type": "string",
+                            "default": ""
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "value": {
+                            "type": "string",
+                            "default": ""
+                          }
+                        }
+                      }
+                    },
+                    "detector": {
+                      "description": "mzTab makes use of CV parameters. As mzTab is expected to be used in several experimental environments where parameters might not yet be available for the generated scores etc. all parameters can either report CV parameters or user parameters that only contain a name and a value.\nParameters are always reported as [CV label, accession, name, value]. Any field that is not available MUST be left empty.\n",
+                      "x-mztab-example": "[MS, MS:1001477, SpectraST,]\n[,,A user parameter, The value]\n",
+                      "type": "object",
+                      "required": [
+                        "name",
+                        "value"
+                      ],
+                      "properties": {
+                        "id": {
+                          "type": "integer",
+                          "format": "int32",
+                          "minimum": 1
+                        },
+                        "cv_label": {
+                          "type": "string",
+                          "default": ""
+                        },
+                        "cv_accession": {
+                          "type": "string",
+                          "default": ""
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "value": {
+                          "type": "string",
+                          "default": ""
+                        }
+                      }
+                    }
+                  }
+                },
+                "format": {
+                  "description": "mzTab makes use of CV parameters. As mzTab is expected to be used in several experimental environments where parameters might not yet be available for the generated scores etc. all parameters can either report CV parameters or user parameters that only contain a name and a value.\nParameters are always reported as [CV label, accession, name, value]. Any field that is not available MUST be left empty.\n",
+                  "x-mztab-example": "[MS, MS:1001477, SpectraST,]\n[,,A user parameter, The value]\n",
+                  "type": "object",
+                  "required": [
+                    "name",
+                    "value"
+                  ],
+                  "properties": {
+                    "id": {
+                      "type": "integer",
+                      "format": "int32",
+                      "minimum": 1
+                    },
+                    "cv_label": {
+                      "type": "string",
+                      "default": ""
+                    },
+                    "cv_accession": {
+                      "type": "string",
+                      "default": ""
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "value": {
+                      "type": "string",
+                      "default": ""
+                    }
+                  }
+                },
+                "id_format": {
+                  "description": "mzTab makes use of CV parameters. As mzTab is expected to be used in several experimental environments where parameters might not yet be available for the generated scores etc. all parameters can either report CV parameters or user parameters that only contain a name and a value.\nParameters are always reported as [CV label, accession, name, value]. Any field that is not available MUST be left empty.\n",
+                  "x-mztab-example": "[MS, MS:1001477, SpectraST,]\n[,,A user parameter, The value]\n",
+                  "type": "object",
+                  "required": [
+                    "name",
+                    "value"
+                  ],
+                  "properties": {
+                    "id": {
+                      "type": "integer",
+                      "format": "int32",
+                      "minimum": 1
+                    },
+                    "cv_label": {
+                      "type": "string",
+                      "default": ""
+                    },
+                    "cv_accession": {
+                      "type": "string",
+                      "default": ""
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "value": {
+                      "type": "string",
+                      "default": ""
+                    }
+                  }
+                },
+                "fragmentation_method": {
+                  "type": "array",
+                  "default": [],
+                  "items": {
+                    "description": "mzTab makes use of CV parameters. As mzTab is expected to be used in several experimental environments where parameters might not yet be available for the generated scores etc. all parameters can either report CV parameters or user parameters that only contain a name and a value.\nParameters are always reported as [CV label, accession, name, value]. Any field that is not available MUST be left empty.\n",
+                    "x-mztab-example": "[MS, MS:1001477, SpectraST,]\n[,,A user parameter, The value]\n",
+                    "type": "object",
+                    "required": [
+                      "name",
+                      "value"
+                    ],
+                    "properties": {
+                      "id": {
+                        "type": "integer",
+                        "format": "int32",
+                        "minimum": 1
+                      },
+                      "cv_label": {
+                        "type": "string",
+                        "default": ""
+                      },
+                      "cv_accession": {
+                        "type": "string",
+                        "default": ""
+                      },
+                      "name": {
+                        "type": "string"
+                      },
+                      "value": {
+                        "type": "string",
+                        "default": ""
+                      }
+                    }
+                  },
+                  "description": "The fragmentation methods applied during this msRun."
+                },
+                "scan_polarity": {
+                  "type": "array",
+                  "default": [],
+                  "items": {
+                    "description": "mzTab makes use of CV parameters. As mzTab is expected to be used in several experimental environments where parameters might not yet be available for the generated scores etc. all parameters can either report CV parameters or user parameters that only contain a name and a value.\nParameters are always reported as [CV label, accession, name, value]. Any field that is not available MUST be left empty.\n",
+                    "x-mztab-example": "[MS, MS:1001477, SpectraST,]\n[,,A user parameter, The value]\n",
+                    "type": "object",
+                    "required": [
+                      "name",
+                      "value"
+                    ],
+                    "properties": {
+                      "id": {
+                        "type": "integer",
+                        "format": "int32",
+                        "minimum": 1
+                      },
+                      "cv_label": {
+                        "type": "string",
+                        "default": ""
+                      },
+                      "cv_accession": {
+                        "type": "string",
+                        "default": ""
+                      },
+                      "name": {
+                        "type": "string"
+                      },
+                      "value": {
+                        "type": "string",
+                        "default": ""
+                      }
+                    }
+                  },
+                  "description": "The scan polarity/polarities used during this msRun."
+                },
+                "hash": {
+                  "type": "string",
+                  "description": "The file hash value of this msRun's data file."
+                },
+                "hash_method": {
+                  "description": "mzTab makes use of CV parameters. As mzTab is expected to be used in several experimental environments where parameters might not yet be available for the generated scores etc. all parameters can either report CV parameters or user parameters that only contain a name and a value.\nParameters are always reported as [CV label, accession, name, value]. Any field that is not available MUST be left empty.\n",
+                  "x-mztab-example": "[MS, MS:1001477, SpectraST,]\n[,,A user parameter, The value]\n",
+                  "type": "object",
+                  "required": [
+                    "name",
+                    "value"
+                  ],
+                  "properties": {
+                    "id": {
+                      "type": "integer",
+                      "format": "int32",
+                      "minimum": 1
+                    },
+                    "cv_label": {
+                      "type": "string",
+                      "default": ""
+                    },
+                    "cv_accession": {
+                      "type": "string",
+                      "default": ""
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "value": {
+                      "type": "string",
+                      "default": ""
+                    }
+                  }
+                }
+              }
+            },
+            "description": "The ms run(s) referenced by this assay."
+          }
+        }
+      },
+      "x-mztab-example": "MTD\tassay[1]\tfirst assay\nMTD\tassay[1]-custom[1]\t[MS, , Assay operator, Fred Blogs]\nMTD\tassay[1]-sample_ref\tsample[1]\nMTD\tassay[1]-ms_run_ref\tms_run[1]\nMTD\tassay[1]-external_uri\thttps://www.ebi.ac.uk/metabolights/MTBLS517/files/i_Investigation.txt?STUDYASSAY=a_e04_c18pos.txt\nMTD\tassay[2]\tsecond assay\nMTD\tassay[2]-sample_ref\tsample[2]\n"
+    },
+    "study_variable": {
+      "type": "array",
+      "description": "Specification of study_variable.\n(empty) name: A name for each study variable (experimental condition or factor), to serve as a list of the study variables that MUST be reported in the following tables. For software that does not capture study variables, a single study variable MUST be reported, linking to all assays. This single study variable MUST have the identifier \u201cundefined\u201c.\nassay_refs: Bar-separated references to the IDs of assays grouped in the study variable.\naverage_function: The function used to calculate the study variable quantification value and the operation used is not arithmetic mean (default) e.g. \u201cgeometric mean\u201d, \u201cmedian\u201d. The 1-n refers to different study variables.\nvariation_function: The function used to calculate the study variable quantification variation value if it is reported and the operation used is not coefficient of variation (default) e.g. \u201cstandard error\u201d.\ndescription: A textual description of the study variable.\nfactors: Additional parameters or factors, separated by bars, that are known about study variables allowing the capture of more complex, such as nested designs.\n",
+      "default": [],
+      "items": {
+        "description": "Specification of study_variable.\n(empty) name: A name for each study variable (experimental condition or factor), to serve as a list of the study variables that MUST be reported in the following tables. For software that does not capture study variables, a single study variable MUST be reported, linking to all assays. This single study variable MUST have the identifier \u201cundefined\u201c.\nassay_refs: Bar-separated references to the IDs of assays grouped in the study variable.\naverage_function: The function used to calculate the study variable quantification value and the operation used is not arithmetic mean (default) e.g. \u201cgeometric mean\u201d, \u201cmedian\u201d. The 1-n refers to different study variables.\nvariation_function: The function used to calculate the study variable quantification variation value if it is reported and the operation used is not coefficient of variation (default) e.g. \u201cstandard error\u201d.\ndescription: A textual description of the study variable.\nfactors: Additional parameters or factors, separated by bars, that are known about study variables allowing the capture of more complex, such as nested designs.  \n",
+        "x-mztab-example": "MTD\tstudy_variable[1]\tcontrol\nMTD\tstudy_variable[1]-assay_refs\tassay[1]| assay[2]| assay[3]\nMTD\tstudy_variable-average_function\t[MS, MS:1002883, median, ]\nMTD\tstudy_variable-variation_function\t[MS, MS:1002885, standard error, ]\nMTD\tstudy_variable[1]-description\tGroup B (spike-in 0.74 fmol/uL)\nMTD\tstudy_variable[1]-factors\t[,,time point, 1 minute]|[,,rapamycin dose,0.5mg]\nMTD\tstudy_variable[2]\t1 minute 0.5mg rapamycin\n",
+        "x-mztab-serialize-by-id": "true",
+        "type": "object",
+        "required": [
+          "id",
+          "name"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1
+          },
+          "name": {
+            "type": "string",
+            "description": "The study variable name."
+          },
+          "assay_refs": {
+            "type": "array",
+            "default": [],
+            "items": {
+              "description": "Specification of assay.\n(empty) name: A name for each assay, to serve as a list of the assays that MUST be reported in the following tables. \ncustom: Additional custom parameters or values for a given assay. \nexternal_uri: An external reference uri to further information about the assay, for example via a reference to an object within an ISA-TAB file. \nsample_ref: An association from a given assay to the sample analysed. \nms_run_ref: An association from a given assay to the source MS run. All assays MUST reference exactly one ms_run unless a workflow with pre-fractionation is being encoded, in which case each assay MUST reference n ms_runs where n fractions have been collected. Multiple assays SHOULD reference the same ms_run to capture multiplexed experimental designs.\n",
+              "x-mztab-example": "MTD\tassay[1]\tfirst assay\nMTD\tassay[1]-custom[1]\t[MS, , Assay operator, Fred Blogs]\nMTD\tassay[1]-external_uri\thttps://www.ebi.ac.uk/metabolights/MTBLS517/files/i_Investigation.txt?STUDYASSAY=a_e04_c18pos.txt\nMTD\tassay[1]-sample_ref\tsample[1]\nMTD\tassay[1]-ms_run_ref\tms_run[1]\n",
+              "x-mztab-serialize-by-id": "true",
+              "type": "object",
+              "required": [
+                "name",
+                "ms_run_ref"
+              ],
+              "properties": {
+                "id": {
+                  "type": "integer",
+                  "format": "int32",
+                  "minimum": 1
+                },
+                "name": {
+                  "type": "string",
+                  "description": "The assay name."
+                },
+                "custom": {
+                  "type": "array",
+                  "default": [],
+                  "items": {
+                    "description": "mzTab makes use of CV parameters. As mzTab is expected to be used in several experimental environments where parameters might not yet be available for the generated scores etc. all parameters can either report CV parameters or user parameters that only contain a name and a value.\nParameters are always reported as [CV label, accession, name, value]. Any field that is not available MUST be left empty.\n",
+                    "x-mztab-example": "[MS, MS:1001477, SpectraST,]\n[,,A user parameter, The value]\n",
+                    "type": "object",
+                    "required": [
+                      "name",
+                      "value"
+                    ],
+                    "properties": {
+                      "id": {
+                        "type": "integer",
+                        "format": "int32",
+                        "minimum": 1
+                      },
+                      "cv_label": {
+                        "type": "string",
+                        "default": ""
+                      },
+                      "cv_accession": {
+                        "type": "string",
+                        "default": ""
+                      },
+                      "name": {
+                        "type": "string"
+                      },
+                      "value": {
+                        "type": "string",
+                        "default": ""
+                      }
+                    }
+                  },
+                  "description": "Additional user or cv parameters."
+                },
+                "external_uri": {
+                  "type": "string",
+                  "format": "uri",
+                  "description": "An external URI to further information about this assay."
+                },
+                "sample_ref": {
+                  "description": "Specification of sample.\n(empty) name: A name for each sample to serve as a list of the samples that MUST be reported in the following tables. Samples MUST be reported if a statistical design is being captured (i.e. bio or tech replicates). If the type of replicates are not known, samples SHOULD NOT be reported. \nspecies: The respective species of the samples analysed. For more complex cases, such as metagenomics, optional columns and userParams should be used. \ntissue: The respective tissue(s) of the sample. \ncell_type: The respective cell type(s) of the sample. \ndisease: The respective disease(s) of the sample. \ndescription: A human readable description of the sample. \ncustom: Custom parameters describing the sample's additional properties. Dates MUST be provided in ISO-8601 format.\n",
+                  "x-mztab-example": "COM\tExperiment where all samples consisted of the same two species\nMTD\tsample[1]\tindividual number 1\nMTD\tsample[1]-species[1]\t[NCBITaxon, NCBITaxon:9606, Homo sapiens, ]\nMTD\tsample[1]-tissue[1]\t[BTO, BTO:0000759, liver, ]\nMTD\tsample[1]-cell_type[1]\t[CL, CL:0000182, hepatocyte, ]\nMTD\tsample[1]-disease[1]\t[DOID, DOID:684, hepatocellular carcinoma, ]\nMTD\tsample[1]-disease[2]\t[DOID, DOID:9451, alcoholic fatty liver, ]\nMTD\tsample[1]-description\tHepatocellular carcinoma samples.\nMTD\tsample[1]-custom[1]\t[,,Extraction date, 2011-12-21]\nMTD\tsample[1]-custom[2]\t[,,Extraction reason, liver biopsy]\nMTD\tsample[2]\tindividual number 2\nMTD\tsample[2]-species[1]\t[NCBITaxon, NCBITaxon:9606, Homo sapiens, ]\nMTD\tsample[2]-tissue[1]\t[BTO, BTO:0000759, liver, ]\nMTD\tsample[2]-cell_type[1]\t[CL, CL:0000182, hepatocyte, ]\nMTD\tsample[2]-description\tHealthy control samples.\n",
+                  "x-mztab-serialize-by-id": "true",
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer",
+                      "format": "int32",
+                      "minimum": 1
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "The sample's name."
+                    },
+                    "custom": {
+                      "type": "array",
+                      "description": "Additional user or cv parameters.",
+                      "default": [],
+                      "items": {
+                        "description": "mzTab makes use of CV parameters. As mzTab is expected to be used in several experimental environments where parameters might not yet be available for the generated scores etc. all parameters can either report CV parameters or user parameters that only contain a name and a value.\nParameters are always reported as [CV label, accession, name, value]. Any field that is not available MUST be left empty.\n",
+                        "x-mztab-example": "[MS, MS:1001477, SpectraST,]\n[,,A user parameter, The value]\n",
+                        "type": "object",
+                        "required": [
+                          "name",
+                          "value"
+                        ],
+                        "properties": {
+                          "id": {
+                            "type": "integer",
+                            "format": "int32",
+                            "minimum": 1
+                          },
+                          "cv_label": {
+                            "type": "string",
+                            "default": ""
+                          },
+                          "cv_accession": {
+                            "type": "string",
+                            "default": ""
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "value": {
+                            "type": "string",
+                            "default": ""
+                          }
+                        }
+                      }
+                    },
+                    "species": {
+                      "type": "array",
+                      "description": "Biological species information on the sample.",
+                      "default": [],
+                      "items": {
+                        "description": "mzTab makes use of CV parameters. As mzTab is expected to be used in several experimental environments where parameters might not yet be available for the generated scores etc. all parameters can either report CV parameters or user parameters that only contain a name and a value.\nParameters are always reported as [CV label, accession, name, value]. Any field that is not available MUST be left empty.\n",
+                        "x-mztab-example": "[MS, MS:1001477, SpectraST,]\n[,,A user parameter, The value]\n",
+                        "type": "object",
+                        "required": [
+                          "name",
+                          "value"
+                        ],
+                        "properties": {
+                          "id": {
+                            "type": "integer",
+                            "format": "int32",
+                            "minimum": 1
+                          },
+                          "cv_label": {
+                            "type": "string",
+                            "default": ""
+                          },
+                          "cv_accession": {
+                            "type": "string",
+                            "default": ""
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "value": {
+                            "type": "string",
+                            "default": ""
+                          }
+                        }
+                      }
+                    },
+                    "tissue": {
+                      "type": "array",
+                      "description": "Biological tissue information on the sample.",
+                      "default": [],
+                      "items": {
+                        "description": "mzTab makes use of CV parameters. As mzTab is expected to be used in several experimental environments where parameters might not yet be available for the generated scores etc. all parameters can either report CV parameters or user parameters that only contain a name and a value.\nParameters are always reported as [CV label, accession, name, value]. Any field that is not available MUST be left empty.\n",
+                        "x-mztab-example": "[MS, MS:1001477, SpectraST,]\n[,,A user parameter, The value]\n",
+                        "type": "object",
+                        "required": [
+                          "name",
+                          "value"
+                        ],
+                        "properties": {
+                          "id": {
+                            "type": "integer",
+                            "format": "int32",
+                            "minimum": 1
+                          },
+                          "cv_label": {
+                            "type": "string",
+                            "default": ""
+                          },
+                          "cv_accession": {
+                            "type": "string",
+                            "default": ""
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "value": {
+                            "type": "string",
+                            "default": ""
+                          }
+                        }
+                      }
+                    },
+                    "cell_type": {
+                      "type": "array",
+                      "description": "Biological cell type information on the sample.",
+                      "default": [],
+                      "items": {
+                        "description": "mzTab makes use of CV parameters. As mzTab is expected to be used in several experimental environments where parameters might not yet be available for the generated scores etc. all parameters can either report CV parameters or user parameters that only contain a name and a value.\nParameters are always reported as [CV label, accession, name, value]. Any field that is not available MUST be left empty.\n",
+                        "x-mztab-example": "[MS, MS:1001477, SpectraST,]\n[,,A user parameter, The value]\n",
+                        "type": "object",
+                        "required": [
+                          "name",
+                          "value"
+                        ],
+                        "properties": {
+                          "id": {
+                            "type": "integer",
+                            "format": "int32",
+                            "minimum": 1
+                          },
+                          "cv_label": {
+                            "type": "string",
+                            "default": ""
+                          },
+                          "cv_accession": {
+                            "type": "string",
+                            "default": ""
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "value": {
+                            "type": "string",
+                            "default": ""
+                          }
+                        }
+                      }
+                    },
+                    "disease": {
+                      "type": "array",
+                      "description": "Disease information on the sample.",
+                      "default": [],
+                      "items": {
+                        "description": "mzTab makes use of CV parameters. As mzTab is expected to be used in several experimental environments where parameters might not yet be available for the generated scores etc. all parameters can either report CV parameters or user parameters that only contain a name and a value.\nParameters are always reported as [CV label, accession, name, value]. Any field that is not available MUST be left empty.\n",
+                        "x-mztab-example": "[MS, MS:1001477, SpectraST,]\n[,,A user parameter, The value]\n",
+                        "type": "object",
+                        "required": [
+                          "name",
+                          "value"
+                        ],
+                        "properties": {
+                          "id": {
+                            "type": "integer",
+                            "format": "int32",
+                            "minimum": 1
+                          },
+                          "cv_label": {
+                            "type": "string",
+                            "default": ""
+                          },
+                          "cv_accession": {
+                            "type": "string",
+                            "default": ""
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "value": {
+                            "type": "string",
+                            "default": ""
+                          }
+                        }
+                      }
+                    },
+                    "description": {
+                      "description": "A free form description of the sample.",
+                      "type": "string"
+                    }
+                  }
+                },
+                "ms_run_ref": {
+                  "type": "array",
+                  "default": [],
+                  "minItems": 1,
+                  "items": {
+                    "description": "Specification of ms_run. \nlocation: Location of the external data file e.g. raw files on which analysis has been performed. If the actual location of the MS run is unknown, a \u201cnull\u201d MUST be used as a place holder value, since the [1-n] cardinality is referenced elsewhere. If pre-fractionation has been performed, then [1-n] ms_runs SHOULD be created per assay. \ninstrument_ref: If different instruments are used in different runs, instrument_ref can be used to link a specific instrument to a specific run. \nformat: Parameter specifying the data format of the external MS data file. If ms_run[1-n]-format is present, ms_run[1-n]-id_format SHOULD also be present, following the parameters specified in Table 1. \nid_format: Parameter specifying the id format used in the external data file. If ms_run[1-n]-id_format is present, ms_run[1-n]-format SHOULD also be present.\nfragmentation_method: The type(s) of fragmentation used in a given ms run.\nscan_polarity: The polarity mode of a given run. Usually only one value SHOULD be given here except for the case of mixed polarity runs.\nhash: Hash value of the corresponding external MS data file defined in ms_run[1-n]-location. If ms_run[1-n]-hash is present, ms_run[1-n]-hash_method SHOULD also be present.\nhash_method: A parameter specifying the hash methods used to generate the String in ms_run[1-n]-hash. Specifics of the hash method used MAY follow the definitions of the mzML format. If ms_run[1-n]-hash is present, ms_run[1-n]-hash_method SHOULD also be present.\n",
+                    "x-mztab-example": "COM\tlocation can be a local or remote URI\nMTD\tms_run[1]-location\tfile:///C:/path/to/my/file.mzML\nMTD\tms_run[1]-instrument_ref\tinstrument[1]\nMTD\tms_run[1]-format\t[MS, MS:1000584, mzML file, ]\nMTD\tms_run[1]-id_format\t[MS, MS:1000530, mzML unique identifier, ]\nMTD\tms_run[1]-fragmentation_method[1]\t[MS, MS:1000133, CID, ]\nCOM\tfor mixed polarity scan scenarios\nMTD\tms_run[1]-scan_polarity[1]\t[MS, MS:1000130, positive scan, ]\nMTD\tms_run[1]-scan_polarity[2]\t[MS, MS:1000129, negative scan, ]\nMTD\tms_run[1]-hash_method\t[MS, MS:1000569, SHA-1, ]\nMTD\tms_run[1]-hash\tde9f2c7fd25e1b3afad3e85a0bd17d9b100db4b3\n",
+                    "x-mztab-serialize-by-id": "true",
+                    "type": "object",
+                    "required": [
+                      "id",
+                      "location"
+                    ],
+                    "properties": {
+                      "id": {
+                        "type": "integer",
+                        "format": "int32",
+                        "minimum": 1
+                      },
+                      "name": {
+                        "type": "string",
+                        "description": "The msRun's name."
+                      },
+                      "location": {
+                        "type": "string",
+                        "format": "uri",
+                        "description": "The msRun's location URI."
+                      },
+                      "instrument_ref": {
+                        "description": "The name, source, analyzer and detector of the instruments used in the experiment. Multiple instruments are numbered [1-n].",
+                        "x-mztab-example": "MTD\tinstrument[1]-name\t[MS, MS:1000449, LTQ Orbitrap,]\nMTD\tinstrument[1]-source\t[MS, MS:1000073, ESI,]\n\u2026\nMTD\tinstrument[2]-source\t[MS, MS:1000598, ETD,]\nMTD\tinstrument[1]-analyzer[1]\t[MS, MS:1000291, linear ion trap,]\n\u2026\nMTD\tinstrument[2]-analyzer[1]\t[MS, MS:1000484, orbitrap,]\nMTD\tinstrument[1]-detector\t[MS, MS:1000253, electron multiplier,]\n\u2026\nMTD\tinstrument[2]-detector\t[MS, MS:1000348, focal plane collector,]\n",
+                        "x-mztab-serialize-by-id": "true",
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer",
+                            "format": "int32",
+                            "minimum": 1
+                          },
+                          "name": {
+                            "description": "mzTab makes use of CV parameters. As mzTab is expected to be used in several experimental environments where parameters might not yet be available for the generated scores etc. all parameters can either report CV parameters or user parameters that only contain a name and a value.\nParameters are always reported as [CV label, accession, name, value]. Any field that is not available MUST be left empty.\n",
+                            "x-mztab-example": "[MS, MS:1001477, SpectraST,]\n[,,A user parameter, The value]\n",
+                            "type": "object",
+                            "required": [
+                              "name",
+                              "value"
+                            ],
+                            "properties": {
+                              "id": {
+                                "type": "integer",
+                                "format": "int32",
+                                "minimum": 1
+                              },
+                              "cv_label": {
+                                "type": "string",
+                                "default": ""
+                              },
+                              "cv_accession": {
+                                "type": "string",
+                                "default": ""
+                              },
+                              "name": {
+                                "type": "string"
+                              },
+                              "value": {
+                                "type": "string",
+                                "default": ""
+                              }
+                            }
+                          },
+                          "source": {
+                            "description": "mzTab makes use of CV parameters. As mzTab is expected to be used in several experimental environments where parameters might not yet be available for the generated scores etc. all parameters can either report CV parameters or user parameters that only contain a name and a value.\nParameters are always reported as [CV label, accession, name, value]. Any field that is not available MUST be left empty.\n",
+                            "x-mztab-example": "[MS, MS:1001477, SpectraST,]\n[,,A user parameter, The value]\n",
+                            "type": "object",
+                            "required": [
+                              "name",
+                              "value"
+                            ],
+                            "properties": {
+                              "id": {
+                                "type": "integer",
+                                "format": "int32",
+                                "minimum": 1
+                              },
+                              "cv_label": {
+                                "type": "string",
+                                "default": ""
+                              },
+                              "cv_accession": {
+                                "type": "string",
+                                "default": ""
+                              },
+                              "name": {
+                                "type": "string"
+                              },
+                              "value": {
+                                "type": "string",
+                                "default": ""
+                              }
+                            }
+                          },
+                          "analyzer": {
+                            "type": "array",
+                            "description": "The instrument's mass analyzer, as defined by the parameter.",
+                            "default": [],
+                            "items": {
+                              "description": "mzTab makes use of CV parameters. As mzTab is expected to be used in several experimental environments where parameters might not yet be available for the generated scores etc. all parameters can either report CV parameters or user parameters that only contain a name and a value.\nParameters are always reported as [CV label, accession, name, value]. Any field that is not available MUST be left empty.\n",
+                              "x-mztab-example": "[MS, MS:1001477, SpectraST,]\n[,,A user parameter, The value]\n",
+                              "type": "object",
+                              "required": [
+                                "name",
+                                "value"
+                              ],
+                              "properties": {
+                                "id": {
+                                  "type": "integer",
+                                  "format": "int32",
+                                  "minimum": 1
+                                },
+                                "cv_label": {
+                                  "type": "string",
+                                  "default": ""
+                                },
+                                "cv_accession": {
+                                  "type": "string",
+                                  "default": ""
+                                },
+                                "name": {
+                                  "type": "string"
+                                },
+                                "value": {
+                                  "type": "string",
+                                  "default": ""
+                                }
+                              }
+                            }
+                          },
+                          "detector": {
+                            "description": "mzTab makes use of CV parameters. As mzTab is expected to be used in several experimental environments where parameters might not yet be available for the generated scores etc. all parameters can either report CV parameters or user parameters that only contain a name and a value.\nParameters are always reported as [CV label, accession, name, value]. Any field that is not available MUST be left empty.\n",
+                            "x-mztab-example": "[MS, MS:1001477, SpectraST,]\n[,,A user parameter, The value]\n",
+                            "type": "object",
+                            "required": [
+                              "name",
+                              "value"
+                            ],
+                            "properties": {
+                              "id": {
+                                "type": "integer",
+                                "format": "int32",
+                                "minimum": 1
+                              },
+                              "cv_label": {
+                                "type": "string",
+                                "default": ""
+                              },
+                              "cv_accession": {
+                                "type": "string",
+                                "default": ""
+                              },
+                              "name": {
+                                "type": "string"
+                              },
+                              "value": {
+                                "type": "string",
+                                "default": ""
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "format": {
+                        "description": "mzTab makes use of CV parameters. As mzTab is expected to be used in several experimental environments where parameters might not yet be available for the generated scores etc. all parameters can either report CV parameters or user parameters that only contain a name and a value.\nParameters are always reported as [CV label, accession, name, value]. Any field that is not available MUST be left empty.\n",
+                        "x-mztab-example": "[MS, MS:1001477, SpectraST,]\n[,,A user parameter, The value]\n",
+                        "type": "object",
+                        "required": [
+                          "name",
+                          "value"
+                        ],
+                        "properties": {
+                          "id": {
+                            "type": "integer",
+                            "format": "int32",
+                            "minimum": 1
+                          },
+                          "cv_label": {
+                            "type": "string",
+                            "default": ""
+                          },
+                          "cv_accession": {
+                            "type": "string",
+                            "default": ""
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "value": {
+                            "type": "string",
+                            "default": ""
+                          }
+                        }
+                      },
+                      "id_format": {
+                        "description": "mzTab makes use of CV parameters. As mzTab is expected to be used in several experimental environments where parameters might not yet be available for the generated scores etc. all parameters can either report CV parameters or user parameters that only contain a name and a value.\nParameters are always reported as [CV label, accession, name, value]. Any field that is not available MUST be left empty.\n",
+                        "x-mztab-example": "[MS, MS:1001477, SpectraST,]\n[,,A user parameter, The value]\n",
+                        "type": "object",
+                        "required": [
+                          "name",
+                          "value"
+                        ],
+                        "properties": {
+                          "id": {
+                            "type": "integer",
+                            "format": "int32",
+                            "minimum": 1
+                          },
+                          "cv_label": {
+                            "type": "string",
+                            "default": ""
+                          },
+                          "cv_accession": {
+                            "type": "string",
+                            "default": ""
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "value": {
+                            "type": "string",
+                            "default": ""
+                          }
+                        }
+                      },
+                      "fragmentation_method": {
+                        "type": "array",
+                        "default": [],
+                        "items": {
+                          "description": "mzTab makes use of CV parameters. As mzTab is expected to be used in several experimental environments where parameters might not yet be available for the generated scores etc. all parameters can either report CV parameters or user parameters that only contain a name and a value.\nParameters are always reported as [CV label, accession, name, value]. Any field that is not available MUST be left empty.\n",
+                          "x-mztab-example": "[MS, MS:1001477, SpectraST,]\n[,,A user parameter, The value]\n",
+                          "type": "object",
+                          "required": [
+                            "name",
+                            "value"
+                          ],
+                          "properties": {
+                            "id": {
+                              "type": "integer",
+                              "format": "int32",
+                              "minimum": 1
+                            },
+                            "cv_label": {
+                              "type": "string",
+                              "default": ""
+                            },
+                            "cv_accession": {
+                              "type": "string",
+                              "default": ""
+                            },
+                            "name": {
+                              "type": "string"
+                            },
+                            "value": {
+                              "type": "string",
+                              "default": ""
+                            }
+                          }
+                        },
+                        "description": "The fragmentation methods applied during this msRun."
+                      },
+                      "scan_polarity": {
+                        "type": "array",
+                        "default": [],
+                        "items": {
+                          "description": "mzTab makes use of CV parameters. As mzTab is expected to be used in several experimental environments where parameters might not yet be available for the generated scores etc. all parameters can either report CV parameters or user parameters that only contain a name and a value.\nParameters are always reported as [CV label, accession, name, value]. Any field that is not available MUST be left empty.\n",
+                          "x-mztab-example": "[MS, MS:1001477, SpectraST,]\n[,,A user parameter, The value]\n",
+                          "type": "object",
+                          "required": [
+                            "name",
+                            "value"
+                          ],
+                          "properties": {
+                            "id": {
+                              "type": "integer",
+                              "format": "int32",
+                              "minimum": 1
+                            },
+                            "cv_label": {
+                              "type": "string",
+                              "default": ""
+                            },
+                            "cv_accession": {
+                              "type": "string",
+                              "default": ""
+                            },
+                            "name": {
+                              "type": "string"
+                            },
+                            "value": {
+                              "type": "string",
+                              "default": ""
+                            }
+                          }
+                        },
+                        "description": "The scan polarity/polarities used during this msRun."
+                      },
+                      "hash": {
+                        "type": "string",
+                        "description": "The file hash value of this msRun's data file."
+                      },
+                      "hash_method": {
+                        "description": "mzTab makes use of CV parameters. As mzTab is expected to be used in several experimental environments where parameters might not yet be available for the generated scores etc. all parameters can either report CV parameters or user parameters that only contain a name and a value.\nParameters are always reported as [CV label, accession, name, value]. Any field that is not available MUST be left empty.\n",
+                        "x-mztab-example": "[MS, MS:1001477, SpectraST,]\n[,,A user parameter, The value]\n",
+                        "type": "object",
+                        "required": [
+                          "name",
+                          "value"
+                        ],
+                        "properties": {
+                          "id": {
+                            "type": "integer",
+                            "format": "int32",
+                            "minimum": 1
+                          },
+                          "cv_label": {
+                            "type": "string",
+                            "default": ""
+                          },
+                          "cv_accession": {
+                            "type": "string",
+                            "default": ""
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "value": {
+                            "type": "string",
+                            "default": ""
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "description": "The ms run(s) referenced by this assay."
+                }
+              }
+            },
+            "description": "The assays referenced by this study variable."
+          },
+          "average_function": {
+            "description": "mzTab makes use of CV parameters. As mzTab is expected to be used in several experimental environments where parameters might not yet be available for the generated scores etc. all parameters can either report CV parameters or user parameters that only contain a name and a value.\nParameters are always reported as [CV label, accession, name, value]. Any field that is not available MUST be left empty.\n",
+            "x-mztab-example": "[MS, MS:1001477, SpectraST,]\n[,,A user parameter, The value]\n",
+            "type": "object",
+            "required": [
+              "name",
+              "value"
+            ],
+            "properties": {
+              "id": {
+                "type": "integer",
+                "format": "int32",
+                "minimum": 1
+              },
+              "cv_label": {
+                "type": "string",
+                "default": ""
+              },
+              "cv_accession": {
+                "type": "string",
+                "default": ""
+              },
+              "name": {
+                "type": "string"
+              },
+              "value": {
+                "type": "string",
+                "default": ""
+              }
+            }
+          },
+          "variation_function": {
+            "description": "mzTab makes use of CV parameters. As mzTab is expected to be used in several experimental environments where parameters might not yet be available for the generated scores etc. all parameters can either report CV parameters or user parameters that only contain a name and a value.\nParameters are always reported as [CV label, accession, name, value]. Any field that is not available MUST be left empty.\n",
+            "x-mztab-example": "[MS, MS:1001477, SpectraST,]\n[,,A user parameter, The value]\n",
+            "type": "object",
+            "required": [
+              "name",
+              "value"
+            ],
+            "properties": {
+              "id": {
+                "type": "integer",
+                "format": "int32",
+                "minimum": 1
+              },
+              "cv_label": {
+                "type": "string",
+                "default": ""
+              },
+              "cv_accession": {
+                "type": "string",
+                "default": ""
+              },
+              "name": {
+                "type": "string"
+              },
+              "value": {
+                "type": "string",
+                "default": ""
+              }
+            }
+          },
+          "description": {
+            "type": "string",
+            "description": "A free-form description of this study variable."
+          },
+          "factors": {
+            "type": "array",
+            "default": [],
+            "items": {
+              "description": "mzTab makes use of CV parameters. As mzTab is expected to be used in several experimental environments where parameters might not yet be available for the generated scores etc. all parameters can either report CV parameters or user parameters that only contain a name and a value.\nParameters are always reported as [CV label, accession, name, value]. Any field that is not available MUST be left empty.\n",
+              "x-mztab-example": "[MS, MS:1001477, SpectraST,]\n[,,A user parameter, The value]\n",
+              "type": "object",
+              "required": [
+                "name",
+                "value"
+              ],
+              "properties": {
+                "id": {
+                  "type": "integer",
+                  "format": "int32",
+                  "minimum": 1
+                },
+                "cv_label": {
+                  "type": "string",
+                  "default": ""
+                },
+                "cv_accession": {
+                  "type": "string",
+                  "default": ""
+                },
+                "name": {
+                  "type": "string"
+                },
+                "value": {
+                  "type": "string",
+                  "default": ""
+                }
+              }
+            },
+            "description": "Parameters indicating which factors were used for the assays referenced by this study variable, and at which levels."
+          }
+        }
+      },
+      "x-mztab-example": "MTD\tstudy_variable[1]\tcontrol\nMTD\tstudy_variable[1]-assay_refs\tassay[1]| assay[2]| assay[3]\nMTD\tstudy_variable-average_function\t[MS, MS:1002883, median, ]\nMTD\tstudy_variable-variation_function\t[MS, MS:1002885, standard error, ]\nMTD\tstudy_variable[1]-description\tGroup B (spike-in 0.74 fmol/uL)\nMTD\tstudy_variable[1]-factors\t[,,rapamycin dose,0.5mg]\nMTD\tstudy_variable[2]\t1 minute\n"
+    },
+    "custom": {
+      "type": "array",
+      "description": "Any additional parameters describing the analysis reported.",
+      "default": [],
+      "items": {
+        "description": "mzTab makes use of CV parameters. As mzTab is expected to be used in several experimental environments where parameters might not yet be available for the generated scores etc. all parameters can either report CV parameters or user parameters that only contain a name and a value.\nParameters are always reported as [CV label, accession, name, value]. Any field that is not available MUST be left empty.\n",
+        "x-mztab-example": "[MS, MS:1001477, SpectraST,]\n[,,A user parameter, The value]\n",
+        "type": "object",
+        "required": [
+          "name",
+          "value"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1
+          },
+          "cv_label": {
+            "type": "string",
+            "default": ""
+          },
+          "cv_accession": {
+            "type": "string",
+            "default": ""
+          },
+          "name": {
+            "type": "string"
+          },
+          "value": {
+            "type": "string",
+            "default": ""
+          }
+        }
+      },
+      "x-mztab-example": "MTD custom[1] [,,MS operator, Florian]\n"
+    },
+    "cv": {
+      "type": "array",
+      "description": "Specification of controlled vocabularies.\nlabel: A string describing the labels of the controlled vocabularies/ontologies used in the mzTab file as a short-hand e.g. \"MS\" for PSI-MS.\nfull_name: A string describing the full names of the controlled vocabularies/ontologies used in the mzTab file.\nversion: A string describing the version of the controlled vocabularies/ontologies used in the mzTab file.\nuri: A string containing the URIs of the controlled vocabularies/ontologies used in the mzTab file.\n",
+      "default": [],
+      "items": {
+        "description": "Specification of controlled vocabularies.\nlabel: A string describing the labels of the controlled vocabularies/ontologies used in the mzTab file as a short-hand e.g. \"MS\" for PSI-MS.\nfull_name: A string describing the full names of the controlled vocabularies/ontologies used in the mzTab file.\nversion: A string describing the version of the controlled vocabularies/ontologies used in the mzTab file.\nuri: A string containing the URIs of the controlled vocabularies/ontologies used in the mzTab file.\n",
+        "x-mztab-example": "MTD\tcv[1]-label\tMS\nMTD\tcv[1]-full_name\tPSI-MS controlled vocabulary\nMTD\tcv[1]-version\t4.1.11\nMTD\tcv[1]-uri\thttps://raw.githubusercontent.com/HUPO-PSI/psi-ms-CV/master/psi-ms.obo\n",
+        "x-mztab-serialize-by-id": "true",
+        "type": "object",
+        "required": [
+          "label",
+          "full_name",
+          "version",
+          "uri"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1
+          },
+          "label": {
+            "type": "string",
+            "description": "The abbreviated CV label."
+          },
+          "full_name": {
+            "type": "string",
+            "description": "The full name of this CV, for humans."
+          },
+          "version": {
+            "type": "string",
+            "description": "The CV version used when the file was generated."
+          },
+          "uri": {
+            "type": "string",
+            "format": "uri",
+            "description": "A URI to the CV definition."
+          }
+        }
+      },
+      "x-mztab-example": "MTD\tcv[1]-label\tMS\nMTD\tcv[1]-full_name\tPSI-MS controlled vocabulary\nMTD\tcv[1]-version\t4.1.11\nMTD\tcv[1]-uri\thttps://raw.githubusercontent.com/HUPO-PSI/psi-ms-CV/master/psi-ms.obo\n"
+    },
+    "small_molecule-quantification_unit": {
+      "description": "mzTab makes use of CV parameters. As mzTab is expected to be used in several experimental environments where parameters might not yet be available for the generated scores etc. all parameters can either report CV parameters or user parameters that only contain a name and a value.\nParameters are always reported as [CV label, accession, name, value]. Any field that is not available MUST be left empty.\n",
+      "x-mztab-example": "[MS, MS:1001477, SpectraST,]\n[,,A user parameter, The value]\n",
+      "type": "object",
+      "required": [
+        "name",
+        "value"
+      ],
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 1
+        },
+        "cv_label": {
+          "type": "string",
+          "default": ""
+        },
+        "cv_accession": {
+          "type": "string",
+          "default": ""
+        },
+        "name": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string",
+          "default": ""
+        }
+      }
+    },
+    "small_molecule_feature-quantification_unit": {
+      "description": "mzTab makes use of CV parameters. As mzTab is expected to be used in several experimental environments where parameters might not yet be available for the generated scores etc. all parameters can either report CV parameters or user parameters that only contain a name and a value.\nParameters are always reported as [CV label, accession, name, value]. Any field that is not available MUST be left empty.\n",
+      "x-mztab-example": "[MS, MS:1001477, SpectraST,]\n[,,A user parameter, The value]\n",
+      "type": "object",
+      "required": [
+        "name",
+        "value"
+      ],
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 1
+        },
+        "cv_label": {
+          "type": "string",
+          "default": ""
+        },
+        "cv_accession": {
+          "type": "string",
+          "default": ""
+        },
+        "name": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string",
+          "default": ""
+        }
+      }
+    },
+    "small_molecule-identification_reliability": {
+      "description": "mzTab makes use of CV parameters. As mzTab is expected to be used in several experimental environments where parameters might not yet be available for the generated scores etc. all parameters can either report CV parameters or user parameters that only contain a name and a value.\nParameters are always reported as [CV label, accession, name, value]. Any field that is not available MUST be left empty.\n",
+      "x-mztab-example": "[MS, MS:1001477, SpectraST,]\n[,,A user parameter, The value]\n",
+      "type": "object",
+      "required": [
+        "name",
+        "value"
+      ],
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 1
+        },
+        "cv_label": {
+          "type": "string",
+          "default": ""
+        },
+        "cv_accession": {
+          "type": "string",
+          "default": ""
+        },
+        "name": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string",
+          "default": ""
+        }
+      }
+    },
+    "database": {
+      "type": "array",
+      "description": "Specification of databases.\n(empty): The description of databases used. For cases, where a known database has not been used for identification, a userParam SHOULD be inserted to describe any identification performed e.g. de novo. If no identification has been performed at all then \"no database\" should be inserted followed by null.\nprefix: The prefix used in the \u201cidentifier\u201d column of data tables. For the \u201cno database\u201d case \"null\" must be used.\nversion: The database version is mandatory where identification has been performed. This may be a formal version number e.g. \u201c1.4.1\u201d, a date of access \u201c2016-10-27\u201d (ISO-8601 format) or \u201cUnknown\u201d if there is no suitable version that can be annotated.\nuri: The URI to the database. For the \u201cno database\u201d case, \"null\" must be reported.\n",
+      "default": [],
+      "items": {
+        "description": "Specification of databases.\n(empty): The description of databases used. For cases, where a known database has not been used for identification, a userParam SHOULD be inserted to describe any identification performed e.g. de novo. If no identification has been performed at all then \"no database\" should be inserted followed by null.\nprefix: The prefix used in the \u201cidentifier\u201d column of data tables. For the \u201cno database\u201d case \"null\" must be used.\nversion: The database version is mandatory where identification has been performed. This may be a formal version number e.g. \u201c1.4.1\u201d, a date of access \u201c2016-10-27\u201d (ISO-8601 format) or \u201cUnknown\u201d if there is no suitable version that can be annotated.\nuri: The URI to the database. For the \u201cno database\u201d case, \"null\" must be reported.\n",
+        "x-mztab-example": "MTD\tdatabase[1]\t[MIRIAM, MIR:00100079, HMDB, ]\nMTD\tdatabase[1]-prefix\thmdb\nMTD\tdatabase[1]-version\t3.6\nMTD\tdatabase[1]-uri\thttp://www.hmdb.ca/\nMTD\tdatabase[2]\t[,, \"de novo\", ]\nMTD\tdatabase[2]-prefix\tdn\nMTD\tdatabase[2]-version\tUnknown\nMTD\tdatabase[2]-uri\tnull\nMTD\tdatabase[3]\t[,, \"no database\", null ]\nMTD\tdatabase[3]-prefix\tnull\nMTD\tdatabase[3]-version\tUnknown\nMTD\tdatabase[3]-uri\tnull\n",
+        "x-mztab-serialize-by-id": "true",
+        "type": "object",
+        "required": [
+          "param",
+          "prefix",
+          "version",
+          "uri"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1
+          },
+          "param": {
+            "description": "mzTab makes use of CV parameters. As mzTab is expected to be used in several experimental environments where parameters might not yet be available for the generated scores etc. all parameters can either report CV parameters or user parameters that only contain a name and a value.\nParameters are always reported as [CV label, accession, name, value]. Any field that is not available MUST be left empty.\n",
+            "x-mztab-example": "[MS, MS:1001477, SpectraST,]\n[,,A user parameter, The value]\n",
+            "type": "object",
+            "required": [
+              "name",
+              "value"
+            ],
+            "properties": {
+              "id": {
+                "type": "integer",
+                "format": "int32",
+                "minimum": 1
+              },
+              "cv_label": {
+                "type": "string",
+                "default": ""
+              },
+              "cv_accession": {
+                "type": "string",
+                "default": ""
+              },
+              "name": {
+                "type": "string"
+              },
+              "value": {
+                "type": "string",
+                "default": ""
+              }
+            }
+          },
+          "prefix": {
+            "type": "string",
+            "default": "null",
+            "description": "The database prefix."
+          },
+          "version": {
+            "type": "string",
+            "description": "The database version."
+          },
+          "uri": {
+            "type": "string",
+            "format": "uri",
+            "description": "The URI to the online database."
+          }
+        }
+      },
+      "x-mztab-example": "MTD\tdatabase[1]\t[MIRIAM, MIR:00100079, HMDB, ]\nMTD\tdatabase[1]-prefix\thmdb\nMTD\tdatabase[1]-version\t3.6\nMTD\tdatabase[1]-uri\thttp://www.hmdb.ca/\nMTD\tdatabase[2]\t[,, \"de novo\", ]\nMTD\tdatabase[2]-prefix\tdn\nMTD\tdatabase[2]-version\tUnknown\nMTD\tdatabase[2]-uri\tnull\nMTD\tdatabase[3]\t[,, \"no database\", null ]\nMTD\tdatabase[3]-prefix\tnull\nMTD\tdatabase[3]-version\tUnknown\nMTD\tdatabase[3]-uri\tnull\n"
+    },
+    "id_confidence_measure": {
+      "type": "array",
+      "description": "The type of small molecule confidence measures or scores MUST be reported as a CV parameter [1-n]. The CV parameter definition should formally state whether the ordering is high to low or vice versa. The order of the scores SHOULD reflect their importance for the identification and be used to determine the identification\u2019s rank.",
+      "default": [],
+      "items": {
+        "description": "mzTab makes use of CV parameters. As mzTab is expected to be used in several experimental environments where parameters might not yet be available for the generated scores etc. all parameters can either report CV parameters or user parameters that only contain a name and a value.\nParameters are always reported as [CV label, accession, name, value]. Any field that is not available MUST be left empty.\n",
+        "x-mztab-example": "[MS, MS:1001477, SpectraST,]\n[,,A user parameter, The value]\n",
+        "type": "object",
+        "required": [
+          "name",
+          "value"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1
+          },
+          "cv_label": {
+            "type": "string",
+            "default": ""
+          },
+          "cv_accession": {
+            "type": "string",
+            "default": ""
+          },
+          "name": {
+            "type": "string"
+          },
+          "value": {
+            "type": "string",
+            "default": ""
+          }
+        }
+      },
+      "x-mztab-example": "MTD\tid_confidence_measure[1]\t[MS,MS:1002889,Progenesis MetaScope Score,]\nMTD\tid_confidence_measure[2]\t[MS,MS:1002890,fragmentation score,]\nMTD\tid_confidence_measure[3]\t[MS,MS:1002891,isotopic fit score,]\n"
+    },
+    "colunit-small_molecule": {
+      "type": "array",
+      "description": "Defines the used unit for a column in the small molecule section. The format of the value has to be \\{column name}=\\{Parameter defining the unit}. This field MUST NOT be used to define a unit for quantification columns. The unit used for small molecule quantification values MUST be set in small_molecule-quantification_unit.",
+      "default": [],
+      "items": {
+        "type": "object",
+        "required": [
+          "column_name",
+          "param"
+        ],
+        "description": "Defines the used unit for a column in the mzTab-M file. The format of the value has to be \\{column name}=\\{Parameter defining the unit}. This field MUST NOT be used to define a unit for quantification columns. The unit used for small molecule quantification values MUST be set in small_molecule-quantification_unit.",
+        "x-mztab-example": "COM\tcolunit for optional small molecule summary column with the name 'opt_global_cv_MS:MS:1002954_collisional_cross_sectional_area'\nMTD\tcolunit-small_molecule\topt_global_cv_MS:MS:1002954_collisional_cross_sectional_area=[UO,UO:00003241, square angstrom,]\n",
+        "properties": {
+          "column_name": {
+            "type": "string",
+            "description": "The fully qualified target column name."
+          },
+          "param": {
+            "description": "mzTab makes use of CV parameters. As mzTab is expected to be used in several experimental environments where parameters might not yet be available for the generated scores etc. all parameters can either report CV parameters or user parameters that only contain a name and a value.\nParameters are always reported as [CV label, accession, name, value]. Any field that is not available MUST be left empty.\n",
+            "x-mztab-example": "[MS, MS:1001477, SpectraST,]\n[,,A user parameter, The value]\n",
+            "type": "object",
+            "required": [
+              "name",
+              "value"
+            ],
+            "properties": {
+              "id": {
+                "type": "integer",
+                "format": "int32",
+                "minimum": 1
+              },
+              "cv_label": {
+                "type": "string",
+                "default": ""
+              },
+              "cv_accession": {
+                "type": "string",
+                "default": ""
+              },
+              "name": {
+                "type": "string"
+              },
+              "value": {
+                "type": "string",
+                "default": ""
+              }
+            }
+          }
+        }
+      },
+      "x-mztab-example": "COM\tcolunit for optional small molecule summary column with the name 'opt_global_cv_MS:MS:1002954_collisional_cross_sectional_area'\nMTD\tcolunit-small_molecule\topt_global_cv_MS:MS:1002954_collisional_cross_sectional_area=[UO,UO:00003241, square angstrom,]\n"
+    },
+    "colunit-small_molecule_feature": {
+      "type": "array",
+      "description": "Defines the used unit for a column in the small molecule feature section. The format of the value has to be \\{column name}=\\{Parameter defining the unit}. This field MUST NOT be used to define a unit for quantification columns. The unit used for small molecule quantification values MUST be set in small_molecule_feature-quantification_unit.",
+      "default": [],
+      "items": {
+        "type": "object",
+        "required": [
+          "column_name",
+          "param"
+        ],
+        "description": "Defines the used unit for a column in the mzTab-M file. The format of the value has to be \\{column name}=\\{Parameter defining the unit}. This field MUST NOT be used to define a unit for quantification columns. The unit used for small molecule quantification values MUST be set in small_molecule-quantification_unit.",
+        "x-mztab-example": "COM\tcolunit for optional small molecule summary column with the name 'opt_global_cv_MS:MS:1002954_collisional_cross_sectional_area'\nMTD\tcolunit-small_molecule\topt_global_cv_MS:MS:1002954_collisional_cross_sectional_area=[UO,UO:00003241, square angstrom,]\n",
+        "properties": {
+          "column_name": {
+            "type": "string",
+            "description": "The fully qualified target column name."
+          },
+          "param": {
+            "description": "mzTab makes use of CV parameters. As mzTab is expected to be used in several experimental environments where parameters might not yet be available for the generated scores etc. all parameters can either report CV parameters or user parameters that only contain a name and a value.\nParameters are always reported as [CV label, accession, name, value]. Any field that is not available MUST be left empty.\n",
+            "x-mztab-example": "[MS, MS:1001477, SpectraST,]\n[,,A user parameter, The value]\n",
+            "type": "object",
+            "required": [
+              "name",
+              "value"
+            ],
+            "properties": {
+              "id": {
+                "type": "integer",
+                "format": "int32",
+                "minimum": 1
+              },
+              "cv_label": {
+                "type": "string",
+                "default": ""
+              },
+              "cv_accession": {
+                "type": "string",
+                "default": ""
+              },
+              "name": {
+                "type": "string"
+              },
+              "value": {
+                "type": "string",
+                "default": ""
+              }
+            }
+          }
+        }
+      },
+      "x-mztab-example": "COM\tcolunit for optional small molecule feature column with the name 'opt_ms_run[1]_cv_MS:MS:1002476_ion_mobility_drift_time' referencing ms_run[1]\nMTD\tcolunit-small_molecule_feature\topt_ms_run[1]_cv_MS:MS:1002476_ion_mobility_drift_time=[UO,UO:0000031, minute,]\n"
+    },
+    "colunit-small_molecule_evidence": {
+      "type": "array",
+      "description": "Defines the used unit for a column in the small molecule evidence section. The format of the value has to be \\{column name}=\\{Parameter defining the unit}.",
+      "default": [],
+      "items": {
+        "type": "object",
+        "required": [
+          "column_name",
+          "param"
+        ],
+        "description": "Defines the used unit for a column in the mzTab-M file. The format of the value has to be \\{column name}=\\{Parameter defining the unit}. This field MUST NOT be used to define a unit for quantification columns. The unit used for small molecule quantification values MUST be set in small_molecule-quantification_unit.",
+        "x-mztab-example": "COM\tcolunit for optional small molecule summary column with the name 'opt_global_cv_MS:MS:1002954_collisional_cross_sectional_area'\nMTD\tcolunit-small_molecule\topt_global_cv_MS:MS:1002954_collisional_cross_sectional_area=[UO,UO:00003241, square angstrom,]\n",
+        "properties": {
+          "column_name": {
+            "type": "string",
+            "description": "The fully qualified target column name."
+          },
+          "param": {
+            "description": "mzTab makes use of CV parameters. As mzTab is expected to be used in several experimental environments where parameters might not yet be available for the generated scores etc. all parameters can either report CV parameters or user parameters that only contain a name and a value.\nParameters are always reported as [CV label, accession, name, value]. Any field that is not available MUST be left empty.\n",
+            "x-mztab-example": "[MS, MS:1001477, SpectraST,]\n[,,A user parameter, The value]\n",
+            "type": "object",
+            "required": [
+              "name",
+              "value"
+            ],
+            "properties": {
+              "id": {
+                "type": "integer",
+                "format": "int32",
+                "minimum": 1
+              },
+              "cv_label": {
+                "type": "string",
+                "default": ""
+              },
+              "cv_accession": {
+                "type": "string",
+                "default": ""
+              },
+              "name": {
+                "type": "string"
+              },
+              "value": {
+                "type": "string",
+                "default": ""
+              }
+            }
+          }
+        }
+      },
+      "x-mztab-example": "COM\tcolunit for optional small molecule evidence column with the name 'opt_global_mass_error'\nMTD\tcolunit-small_molecule_evidence\topt_global_mass_error=[UO, UO:0000169, parts per million, ]\n"
+    }
+  },
+  "$schema": "http://json-schema.org/schema#"
+}

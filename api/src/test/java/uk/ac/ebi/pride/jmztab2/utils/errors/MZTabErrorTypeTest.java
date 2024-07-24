@@ -80,6 +80,23 @@ public class MZTabErrorTypeTest {
         MZTabErrorType expResult = error.getType();
         MZTabErrorType result = MZTabErrorType.createInfo(category, keyword);
         assertEquals(expResult, result);
+        assertEquals(Level.Info, result.getLevel());
+        
+        keyword = "NoSmallMoleculeSummarySection";
+        error = new MZTabError(
+                LogicalErrorType.NoSmallMoleculeSummarySection, -1);
+        expResult = error.getType();
+        result = MZTabErrorType.createInfo(category, keyword);
+        assertEquals(expResult, result);
+        assertEquals(Level.Info, result.getLevel());
+        
+        keyword = "NoSmallMoleculeFeatureSection";
+        error = new MZTabError(
+                LogicalErrorType.NoSmallMoleculeFeatureSection, -1);
+        expResult = error.getType();
+        result = MZTabErrorType.createInfo(category, keyword);
+        assertEquals(expResult, result);
+        assertEquals(Level.Info, result.getLevel());
     }
 
     /**

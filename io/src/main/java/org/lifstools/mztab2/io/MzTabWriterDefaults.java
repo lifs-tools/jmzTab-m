@@ -271,8 +271,9 @@ public class MzTabWriterDefaults {
         Metadata metadata = Optional.ofNullable(mzTabFile.getMetadata()).orElseThrow(() -> new MZTabException(new MZTabError(
                     LogicalErrorType.NoMetadataSection, -1)));
         
-        List<SmallMoleculeSummary> smsList = Optional.ofNullable(mzTabFile.getSmallMoleculeSummary()).orElseThrow(() -> new MZTabException(new MZTabError(
-                    LogicalErrorType.NoSmallMoleculeSummarySection, -1)));
+        List<SmallMoleculeSummary> smsList = Optional.ofNullable(mzTabFile.getSmallMoleculeSummary()).orElse(Collections.emptyList());
+        //orElseThrow(() -> new MZTabException(new MZTabError(
+        //            LogicalErrorType.NoSmallMoleculeSummarySection, -1)));
 
         metadata.
                 getAssay().

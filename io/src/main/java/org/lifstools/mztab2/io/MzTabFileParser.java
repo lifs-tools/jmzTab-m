@@ -475,7 +475,7 @@ public class MzTabFileParser {
             for (Integer id : commentMap.keySet()) {
                 mzTabFile.addCommentItem(commentMap.get(id));
             }
-
+            
             if (smallMoleculeSummaryMap.isEmpty()) {
                 errorList.add(new MZTabError(
                     LogicalErrorType.NoSmallMoleculeSummarySection, -1));

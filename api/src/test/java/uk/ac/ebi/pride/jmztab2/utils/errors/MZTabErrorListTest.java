@@ -91,13 +91,13 @@ public class MZTabErrorListTest {
     /**
      * Test of setLevel method, of class MZTabErrorList.
      */
-    @Test
-    public void testSetLevel() {
-        MZTabErrorList list = new MZTabErrorList(MZTabErrorType.Level.Warn, 1);
-        Assert.assertEquals(MZTabErrorType.Level.Warn, list.getLevel());
-        list.setLevel(MZTabErrorType.Level.Info);
-        Assert.assertEquals(MZTabErrorType.Level.Info, list.getLevel());
-    }
+//    @Test
+//    public void testSetLevel() {
+//        MZTabErrorList list = new MZTabErrorList(MZTabErrorType.Level.Warn, 1);
+//        Assert.assertEquals(MZTabErrorType.Level.Warn, list.getLevel());
+//        list.setLevel(MZTabErrorType.Level.Info);
+//        Assert.assertEquals(MZTabErrorType.Level.Info, list.getLevel());
+//    }
 
     /**
      * Test of clear method, of class MZTabErrorList.

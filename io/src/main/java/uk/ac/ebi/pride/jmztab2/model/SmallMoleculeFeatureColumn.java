@@ -21,6 +21,7 @@ import static org.lifstools.mztab2.model.SmallMoleculeFeature.Properties.*;
 import org.lifstools.mztab2.model.StringList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -245,4 +246,31 @@ public class SmallMoleculeFeatureColumn implements ISmallMoleculeFeatureColumn {
     public void setElement(Object element) {
         this.column.setElement(element);
     }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final SmallMoleculeFeatureColumn other = (SmallMoleculeFeatureColumn) obj;
+        return Objects.equals(this.column, other.column);
+    }
+
+    @Override
+    public String toString() {
+        return "SmallMoleculeFeatureColumn{" + "column=" + column + '}';
+    }
+    
 }

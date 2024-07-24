@@ -1,0 +1,32 @@
+{
+  "description": "The contact\u2019s name, affiliation and e-mail. Several contacts can be given by indicating the number in the square brackets after \"contact\". A contact has to be supplied in the format [first name] [initials] [last name].\n",
+  "x-mztab-example": "MTD\tcontact[1]-name\tJames D. Watson\nMTD\tcontact[1]-affiliation\tCambridge University, UK\nMTD\tcontact[1]-email\twatson@cam.ac.uk\nMTD\tcontact[2]-name\tFrancis Crick\nMTD\tcontact[2]-affiliation\tCambridge University, UK\nMTD\tcontact[2]-email\tcrick@cam.ac.uk\nMTD\tcontact[2]-orcid\t0000-0002-1825-0097\n",
+  "x-mztab-serialize-by-id": "true",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "integer",
+      "format": "int32",
+      "minimum": 1
+    },
+    "name": {
+      "description": "The contact's name.",
+      "type": "string"
+    },
+    "affiliation": {
+      "description": "The contact's affiliation.",
+      "type": "string"
+    },
+    "email": {
+      "description": "The contact's e-mail address.",
+      "type": "string",
+      "pattern": "^\\w+([\\.-]?\\w+)*@\\w+([\\.-]?\\w+)*(\\.\\w{2,3})+$"
+    },
+    "orcid": {
+      "description": "The contact's orcid id, without https prefix.",
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{3}[0-9X]{1}"
+    }
+  },
+  "$schema": "http://json-schema.org/schema#"
+}

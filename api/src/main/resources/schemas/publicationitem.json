@@ -1,0 +1,25 @@
+{
+  "type": "object",
+  "required": [
+    "type",
+    "accession"
+  ],
+  "description": "A publication item, defined by a qualifier and a native accession, e.g. pubmed id.",
+  "properties": {
+    "type": {
+      "type": "string",
+      "description": "The type qualifier of this publication item.",
+      "enum": [
+        "doi",
+        "pubmed",
+        "uri"
+      ],
+      "default": "doi"
+    },
+    "accession": {
+      "type": "string",
+      "description": "The native accession id for this publication item."
+    }
+  },
+  "$schema": "http://json-schema.org/schema#"
+}

@@ -1,0 +1,26 @@
+{
+  "type": "object",
+  "description": "Comment lines can be placed anywhere in an mzTab file. These lines must start with the three-letter code COM and are ignored by most parsers. Empty lines can also occur anywhere in an mzTab file and are ignored.\n",
+  "x-mztab-example": "COM\tThis is a comment line\n",
+  "required": [
+    "prefix",
+    "msg"
+  ],
+  "properties": {
+    "prefix": {
+      "type": "string",
+      "enum": [
+        "COM"
+      ],
+      "default": "COM"
+    },
+    "msg": {
+      "type": "string"
+    },
+    "line_number": {
+      "type": "integer",
+      "format": "int32"
+    }
+  },
+  "$schema": "http://json-schema.org/schema#"
+}

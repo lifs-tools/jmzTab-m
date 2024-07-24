@@ -1,0 +1,53 @@
+{
+  "description": "Software used to analyze the data and obtain the reported results. The parameter\u2019s value SHOULD contain the software\u2019s version. The order (numbering) should reflect the order in which the tools were used. A software setting used. This field MAY occur multiple times for a single software. The value of this field is deliberately set as a String, since there currently do not exist CV terms for every possible setting.\n",
+  "x-mztab-example": "MTD\tsoftware[1]\t[MS, MS:1002879, Progenesis QI, 3.0]\nMTD\tsoftware[1]-setting\tFragment tolerance = 0.1 Da\n\u2026\nMTD\tsoftware[2]-setting\tParent tolerance = 0.5 Da\n",
+  "x-mztab-serialize-by-id": "true",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "integer",
+      "format": "int32",
+      "minimum": 1
+    },
+    "parameter": {
+      "description": "mzTab makes use of CV parameters. As mzTab is expected to be used in several experimental environments where parameters might not yet be available for the generated scores etc. all parameters can either report CV parameters or user parameters that only contain a name and a value.\nParameters are always reported as [CV label, accession, name, value]. Any field that is not available MUST be left empty.\n",
+      "x-mztab-example": "[MS, MS:1001477, SpectraST,]\n[,,A user parameter, The value]\n",
+      "type": "object",
+      "required": [
+        "name",
+        "value"
+      ],
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 1
+        },
+        "cv_label": {
+          "type": "string",
+          "default": ""
+        },
+        "cv_accession": {
+          "type": "string",
+          "default": ""
+        },
+        "name": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string",
+          "default": ""
+        }
+      }
+    },
+    "setting": {
+      "type": "array",
+      "default": [],
+      "description": "A software setting used. This field MAY occur multiple times for a\nsingle software. The value of this field is deliberately set as a\nString, since there currently do not exist cvParams for every\npossible setting.\n",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "$schema": "http://json-schema.org/schema#"
+}

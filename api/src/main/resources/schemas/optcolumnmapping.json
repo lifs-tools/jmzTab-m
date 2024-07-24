@@ -1,0 +1,50 @@
+{
+  "type": "object",
+  "required": [
+    "identifier"
+  ],
+  "description": "Additional columns can be added to the end of the small molecule table. These column headers MUST start with the prefix \u201copt_\u201d followed by the {identifier} of the object they reference: assay, study variable, MS run or \u201cglobal\u201d (if the value relates to all replicates). Column names MUST only contain the following characters: \u2018A\u2019-\u2018Z\u2019, \u2018a\u2019-\u2018z\u2019, \u20180\u2019-\u20189\u2019, \u2018\u2019, \u2018-\u2019, \u2018[\u2019, \u2018]\u2019, and \u2018:\u2019. CV parameter accessions MAY be used for optional columns following the format: opt{identifier}_cv_{accession}_\\{parameter name}. Spaces within the parameter\u2019s name MUST be replaced by \u2018_\u2019.\n",
+  "x-mztab-example": "SMH\tSML_ID\t\u2026\topt_assay[1]_my_value\t\u2026\topt_global_another_value\nSML\t1\t\u2026\tMy value\t\u2026\tsome other value\n",
+  "properties": {
+    "identifier": {
+      "type": "string",
+      "description": "The fully qualified column name."
+    },
+    "param": {
+      "description": "mzTab makes use of CV parameters. As mzTab is expected to be used in several experimental environments where parameters might not yet be available for the generated scores etc. all parameters can either report CV parameters or user parameters that only contain a name and a value.\nParameters are always reported as [CV label, accession, name, value]. Any field that is not available MUST be left empty.\n",
+      "x-mztab-example": "[MS, MS:1001477, SpectraST,]\n[,,A user parameter, The value]\n",
+      "type": "object",
+      "required": [
+        "name",
+        "value"
+      ],
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 1
+        },
+        "cv_label": {
+          "type": "string",
+          "default": ""
+        },
+        "cv_accession": {
+          "type": "string",
+          "default": ""
+        },
+        "name": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string",
+          "default": ""
+        }
+      }
+    },
+    "value": {
+      "type": "string",
+      "description": "The value for this column in a particular row."
+    }
+  },
+  "$schema": "http://json-schema.org/schema#"
+}

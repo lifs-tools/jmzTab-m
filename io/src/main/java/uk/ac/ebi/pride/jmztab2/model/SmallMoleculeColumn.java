@@ -21,6 +21,7 @@ import org.lifstools.mztab2.model.SmallMoleculeSummary;
 import static org.lifstools.mztab2.model.SmallMoleculeSummary.Properties.*;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -250,4 +251,31 @@ public class SmallMoleculeColumn implements ISmallMoleculeColumn {
     public void setElement(Object element) {
         this.column.setElement(element);
     }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final SmallMoleculeColumn other = (SmallMoleculeColumn) obj;
+        return Objects.equals(this.column, other.column);
+    }
+
+    @Override
+    public String toString() {
+        return "SmallMoleculeColumn{" + "column=" + column + '}';
+    }
+    
 }

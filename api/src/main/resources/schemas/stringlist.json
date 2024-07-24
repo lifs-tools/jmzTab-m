@@ -1,0 +1,9 @@
+{
+  "type": "array",
+  "default": [],
+  "description": "A typed list of strings.",
+  "items": {
+    "type": "string"
+  },
+  "$schema": "http://json-schema.org/schema#"
+}

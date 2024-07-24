@@ -1,0 +1,19 @@
+{
+  "description": "A URI pointing to the file\u2019s source data (e.g., a MetaboLights records) or an external file with more details about the study design.",
+  "x-mztab-example": "MTD\turi[1]\thttps://www.ebi.ac.uk/metabolights/MTBLS517\n\u2026\nMTD\texternal_study_uri[1]\thttps://www.ebi.ac.uk/metabolights/MTBLS517/files/i_Investigation.txt\n",
+  "type": "object",
+  "x-mztab-serialize-by-id": "true",
+  "properties": {
+    "id": {
+      "type": "integer",
+      "format": "int32",
+      "minimum": 1
+    },
+    "value": {
+      "type": "string",
+      "description": "The URI pointing to the external resource.",
+      "format": "uri"
+    }
+  },
+  "$schema": "http://json-schema.org/schema#"
+}

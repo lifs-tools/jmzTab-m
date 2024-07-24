@@ -39,7 +39,8 @@ public enum ClassPathFile {
     LIPIDOMICS_EXAMPLE("/metabolomics/", "lipidomics-example.mzTab"),
     LIPIDOMICS_EXAMPLE_WRONG_MSSCAN_REF("/metabolomics/", "lipidomics-example-wrong-msscan-ref.mzTab"),
     MINIMAL_EXAMPLE("/metabolomics/", "minimal-m-2.0.mztab"),
-    XCMS_EXAMPLE("/metabolomics/", "xcms-test-export.mztab");
+    XCMS_EXAMPLE("/metabolomics/", "xcms-test-export.mztab"),
+    XCMS_NO_SML_EXAMPLE("/metabolomics/", "xcms-test-export-nosml.mztab");
 
     private final String resourcePathPrefix;
     private final String fileName;
