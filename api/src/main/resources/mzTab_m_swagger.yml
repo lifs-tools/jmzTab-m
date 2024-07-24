@@ -1211,7 +1211,7 @@ definitions:
             OR (for negative mode):
             SME	1	…	[M-H]-	…
             SME	2	…	[M+Cl]-	…
-        pattern: '^\[\d*M([-][\w]*)\]\d*[+-]$'
+        pattern: '^\[\d*M([+-][\w]*)\]\d*[+-]$'
       exp_mass_to_charge:
         type: number
         description: The experimental mass/charge value for the precursor ion. If multiple adduct forms have been combined into a single identification event/search, then a single value e.g. for the protonated form SHOULD be reported here.
