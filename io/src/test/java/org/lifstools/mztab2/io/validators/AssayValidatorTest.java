@@ -47,6 +47,20 @@ public class AssayValidatorTest {
         assertEquals(expResult.size(), result.size());
         assertEquals(expResult.get(0).toString(), result.get(0).toString());
     }
+    
+    @Test
+    public void testValidateMissingName() {
+        Metadata metadata = new Metadata();
+        metadata.addAssayItem(new Assay().id(1));
+        MZTabParserContext parserContext = new MZTabParserContext();
+        AssayValidator instance = new AssayValidator();
+        List<MZTabError> expResult = Arrays.asList(new MZTabError(
+                LogicalErrorType.NotDefineInMetadata, -1,
+                Metadata.Properties.assay + ""));
+        List<MZTabError> result = instance.validateRefine(metadata, parserContext);
+        assertEquals(expResult.size(), result.size());
+        assertEquals(expResult.get(0).toString(), result.get(0).toString());
+    }
 
     /**
      * Test of validateRefine method for assay requiring a linked ms run, of
