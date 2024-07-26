@@ -95,13 +95,13 @@ public class StudyVariableValidatorTest {
         List<MZTabError> expResult = Arrays.asList(
                 new MZTabError(
                         LogicalErrorType.NotDefineInMetadata, -1,
-                        Metadata.Properties.studyVariable + "[" + 1 + "]" + "\t" + "<NAME>"),
+                        Metadata.Properties.studyVariable + "[" + 1 + "]" + "\t<" + StudyVariable.Properties.name+">"),
                 new MZTabError(
                         LogicalErrorType.NotDefineInMetadata, -1,
-                        Metadata.Properties.studyVariable + "[" + 2 + "]" + "\t" + "<NAME>"),
+                        Metadata.Properties.studyVariable + "[" + 2 + "]" + "\t<" + StudyVariable.Properties.name+">"),
                 new MZTabError(
                         LogicalErrorType.NotDefineInMetadata, -1,
-                        Metadata.Properties.studyVariable + "[" + 2 + "]-" + StudyVariable.Properties.description + "\t" + "<DESCRIPTION>")
+                        Metadata.Properties.studyVariable + "[" + 2 + "]-" + StudyVariable.Properties.description)
         );
         List<MZTabError> result = instance.validateRefine(metadata, parserContext);
         assertEquals(expResult.size(), result.size());
@@ -134,7 +134,7 @@ public class StudyVariableValidatorTest {
         List<MZTabError> expResult = Arrays.asList(
                 new MZTabError(
                         LogicalErrorType.UndefinedStudyVariableNameOnceOnly, -1,
-                        Metadata.Properties.studyVariable + "[" + 2 + "]" + "\t" + "<NAME>")
+                        Metadata.Properties.studyVariable + "[" + 2 + "]" + "\t<" + StudyVariable.Properties.name+">")
         );
         List<MZTabError> result = instance.validateRefine(metadata, parserContext);
         assertEquals(expResult.size(), result.size());

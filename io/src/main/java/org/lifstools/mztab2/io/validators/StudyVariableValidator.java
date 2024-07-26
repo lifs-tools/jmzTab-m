@@ -55,18 +55,19 @@ public class StudyVariableValidator implements RefiningValidator<Metadata> {
                     if (sv == null) {
                         errorList.add(new MZTabError(
                                 LogicalErrorType.NotDefineInMetadata, -1,
-                                Metadata.Properties.studyVariable + "[" + id + "]" + "\t" + "<NAME>"));
+                                Metadata.Properties.studyVariable + "[" + id + "]" + "\t<" + StudyVariable.Properties.name + ">"));
                     } else {
                         if (sv.getName() == null) {
                             errorList.add(new MZTabError(
                                     LogicalErrorType.NotDefineInMetadata, -1,
-                                    Metadata.Properties.studyVariable + "[" + id + "]" + "\t" + "<NAME>"));
+                                    Metadata.Properties.studyVariable + "[" + id + "]" + "\t<" + StudyVariable.Properties.name + ">"));
                         } else {
                             if (sv.getName().equals("undefined")) {
                                 if (undefinedDefined) {
                                     errorList.add(new MZTabError(
                                             LogicalErrorType.UndefinedStudyVariableNameOnceOnly, -1,
-                                            Metadata.Properties.studyVariable + "[" + id + "]" + "\t" + "<NAME>"));
+                                            Metadata.Properties.studyVariable + "[" + id + "]" + "\t<" + StudyVariable.Properties.name
+                                            + ">"));
                                 } else {
                                     undefinedDefined = true;
                                 }
@@ -76,7 +77,7 @@ public class StudyVariableValidator implements RefiningValidator<Metadata> {
                                 getDescription() == null) {
                             errorList.add(new MZTabError(
                                     LogicalErrorType.NotDefineInMetadata, -1,
-                                    Metadata.Properties.studyVariable + "[" + id + "]-" + StudyVariable.Properties.description + "\t" + "<DESCRIPTION>"));
+                                    Metadata.Properties.studyVariable + "[" + id + "]-" + StudyVariable.Properties.description));
                         }
                         if (sv.
                                 getAssayRefs() == null || sv.getAssayRefs().

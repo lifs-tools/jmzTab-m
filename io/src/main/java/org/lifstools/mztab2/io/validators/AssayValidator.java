@@ -25,7 +25,7 @@ import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabError;
 import uk.ac.ebi.pride.jmztab2.utils.parser.MZTabParserContext;
 
 /**
- * Validates that the quantification method section is present in metadata.
+ * Validates that the assay section is present in metadata.
  *
  * @author nilshoffmann
  */
@@ -42,6 +42,11 @@ public class AssayValidator implements RefiningValidator<Metadata> {
         }
 
         for (Integer id : assayMap.keySet()) {
+            if (assayMap.get(id).getName() == null || assayMap.get(id).getName().isBlank()) {
+                errorList.add(new MZTabError(
+                        LogicalErrorType.NotDefineInMetadata, -1,
+                        Metadata.Properties.assay + "[" + id + "]" + "\t<" + Assay.Properties.name + ">"));
+            }
             if (assayMap.get(id).
                     getMsRunRef() == null || assayMap.get(id).
                             getMsRunRef().isEmpty()) {
