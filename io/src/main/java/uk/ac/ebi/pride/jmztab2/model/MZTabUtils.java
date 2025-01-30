@@ -170,8 +170,14 @@ public class MZTabUtils {
             
             if (tokens.length == 4) {
                 String cvLabel = tokens[0].trim();
+                if(cvLabel.contains("\"")) {
+                    cvLabel = removeDoubleQuotes(cvLabel);
+                }
                 
                 String accession = tokens[1].trim();
+                if(accession.contains("\"")) {
+                    accession = removeDoubleQuotes(accession);
+                }
                 
                 String name = tokens[2].trim();
                 if (name.contains("\"")) {  //We remove the escaping because it will be written back in the writer
@@ -848,7 +854,7 @@ public class MZTabUtils {
             value = value.trim();
             length = value.length();
             
-            value = value.replace("\"", "");
+            value = value.replaceAll("\"", "");
             count = length - value.length();
             
             if (isEmpty(value)) {
