@@ -1040,7 +1040,7 @@ components:
             SMH	SML_ID	…	adduct_ions	…
             SML	1	…	[M+H]1+ | [M+Na]1+	…
           default: []
-          pattern: ^\[\d*M([+-][\w]*)\]\d*[+-]$
+          pattern: '^\[\d*M([+-][\w\d]+)*\]\d*[+-]$'
           items:
             type: string
         reliability:
@@ -1292,7 +1292,7 @@ components:
             SFH	SMF_ID	…	adduct_ion	…
             SMF	1	…	[M+H]+	…
             SMF	2	…	[M+2Na]2+	…
-          pattern: ^\[\d*M([+-][\w]*)\]\d*[+-]$
+          pattern: '^\[\d*M([+-][\w\d]+)*\]\d*[+-]$'
         isotopomer:
           $ref: "#/components/schemas/Parameter"
         exp_mass_to_charge:
@@ -1547,7 +1547,7 @@ components:
             OR (for negative mode):
             SME	1	…	[M-H]-	…
             SME	2	…	[M+Cl]-	…
-          pattern: ^\[\d*M([-][\w]*)\]\d*[+-]$
+          pattern: '^\[\d*M([+-][\w\d]+)*\]\d*[+-]$'
         exp_mass_to_charge:
           type: number
           description: The experimental mass/charge value for the precursor ion. If
