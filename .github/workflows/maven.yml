@@ -60,6 +60,14 @@ jobs:
       if: always()
       with:
         files: "**/*-reports/*.xml"
+    - name: Publish to LIFS Tools Artifactory m.lifs-tools.org
+      run: ./mvnw -B deploy -DskipTests --file pom.xml
+      env:
+        registry: https://m.lifs-tools.org/artifactory/libs-snapshot-local
+        username: github-deployer
+        password: ${{ secrets.ARTIFACTORY_TOKEN }}
+        GITHUB_TOKEN: "${{ secrets.REPOSITORY_TOKEN }}"
+
           #    - name: Publish Jar
           #      env:
           #        ARTIFACTORY_USERNAME_REF: github-deployer 
@@ -68,10 +76,10 @@ jobs:
           #        DEFAULT_BRANCH: master
           #        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           #      run: ./mvnw -B deploy -DskipTests -Possrh-snapshot --file pom.xml
-    - name: Build and analyze
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      run: ./mvnw -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=lifs-tools_jg --file pom.xml
+    # - name: Build and analyze
+    #   env:
+    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+    #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+    #   run: ./mvnw -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=lifs-tools_jg --file pom.xml
     
 
