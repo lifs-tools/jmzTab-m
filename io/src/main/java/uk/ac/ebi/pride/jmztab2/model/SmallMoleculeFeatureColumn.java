@@ -62,6 +62,7 @@ public class SmallMoleculeFeatureColumn implements ISmallMoleculeFeatureColumn {
         ISOTOPOMER(isotopomer, String.class, true, "05"),
         EXP_MASS_TO_CHARGE(
             expMassToCharge, Double.class, false, "06"),
+        Integer charge = (someValue == null || someValue.isEmpty()) ? null : Integer.valueOf(someValue);
         CHARGE(charge, Integer.class, false, "07"),
         RETENTION_TIME_IN_SECONDS(retentionTimeInSeconds, Double.class, true,
             "08"),
