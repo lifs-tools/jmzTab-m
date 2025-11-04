@@ -48,11 +48,9 @@ jobs:
     - name: Publish to LIFS Tools Artifactory m.lifs-tools.org
       run: ./mvnw -B deploy -Pgithub-snapshot -DskipTests --file pom.xml
       env:
-        registry: https://m.lifs-tools.org/artifactory/libs-snapshot-local
-        username: github-deployer
-        password: ${{ secrets.ARTIFACTORY_TOKEN }}
+        MAVEN_USERNAME: github-deployer
+        MAVEN_PASSWORD: ${{ secrets.ARTIFACTORY_TOKEN }}
         GITHUB_TOKEN: "${{ secrets.REPOSITORY_TOKEN }}"
-
           #    - name: Publish Jar
           #      env:
           #        ARTIFACTORY_USERNAME_REF: github-deployer 
