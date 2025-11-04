@@ -22,7 +22,6 @@ jobs:
       with:
         java-version: '21'
         distribution: 'adopt'
-        cache: maven
     - name: Set Git user
       run: |
         git config --global committer.email "noreply@github.com"
@@ -34,7 +33,11 @@ jobs:
         USERNAME: ${{ github.actor }}
         PASSWORD: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        echo "RELEASE_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV  
+        echo "RELEASE_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
+    - name: Restore Maven cache
+      uses: skjolber/maven-cache-github-action@v3.1.1
+      with:
+        step: restore
     - name: Build with Maven
       env:
         USERNAME: ${{ github.actor }}
@@ -46,15 +49,19 @@ jobs:
       with:
         files: "**/*-reports/*.xml"
     - name: Publish to GitHub Packages
-      run: mvn --batch-mode deploy
+      run: mvn --batch-mode -Pgithub-snapshot deploy
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    - name: Publish to LIFS Tools Artifactory m.lifs-tools.org
-      run: ./mvnw -B deploy -Pgithub-snapshot -DskipTests --file pom.xml
-      env:
-        MAVEN_USERNAME: github-deployer
-        MAVEN_PASSWORD: ${{ secrets.ARTIFACTORY_TOKEN }}
-        GITHUB_TOKEN: "${{ secrets.REPOSITORY_TOKEN }}"
+    - name: Save Maven cache
+      uses: skjolber/maven-cache-github-action@v3.1.1
+      with:
+        step: save
+    # - name: Publish to LIFS Tools Artifactory m.lifs-tools.org
+    #   run: ./mvnw -B deploy -Pgithub-snapshot -DskipTests --file pom.xml
+    #   env:
+    #     MAVEN_USERNAME: github-deployer
+    #     MAVEN_PASSWORD: ${{ secrets.ARTIFACTORY_TOKEN }}
+    #     GITHUB_TOKEN: "${{ secrets.REPOSITORY_TOKEN }}"
           #    - name: Publish Jar
           #      env:
           #        ARTIFACTORY_USERNAME_REF: github-deployer 
