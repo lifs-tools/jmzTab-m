@@ -348,7 +348,7 @@
                             </goals>
                             <configuration>
                                 <from>
-                                    <image>openjdk:17-jre-slim</image>
+                                    <image>openjdk:21-jre-slim</image>
                                 </from>
                                 <to>
                                     <image>${docker.image.prefix}/${docker.service.prefix}-${project.artifactId}</image>
@@ -714,7 +714,7 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <configuration>
-                    <source>17</source>
+                    <source>21</source>
                     <linksource>true</linksource>
                     <docfilessubdirs>true</docfilessubdirs>
                 </configuration>
