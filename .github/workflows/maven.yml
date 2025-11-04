@@ -45,6 +45,10 @@ jobs:
       if: always()
       with:
         files: "**/*-reports/*.xml"
+    - name: Publish to GitHub Packages
+      run: mvn --batch-mode deploy
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: Publish to LIFS Tools Artifactory m.lifs-tools.org
       run: ./mvnw -B deploy -Pgithub-snapshot -DskipTests --file pom.xml
       env:
