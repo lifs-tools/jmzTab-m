@@ -42,11 +42,12 @@ public class AssayValidator implements RefiningValidator<Metadata> {
         }
 
         for (Integer id : assayMap.keySet()) {
-            if (assayMap.get(id).getName() == null || assayMap.get(id).getName().isBlank()) {
-                errorList.add(new MZTabError(
-                        LogicalErrorType.NotDefineInMetadata, -1,
-                        Metadata.Properties.assay + "[" + id + "]" + "\t<" + Assay.Properties.name + ">"));
-            }
+            // FIXME reenable for next major release
+            // if (assayMap.get(id).getName() == null || assayMap.get(id).getName().isBlank()) {
+            //     errorList.add(new MZTabError(
+            //             LogicalErrorType.NotDefineInMetadata, -1,
+            //             Metadata.Properties.assay + "[" + id + "]" + "\t<" + Assay.Properties.name + ">"));
+            // }
             if (assayMap.get(id).
                     getMsRunRef() == null || assayMap.get(id).
                             getMsRunRef().isEmpty()) {

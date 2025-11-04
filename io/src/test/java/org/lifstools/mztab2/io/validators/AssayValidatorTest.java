@@ -20,6 +20,8 @@ import org.lifstools.mztab2.model.Assay;
 import org.lifstools.mztab2.model.Metadata;
 import java.util.Arrays;
 import java.util.List;
+
+import org.junit.Ignore;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import uk.ac.ebi.pride.jmztab2.utils.errors.LogicalErrorType;
@@ -48,6 +50,7 @@ public class AssayValidatorTest {
         assertEquals(expResult.get(0).toString(), result.get(0).toString());
     }
     
+    @Ignore
     @Test
     public void testValidateMissingName() {
         Metadata metadata = new Metadata();

@@ -220,14 +220,21 @@
                 </plugin>
                 <plugin>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.10.1</version>
+                    <version>3.14.1</version>
                     <configuration>
                         <release>${java.version}</release>
+                        <annotationProcessorPaths>
+                            <path>
+                                <groupId>org.projectlombok</groupId>
+                                <artifactId>lombok</artifactId>
+                                <version>${lombok.version}</version>
+                            </path>
+                        </annotationProcessorPaths>
                     </configuration>
                 </plugin>
                 <plugin>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>3.0.0-M7</version>
+                    <version>3.5.4</version>
                     <configuration>
                         <redirectTestOutputToFile>true</redirectTestOutputToFile>
                         <parallel>classes</parallel>
@@ -239,7 +246,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-failsafe-plugin</artifactId>
-                    <version>3.0.0-M7</version>
+                    <version>3.5.4</version>
                     <configuration>
                         <redirectTestOutputToFile>true</redirectTestOutputToFile>
                         <parallel>classes</parallel>
@@ -262,12 +269,12 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-shade-plugin</artifactId>
-                    <version>3.4.1</version>
+                    <version>3.6.1</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-source-plugin</artifactId>
-                    <version>3.2.1</version>
+                    <version>3.3.1</version>
                     <executions>
                         <execution>
                             <id>attach-sources</id>
@@ -547,9 +554,9 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!--<maven.compiler.source>1.8</maven.compiler.source>-->
         <!--<maven.compiler.target>1.8</maven.compiler.target>-->
-        <java.version>17</java.version>
+        <java.version>21</java.version>
         <maven.compiler.release>${java.version}</maven.compiler.release>
-        <lombok.version>1.18.34</lombok.version>
+        <lombok.version>1.18.42</lombok.version>
         <junit.version>4.13.2</junit.version>
         <hamcrest.version>2.2</hamcrest.version>
         <javax.validation.version>2.0.1.Final</javax.validation.version>
@@ -569,7 +576,7 @@
         <migbase.version>2.2</migbase.version>
         <swagger2markup.version>1.3.7</swagger2markup.version>
         <maven-plugin-version>1.0.0</maven-plugin-version>
-        <jacoco.version>0.8.11</jacoco.version>
+        <jacoco.version>0.8.13</jacoco.version>
         <mockito.version>3.12.4</mockito.version><!--2.19.0-->
         <olsclient.version>2.13</olsclient.version>
         <jxpath.version>1.3</jxpath.version>
@@ -584,11 +591,11 @@
         <javax.annotation-api.version>1.3.2</javax.annotation-api.version>
         <assembly.dir>${project.artifactId}</assembly.dir>
         <javax.activation-api.version>1.2.0</javax.activation-api.version>
-        <jib.plugin.version>3.4.0</jib.plugin.version>
+        <jib.plugin.version>3.4.6</jib.plugin.version>
         <docker.service.prefix>jmztabm</docker.service.prefix>
         <docker.image.prefix>lifs</docker.image.prefix>
         <docker.base.image>azul/zulu-openjdk-alpine</docker.base.image>
-        <docker.base.image.version>17-jre-headless-latest</docker.base.image.version>
+        <docker.base.image.version>21-jre-headless-latest</docker.base.image.version>
     </properties>
 
     <modules>
