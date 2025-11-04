@@ -777,19 +777,28 @@
             </build>
             <distributionManagement>
                 <repository>
-                    <id>lifs-release</id>
-                    <name>LIFS releases</name>
-                    <url>https://m.lifs-tools.org:443/artifactory/lifs-libs-snapshot-local</url>
+                    <id>github</id>
+                    <name>GitHub Packages</name>
+                    <url>https://maven.pkg.github.com/lifs-tools/jmzTab-m</url>
                 </repository>
-                <snapshotRepository>
-                    <id>lifs-snapshots</id>
-                    <name>LIFS snapshots</name>
-                    <url>https://m.lifs-tools.org:443/artifactory/lifs-libs-snapshot-local</url>
-                </snapshotRepository>
             </distributionManagement>
         </profile>
         <profile>
             <id>ossrh-snapshot</id>
+            <distributionManagement>
+                <snapshotRepository>
+                    <id>ossrh</id>
+                    <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+                </snapshotRepository>
+                <repository>
+                    <id>ossrh</id>
+                    <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+                </repository>
+                <site>
+                    <id>jmztabm-github</id>
+                    <url>scm:git:ssh://git@github.com/lifs-tools/jmztab-m.git</url>
+                </site>
+            </distributionManagement>
             <build>
                 <plugins>
                     <plugin>
@@ -844,6 +853,20 @@
                     <value>true</value>
                 </property>
             </activation>
+            <distributionManagement>
+                <snapshotRepository>
+                    <id>ossrh</id>
+                    <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+                </snapshotRepository>
+                <repository>
+                    <id>ossrh</id>
+                    <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+                </repository>
+                <site>
+                    <id>jmztabm-github</id>
+                    <url>scm:git:ssh://git@github.com/lifs-tools/jmztab-m.git</url>
+                </site>
+            </distributionManagement>
             <build>
                 <plugins>
                     <plugin>
@@ -908,18 +931,4 @@
             </build>
         </profile>
     </profiles>
-    <distributionManagement>
-        <snapshotRepository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-        </snapshotRepository>
-        <repository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-        </repository>
-        <site>
-            <id>jmztabm-github</id>
-            <url>scm:git:ssh://git@github.com/lifs-tools/jmztab-m.git</url>
-        </site>
-    </distributionManagement>
 </project>
