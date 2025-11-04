@@ -737,6 +737,58 @@
     </reporting>
     <profiles>
         <profile>
+            <id>github-snapshot</id>
+            <build>
+                <plugins>
+                    <!-- <plugin>
+                        <groupId>org.owasp</groupId>
+                        <artifactId>dependency-check-maven</artifactId>
+                    </plugin> -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>attach-sources</id>
+                                <goals>
+                                    <goal>jar-no-fork</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>attach-javadocs</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                                <configuration>
+                                    <detectJavaApiLink>false</detectJavaApiLink>
+                                    <additionalparam>-Xdoclint:none</additionalparam>
+                                    <docfilessubdirs>true</docfilessubdirs>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+            <distributionManagement>
+                <repository>
+                    <id>lifs-release</id>
+                    <name>LIFS releases</name>
+                    <url>https://m.lifs-tools.org:443/artifactory/lifs-libs-snapshot-local</url>
+                </repository>
+                <snapshotRepository>
+                    <id>lifs-snapshots</id>
+                    <name>LIFS snapshots</name>
+                    <url>https://m.lifs-tools.org:443/artifactory/lifs-libs-snapshot-local</url>
+                </snapshotRepository>
+            </distributionManagement>
+        </profile>
+        <profile>
             <id>ossrh-snapshot</id>
             <build>
                 <plugins>
