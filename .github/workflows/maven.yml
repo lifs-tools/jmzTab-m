@@ -49,7 +49,7 @@ jobs:
       with:
         files: "**/*-reports/*.xml"
     - name: Publish to GitHub Packages
-      run: mvn --batch-mode -Pgithub-snapshot deploy
+      run: mvn --batch-mode -DskipTests -Pgithub-snapshot deploy
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - uses: jfrog/setup-jfrog-cli@v4

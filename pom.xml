@@ -784,6 +784,21 @@
             </distributionManagement>
         </profile>
         <profile>
+            <id>jfrog</id>
+            <distributionManagement>
+                <repository>
+                    <id>artifactory-releases</id>
+                    <name>lifstools-release-local</name>
+                    <url>https://m.lifs-tools.org/artifactory/lifs-libs-release-local</url>
+                </repository>
+                <snapshotRepository>
+                    <id>artifactory-snapshots</id>
+                    <name>lifstools-snapshot-local</name>
+                    <url>https://m.lifs-tools.org/artifactory/lifs-libs-snapshot-local</url>
+                </snapshotRepository>
+            </distributionManagement>
+        </profile>
+        <profile>
             <id>ossrh-snapshot</id>
             <distributionManagement>
                 <snapshotRepository>
