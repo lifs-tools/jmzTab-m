@@ -571,7 +571,7 @@
         <jodatime.version>2.12.7</jodatime.version>
         <hibernate.validator.version>6.2.5.Final</hibernate.validator.version>
         <slf4j.version>2.0.17</slf4j.version>
-        <commons-cli.version>1.6.0</commons-cli.version>
+        <commons-cli.version>1.10.0</commons-cli.version>
         <javax.el.version>3.0.1-b12</javax.el.version>
         <migbase.version>2.2</migbase.version>
         <swagger2markup.version>1.3.7</swagger2markup.version>
