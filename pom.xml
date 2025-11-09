@@ -579,7 +579,7 @@
         <jacoco.version>0.8.14</jacoco.version>
         <mockito.version>3.12.4</mockito.version><!--2.19.0-->
         <olsclient.version>2.13</olsclient.version>
-        <jxpath.version>1.3</jxpath.version>
+        <jxpath.version>1.4.0</jxpath.version>
         <spring.version>5.3.39</spring.version>
         <logback.version>1.5.20</logback.version>
         <diffutils.version>2.2</diffutils.version>
