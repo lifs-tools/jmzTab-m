@@ -35,7 +35,7 @@ jobs:
       run: |
         echo "RELEASE_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
     - name: Restore Maven cache
-      uses: skjolber/maven-cache-github-action@v3.1.1
+      uses: skjolber/maven-cache-github-action@v3.1.2
       with:
         step: restore
     - name: Build with Maven
@@ -64,7 +64,7 @@ jobs:
             jf mvn -B deploy -DskipTests -Pjfrog --file pom.xml
             jf rt bp # (optional, deploy build info, use --dry-run flag to see the build info in console without committing it)
     - name: Save Maven cache
-      uses: skjolber/maven-cache-github-action@v3.1.1
+      uses: skjolber/maven-cache-github-action@v3.1.2
       with:
         step: save
     # - name: Publish to LIFS Tools Artifactory m.lifs-tools.org
