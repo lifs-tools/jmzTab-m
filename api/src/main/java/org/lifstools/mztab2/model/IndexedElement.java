@@ -17,7 +17,7 @@ package org.lifstools.mztab2.model;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Proxy;
-import javax.validation.ValidationException;
+import jakarta.validation.ValidationException;
 
 /**
  * Indexed elements (IDs) define a unique ID for a collection of multiple

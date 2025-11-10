@@ -22,9 +22,9 @@ import java.lang.annotation.Annotation;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintViolation;
-import javax.validation.Validation;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
 import org.hibernate.validator.HibernateValidator;
 import org.hibernate.validator.HibernateValidatorConfiguration;
 import org.hibernate.validator.cfg.ConstraintMapping;
@@ -124,7 +124,7 @@ public class MzTabBeanValidator implements Validator<MzTab> {
     public List<ValidationMessage> validate(MzTab mzTab) {
         List<ValidationMessage> list = new LinkedList<>();
 
-        javax.validation.Validator validator = configuration.addMapping(
+        jakarta.validation.Validator validator = configuration.addMapping(
             constraintMapping).
             buildValidatorFactory().
             getValidator();
@@ -142,7 +142,7 @@ public class MzTabBeanValidator implements Validator<MzTab> {
      * <p>
      * getPathLocatorString.</p>
      *
-     * @param cv a {@link javax.validation.ConstraintViolation} object.
+     * @param cv a {@link jakarta.validation.ConstraintViolation} object.
      * @return a {@link java.lang.String} object.
      */
     protected String getPathLocatorString(ConstraintViolation<?> cv) {

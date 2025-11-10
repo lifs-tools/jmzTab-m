@@ -41,6 +41,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import uk.ac.ebi.pride.jmztab2.model.MZTabConstants;
 import uk.ac.ebi.pride.jmztab2.model.MetadataElement;
@@ -86,14 +87,17 @@ public class MetadataSerializer extends StdSerializer<Metadata> {
      * @param jg a {@link com.fasterxml.jackson.core.JsonGenerator} object.
      * @param sp a {@link com.fasterxml.jackson.databind.SerializerProvider}
      * object.
-     * @param comparator a {@link java.util.Comparator} object.
+     * @param comparator an optional {@link java.util.Comparator} object.
      * @param <T> a T object.
      */
     public static <T extends Object> void serializeListWithMetadataElement(
         List<T> list, MetadataElement mtdElement, JsonGenerator jg,
-        SerializerProvider sp, Comparator<? super T> comparator) {
-        list.stream().
-            sorted(comparator).
+        SerializerProvider sp, Optional<Comparator<? super T>> comparator) {
+        var stream = list.stream();
+        if (comparator.isPresent()) {
+            stream = stream.sorted(comparator.get());
+        }
+        stream.
             forEach((object) ->
             {
                 if (object != null) {
@@ -194,9 +198,9 @@ public class MetadataSerializer extends StdSerializer<Metadata> {
             //file uri
             if (t.getUri() != null) {
                 serializeListWithMetadataElement(t.getUri(),
-                    MetadataElement.URI, jg, sp, Comparator.comparing(
+                    MetadataElement.URI, jg, sp, Optional.of(Comparator.comparing(
                         Uri::getId,
-                        Comparator.nullsFirst(Comparator.naturalOrder())));
+                        Comparator.nullsFirst(Comparator.naturalOrder()))));
             } else {
                 
                     log.debug( "URI is null!");
@@ -204,10 +208,10 @@ public class MetadataSerializer extends StdSerializer<Metadata> {
             //external study uri
             if (t.getExternalStudyUri() != null) {
                 serializeListWithMetadataElement(t.getExternalStudyUri(),
-                    MetadataElement.EXTERNAL_STUDY_URI, jg, sp, Comparator.
+                    MetadataElement.EXTERNAL_STUDY_URI, jg, sp, Optional.of(Comparator.
                         comparing(
                             Uri::getId,
-                            Comparator.nullsFirst(Comparator.naturalOrder())));
+                            Comparator.nullsFirst(Comparator.naturalOrder()))));
             } else {
                 
                     log.debug( "External Study URI is null!");
@@ -266,11 +270,7 @@ public class MetadataSerializer extends StdSerializer<Metadata> {
             //derivatization agent
             if (t.getDerivatizationAgent() != null) {
                 serializeListWithMetadataElement(t.getDerivatizationAgent(),
-                    MetadataElement.DERIVATIZATION_AGENT, jg, sp, Comparator.
-                        comparing(
-                            Parameter::getId,
-                            Comparator.nullsFirst(Comparator.naturalOrder())
-                        ));
+                    MetadataElement.DERIVATIZATION_AGENT, jg, sp, Optional.empty());
             } else {
                 
                     log.debug( "Derivatization agent is null!");
@@ -309,9 +309,7 @@ public class MetadataSerializer extends StdSerializer<Metadata> {
             //custom
             if (t.getCustom() != null) {
                 serializeListWithMetadataElement(t.getCustom(),
-                    MetadataElement.CUSTOM, jg, sp, Comparator.comparing(
-                        Parameter::getId, Comparator.nullsFirst(Comparator.
-                            naturalOrder())));
+                    MetadataElement.CUSTOM, jg, sp, Optional.empty());
             } else {
                 
                     log.debug( "Custom is null!");
@@ -371,10 +369,7 @@ public class MetadataSerializer extends StdSerializer<Metadata> {
             }
             if (t.getIdConfidenceMeasure() != null) {
                 serializeListWithMetadataElement(t.getIdConfidenceMeasure(),
-                    MetadataElement.ID_CONFIDENCE_MEASURE, jg, sp, Comparator.
-                        comparing(
-                            Parameter::getId, Comparator.nullsFirst(Comparator.
-                                naturalOrder())));
+                    MetadataElement.ID_CONFIDENCE_MEASURE, jg, sp, Optional.empty());
             } else {
                 
                     log.debug( "Id confidence measure is null!");

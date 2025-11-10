@@ -61,7 +61,7 @@ public enum MZBoolean {
     public static MZBoolean findBoolean(String booleanLabel) {
         booleanLabel = booleanLabel.trim();
         try {
-            Integer id = new Integer(booleanLabel);
+            Integer id = Integer.parseInt(booleanLabel);
             MZBoolean mzBoolean = null;
             switch (id) {
                 case 0:

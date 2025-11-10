@@ -16,6 +16,7 @@
 package org.lifstools.mztab2.io.serialization;
 
 import com.fasterxml.jackson.databind.ObjectWriter;
+import java.net.URI;
 import org.lifstools.mztab2.io.AbstractSerializerTest;
 import org.lifstools.mztab2.io.TestResources;
 import org.lifstools.mztab2.io.serialization.ParameterConverter;
@@ -42,7 +43,7 @@ public class MsRunSerializerTest extends AbstractSerializerTest {
         Metadata mtd = new Metadata();
         Instrument instrument1 = new Instrument().id(1);
         MsRun msRun1 = new MsRun().id(1).
-            location("file://ftp.ebi.ac.uk/path/to/file1.mzml").
+            location(URI.create("file://ftp.ebi.ac.uk/path/to/file1.mzml")).
             idFormat(new Parameter().cvLabel("MS").
                 cvAccession("MS:1001530").
                 name(

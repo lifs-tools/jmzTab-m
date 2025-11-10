@@ -813,11 +813,11 @@ public class MZTabParserContext {
         if (msRun == null) {
             msRun = new MsRun();
             msRun.id(id);
-            msRun.setLocation(location==null?null:location.toASCIIString());
+            msRun.setLocation(location==null?null:location);
             msRunMap.put(id, msRun);
             metadata.addMsRunItem(msRun);
         } else {
-            msRun.setLocation(location.toString());
+            msRun.setLocation(location);
         }
         return msRun;
     }
@@ -1067,11 +1067,11 @@ public class MZTabParserContext {
         if (assay == null) {
             assay = new Assay();
             assay.id(id);
-            assay.setExternalUri(location==null?null:location.toASCIIString());
+            assay.setExternalUri(location==null?null:location);
             assayMap.put(id, assay);
             metadata.addAssayItem(assay);
         } else {
-            assay.setExternalUri(location.toString());
+            assay.setExternalUri(location);
         }
         return assay;
     }
@@ -1419,7 +1419,7 @@ public class MZTabParserContext {
             metadata.addCvItem(cv);
         }
 
-        cv.setUri(uri);
+        cv.setUri(URI.create(uri));
         return cvMap.put(id, cv);
     }
 
@@ -1489,9 +1489,6 @@ public class MZTabParserContext {
      * @param parameter SHOULD NOT be null
      */
     void addIdConfidenceMeasure(Metadata metadata, Integer id, Parameter parameter) {
-        if(parameter.getId()==null) {
-            parameter.setId(id);
-        }
         this.idConfidenceMeasureMap.put(id, parameter);
         metadata.addIdConfidenceMeasureItem(parameter);
     }
@@ -1506,9 +1503,6 @@ public class MZTabParserContext {
     Parameter addCustomItem(Metadata metadata, Integer id, Parameter custom) {
         if (custom == null) {
             return null;
-        }
-        if(custom.getId()==null) {
-            custom.setId(id);
         }
         this.customItemMap.put(id, custom);
         metadata.addCustomItem(custom);
@@ -1525,9 +1519,6 @@ public class MZTabParserContext {
     Parameter addDerivatizationAgentItem(Metadata metadata, Integer id, Parameter derivatizationAgent) {
         if (derivatizationAgent == null) {
             return null;
-        }
-        if(derivatizationAgent.getId()==null) {
-            derivatizationAgent.setId(id);
         }
         this.derivatizationItemMap.put(id, derivatizationAgent);
         metadata.addDerivatizationAgentItem(derivatizationAgent);
@@ -1619,11 +1610,11 @@ public class MZTabParserContext {
         if (database == null) {
             database = new Database();
             database.id(id);
-            database.setUri(checkURI==null?null:checkURI.toString());
+            database.setUri(checkURI==null?null:checkURI);
             databaseMap.put(id, database);
             metadata.addDatabaseItem(database);
         } else {
-            database.setUri(checkURI==null?null:checkURI.toString());
+            database.setUri(checkURI==null?null:checkURI);
         }
         return database;
     }

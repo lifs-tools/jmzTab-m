@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jxb:bindings xmlns:xs="http://www.w3.org/2001/XMLSchema"
               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-              xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
-              version="2.1">
+              xmlns:jxb="https://jakarta.ee/xml/ns/jaxb"
+              version="3.0">
   <jxb:bindings schemaLocation="CvMapping.xsd">
     <!-- these bindings generate Java enums instead of simple string-based types -->
     <jxb:bindings node="//xs:attribute[@name='cvTermsCombinationLogic']/xs:simpleType">

@@ -282,7 +282,7 @@ public class MZTabUtils {
         Matcher matcher = pattern.matcher(target);
         if (matcher.find()) {
             Integer id = Integer.parseInt(matcher.group(1));
-            IndexedElement p = new IndexedElementImpl(id, element.getName(), element);
+            IndexedElement p = new IndexedElementImpl(id, element);
             return p;
         } else {
             return null;
@@ -378,7 +378,7 @@ public class MZTabUtils {
         Integer integer;
         
         try {
-            integer = new Integer(target);
+            integer = Integer.parseInt(target);
         } catch (NumberFormatException e) {
             integer = null;
         }
@@ -402,7 +402,7 @@ public class MZTabUtils {
         
         Double value;
         try {
-            value = new Double(target);
+            value = Double.parseDouble(target);
         } catch (NumberFormatException e) {
             switch (target) {
                 case CALCULATE_ERROR:
@@ -434,7 +434,7 @@ public class MZTabUtils {
         }
         
         try {
-            return new Long(target);
+            return Long.parseLong(target);
         } catch (NumberFormatException e) {
             return null;
         }
@@ -583,7 +583,7 @@ public class MZTabUtils {
         for (String item : list) {
             matcher = pattern.matcher(item.trim());
             if (matcher.find()) {
-                ms_file_id = new Integer(matcher.group(1));
+                ms_file_id = Integer.parseInt(matcher.group(1));
                 reference = matcher.group(2);
                 
                 MsRun msRun = context.getMsRunMap().

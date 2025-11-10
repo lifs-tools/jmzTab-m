@@ -15,6 +15,7 @@
  */
 package org.lifstools.mztab2.io.validators;
 
+import java.net.URI;
 import org.lifstools.mztab2.io.validators.MsRunValidator;
 import org.lifstools.mztab2.model.Metadata;
 import org.lifstools.mztab2.model.MsRun;
@@ -60,7 +61,7 @@ public class MsRunValidatorTest {
         Metadata metadata = new Metadata();
         MZTabParserContext parserContext = new MZTabParserContext();
         MsRunValidator instance = new MsRunValidator();
-        MsRun msRun = new MsRun().id(1).location("file:///path/to/my.mzml").scanPolarity(null);
+        MsRun msRun = new MsRun().id(1).location(URI.create("file:///path/to/my.mzml")).scanPolarity(null);
         parserContext.addMsRun(metadata, msRun);
         metadata.addMsRunItem(msRun);
         List<MZTabError> expResult = Arrays.asList(new MZTabError(

@@ -15,6 +15,7 @@
  */
 package org.lifstools.mztab2.io.validators;
 
+import java.net.URI;
 import org.lifstools.mztab2.io.validators.DatabaseValidator;
 import org.lifstools.mztab2.model.Database;
 import org.lifstools.mztab2.model.Metadata;
@@ -55,7 +56,7 @@ public class DatabaseValidatorTest {
     @Test
     public void testValidateRefineNoDatabase() {
         Metadata metadata = new Metadata();
-        metadata.addDatabaseItem(new Database().id(1).uri("file:///my/illegal/db/uri").param(new Parameter().name("no database")).prefix("my illegal prefix"));
+        metadata.addDatabaseItem(new Database().id(1).uri(URI.create("file:///my/illegal/db/uri")).param(new Parameter().name("no database")).prefix("my illegal prefix"));
         MZTabParserContext parserContext = new MZTabParserContext();
         DatabaseValidator instance = new DatabaseValidator();
         List<MZTabError> expResult = Arrays.asList(new MZTabError(

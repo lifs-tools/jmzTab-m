@@ -32,7 +32,7 @@ import org.lifstools.mztab2.test.utils.ExtractClassPathFiles;
 import org.lifstools.mztab2.test.utils.LogMethodName;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBException;
 import static org.junit.Assert.assertEquals;
 import org.junit.ClassRule;
 import org.junit.Rule;

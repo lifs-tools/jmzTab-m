@@ -1670,10 +1670,6 @@ components:
         - name
         - value
       properties:
-        id:
-          type: integer
-          format: int32
-          minimum: 1
         cv_label:
           type: string
           default: ""

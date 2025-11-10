@@ -16,6 +16,7 @@
 package org.lifstools.mztab2.io.serialization;
 
 import com.fasterxml.jackson.databind.ObjectWriter;
+import java.net.URI;
 import org.lifstools.mztab2.io.AbstractSerializerTest;
 import org.lifstools.mztab2.io.TestResources;
 import org.lifstools.mztab2.model.Uri;
@@ -44,9 +45,9 @@ public class UriSerializerTest extends AbstractSerializerTest {
         String uri2 = "https://github.com/lifs-tools";
         
         mtd.addUriItem(new Uri().id(1).
-                value(uri1));
+                value(URI.create(uri1)));
         mtd.addUriItem(new Uri().id(2).
-            value(uri2));
+            value(URI.create(uri2)));
 
         assertEqSentry(TestResources.MZTAB_VERSION_HEADER
             + MTD + TAB_STRING + Metadata.Properties.uri + "[1]" + TAB_STRING + uri1 + NEW_LINE

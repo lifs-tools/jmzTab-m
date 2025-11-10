@@ -16,6 +16,7 @@
 package org.lifstools.mztab2.io.serialization;
 
 import com.fasterxml.jackson.databind.ObjectWriter;
+import java.net.URI;
 import org.lifstools.mztab2.io.AbstractSerializerTest;
 import org.lifstools.mztab2.io.TestResources;
 import org.lifstools.mztab2.io.serialization.ParameterConverter;
@@ -44,7 +45,7 @@ public class AssaySerializerTest extends AbstractSerializerTest {
 
         Metadata metadata = new Metadata();
         Assay assay = new Assay().id(1).
-                externalUri("http://jus.tf.for.testing.de/really").
+                externalUri(URI.create("http://jus.tf.for.testing.de/really")).
                 name(Metadata.Properties.assay + " 1");
         metadata.addAssayItem(assay);
 
@@ -66,7 +67,7 @@ public class AssaySerializerTest extends AbstractSerializerTest {
         //do not add sample to metadata, just test the ref mechanism
         Sample sample = new Sample().id(1);
         Assay assay = new Assay().id(1).
-                externalUri("http://jus.tf.for.testing.de/really").
+                externalUri(URI.create("http://jus.tf.for.testing.de/really")).
                 name(Metadata.Properties.assay + " 1").
                 sampleRef(sample);
         metadata.addAssayItem(assay);
@@ -90,7 +91,7 @@ public class AssaySerializerTest extends AbstractSerializerTest {
         //do not add to metadata, just test the ref mechanism
         MsRun msRun = new MsRun().id(1);
         Assay assay = new Assay().id(1).
-                externalUri("http://jus.tf.for.testing.de/really").
+                externalUri(URI.create("http://jus.tf.for.testing.de/really")).
                 name("assay 1").
                 addMsRunRefItem(msRun);
         metadata.addAssayItem(assay);
@@ -113,10 +114,10 @@ public class AssaySerializerTest extends AbstractSerializerTest {
 
         Metadata metadata = new Metadata();
         //do not add to metadata, just test the ref mechanism
-        Parameter customParam = new Parameter().id(1).
+        Parameter customParam = new Parameter().
                 name("custom param").
                 value("custom value");
-        Parameter customParam2 = new Parameter().id(2).name("custom param2").value("custom value 2");
+        Parameter customParam2 = new Parameter().name("custom param2").value("custom value 2");
         Assay assay = new Assay().id(1).
                 name("assay 1").
                 addCustomItem(customParam).addCustomItem(customParam2);
@@ -125,8 +126,8 @@ public class AssaySerializerTest extends AbstractSerializerTest {
 
         assertEqSentry(TestResources.MZTAB_VERSION_HEADER
                 + MTD + TAB_STRING + Metadata.Properties.assay + "[" + assay.getId() + "]" + TAB_STRING + "assay 1" + NEW_LINE
-                + MTD + TAB_STRING + Metadata.Properties.assay + "[" + assay.getId() + "]-" + Assay.Properties.custom + "[" + customParam.getId() + "]" + TAB_STRING + new ParameterConverter().convert(customParam) + NEW_LINE
-                + MTD + TAB_STRING + Metadata.Properties.assay + "[" + assay.getId() + "]-" + Assay.Properties.custom + "[" + customParam2.getId() + "]" + TAB_STRING + new ParameterConverter().convert(customParam2) + NEW_LINE,
+                + MTD + TAB_STRING + Metadata.Properties.assay + "[" + assay.getId() + "]-" + Assay.Properties.custom + "[" + 1 + "]" + TAB_STRING + new ParameterConverter().convert(customParam) + NEW_LINE
+                + MTD + TAB_STRING + Metadata.Properties.assay + "[" + assay.getId() + "]-" + Assay.Properties.custom + "[" + 2 + "]" + TAB_STRING + new ParameterConverter().convert(customParam2) + NEW_LINE,
                 serializeSingle(writer, metadata));
     }
 

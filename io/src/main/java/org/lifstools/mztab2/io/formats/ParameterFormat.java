@@ -15,8 +15,10 @@
  */
 package org.lifstools.mztab2.io.formats;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.lifstools.mztab2.io.serialization.ParameterConverter;
+import org.lifstools.mztab2.io.serialization.StringToParameterConverter;
 
 /**
  * Format specification for {@link org.lifstools.mztab2.model.Parameter}.
@@ -25,6 +27,7 @@ import org.lifstools.mztab2.io.serialization.ParameterConverter;
  * 
  */
 @JsonSerialize(converter = ParameterConverter.class)
+@JsonDeserialize(converter = StringToParameterConverter.class)
 public abstract class ParameterFormat {
 
 }

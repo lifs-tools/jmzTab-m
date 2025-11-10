@@ -11,9 +11,9 @@
         </encoder>
     </appender>
 
-    <logger name="org.lifstools" level="info"/>
+    <logger name="org.lifstools" level="INFO"/>
 
-    <root level="info">
+    <root level="${LOG_LEVEL:INFO}">">
         <appender-ref ref="console"/>
     </root>
 

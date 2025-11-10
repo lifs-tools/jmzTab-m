@@ -16,6 +16,7 @@
 package org.lifstools.mztab2.io.serialization;
 
 import com.fasterxml.jackson.databind.ObjectWriter;
+import java.net.URI;
 import org.lifstools.mztab2.io.AbstractSerializerTest;
 import org.lifstools.mztab2.io.TestResources;
 import org.lifstools.mztab2.model.CV;
@@ -44,12 +45,12 @@ public class CvSerializerTest extends AbstractSerializerTest {
             label("MS").
             fullName("PSI-MS ontology").
             version("3.54.0").
-            uri("https://raw.githubusercontent.com/HUPO-PSI/psi-ms-CV/master/psi-ms.obo"));
+            uri(URI.create("https://raw.githubusercontent.com/HUPO-PSI/psi-ms-CV/master/psi-ms.obo")));
         mtd.addCvItem(new CV().id(2).
             label("CHEBI").
             fullName("Chebi ontology").
             version("164").
-            uri("ftp://ftp.ebi.ac.uk/pub/databases/chebi/ontology/chebi.obo"));
+            uri(URI.create("ftp://ftp.ebi.ac.uk/pub/databases/chebi/ontology/chebi.obo")));
 
         assertEqSentry(TestResources.MZTAB_VERSION_HEADER
             + MTD + TAB_STRING + Metadata.Properties.cv + "[1]-label" + TAB_STRING + "MS" + NEW_LINE

@@ -15,6 +15,9 @@
  */
 package org.lifstools.mztab2.cli;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.LoggerContext;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import org.lifstools.mztab2.io.MzTabFileParser;
@@ -36,7 +39,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Properties;
 import java.util.stream.Collectors;
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBException;
 import org.apache.commons.cli.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -110,6 +113,7 @@ public class MZTabCommandLine {
         MZTabErrorTypeMap typeMap = new MZTabErrorTypeMap();
         CommandLineParser parser = new PosixParser();
         Options options = new Options();
+        String logLevelOpt = addLogLevelOption(options);
         String helpOpt = addHelpOption(options);
         String versionOpt = addVersionOption(options);
         String msgOpt = addMessageOption(options);
@@ -132,6 +136,12 @@ public class MZTabCommandLine {
         } else if (line.hasOption(versionOpt)) {
             LOGGER.info(getAppInfo());
         } else {
+            if (line.hasOption(logLevelOpt)) {
+                handleLogLevelOption(line.getOptionValue(logLevelOpt));
+            } else {
+                LoggerContext ctx = (LoggerContext) LoggerFactory.getILoggerFactory();
+                LOGGER.info("Using default global logger level: '{}'", ctx.getLogger(Logger.ROOT_LOGGER_NAME).getLevel());
+            }
             boolean hadErrorsOrWarnings = handleValidationOptions(line, outOpt,
                 levelOpt, serializeOpt,
                 deserializeOpt, checkOpt, checkSemanticOpt);
@@ -186,6 +196,13 @@ public class MZTabCommandLine {
         return levelOpt;
     }
     
+    protected static String addLogLevelOption(Options options) {
+        String levelOpt = "logLevel";
+        options.addOption(null, levelOpt, true,
+            "Choose verbosity of logging level (Info, Debug, Warn, Error), default level is Info!");
+        return levelOpt;
+    }
+    
     protected static String addCheckOption(Options options) throws IllegalArgumentException {
         String checkOpt = "c";
         Option checkSemanticOption = OptionBuilder.
@@ -214,10 +231,36 @@ public class MZTabCommandLine {
         options.addOption(msgOption);
         return msgOpt;
     }
+    
+    protected static void handleLogLevelOption(String logLevel) {
+        if (logLevel != null) {
+           LOGGER.info("Setting global logger level to: {}", logLevel.toUpperCase());
+           LOGGER.info("Setting org.lifs-tools logger level to: {}", logLevel.toUpperCase());
+           LoggerContext ctx = (LoggerContext) LoggerFactory.getILoggerFactory();
+           switch(logLevel.toUpperCase()) {
+               case "INFO":
+                ctx.getLogger(Logger.ROOT_LOGGER_NAME).setLevel(Level.INFO);
+                ctx.getLogger("org.lifstools").setLevel(Level.INFO);
+                break;   
+               case "WARN":
+                ctx.getLogger(Logger.ROOT_LOGGER_NAME).setLevel(Level.WARN);
+                ctx.getLogger("org.lifstools").setLevel(Level.WARN);
+                break;
+               case "ERROR":
+                ctx.getLogger(Logger.ROOT_LOGGER_NAME).setLevel(Level.ERROR);
+                ctx.getLogger("org.lifstools").setLevel(Level.ERROR);
+                break;
+               case "DEBUG":
+                ctx.getLogger(Logger.ROOT_LOGGER_NAME).setLevel(Level.DEBUG);
+                ctx.getLogger("org.lifstools").setLevel(Level.DEBUG);
+                break;
+           }
+        }
+    }
 
     protected static boolean handleValidationOptions(CommandLine line,
         String outOpt, String levelOpt, String serializeOpt,
-        String deserializeOpt, String checkOpt, String checkSemanticOpt) throws JAXBException, IllegalArgumentException, URISyntaxException {
+        String deserializeOpt, String checkOpt, String checkSemanticOpt) throws IOException, JAXBException, IllegalArgumentException, URISyntaxException {
         File outFile = null;
         if (line.hasOption(outOpt)) {
             outFile = new File(line.getOptionValue(outOpt));
@@ -251,11 +294,13 @@ public class MZTabCommandLine {
             return handleValidation(line, checkOpt, out, level,
                 checkSemanticOpt,
                 serializeToJson, deserializeFromJson);
-        } catch (IOException ex) {
-            LOGGER.error(
-                "Caught an IO Exception: ", ex);
-            return false;
         }
+//        } catch (IOException ex) {
+//            LOGGER.error( 
+//                "Caught an IO Exception: {}", ex.getLocalizedMessage());
+//            ex.printStackTrace();
+//            return true;
+//        }
     }
 
     protected static void handleMsgOption(CommandLine line, String msgOpt,
@@ -283,51 +328,69 @@ public class MZTabCommandLine {
             }
             File inFile = new File(value.trim());
             if (fromJson) {
-                File tmpFile = new File(inFile.getParentFile(),
-                    inFile.getName() + ".mztab");
-                MzTabNonValidatingWriter w = new MzTabNonValidatingWriter();
-                ObjectMapper mapper = new ObjectMapper();
-                MzTab mzTab = mapper.readValue(inFile, MzTab.class);
-                LOGGER.info("Writing JSON as mzTab to file: {}", tmpFile.
-                    getAbsolutePath());
-                w.write(tmpFile.toPath(), mzTab);
-                inFile = tmpFile;
+                try {
+                    File tmpFile = new File(inFile.getParentFile(),
+                        inFile.getName() + ".mztab");
+                    LOGGER.info("Parsing '{}', converting to mzTab file: '{}'", inFile.getAbsolutePath(), tmpFile.getAbsolutePath());
+                    MzTabNonValidatingWriter w = new MzTabNonValidatingWriter();
+                    ObjectMapper mapper = new ObjectMapper();
+                    mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+                    mapper.configure(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES, false);
+                    MzTab mzTab = mapper.readValue(inFile, MzTab.class);
+                    LOGGER.info("Writing JSON as mzTab to file: {}", tmpFile.
+                        getAbsolutePath());
+                    w.write(tmpFile.toPath(), mzTab);
+                    inFile = tmpFile;
+                } catch (IOException ioex) {
+                    LOGGER.error("Caught exception while reading JSON from file '" + inFile.getAbsolutePath() + "'", ioex);
+                }
             }
             LOGGER.info("Beginning validation of mztab file: {}", inFile.
                 getAbsolutePath());
-            MzTabFileParser mzTabParser = new MzTabFileParser(inFile);
-            MZTabErrorList errorList = mzTabParser.parse(outFile, level);
-            if (!errorList.isEmpty()) {
-                long nErrorsOrWarnings = errorList.getErrorList().
-                    stream().
-                    filter((error) ->
-                    {
-                        MZTabError e = error;
-                        return e.getType().
-                                getLevel() == MZTabErrorType.Level.Error || e.
-                                        getType().
-                                        getLevel() == MZTabErrorType.Level.Warn;
-                    }).
-                    count();
-                errorsOrWarnings = nErrorsOrWarnings > 0;
-                //these are reported to std.err already.
-                LOGGER.error(
-                    "There were " + errorList.size() + " validation messages including " + nErrorsOrWarnings + " warnings or errors during validation of your file, please check the output for details!");
+            try {
+                MzTabFileParser mzTabParser = new MzTabFileParser(inFile);
+                MZTabErrorList errorList = mzTabParser.parse(outFile, level);
+                if (!errorList.isEmpty()) {
+                    long nErrorsOrWarnings = errorList.getErrorList().
+                        stream().
+                        filter((error) ->
+                        {
+                            MZTabError e = error;
+                            return e.getType().
+                                    getLevel() == MZTabErrorType.Level.Error || e.
+                                            getType().
+                                            getLevel() == MZTabErrorType.Level.Warn;
+                        }).
+                        count();
+                    errorsOrWarnings = nErrorsOrWarnings > 0;
+                    //these are reported to std.err already.
+                    LOGGER.error(
+                        "There were " + errorList.size() + " validation messages including " + nErrorsOrWarnings + " warnings or errors during validation of your file, please check the output for details!");
+                } else {
+                    LOGGER.info("There were 0 validation messages during validation of your file!");
+                }
+                LOGGER.info(value);
+                if (toJson) {
+                    File jsonFile = new File(inFile.getName() + ".json");
+                    LOGGER.info(
+                        "Writing mzTab object as json to " + jsonFile.
+                            getAbsolutePath());
+                    try {
+                        ObjectMapper objectMapper = new ObjectMapper().enable(
+                            SerializationFeature.INDENT_OUTPUT);
+                        objectMapper.
+                            writeValue(jsonFile, mzTabParser.getMZTabFile());
+                    } catch (IOException ioex) {
+                        LOGGER.error("Caught exception while writing mzTab to JSON file '" + jsonFile.getAbsolutePath() + "'", ioex);
+                    }
+                }
+                errorsOrWarnings = errorsOrWarnings || handleSemanticValidation(line,
+                    checkSemanticOpt, inFile, outFile,
+                    mzTabParser, level);
+                LOGGER.info("Finished validation!");
+            } catch(IOException | IllegalArgumentException ioex) {
+                LOGGER.error("Validation of file '" + inFile.getAbsolutePath() + "' failed with exception: ", ioex);
             }
-            if (toJson) {
-                File jsonFile = new File(inFile.getName() + ".json");
-                LOGGER.error(
-                    "Writing mzTab object as json to " + jsonFile.
-                        getAbsolutePath());
-                ObjectMapper objectMapper = new ObjectMapper().enable(
-                    SerializationFeature.INDENT_OUTPUT);
-                objectMapper.
-                    writeValue(jsonFile, mzTabParser.getMZTabFile());
-            }
-            errorsOrWarnings = errorsOrWarnings || handleSemanticValidation(line,
-                checkSemanticOpt, inFile, outFile,
-                mzTabParser, level);
-            LOGGER.info("Finished validation!");
         }
         return errorsOrWarnings;
     }

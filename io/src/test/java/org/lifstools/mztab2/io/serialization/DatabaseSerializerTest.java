@@ -16,6 +16,7 @@
 package org.lifstools.mztab2.io.serialization;
 
 import com.fasterxml.jackson.databind.ObjectWriter;
+import java.net.URI;
 import org.lifstools.mztab2.io.AbstractSerializerTest;
 import org.lifstools.mztab2.io.TestResources;
 import org.lifstools.mztab2.model.Database;
@@ -42,18 +43,18 @@ public class DatabaseSerializerTest extends AbstractSerializerTest {
         Metadata mtd = new Metadata();
         
         mtd.addDatabaseItem(new Database().id(1).
-            param(new Parameter().id(1).
+            param(new Parameter().
                 name("no database").
                 value("null")).
             version("Unknown"));
         mtd.addDatabaseItem(new Database().id(2).
-            param(new Parameter().id(2).
+            param(new Parameter().
                 cvLabel("MIRIAM").
                 cvAccession("MIR:00100079").
                 name("HMDB")).
             version("3.6").
             prefix("hmdb").
-            uri("http://www.hmdb.ca/"));
+            uri(URI.create("http://www.hmdb.ca/")));
 
         //param prefix uri version
         assertEqSentry(TestResources.MZTAB_VERSION_HEADER

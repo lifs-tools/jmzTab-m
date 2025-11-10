@@ -15,6 +15,7 @@
  */
 package org.lifstools.mztab2.validation;
 
+import java.net.URI;
 import org.lifstools.mztab2.cvmapping.JxPathElement;
 import static org.lifstools.mztab2.cvmapping.JxPathElement.toStream;
 import org.lifstools.mztab2.model.Instrument;
@@ -43,8 +44,8 @@ public class JxPathTest {
         List<?> msRuns = (List<?>) context.getValue("/metadata/msRun",
             List.class);
         assertFalse(msRuns.isEmpty());
-        assertEquals("file:///path/to/file1.mzML", toStream(context.
-            getPointer("/metadata/msRun/@location"), String.class).
+        assertEquals(URI.create("file:///path/to/file1.mzML"), toStream(context.
+            getPointer("/metadata/msRun/@location"), URI.class).
             findFirst().
             map((t) ->
             {
@@ -54,9 +55,9 @@ public class JxPathTest {
             }).
             get().
             getValue());
-        Stream<? extends String> stream = toStream(context.iterate(
-            "/metadata/msRun/@location"), String.class);
-        assertEquals("file:///path/to/file1.mzML", stream.findFirst().
+        Stream<? extends URI> stream = toStream(context.iterate(
+            "/metadata/msRun/@location"), URI.class);
+        assertEquals(URI.create("file:///path/to/file1.mzML"), stream.findFirst().
             get());
 
         //scopePath /metadata/msrun

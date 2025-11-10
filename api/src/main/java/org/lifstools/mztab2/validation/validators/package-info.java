@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 /**
- * This package contains custom validators that implement the <pre>javax.validation.ConstraintValidator</pre> interface. 
+ * This package contains custom validators that implement the <pre>jakarta.validation.ConstraintValidator</pre> interface. 
  */
 package org.lifstools.mztab2.validation.validators;

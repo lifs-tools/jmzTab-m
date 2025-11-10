@@ -16,6 +16,8 @@
 package org.lifstools.mztab2.io.serialization;
 
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonToken;
+import com.fasterxml.jackson.core.type.WritableTypeId;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
@@ -52,9 +54,11 @@ public class SampleProcessingSerializer extends StdSerializer<SampleProcessing> 
     @Override
     public void serializeWithType(SampleProcessing value, JsonGenerator gen,
         SerializerProvider serializers, TypeSerializer typeSer) throws IOException {
-        typeSer.writeTypePrefixForObject(value, gen);
+        WritableTypeId typeIdDef = typeSer.writeTypePrefix(gen,
+            typeSer.typeId(value, JsonToken.START_OBJECT));
+        typeSer.writeTypePrefix(gen, typeIdDef);
         serialize(value, gen, serializers);
-        typeSer.writeTypeSuffixForObject(value, gen);
+        typeSer.writeTypeSuffix(gen, typeIdDef);
     }
 
     /** {@inheritDoc} */

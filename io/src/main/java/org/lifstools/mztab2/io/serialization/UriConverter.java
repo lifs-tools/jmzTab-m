@@ -32,7 +32,7 @@ public class UriConverter extends StdConverter<Uri, String> {
      */
     @Override
     public String convert(Uri uri) {
-        return Optional.ofNullable(uri).map(u -> u.getValue()).orElse(NULL);
+        return Optional.ofNullable(uri).map(u -> u.getValue().toASCIIString()).orElse(NULL);
     }
 
 }

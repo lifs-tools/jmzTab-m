@@ -28,11 +28,12 @@ import org.lifstools.mztab2.test.utils.LogMethodName;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
-import javax.validation.ConstraintViolation;
-import javax.validation.Validation;
-import javax.validation.Validator;
-import javax.validation.ValidatorFactory;
-import javax.xml.bind.JAXBException;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
+import jakarta.xml.bind.JAXBException;
+import java.net.URI;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -54,28 +55,28 @@ public class MzTabValidatorTest {
                 "ISAS e.V. Dortmund, Germany");
         contact1.id(1);
         MsRun msRun1 = new MsRun().id(1).
-            location("file:///path/to/file1.mzML").
+            location(URI.create("file:///path/to/file1.mzML")).
             format(
-                new Parameter().id(1).
+                new Parameter().
                     cvLabel("MS").
                     cvAccession("MS:1000584").
                     name("mzML file").
                     value("")
             ).
             idFormat(
-                new Parameter().id(1).
+                new Parameter().
                     cvLabel("MS").
                     cvAccession("MS:1001530").
                     name("mzML unique identifier").
                     value("")
             ).
             addScanPolarityItem(
-                new Parameter().id(1).
+                new Parameter().
                     cvLabel("MS").
                     cvAccession("MS:1000129").
                     name("negative scan")
             ).addScanPolarityItem(
-                new Parameter().id(1).
+                new Parameter().
                     cvLabel("MS").
                     cvAccession("MS:1000130").
                     name("positive scan")
@@ -144,7 +145,7 @@ public class MzTabValidatorTest {
         CV cv1 = new CV().label("MS").
             fullName("PSI-MS").
             version("4.0.18").
-            uri("https://github.com/HUPO-PSI/psi-ms-CV/blob/master/psi-ms.obo");
+            uri(URI.create("https://github.com/HUPO-PSI/psi-ms-CV/blob/master/psi-ms.obo"));
         cv1.id(1);
         mztabfile.getMetadata().
             addCvItem(cv1);

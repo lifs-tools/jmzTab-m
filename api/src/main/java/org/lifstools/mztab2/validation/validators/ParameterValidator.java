@@ -18,8 +18,8 @@ package org.lifstools.mztab2.validation.validators;
 import org.lifstools.mztab2.validation.constraints.CheckParameter;
 import org.lifstools.mztab2.model.Parameter;
 import java.util.Optional;
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 
 /**
  * Base interface for parameter validation with default validation method.
