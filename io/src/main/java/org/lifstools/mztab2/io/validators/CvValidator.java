@@ -56,7 +56,7 @@ public class CvValidator implements RefiningValidator<Metadata> {
                             LogicalErrorType.NotDefineInMetadata, -1,
                             Metadata.Properties.cv + "[" + cv.getId() + "]-" + CV.Properties.version));
                 }
-                if (cv.getUri() == null || cv.getUri().isEmpty()) {
+                if (cv.getUri() == null || cv.getUri().toASCIIString().isEmpty()) {
                     errorList.add(new MZTabError(
                             LogicalErrorType.NotDefineInMetadata, -1,
                             Metadata.Properties.cv + "[" + cv.getId() + "]-" + CV.Properties.uri));

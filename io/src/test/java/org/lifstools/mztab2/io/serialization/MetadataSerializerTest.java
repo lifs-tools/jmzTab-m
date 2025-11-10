@@ -16,6 +16,7 @@
 package org.lifstools.mztab2.io.serialization;
 
 import com.fasterxml.jackson.databind.ObjectWriter;
+import java.net.URI;
 import org.lifstools.mztab2.io.AbstractSerializerTest;
 import org.lifstools.mztab2.io.TestResources;
 import org.lifstools.mztab2.model.Contact;
@@ -52,7 +53,7 @@ public class MetadataSerializerTest extends AbstractSerializerTest {
             ).
             addMsRunItem(
                 new MsRun().id(1).
-                    location("file:///path/to/file1.mzML").
+                    location(URI.create("file:///path/to/file1.mzML")).
                     format(
                         new Parameter().
                             cvLabel("MS").

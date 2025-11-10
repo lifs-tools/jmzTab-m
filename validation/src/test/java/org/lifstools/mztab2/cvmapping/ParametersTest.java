@@ -31,12 +31,12 @@ public class ParametersTest {
      */
     @Test
     public void testIsEqual() {
-        Parameter parameter1 = new Parameter().id(1).
+        Parameter parameter1 = new Parameter().
             cvLabel("MS").
             cvAccession("879123").
             name("jklajsd").
             value("klhasd");
-        Parameter parameter2 = new Parameter().id(1).
+        Parameter parameter2 = new Parameter().
             cvLabel("MS").
             cvAccession("879123").
             name("jklajsd").
@@ -46,12 +46,12 @@ public class ParametersTest {
     
     @Test
     public void testIsNotEqual() {
-        Parameter parameter1 = new Parameter().id(1).
+        Parameter parameter1 = new Parameter().
             cvLabel("MS").
             cvAccession("214873").
             name("jklajsd").
             value("klhasd");
-        Parameter parameter2 = new Parameter().id(2).
+        Parameter parameter2 = new Parameter().
             cvLabel("MS").
             cvAccession("879123").
             name("jklajsd").
@@ -70,12 +70,12 @@ public class ParametersTest {
     
     @Test
     public void testIsEqualWithDifferentValues() {
-        Parameter parameter1 = new Parameter().id(1).
+        Parameter parameter1 = new Parameter().
             cvLabel("MS").
             cvAccession("214873").
             name("jklajsd").
             value("klhasd");
-        Parameter parameter2 = new Parameter().id(2).
+        Parameter parameter2 = new Parameter().
             cvLabel("MS").
             cvAccession("214873").
             name("jklajsd").

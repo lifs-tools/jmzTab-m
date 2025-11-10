@@ -27,7 +27,7 @@ import java.util.Objects;
 public class IndexedElementImpl implements IndexedElement {
 
     private final Integer id;
-    private final String elementType;
+    //private final String elementType;
     private final Object payload;
 
     /**
@@ -35,28 +35,16 @@ public class IndexedElementImpl implements IndexedElement {
      * type and payload.
      *
      * @param id the id.
-     * @param elementType the element type string.
      * @param payload the payload, any indexed domain object.
      */
-    public IndexedElementImpl(Integer id, String elementType, Object payload) {
+    public IndexedElementImpl(Integer id, Object payload) {
         this.id = id;
-        this.elementType = elementType;
         this.payload = payload;
     }
 
     @Override
     public Integer getId() {
         return id;
-    }
-
-    /**
-     * Returns the element type string.
-     * This is used by MetadataElement in the <pre>jmztabm-io</pre> module.
-     *
-     * @return the element type string.
-     */
-    public String getElementType() {
-        return elementType;
     }
 
     /**
@@ -89,7 +77,6 @@ public class IndexedElementImpl implements IndexedElement {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("class IndexedElement {\n");
-
         sb.append("    id: ").append(toIndentedString(id)).append("\n");
         sb.append("}");
         return sb.toString();

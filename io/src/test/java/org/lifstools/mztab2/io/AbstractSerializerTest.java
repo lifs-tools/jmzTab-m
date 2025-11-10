@@ -53,6 +53,9 @@ public abstract class AbstractSerializerTest {
     }
 
     public String serializeSequence(ObjectWriter writer, Collection<?> elements) throws IOException {
+        if (elements == null) {
+            return "";
+        }
         StringWriter sw = new StringWriter();
         SequenceWriter sequenceWriter = writer.writeValues(sw);
         sequenceWriter.writeAll(elements);
@@ -60,6 +63,9 @@ public abstract class AbstractSerializerTest {
     }
     
     public String serializeSingle(ObjectWriter writer, Object object) throws IOException {
+        if (object == null) {
+            return "";
+        }
         StringWriter sw = new StringWriter();
         writer.writeValue(sw, object);
         return sw.toString();

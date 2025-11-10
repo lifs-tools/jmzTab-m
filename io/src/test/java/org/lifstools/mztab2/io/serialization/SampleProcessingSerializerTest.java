@@ -39,7 +39,7 @@ public class SampleProcessingSerializerTest extends AbstractSerializerTest {
     public void testSerialize() throws Exception {
         Metadata mtd = new Metadata();
         SampleProcessing sp = new SampleProcessing().id(1);
-        sp.addSampleProcessingItem(new Parameter().id(1).
+        sp.addSampleProcessingItem(new Parameter().
             cvLabel("SEP").
             cvAccession("sep:00210").
             name("liquid chromatography"));

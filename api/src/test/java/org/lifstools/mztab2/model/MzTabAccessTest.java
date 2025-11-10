@@ -15,6 +15,7 @@
  */
 package org.lifstools.mztab2.model;
 
+import java.net.URI;
 import org.lifstools.mztab2.model.Assay;
 import org.lifstools.mztab2.model.Database;
 import org.lifstools.mztab2.model.Metadata;
@@ -130,7 +131,7 @@ public class MzTabAccessTest {
 
     @Test
     public void testGetMsRunFor() {
-        MsRun msRun = new MsRun().id(1).location("123");
+        MsRun msRun = new MsRun().id(1).location(URI.create("file:///123.mzML"));
         Metadata metadata = new Metadata();
         metadata.addMsRunItem(msRun);
         MzTab mzTab = new MzTab().metadata(metadata);

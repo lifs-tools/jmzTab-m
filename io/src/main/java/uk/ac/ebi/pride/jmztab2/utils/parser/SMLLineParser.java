@@ -149,7 +149,7 @@ public class SMLLineParser extends MZTabDataLineParser<SmallMoleculeSummary> {
                             break;
                         case URI:
                             smallMoleculeSummary.uri(
-                                checkStringList(column, target,
+                                checkUriList(column, target,
                                     MZTabConstants.BAR));
                             break;
 

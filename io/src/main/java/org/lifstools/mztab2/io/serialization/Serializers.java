@@ -16,10 +16,10 @@
 package org.lifstools.mztab2.io.serialization;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import org.lifstools.mztab2.model.Assay;
 import org.lifstools.mztab2.model.IndexedElement;
 import org.lifstools.mztab2.model.OptColumnMapping;
@@ -39,7 +39,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import javax.validation.ValidationException;
+import jakarta.validation.ValidationException;
 import lombok.extern.slf4j.Slf4j;
 import uk.ac.ebi.pride.jmztab2.model.IMZTabColumn;
 import uk.ac.ebi.pride.jmztab2.model.MZTabConstants;
@@ -448,11 +448,11 @@ public class Serializers {
         if (element instanceof MetadataElement) {
             return Optional.ofNullable(((MetadataElement) element).getName());
         }
-        JacksonXmlRootElement rootElement = element.getClass().
-                getAnnotation(JacksonXmlRootElement.class);
+        JsonPropertyOrder rootElement = element.getClass().
+                getAnnotation(JsonPropertyOrder.class);
         if (rootElement != null) {
             String underscoreName = camelCaseToUnderscoreLowerCase(
-                    rootElement.localName());
+                    element.getClass().getSimpleName());
             if (element instanceof IndexedElement) {
                 Integer id = Optional.ofNullable(((IndexedElement) element).getId()).orElseThrow(()
                         -> new NullPointerException(

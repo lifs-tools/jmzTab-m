@@ -23,6 +23,7 @@ import org.lifstools.mztab2.model.MzTab;
 import org.lifstools.mztab2.model.Parameter;
 import org.lifstools.mztab2.model.SmallMoleculeSummary;
 import java.io.IOException;
+import java.net.URI;
 import java.util.Arrays;
 import org.junit.Assert;
 import org.junit.Test;
@@ -75,7 +76,7 @@ public class SmallMoleculeSummarySerializerTest extends AbstractSerializerTest {
             addInchiItem(
                 "InChI=1S/C42H83NO3/c1-3-5-7-9-11-13-15-17-18-19-20-21-22-23-24-26-28-30-32-34-36-38-42(46)43-40(39-44)41(45)37-35-33-31-29-27-25-16-14-12-10-8-6-4-2/h35,37,40-41,44-45H,3-34,36,38-39H2,1-2H3,(H,43,46)/b37-35+/t40-,41+/m0/s1").
             addUriItem(
-                "http://www.lipidmaps.org/data/LMSDRecord.php?LM_ID=LMSP02010012").
+                URI.create("http://www.lipidmaps.org/data/LMSDRecord.php?LM_ID=LMSP02010012")).
             addTheoreticalNeutralMassItem(649.6373).
             addAdductIonsItem("[M+H]1+").
             reliability("1").

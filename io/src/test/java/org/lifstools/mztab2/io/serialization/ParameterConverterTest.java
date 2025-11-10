@@ -36,7 +36,7 @@ public class ParameterConverterTest {
     public void testConvert() {
 
         ParameterConverter conv = new ParameterConverter();
-        Parameter p1 = new Parameter().id(1).
+        Parameter p1 = new Parameter().
             cvLabel("SEP").
             cvAccession("sep:00210").
             name("liquid chromatography");
@@ -53,7 +53,7 @@ public class ParameterConverterTest {
     public void testConvertWithValue() {
 
         ParameterConverter conv = new ParameterConverter();
-        Parameter p1 = new Parameter().id(1).
+        Parameter p1 = new Parameter().
             cvLabel("SEP").
             cvAccession("sep:00210").
             name("liquid chromatography").
@@ -72,7 +72,7 @@ public class ParameterConverterTest {
     public void testConvertUserParam() {
 
         ParameterConverter conv = new ParameterConverter();
-        Parameter p1 = new Parameter().id(1).
+        Parameter p1 = new Parameter().
             name("liquid chromatography").
             value("89.12");
 
@@ -89,7 +89,7 @@ public class ParameterConverterTest {
         //[MOD, MOD:00648, "N,O-diacetylated L-serine",]
         
         ParameterConverter conv = new ParameterConverter();
-        Parameter p1 = new Parameter().id(1).
+        Parameter p1 = new Parameter().
             cvLabel("MOD").
             cvAccession("MOD:00648").
             name("N,O-diacetylated L-serine").
