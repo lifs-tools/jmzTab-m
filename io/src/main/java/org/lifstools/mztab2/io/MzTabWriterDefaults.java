@@ -17,8 +17,11 @@ package org.lifstools.mztab2.io;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonGenerator.Feature;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.dataformat.csv.CsvFactory;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
+import com.fasterxml.jackson.dataformat.csv.CsvParser;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import org.lifstools.mztab2.io.formats.AssayFormat;
 import org.lifstools.mztab2.io.formats.ContactFormat;
@@ -62,6 +65,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.IntStream;
 import uk.ac.ebi.pride.jmztab2.model.MZTabConstants;
 import uk.ac.ebi.pride.jmztab2.model.SmallMoleculeColumn;
 import uk.ac.ebi.pride.jmztab2.model.SmallMoleculeEvidenceColumn;
@@ -86,8 +90,10 @@ public class MzTabWriterDefaults {
     public CsvMapper defaultMapper() {
         CsvFactory factory = new CsvFactory();
         factory.disable(JsonGenerator.Feature.AUTO_CLOSE_TARGET);
+        factory.enable(JsonGenerator.Feature.IGNORE_UNKNOWN);
         CsvMapper mapper = new CsvMapper(factory);
         mapper.configure(Feature.IGNORE_UNKNOWN, true);
+        mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
         return mapper;
     }
 
@@ -204,7 +210,8 @@ public class MzTabWriterDefaults {
     }
 
     /**
-     * Creates the csv schema (column names and types) for the small molecule summary section.
+     * Creates the csv schema (column names and types) for the small molecule
+     * summary section.
      *
      * @param mapper the csv mapper
      * @param mzTabFile the mztab object
@@ -267,10 +274,10 @@ public class MzTabWriterDefaults {
                 addColumn(SmallMoleculeColumn.Stable.columnFor(
                         SmallMoleculeColumn.Stable.BEST_ID_CONFIDENCE_VALUE).
                         getHeader(), CsvSchema.ColumnType.NUMBER_OR_STRING);
-        
+
         Metadata metadata = Optional.ofNullable(mzTabFile.getMetadata()).orElseThrow(() -> new MZTabException(new MZTabError(
-                    LogicalErrorType.NoMetadataSection, -1)));
-        
+                LogicalErrorType.NoMetadataSection, -1)));
+
         List<SmallMoleculeSummary> smsList = Optional.ofNullable(mzTabFile.getSmallMoleculeSummary()).orElse(Collections.emptyList());
         //orElseThrow(() -> new MZTabException(new MZTabError(
         //            LogicalErrorType.NoSmallMoleculeSummarySection, -1)));
@@ -280,7 +287,7 @@ public class MzTabWriterDefaults {
                 forEach((assay)
                         -> {
                     builder.addColumn(
-                            SmallMoleculeSummary.Properties.abundanceAssay + "[" + assay.
+                            SmallMoleculeSummary.JSON_PROPERTY_ABUNDANCE_ASSAY + "[" + assay.
                                     getId() + "]",
                             CsvSchema.ColumnType.NUMBER_OR_STRING);
                 });
@@ -289,7 +296,7 @@ public class MzTabWriterDefaults {
                 forEach((studyVariable)
                         -> {
                     builder.addColumn(
-                            SmallMoleculeSummary.Properties.abundanceStudyVariable + "[" + studyVariable.
+                            SmallMoleculeSummary.JSON_PROPERTY_ABUNDANCE_STUDY_VARIABLE + "[" + studyVariable.
                                     getId() + "]", CsvSchema.ColumnType.NUMBER_OR_STRING);
                 });
         metadata.
@@ -297,7 +304,7 @@ public class MzTabWriterDefaults {
                 forEach((studyVariable)
                         -> {
                     builder.addColumn(
-                            SmallMoleculeSummary.Properties.abundanceVariationStudyVariable + "[" + studyVariable.
+                            SmallMoleculeSummary.JSON_PROPERTY_ABUNDANCE_VARIATION_STUDY_VARIABLE + "[" + studyVariable.
                                     getId() + "]",
                             CsvSchema.ColumnType.NUMBER_OR_STRING);
                 });
@@ -323,7 +330,8 @@ public class MzTabWriterDefaults {
     }
 
     /**
-     * Creates the csv schema (column names and types) for the small molecule feature section.
+     * Creates the csv schema (column names and types) for the small molecule
+     * feature section.
      *
      * @param mapper the csv mapper
      * @param mzTabFile the mztab object
@@ -377,14 +385,14 @@ public class MzTabWriterDefaults {
                                 getHeader(), CsvSchema.ColumnType.NUMBER_OR_STRING);
         Metadata metadata = Optional.ofNullable(mzTabFile.getMetadata()).orElseThrow(
                 () -> new MZTabException(new MZTabError(
-                    LogicalErrorType.NoMetadataSection, -1)));
+                        LogicalErrorType.NoMetadataSection, -1)));
         Optional.ofNullable(metadata.
                 getAssay()).
                 ifPresent((assayList)
                         -> assayList.forEach((assay)
                         -> {
                     builder.addColumn(
-                            SmallMoleculeFeature.Properties.abundanceAssay + "[" + assay.
+                            SmallMoleculeFeature.JSON_PROPERTY_ABUNDANCE_ASSAY + "[" + assay.
                                     getId() + "]",
                             CsvSchema.ColumnType.NUMBER_OR_STRING);
                 })
@@ -412,7 +420,8 @@ public class MzTabWriterDefaults {
     }
 
     /**
-     * Creates the csv schema (column names and types) for the small molecule feature section.
+     * Creates the csv schema (column names and types) for the small molecule
+     * feature section.
      *
      * @param mapper the csv mapper
      * @param mzTabFile the mztab object
@@ -482,21 +491,23 @@ public class MzTabWriterDefaults {
                         SmallMoleculeEvidenceColumn.Stable.MS_LEVEL).
                         getHeader(),
                         CsvSchema.ColumnType.STRING);
-        Metadata metadata = Optional.ofNullable(mzTabFile.getMetadata()).orElseThrow(() ->
-            new MZTabException(new MZTabError(
-                    LogicalErrorType.NoMetadataSection, -1)));
+        Metadata metadata = Optional.ofNullable(mzTabFile.getMetadata()).orElseThrow(()
+                -> new MZTabException(new MZTabError(
+                        LogicalErrorType.NoMetadataSection, -1)));
         Optional.ofNullable(metadata.
                 getIdConfidenceMeasure()).
                 ifPresent((parameterList)
                         -> {
-                    parameterList.forEach((param)
-                            -> {
-                        builder.
-                                addColumn(
-                                        SmallMoleculeEvidence.Properties.idConfidenceMeasure + "[" + param.
-                                                getId() + "]",
-                                        CsvSchema.ColumnType.NUMBER_OR_STRING);
-                    });
+                    IntStream.range(0, parameterList.
+                            size()).
+                            forEachOrdered(i
+                                    -> {
+                                builder.
+                                        addColumn(
+                                                SmallMoleculeEvidence.JSON_PROPERTY_ID_CONFIDENCE_MEASURE + "[" + (i + 1) + "]",
+                                                CsvSchema.ColumnType.NUMBER_OR_STRING);
+                            });
+
                 });
         builder.addColumn(SmallMoleculeEvidenceColumn.Stable.columnFor(
                 SmallMoleculeEvidenceColumn.Stable.RANK).

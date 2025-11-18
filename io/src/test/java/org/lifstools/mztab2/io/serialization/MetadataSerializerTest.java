@@ -16,6 +16,7 @@
 package org.lifstools.mztab2.io.serialization;
 
 import com.fasterxml.jackson.databind.ObjectWriter;
+import java.net.URI;
 import org.lifstools.mztab2.io.AbstractSerializerTest;
 import org.lifstools.mztab2.io.TestResources;
 import org.lifstools.mztab2.model.Contact;
@@ -52,13 +53,24 @@ public class MetadataSerializerTest extends AbstractSerializerTest {
             ).
             addMsRunItem(
                 new MsRun().id(1).
-                    location("file:///path/to/file1.mzML").
+                    location(URI.create("file:///path/to/file1.mzML")).
                     format(
                         new Parameter().
                             cvLabel("MS").
                             cvAccession("MS:1000584").
                             name("mzML file")
                     )
+            ).
+            addIdConfidenceMeasureItem(
+                new Parameter().
+                    cvLabel("MS").
+                    cvAccession("MS:1002889").
+                    name("Progenesis MetaScope Score")
+            ).addIdConfidenceMeasureItem(
+                new Parameter().
+                    cvLabel("MS").
+                    cvAccession("MS:1002890").
+                    name("fragmentation score")  
             );
         ObjectWriter writer = metaDataWriter();
         assertEqSentry(TestResources.MZTAB_VERSION_HEADER
@@ -69,7 +81,9 @@ public class MetadataSerializerTest extends AbstractSerializerTest {
             + MTD + TAB_STRING + Metadata.Properties.contact + "[1]-email" + TAB_STRING + "nils.hoffmann_at_isas.de" + NEW_LINE
             + MTD + TAB_STRING + Metadata.Properties.contact + "[1]-affiliation" + TAB_STRING + "ISAS e.V. Dortmund, Germany" + NEW_LINE
             + MTD + TAB_STRING + Metadata.Properties.msRun + "[1]-location" + TAB_STRING + "file:///path/to/file1.mzML" + NEW_LINE
-            + MTD + TAB_STRING + Metadata.Properties.msRun + "[1]-format" + TAB_STRING + "[MS, MS:1000584, mzML file, ]" + NEW_LINE,
+            + MTD + TAB_STRING + Metadata.Properties.msRun + "[1]-format" + TAB_STRING + "[MS, MS:1000584, mzML file, ]" + NEW_LINE
+            + MTD + TAB_STRING + Metadata.Properties.idConfidenceMeasure + "[1]" + TAB_STRING + "[MS, MS:1002889, Progenesis MetaScope Score, ]" + NEW_LINE
+            + MTD + TAB_STRING + Metadata.Properties.idConfidenceMeasure + "[2]" + TAB_STRING + "[MS, MS:1002890, fragmentation score, ]" + NEW_LINE,
             serializeSingle(writer, metadata));
     }
 

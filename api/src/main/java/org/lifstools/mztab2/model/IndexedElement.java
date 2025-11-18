@@ -17,7 +17,9 @@ package org.lifstools.mztab2.model;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Proxy;
-import javax.validation.ValidationException;
+import jakarta.validation.ValidationException;
+import java.lang.reflect.Method;
+import java.util.Optional;
 
 /**
  * Indexed elements (IDs) define a unique ID for a collection of multiple
@@ -34,50 +36,88 @@ public interface IndexedElement {
      * @return the id.
      */
     public Integer getId();
+    
+    /**
+     * Return the proxied object.
+     * @return the proxied object.
+     */
+    public Object getPayload();
 
+    /**
+     * Create a new indexed element as a proxy of the provided element.
+     * This method may return a null value.
+     *
+     * @param element the element with a getId, hashCode and toString method to
+     * proxy.
+     * @return the IndexedElement or null.
+     * @throws ValidationException if the passed in element can not be proxied.
+     */
+    public static IndexedElement unsafeOf(Object element) {
+        if (hasGetIdMethod(element)) {
+            IndexedElement proxyInstance = (IndexedElement) Proxy.newProxyInstance(
+                    IndexedElement.class.getClassLoader(),
+                    new Class[]{IndexedElement.class},
+                    (proxy, method, methodArgs) -> {
+                        if (method.getName().equals("getId")) {
+                            try {
+                                Integer id = (Integer) element.getClass().getMethod("getId").invoke(element);
+                                return id;
+                            } catch (NoSuchMethodException ex) {
+                                throw new ValidationException(
+                                        "'id' field of " + element.toString() + " was not accessible by method getId! Missing method!");
+                            } catch (SecurityException ex) {
+                                throw new ValidationException(
+                                        "'id' field of " + element.toString() + " was not accessible by method getId! Access denied!");
+                            } catch (IllegalAccessException ex) {
+                                throw new ValidationException(
+                                        "'id' field of " + element.toString() + " was not accessible by method getId! Illegal access!");
+                            } catch (IllegalArgumentException ex) {
+                                throw new ValidationException(
+                                        "'id' field of " + element.toString() + " was not accessible by method getId! Illegal argument!");
+                            } catch (InvocationTargetException ex) {
+                                throw new ValidationException(
+                                        "'id' field of " + element.toString() + " was not accessible by method getId! Invalid invocation target!");
+                            }
+                        } else if (method.getName().equals("getPayload")) {
+                            return element;
+                        } else if (method.getName().equals("hashCode")) {
+                            return element.getClass().getMethod("hashCode").invoke(element);
+                        } else if (method.getName().equals("toString")) {
+                            return element.getClass().getMethod("toString").invoke(element);
+                        } else {
+                            throw new ValidationException(
+                                    "Unsupported method: " + method.getName() + " on element of type " + element.getClass().getName());
+                        }
+                    });
+            return proxyInstance;
+        }
+        return null;
+    }
+    
     /**
      * Create a new indexed element as a proxy of the provided element.
      *
      * @param element the element with a getId, hashCode and toString method to
      * proxy.
-     * @return the indexed element proxy.
+     * @return the Optional indexed element proxy.
      * @throws ValidationException if the passed in element can not be proxied.
      */
-    public static IndexedElement of(Object element) {
-        IndexedElement proxyInstance = (IndexedElement) Proxy.newProxyInstance(
-                IndexedElement.class.getClassLoader(),
-                new Class[]{IndexedElement.class},
-                (proxy, method, methodArgs) -> {
-                    if (method.getName().equals("getId")) {
-
-                        try {
-                            Integer id = (Integer) element.getClass().getMethod("getId").invoke(element);
-                            return id;
-                        } catch (NoSuchMethodException ex) {
-                            throw new ValidationException(
-                                    "'id' field of " + element.toString() + " was not accessible by method getId! Missing method!");
-                        } catch (SecurityException ex) {
-                            throw new ValidationException(
-                                    "'id' field of " + element.toString() + " was not accessible by method getId! Access denied!");
-                        } catch (IllegalAccessException ex) {
-                            throw new ValidationException(
-                                    "'id' field of " + element.toString() + " was not accessible by method getId! Illegal access!");
-                        } catch (IllegalArgumentException ex) {
-                            throw new ValidationException(
-                                    "'id' field of " + element.toString() + " was not accessible by method getId! Illegal argument!");
-                        } catch (InvocationTargetException ex) {
-                            throw new ValidationException(
-                                    "'id' field of " + element.toString() + " was not accessible by method getId! Invalid invocation target!");
-                        }
-                    } else if (method.getName().equals("hashCode")) {
-                        return element.getClass().getMethod("hashCode").invoke(element);
-                    } else if (method.getName().equals("toString")) {
-                        return element.getClass().getMethod("toString").invoke(element);
-                    } else {
-                        throw new ValidationException(
-                                "Unsupported method: " + method.getName() + " on element of type " + element.getClass().getName());
-                    }
-                });
-        return proxyInstance;
+    public static Optional<IndexedElement> of(Object element) {
+        return Optional.ofNullable(unsafeOf(element));
+    }
+    
+    static boolean hasGetIdMethod(Object element) {
+        if (element instanceof IndexedElement) {
+            return true;
+        }
+        // check if method "getId" exists on class
+        Class<?> c = element.getClass();
+        try {
+            Method m = c.getMethod("getId");
+            boolean b = Integer.class.equals(m.getReturnType());
+            return b;
+        } catch (NoSuchMethodException nme) {
+            return false;
+        }
     }
 }

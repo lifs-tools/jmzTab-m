@@ -61,7 +61,7 @@ public class ParameterOptionColumn extends OptionColumn {
     public static String getHeader(Object element, Parameter param) {
         StringBuilder sb = new StringBuilder();
 
-        sb.append(OPT).append("_").append(element == null ? GLOBAL : Serializers.getReference(element, IndexedElement.of(element).getId()));
+        sb.append(OPT).append("_").append(element == null ? GLOBAL : Serializers.getReference(element, IndexedElement.of(element).get().getId()));
         sb.append("_").append(CV).append(param.getCvAccession()).append("_").append(param.getName().replaceAll(" ", "_"));
 
         return sb.toString();

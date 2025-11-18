@@ -40,7 +40,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBException;
 import org.junit.Assert;
 import static org.junit.Assert.assertEquals;
 import org.junit.ClassRule;

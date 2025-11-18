@@ -28,6 +28,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.net.URI;
 import java.util.List;
 import org.junit.Assert;
 import static org.junit.Assert.assertEquals;
@@ -262,7 +263,7 @@ public class MTDLineParserTest {
             errorList);
         parser.parse(1, "MTD\tdatabase[1]-prefix\thmdb", errorList);
         parser.parse(1, "MTD\tdatabase[1]-version\t3.6", errorList);
-        parser.parse(1, "MTD\tdatabase[1]-uri\thttp://www.hmdb.ca/", errorList);
+        parser.parse(1, "MTD\tdatabase[1]-uri\thttps://www.hmdb.ca/", errorList);
         assertFalse(context.getDatabaseMap().
             isEmpty());
         assertNotNull(context.getDatabaseMap().
@@ -273,7 +274,7 @@ public class MTDLineParserTest {
         assertEquals("3.6", context.getDatabaseMap().
             get(1).
             getVersion());
-        assertEquals("http://www.hmdb.ca/", context.getDatabaseMap().
+        assertEquals(URI.create("https://www.hmdb.ca/"), context.getDatabaseMap().
             get(1).
             getUri());
         assertEquals(new Parameter().cvLabel("MIRIAM").
@@ -297,7 +298,7 @@ public class MTDLineParserTest {
         parser.parse(1, "MTD\tcv[12]-full_name\tMS", errorList);
         parser.parse(1, "MTD\tcv[1]-version\t3.54.0", errorList);
         parser.parse(1,
-            "MTD\tcv[12]-uri\thttp://psidev.cvs.sourceforge.net/viewvc/psidev/psi/psi-ms/mzML/controlledVocabulary/psi-ms.obo",
+            "MTD\tcv[12]-uri\thttps://psidev.cvs.sourceforge.net/viewvc/psidev/psi/psi-ms/mzML/controlledVocabulary/psi-ms.obo",
             errorList);
         assertTrue(context.getCvMap().
             size() == 2);
@@ -309,7 +310,7 @@ public class MTDLineParserTest {
             get(12).
             getUri().
             equals(
-                "http://psidev.cvs.sourceforge.net/viewvc/psidev/psi/psi-ms/mzML/controlledVocabulary/psi-ms.obo"));
+                URI.create("https://psidev.cvs.sourceforge.net/viewvc/psidev/psi/psi-ms/mzML/controlledVocabulary/psi-ms.obo")));
     }
 
     @Test
@@ -322,7 +323,7 @@ public class MTDLineParserTest {
             isEmpty());
         assertNotNull(context.getIdConfidenceMeasureMap().
             get(1));
-        assertEquals(new Parameter().id(1).
+        assertEquals(new Parameter().
             cvLabel("MS").
             cvAccession("MS:1001419").
             name("“SpectraST:discriminant score F”").

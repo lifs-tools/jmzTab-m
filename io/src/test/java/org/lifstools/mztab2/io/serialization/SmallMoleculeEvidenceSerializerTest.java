@@ -16,6 +16,7 @@
 package org.lifstools.mztab2.io.serialization;
 
 import com.fasterxml.jackson.databind.ObjectWriter;
+import java.net.URI;
 import org.lifstools.mztab2.io.AbstractSerializerTest;
 import static org.lifstools.mztab2.io.MzTabTestData.create2_0TestFile;
 import org.lifstools.mztab2.model.MsRun;
@@ -58,7 +59,7 @@ public class SmallMoleculeEvidenceSerializerTest extends AbstractSerializerTest 
             inchi(
                 "InChI=1S/C42H83NO3/c1-3-5-7-9-11-13-15-17-18-19-20-21-22-23-24-26-28-30-32-34-36-38-42(46)43-40(39-44)41(45)37-35-33-31-29-27-25-16-14-12-10-8-6-4-2/h35,37,40-41,44-45H,3-34,36,38-39H2,1-2H3,(H,43,46)/b37-35+/t40-,41+/m0/s1").
             chemicalName("LacCer d18:1/12:0").
-            uri("http://www.lipidmaps.org/data/LMSDRecord.php?LM_ID=LMSP02010012").
+            uri(URI.create("http://www.lipidmaps.org/data/LMSDRecord.php?LM_ID=LMSP02010012")).
             adductIon("[M+H]1+").
             expMassToCharge(650.6432).
             charge(1).

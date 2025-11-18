@@ -38,7 +38,7 @@ public class RemoveUserParams implements CvTermSelectionHandler {
             stream().
             filter((pair) ->
             {
-                if (pair.getValue().
+                if (pair.getValue() == null || pair.getValue().
                     getCvAccession() == null || pair.getValue().
                         getCvAccession().
                         isEmpty()) {

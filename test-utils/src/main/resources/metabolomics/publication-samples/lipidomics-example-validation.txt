@@ -1,0 +1,16 @@
+Running jmztabm-cli
+ version: '1.0.6'
+ build-date: '2021-01-02T17:21:49.058Z'
+ scm-location: 'https://github.com/lifs-tools/jmztab-m/tree/master/jmztabm-cli'
+ commit: '5fee003a3c97695b422bf556f4b5d9eb24080a3c'
+ branch: '1.0.6'
+
+Validator set to default level 'Info'
+Beginning validation of mztab file: /home/data/lipidomics-example.mzTab
+[Error-2050] line 81: The spectra_ref element "scan=731" for column "spectra_ref" must follow the defined ms_run[1-n]-id_format pattern "controllerType=[\d]+ controllerNumber=[1-9]\d* scan=[1-9]\d*".
+[Error-2050] line 82: The spectra_ref element "scan=732" for column "spectra_ref" must follow the defined ms_run[1-n]-id_format pattern "controllerType=[\d]+ controllerNumber=[1-9]\d* scan=[1-9]\d*".
+[Error-2050] line 83: The spectra_ref element "scan=732" for column "spectra_ref" must follow the defined ms_run[1-n]-id_format pattern "controllerType=[\d]+ controllerNumber=[1-9]\d* scan=[1-9]\d*".
+[Error-2050] line 84: The spectra_ref element "scan=732" for column "spectra_ref" must follow the defined ms_run[1-n]-id_format pattern "controllerType=[\d]+ controllerNumber=[1-9]\d* scan=[1-9]\d*".
+There were 4 validation messages including 4 warnings or errors during validation of your file, please check the output for details!
+Writing mzTab object as json to /lipidomics-example.mzTab.json
+Finished validation!

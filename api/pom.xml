@@ -12,38 +12,204 @@
     <packaging>jar</packaging>
     <properties>
         <swagger.api.spec>mzTab_m_swagger.yml</swagger.api.spec>
+        <openapi.api.spec>mzTab_m_openapi.yml</openapi.api.spec>
     </properties>
+    <profiles>
+        <profile>
+            <!-- activate this profile to generate updated model classes -->
+            <id>generate-api-model</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.openapitools</groupId>
+                        <artifactId>openapi-generator-maven-plugin</artifactId>
+                        <!-- RELEASE_VERSION -->
+                        <version>7.17.0</version>
+                        <!-- /RELEASE_VERSION -->
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>generate</goal>
+                                </goals>
+                                <configuration>
+                                    <inputSpec>${project.basedir}/src/main/resources/${openapi.api.spec}</inputSpec>
+                                    <generatorName>java</generatorName>
+                                    <configOptions>
+                                        <useBeanValidation>true</useBeanValidation>
+                                        <performBeanValidation>true</performBeanValidation>
+                                        <withXml>false</withXml>
+                                        <supportsInheritance>true</supportsInheritance>
+                                    </configOptions>
+                                    <library>native</library>
+                                    <output>${project.basedir}</output>
+                                    <annotationLibrary>swagger2</annotationLibrary>
+                                    <modelPackage>org.lifstools.mztab2.model</modelPackage>
+                                    <apiPackage>org.lifstools.mztab2.api</apiPackage>
+                                    <invokerPackage>org.lifstools.mztab2.invoker</invokerPackage>
+                                    <sourceFolder>/</sourceFolder>
+                                    <generateBuilders>true</generateBuilders>
+                                    <withXml>false</withXml>
+                                    <generateApis>false</generateApis>
+                                    <generateModelTests>true</generateModelTests>
+                                    <additionalProperties>true</additionalProperties>
+                                    <generateSupportingFiles>false</generateSupportingFiles>
+                                    <generateApiDocumentation>false</generateApiDocumentation>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+<!--                    <plugin>
+                        <groupId>io.swagger</groupId>
+                        <artifactId>swagger-codegen-maven-plugin</artifactId>
+                        <version>2.4.49</version>
+                        <executions>
+                            <execution>
+                                <id>generate-java-client-lib</id>
+                                <goals>
+                                    <goal>generate</goal>
+                                </goals>
+                                <configuration>
+                                     target to generate java client code 
+                                    <inputSpec>${project.basedir}/src/main/resources/${swagger.api.spec}</inputSpec>
+                                    <language>java</language>
+                                    <templateDirectory>${project.basedir}/src/main/swagger/java-templates</templateDirectory>
+                                    <library>jersey2</library>
+                                    <modelPackage>org.lifstools.mztab2.model</modelPackage>
+                                    <apiPackage>org.lifstools.mztab2.api</apiPackage>
+                                    <invokerPackage>org.lifstools.mztab2.invoker</invokerPackage>
+                                    <withXml>false</withXml>
+                                    <generateApis>false</generateApis>
+                                    <generateModelTests>true</generateModelTests>
+                                    <additionalProperties>true</additionalProperties>
+                                    <generateSupportingFiles>false</generateSupportingFiles>
+                                    <generateApiDocumentation>false</generateApiDocumentation>
+                                    <verbose>false</verbose>
+                                    <configOptions>
+                                        <sourceFolder>swagger</sourceFolder>
+                                        <dateLibrary>joda</dateLibrary>
+                                        <dateLibrary>java8</dateLibrary>
+                                        <sourceFolder>java</sourceFolder>
+                                        <useBeanValidation>true</useBeanValidation>
+                                        <performBeanValidation>true</performBeanValidation>
+                                        <withXml>false</withXml>
+                                        <supportsInheritance>true</supportsInheritance>
+                                    </configOptions>
+                                    <output>${project.basedir}/src/main/</output>
+                                    <addCompileSourceRoot>true</addCompileSourceRoot>
+                                </configuration>
+                            </execution>
+                                                <execution>
+                                <id>generate-java-spring-boot-backend</id>
+                                <goals>
+                                    <goal>generate</goal>
+                                </goals>
+                                <configuration>
+                                     target to generate java client code 
+                                    <inputSpec>${project.basedir}/src/main/resources/mzTab_m_swagger.yml</inputSpec>
+                                    <language>spring</language>
+                                    <templateDirectory>${project.basedir}/src/main/resources/java</templateDirectory>
+                                    <library>spring-boot</library>
+                                    <modelPackage>de.isas.mztab1_1.model</modelPackage>
+                                    <apiPackage>de.isas.mztab1_1.server.api</apiPackage>
+                                    <invokerPackage>de.isas.mztab1_1.server.invoker</invokerPackage>
+                                    <withXml>true</withXml>
+                                    <generateApis>true</generateApis>
+                                    <generateModels>false</generateModels>
+                                    <generateModelTests>true</generateModelTests>
+                                    <generateSupportingFiles>true</generateSupportingFiles>
+                                    <generateApiDocumentation>true</generateApiDocumentation>
+                                    <configOptions>
+                                        <sourceFolder>swagger</sourceFolder>
+                                        <dateLibrary>joda</dateLibrary>
+                                        <dateLibrary>java8</dateLibrary>
+                                        <sourceFolder>mztab-java-server</sourceFolder>
+                                        <useBeanValidation>true</useBeanValidation>
+                                        <performBeanValidation>true</performBeanValidation>
+                                        <withXml>true</withXml>
+                                        <supportsInheritance>true</supportsInheritance>
+                                    </configOptions>
+                                    <output>${project.build.directory}/generated-sources/</output>
+                                    <addCompileSourceRoot>true</addCompileSourceRoot>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>generate-python-client-lib</id>
+                                <goals>
+                                    <goal>generate</goal>
+                                </goals>
+                                <configuration>
+                                     target to generate python client code 
+                                    <inputSpec>${project.basedir}/src/main/resources/${swagger.api.spec}</inputSpec>
+                                    <language>python</language>
+                                    <withXml>true</withXml>
+                                    <generateApis>true</generateApis>
+                                    <generateModelTests>true</generateModelTests>
+                                    <generateSupportingFiles>true</generateSupportingFiles>
+                                    <generateApiDocumentation>true</generateApiDocumentation>
+                                    <output>${project.build.directory}/generated-sources/mztab-python</output>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>generate-r-client-lib</id>
+                                <goals>
+                                    <goal>generate</goal>
+                                </goals>
+                                <configuration>
+                                    target to generate r client code 
+                                    <inputSpec>${project.basedir}/src/main/resources/${swagger.api.spec}</inputSpec>
+                                    <language>r</language>
+                                    <templateDirectory>${project.basedir}/src/main/swagger/r-templates</templateDirectory>
+                                    <withXml>true</withXml>
+                                    <generateApis>true</generateApis>
+                                    <generateModelTests>true</generateModelTests>
+                                    <generateSupportingFiles>true</generateSupportingFiles>
+                                    <generateApiDocumentation>true</generateApiDocumentation>
+                                    <configOptions>
+                                        <packageName>rmztab</packageName>
+                                    </configOptions>
+                                    <output>${project.build.directory}/generated-sources/mztab-r</output>
+                                    <modelPackage>mztab-r</modelPackage>
+                                    <apiPackage>mztab-r</apiPackage>
+                                    <invokerPackage>mztab-r</invokerPackage>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>-->
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
     <build>
         <plugins>
-            <plugin>
-                <groupId>io.swagger</groupId>
-                <artifactId>swagger-codegen-maven-plugin</artifactId>
-                <version>2.4.49</version>
+<!--            <plugin>
+                <groupId>org.openapitools</groupId>
+                <artifactId>openapi-generator-maven-plugin</artifactId>
+                 RELEASE_VERSION 
+                <version>7.17.0</version>
                 <executions>
                     <execution>
-                        <id>generate-java-client-lib</id>
                         <goals>
                             <goal>generate</goal>
                         </goals>
                         <configuration>
-                            <!-- target to generate java client code -->
-                            <inputSpec>${project.basedir}/src/main/resources/${swagger.api.spec}</inputSpec>
-                            <language>java</language>
-                            <templateDirectory>${project.basedir}/src/main/swagger/java-templates</templateDirectory>
-                            <library>jersey2</library>
+                            <inputSpec>${project.basedir}/src/main/resources/${openapi.api.spec}</inputSpec>
+                            <generatorName>java</generatorName>
+                            <configOptions>
+                               <sourceFolder>src/gen/java/main</sourceFolder>
+                            </configOptions>
                             <modelPackage>org.lifstools.mztab2.model</modelPackage>
                             <apiPackage>org.lifstools.mztab2.api</apiPackage>
                             <invokerPackage>org.lifstools.mztab2.invoker</invokerPackage>
                             <withXml>true</withXml>
-                            <generateApis>false</generateApis>
+                            <generateApis>true</generateApis>
                             <generateModelTests>true</generateModelTests>
                             <additionalProperties>true</additionalProperties>
                             <generateSupportingFiles>false</generateSupportingFiles>
                             <generateApiDocumentation>false</generateApiDocumentation>
                             <verbose>false</verbose>
                             <configOptions>
-                                <!--<sourceFolder>swagger</sourceFolder>-->
-                                <!--<dateLibrary>joda</dateLibrary>-->
+                                <sourceFolder>swagger</sourceFolder>
+                                <dateLibrary>joda</dateLibrary>
                                 <dateLibrary>java8</dateLibrary>
                                 <sourceFolder>mztab-java</sourceFolder>
                                 <useBeanValidation>true</useBeanValidation>
@@ -53,85 +219,11 @@
                             </configOptions>
                             <output>${project.build.directory}/generated-sources/</output>
                             <addCompileSourceRoot>true</addCompileSourceRoot>
-                        </configuration>
+                            </configuration>
                     </execution>
-                    <!--                    <execution>
-                        <id>generate-java-spring-boot-backend</id>
-                        <goals>
-                            <goal>generate</goal>
-                        </goals>
-                        <configuration>
-                             target to generate java client code 
-                            <inputSpec>${project.basedir}/src/main/resources/mzTab_m_swagger.yml</inputSpec>
-                            <language>spring</language>
-                            <templateDirectory>${project.basedir}/src/main/resources/java</templateDirectory>
-                            <library>spring-boot</library>
-                            <modelPackage>de.isas.mztab1_1.model</modelPackage>
-                            <apiPackage>de.isas.mztab1_1.server.api</apiPackage>
-                            <invokerPackage>de.isas.mztab1_1.server.invoker</invokerPackage>
-                            <withXml>true</withXml>
-                            <generateApis>true</generateApis>
-                            <generateModels>false</generateModels>
-                            <generateModelTests>true</generateModelTests>
-                            <generateSupportingFiles>true</generateSupportingFiles>
-                            <generateApiDocumentation>true</generateApiDocumentation>
-                            <configOptions>
-                                <sourceFolder>swagger</sourceFolder>
-                                <dateLibrary>joda</dateLibrary>
-                                <dateLibrary>java8</dateLibrary>
-                                <sourceFolder>mztab-java-server</sourceFolder>
-                                <useBeanValidation>true</useBeanValidation>
-                                <performBeanValidation>true</performBeanValidation>
-                                <withXml>true</withXml>
-                                <supportsInheritance>true</supportsInheritance>
-                            </configOptions>
-                            <output>${project.build.directory}/generated-sources/</output>
-                            <addCompileSourceRoot>true</addCompileSourceRoot>
-                        </configuration>
-                    </execution>-->
-<!--                    <execution>
-                        <id>generate-python-client-lib</id>
-                        <goals>
-                            <goal>generate</goal>
-                        </goals>
-                        <configuration>
-                             target to generate python client code 
-                            <inputSpec>${project.basedir}/src/main/resources/${swagger.api.spec}</inputSpec>
-                            <language>python</language>
-                            <withXml>true</withXml>
-                            <generateApis>true</generateApis>
-                            <generateModelTests>true</generateModelTests>
-                            <generateSupportingFiles>true</generateSupportingFiles>
-                            <generateApiDocumentation>true</generateApiDocumentation>
-                            <output>${project.build.directory}/generated-sources/mztab-python</output>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>generate-r-client-lib</id>
-                        <goals>
-                            <goal>generate</goal>
-                        </goals>
-                        <configuration>
-                            target to generate r client code 
-                            <inputSpec>${project.basedir}/src/main/resources/${swagger.api.spec}</inputSpec>
-                            <language>r</language>
-                            <templateDirectory>${project.basedir}/src/main/swagger/r-templates</templateDirectory>
-                            <withXml>true</withXml>
-                            <generateApis>true</generateApis>
-                            <generateModelTests>true</generateModelTests>
-                            <generateSupportingFiles>true</generateSupportingFiles>
-                            <generateApiDocumentation>true</generateApiDocumentation>
-                            <configOptions>
-                                <packageName>rmztab</packageName>
-                            </configOptions>
-                            <output>${project.build.directory}/generated-sources/mztab-r</output>
-                            <modelPackage>mztab-r</modelPackage>
-                            <apiPackage>mztab-r</apiPackage>
-                            <invokerPackage>mztab-r</invokerPackage>
-                        </configuration>
-                    </execution>-->
                 </executions>
-            </plugin>
+            </plugin>-->
+            
 <!--            <plugin>
                 <groupId>io.github.swagger2markup</groupId>
                 <artifactId>swagger2markup-maven-plugin</artifactId>
@@ -189,12 +281,17 @@
         </plugins>
     </build>
     <dependencies>
-        <dependency>
+<!--        <dependency>
             <groupId>io.swagger</groupId>
             <artifactId>swagger-annotations</artifactId>
         </dependency>
 
-        <!-- JSON processing: jackson -->
+         JSON processing: jackson 
+-->     
+         <dependency>
+            <groupId>javax.annotation</groupId>
+            <artifactId>javax.annotation-api</artifactId>
+        </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-core</artifactId>
@@ -212,6 +309,16 @@
             <artifactId>jackson-dataformat-csv</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.hibernate.validator</groupId>
+            <artifactId>hibernate-validator</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!--
+        <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-joda</artifactId>
         </dependency>
@@ -220,7 +327,7 @@
             <artifactId>joda-time</artifactId>
         </dependency>
 
-        <!-- Base64 encoding that works in both JVM and Android -->
+         Base64 encoding that works in both JVM and Android 
         <dependency>
             <groupId>com.brsanthu</groupId>
             <artifactId>migbase64</artifactId>
@@ -235,30 +342,23 @@
             <artifactId>hamcrest-core</artifactId>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>javax.validation</groupId>
-            <artifactId>validation-api</artifactId>
-        </dependency>
+        
         <dependency>
             <groupId>com.fasterxml.jackson.dataformat</groupId>
             <artifactId>jackson-dataformat-xml</artifactId>
         </dependency>
-        <dependency>
+-->        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <type>jar</type>
+        </dependency><!--
+        <dependency>
+            <groupId>jakarta.xml.bind</groupId>
+            <artifactId>jakarta.xml.bind-api</artifactId>
         </dependency>
         <dependency>
-            <groupId>javax.xml.bind</groupId>
-            <artifactId>jaxb-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.xml.bind</groupId>
-            <artifactId>jaxb-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>javax.annotation</groupId>
-            <artifactId>javax.annotation-api</artifactId>
+            <groupId>org.glassfish.jaxb</groupId>
+            <artifactId>jaxb-runtime</artifactId>
         </dependency>
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
@@ -277,6 +377,12 @@
                     <artifactId>selenium-remote-driver</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>-->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.42</version>
+            <type>jar</type>
         </dependency>
     </dependencies>
     <description>The data model for the mzTab-M 2.0 data standard format for metabolomics.</description>

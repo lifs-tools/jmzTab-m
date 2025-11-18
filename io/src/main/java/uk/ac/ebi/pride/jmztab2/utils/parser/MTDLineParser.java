@@ -616,7 +616,7 @@ public class MTDLineParser extends MZTabLineParser {
         id = checkIndex(defineLabel, matcher.group(3));
         URI uri = checkURI(defineLabel, valueLabel, false);
         metadata.addExternalStudyUriItem(new Uri().id(id).
-            value(uri == null ? MZTabConstants.NULL : uri.toASCIIString()));
+            value(uri));
     }
 
     protected void handleUri(String defineLabel, Matcher matcher,
@@ -625,7 +625,7 @@ public class MTDLineParser extends MZTabLineParser {
         id = checkIndex(defineLabel, matcher.group(3));
         URI uri = checkURI(defineLabel, valueLabel, mandatory);
         metadata.addUriItem(new Uri().id(id).
-            value(uri == null ? MZTabConstants.NULL : uri.toASCIIString()));
+            value(uri));
     }
 
     protected void handleContact(String defineLabel, Matcher matcher,

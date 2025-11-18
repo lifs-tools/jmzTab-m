@@ -16,6 +16,8 @@
 package org.lifstools.mztab2.io.serialization;
 
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonToken;
+import com.fasterxml.jackson.core.type.WritableTypeId;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
@@ -30,6 +32,7 @@ import java.util.Collections;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
+import static uk.ac.ebi.pride.jmztab2.model.MZTabConstants.NULL;
 import uk.ac.ebi.pride.jmztab2.model.SmallMoleculeEvidenceColumn;
 import static uk.ac.ebi.pride.jmztab2.model.SmallMoleculeEvidenceColumn.Stable.columnFor;
 
@@ -63,9 +66,11 @@ public class SmallMoleculeEvidenceSerializer extends StdSerializer<SmallMolecule
     @Override
     public void serializeWithType(SmallMoleculeEvidence value, JsonGenerator gen,
         SerializerProvider serializers, TypeSerializer typeSer) throws IOException {
-        typeSer.writeTypePrefixForObject(value, gen);
+        WritableTypeId typeIdDef = typeSer.writeTypePrefix(gen,
+            typeSer.typeId(value, JsonToken.START_OBJECT));
+        typeSer.writeTypePrefix(gen, typeIdDef);
         serialize(value, gen, serializers);
-        typeSer.writeTypeSuffixForObject(value, gen);
+        typeSer.writeTypeSuffix(gen, typeIdDef);
     }
 
     /**
@@ -99,8 +104,13 @@ public class SmallMoleculeEvidenceSerializer extends StdSerializer<SmallMolecule
             writeString(columnFor(
                 SmallMoleculeEvidenceColumn.Stable.CHEMICAL_NAME), jg,
                 smallMoleculeEvidence.getChemicalName());
-            writeString(columnFor(SmallMoleculeEvidenceColumn.Stable.URI), jg,
-                smallMoleculeEvidence.getUri());
+            if (smallMoleculeEvidence.getUri() == null) {
+                writeString(columnFor(SmallMoleculeEvidenceColumn.Stable.URI), jg,
+                    NULL);
+            } else {
+                writeString(columnFor(SmallMoleculeEvidenceColumn.Stable.URI), jg,
+                    smallMoleculeEvidence.getUri().toASCIIString());
+            }
             writeObject(columnFor(
                 SmallMoleculeEvidenceColumn.Stable.DERIVATIZED_FORM), jg,
                 sp,

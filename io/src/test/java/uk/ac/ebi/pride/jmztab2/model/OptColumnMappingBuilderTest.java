@@ -36,10 +36,8 @@ public class OptColumnMappingBuilderTest {
         withName("whatever");
     public static IndexedElementOptColumnMappingBuilder FIXTURE_INDEXED_ELEMENT_PARAM = OptColumnMappingBuilder.forIndexedElement(new Assay().id(1).
                 name("Assay 1")).
-        withParameter(new Parameter().id(
-            1).cvLabel("MS").cvAccession("MS:128712").name("made up for testing"));
-    public static GlobalOptColumnMappingBuilder FIXTURE_GLOBAL_PARAM = OptColumnMappingBuilder.forGlobal().withParameter(new Parameter().id(
-            1).cvLabel("MS").cvAccession("MS:128712").name("made up for testing"));
+        withParameter(new Parameter().cvLabel("MS").cvAccession("MS:128712").name("made up for testing"));
+    public static GlobalOptColumnMappingBuilder FIXTURE_GLOBAL_PARAM = OptColumnMappingBuilder.forGlobal().withParameter(new Parameter().cvLabel("MS").cvAccession("MS:128712").name("made up for testing"));
     
     /**
      * Test of forGlobal method, of class OptColumnMappingBuilder.
@@ -109,8 +107,7 @@ public class OptColumnMappingBuilderTest {
     @Test(expected = IllegalArgumentException.class)
     public void testWithCvParameterWithoutCvLabel() {
         OptColumnMapping ocm = OptColumnMappingBuilder.forIndexedElement(new Assay().id(1).
-                name("Assay 1")).withParameter(new Parameter().id(
-            1).cvAccession("MS").cvLabel("").value("made up for testing")).
+                name("Assay 1")).withParameter(new Parameter().cvAccession("MS").cvLabel("").value("made up for testing")).
             build("1");
     }
     
@@ -120,8 +117,7 @@ public class OptColumnMappingBuilderTest {
     @Test(expected = IllegalArgumentException.class)
     public void testWithCvParameterWithoutCvAccession() {
         OptColumnMapping ocm = OptColumnMappingBuilder.forIndexedElement(new Assay().id(1).
-                name("Assay 1")).withParameter(new Parameter().id(
-            1).cvAccession("").value("made up for testing")).
+                name("Assay 1")).withParameter(new Parameter().cvAccession("").value("made up for testing")).
             build("1");
     }
     
@@ -131,8 +127,7 @@ public class OptColumnMappingBuilderTest {
     @Test(expected = IllegalArgumentException.class)
     public void testWithCvParameterWithoutParamName() {
         OptColumnMappingBuilder.forIndexedElement(new Assay().id(1).
-                name("Assay 1")).withParameter(new Parameter().id(
-            1).cvAccession("MS:19872").cvLabel("MS").name("").value("made up for testing")).
+                name("Assay 1")).withParameter(new Parameter().cvAccession("MS:19872").cvLabel("MS").name("").value("made up for testing")).
             build("1");
     }
 }

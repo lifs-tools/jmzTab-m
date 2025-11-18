@@ -22,8 +22,10 @@ import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import org.lifstools.mztab2.model.MzTab;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.lang.reflect.Proxy;
 import java.util.Collection;
 import org.junit.Assert;
+import org.lifstools.mztab2.model.IndexedElement;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabException;
 
 /**
@@ -53,6 +55,9 @@ public abstract class AbstractSerializerTest {
     }
 
     public String serializeSequence(ObjectWriter writer, Collection<?> elements) throws IOException {
+        if (elements == null) {
+            return "";
+        }
         StringWriter sw = new StringWriter();
         SequenceWriter sequenceWriter = writer.writeValues(sw);
         sequenceWriter.writeAll(elements);
@@ -60,8 +65,20 @@ public abstract class AbstractSerializerTest {
     }
     
     public String serializeSingle(ObjectWriter writer, Object object) throws IOException {
+        if (object == null) {
+            return "";
+        }
         StringWriter sw = new StringWriter();
-        writer.writeValue(sw, object);
+        Object payload = object;
+        if (Proxy.isProxyClass(object.getClass()) && IndexedElement.class.isAssignableFrom(object.getClass())) {
+            IndexedElement ie = (IndexedElement)object;
+            payload = (Object)ie.getPayload();
+        }
+        if (payload instanceof IndexedElement) {
+            IndexedElement impl = (IndexedElement)payload;
+            payload = impl.getPayload();
+        }
+        writer.writeValue(sw, payload);
         return sw.toString();
     }
 

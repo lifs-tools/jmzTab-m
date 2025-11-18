@@ -15,16 +15,6 @@
  */
 package org.lifstools.mztab2.model;
 
-import org.lifstools.mztab2.model.Assay;
-import org.lifstools.mztab2.model.Database;
-import org.lifstools.mztab2.model.Metadata;
-import org.lifstools.mztab2.model.MsRun;
-import org.lifstools.mztab2.model.MzTab;
-import org.lifstools.mztab2.model.OptColumnMapping;
-import org.lifstools.mztab2.model.SmallMoleculeEvidence;
-import org.lifstools.mztab2.model.SmallMoleculeFeature;
-import org.lifstools.mztab2.model.SmallMoleculeSummary;
-import org.lifstools.mztab2.model.StudyVariable;
 import java.util.List;
 import java.util.Optional;
 import java.util.regex.Matcher;

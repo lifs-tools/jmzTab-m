@@ -16,6 +16,8 @@
 package org.lifstools.mztab2.io.serialization;
 
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonToken;
+import com.fasterxml.jackson.core.type.WritableTypeId;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
@@ -32,6 +34,7 @@ import java.util.Collections;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import uk.ac.ebi.pride.jmztab2.model.AbundanceColumn;
+import static uk.ac.ebi.pride.jmztab2.model.MZTabConstants.NULL;
 import uk.ac.ebi.pride.jmztab2.model.SmallMoleculeColumn;
 import static uk.ac.ebi.pride.jmztab2.model.SmallMoleculeColumn.Stable.columnFor;
 
@@ -65,9 +68,11 @@ public class SmallMoleculeSummarySerializer extends StdSerializer<SmallMoleculeS
     @Override
     public void serializeWithType(SmallMoleculeSummary value, JsonGenerator gen,
         SerializerProvider serializers, TypeSerializer typeSer) throws IOException {
-        typeSer.writeTypePrefixForObject(value, gen);
+        WritableTypeId typeIdDef = typeSer.writeTypePrefix(gen,
+            typeSer.typeId(value, JsonToken.START_OBJECT));
+        typeSer.writeTypePrefix(gen, typeIdDef);
         serialize(value, gen, serializers);
-        typeSer.writeTypeSuffixForObject(value, gen);
+        typeSer.writeTypeSuffix(gen, typeIdDef);
     }
 
     /**
@@ -103,7 +108,7 @@ public class SmallMoleculeSummarySerializer extends StdSerializer<SmallMoleculeS
                 SmallMoleculeColumn.Stable.CHEMICAL_NAME), jg,
                 smallMoleculeSummary.getChemicalName());
             writeAsStringArray(columnFor(SmallMoleculeColumn.Stable.URI), jg,
-                smallMoleculeSummary.getUri());
+                smallMoleculeSummary.getUri().stream().map(uri->uri==null?NULL:uri.toASCIIString()).toList());
             writeAsNumberArray(columnFor(
                 SmallMoleculeColumn.Stable.THEOR_NEUTRAL_MASS), jg,
                 smallMoleculeSummary.

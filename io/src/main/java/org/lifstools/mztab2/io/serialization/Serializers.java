@@ -16,10 +16,12 @@
 package org.lifstools.mztab2.io.serialization;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import org.lifstools.mztab2.model.Assay;
 import org.lifstools.mztab2.model.IndexedElement;
 import org.lifstools.mztab2.model.OptColumnMapping;
@@ -27,20 +29,19 @@ import org.lifstools.mztab2.model.Parameter;
 import org.lifstools.mztab2.model.StudyVariable;
 import org.lifstools.mztab2.model.Uri;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import javax.validation.ValidationException;
+import jakarta.validation.ValidationException;
+import java.lang.reflect.Proxy;
 import lombok.extern.slf4j.Slf4j;
+import org.lifstools.mztab2.model.IndexedElementImpl;
 import uk.ac.ebi.pride.jmztab2.model.IMZTabColumn;
 import uk.ac.ebi.pride.jmztab2.model.MZTabConstants;
 import static uk.ac.ebi.pride.jmztab2.model.MZTabConstants.NULL;
@@ -219,14 +220,25 @@ public class Serializers {
             jg.writeString(indexedElementList.stream().
                     map((indexedElement)
                             -> {
-                        if (indexedElement instanceof Parameter) {
+                        Object obj = indexedElement;
+                        if (Proxy.isProxyClass(indexedElement.getClass()) && IndexedElement.class.isAssignableFrom(indexedElement.getClass())) {
+                            IndexedElement ie = (IndexedElement)indexedElement;
+                            obj = (Object)ie.getPayload();
+                            log.debug("Encountered proxied class: {} with payload class: {}", indexedElement.getClass(), obj.getClass());
+                        }
+                        if (obj instanceof IndexedElement) {
+                            IndexedElement impl = (IndexedElement)obj;
+                            obj = impl.getPayload();
+                            log.debug("Encountered IndexedElement, retrieving payload of class {} for serialization", obj.getClass());
+                        }
+                        if (obj instanceof Parameter) {
                             return new ParameterConverter().convert(
-                                    (Parameter) indexedElement);
-                        } else if (indexedElement instanceof Uri) {
-                            return new UriConverter().convert((Uri) indexedElement);
+                                    (Parameter) obj);
+                        } else if (obj instanceof Uri) {
+                            return new UriConverter().convert((Uri) obj);
                         } else {
                             throw new IllegalArgumentException(
-                                    "Serialization of type " + indexedElement.getClass() + " currently not supported!");
+                                    "Serialization of type " + obj.getClass() + " currently not supported!");
                         }
                     }).
                     collect(Collectors.joining("|")));
@@ -448,11 +460,11 @@ public class Serializers {
         if (element instanceof MetadataElement) {
             return Optional.ofNullable(((MetadataElement) element).getName());
         }
-        JacksonXmlRootElement rootElement = element.getClass().
-                getAnnotation(JacksonXmlRootElement.class);
+        JsonPropertyOrder rootElement = element.getClass().
+                getAnnotation(JsonPropertyOrder.class);
         if (rootElement != null) {
             String underscoreName = camelCaseToUnderscoreLowerCase(
-                    rootElement.localName());
+                    element.getClass().getSimpleName());
             if (element instanceof IndexedElement) {
                 Integer id = Optional.ofNullable(((IndexedElement) element).getId()).orElseThrow(()
                         -> new NullPointerException(
@@ -461,9 +473,9 @@ public class Serializers {
                 return Optional.of(
                         underscoreName + "[" + id + "]");
             } 
-            IndexedElement ielement = IndexedElement.of(element);
-            if(ielement!=null) {
-                Integer id = Optional.ofNullable((ielement).getId()).orElseThrow(()
+            Optional<IndexedElement> ielement = IndexedElement.of(element);
+            if (ielement.isPresent()) {
+                Integer id = Optional.ofNullable(ielement.get().getId()).orElseThrow(()
                         -> new NullPointerException(
                                 "Field 'id' must not be null for element '" + underscoreName + "'!")
                 );
@@ -1045,14 +1057,19 @@ public class Serializers {
     }
 
     public static void checkIndexedElement(Object element) {
-        Integer id = IndexedElement.of(element).getId();
-        if (id == null) {
-            throw new ValidationException(
-                    "'id' field of " + element.toString() + " must not be null!");
-        }
-        if (id < 1) {
-            throw new ValidationException(
-                    "'id' field of " + element.toString() + " must have a value greater to equal to 1!");
+        Optional<IndexedElement> indexedElement = IndexedElement.of(element);
+        if (indexedElement.isPresent()) {
+            Integer id = IndexedElement.of(element).get().getId();
+            if (id == null) {
+                throw new ValidationException(
+                        "'id' field of " + element.toString() + " must not be null!");
+            }
+            if (id < 1) {
+                throw new ValidationException(
+                        "'id' field of " + element.toString() + " must have a value greater to equal to 1!");
+            }
+        } else {
+            throw new ValidationException("Supposed IndexedElement '"+ element.toString() + "' is not an indexed element!");
         }
     }
 

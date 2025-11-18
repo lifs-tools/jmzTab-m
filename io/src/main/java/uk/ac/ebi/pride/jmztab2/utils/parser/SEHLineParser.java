@@ -118,8 +118,12 @@ public class SEHLineParser extends MZTabHeaderLineParser {
         }
         
         int id = parseIndex(header, matcher.group(1));
-        Parameter p = metadata.getIdConfidenceMeasure().get(id-1);
-        factory.addIdConfidenceMeasureColumn(p, id, Double.class);
+        if (metadata.getIdConfidenceMeasure().size() > 0) {
+            Parameter p = metadata.getIdConfidenceMeasure().get(id-1);
+            factory.addIdConfidenceMeasureColumn(p, id, Double.class);
+        } else {
+            throw new IllegalArgumentException("Id confidence measure column was not defined in metadata section!");
+        }
     }
 
     private Map<Integer, String> generateHeaderPhysPositionToOrderMap(String[] items) {
