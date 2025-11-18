@@ -113,7 +113,7 @@ public class MZTabColumn implements IMZTabColumn {
         }
 
         if (element != null) {
-            sb.append(String.format("%02d", IndexedElement.of(element).getId()));
+            sb.append(String.format("%02d", IndexedElement.of(element).get().getId()));
         } else {
             sb.append("00");
         }
@@ -283,10 +283,10 @@ public class MZTabColumn implements IMZTabColumn {
         StringBuilder sb = new StringBuilder();
         if(this instanceof AbundanceColumn) {
             sb.append(this.header).append("[").
-            append(IndexedElement.of(element).getId()).
+            append(IndexedElement.of(element).get().getId()).
             append("]");
         } else {
-            sb.append(this.header).append("_").append(Serializers.getReference(element, IndexedElement.of(element).getId()));
+            sb.append(this.header).append("_").append(Serializers.getReference(element, IndexedElement.of(element).get().getId()));
         }
         this.header = sb.toString();
     }

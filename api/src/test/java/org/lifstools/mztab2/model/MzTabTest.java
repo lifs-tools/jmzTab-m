@@ -46,6 +46,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.junit.Assert;
@@ -428,7 +429,7 @@ public class MzTabTest {
     @Test
     public void testIndexedElementProxy() {
         MsRun mr = new MsRun().id(1).location(URI.create("file:///location"));
-        IndexedElement ie = IndexedElement.of(mr);
-        Assert.assertEquals(mr.getId(), ie.getId());
+        Optional<IndexedElement> ie = IndexedElement.of(mr);
+        Assert.assertEquals(mr.getId(), ie.get().getId());
     }
 }

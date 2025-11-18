@@ -52,6 +52,7 @@ public class IndexedElementImpl implements IndexedElement {
      *
      * @return the payload.
      */
+    @Override
     public Object getPayload() {
         return payload;
     }

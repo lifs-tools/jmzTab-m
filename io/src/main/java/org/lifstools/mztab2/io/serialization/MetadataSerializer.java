@@ -38,11 +38,14 @@ import org.lifstools.mztab2.model.Software;
 import org.lifstools.mztab2.model.StudyVariable;
 import org.lifstools.mztab2.model.Uri;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.IntStream;
 import lombok.extern.slf4j.Slf4j;
+import org.lifstools.mztab2.model.IndexedElementImpl;
 import uk.ac.ebi.pride.jmztab2.model.MZTabConstants;
 import uk.ac.ebi.pride.jmztab2.model.MetadataElement;
 import uk.ac.ebi.pride.jmztab2.model.MetadataProperty;
@@ -81,7 +84,7 @@ public class MetadataSerializer extends StdSerializer<Metadata> {
      * <p>
      * Serialize a list of Parameters for the provided metadata element.</p>
      *
-     * @param list a {@link java.util.List} object.
+     * @param list a {@link java.util.List} holding Parameter objects.
      * @param mtdElement a
      * {@link uk.ac.ebi.pride.jmztab2.model.MetadataElement} object.
      * @param jg a {@link com.fasterxml.jackson.core.JsonGenerator} object.
@@ -90,31 +93,80 @@ public class MetadataSerializer extends StdSerializer<Metadata> {
      * @param comparator an optional {@link java.util.Comparator} object.
      * @param <T> a T object.
      */
-    public static <T extends Object> void serializeListWithMetadataElement(
+    public static <T extends Parameter> void serializeParameterListWithMetadataElement(
         List<T> list, MetadataElement mtdElement, JsonGenerator jg,
         SerializerProvider sp, Optional<Comparator<? super T>> comparator) {
-        var stream = list.stream();
+        final List<T> elements = new ArrayList<>(list);
         if (comparator.isPresent()) {
-            stream = stream.sorted(comparator.get());
+            elements.clear();
+            elements.addAll(list.stream().sorted(comparator.get()).toList());
         }
-        stream.
-            forEach((object) ->
-            {
-                if (object != null) {
-                    addIndexedLine(jg, sp, Section.Metadata.getPrefix(),
-                        mtdElement.getName() + "[" + IndexedElement.of(object).getId() + "]",
-                        object);
-                } else {
-                    throw new NullPointerException(
-                        "Object in list for metadata element " + mtdElement.
-                            getName() + " must not be null!");
-                }
-            });
+        var ieStream = IntStream.range(0, elements.size()).mapToObj(i -> {
+            T t = elements.get(i);
+            if (t == null) {
+                throw new NullPointerException(
+                    "Object in list for metadata element " + mtdElement.
+                        getName() + " must not be null!");
+            }
+            Optional<IndexedElement> ie = IndexedElement.of(t);
+            if (ie.isPresent()) {
+                return ie.get();
+            } else {
+                return new IndexedElementImpl(i+1, t);
+            }
+        });
+        ieStream.forEach((ie) -> {
+            addIndexedLine(jg, sp, Section.Metadata.getPrefix(),
+            mtdElement.getName() + "[" + ie.getId() + "]",
+            ie);
+        });
+    }
+    
+    /**
+     * <p>
+     * Serialize a list of URIs for the provided metadata element.</p>
+     *
+     * @param list a {@link java.util.List} holding Parameter objects.
+     * @param mtdElement a
+     * {@link uk.ac.ebi.pride.jmztab2.model.MetadataElement} object.
+     * @param jg a {@link com.fasterxml.jackson.core.JsonGenerator} object.
+     * @param sp a {@link com.fasterxml.jackson.databind.SerializerProvider}
+     * object.
+     * @param comparator an optional {@link java.util.Comparator} object.
+     * @param <T> a T object.
+     */
+    public static <T extends Uri> void serializeUriListWithMetadataElement(
+        List<T> list, MetadataElement mtdElement, JsonGenerator jg,
+        SerializerProvider sp, Optional<Comparator<? super T>> comparator) {
+        final List<T> elements = new ArrayList<>(list);
+        if (comparator.isPresent()) {
+            elements.clear();
+            elements.addAll(list.stream().sorted(comparator.get()).toList());
+        }
+        var ieStream = IntStream.range(0, elements.size()).mapToObj(i -> {
+            T t = elements.get(i);
+            if (t == null) {
+                throw new NullPointerException(
+                    "Object in list for metadata element " + mtdElement.
+                        getName() + " must not be null!");
+            }
+            Optional<IndexedElement> ie = IndexedElement.of(t);
+            if (ie.isPresent()) {
+                return ie.get();
+            } else {
+                return new IndexedElementImpl(i, t);
+            }
+        });
+        ieStream.forEach((ie) -> {
+            addIndexedLine(jg, sp, Section.Metadata.getPrefix(),
+            mtdElement.getName() + "[" + ie.getId() + "]",
+            ie);
+        });
     }
 
     /**
      * <p>
-     * serializeList.</p>
+     * serializeUriList.</p>
      *
      * @param list a {@link java.util.List} object.
      * @param jg a {@link com.fasterxml.jackson.core.JsonGenerator} object.
@@ -197,7 +249,7 @@ public class MetadataSerializer extends StdSerializer<Metadata> {
             }
             //file uri
             if (t.getUri() != null) {
-                serializeListWithMetadataElement(t.getUri(),
+                serializeUriListWithMetadataElement(t.getUri(),
                     MetadataElement.URI, jg, sp, Optional.of(Comparator.comparing(
                         Uri::getId,
                         Comparator.nullsFirst(Comparator.naturalOrder()))));
@@ -207,7 +259,7 @@ public class MetadataSerializer extends StdSerializer<Metadata> {
             }
             //external study uri
             if (t.getExternalStudyUri() != null) {
-                serializeListWithMetadataElement(t.getExternalStudyUri(),
+                serializeUriListWithMetadataElement(t.getExternalStudyUri(),
                     MetadataElement.EXTERNAL_STUDY_URI, jg, sp, Optional.of(Comparator.
                         comparing(
                             Uri::getId,
@@ -269,7 +321,7 @@ public class MetadataSerializer extends StdSerializer<Metadata> {
             }
             //derivatization agent
             if (t.getDerivatizationAgent() != null) {
-                serializeListWithMetadataElement(t.getDerivatizationAgent(),
+                serializeParameterListWithMetadataElement(t.getDerivatizationAgent(),
                     MetadataElement.DERIVATIZATION_AGENT, jg, sp, Optional.empty());
             } else {
                 
@@ -308,7 +360,7 @@ public class MetadataSerializer extends StdSerializer<Metadata> {
             }
             //custom
             if (t.getCustom() != null) {
-                serializeListWithMetadataElement(t.getCustom(),
+                serializeParameterListWithMetadataElement(t.getCustom(),
                     MetadataElement.CUSTOM, jg, sp, Optional.empty());
             } else {
                 
@@ -368,7 +420,7 @@ public class MetadataSerializer extends StdSerializer<Metadata> {
                     log.debug( "Databases are null!");
             }
             if (t.getIdConfidenceMeasure() != null) {
-                serializeListWithMetadataElement(t.getIdConfidenceMeasure(),
+                serializeParameterListWithMetadataElement(t.getIdConfidenceMeasure(),
                     MetadataElement.ID_CONFIDENCE_MEASURE, jg, sp, Optional.empty());
             } else {
                 

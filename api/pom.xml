@@ -378,6 +378,12 @@
                 </exclusion>
             </exclusions>
         </dependency>-->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.42</version>
+            <type>jar</type>
+        </dependency>
     </dependencies>
     <description>The data model for the mzTab-M 2.0 data standard format for metabolomics.</description>
 </project>
