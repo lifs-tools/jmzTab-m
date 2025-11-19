@@ -573,7 +573,7 @@
         <jxpath.version>1.4.0</jxpath.version>
         <spring.version>5.3.39</spring.version>
         <logback.version>1.5.21</logback.version>
-        <diffutils.version>2.2</diffutils.version>
+        <diffutils.version>3.0</diffutils.version>
         <javaobjectdiff.version>0.95</javaobjectdiff.version>
 <!--        <jaxb.api-version>2.3.1</jaxb.api-version>
         <jaxb.core-version>2.3.0.1</jaxb.core-version>
