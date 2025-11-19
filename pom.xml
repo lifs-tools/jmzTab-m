@@ -564,7 +564,7 @@
         <jackson.core.version>2.19.4</jackson.core.version>
         <hibernate.validator.version>9.0.1.Final</hibernate.validator.version>
         <slf4j.version>2.0.17</slf4j.version>
-        <commons-cli.version>1.6.0</commons-cli.version>
+        <commons-cli.version>1.11.0</commons-cli.version>
         <javax.el.version>4.0.2</javax.el.version>
         <maven-plugin-version>1.0.0</maven-plugin-version>
         <jacoco.version>0.8.14</jacoco.version>
