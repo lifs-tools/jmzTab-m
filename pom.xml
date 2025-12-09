@@ -568,7 +568,7 @@
         <javax.el.version>4.0.2</javax.el.version>
         <maven-plugin-version>1.0.0</maven-plugin-version>
         <jacoco.version>0.8.14</jacoco.version>
-        <mockito.version>3.12.4</mockito.version><!--2.19.0-->
+        <mockito.version>5.21.0</mockito.version><!--2.19.0-->
         <olsclient.version>2.13</olsclient.version>
         <jxpath.version>1.4.0</jxpath.version>
         <spring.version>5.3.39</spring.version>
