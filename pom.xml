@@ -571,7 +571,7 @@
         <mockito.version>3.12.4</mockito.version><!--2.19.0-->
         <olsclient.version>2.13</olsclient.version>
         <jxpath.version>1.4.0</jxpath.version>
-        <spring.version>5.3.39</spring.version>
+        <spring.version>7.0.2</spring.version>
         <logback.version>1.5.21</logback.version>
         <diffutils.version>2.2</diffutils.version>
         <javaobjectdiff.version>0.95</javaobjectdiff.version>
