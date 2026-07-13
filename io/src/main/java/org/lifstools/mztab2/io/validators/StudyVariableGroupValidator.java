@@ -19,18 +19,20 @@ import org.lifstools.mztab2.model.Metadata;
 import org.lifstools.mztab2.model.StudyVariable;
 import org.lifstools.mztab2.model.StudyVariableGroup;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 import java.util.SortedMap;
-import java.util.stream.Collectors;
 import uk.ac.ebi.pride.jmztab2.utils.errors.LogicalErrorType;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabError;
 import uk.ac.ebi.pride.jmztab2.utils.parser.MZTabParserContext;
 
 /**
- * Validates that each study_variable_group entry has the required fields and
- * that optional fields conform to spec constraints.
+ * Validates that each study_variable_group entry has the required fields, that
+ * optional fields conform to spec constraints, and that its study_variable_refs
+ * reference defined study variables. Once study variable groups are defined,
+ * every study variable MUST belong to exactly one group.
  *
  * @author nilshoffmann
  */
@@ -55,11 +57,8 @@ public class StudyVariableGroupValidator implements RefiningValidator<Metadata> 
             return errorList;
         }
 
-        Set<Integer> referencedGroupIds = svMap.values().stream()
-            .filter(sv -> sv.getGroupRef() != null
-                && sv.getGroupRef().getId() != null)
-            .map(sv -> sv.getGroupRef().getId())
-            .collect(Collectors.toSet());
+        // how often each study variable is referenced across all groups
+        Map<Integer, Integer> referenceCount = new HashMap<>();
 
         for (Integer id : svgMap.keySet()) {
             StudyVariableGroup svg = svgMap.get(id);
@@ -105,12 +104,48 @@ public class StudyVariableGroupValidator implements RefiningValidator<Metadata> 
                     + " (MUST be one of: " + String.join(", ", VALID_XSD_DATATYPES) + ")"));
             }
 
-            // every declared group must be referenced by at least one study variable
-            if (!referencedGroupIds.contains(id)) {
+            // every group MUST reference at least one study variable
+            List<StudyVariable> refs = svg.getStudyVariableRefs();
+            if (refs == null || refs.isEmpty()) {
+                errorList.add(new MZTabError(
+                    LogicalErrorType.NotDefineInMetadata, -1,
+                    Metadata.JSON_PROPERTY_STUDY_VARIABLE_GROUP + "[" + id + "]-"
+                    + StudyVariableGroup.JSON_PROPERTY_STUDY_VARIABLE_REFS));
+                continue;
+            }
+
+            // every referenced study variable MUST be defined; replace the id-only
+            // reference with the resolved study variable.
+            for (int i = 0; i < refs.size(); i++) {
+                Integer refId = refs.get(i).getId();
+                StudyVariable referenced = svMap.get(refId);
+                if (referenced == null) {
+                    errorList.add(new MZTabError(
+                        LogicalErrorType.NotDefineInMetadata, -1,
+                        Metadata.JSON_PROPERTY_STUDY_VARIABLE_GROUP + "[" + id + "]-"
+                        + StudyVariableGroup.JSON_PROPERTY_STUDY_VARIABLE_REFS
+                        + "\t" + Metadata.JSON_PROPERTY_STUDY_VARIABLE + "[" + refId + "]"));
+                } else {
+                    refs.set(i, referenced);
+                    referenceCount.merge(refId, 1, Integer::sum);
+                }
+            }
+        }
+
+        // once groups are defined, every study variable MUST belong to exactly
+        // one group.
+        for (Integer svId : svMap.keySet()) {
+            int count = referenceCount.getOrDefault(svId, 0);
+            if (count == 0) {
                 errorList.add(new MZTabError(
                     LogicalErrorType.StudyVariableNotDefined, -1,
-                    Metadata.JSON_PROPERTY_STUDY_VARIABLE_GROUP + "[" + id + "]"
-                    + " is not referenced by any study_variable[n]-group_ref"));
+                    Metadata.JSON_PROPERTY_STUDY_VARIABLE + "[" + svId + "]"
+                    + " is not referenced by any study_variable_group[n]-study_variable_refs"));
+            } else if (count > 1) {
+                errorList.add(new MZTabError(
+                    LogicalErrorType.DuplicationID, -1,
+                    Metadata.JSON_PROPERTY_STUDY_VARIABLE + "[" + svId + "]"
+                    + " is referenced by more than one study_variable_group"));
             }
         }
 

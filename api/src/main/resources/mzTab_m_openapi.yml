@@ -692,6 +692,8 @@ components:
             datatype: The datatype of the group variable, used to disambiguate how the associated values are encoded and parsed. Optional, but producers SHOULD provide it to simplify interpretation by downstream consumers. Supported values are xsd:string, xsd:integer, xsd:decimal, xsd:boolean, xsd:date, xsd:time, xsd:dateTime, and xsd:anyURI.
 
             unit: An optional parameter specifying the unit of the study variable group.
+
+            study_variable_refs: Bar-separated references to the study variables that belong to this group.
           default: []
           items:
             $ref: "#/components/schemas/StudyVariableGroup"
@@ -704,6 +706,8 @@ components:
 
             MTD	study_variable_group[1]-datatype	xsd:string
 
+            MTD	study_variable_group[1]-study_variable_refs	study_variable[1]| study_variable[2]
+
             MTD	study_variable_group[2]	[,,timepoint,]
 
             MTD	study_variable_group[2]-description	Time after treatment
@@ -713,6 +717,8 @@ components:
             MTD	study_variable_group[2]-datatype	xsd:integer
 
             MTD	study_variable_group[2]-unit	[UO, UO:0000033, day, ]
+
+            MTD	study_variable_group[2]-study_variable_refs	study_variable[3]| study_variable[4]| study_variable[5]
         study_variable:
           type: array
           description: >
@@ -2139,9 +2145,6 @@ components:
           items:
             $ref: "#/components/schemas/Assay"
           description: The assays referenced by this study variable.
-        group_ref:
-          $ref: "#/components/schemas/StudyVariableGroup"
-          description: Reference to the study_variable_group that this study variable belongs to. This field is mandatory if study_variable_group(s) are defined.
         average_function:
           $ref: "#/components/schemas/Parameter"
         variation_function:
@@ -2162,6 +2165,8 @@ components:
         datatype: The datatype of the group variable, used to disambiguate how the associated values are encoded and parsed. Optional, but producers SHOULD provide it to simplify interpretation by downstream consumers. Supported values are xsd:string, xsd:integer, xsd:decimal, xsd:boolean, xsd:date, xsd:time, xsd:dateTime, and xsd:anyURI. Date, time and dateTime values MUST be encoded in ISO 8601 format.
 
         unit: An optional parameter specifying the unit of the study variable group (e.g., day, hour, concentration, etc.).
+
+        study_variable_refs: Bar-separated references to the study variables that belong to this group. Every group MUST reference at least one study variable, and every study variable MUST be referenced by exactly one group when study variable groups are defined.
       x-mztab-example: >
         MTD	study_variable_group[1]	[PATO, PATO:0000383, sex, ]
 
@@ -2170,6 +2175,8 @@ components:
         MTD	study_variable_group[1]-type	[STATO, STATO:0000252, categorical variable, ]
 
         MTD	study_variable_group[1]-datatype	xsd:string
+
+        MTD	study_variable_group[1]-study_variable_refs	study_variable[1]| study_variable[2]
 
         MTD	study_variable_group[2]	[PATO, PATO:0000384, timepoint, ]
 
@@ -2181,15 +2188,13 @@ components:
 
         MTD	study_variable_group[2]-unit	[UO, UO:0000033, day, ]
 
-        MTD	study_variable[1]	Female_0day
+        MTD	study_variable_group[2]-study_variable_refs	study_variable[3]| study_variable[4]| study_variable[5]
 
-        MTD	study_variable[1]-group_ref	study_variable_group[1]
+        MTD	study_variable[1]	Female
 
         MTD	study_variable[1]-assay_refs	assay[1]| assay[2]| assay[3]
 
-        MTD	study_variable[2]	Female_1day
-
-        MTD	study_variable[2]-group_ref	study_variable_group[2]
+        MTD	study_variable[2]	Male
 
         MTD	study_variable[2]-assay_refs	assay[4]| assay[5]| assay[6]
       x-mztab-serialize-by-id: "true"
@@ -2227,6 +2232,12 @@ components:
         unit:
           $ref: "#/components/schemas/Parameter"
           description: An optional parameter specifying the unit of the study variable group (e.g., day, hour, concentration, etc.).
+        study_variable_refs:
+          type: array
+          default: []
+          items:
+            $ref: "#/components/schemas/StudyVariable"
+          description: The study variables that belong to this study variable group.
     Assay:
       description: >
         Specification of assay.

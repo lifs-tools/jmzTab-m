@@ -22,8 +22,15 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import static org.lifstools.mztab2.io.serialization.Serializers.addLineWithProperty;
+import static org.lifstools.mztab2.io.serialization.Serializers.addSubElementStrings;
+import org.lifstools.mztab2.model.Metadata;
+import org.lifstools.mztab2.model.StudyVariable;
 import org.lifstools.mztab2.model.StudyVariableGroup;
 import java.io.IOException;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import uk.ac.ebi.pride.jmztab2.model.Section;
 
@@ -97,6 +104,25 @@ public class StudyVariableGroupSerializer extends StdSerializer<StudyVariableGro
             addLineWithProperty(jg, Section.Metadata.getPrefix(),
                 StudyVariableGroup.JSON_PROPERTY_UNIT,
                 studyVariableGroup, studyVariableGroup.getUnit());
+            // study_variable_refs as a bar-separated list of study_variable[id]
+            addSubElementStrings(jg, Section.Metadata.getPrefix(),
+                studyVariableGroup,
+                StudyVariableGroup.JSON_PROPERTY_STUDY_VARIABLE_REFS,
+                Optional.ofNullable(studyVariableGroup.getStudyVariableRefs()).
+                    orElse(Collections.emptyList()).
+                    stream().
+                    sorted(Comparator.comparing(StudyVariable::getId,
+                        Comparator.nullsFirst(Comparator.naturalOrder()))).
+                    map((svRef) ->
+                    {
+                        return new StringBuilder().
+                            append(Metadata.JSON_PROPERTY_STUDY_VARIABLE).
+                            append("[").
+                            append(svRef.getId()).
+                            append("]").
+                            toString();
+                    }).
+                    collect(Collectors.toList()), true);
         } else {
             log.debug(StudyVariableGroup.class.getSimpleName() + " is null!");
         }

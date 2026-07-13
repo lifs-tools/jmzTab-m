@@ -15,6 +15,8 @@ package org.lifstools.mztab2.model;
 
 import java.util.Objects;
 import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -37,7 +39,8 @@ import org.hibernate.validator.constraints.*;
   StudyVariableGroup.JSON_PROPERTY_DESCRIPTION,
   StudyVariableGroup.JSON_PROPERTY_TYPE,
   StudyVariableGroup.JSON_PROPERTY_DATATYPE,
-  StudyVariableGroup.JSON_PROPERTY_UNIT
+  StudyVariableGroup.JSON_PROPERTY_UNIT,
+  StudyVariableGroup.JSON_PROPERTY_STUDY_VARIABLE_REFS
 })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-04-29T15:34:38.183974+02:00[Europe/Berlin]", comments = "Generator version: 7.17.0")
 public class StudyVariableGroup {
@@ -64,6 +67,10 @@ public class StudyVariableGroup {
   public static final String JSON_PROPERTY_UNIT = "unit";
   @jakarta.annotation.Nullable
   private Parameter unit;
+
+  public static final String JSON_PROPERTY_STUDY_VARIABLE_REFS = "study_variable_refs";
+  @jakarta.annotation.Nullable
+  private List<@Valid StudyVariable> studyVariableRefs = new ArrayList<>();
 
   public StudyVariableGroup() {
   }
@@ -231,6 +238,41 @@ public class StudyVariableGroup {
     this.unit = unit;
   }
 
+  public StudyVariableGroup studyVariableRefs(@jakarta.annotation.Nullable List<@Valid StudyVariable> studyVariableRefs) {
+
+    this.studyVariableRefs = studyVariableRefs;
+    return this;
+  }
+
+  public StudyVariableGroup addStudyVariableRefsItem(StudyVariable studyVariableRefsItem) {
+    if (this.studyVariableRefs == null) {
+      this.studyVariableRefs = new ArrayList<>();
+    }
+    this.studyVariableRefs.add(studyVariableRefsItem);
+    return this;
+  }
+
+  /**
+   * The study variables that belong to this study variable group.
+   * @return studyVariableRefs
+   */
+  @jakarta.annotation.Nullable
+  @Valid
+
+  @JsonProperty(value = JSON_PROPERTY_STUDY_VARIABLE_REFS, required = false)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public List<@Valid StudyVariable> getStudyVariableRefs() {
+    return studyVariableRefs;
+  }
+
+
+  @JsonProperty(value = JSON_PROPERTY_STUDY_VARIABLE_REFS, required = false)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setStudyVariableRefs(@jakarta.annotation.Nullable List<@Valid StudyVariable> studyVariableRefs) {
+    this.studyVariableRefs = studyVariableRefs;
+  }
+
 
   @Override
   public boolean equals(Object o) {
@@ -246,12 +288,13 @@ public class StudyVariableGroup {
         Objects.equals(this.description, studyVariableGroup.description) &&
         Objects.equals(this.type, studyVariableGroup.type) &&
         Objects.equals(this.datatype, studyVariableGroup.datatype) &&
-        Objects.equals(this.unit, studyVariableGroup.unit);
+        Objects.equals(this.unit, studyVariableGroup.unit) &&
+        Objects.equals(this.studyVariableRefs, studyVariableGroup.studyVariableRefs);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, parameter, description, type, datatype, unit);
+    return Objects.hash(id, parameter, description, type, datatype, unit, studyVariableRefs);
   }
 
   @Override
@@ -264,6 +307,7 @@ public class StudyVariableGroup {
     sb.append("    type: ").append(toIndentedString(type)).append("\n");
     sb.append("    datatype: ").append(toIndentedString(datatype)).append("\n");
     sb.append("    unit: ").append(toIndentedString(unit)).append("\n");
+    sb.append("    studyVariableRefs: ").append(toIndentedString(studyVariableRefs)).append("\n");
     sb.append("}");
     return sb.toString();
   }

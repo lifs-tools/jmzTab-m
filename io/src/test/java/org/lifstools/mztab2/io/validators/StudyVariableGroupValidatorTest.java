@@ -19,7 +19,6 @@ import org.lifstools.mztab2.model.Metadata;
 import org.lifstools.mztab2.model.Parameter;
 import org.lifstools.mztab2.model.StudyVariable;
 import org.lifstools.mztab2.model.StudyVariableGroup;
-import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
@@ -38,6 +37,10 @@ public class StudyVariableGroupValidatorTest {
     private static final Parameter STATO_CATEGORICAL = new Parameter().
         cvLabel("STATO").cvAccession("STATO:0000252").name("categorical variable");
 
+    private static StudyVariable studyVariable(int id) {
+        return new StudyVariable().id(id).name("sv" + id).description("study variable " + id);
+    }
+
     /** No groups declared → validator is a no-op, no errors expected. */
     @Test
     public void testEmptyGroupMapProducesNoErrors() {
@@ -49,24 +52,23 @@ public class StudyVariableGroupValidatorTest {
         assertTrue(result.isEmpty());
     }
 
-    /** Valid group with all mandatory fields, referenced by a study variable → no errors. */
+    /** Valid group with all mandatory fields referencing a defined study variable → no errors. */
     @Test
-    public void testValidGroupReferencedByStudyVariable() {
+    public void testValidGroupReferencingStudyVariable() {
         Metadata metadata = new Metadata();
         MZTabParserContext parserContext = new MZTabParserContext();
 
+        StudyVariable sv1 = studyVariable(1);
+        parserContext.addStudyVariable(metadata, sv1);
         StudyVariableGroup group = new StudyVariableGroup().id(1).
             parameter(PATO_SEX).
-            description("Sex of the individual");
+            description("Sex of the individual").
+            addStudyVariableRefsItem(sv1);
         parserContext.addStudyVariableGroup(metadata, group);
-
-        StudyVariable sv = new StudyVariable().id(1).name("Female").
-            description("Female samples").groupRef(group);
-        parserContext.addStudyVariable(metadata, sv);
 
         StudyVariableGroupValidator instance = new StudyVariableGroupValidator();
         List<MZTabError> result = instance.validateRefine(metadata, parserContext);
-        assertTrue(result.isEmpty());
+        assertTrue(result.isEmpty(), result.toString());
     }
 
     /** Valid group with all optional fields populated → no errors. */
@@ -75,21 +77,20 @@ public class StudyVariableGroupValidatorTest {
         Metadata metadata = new Metadata();
         MZTabParserContext parserContext = new MZTabParserContext();
 
+        StudyVariable sv1 = studyVariable(1);
+        parserContext.addStudyVariable(metadata, sv1);
         StudyVariableGroup group = new StudyVariableGroup().id(1).
             parameter(PATO_SEX).
             description("Sex of the individual").
             type(STATO_CATEGORICAL).
             datatype("xsd:string").
-            unit(new Parameter().cvLabel("UO").cvAccession("UO:0000189").name("count unit"));
+            unit(new Parameter().cvLabel("UO").cvAccession("UO:0000189").name("count unit")).
+            addStudyVariableRefsItem(sv1);
         parserContext.addStudyVariableGroup(metadata, group);
-
-        StudyVariable sv = new StudyVariable().id(1).name("Female").
-            description("Female samples").groupRef(group);
-        parserContext.addStudyVariable(metadata, sv);
 
         StudyVariableGroupValidator instance = new StudyVariableGroupValidator();
         List<MZTabError> result = instance.validateRefine(metadata, parserContext);
-        assertTrue(result.isEmpty());
+        assertTrue(result.isEmpty(), result.toString());
     }
 
     /** Group with null parameter → error for missing mandatory field. */
@@ -98,23 +99,20 @@ public class StudyVariableGroupValidatorTest {
         Metadata metadata = new Metadata();
         MZTabParserContext parserContext = new MZTabParserContext();
 
+        StudyVariable sv1 = studyVariable(1);
+        parserContext.addStudyVariable(metadata, sv1);
         StudyVariableGroup group = new StudyVariableGroup().id(1).
-            description("Sex of the individual");
+            description("Sex of the individual").
+            addStudyVariableRefsItem(sv1);
         parserContext.addStudyVariableGroup(metadata, group);
 
-        StudyVariable sv = new StudyVariable().id(1).name("Female").
-            description("Female samples").groupRef(group);
-        parserContext.addStudyVariable(metadata, sv);
-
         StudyVariableGroupValidator instance = new StudyVariableGroupValidator();
-        List<MZTabError> expResult = Arrays.asList(
-            new MZTabError(LogicalErrorType.NotDefineInMetadata, -1,
-                Metadata.JSON_PROPERTY_STUDY_VARIABLE_GROUP + "[1]"
-                + "\t<" + StudyVariableGroup.JSON_PROPERTY_PARAMETER + ">")
-        );
         List<MZTabError> result = instance.validateRefine(metadata, parserContext);
-        assertEquals(expResult.size(), result.size());
-        assertEquals(expResult.get(0).toString(), result.get(0).toString());
+        assertEquals(1, result.size(), result.toString());
+        assertEquals(new MZTabError(LogicalErrorType.NotDefineInMetadata, -1,
+            Metadata.JSON_PROPERTY_STUDY_VARIABLE_GROUP + "[1]"
+            + "\t<" + StudyVariableGroup.JSON_PROPERTY_PARAMETER + ">").toString(),
+            result.get(0).toString());
     }
 
     /** Group with null description → error for missing mandatory field. */
@@ -123,23 +121,20 @@ public class StudyVariableGroupValidatorTest {
         Metadata metadata = new Metadata();
         MZTabParserContext parserContext = new MZTabParserContext();
 
+        StudyVariable sv1 = studyVariable(1);
+        parserContext.addStudyVariable(metadata, sv1);
         StudyVariableGroup group = new StudyVariableGroup().id(1).
-            parameter(PATO_SEX);
+            parameter(PATO_SEX).
+            addStudyVariableRefsItem(sv1);
         parserContext.addStudyVariableGroup(metadata, group);
 
-        StudyVariable sv = new StudyVariable().id(1).name("Female").
-            description("Female samples").groupRef(group);
-        parserContext.addStudyVariable(metadata, sv);
-
         StudyVariableGroupValidator instance = new StudyVariableGroupValidator();
-        List<MZTabError> expResult = Arrays.asList(
-            new MZTabError(LogicalErrorType.NotDefineInMetadata, -1,
-                Metadata.JSON_PROPERTY_STUDY_VARIABLE_GROUP + "[1]-"
-                + StudyVariableGroup.JSON_PROPERTY_DESCRIPTION)
-        );
         List<MZTabError> result = instance.validateRefine(metadata, parserContext);
-        assertEquals(expResult.size(), result.size());
-        assertEquals(expResult.get(0).toString(), result.get(0).toString());
+        assertEquals(1, result.size(), result.toString());
+        assertEquals(new MZTabError(LogicalErrorType.NotDefineInMetadata, -1,
+            Metadata.JSON_PROPERTY_STUDY_VARIABLE_GROUP + "[1]-"
+            + StudyVariableGroup.JSON_PROPERTY_DESCRIPTION).toString(),
+            result.get(0).toString());
     }
 
     /** Group type with a non-STATO cv label → error. */
@@ -148,28 +143,25 @@ public class StudyVariableGroupValidatorTest {
         Metadata metadata = new Metadata();
         MZTabParserContext parserContext = new MZTabParserContext();
 
+        StudyVariable sv1 = studyVariable(1);
+        parserContext.addStudyVariable(metadata, sv1);
         Parameter invalidType = new Parameter().cvLabel("MS").
             cvAccession("MS:1000001").name("some ms term");
         StudyVariableGroup group = new StudyVariableGroup().id(1).
             parameter(PATO_SEX).
             description("Sex of the individual").
-            type(invalidType);
+            type(invalidType).
+            addStudyVariableRefsItem(sv1);
         parserContext.addStudyVariableGroup(metadata, group);
 
-        StudyVariable sv = new StudyVariable().id(1).name("Female").
-            description("Female samples").groupRef(group);
-        parserContext.addStudyVariable(metadata, sv);
-
         StudyVariableGroupValidator instance = new StudyVariableGroupValidator();
-        List<MZTabError> expResult = Arrays.asList(
-            new MZTabError(LogicalErrorType.NotDefineInMetadata, -1,
-                Metadata.JSON_PROPERTY_STUDY_VARIABLE_GROUP + "[1]-"
-                + StudyVariableGroup.JSON_PROPERTY_TYPE
-                + " (MUST be a STATO ontology term, e.g. [STATO, STATO:0000252, categorical variable, ])")
-        );
         List<MZTabError> result = instance.validateRefine(metadata, parserContext);
-        assertEquals(expResult.size(), result.size());
-        assertEquals(expResult.get(0).toString(), result.get(0).toString());
+        assertEquals(1, result.size(), result.toString());
+        assertEquals(new MZTabError(LogicalErrorType.NotDefineInMetadata, -1,
+            Metadata.JSON_PROPERTY_STUDY_VARIABLE_GROUP + "[1]-"
+            + StudyVariableGroup.JSON_PROPERTY_TYPE
+            + " (MUST be a STATO ontology term, e.g. [STATO, STATO:0000252, categorical variable, ])").toString(),
+            result.get(0).toString());
     }
 
     /** Group with an unsupported xsd datatype value → error. */
@@ -178,31 +170,28 @@ public class StudyVariableGroupValidatorTest {
         Metadata metadata = new Metadata();
         MZTabParserContext parserContext = new MZTabParserContext();
 
+        StudyVariable sv1 = studyVariable(1);
+        parserContext.addStudyVariable(metadata, sv1);
         StudyVariableGroup group = new StudyVariableGroup().id(1).
             parameter(PATO_SEX).
             description("Sex of the individual").
-            datatype("xsd:unsupported");
+            datatype("xsd:unsupported").
+            addStudyVariableRefsItem(sv1);
         parserContext.addStudyVariableGroup(metadata, group);
 
-        StudyVariable sv = new StudyVariable().id(1).name("Female").
-            description("Female samples").groupRef(group);
-        parserContext.addStudyVariable(metadata, sv);
-
         StudyVariableGroupValidator instance = new StudyVariableGroupValidator();
-        List<MZTabError> expResult = Arrays.asList(
-            new MZTabError(LogicalErrorType.NotDefineInMetadata, -1,
-                Metadata.JSON_PROPERTY_STUDY_VARIABLE_GROUP + "[1]-"
-                + StudyVariableGroup.JSON_PROPERTY_DATATYPE
-                + " (MUST be one of: xsd:string, xsd:integer, xsd:decimal, xsd:boolean, xsd:date, xsd:time, xsd:dateTime, xsd:anyURI)")
-        );
         List<MZTabError> result = instance.validateRefine(metadata, parserContext);
-        assertEquals(expResult.size(), result.size());
-        assertEquals(expResult.get(0).toString(), result.get(0).toString());
+        assertEquals(1, result.size(), result.toString());
+        assertEquals(new MZTabError(LogicalErrorType.NotDefineInMetadata, -1,
+            Metadata.JSON_PROPERTY_STUDY_VARIABLE_GROUP + "[1]-"
+            + StudyVariableGroup.JSON_PROPERTY_DATATYPE
+            + " (MUST be one of: xsd:string, xsd:integer, xsd:decimal, xsd:boolean, xsd:date, xsd:time, xsd:dateTime, xsd:anyURI)").toString(),
+            result.get(0).toString());
     }
 
-    /** Group not referenced by any study variable → StudyVariableNotDefined error. */
+    /** Group without any study_variable_refs → error. */
     @Test
-    public void testUnreferencedGroupProducesError() {
+    public void testGroupWithoutStudyVariableRefsProducesError() {
         Metadata metadata = new Metadata();
         MZTabParserContext parserContext = new MZTabParserContext();
 
@@ -211,16 +200,54 @@ public class StudyVariableGroupValidatorTest {
             description("Sex of the individual");
         parserContext.addStudyVariableGroup(metadata, group);
 
-        // No study variable with groupRef → group is unreferenced
         StudyVariableGroupValidator instance = new StudyVariableGroupValidator();
-        List<MZTabError> expResult = Arrays.asList(
-            new MZTabError(LogicalErrorType.StudyVariableNotDefined, -1,
-                Metadata.JSON_PROPERTY_STUDY_VARIABLE_GROUP + "[1]"
-                + " is not referenced by any study_variable[n]-group_ref")
-        );
         List<MZTabError> result = instance.validateRefine(metadata, parserContext);
-        assertEquals(expResult.size(), result.size());
-        assertEquals(expResult.get(0).toString(), result.get(0).toString());
+        assertEquals(1, result.size(), result.toString());
+        assertEquals(new MZTabError(LogicalErrorType.NotDefineInMetadata, -1,
+            Metadata.JSON_PROPERTY_STUDY_VARIABLE_GROUP + "[1]-"
+            + StudyVariableGroup.JSON_PROPERTY_STUDY_VARIABLE_REFS).toString(),
+            result.get(0).toString());
+    }
+
+    /** A study_variable_refs entry pointing to an undefined study variable → error. */
+    @Test
+    public void testUnknownStudyVariableRefProducesError() {
+        Metadata metadata = new Metadata();
+        MZTabParserContext parserContext = new MZTabParserContext();
+
+        StudyVariableGroup group = new StudyVariableGroup().id(1).
+            parameter(PATO_SEX).
+            description("Sex of the individual").
+            addStudyVariableRefsItem(new StudyVariable().id(99));
+        parserContext.addStudyVariableGroup(metadata, group);
+
+        StudyVariableGroupValidator instance = new StudyVariableGroupValidator();
+        List<MZTabError> result = instance.validateRefine(metadata, parserContext);
+        assertTrue(result.stream().anyMatch(e -> e.getMessage().contains("study_variable[99]")),
+            result.toString());
+    }
+
+    /** A study variable not referenced by any group → error once groups are defined. */
+    @Test
+    public void testUnreferencedStudyVariableProducesError() {
+        Metadata metadata = new Metadata();
+        MZTabParserContext parserContext = new MZTabParserContext();
+
+        StudyVariable sv1 = studyVariable(1);
+        StudyVariable sv2 = studyVariable(2);
+        parserContext.addStudyVariable(metadata, sv1);
+        parserContext.addStudyVariable(metadata, sv2);
+        StudyVariableGroup group = new StudyVariableGroup().id(1).
+            parameter(PATO_SEX).
+            description("Sex of the individual").
+            addStudyVariableRefsItem(sv1);
+        parserContext.addStudyVariableGroup(metadata, group);
+
+        StudyVariableGroupValidator instance = new StudyVariableGroupValidator();
+        List<MZTabError> result = instance.validateRefine(metadata, parserContext);
+        assertEquals(1, result.size(), result.toString());
+        assertEquals(LogicalErrorType.StudyVariableNotDefined, result.get(0).getType());
+        assertTrue(result.get(0).getMessage().contains("study_variable[2]"), result.toString());
     }
 
     /** All valid xsd datatypes are accepted without error. */
@@ -234,19 +261,18 @@ public class StudyVariableGroupValidatorTest {
             Metadata metadata = new Metadata();
             MZTabParserContext parserContext = new MZTabParserContext();
 
+            StudyVariable sv1 = studyVariable(1);
+            parserContext.addStudyVariable(metadata, sv1);
             StudyVariableGroup group = new StudyVariableGroup().id(1).
                 parameter(PATO_SEX).
                 description("Sex of the individual").
-                datatype(datatype);
+                datatype(datatype).
+                addStudyVariableRefsItem(sv1);
             parserContext.addStudyVariableGroup(metadata, group);
-
-            StudyVariable sv = new StudyVariable().id(1).name("Female").
-                description("Female samples").groupRef(group);
-            parserContext.addStudyVariable(metadata, sv);
 
             StudyVariableGroupValidator instance = new StudyVariableGroupValidator();
             List<MZTabError> result = instance.validateRefine(metadata, parserContext);
-            assertTrue(result.isEmpty(), "Expected no errors for datatype: " + datatype);
+            assertTrue(result.isEmpty(), "Expected no errors for datatype: " + datatype + " " + result);
         }
     }
 }

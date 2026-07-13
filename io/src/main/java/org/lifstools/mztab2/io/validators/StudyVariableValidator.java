@@ -42,6 +42,27 @@ public class StudyVariableValidator implements RefiningValidator<Metadata> {
             errorList.add(new MZTabError(
                     LogicalErrorType.SingleStudyVariableName, -1));
         } else {
+            // Resolve deferred assay_refs against the (now complete) assay map.
+            // Referenced assays may have been defined after the study variable.
+            for (StudyVariable sv : svMap.values()) {
+                if (sv == null || sv.getAssayRefs() == null) {
+                    continue;
+                }
+                List<Assay> refs = sv.getAssayRefs();
+                for (int i = 0; i < refs.size(); i++) {
+                    Integer refId = refs.get(i).getId();
+                    Assay resolved = assayMap.get(refId);
+                    if (resolved == null) {
+                        errorList.add(new MZTabError(
+                                LogicalErrorType.NotDefineInMetadata, -1,
+                                Metadata.JSON_PROPERTY_STUDY_VARIABLE + "[" + sv.getId() + "]-"
+                                + StudyVariable.JSON_PROPERTY_ASSAY_REFS
+                                + "\t" + Metadata.JSON_PROPERTY_ASSAY + "[" + refId + "]"));
+                    } else {
+                        refs.set(i, resolved);
+                    }
+                }
+            }
             if (svMap.size() == 1 && assayMap.size() > 0) {
                 StudyVariable sv = svMap.get(Integer.valueOf(1));
                 if (sv.getName() == null || sv.getName().isEmpty()) {

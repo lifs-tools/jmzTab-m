@@ -26,7 +26,6 @@ import java.util.Arrays;
 import java.util.List;
 import org.lifstools.mztab2.model.Assay;
 import org.lifstools.mztab2.model.Parameter;
-import org.lifstools.mztab2.model.StudyVariableGroup;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import jakarta.validation.constraints.*;
@@ -40,7 +39,6 @@ import org.hibernate.validator.constraints.*;
   StudyVariable.JSON_PROPERTY_ID,
   StudyVariable.JSON_PROPERTY_NAME,
   StudyVariable.JSON_PROPERTY_ASSAY_REFS,
-  StudyVariable.JSON_PROPERTY_GROUP_REF,
   StudyVariable.JSON_PROPERTY_AVERAGE_FUNCTION,
   StudyVariable.JSON_PROPERTY_VARIATION_FUNCTION,
   StudyVariable.JSON_PROPERTY_DESCRIPTION
@@ -58,10 +56,6 @@ public class StudyVariable {
   public static final String JSON_PROPERTY_ASSAY_REFS = "assay_refs";
   @jakarta.annotation.Nullable
   private List<@Valid Assay> assayRefs = new ArrayList<>();
-
-  public static final String JSON_PROPERTY_GROUP_REF = "group_ref";
-  @jakarta.annotation.Nullable
-  private StudyVariableGroup groupRef;
 
   public static final String JSON_PROPERTY_AVERAGE_FUNCTION = "average_function";
   @jakarta.annotation.Nullable
@@ -168,33 +162,6 @@ public class StudyVariable {
     this.assayRefs = assayRefs;
   }
 
-  public StudyVariable groupRef(@jakarta.annotation.Nullable StudyVariableGroup groupRef) {
-    
-    this.groupRef = groupRef;
-    return this;
-  }
-
-  /**
-   * Reference to the study_variable_group that this study variable belongs to. This field is mandatory if study_variable_group(s) are defined.
-   * @return groupRef
-   */
-  @jakarta.annotation.Nullable
-  @Valid
-
-  @JsonProperty(value = JSON_PROPERTY_GROUP_REF, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public StudyVariableGroup getGroupRef() {
-    return groupRef;
-  }
-
-
-  @JsonProperty(value = JSON_PROPERTY_GROUP_REF, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setGroupRef(@jakarta.annotation.Nullable StudyVariableGroup groupRef) {
-    this.groupRef = groupRef;
-  }
-
   public StudyVariable averageFunction(@jakarta.annotation.Nullable Parameter averageFunction) {
     
     this.averageFunction = averageFunction;
@@ -288,7 +255,6 @@ public class StudyVariable {
     return Objects.equals(this.id, studyVariable.id) &&
         Objects.equals(this.name, studyVariable.name) &&
         Objects.equals(this.assayRefs, studyVariable.assayRefs) &&
-        Objects.equals(this.groupRef, studyVariable.groupRef) &&
         Objects.equals(this.averageFunction, studyVariable.averageFunction) &&
         Objects.equals(this.variationFunction, studyVariable.variationFunction) &&
         Objects.equals(this.description, studyVariable.description);
@@ -296,7 +262,7 @@ public class StudyVariable {
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, name, assayRefs, groupRef, averageFunction, variationFunction, description);
+    return Objects.hash(id, name, assayRefs, averageFunction, variationFunction, description);
   }
 
   @Override
@@ -306,7 +272,6 @@ public class StudyVariable {
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    assayRefs: ").append(toIndentedString(assayRefs)).append("\n");
-    sb.append("    groupRef: ").append(toIndentedString(groupRef)).append("\n");
     sb.append("    averageFunction: ").append(toIndentedString(averageFunction)).append("\n");
     sb.append("    variationFunction: ").append(toIndentedString(variationFunction)).append("\n");
     sb.append("    description: ").append(toIndentedString(description)).append("\n");
