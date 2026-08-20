@@ -71,12 +71,12 @@ public enum MetadataProperty {
     STUDY_VARIABLE_AVERAGE_FUNCTION       (MetadataElement.STUDY_VARIABLE,                      "average_function"),
     STUDY_VARIABLE_VARIATION_FUNCTION     (MetadataElement.STUDY_VARIABLE,                      "variation_function"),
     STUDY_VARIABLE_FACTORS                (MetadataElement.STUDY_VARIABLE,                      "factors"),
-    STUDY_VARIABLE_GROUP_REF              (MetadataElement.STUDY_VARIABLE,                      "group_ref"),
 
     STUDY_VARIABLE_GROUP_DESCRIPTION      (MetadataElement.STUDY_VARIABLE_GROUP,                "description"),
     STUDY_VARIABLE_GROUP_TYPE             (MetadataElement.STUDY_VARIABLE_GROUP,                "type"),
     STUDY_VARIABLE_GROUP_DATATYPE         (MetadataElement.STUDY_VARIABLE_GROUP,                "datatype"),
     STUDY_VARIABLE_GROUP_UNIT             (MetadataElement.STUDY_VARIABLE_GROUP,                "unit"),
+    STUDY_VARIABLE_GROUP_STUDY_VARIABLE_REFS (MetadataElement.STUDY_VARIABLE_GROUP,            "study_variable_refs"),
 
     CV_LABEL                              (MetadataElement.CV,                                  "label"),
     CV_FULL_NAME                          (MetadataElement.CV,                                  "full_name"),

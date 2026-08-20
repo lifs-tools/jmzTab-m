@@ -1193,6 +1193,35 @@ public class MZTabParserContext {
     }
 
     /**
+     * Add a study_variable[id]-assay_refs entry. The referenced assay may be
+     * defined later in the metadata section, so only its id is recorded here;
+     * resolution and validation happen after the whole metadata section has been
+     * parsed (see StudyVariableValidator).
+     *
+     * @param metadata a {@link org.lifstools.mztab2.model.Metadata} object.
+     * @param id SHOULD be positive integer (study variable id).
+     * @param assayRef the referenced assay (id only).
+     * @return a {@link org.lifstools.mztab2.model.StudyVariable} object.
+     */
+    public StudyVariable addStudyVariableAssayRef(Metadata metadata, Integer id, Assay assayRef) {
+        if (id <= 0) {
+            throw new IllegalArgumentException("study variable id should be greater than 0!");
+        }
+        if (assayRef == null) {
+            throw new NullPointerException("study_variable[n]-assay_refs should not be null.");
+        }
+        StudyVariable studyVariable = studyVariableMap.get(id);
+        if (studyVariable == null) {
+            studyVariable = new StudyVariable();
+            studyVariable.id(id);
+            studyVariableMap.put(id, studyVariable);
+            metadata.addStudyVariableItem(studyVariable);
+        }
+        studyVariable.addAssayRefsItem(assayRef);
+        return studyVariable;
+    }
+
+    /**
      * Add a study_variable[id]-description. A textual description of the study variable.
      *
      * @param metadata a {@link org.lifstools.mztab2.model.Metadata} object.
@@ -1438,35 +1467,33 @@ public class MZTabParserContext {
     }
 
     /**
-     * Add a study_variable[id]-group_ref linking to a StudyVariableGroup.
+     * Add a study_variable_group[id]-study_variable_refs entry. The referenced
+     * study variable may be defined later in the metadata section, so only its
+     * id is recorded here; resolution and validation happen after the whole
+     * metadata section has been parsed.
      *
      * @param metadata a {@link org.lifstools.mztab2.model.Metadata} object.
-     * @param id SHOULD be positive integer (study variable id).
-     * @param group SHOULD NOT be null and SHOULD be defined in metadata first.
-     * @return a {@link org.lifstools.mztab2.model.StudyVariable} object.
+     * @param id SHOULD be positive integer (study variable group id).
+     * @param studyVariableRef the referenced study variable (id only).
+     * @return a {@link org.lifstools.mztab2.model.StudyVariableGroup} object.
      */
-    public StudyVariable addStudyVariableGroupRef(Metadata metadata,
-        Integer id, StudyVariableGroup group) {
+    public StudyVariableGroup addStudyVariableGroupStudyVariableRef(Metadata metadata,
+        Integer id, StudyVariable studyVariableRef) {
         if (id <= 0) {
-            throw new IllegalArgumentException("study_variable id should be greater than 0!");
+            throw new IllegalArgumentException("study_variable_group id should be greater than 0!");
         }
-        if (group == null) {
-            throw new NullPointerException("study_variable[n]-group_ref should not be null.");
+        if (studyVariableRef == null) {
+            throw new NullPointerException("study_variable_group[n]-study_variable_refs should not be null.");
         }
-        if (!studyVariableGroupMap.containsValue(group)) {
-            throw new IllegalArgumentException("study_variable_group should be defined in metadata first");
+        StudyVariableGroup svg = studyVariableGroupMap.get(id);
+        if (svg == null) {
+            svg = new StudyVariableGroup();
+            svg.id(id);
+            studyVariableGroupMap.put(id, svg);
+            metadata.addStudyVariableGroupItem(svg);
         }
-        StudyVariable studyVariable = studyVariableMap.get(id);
-        if (studyVariable == null) {
-            studyVariable = new StudyVariable();
-            studyVariable.id(id);
-            studyVariable.setGroupRef(group);
-            studyVariableMap.put(id, studyVariable);
-            metadata.addStudyVariableItem(studyVariable);
-        } else {
-            studyVariable.setGroupRef(group);
-        }
-        return studyVariable;
+        svg.addStudyVariableRefsItem(studyVariableRef);
+        return svg;
     }
 
     /**

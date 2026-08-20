@@ -21,8 +21,10 @@ import org.lifstools.mztab2.io.TestResources;
 import org.lifstools.mztab2.model.Metadata;
 import static org.lifstools.mztab2.model.Metadata.PrefixEnum.MTD;
 import org.lifstools.mztab2.model.Parameter;
+import org.lifstools.mztab2.model.StudyVariable;
 import org.lifstools.mztab2.model.StudyVariableGroup;
 import org.junit.jupiter.api.Test;
+import static uk.ac.ebi.pride.jmztab2.model.MZTabConstants.BAR_S;
 import static uk.ac.ebi.pride.jmztab2.model.MZTabConstants.NEW_LINE;
 import static uk.ac.ebi.pride.jmztab2.model.MZTabConstants.TAB_STRING;
 
@@ -142,6 +144,34 @@ public class StudyVariableGroupSerializerTest extends AbstractSerializerTest {
             + MTD + TAB_STRING + Metadata.JSON_PROPERTY_STUDY_VARIABLE_GROUP + "[2]-" + StudyVariableGroup.JSON_PROPERTY_TYPE + TAB_STRING + pc.convert(group2.getType())
             + NEW_LINE
             + MTD + TAB_STRING + Metadata.JSON_PROPERTY_STUDY_VARIABLE_GROUP + "[2]-" + StudyVariableGroup.JSON_PROPERTY_DATATYPE + TAB_STRING + group2.getDatatype()
+            + NEW_LINE,
+            serializeSingle(writer, mtd));
+    }
+
+    @Test
+    public void testSerializeStudyVariableRefs() throws Exception {
+        Metadata mtd = new Metadata();
+        Parameter sexParam = new Parameter().cvLabel("PATO").
+            cvAccession("PATO:0000383").
+            name("sex");
+        StudyVariableGroup group1 = new StudyVariableGroup().
+            id(1).
+            parameter(sexParam).
+            description("Sex of the individual").
+            addStudyVariableRefsItem(new StudyVariable().id(1).name("Female")).
+            addStudyVariableRefsItem(new StudyVariable().id(2).name("Male"));
+        mtd.addStudyVariableGroupItem(group1);
+
+        ObjectWriter writer = metaDataWriter();
+        ParameterConverter pc = new ParameterConverter();
+        assertEqSentry(
+            TestResources.MZTAB_VERSION_HEADER
+            + MTD + TAB_STRING + Metadata.JSON_PROPERTY_STUDY_VARIABLE_GROUP + "[1]" + TAB_STRING + pc.convert(sexParam)
+            + NEW_LINE
+            + MTD + TAB_STRING + Metadata.JSON_PROPERTY_STUDY_VARIABLE_GROUP + "[1]-" + StudyVariableGroup.JSON_PROPERTY_DESCRIPTION + TAB_STRING + group1.getDescription()
+            + NEW_LINE
+            + MTD + TAB_STRING + Metadata.JSON_PROPERTY_STUDY_VARIABLE_GROUP + "[1]-" + StudyVariableGroup.JSON_PROPERTY_STUDY_VARIABLE_REFS + TAB_STRING
+            + Metadata.JSON_PROPERTY_STUDY_VARIABLE + "[1]" + BAR_S + Metadata.JSON_PROPERTY_STUDY_VARIABLE + "[2]"
             + NEW_LINE,
             serializeSingle(writer, mtd));
     }

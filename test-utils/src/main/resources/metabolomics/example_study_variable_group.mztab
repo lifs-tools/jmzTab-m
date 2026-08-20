@@ -1,0 +1,117 @@
+COM	Example demonstrating the study_variable_group design (mzTab-M 2.1)
+COM
+COM	Model: each study_variable_group is one experimental factor (a column of the
+COM	wide design matrix). Each study_variable is one level of exactly one factor and
+COM	references the assays that carry that level. The link is top-down: every group
+COM	lists its member study variables via study_variable_group[1-n]-study_variable_refs.
+COM
+COM	Design: sex (2 levels) x timepoint (3 levels), one assay per cell (assay[1-6]).
+COM	  assay[1] Female,0day  assay[2] Female,1day  assay[3] Female,2day
+COM	  assay[4] Male,0day    assay[5] Male,1day    assay[6] Male,2day
+
+MTD	mzTab-version	2.1.0-M
+MTD	mzTab-ID	EXAMPLE_SV_GROUP_001
+MTD	title	Multi-factorial design with sex and timepoint factors
+MTD	description	Example dataset demonstrating study_variable_group for multi-factorial designs
+MTD	quantification_method	[MS, MS:1001834, LC-MS label-free quantitation analysis, ]
+MTD	software[1]	[MS, MS:1002879, Progenesis QI, 3.0]
+
+COM	MS runs (one per assay)
+MTD	ms_run[1]-location	file:///data/run1.mzML
+MTD	ms_run[1]-format	[MS, MS:1000584, mzML file, ]
+MTD	ms_run[1]-id_format	[MS, MS:1000768, Thermo nativeID format, ]
+MTD	ms_run[1]-scan_polarity[1]	[MS, MS:1000129, negative scan, ]
+MTD	ms_run[2]-location	file:///data/run2.mzML
+MTD	ms_run[2]-format	[MS, MS:1000584, mzML file, ]
+MTD	ms_run[2]-id_format	[MS, MS:1000768, Thermo nativeID format, ]
+MTD	ms_run[2]-scan_polarity[1]	[MS, MS:1000129, negative scan, ]
+MTD	ms_run[3]-location	file:///data/run3.mzML
+MTD	ms_run[3]-format	[MS, MS:1000584, mzML file, ]
+MTD	ms_run[3]-id_format	[MS, MS:1000768, Thermo nativeID format, ]
+MTD	ms_run[3]-scan_polarity[1]	[MS, MS:1000129, negative scan, ]
+MTD	ms_run[4]-location	file:///data/run4.mzML
+MTD	ms_run[4]-format	[MS, MS:1000584, mzML file, ]
+MTD	ms_run[4]-id_format	[MS, MS:1000768, Thermo nativeID format, ]
+MTD	ms_run[4]-scan_polarity[1]	[MS, MS:1000129, negative scan, ]
+MTD	ms_run[5]-location	file:///data/run5.mzML
+MTD	ms_run[5]-format	[MS, MS:1000584, mzML file, ]
+MTD	ms_run[5]-id_format	[MS, MS:1000768, Thermo nativeID format, ]
+MTD	ms_run[5]-scan_polarity[1]	[MS, MS:1000129, negative scan, ]
+MTD	ms_run[6]-location	file:///data/run6.mzML
+MTD	ms_run[6]-format	[MS, MS:1000584, mzML file, ]
+MTD	ms_run[6]-id_format	[MS, MS:1000768, Thermo nativeID format, ]
+MTD	ms_run[6]-scan_polarity[1]	[MS, MS:1000129, negative scan, ]
+
+COM	Assays (one per design cell)
+MTD	assay[1]	Female_0day
+MTD	assay[1]-ms_run_ref	ms_run[1]
+MTD	assay[2]	Female_1day
+MTD	assay[2]-ms_run_ref	ms_run[2]
+MTD	assay[3]	Female_2day
+MTD	assay[3]-ms_run_ref	ms_run[3]
+MTD	assay[4]	Male_0day
+MTD	assay[4]-ms_run_ref	ms_run[4]
+MTD	assay[5]	Male_1day
+MTD	assay[5]-ms_run_ref	ms_run[5]
+MTD	assay[6]	Male_2day
+MTD	assay[6]-ms_run_ref	ms_run[6]
+
+COM	Study Variable Groups (the factors)
+COM	sex - categorical (nominal), string values
+MTD	study_variable_group[1]	[,,sex,]
+MTD	study_variable_group[1]-description	Sex of the individual
+MTD	study_variable_group[1]-type	[STATO, STATO:0000252, categorical variable, ]
+MTD	study_variable_group[1]-datatype	xsd:string
+MTD	study_variable_group[1]-study_variable_refs	study_variable[1]| study_variable[2]
+COM	timepoint - ordinal, integer values with a unit
+MTD	study_variable_group[2]	[,,timepoint,]
+MTD	study_variable_group[2]-description	Time after treatment
+MTD	study_variable_group[2]-type	[STATO, STATO:0000228, ordinal variable, ]
+MTD	study_variable_group[2]-datatype	xsd:integer
+MTD	study_variable_group[2]-unit	[UO, UO:0000033, day, ]
+MTD	study_variable_group[2]-study_variable_refs	study_variable[3]| study_variable[4]| study_variable[5]
+
+COM	Study Variables (the levels of each factor)
+COM	sex levels
+MTD	study_variable[1]	Female
+MTD	study_variable[1]-description	Female individuals
+MTD	study_variable[1]-assay_refs	assay[1]| assay[2]| assay[3]
+MTD	study_variable[2]	Male
+MTD	study_variable[2]-description	Male individuals
+MTD	study_variable[2]-assay_refs	assay[4]| assay[5]| assay[6]
+COM	timepoint levels
+MTD	study_variable[3]	0
+MTD	study_variable[3]-description	Control timepoint (0 days)
+MTD	study_variable[3]-assay_refs	assay[1]| assay[4]
+MTD	study_variable[4]	1
+MTD	study_variable[4]-description	1 day post-treatment
+MTD	study_variable[4]-assay_refs	assay[2]| assay[5]
+MTD	study_variable[5]	2
+MTD	study_variable[5]-description	2 days post-treatment
+MTD	study_variable[5]-assay_refs	assay[3]| assay[6]
+
+COM	Controlled vocabularies
+MTD	cv[1]-label	MS
+MTD	cv[1]-full_name	PSI-MS controlled vocabulary
+MTD	cv[1]-version	4.1.11
+MTD	cv[1]-uri	https://purl.obolibrary.org/obo/ms.obo
+MTD	cv[2]-label	UO
+MTD	cv[2]-full_name	Unit Ontology
+MTD	cv[2]-version	2021-11-08
+MTD	cv[2]-uri	https://purl.obolibrary.org/obo/uo.obo
+MTD	cv[3]-label	STATO
+MTD	cv[3]-full_name	Statistics Ontology
+MTD	cv[3]-version	2018-06-15
+MTD	cv[3]-uri	https://purl.obolibrary.org/obo/stato.owl
+
+MTD	small_molecule-quantification_unit	[MS, MS:1002887, Progenesis QI normalised abundance, ]
+MTD	small_molecule_feature-quantification_unit	[MS, MS:1002887, Progenesis QI normalised abundance, ]
+MTD	small_molecule-identification_reliability	[MS, MS:1002896, compound identification confidence level, ]
+MTD	database[1]	[MIRIAM, MIR:00100079, HMDB, ]
+MTD	database[1]-prefix	hmdb
+MTD	database[1]-version	3.6
+MTD	database[1]-uri	http://www.hmdb.ca/
+
+COM	Small Molecule section (minimal example)
+SMH	SML_ID	SMF_ID_REFS	database_identifier	chemical_formula	smiles	inchi	chemical_name	uri	theoretical_neutral_mass	adduct_ions	reliability	best_id_confidence_measure	best_id_confidence_value	abundance_assay[1]	abundance_assay[2]	abundance_assay[3]	abundance_assay[4]	abundance_assay[5]	abundance_assay[6]	abundance_study_variable[1]	abundance_study_variable[2]	abundance_study_variable[3]	abundance_study_variable[4]	abundance_study_variable[5]	abundance_variation_study_variable[1]	abundance_variation_study_variable[2]	abundance_variation_study_variable[3]	abundance_variation_study_variable[4]	abundance_variation_study_variable[5]
+SML	1	null	hmdb:HMDB0000043	C6H12O6	C([C@@H]1[C@H]([C@@H]([C@H](C(=O)O1)O)O)O)O	InChI=1S/C6H12O6/c7-1-2-3(8)4(9)5(10)6(11)12-2/h2-11H,1H2	D-Gluconic acid	http://www.hmdb.ca/metabolites/HMDB0000043	196.0423	[M-H]1-	2	[MS, MS:1002888, SpectraScore, ]	0.85	1.51	1.62	1.44	2.13	2.05	2.21	1.52	2.13	1.82	1.84	1.83	0.11	0.14	0.12	0.13	0.10

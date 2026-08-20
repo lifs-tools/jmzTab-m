@@ -1163,19 +1163,14 @@ public class MTDLineParser extends MZTabLineParser {
                                 LogicalErrorType.DuplicationID, lineNumber,
                                 valueLabel));
                         });
-                    // check that assays exist
+                    // Resolve assays that are already defined; assays defined
+                    // later in the metadata section are recorded by id and
+                    // resolved/validated once the whole section is parsed (see
+                    // StudyVariableValidator).
                     for (IndexedElement e : indexedElementList) {
-                        //assays need to be defined before
-                        if (!context.getAssayMap().
-                            containsKey(e.getId())) {
-                            // can not find assay[id] in metadata.
-                            throw new MZTabException(new MZTabError(
-                                LogicalErrorType.NotDefineInMetadata, lineNumber,
-                                valueLabel));
-                        }
-                        context.addStudyVariableAssay(metadata, id, context.
-                            getAssayMap().
-                            get(e.getId()));
+                        Assay assay = context.getAssayMap().get(e.getId());
+                        context.addStudyVariableAssayRef(metadata, id,
+                            assay != null ? assay : new Assay().id(e.getId()));
                     }
                     break;
                 case STUDY_VARIABLE_AVERAGE_FUNCTION:
@@ -1191,20 +1186,8 @@ public class MTDLineParser extends MZTabLineParser {
                         addStudyVariableDescription(metadata, id, valueLabel);
                     break;
                 case STUDY_VARIABLE_FACTORS:
-                    // removed in version 2.1
-                    //context.addStudyVariableFactors(metadata, id,
-                    //    checkParameter(defineLabel, valueLabel));
-                    //break;
-                case STUDY_VARIABLE_GROUP_REF:
-                    IndexedElement groupRefElement = checkIndexedElement(defineLabel,
-                        valueLabel, MetadataElement.STUDY_VARIABLE_GROUP);
-                    StudyVariableGroup referencedGroup = context.getStudyVariableGroupMap().
-                        get(groupRefElement.getId());
-                    if (referencedGroup == null) {
-                        throw new MZTabException(new MZTabError(
-                            LogicalErrorType.NotDefineInMetadata, lineNumber, valueLabel));
-                    }
-                    context.addStudyVariableGroupRef(metadata, id, referencedGroup);
+                    // study_variable[1-n]-factors was removed in version 2.1 and
+                    // is silently ignored for backwards compatibility.
                     break;
                 default:
                     MZTabError error = new MZTabError(
@@ -1237,6 +1220,29 @@ public class MTDLineParser extends MZTabLineParser {
                 case STUDY_VARIABLE_GROUP_UNIT:
                     context.addStudyVariableGroupUnit(metadata, id,
                         checkParameter(defineLabel, valueLabel));
+                    break;
+                case STUDY_VARIABLE_GROUP_STUDY_VARIABLE_REFS:
+                    List<IndexedElement> svRefs = checkIndexedElementList(
+                        defineLabel, valueLabel, MetadataElement.STUDY_VARIABLE);
+                    // detect duplicates
+                    svRefs.stream().
+                        filter(i ->
+                            Collections.frequency(svRefs, i) > 1).
+                        collect(Collectors.toSet()).
+                        forEach((indexedElement) ->
+                        {
+                            errorList.add(new MZTabError(
+                                LogicalErrorType.DuplicationID, lineNumber,
+                                valueLabel));
+                        });
+                    // The referenced study variables may be defined later in the
+                    // metadata section, so we only record the referenced ids here
+                    // and resolve/validate them once the whole section is parsed
+                    // (see StudyVariableGroupValidator).
+                    for (IndexedElement e : svRefs) {
+                        context.addStudyVariableGroupStudyVariableRef(metadata, id,
+                            new StudyVariable().id(e.getId()));
+                    }
                     break;
                 default:
                     MZTabError error = new MZTabError(
