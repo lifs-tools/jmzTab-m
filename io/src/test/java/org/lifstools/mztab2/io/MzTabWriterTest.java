@@ -264,8 +264,10 @@ public class MzTabWriterTest {
         MZTabErrorList errors = parser.parse(System.out,
             MZTabErrorType.Level.Info, 500);
         //we expect errors here, since our test file has neither summary, feature nor evidence sections.
+        //As profile M (metadata only), quantification_method and database are no longer required;
+        //the remaining errors are the profile-independent study_variable and ms_run scan_polarity checks.
         assertFalse(errors.isEmpty());
-        assertEquals(6, errors.size(), errors.toString());
+        assertEquals(4, errors.size(), errors.toString());
 //        MzTab mzTabReRead = parser.getMZTabFile();
 //        Assert.assertEquals(mzTabFile, mzTabReRead);
     }
@@ -282,7 +284,7 @@ public class MzTabWriterTest {
     @Test
     public void testReadWriteRoundtripWithJacksonLipidomicsExample() throws IOException, URISyntaxException, MZTabException {
         MzTab mzTabFile = TestResources.parseResource(EXTRACT_FILES.getBaseDir(),
-            "lipidomics-example.mzTab", MZTabErrorType.Level.Info,
+            "lipidomics-example.mzTab", MZTabErrorType.Level.Warn,
             0);
         File tempFile = File.createTempFile("testReadWriteRoundtripWithJackson",
             ".mztab");
@@ -290,7 +292,7 @@ public class MzTabWriterTest {
         writer.write(tempFile.toPath(), mzTabFile);
         MzTabFileParser parser = new MzTabFileParser(tempFile);
         MZTabErrorList errors = parser.parse(System.out,
-            MZTabErrorType.Level.Info, 500);
+            MZTabErrorType.Level.Warn, 500);
         assertTrue(errors.isEmpty(), errors.toString());
         assertNotNull(parser.getMZTabFile().
             getMetadata().
@@ -316,7 +318,7 @@ public class MzTabWriterTest {
     public void testReadWriteRoundtripWithJacksonLda2StdMix() throws IOException, URISyntaxException, MZTabException {
         MzTab mzTabFile = TestResources.parseResource(EXTRACT_FILES.getBaseDir(),
             "StandardMix_positive_exportPositionLevel.mzTab",
-            MZTabErrorType.Level.Info,
+            MZTabErrorType.Level.Warn,
             0);
         File tempFile = File.createTempFile(
             "testReadWriteRoundtripWithJacksonLipidomicsStdMix",
@@ -325,7 +327,7 @@ public class MzTabWriterTest {
         writer.write(tempFile.toPath(), mzTabFile);
         MzTabFileParser parser = new MzTabFileParser(tempFile);
         MZTabErrorList errors = parser.parse(System.out,
-            MZTabErrorType.Level.Info, 500);
+            MZTabErrorType.Level.Warn, 500);
         assertTrue(errors.isEmpty(), errors.toString());
         compareMzTabModels(mzTabFile, parser.getMZTabFile());
     }
@@ -334,7 +336,7 @@ public class MzTabWriterTest {
     public void testReadWriteRoundtripWithJacksonLda2MouseLiver() throws IOException, URISyntaxException, MZTabException {
         MzTab mzTabFile = TestResources.parseResource(EXTRACT_FILES.getBaseDir(),
             "MouseLiver_negative.mzTab",
-            MZTabErrorType.Level.Info,
+            MZTabErrorType.Level.Warn,
             0);
         File tempFile = File.createTempFile(
             "testReadWriteRoundtripWithJacksonLipidomicsMouseLiver",
@@ -343,7 +345,7 @@ public class MzTabWriterTest {
         writer.write(tempFile.toPath(), mzTabFile);
         MzTabFileParser parser = new MzTabFileParser(tempFile);
         MZTabErrorList errors = parser.parse(System.out,
-            MZTabErrorType.Level.Info, 500);
+            MZTabErrorType.Level.Warn, 500);
         assertTrue(errors.isEmpty(), errors.toString());
         compareMzTabModels(mzTabFile, parser.getMZTabFile());
     }
@@ -351,7 +353,7 @@ public class MzTabWriterTest {
     @Test
     public void testReadWriteRoundtripWithJacksonMTBLS263() throws IOException, URISyntaxException, MZTabException {
         MzTab mzTabFile = TestResources.parseResource(EXTRACT_FILES.getBaseDir(),
-            "MTBLS263.mztab", MZTabErrorType.Level.Info,
+            "MTBLS263.mztab", MZTabErrorType.Level.Warn,
             0);
         File tempFile = File.createTempFile(
             "testReadWriteRoundtripWithJacksonMTBLS263",
@@ -360,7 +362,7 @@ public class MzTabWriterTest {
         writer.write(tempFile.toPath(), mzTabFile);
         MzTabFileParser parser = new MzTabFileParser(tempFile);
         MZTabErrorList errors = parser.parse(System.out,
-            MZTabErrorType.Level.Info, 500);
+            MZTabErrorType.Level.Warn, 500);
         assertTrue(errors.isEmpty(), errors.toString());
         compareMzTabModels(mzTabFile, parser.getMZTabFile());
     }
@@ -455,7 +457,7 @@ public class MzTabWriterTest {
     @Test
     public void testLargeNumberOfFeaturesFromMTBLS263() throws URISyntaxException, IOException, MZTabException {
         MzTab mzTabFile = TestResources.parseResource(EXTRACT_FILES.getBaseDir(),
-            "MTBLS263.mztab", MZTabErrorType.Level.Info,
+            "MTBLS263.mztab", MZTabErrorType.Level.Warn,
             0);
         final int expFactor = 100;
         List<SmallMoleculeSummary> sms = mzTabFile.getSmallMoleculeSummary();

@@ -90,8 +90,13 @@ public class MZTabFileParserTest {
             Arguments.of(GCXGC_MS_EXAMPLE, MZTabErrorType.Level.Warn, 0, false),
             Arguments.of(MINIMAL_EXAMPLE, MZTabErrorType.Level.Error, 0, false),
             Arguments.of(MINIMAL_EXAMPLE, MZTabErrorType.Level.Warn, 0, false),
-            Arguments.of(MINIMAL_EXAMPLE, MZTabErrorType.Level.Info, 1, false),
-            Arguments.of(XCMS_EXAMPLE, MZTabErrorType.Level.Info, 1, false),
+            // MTD-only file: inferred profile M (1 info) plus 5 profile/content
+            // mismatch infos for the conditional metadata fields present without
+            // their related tables.
+            Arguments.of(MINIMAL_EXAMPLE, MZTabErrorType.Level.Info, 6, false),
+            // xcms-test-export is an M+S+F file (summary + feature, no evidence):
+            // 1 discouraged-combination warning plus 1 database mismatch info.
+            Arguments.of(XCMS_EXAMPLE, MZTabErrorType.Level.Info, 2, false),
             Arguments.of(XCMS_NO_SML_EXAMPLE, MZTabErrorType.Level.Warn, 0, false)
         );
     }

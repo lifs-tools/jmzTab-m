@@ -378,6 +378,20 @@ components:
         line_number:
           type: integer
           format: int32
+    MzTabProfile:
+      type: string
+      description: >
+        The mzTab-M profile a file conforms to. The profile declares which of
+        the four tables are present: M (metadata only), M+S (metadata + small
+        molecule summary), M+F (metadata + small molecule feature), M+F+E
+        (metadata + feature + evidence), M+S+F+E (metadata + summary + feature +
+        evidence, the classic full file).
+      enum:
+        - M
+        - M+S
+        - M+F
+        - M+F+E
+        - M+S+F+E
     Metadata:
       type: object
       description: >
@@ -434,6 +448,17 @@ components:
             producing the file. It is not intended to be a globally unique ID
             but carry some locally useful meaning.
           example: MTD mzTab-ID MTBLS214
+        mzTab-profile:
+          description: >
+            The optional mzTab-M profile this file conforms to. The profile
+            declares which of the four tables (metadata, small molecule summary,
+            small molecule feature, small molecule evidence) are present in the
+            file. If omitted (e.g. in legacy 2.0 files), the profile is inferred
+            by the validator from the sections that are actually present.
+          allOf:
+            - $ref: '#/components/schemas/MzTabProfile'
+          x-mztab-example: |
+            MTD	mzTab-profile	M+S+F+E
         title:
           type: string
           description: |

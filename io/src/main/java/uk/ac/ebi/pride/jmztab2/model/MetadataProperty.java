@@ -28,6 +28,7 @@ import java.util.Optional;
 public enum MetadataProperty {
     MZTAB_VERSION                         (MetadataElement.MZTAB,                               "version"),
     MZTAB_ID                              (MetadataElement.MZTAB,                               "ID"),
+    MZTAB_PROFILE                         (MetadataElement.MZTAB,                               "profile"),
 
     INSTRUMENT_NAME                       (MetadataElement.INSTRUMENT,                          "name"),
     INSTRUMENT_SOURCE                     (MetadataElement.INSTRUMENT,                          "source"),

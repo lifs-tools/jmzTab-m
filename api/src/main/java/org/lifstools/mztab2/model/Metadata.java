@@ -52,6 +52,7 @@ import org.hibernate.validator.constraints.*;
   Metadata.JSON_PROPERTY_PREFIX,
   Metadata.JSON_PROPERTY_MZ_TAB_VERSION,
   Metadata.JSON_PROPERTY_MZ_TAB_I_D,
+  Metadata.JSON_PROPERTY_MZ_TAB_PROFILE,
   Metadata.JSON_PROPERTY_TITLE,
   Metadata.JSON_PROPERTY_DESCRIPTION,
   Metadata.JSON_PROPERTY_CONTACT,
@@ -125,6 +126,10 @@ public class Metadata {
   public static final String JSON_PROPERTY_MZ_TAB_I_D = "mzTab-ID";
   @jakarta.annotation.Nonnull
   private String mzTabID;
+
+  public static final String JSON_PROPERTY_MZ_TAB_PROFILE = "mzTab-profile";
+  @jakarta.annotation.Nullable
+  private MzTabProfile mzTabProfile;
 
   public static final String JSON_PROPERTY_TITLE = "title";
   @jakarta.annotation.Nullable
@@ -312,6 +317,33 @@ public class Metadata {
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setMzTabID(@jakarta.annotation.Nonnull String mzTabID) {
     this.mzTabID = mzTabID;
+  }
+
+  public Metadata mzTabProfile(@jakarta.annotation.Nullable MzTabProfile mzTabProfile) {
+
+    this.mzTabProfile = mzTabProfile;
+    return this;
+  }
+
+  /**
+   * The mzTab-M profile this file conforms to. The profile declares which of the four tables (metadata, small molecule summary, small molecule feature, small molecule evidence) are present. If omitted (e.g. in legacy 2.0 files), the profile is inferred from the sections actually present.
+   * @return mzTabProfile
+   */
+  @jakarta.annotation.Nullable
+  @Valid
+
+  @JsonProperty(value = JSON_PROPERTY_MZ_TAB_PROFILE, required = false)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public MzTabProfile getMzTabProfile() {
+    return mzTabProfile;
+  }
+
+
+  @JsonProperty(value = JSON_PROPERTY_MZ_TAB_PROFILE, required = false)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setMzTabProfile(@jakarta.annotation.Nullable MzTabProfile mzTabProfile) {
+    this.mzTabProfile = mzTabProfile;
   }
 
   public Metadata title(@jakarta.annotation.Nullable String title) {
@@ -1198,6 +1230,7 @@ public class Metadata {
     return Objects.equals(this.prefix, metadata.prefix) &&
         Objects.equals(this.mzTabVersion, metadata.mzTabVersion) &&
         Objects.equals(this.mzTabID, metadata.mzTabID) &&
+        Objects.equals(this.mzTabProfile, metadata.mzTabProfile) &&
         Objects.equals(this.title, metadata.title) &&
         Objects.equals(this.description, metadata.description) &&
         Objects.equals(this.contact, metadata.contact) &&
@@ -1228,7 +1261,7 @@ public class Metadata {
 
   @Override
   public int hashCode() {
-    return Objects.hash(prefix, mzTabVersion, mzTabID, title, description, contact, publication, uri, externalStudyUri, instrument, quantificationMethod, sample, sampleProcessing, software, derivatizationAgent, msRun, assay, studyVariableGroup, studyVariable, custom, cv, smallMoleculeQuantificationUnit, smallMoleculeFeatureQuantificationUnit, smallMoleculeIdentificationReliability, database, idConfidenceMeasure, colunitSmallMolecule, colunitSmallMoleculeFeature, colunitSmallMoleculeEvidence);
+    return Objects.hash(prefix, mzTabVersion, mzTabID, mzTabProfile, title, description, contact, publication, uri, externalStudyUri, instrument, quantificationMethod, sample, sampleProcessing, software, derivatizationAgent, msRun, assay, studyVariableGroup, studyVariable, custom, cv, smallMoleculeQuantificationUnit, smallMoleculeFeatureQuantificationUnit, smallMoleculeIdentificationReliability, database, idConfidenceMeasure, colunitSmallMolecule, colunitSmallMoleculeFeature, colunitSmallMoleculeEvidence);
   }
 
   @Override
@@ -1238,6 +1271,7 @@ public class Metadata {
     sb.append("    prefix: ").append(toIndentedString(prefix)).append("\n");
     sb.append("    mzTabVersion: ").append(toIndentedString(mzTabVersion)).append("\n");
     sb.append("    mzTabID: ").append(toIndentedString(mzTabID)).append("\n");
+    sb.append("    mzTabProfile: ").append(toIndentedString(mzTabProfile)).append("\n");
     sb.append("    title: ").append(toIndentedString(title)).append("\n");
     sb.append("    description: ").append(toIndentedString(description)).append("\n");
     sb.append("    contact: ").append(toIndentedString(contact)).append("\n");

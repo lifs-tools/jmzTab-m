@@ -47,7 +47,9 @@ public class MZTabFileParserExtTest {
         MzTab mzTab = TestResources.parseResource(EXTRACT_FILES.getBaseDir(),
                 MTBLS263.fileName(),
                 MZTabErrorType.Level.Info,
-                0, false);
+                // MTBLS263 is a legacy full file (no mzTab-profile line): the
+                // inferred profile M+S+F+E is reported as a single info message.
+                1, false);
         assertEquals(3, mzTab.getMetadata().getStudyVariable().get(0).getAssayRefs().size());
     }
 }

@@ -21,9 +21,6 @@ import org.lifstools.mztab2.io.validators.DatabaseValidator;
 import org.lifstools.mztab2.io.validators.MsRunValidator;
 import org.lifstools.mztab2.io.validators.MzTabIdValidator;
 import org.lifstools.mztab2.io.validators.MzTabVersionValidator;
-import org.lifstools.mztab2.io.validators.QuantificationMethodValidator;
-import org.lifstools.mztab2.io.validators.SmallMoleculeFeatureQuantificationUnitValidator;
-import org.lifstools.mztab2.io.validators.SmallMoleculeQuantificationUnitValidator;
 import org.lifstools.mztab2.io.validators.SoftwareValidator;
 import org.lifstools.mztab2.io.validators.StudyVariableGroupValidator;
 import org.lifstools.mztab2.io.validators.StudyVariableValidator;
@@ -35,6 +32,7 @@ import org.lifstools.mztab2.model.IndexedElement;
 import org.lifstools.mztab2.model.Instrument;
 import org.lifstools.mztab2.model.Metadata;
 import org.lifstools.mztab2.model.MsRun;
+import org.lifstools.mztab2.model.MzTabProfile;
 import org.lifstools.mztab2.model.Parameter;
 import org.lifstools.mztab2.model.Publication;
 import org.lifstools.mztab2.model.Sample;
@@ -736,6 +734,23 @@ public class MTDLineParser extends MZTabLineParser {
                 }
                 metadata.mzTabID(parseString(valueLabel));
                 break;
+            case MZTAB_PROFILE:
+                if (metadata.getMzTabProfile() != null) {
+                    throw new MZTabException(new MZTabError(
+                        LogicalErrorType.DuplicationDefine,
+                        lineNumber, defineLabel));
+                }
+                MzTabProfile profile = MzTabProfile.findProfile(valueLabel);
+                if (profile == null) {
+                    // Unknown/unsupported profile value: report but do not abort,
+                    // the profile will be inferred from the sections present.
+                    errorList.add(new MZTabError(
+                        FormatErrorType.MZTabProfile, lineNumber,
+                        defineLabel, valueLabel));
+                } else {
+                    metadata.mzTabProfile(profile);
+                }
+                break;
             default:
                 MZTabError error = new MZTabError(
                     FormatErrorType.MTDDefineLabel,
@@ -761,16 +776,19 @@ public class MTDLineParser extends MZTabLineParser {
         validate(metadata, new MzTabVersionValidator(), context, errorList);
         validate(metadata, new MzTabIdValidator(), context, errorList);
         validate(metadata, new SoftwareValidator(), context, errorList);
-        validate(metadata, new QuantificationMethodValidator(), context, errorList);
         validate(metadata, new AssayValidator(), context, errorList);
         validate(metadata, new StudyVariableValidator(), context, errorList);
         validate(metadata, new StudyVariableGroupValidator(), context, errorList);
         validate(metadata, new MsRunValidator(), context, errorList);
         validate(metadata, new CvValidator(), context, errorList);
+        // Per-entry database consistency checks. Whether a database section is
+        // required at all is decided by the profile validator based on the
+        // sections present (see MzTabProfileValidator). The conditional
+        // requirement checks for quantification_method,
+        // small_molecule-quantification_unit,
+        // small_molecule_feature-quantification_unit and id_confidence_measure
+        // are likewise handled there.
         validate(metadata, new DatabaseValidator(), context, errorList);
-        validate(metadata, new SmallMoleculeQuantificationUnitValidator(), context, errorList);
-        validate(metadata, new SmallMoleculeFeatureQuantificationUnitValidator(), context, errorList);
-        validate(metadata, new SmallMoleculeQuantificationUnitValidator(), context, errorList);
     }
 
     /**

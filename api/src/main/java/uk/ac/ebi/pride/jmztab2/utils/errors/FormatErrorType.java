@@ -79,6 +79,11 @@ public final class FormatErrorType extends MZTabErrorType {
     public static final MZTabErrorType MZTabVersion = createError(Format,
             "MZTabVersion");
     /**
+     * Constant <code>MZTabProfile</code>
+     */
+    public static final MZTabErrorType MZTabProfile = createError(Format,
+            "MZTabProfile");
+    /**
      * Constant <code>Param</code>
      */
     public static final MZTabErrorType Param = createError(Format, "Param");
@@ -187,7 +192,7 @@ public final class FormatErrorType extends MZTabErrorType {
 
     private static final MZTabErrorType[] VALUES = {
         LinePrefix, CountMatch, IndexedElement, AbundanceColumn, MsRunOptionalColumn, OptionalCVParamColumn, StableColumn, MTDLine, MTDDefineLabel, MZTabMode,
-        MZTabType, MZTabId, MZTabVersion, Param, ParamList, Publication, URI, URL, Email, Orcid, Integer, Double, Reliability, StringList, DoubleList, ModificationList, GOTermList,
+        MZTabType, MZTabId, MZTabVersion, MZTabProfile, Param, ParamList, Publication, URI, URL, Email, Orcid, Integer, Double, Reliability, StringList, DoubleList, ModificationList, GOTermList,
         MZBoolean, SpectraRef, CHEMMODSAccession, SearchEngineScore, Sequence, ColUnit, IntegerList, RegexMismatch, ParamAccessionNotNamespaced, InvalidColunitFormat
     };
 

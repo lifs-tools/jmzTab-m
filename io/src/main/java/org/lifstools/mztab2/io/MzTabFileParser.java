@@ -24,6 +24,7 @@ import org.lifstools.mztab2.model.MzTabAccess;
 import org.lifstools.mztab2.model.SmallMoleculeEvidence;
 import org.lifstools.mztab2.model.SmallMoleculeFeature;
 import org.lifstools.mztab2.model.SmallMoleculeSummary;
+import org.lifstools.mztab2.io.validators.MzTabProfileValidator;
 import java.io.*;
 import java.net.URI;
 import java.net.URL;
@@ -476,11 +477,7 @@ public class MzTabFileParser {
             for (Integer id : commentMap.keySet()) {
                 mzTabFile.addCommentItem(commentMap.get(id));
             }
-            
-            if (smallMoleculeSummaryMap.isEmpty()) {
-                errorList.add(new MZTabError(
-                    LogicalErrorType.NoSmallMoleculeSummarySection, -1));
-            }
+
             if (smlParser != null) {
 
                 for (Integer id : smallMoleculeSummaryMap.keySet()) {
@@ -514,11 +511,6 @@ public class MzTabFileParser {
                     MzTabAccess.Properties.smallMoleculeSummary);
             }
 
-            if (smallMoleculeFeatureMap.isEmpty() && !smallMoleculeSummaryMap.
-                isEmpty()) {
-                errorList.add(new MZTabError(
-                    LogicalErrorType.NoSmallMoleculeFeatureSection, -1));
-            }
             if (smfParser != null) {
                 for (Integer id : smallMoleculeFeatureMap.keySet()) {
                     SmallMoleculeFeature smf
@@ -526,24 +518,12 @@ public class MzTabFileParser {
                             id);
                     mzTabFile.addSmallMoleculeFeatureItem(smf);
                 }
-                if (smallMoleculeFeatureMap.size() > 0 && mzTabFile.
-                    getMetadata().
-                    getSmallMoleculeFeatureQuantificationUnit() == null) {
-                    errorList.add(new MZTabError(
-                        LogicalErrorType.NoSmallMoleculeFeatureQuantificationUnit,
-                        -1));
-                }
                 checkColunitMapping(sfhParser.getFactory(), Optional.ofNullable(
                     mzTabFile.
                         getMetadata().
                         getColunitSmallMoleculeFeature()),
                     Metadata.JSON_PROPERTY_COLUNIT_SMALL_MOLECULE_FEATURE,
                     MzTabAccess.Properties.smallMoleculeFeature);
-            }
-            if (smallMoleculeEvidenceMap.isEmpty() && !smallMoleculeSummaryMap.
-                isEmpty()) {
-                errorList.add(new MZTabError(
-                    LogicalErrorType.NoSmallMoleculeEvidenceSection, -1));
             }
             if (smeParser != null) {
                 for (Integer id : smallMoleculeEvidenceMap.keySet()) {
@@ -617,6 +597,14 @@ public class MzTabFileParser {
                         }
                     }
                 }
+            }
+            // Determine/verify the mzTab-profile and enforce the profile-driven
+            // table presence, cross-reference and conditional-field rules.
+            for (MZTabError profileError : new MzTabProfileValidator().
+                validateProfile(mzTabFile.getMetadata(),
+                    smallMoleculeSummaryMap, smallMoleculeFeatureMap,
+                    smallMoleculeEvidenceMap)) {
+                errorList.add(profileError);
             }
         }
 
