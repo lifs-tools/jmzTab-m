@@ -224,6 +224,10 @@ public class MetadataSerializer extends StdSerializer<Metadata> {
             addLine(jg, prefix, Metadata.JSON_PROPERTY_MZ_TAB_VERSION, t.getMzTabVersion());
             addLine(jg, prefix, Metadata.JSON_PROPERTY_MZ_TAB_I_D, t.
                 getMzTabID());
+            if (t.getMzTabProfile() != null) {
+                addLine(jg, prefix, Metadata.JSON_PROPERTY_MZ_TAB_PROFILE, t.
+                    getMzTabProfile().getValue());
+            }
             addLine(jg, prefix, Metadata.JSON_PROPERTY_TITLE, t.
                 getTitle());
             addLine(jg, prefix, Metadata.JSON_PROPERTY_DESCRIPTION, t.

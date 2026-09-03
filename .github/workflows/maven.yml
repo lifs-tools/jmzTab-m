@@ -48,15 +48,18 @@ jobs:
       with:
         files: "**/*-reports/*.xml"
     - name: Publish to GitHub Packages
+      if: github.event_name == 'push'
       run: ./mvnw --batch-mode -DskipTests -Pgithub-snapshot deploy
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - uses: jfrog/setup-jfrog-cli@v4
+      if: github.event_name == 'push'
       env:
         JF_URL: https://m.lifs-tools.org/
         JF_USER: github-deployer
         JF_PASSWORD: ${{ secrets.ARTIFACTORY_TOKEN }}
     - name: maven build
+      if: github.event_name == 'push'
       run: |
             jf mvn-config --repo-deploy-releases=lifs-libs-release-local --repo-deploy-snapshots=lifs-libs-snapshot-local
             jf mvn -B deploy -DskipTests -Pjfrog --file pom.xml

@@ -35,12 +35,10 @@ public class DatabaseValidator implements RefiningValidator<Metadata> {
     @Override
     public List<MZTabError> validateRefine(Metadata metadata, MZTabParserContext parserContext) {
         List<MZTabError> errorList = new LinkedList<>();
-        if (metadata.getDatabase() == null || metadata.getDatabase().
-                isEmpty()) {
-            errorList.add(new MZTabError(
-                    LogicalErrorType.NotDefineInMetadata, -1,
-                    Metadata.JSON_PROPERTY_DATABASE + ""));
-        } else {
+        // Whether a database section is required at all depends on the profile
+        // (see MzTabProfileValidator). Here we only validate the consistency of
+        // any database entries that are present.
+        if (metadata.getDatabase() != null && !metadata.getDatabase().isEmpty()) {
             for (Database db : metadata.getDatabase()) {
                 if (db.getParam().
                         getName().

@@ -1,0 +1,40 @@
+COM	Example of the "M" profile: metadata only, no molecule tables.
+COM	Declares the experimental design as a study-design exchange artefact or
+COM	the starting point of an analysis workflow. No SML, SMF or SME sections.
+MTD	mzTab-version	2.1.0-M
+MTD	mzTab-ID	PRIDE_1234
+MTD	mzTab-profile	M
+MTD	title	Study design for an experiment investigating the effects of Il-6
+MTD	description	Metadata-only mzTab-M file: experimental design declared, no results reported yet.
+MTD	sample_processing[1]	[MSIO, MSIO:0000148, high performance liquid chromatography, ]
+MTD	instrument[1]-name	[MS, MS:1000449, LTQ Orbitrap, ]
+MTD	instrument[1]-source	[MS, MS:1000073, ESI, ]
+MTD	instrument[1]-analyzer[1]	[MS, MS:1000291, linear ion trap, ]
+MTD	instrument[1]-detector	[MS, MS:1000253, electron multiplier, ]
+MTD	software[1]	[MS, MS:1001582, XCMS, 3.1.1]
+MTD	publication[1]	pubmed:21063943|doi:10.1007/978-1-60761-987-1_6
+MTD	contact[1]-name	James D. Watson
+MTD	contact[1]-affiliation	Cambridge University, UK
+MTD	contact[1]-email	watson@cam.ac.uk
+MTD	uri[1]	http://www.ebi.ac.uk/pride/uri/to/experiment
+MTD	quantification_method	[MS, MS:1001834, LC-MS label-free quantitation analysis, ]
+MTD	ms_run[1]-format	[MS, MS:1000584, mzML file, ]
+MTD	ms_run[1]-id_format	[MS, MS:1001530, mzML unique identifier, ]
+MTD	ms_run[1]-scan_polarity	[MS, MS:1000130, positive scan, ]
+MTD	ms_run[1]-location	ftp://ftp.ebi.ac.uk/path/to/file
+MTD	sample[1]-species[1]	[NCBITaxon, NCBITaxon:9606, Homo sapiens (Human), ]
+MTD	sample[1]-tissue[1]	[BTO, BTO:0000759, liver, ]
+MTD	sample[1]-description	Hepatocellular carcinoma samples.
+MTD	assay[1]-sample_ref	sample[1]
+MTD	assay[1]-ms_run_ref	ms_run[1]
+MTD	study_variable[1]	Group A
+MTD	study_variable[1]-description	Control group
+MTD	study_variable[1]-assay_refs	assay[1]
+MTD	cv[1]-label	MS
+MTD	cv[1]-full_name	PSI-MS controlled vocabulary
+MTD	cv[1]-version	4.1.138
+MTD	cv[1]-uri	https://raw.githubusercontent.com/HUPO-PSI/psi-ms-CV/master/psi-ms.obo
+MTD	database[1]	[, , no database, null]
+MTD	database[1]-prefix	null
+MTD	database[1]-version	Unknown
+MTD	database[1]-uri	null

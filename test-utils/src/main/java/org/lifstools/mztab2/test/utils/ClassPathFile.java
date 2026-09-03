@@ -42,7 +42,18 @@ public enum ClassPathFile {
     XCMS_EXAMPLE("/metabolomics/", "xcms-test-export.mztab"),
     XCMS_NO_SML_EXAMPLE("/metabolomics/", "xcms-test-export-nosml.mztab"),
     STUDY_VARIABLE_GROUP("/metabolomics/", "study-variable-group.mztab"),
-    STUDY_VARIABLE_GROUP_OFFICIAL_EXAMPLE("/metabolomics/", "example_study_variable_group.mztab");
+    STUDY_VARIABLE_GROUP_OFFICIAL_EXAMPLE("/metabolomics/", "example_study_variable_group.mztab"),
+    PROFILE_M("/metabolomics/", "profile-m-2.1.mztab"),
+    PROFILE_MS("/metabolomics/", "profile-ms-2.1.mztab"),
+    PROFILE_MF("/metabolomics/", "profile-mf-2.1.mztab"),
+    PROFILE_MFE("/metabolomics/", "profile-mfe-2.1.mztab"),
+    PROFILE_LEGACY_MFE("/metabolomics/", "profile-legacy-mfe-2.1.mztab"),
+    PROFILE_FORBIDDEN_TABLE("/metabolomics/", "profile-forbidden-table-2.1.mztab"),
+    PROFILE_MISSING_TABLE("/metabolomics/", "profile-missing-table-2.1.mztab"),
+    OFFICIAL_PROFILE_M("/metabolomics/", "official-profile-m.mztab"),
+    OFFICIAL_PROFILE_MS("/metabolomics/", "official-profile-ms.mztab"),
+    OFFICIAL_PROFILE_MF("/metabolomics/", "official-profile-mf.mztab"),
+    OFFICIAL_PROFILE_MFE("/metabolomics/", "official-profile-mfe.mztab");
 
     private final String resourcePathPrefix;
     private final String fileName;

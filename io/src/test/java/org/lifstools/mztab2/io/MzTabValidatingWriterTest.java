@@ -46,25 +46,23 @@ public class MzTabValidatingWriterTest {
     private void assertValidationMessages(Optional<List<ValidationMessage>> messages) {
         System.out.println("Validation messages: " + messages.get().
             toString());
-        Assertions.assertEquals(6, messages.get().size(), messages.get().toString());
+        // create2_0TestFile is a metadata-only file (no SML/SMF/SME sections),
+        // i.e. profile M. The conditional metadata fields quantification_method
+        // and database are therefore NOT required and no longer reported. Only
+        // the profile-independent metadata errors remain.
+        Assertions.assertEquals(4, messages.get().size(), messages.get().toString());
         Assertions.assertEquals(ValidationMessage.MessageTypeEnum.ERROR,
             messages.get().get(0).getMessageType());
-        Assertions.assertTrue(messages.get().get(0).getMessage().contains("quantification_method"));
+        Assertions.assertTrue(messages.get().get(0).getMessage().contains("study_variable[1]"));
         Assertions.assertEquals(ValidationMessage.MessageTypeEnum.ERROR,
             messages.get().get(1).getMessageType());
-        Assertions.assertTrue(messages.get().get(1).getMessage().contains("study_variable[1]"));
+        Assertions.assertTrue(messages.get().get(1).getMessage().contains("study_variable[2]"));
         Assertions.assertEquals(ValidationMessage.MessageTypeEnum.ERROR,
             messages.get().get(2).getMessageType());
-        Assertions.assertTrue(messages.get().get(2).getMessage().contains("study_variable[2]"));
+        Assertions.assertTrue(messages.get().get(2).getMessage().contains("ms_run[1]-scan_polarity"));
         Assertions.assertEquals(ValidationMessage.MessageTypeEnum.ERROR,
             messages.get().get(3).getMessageType());
-        Assertions.assertTrue(messages.get().get(3).getMessage().contains("ms_run[1]-scan_polarity"));
-        Assertions.assertEquals(ValidationMessage.MessageTypeEnum.ERROR,
-            messages.get().get(4).getMessageType());
-        Assertions.assertTrue(messages.get().get(4).getMessage().contains("ms_run[2]-scan_polarity"));
-        Assertions.assertEquals(ValidationMessage.MessageTypeEnum.ERROR,
-            messages.get().get(5).getMessageType());
-        Assertions.assertTrue(messages.get().get(5).getMessage().contains("database"));
+        Assertions.assertTrue(messages.get().get(3).getMessage().contains("ms_run[2]-scan_polarity"));
     }
 
     /**

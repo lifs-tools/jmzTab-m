@@ -248,6 +248,47 @@ public final class LogicalErrorType extends MZTabErrorType {
      */
     public static final MZTabErrorType SpectraIdFormatNotSupported = createWarn(Category.Logical, "SpectraIdFormatNotSupported");
 
+    /**
+     * Constant <code>ProfileInferred</code>
+     */
+    public static final MZTabErrorType ProfileInferred = createInfo(Category.Logical, "ProfileInferred");
+    /**
+     * Constant <code>ProfileTableMissing</code>
+     */
+    public static final MZTabErrorType ProfileTableMissing = createError(Category.Logical, "ProfileTableMissing");
+    /**
+     * Constant <code>ProfileTableForbidden</code>
+     */
+    public static final MZTabErrorType ProfileTableForbidden = createError(Category.Logical, "ProfileTableForbidden");
+    /**
+     * Constant <code>ProfileUnsupportedCombination</code>
+     */
+    public static final MZTabErrorType ProfileUnsupportedCombination = createError(Category.Logical, "ProfileUnsupportedCombination");
+    /**
+     * Constant <code>ProfileMSFDiscouraged</code>
+     */
+    public static final MZTabErrorType ProfileMSFDiscouraged = createWarn(Category.Logical, "ProfileMSFDiscouraged");
+    /**
+     * Constant <code>ProfileFieldMismatch</code>
+     */
+    public static final MZTabErrorType ProfileFieldMismatch = createInfo(Category.Logical, "ProfileFieldMismatch");
+    /**
+     * Constant <code>ProfileSmfIdRefsForbidden</code>
+     */
+    public static final MZTabErrorType ProfileSmfIdRefsForbidden = createError(Category.Logical, "ProfileSmfIdRefsForbidden");
+    /**
+     * Constant <code>ProfileSmfIdRefsRequired</code>
+     */
+    public static final MZTabErrorType ProfileSmfIdRefsRequired = createError(Category.Logical, "ProfileSmfIdRefsRequired");
+    /**
+     * Constant <code>ProfileSmeIdRefsForbidden</code>
+     */
+    public static final MZTabErrorType ProfileSmeIdRefsForbidden = createError(Category.Logical, "ProfileSmeIdRefsForbidden");
+    /**
+     * Constant <code>ProfileAmbiguityCodeMustBeNull</code>
+     */
+    public static final MZTabErrorType ProfileAmbiguityCodeMustBeNull = createError(Category.Logical, "ProfileAmbiguityCodeMustBeNull");
+
     private static final MZTabErrorType[] VALUES = {
         NULL, NotNULL, LineOrder, HeaderLine, NoHeaderLine,
         MsRunNotDefined, AssayNotDefined, StudyVariableNotDefined, ProteinSearchEngineScoreNotDefined, PeptideSearchEngineScoreNotDefined, PSMSearchEngineScoreNotDefined, SmallMoleculeSearchEngineScoreNotDefined,
@@ -255,7 +296,9 @@ public final class LogicalErrorType extends MZTabErrorType {
         SoftwareVersion, AbundanceColumnTogether, AbundanceColumnSameId, SpectraRef, AmbiguityMod, MsRunLocation, FixedMod, VariableMod, PeptideSection, QuantificationAbundance, DuplicationID, ColumnNotValid,
         HeaderNotValid, NoMetadataSection, NoSmallMoleculeEvidenceSection, NoSmallMoleculeFeatureSection, NoSmallMoleculeSummarySection, NoSmallMoleculeQuantificationUnit, NoSmallMoleculeFeatureQuantificationUnit,
         NoSmallMoleculeIdentificationReliability, ExternalStudyIdFormatNotDefined, ExternalStudyFormatNotDefined, NoDatabaseMustHaveNullPrefix, ItemNumberMismatch, UnknownRefId, SingleStudyVariableName, UndefinedStudyVariableNameOnceOnly,
-        SpectraIdFormatNotValid, SpectraIdFormatNotSupported
+        SpectraIdFormatNotValid, SpectraIdFormatNotSupported,
+        ProfileInferred, ProfileTableMissing, ProfileTableForbidden, ProfileUnsupportedCombination, ProfileMSFDiscouraged, ProfileFieldMismatch,
+        ProfileSmfIdRefsForbidden, ProfileSmfIdRefsRequired, ProfileSmeIdRefsForbidden, ProfileAmbiguityCodeMustBeNull
     };
     
     public static MZTabErrorType[] getValues() {

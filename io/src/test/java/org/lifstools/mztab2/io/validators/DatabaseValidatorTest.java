@@ -36,18 +36,17 @@ public class DatabaseValidatorTest {
 
     /**
      * Test of validateRefine method for null database, of class DatabaseValidator.
+     * Whether a database section is required at all is now decided by the
+     * profile validator based on the sections present, so the DatabaseValidator
+     * no longer flags an absent database on its own.
      */
     @Test
     public void testValidateRefineNullDatabase() {
         Metadata metadata = new Metadata();
         MZTabParserContext parserContext = new MZTabParserContext();
         DatabaseValidator instance = new DatabaseValidator();
-        List<MZTabError> expResult = Arrays.asList(new MZTabError(
-                LogicalErrorType.NotDefineInMetadata, -1,
-                Metadata.JSON_PROPERTY_DATABASE + ""));
         List<MZTabError> result = instance.validateRefine(metadata, parserContext);
-        assertEquals(expResult.size(), result.size());
-        assertEquals(expResult.get(0).toString(), result.get(0).toString());
+        assertTrue(result.isEmpty());
     }
 
     /**
