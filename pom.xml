@@ -575,7 +575,7 @@
         <javaobjectdiff.version>0.95</javaobjectdiff.version>
         <jakarta.annotation-api.version>3.0.0</jakarta.annotation-api.version>
         <assembly.dir>${project.artifactId}</assembly.dir>
-        <jib.plugin.version>3.5.1</jib.plugin.version>
+        <jib.plugin.version>3.5.2</jib.plugin.version>
         <docker.service.prefix>jmztabm</docker.service.prefix>
         <docker.image.prefix>lifs</docker.image.prefix>
         <docker.base.image>azul/zulu-openjdk-alpine</docker.base.image>
