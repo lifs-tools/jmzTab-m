@@ -569,7 +569,7 @@
         <mockito.version>5.23.0</mockito.version>
         <olsclient.version>2.13</olsclient.version>
         <jxpath.version>1.4.0</jxpath.version>
-        <spring.version>6.2.19</spring.version>
+        <spring.version>7.0.9</spring.version>
         <logback.version>1.6.3</logback.version>
         <diffutils.version>2.2</diffutils.version>
         <javaobjectdiff.version>0.95</javaobjectdiff.version>
