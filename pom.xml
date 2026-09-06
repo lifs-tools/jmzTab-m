@@ -62,7 +62,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-site-plugin</artifactId>
-                <version>3.21.0</version>
+                <version>3.22.0</version>
                 <dependencies>
                     <dependency><!-- add Asciidoctor Doxia Parser Module -->
                         <groupId>org.asciidoctor</groupId>
@@ -90,7 +90,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-site-plugin</artifactId>
-                    <version>3.21.0</version>
+                    <version>3.22.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -616,7 +616,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-site-plugin</artifactId>
-                <version>3.21.0</version>
+                <version>3.22.0</version>
                 <!--                <reportSets>
                     <reportSet>
                         <reports>
