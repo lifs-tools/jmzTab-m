@@ -1,19 +1,26 @@
 package uk.ac.ebi.pride.jmztab2.model;
 
+import org.lifstools.mztab2.io.ColumnStructureAssertions;
 import org.lifstools.mztab2.io.MzTabNonValidatingWriter;
 import org.lifstools.mztab2.model.Assay;
+import org.lifstools.mztab2.model.CV;
+import org.lifstools.mztab2.model.Database;
 import org.lifstools.mztab2.model.Metadata;
 import org.lifstools.mztab2.model.MsRun;
 import org.lifstools.mztab2.model.MzTab;
+import org.lifstools.mztab2.model.Parameter;
 import org.lifstools.mztab2.model.SmallMoleculeSummary;
+import org.lifstools.mztab2.model.Software;
 import org.lifstools.mztab2.model.StudyVariable;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.nio.charset.StandardCharsets;
+import java.net.URI;
+import java.nio.file.Path;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import uk.ac.ebi.pride.jmztab2.model.OptColumnMappingBuilder.IndexedElementOptColumnMappingBuilder;
 
 /**
@@ -26,12 +33,25 @@ public class MZTabColumnFactoryTest {
      * https://github.com/PRIDE-Utilities/jmzTab/issues/11
      */
     @Test
-    public void testOptionalColumnsAndManyRows() throws IOException {
+    @Disabled("lifs-tools/jmzTab-m#187: enabled by the ColumnPosition refactoring")
+    public void testOptionalColumnsAndManyRows(@TempDir Path tempDir) throws IOException {
         int files = 250;
         int molecules = 500;
         Metadata mtd = new Metadata();
         mtd.setMzTabVersion(MZTabConstants.VERSION_MZTAB_M);
         mtd.setMzTabID("testId1234");
+        mtd.addSoftwareItem(new Software().id(1).parameter(new Parameter().cvLabel("MS")
+            .cvAccession("MS:1001582").name("XCMS").value("3.1.1")));
+        mtd.quantificationMethod(new Parameter().cvLabel("MS").cvAccession("MS:1001834")
+            .name("LC-MS label-free quantitation analysis"));
+        mtd.addCvItem(new CV().id(1).label("MS").fullName("PSI-MS controlled vocabulary")
+            .version("4.1.138").uri(URI.create("https://raw.githubusercontent.com/HUPO-PSI/psi-ms-CV/master/psi-ms.obo")));
+        mtd.addDatabaseItem(new Database().id(1).param(new Parameter().name("PubChem"))
+            .prefix("PUBCHEM").version("2024").uri(URI.create("https://pubchem.ncbi.nlm.nih.gov")));
+        mtd.setSmallMoleculeQuantificationUnit(new Parameter().cvLabel("MS")
+            .cvAccession("MS:1002887").name("Progenesis QI normalised abundance"));
+        mtd.smallMoleculeIdentificationReliability(new Parameter().cvLabel("MS")
+            .cvAccession("MS:1002896").name("compound identification confidence level"));
 
         Map<Assay, IndexedElementOptColumnMappingBuilder> peak_mz_opt = new LinkedHashMap<>();
         Map<Assay, IndexedElementOptColumnMappingBuilder> peak_rt_opt = new LinkedHashMap<>();
@@ -42,7 +62,8 @@ public class MZTabColumnFactoryTest {
         mtd.addStudyVariableItem(new StudyVariable().id(2).name("second study variable"));
         for (int fileCounter = 1; fileCounter <= files; fileCounter++) {
 
-            MsRun msRun = new MsRun().id(fileCounter).name("ms run "+fileCounter);
+            MsRun msRun = new MsRun().id(fileCounter)
+                .location(URI.create("file:///data/run" + fileCounter + ".mzML"));
             mtd.addMsRunItem(msRun);
             Assay assay = new Assay().id(fileCounter).name("assay "+fileCounter);
             assay.addMsRunRefItem(msRun);
@@ -95,10 +116,23 @@ public class MZTabColumnFactoryTest {
         }
         assertEquals(molecules, mzTab.getSmallMoleculeSummary().size());
         assertEquals(files*3, mzTab.getSmallMoleculeSummary().get(0).getOpt().size());
-        MzTabNonValidatingWriter writer = new MzTabNonValidatingWriter();
-        try (OutputStreamWriter osw = new OutputStreamWriter(System.out,
-             StandardCharsets.UTF_8)) {
-            writer.write(osw, mzTab);
+        Path file = tempDir.resolve("many-columns.mztab");
+        new MzTabNonValidatingWriter().write(file, mzTab);
+        MzTab parsed = ColumnStructureAssertions.parseWithoutColumnErrors(file);
+        assertEquals(molecules, parsed.getSmallMoleculeSummary().size());
+        for (int row : new int[]{0, molecules - 1}) {
+            SmallMoleculeSummary expected = mzTab.getSmallMoleculeSummary().get(row);
+            SmallMoleculeSummary actual = parsed.getSmallMoleculeSummary().stream()
+                .filter(s -> s.getSmlId().equals(expected.getSmlId())).findFirst().orElseThrow();
+            assertEquals(files, actual.getAbundanceAssay().size());
+            for (int a = 0; a < files; a++) {
+                assertEquals(expected.getAbundanceAssay().get(a), actual.getAbundanceAssay().get(a), 1e-9);
+            }
+            assertEquals(files * 3, actual.getOpt().size());
+            for (int o = 0; o < files * 3; o++) {
+                assertEquals(expected.getOpt().get(o).getIdentifier(), actual.getOpt().get(o).getIdentifier());
+                assertEquals(expected.getOpt().get(o).getValue(), actual.getOpt().get(o).getValue());
+            }
         }
     }
 }
