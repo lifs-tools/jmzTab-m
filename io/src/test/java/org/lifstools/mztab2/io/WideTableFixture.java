@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import uk.ac.ebi.pride.jmztab2.model.MZTabConstants;
 
 /**
  * Generates an mzTab-M 2.0 file whose SML, SMF and SME sections each have
@@ -115,7 +116,7 @@ final class WideTableFixture {
             String refs = IntStream.rangeClosed(1, ASSAYS)
                 .filter(a -> (a - 1) % STUDY_VARIABLES == sv - 1)
                 .mapToObj(a -> "assay[" + a + "]")
-                .collect(Collectors.joining(", "));
+                .collect(Collectors.joining(MZTabConstants.BAR_S));
             m.add("MTD\tstudy_variable[" + j + "]\tgroup " + j);
             m.add("MTD\tstudy_variable[" + j + "]-description\tgroup " + j);
             m.add("MTD\tstudy_variable[" + j + "]-assay_refs\t" + refs);
