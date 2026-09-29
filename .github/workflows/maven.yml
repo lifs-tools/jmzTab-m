@@ -12,6 +12,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
     steps:
     - uses: actions/checkout@v6
       with:
@@ -28,11 +30,14 @@ jobs:
         git config --global author.email "${GITHUB_ACTOR}@users.noreply.github.com"
         git config --global author.name "${GITHUB_ACTOR}"
     - name: Set Release version env variable
+      id: version
       env:
         USERNAME: ${{ github.actor }}
         PASSWORD: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        echo "RELEASE_VERSION=$(./mvnw help:evaluate -Dexpression=project.version -q -DforceStdout | tr -d '\n')" >> $GITHUB_ENV
+        VERSION=$(./mvnw help:evaluate -Dexpression=project.version -q -DforceStdout | tr -d '\n')
+        echo "RELEASE_VERSION=$VERSION" >> $GITHUB_ENV
+        echo "version=$VERSION" >> $GITHUB_OUTPUT
     - name: Restore Maven cache
       uses: skjolber/maven-cache-github-action@v3.1.2
       with:
@@ -49,7 +54,7 @@ jobs:
         files: "**/*-reports/*.xml"
     - name: Publish to GitHub Packages
       if: github.event_name == 'push'
-      run: ./mvnw --batch-mode -DskipTests -Pgithub-snapshot deploy
+      run: ./mvnw --batch-mode -DskipTests -DskipITs -Pgithub-snapshot deploy
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - uses: jfrog/setup-jfrog-cli@v4
@@ -62,7 +67,7 @@ jobs:
       if: github.event_name == 'push'
       run: |
             jf mvn-config --repo-deploy-releases=lifs-libs-release-local --repo-deploy-snapshots=lifs-libs-snapshot-local
-            jf mvn -B deploy -DskipTests -Pjfrog --file pom.xml
+            jf mvn -B deploy -DskipTests -DskipITs -Pjfrog --file pom.xml
             jf rt bp
     - name: Upload CLI distribution zip
       uses: actions/upload-artifact@v4
@@ -119,3 +124,52 @@ jobs:
           name: jmztabm-validator-${{ matrix.platform }}
           path: cli/target/${{ matrix.binary }}
           if-no-files-found: error
+
+  publish-dev:
+    name: Publish dev-latest pre-release
+    needs: [build, native]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    concurrency:
+      group: dev-latest-release
+      cancel-in-progress: false
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GH_REPO: ${{ github.repository }}
+      TAG: dev-latest
+      VERSION: ${{ needs.build.outputs.version }}
+      RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: dist
+      - name: Collect assets under stable names
+        run: |
+          mkdir release
+          cp dist/jmztabm-cli-dist/jmztabm-cli-*-bin.zip release/jmztabm-cli-bin.zip
+          cp dist/jmztabm-validator-amd64-linux/jmztabm-validator release/jmztabm-validator-amd64-linux
+          cp dist/jmztabm-validator-aarch64-macos/jmztabm-validator release/jmztabm-validator-aarch64-macos
+          cp dist/jmztabm-validator-amd64-windows/jmztabm-validator.exe release/jmztabm-validator-amd64-windows.exe
+          ls -l release
+      - name: Update dev-latest pre-release
+        run: |
+          cat > notes.md <<NOTES
+          Latest development build of jmzTab-m from \`master\`, replaced on every push. Not a stable release.
+
+          - Version: \`${VERSION}\`
+          - Commit: ${GITHUB_SHA}
+          - Built: $(date -u +'%Y-%m-%d %H:%M UTC')
+          - Workflow run: ${RUN_URL}
+
+          The native \`jmztabm-validator-*\` binaries may need to be made executable after download (\`chmod +x\`).
+          NOTES
+          if gh release view "$TAG" > /dev/null 2>&1; then
+            gh api -X PATCH "repos/${GH_REPO}/git/refs/tags/${TAG}" -f sha="${GITHUB_SHA}" -F force=true
+            gh release upload "$TAG" release/* --clobber
+            gh release edit "$TAG" --title "Latest development build (${VERSION})" --notes-file notes.md --prerelease --latest=false
+          else
+            gh release create "$TAG" release/* --target "${GITHUB_SHA}" --title "Latest development build (${VERSION})" --notes-file notes.md --prerelease --latest=false
+          fi
