@@ -131,26 +131,17 @@ public abstract class MZTabHeaderLineParser extends MZTabLineParser {
     }
 
     /**
-     * <p>fromIndexToOrder.</p>
-     *
-     * @param index a {@link java.lang.Integer} object.
-     * @return a {@link java.lang.String} object.
-     */
-    protected String fromIndexToOrder(Integer index) {
-        return String.format("%02d", index);
-    }
-
-    /**
      * Additional columns can be added to the end of the protein table. These column headers MUST start with the prefix "opt_".
      * Column names MUST only contain the following characters: 'A'-'Z', 'a'-'z', '0'-'9', '_', '-', '[', ']', and ':'.
-     * 
+     *
      * the format: opt_{IndexedElement[id]}_{value}. Spaces within the parameter's name MUST be replaced by '_'.
      *
      * @param nameLabel a {@link java.lang.String} object.
+     * @param order the column's 1-based physical header position.
      * @return a boolean.
      * @throws uk.ac.ebi.pride.jmztab2.utils.errors.MZTabException if any structural or logical errors are encountered that prohibit further processing.
      */
-    protected boolean checkOptColumnName(String nameLabel) throws MZTabException {
+    protected boolean checkOptColumnName(String nameLabel, int order) throws MZTabException {
         nameLabel = nameLabel.trim();
 
         String regexp = MZTabConstants.REGEX_OPT_COLUMN_NAME;
@@ -174,9 +165,9 @@ public abstract class MZTabHeaderLineParser extends MZTabLineParser {
 
             if (object_id.contains(MZTabConstants.GLOBAL)) {
                 if (param == null) {
-                    factory.addOptionalColumn(value, dataType);
+                    factory.addOptionalColumn(value, dataType, order);
                 } else {
-                    factory.addOptionalColumn(param, dataType);
+                    factory.addOptionalColumn(param, dataType, order);
                 }
             } else {
                 id = parseIndex(nameLabel, matcher.group(3));
@@ -188,9 +179,9 @@ public abstract class MZTabHeaderLineParser extends MZTabLineParser {
                         error = new MZTabError(LogicalErrorType.AssayNotDefined, lineNumber, nameLabel);
                         throw new MZTabException(error);
                     } else if (param == null) {
-                        factory.addOptionalColumn(element, value, dataType);
+                        factory.addOptionalColumn(element, value, dataType, order);
                     } else {
-                        factory.addOptionalColumn(element, param, dataType);
+                        factory.addOptionalColumn(element, param, dataType, order);
                     }
                 } else if (object_id.contains(Metadata.JSON_PROPERTY_STUDY_VARIABLE)) {
                     StudyVariable element = context.getStudyVariableMap().get(id);
@@ -199,9 +190,9 @@ public abstract class MZTabHeaderLineParser extends MZTabLineParser {
                         error = new MZTabError(LogicalErrorType.StudyVariableNotDefined, lineNumber, nameLabel);
                         throw new MZTabException(error);
                     } else if (param == null) {
-                        factory.addOptionalColumn(element, value, dataType);
+                        factory.addOptionalColumn(element, value, dataType, order);
                     } else {
-                        factory.addOptionalColumn(element, param, dataType);
+                        factory.addOptionalColumn(element, param, dataType, order);
                     }
                 } else if (object_id.contains(Metadata.JSON_PROPERTY_MS_RUN)) {
                     // not found ms_run_id in metadata.
@@ -210,9 +201,9 @@ public abstract class MZTabHeaderLineParser extends MZTabLineParser {
                         error = new MZTabError(LogicalErrorType.MsRunNotDefined, lineNumber, nameLabel);
                         throw new MZTabException(error);
                     } else if (param == null) {
-                        factory.addOptionalColumn(element, value, dataType);
+                        factory.addOptionalColumn(element, value, dataType, order);
                     } else {
-                        factory.addOptionalColumn(element, param, dataType);
+                        factory.addOptionalColumn(element, param, dataType, order);
                     }
                 }
             }
@@ -257,7 +248,7 @@ public abstract class MZTabHeaderLineParser extends MZTabLineParser {
      * another is "decoy peptide" (MS:1002217), the data type is Boolean (0/1). Besides them, "opt_" start optional
      * column data type is String.
      *
-     * @see #checkOptColumnName(String)
+     * @see #checkOptColumnName(String, int)
      */
     private Class getDataType(Parameter param) {
         Class dataType;
@@ -281,11 +272,11 @@ public abstract class MZTabHeaderLineParser extends MZTabLineParser {
      * <p>checkAbundanceColumns.</p>
      *
      * @param offset a int.
-     * @param order a {@link java.lang.String} object.
+     * @param order the column's 1-based physical header position.
      * @return a int.
      * @throws uk.ac.ebi.pride.jmztab2.utils.errors.MZTabException if any structural or logical errors are encountered that prohibit further processing.
      */
-    protected int checkAbundanceColumns(int offset, String order) throws MZTabException {
+    protected int checkAbundanceColumns(int offset, int order) throws MZTabException {
         String headerString = items[offset];
         if (headerString.contains(SmallMoleculeSummary.JSON_PROPERTY_ABUNDANCE_ASSAY)) {
             checkAbundanceAssayColumn(headerString, order);
@@ -326,7 +317,7 @@ public abstract class MZTabHeaderLineParser extends MZTabLineParser {
         }
     }
 
-    private void checkAbundanceAssayColumn(String abundanceHeader, String order) throws MZTabException {
+    private void checkAbundanceAssayColumn(String abundanceHeader, int order) throws MZTabException {
         String valueLabel = checkAbundanceSection(abundanceHeader);
 
         Pattern pattern = Pattern.compile(MZTabConstants.REGEX_ABUNDANCE_ASSAY_COLUMN_NAME);
@@ -348,7 +339,7 @@ public abstract class MZTabHeaderLineParser extends MZTabLineParser {
 
 
     private void checkAbundanceStudyVariableColumns(String header,
-                                                    String order) throws MZTabException {
+                                                    int order) throws MZTabException {
         header = header.trim().toLowerCase();
 
         if (!header.contains(SmallMoleculeSummary.JSON_PROPERTY_ABUNDANCE_STUDY_VARIABLE

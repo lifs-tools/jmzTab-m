@@ -22,9 +22,6 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.IntStream;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import uk.ac.ebi.pride.jmztab2.model.IMZTabColumn;
 import uk.ac.ebi.pride.jmztab2.model.ISmallMoleculeColumn;
 import uk.ac.ebi.pride.jmztab2.model.MZTabColumnFactory;
 import uk.ac.ebi.pride.jmztab2.model.MZTabConstants;
@@ -45,10 +42,6 @@ import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabException;
  */
 public class SEHLineParser extends MZTabHeaderLineParser {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SEHLineParser.class);
-    private Map<Integer, String> physPositionToOrder;
-
-
     /**
      * <p>Constructor for SEHLineParser.</p>
      *
@@ -63,77 +56,50 @@ public class SEHLineParser extends MZTabHeaderLineParser {
     @Override
     protected int parseColumns() throws MZTabException {
         String header;
-        Integer physicalPosition;
-
+        int physicalPosition;
         ISmallMoleculeColumn column;
-        SortedMap<String, IMZTabColumn> columnMapping = factory.getColumnMapping();
-        SortedMap<String, IMZTabColumn> optionalMapping = factory.getOptionalColumnMapping();
-        SortedMap<String, IMZTabColumn> stableMapping = factory.getStableColumnMapping();
 
-        physPositionToOrder = generateHeaderPhysPositionToOrderMap(items);
-
-        //Iterates through the tokens in the small molecule evidence header
-        //It will identify the type of column and the position accordingly
+        //Iterates through the tokens in the small molecule evidence header.
+        //The 1-based physical position of each column is its order.
         for (physicalPosition = 1; physicalPosition < items.length; physicalPosition++) {
-
             column = null;
             header = items[physicalPosition];
             if (header.startsWith(SmallMoleculeEvidence.JSON_PROPERTY_ID_CONFIDENCE_MEASURE)) {
-                checkIdConfidenceMeasure(header);
+                checkIdConfidenceMeasure(header, physicalPosition);
             } else if (header.startsWith(MZTabConstants.OPT_PREFIX)) {
-                checkOptColumnName(header);
+                checkOptColumnName(header, physicalPosition);
             } else {
                 try {
                     column = SmallMoleculeEvidenceColumn.Stable.columnFor(header);
                 } catch(IllegalArgumentException ex) {
-                    throw new MZTabException(new MZTabError(LogicalErrorType.ColumnNotValid,lineNumber,header,section.getName()));    
+                    throw new MZTabException(new MZTabError(LogicalErrorType.ColumnNotValid,lineNumber,header,section.getName()));
                 }
-
             }
 
             if (column != null) {
-                if (!column.getOrder().equals(physPositionToOrder.get(physicalPosition))) {
-                    column.setOrder(physPositionToOrder.get(physicalPosition));
-                    LOGGER.debug(column.toString());
-                }
-                if(column.isOptional()){
-                    optionalMapping.put(column.getLogicPosition(), column);
-                } else {
-                    stableMapping.put(column.getLogicPosition(), column);
-                }
-                columnMapping.put(column.getLogicPosition(), column);
+                factory.addStableColumn(column, physicalPosition);
             }
         }
         return physicalPosition;
     }
 
-    private void checkIdConfidenceMeasure(String header) throws MZTabException {
+    private void checkIdConfidenceMeasure(String header, int order) throws MZTabException {
         String valueLabel = header;
-        
+
         Pattern pattern = Pattern.compile(SmallMoleculeEvidence.JSON_PROPERTY_ID_CONFIDENCE_MEASURE+MZTabConstants.REGEX_INDEXED_VALUE);
         Matcher matcher = pattern.matcher(valueLabel);
         if (!matcher.find()) {
             MZTabError error = new MZTabError(FormatErrorType.StableColumn, lineNumber, header);
             throw new MZTabException(error);
         }
-        
+
         int id = parseIndex(header, matcher.group(1));
         if (metadata.getIdConfidenceMeasure().size() > 0) {
             Parameter p = metadata.getIdConfidenceMeasure().get(id-1);
-            factory.addIdConfidenceMeasureColumn(p, id, Double.class);
+            factory.addIdConfidenceMeasureColumn(p, id, Double.class, order);
         } else {
             throw new IllegalArgumentException("Id confidence measure column was not defined in metadata section!");
         }
-    }
-
-    private Map<Integer, String> generateHeaderPhysPositionToOrderMap(String[] items) {
-        Integer physicalPosition;
-        Map<Integer, String> physicalPositionToOrder = new LinkedHashMap<>();
-        int order = 0;
-        for (physicalPosition = 1; physicalPosition < items.length; physicalPosition++) {
-            physicalPositionToOrder.put(physicalPosition, fromIndexToOrder(++order));
-        }
-        return physicalPositionToOrder;
     }
 
     /**

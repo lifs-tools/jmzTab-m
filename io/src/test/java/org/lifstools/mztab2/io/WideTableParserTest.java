@@ -20,7 +20,6 @@ import java.nio.file.Path;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import static org.lifstools.mztab2.io.WideTableFixture.*;
@@ -34,7 +33,6 @@ import org.lifstools.mztab2.model.SmallMoleculeSummary;
  * Regression tests for lifs-tools/jmzTab-m#187: dynamic columns beyond
  * physical position 99 must keep unique positions and their values.
  */
-@Disabled("lifs-tools/jmzTab-m#187: enabled by the ColumnPosition refactoring")
 public class WideTableParserTest {
 
     private static final double DELTA = 1e-9;

@@ -21,7 +21,6 @@ import java.nio.file.Files;
 import java.util.List;
 import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.lifstools.mztab2.model.MzTab;
@@ -34,7 +33,6 @@ import org.lifstools.mztab2.test.utils.ExtractClassPathFiles;
  * lifs-tools/jmzTab-m#187: "Key 1000000 for column opt_global_mzmax is
  * already assigned to: opt_global_mzmin".
  */
-@Disabled("lifs-tools/jmzTab-m#187: enabled by the ColumnPosition refactoring")
 public class Issue187XcmsExampleTest {
 
     @RegisterExtension

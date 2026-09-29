@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2018 Leibniz-Institut für Analytische Wissenschaften – ISAS – e.V..
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,20 +15,23 @@
  */
 package uk.ac.ebi.pride.jmztab2.model;
 
-import org.lifstools.mztab2.model.Assay;
-import org.lifstools.mztab2.model.IndexedElement;
-import org.lifstools.mztab2.model.Parameter;
-import org.lifstools.mztab2.model.StudyVariable;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import org.lifstools.mztab2.model.Assay;
+import org.lifstools.mztab2.model.Parameter;
+import org.lifstools.mztab2.model.StudyVariable;
 
 /**
  * This is a static factory class which used to generate a couple of MZTabColumn
- * objects, and organizes them into "logicalPosition, MZTabColumn" pairs.
+ * objects, and organizes them into "position, MZTabColumn" pairs.
  * Currently, mzTab table including three kinds of columns:
  * <ol>
  * <li>
- * Stable column with stable order: header name, data type, logical position and
+ * Stable column with stable order: header name, data type, position and
  * order are stable in these columns. All of them are defined in
  * {@link uk.ac.ebi.pride.jmztab2.model.SmallMoleculeColumn}, {@link uk.ac.ebi.pride.jmztab2.model.SmallMoleculeFeatureColumn},
  * and {@link uk.ac.ebi.pride.jmztab2.model.SmallMoleculeEvidenceColumn}.
@@ -38,7 +41,7 @@ import java.util.TreeMap;
  * defined in the {@link uk.ac.ebi.pride.jmztab2.model.SmallMoleculeColumn},
  * {@link uk.ac.ebi.pride.jmztab2.model.SmallMoleculeFeatureColumn}, and
  * {@link uk.ac.ebi.pride.jmztab2.model.SmallMoleculeEvidenceColumn}. But header
- * name, logical position dynamically depend on {@link IndexedElement}.
+ * name, position dynamically depend on {@link IndexedElement}.
  * </li>
  * <li>
  * Optional columns which are placed at the end of a table-based section. There
@@ -62,10 +65,11 @@ import java.util.TreeMap;
  */
 public class MZTabColumnFactory {
 
-    private final SortedMap<String, IMZTabColumn> stableColumnMapping = new TreeMap<>();
-    private final SortedMap<String, IMZTabColumn> optionalColumnMapping = new TreeMap<>();
-    private final SortedMap<String, IMZTabColumn> abundanceColumnMapping = new TreeMap<>();
-    private final SortedMap<String, IMZTabColumn> columnMapping = new TreeMap<>();
+    private final SortedMap<ColumnPosition, IMZTabColumn> stableColumnMapping = new TreeMap<>();
+    private final SortedMap<ColumnPosition, IMZTabColumn> optionalColumnMapping = new TreeMap<>();
+    private final SortedMap<ColumnPosition, IMZTabColumn> abundanceColumnMapping = new TreeMap<>();
+    private final SortedMap<ColumnPosition, IMZTabColumn> columnMapping = new TreeMap<>();
+    private final Map<String, IMZTabColumn> headerIndex = new HashMap<>();
 
     private Section section;
 
@@ -76,8 +80,10 @@ public class MZTabColumnFactory {
      * Retrieves the MZTabColumnFactory accordingly to the {@link #section}
      *
      * @param section SHOULD be
-     * {@link uk.ac.ebi.pride.jmztab2.model.Section#Protein_Header}, {@link uk.ac.ebi.pride.jmztab2.model.Section#Peptide_Header} {@link uk.ac.ebi.pride.jmztab2.model.Section#PSM_Header}
-     * or {@link uk.ac.ebi.pride.jmztab2.model.Section#Small_Molecule_Header}.
+     * {@link uk.ac.ebi.pride.jmztab2.model.Section#Small_Molecule_Header},
+     * {@link uk.ac.ebi.pride.jmztab2.model.Section#Small_Molecule_Feature_Header}
+     * or
+     * {@link uk.ac.ebi.pride.jmztab2.model.Section#Small_Molecule_Evidence_Header}.
      * @return a {@link uk.ac.ebi.pride.jmztab2.model.MZTabColumnFactory}
      * object.
      */
@@ -96,236 +102,253 @@ public class MZTabColumnFactory {
     }
 
     /**
-     * Get stable columns mapping. Key is logical position, and value is
-     * MZTabColumn object. Stable column with stable order: header name, data
-     * type, logical position and order are stable in these columns. All of them
-     * have been defined in null     {@link uk.ac.ebi.pride.jmztab2.model.SmallMoleculeColumn}, {@link uk.ac.ebi.pride.jmztab2.model.SmallMoleculeFeatureColumn},
-     * {@link uk.ac.ebi.pride.jmztab2.model.SmallMoleculeEvidenceColumn}.
+     * Stable (non-optional) columns, keyed by position.
      *
-     * @return a {@link java.util.SortedMap} object.
+     * @return an unmodifiable view.
      */
-    public SortedMap<String, IMZTabColumn> getStableColumnMapping() {
-        return stableColumnMapping;
+    public SortedMap<ColumnPosition, IMZTabColumn> getStableColumnMapping() {
+        return Collections.unmodifiableSortedMap(stableColumnMapping);
     }
 
     /**
-     * Get all optional columns, including option column with stable order and
-     * name, abundance columns, optional columns and cv param optional columns.
-     * Key is logical position, and value is MZTabColumn object.
+     * Optional columns (abundance, opt_, cv opt_, id_confidence_measure and
+     * stable columns flagged optional), keyed by position.
      *
-     * @see AbundanceColumn
-     * @see OptionColumn
-     * @see ParameterOptionColumn
-     * @return a {@link java.util.SortedMap} object.
+     * @return an unmodifiable view.
      */
-    public SortedMap<String, IMZTabColumn> getOptionalColumnMapping() {
-        return optionalColumnMapping;
+    public SortedMap<ColumnPosition, IMZTabColumn> getOptionalColumnMapping() {
+        return Collections.unmodifiableSortedMap(optionalColumnMapping);
     }
 
     /**
-     * Get all columns in the factory. In this class, we maintain the following
-     * constraint at any time:
+     * Abundance columns, keyed by position.
      *
-     * @return a {@link java.util.SortedMap} object.
+     * @return an unmodifiable view.
      */
-    public SortedMap<String, IMZTabColumn> getColumnMapping() {
-        return columnMapping;
+    public SortedMap<ColumnPosition, IMZTabColumn> getAbundanceColumnMapping() {
+        return Collections.unmodifiableSortedMap(abundanceColumnMapping);
     }
 
     /**
-     * Extract the order from logical position. Normally, the order is coming
-     * from top two characters of logical position. For example, logical
-     * position is 092, then the order number is 9.
+     * All columns, keyed by position.
+     *
+     * @return an unmodifiable view.
      */
-    private String getColumnOrder(String position) {
-        return position.substring(0, 2);
+    public SortedMap<ColumnPosition, IMZTabColumn> getColumnMapping() {
+        return Collections.unmodifiableSortedMap(columnMapping);
     }
-    
-    private void checkOptionalColumn(IMZTabColumn column) throws IllegalArgumentException {
-        if(optionalColumnMapping.containsKey(column.getLogicPosition())) {
-            throw new IllegalArgumentException("Key " + column.getLogicPosition() + " for column " + column.getName() + " is already assigned to: " + optionalColumnMapping.get(column.getLogicPosition()).getName());
+
+    /**
+     * The order following the last registered column, or 1 if empty.
+     *
+     * @return the next free order.
+     */
+    public int nextOrder() {
+        return columnMapping.isEmpty() ? 1 : columnMapping.lastKey().order() + 1;
+    }
+
+    private ColumnPosition register(IMZTabColumn column) {
+        ColumnPosition position = column.getPosition();
+        IMZTabColumn other = columnMapping.get(position);
+        if (other != null) {
+            throw new IllegalArgumentException("Position " + position + " for column '" + column.getHeader() + "' is already assigned to '" + other.getHeader() + "'");
         }
-        optionalColumnMapping.put(column.getLogicPosition(), column);
-        if(columnMapping.containsKey(column.getLogicPosition())) {
-            throw new IllegalArgumentException("Key " + column.getLogicPosition() + " for column " + column.getName() + " is already assigned to: " + columnMapping.get(column.getLogicPosition()).getName());
+        String headerKey = column.getHeader().trim().toLowerCase(Locale.ROOT);
+        if (headerIndex.containsKey(headerKey)) {
+            throw new IllegalArgumentException("Column header '" + column.getHeader() + "' is already defined");
         }
-        columnMapping.put(column.getLogicPosition(), column);
-    }
-    
-    private void checkAbundanceOptionalColumn(IMZTabColumn column) throws IllegalArgumentException {
-        if(abundanceColumnMapping.containsKey(column.getLogicPosition())) {
-            throw new IllegalArgumentException("Key " + column.getLogicPosition() + " for column " + column.getName() + " is already assigned to: " + abundanceColumnMapping.get(column.getLogicPosition()).getName());
+        if (column.isOptional()) {
+            optionalColumnMapping.put(position, column);
+        } else {
+            stableColumnMapping.put(position, column);
         }
-        abundanceColumnMapping.put(column.getLogicPosition(), column);
+        if (column instanceof AbundanceColumn) {
+            abundanceColumnMapping.put(position, column);
+        }
+        columnMapping.put(position, column);
+        headerIndex.put(headerKey, column);
+        return position;
     }
 
-    private String addOptionColumn(IMZTabColumn column) {
-
-        checkOptionalColumn(column);
-
-        return column.getLogicPosition();
-    }
-
-    private String addOptionColumn(IMZTabColumn column, String order) {
-
+    /**
+     * Register a stable column at the given order.
+     *
+     * @param column a stable column instance, e.g. from
+     * {@link SmallMoleculeColumn.Stable#columnFor(String)}.
+     * @param order the column's order within its section.
+     * @return the column's position.
+     * @throws IllegalArgumentException if the position or header is taken.
+     */
+    public ColumnPosition addStableColumn(IMZTabColumn column, int order) {
         column.setOrder(order);
-        checkOptionalColumn(column);
-
-        return column.getLogicPosition();
+        return register(column);
     }
 
     /**
-     * Add global {@link uk.ac.ebi.pride.jmztab2.model.OptionColumn} into
-     * {@link #optionalColumnMapping} and {@link #columnMapping}. The header
-     * like: opt_global_{name}
+     * Add a global {@link OptionColumn} (opt_global_{name}) at
+     * {@link #nextOrder()}.
      *
      * @param name SHOULD NOT be empty.
      * @param columnType SHOULD NOT be empty.
-     * @return the column's logic position.
+     * @return the column's position.
      */
-    public String addOptionalColumn(String name, Class columnType) {
-        IMZTabColumn column = new OptionColumn(null, name, columnType,
-            Integer.parseInt(getColumnOrder(columnMapping.lastKey())));
-        
-        return addOptionColumn(column);
+    public ColumnPosition addOptionalColumn(String name, Class columnType) {
+        return addOptionalColumn(name, columnType, nextOrder());
     }
 
     /**
-     * Add {@link uk.ac.ebi.pride.jmztab2.model.OptionColumn} followed by an
-     * indexed element (study variable, assay, ms run) into
-     * {@link #optionalColumnMapping} and {@link #columnMapping}. The header
-     * will look like: opt_study_variable[1]_{name} for a study variable
+     * Add a global {@link OptionColumn} (opt_global_{name}).
+     *
+     * @param name SHOULD NOT be empty.
+     * @param columnType SHOULD NOT be empty.
+     * @param order the column's order within its section.
+     * @return the column's position.
+     */
+    public ColumnPosition addOptionalColumn(String name, Class columnType, int order) {
+        return register(new OptionColumn(null, name, columnType, order));
+    }
+
+    /**
+     * Add an {@link OptionColumn} for an indexed element, e.g.
+     * opt_assay[1]_{name}, at {@link #nextOrder()}.
      *
      * @param <T> the type of the columnEntity.
      * @param columnEntity SHOULD NOT be empty.
      * @param name SHOULD NOT be empty.
      * @param columnType SHOULD NOT be empty.
-     * @return the column's logic position.
+     * @return the column's position.
      */
-    public <T extends Object> String addOptionalColumn(T columnEntity,
-        String name, Class columnType) {
-        IMZTabColumn column = new OptionColumn(columnEntity, name, columnType,
-            Integer.parseInt(getColumnOrder(columnMapping.lastKey())));
-        return addOptionColumn(column);
+    public <T extends Object> ColumnPosition addOptionalColumn(T columnEntity, String name, Class columnType) {
+        return addOptionalColumn(columnEntity, name, columnType, nextOrder());
     }
 
     /**
-     * Add global {@link uk.ac.ebi.pride.jmztab2.model.ParameterOptionColumn}
-     * into {@link #optionalColumnMapping} and {@link #columnMapping}. The
-     * header like: opt_global_cv_{accession}_{parameter name}
+     * Add an {@link OptionColumn} for an indexed element, e.g.
+     * opt_assay[1]_{name}.
+     *
+     * @param <T> the type of the columnEntity.
+     * @param columnEntity SHOULD NOT be empty.
+     * @param name SHOULD NOT be empty.
+     * @param columnType SHOULD NOT be empty.
+     * @param order the column's order within its section.
+     * @return the column's position.
+     */
+    public <T extends Object> ColumnPosition addOptionalColumn(T columnEntity, String name, Class columnType, int order) {
+        return register(new OptionColumn(columnEntity, name, columnType, order));
+    }
+
+    /**
+     * Add a global {@link ParameterOptionColumn}
+     * (opt_global_cv_{accession}_{name}) at {@link #nextOrder()}.
      *
      * @param param SHOULD NOT empty.
      * @param columnType SHOULD NOT empty.
-     * @return the column's logic position.
+     * @return the column's position.
      */
-    public String addOptionalColumn(Parameter param, Class columnType) {
-        IMZTabColumn column = new ParameterOptionColumn(null, param, columnType,
-            Integer.parseInt(getColumnOrder(columnMapping.lastKey())));
-        return addOptionColumn(column);
+    public ColumnPosition addOptionalColumn(Parameter param, Class columnType) {
+        return addOptionalColumn(param, columnType, nextOrder());
     }
 
     /**
-     * Add {@link uk.ac.ebi.pride.jmztab2.model.ParameterOptionColumn} followed
-     * by an indexed element (study variable, assay, ms run) into
-     * {@link #optionalColumnMapping} and {@link #columnMapping}. The header
-     * will look like: opt_assay[1]_cv_{accession}_{parameter name} for an
-     * assay.
+     * Add a global {@link ParameterOptionColumn}
+     * (opt_global_cv_{accession}_{name}).
+     *
+     * @param param SHOULD NOT empty.
+     * @param columnType SHOULD NOT empty.
+     * @param order the column's order within its section.
+     * @return the column's position.
+     */
+    public ColumnPosition addOptionalColumn(Parameter param, Class columnType, int order) {
+        return register(new ParameterOptionColumn(null, param, columnType, order));
+    }
+
+    /**
+     * Add a {@link ParameterOptionColumn} for an indexed element, e.g.
+     * opt_assay[1]_cv_{accession}_{name}, at {@link #nextOrder()}.
      *
      * @param <T> the type of the columnEntity.
      * @param columnEntity SHOULD NOT empty.
      * @param param SHOULD NOT empty.
      * @param columnType SHOULD NOT empty.
-     * @return the column's logic position.
+     * @return the column's position.
      */
-    public <T extends Object> String addOptionalColumn(T columnEntity,
-        Parameter param, Class columnType) {
-        IMZTabColumn column = new ParameterOptionColumn(columnEntity, param,
-            columnType, Integer.parseInt(getColumnOrder(columnMapping.lastKey())));
-        return addOptionColumn(column);
+    public <T extends Object> ColumnPosition addOptionalColumn(T columnEntity, Parameter param, Class columnType) {
+        return addOptionalColumn(columnEntity, param, columnType, nextOrder());
     }
 
     /**
-     * <p>
-     * addAbundanceOptionalColumn.</p>
+     * Add a {@link ParameterOptionColumn} for an indexed element, e.g.
+     * opt_assay[1]_cv_{accession}_{name}.
+     *
+     * @param <T> the type of the columnEntity.
+     * @param columnEntity SHOULD NOT empty.
+     * @param param SHOULD NOT empty.
+     * @param columnType SHOULD NOT empty.
+     * @param order the column's order within its section.
+     * @return the column's position.
+     */
+    public <T extends Object> ColumnPosition addOptionalColumn(T columnEntity, Parameter param, Class columnType, int order) {
+        return register(new ParameterOptionColumn(columnEntity, param, columnType, order));
+    }
+
+    /**
+     * Add an abundance_assay[id] column.
      *
      * @param assay a {@link org.lifstools.mztab2.model.Assay} object.
-     * @param order the order string for this column.
-     * @return the column's logic position.
+     * @param order the column's order within its section.
+     * @return the column's position.
      */
-    public String addAbundanceOptionalColumn(Assay assay, String order) {
-        IMZTabColumn column = AbundanceColumn.createOptionalColumn(section,
-            assay, Integer.parseInt(order));
-        checkAbundanceOptionalColumn(column);
-        return addOptionColumn(column, order);
+    public ColumnPosition addAbundanceOptionalColumn(Assay assay, int order) {
+        return register(AbundanceColumn.createOptionalColumn(section, assay, order));
     }
 
     /**
-     * Add an {@link uk.ac.ebi.pride.jmztab2.model.AbundanceColumn} into
-     * {@link uk.ac.ebi.pride.jmztab2.model.AbundanceColumn}, {@link #optionalColumnMapping}
-     * and {@link #columnMapping}. The header can be one of
-     * abundance_study_variable[1], abundance_coeffvar_study_variable[1].
+     * Add an abundance_study_variable[id] or
+     * abundance_variation_study_variable[id] column.
      *
-     * @see
-     * AbundanceColumn#createOptionalColumns(uk.ac.ebi.pride.jmztab2.model.Section,
-     * org.lifstools.mztab2.model.StudyVariable, java.lang.String, java.lang.String)
      * @param studyVariable SHOULD NOT empty.
      * @param columnHeader the column header without the 'abundance_' prefix.
-     * @param order the order string for this column.
-     * @return the column's logic position.
+     * @param order the column's order within its section.
+     * @return the column's position.
      */
-    public String addAbundanceOptionalColumn(StudyVariable studyVariable,
-        String columnHeader, String order) {
-        SortedMap<String, MZTabColumn> columns = AbundanceColumn.
-            createOptionalColumns(section, studyVariable, columnHeader, order);
-        for(IMZTabColumn col:columns.values()) {
-            checkAbundanceOptionalColumn(col);
-            checkOptionalColumn(col);
-        }
-        return columns.lastKey();
+    public ColumnPosition addAbundanceOptionalColumn(StudyVariable studyVariable, String columnHeader, int order) {
+        return register(AbundanceColumn.createOptionalColumn(section, studyVariable, columnHeader, order));
     }
 
     /**
-     * <p>
-     * addIdConfidenceMeasureColumn.</p>
+     * Add an id_confidence_measure[index] column at {@link #nextOrder()}.
      *
      * @param parameter a {@link org.lifstools.mztab2.model.Parameter} object.
      * @param index a {@link java.lang.Integer} object.
      * @param columnType the class of values in this column.
-     * @return the column's logic position.
+     * @return the column's position.
      */
-    public String addIdConfidenceMeasureColumn(Parameter parameter,
-        Integer index, Class columnType) {
+    public ColumnPosition addIdConfidenceMeasureColumn(Parameter parameter, Integer index, Class columnType) {
+        return addIdConfidenceMeasureColumn(parameter, index, columnType, nextOrder());
+    }
+
+    /**
+     * Add an id_confidence_measure[index] column.
+     *
+     * @param parameter a {@link org.lifstools.mztab2.model.Parameter} object.
+     * @param index a {@link java.lang.Integer} object.
+     * @param columnType the class of values in this column.
+     * @param order the column's order within its section.
+     * @return the column's position.
+     */
+    public ColumnPosition addIdConfidenceMeasureColumn(Parameter parameter, Integer index, Class columnType, int order) {
         if (section != Section.Small_Molecule_Evidence_Header && section != Section.Small_Molecule_Evidence) {
             throw new IllegalArgumentException(
-                "Section should be SmallMoleculeEvidence, but is " + section.
-                    getName());
+                "Section should be SmallMoleculeEvidence, but is " + section.getName());
         }
         if (parameter == null) {
             throw new NullPointerException("Parameter should not be null!");
         }
-
-        SortedMap<String, MZTabColumn> columns = new TreeMap<>();
-
-        MZTabColumn column = new MZTabColumn("id_confidence_measure", columnType,
-            false, Integer.parseInt(getColumnOrder(columnMapping.lastKey())) + "",
-            index);
-
-        columns.put(column.getLogicPosition(), column);
-        for(IMZTabColumn col : columns.values()) {
-            checkOptionalColumn(col);
-        }
-        return columns.lastKey();
+        return register(new MZTabColumn("id_confidence_measure", columnType, true, order, index));
     }
 
     /**
-     * The offset record the position of MZTabColumn in header line. For
-     * example, protein header line, the relationships between Logical Position,
-     * MZTabColumn, offset and order are like following structure: Logical
-     * Position MZTabColumn offset order "01" accession 1 01 "02" description 2
-     * 02 ...... "08" best_search_engine_score 8 08 "091"
-     * search_engine_score_ms_run[1] 9 09 "092" search_engine_score_ms_run[2] 10
-     * 09 "10" reliability 11 10 "111" num_psms_ms_run[1] 12 11 "112"
-     * num_psms_ms_run[2] 13 11
+     * Numbers all columns 1..n in position order.
      *
      * @return a {@link java.util.SortedMap} object with the offsets for each
      * column.
@@ -342,25 +365,14 @@ public class MZTabColumnFactory {
     }
 
     /**
-     * Query the MZTabColumn in factory, based on column header with
-     * case-insensitive. Notice: for optional columns, header name maybe
-     * flexible. For example, num_psms_ms_run[1]. At this time, user SHOULD BE
-     * provide the full header name to query MZTabColumn. If just provide
-     * num_psms_ms_run, return null.
+     * Query the column by its full header, case-insensitive, e.g.
+     * {@code abundance_assay[1]}.
      *
      * @param header the column header to use as the search key.
      * @return a {@link uk.ac.ebi.pride.jmztab2.model.IMZTabColumn} object or
      * null.
      */
     public IMZTabColumn findColumnByHeader(String header) {
-        header = header.trim();
-
-        for (IMZTabColumn column : columnMapping.values()) {
-            if (header.equalsIgnoreCase(column.getHeader())) {
-                return column;
-            }
-        }
-
-        return null;
+        return headerIndex.get(header.trim().toLowerCase(Locale.ROOT));
     }
 }

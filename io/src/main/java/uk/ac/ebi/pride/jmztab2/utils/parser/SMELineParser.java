@@ -62,12 +62,10 @@ public class SMELineParser extends MZTabDataLineParser<SmallMoleculeEvidence> {
         String columnName;
         String target;
         int physicalPosition;
-        String logicalPosition;
         smallMoleculeEvidence = new SmallMoleculeEvidence();
 
         for (physicalPosition = 1; physicalPosition < items.length; physicalPosition++) {
-            logicalPosition = positionMapping.get(physicalPosition);
-            column = factory.getColumnMapping().get(logicalPosition);
+            column = positionMapping.get(physicalPosition);
 
             if (column != null) {
                 columnName = column.getName();

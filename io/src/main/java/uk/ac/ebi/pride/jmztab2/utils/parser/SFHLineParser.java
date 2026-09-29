@@ -19,9 +19,6 @@ import org.lifstools.mztab2.model.Assay;
 import org.lifstools.mztab2.model.Metadata;
 import org.lifstools.mztab2.model.Parameter;
 import java.util.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import uk.ac.ebi.pride.jmztab2.model.IMZTabColumn;
 import uk.ac.ebi.pride.jmztab2.model.ISmallMoleculeFeatureColumn;
 import uk.ac.ebi.pride.jmztab2.model.MZTabColumnFactory;
 import uk.ac.ebi.pride.jmztab2.model.MZTabConstants;
@@ -42,10 +39,6 @@ import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabException;
  */
 public class SFHLineParser extends MZTabHeaderLineParser {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SFHLineParser.class);
-    private Map<Integer, String> physPositionToOrder;
-
-
     /**
      * <p>Constructor for SFHLineParser.</p>
      *
@@ -60,63 +53,31 @@ public class SFHLineParser extends MZTabHeaderLineParser {
     @Override
     protected int parseColumns() throws MZTabException {
         String header;
-        Integer physicalPosition;
-
+        int physicalPosition;
         ISmallMoleculeFeatureColumn column;
-        SortedMap<String, IMZTabColumn> columnMapping = factory.getColumnMapping();
-        SortedMap<String, IMZTabColumn> optionalMapping = factory.getOptionalColumnMapping();
-        SortedMap<String, IMZTabColumn> stableMapping = factory.getStableColumnMapping();
 
-        physPositionToOrder = generateHeaderPhysPositionToOrderMap(items);
-
-        //Iterates through the tokens in the protein header
-        //It will identify the type of column and the position accordingly
+        //Iterates through the tokens in the small molecule feature header.
+        //The 1-based physical position of each column is its order.
         for (physicalPosition = 1; physicalPosition < items.length; physicalPosition++) {
-
             column = null;
             header = items[physicalPosition];
-
-            if (header.contains(MZTabConstants.ABUNDANCE_PREFIX)) {
-                checkAbundanceColumns(physicalPosition, physPositionToOrder.get(physicalPosition));
+            if (header.startsWith(MZTabConstants.ABUNDANCE_PREFIX)) {
+                checkAbundanceColumns(physicalPosition, physicalPosition);
             } else if (header.startsWith(MZTabConstants.OPT_PREFIX)) {
-                checkOptColumnName(header);
+                checkOptColumnName(header, physicalPosition);
             } else {
                 try {
                     column = SmallMoleculeFeatureColumn.Stable.columnFor(header);
                 } catch(IllegalArgumentException ex) {
                     throw new MZTabException(new MZTabError(LogicalErrorType.ColumnNotValid,lineNumber,header,section.getName()));
                 }
-                
             }
 
             if (column != null) {
-                if (!column.getOrder().equals(physPositionToOrder.get(physicalPosition))) {
-                    column.setOrder(physPositionToOrder.get(physicalPosition));
-                    LOGGER.debug(column.toString());
-                }
-                if(column.isOptional()){
-                    optionalMapping.put(column.getLogicPosition(), column);
-                } else {
-                    stableMapping.put(column.getLogicPosition(), column);
-                }
-                columnMapping.put(column.getLogicPosition(), column);
+                factory.addStableColumn(column, physicalPosition);
             }
         }
         return physicalPosition;
-    }
-
-    private Map<Integer, String> generateHeaderPhysPositionToOrderMap(String[] items) {
-        Integer physicalPosition;
-        Map<Integer, String> physicalPositionToOrder = new LinkedHashMap<>();
-        int order = 0;
-
-        for (physicalPosition = 1; physicalPosition < items.length; physicalPosition++) {
-            if(physicalPositionToOrder.containsKey(physicalPosition)) {
-                throw new IllegalArgumentException("Physical position "+physicalPosition+" for item "+items[physicalPosition-1]+" is already assigned!");
-            }
-            physicalPositionToOrder.put(physicalPosition, fromIndexToOrder(++order));
-        }
-        return physicalPositionToOrder;
     }
 
     /**
