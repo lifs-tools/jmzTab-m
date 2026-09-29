@@ -35,6 +35,8 @@ jobs:
         USERNAME: ${{ github.actor }}
         PASSWORD: ${{ secrets.GITHUB_TOKEN }}
       run: |
+        # let the wrapper download Maven first, its progress output would otherwise end up in VERSION
+        ./mvnw -q -v > /dev/null
         VERSION=$(./mvnw help:evaluate -Dexpression=project.version -q -DforceStdout | tr -d '\n')
         echo "RELEASE_VERSION=$VERSION" >> $GITHUB_ENV
         echo "version=$VERSION" >> $GITHUB_OUTPUT
