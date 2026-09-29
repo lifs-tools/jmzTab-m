@@ -309,6 +309,11 @@ public final class LogicalErrorType extends MZTabErrorType {
      */
     public static final MZTabErrorType ReferenceBeforeDefinition = createError(Category.Logical, "ReferenceBeforeDefinition");
 
+    /**
+     * Constant <code>DuplicateColumnHeader</code>
+     */
+    public static final MZTabErrorType DuplicateColumnHeader = createError(Category.Logical, "DuplicateColumnHeader");
+
     private static final MZTabErrorType[] VALUES = {
         NULL, NotNULL, LineOrder, HeaderLine, NoHeaderLine,
         MsRunNotDefined, AssayNotDefined, StudyVariableNotDefined, ProteinSearchEngineScoreNotDefined, PeptideSearchEngineScoreNotDefined, PSMSearchEngineScoreNotDefined, SmallMoleculeSearchEngineScoreNotDefined,
@@ -320,7 +325,7 @@ public final class LogicalErrorType extends MZTabErrorType {
         ProfileInferred, ProfileTableMissing, ProfileTableForbidden, ProfileUnsupportedCombination, ProfileMSFDiscouraged, ProfileFieldMismatch,
         ProfileSmfIdRefsForbidden, ProfileSmfIdRefsRequired, ProfileSmeIdRefsForbidden, ProfileAmbiguityCodeMustBeNull,
         UndefinedStudyVariableAssayRefs, InstrumentNotReferenced, SampleNotReferenced, StudyVariableFactorsRemoved,
-        ReferenceBeforeDefinition
+        ReferenceBeforeDefinition, DuplicateColumnHeader
     };
     
     public static MZTabErrorType[] getValues() {

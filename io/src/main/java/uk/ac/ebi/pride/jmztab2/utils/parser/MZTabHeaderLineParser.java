@@ -21,6 +21,9 @@ import org.lifstools.mztab2.model.MsRun;
 import org.lifstools.mztab2.model.Parameter;
 import org.lifstools.mztab2.model.SmallMoleculeSummary;
 import org.lifstools.mztab2.model.StudyVariable;
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import uk.ac.ebi.pride.jmztab2.model.MZBoolean;
@@ -87,13 +90,32 @@ public abstract class MZTabHeaderLineParser extends MZTabLineParser {
     public void parse(int lineNumber, String line, MZTabErrorList errorList) throws MZTabException {
         super.parse(lineNumber, line, errorList);
 
-        int offset = parseColumns();
+        checkDuplicateHeaders();
+        int offset;
+        try {
+            offset = parseColumns();
+        } catch (IllegalArgumentException e) {
+            throw new MZTabException(new MZTabError(LogicalErrorType.HeaderNotValid, lineNumber, section.getName(), e.getMessage(), "" + items.length));
+        }
         if (offset != items.length) {
             this.errorList.add(new MZTabError(LogicalErrorType.HeaderLine, lineNumber, section.getName(), "" + offset, "" + items.length));
         }
 
         refine();
 
+    }
+
+    /**
+     * Column headers are case-insensitive and MUST be unique within a section.
+     */
+    private void checkDuplicateHeaders() throws MZTabException {
+        Set<String> seen = new HashSet<>();
+        for (int i = 1; i < items.length; i++) {
+            String header = items[i].trim();
+            if (!seen.add(header.toLowerCase(Locale.ROOT))) {
+                throw new MZTabException(new MZTabError(LogicalErrorType.DuplicateColumnHeader, lineNumber, header, section.getName()));
+            }
+        }
     }
 
     /**

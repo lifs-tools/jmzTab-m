@@ -94,12 +94,11 @@ public class SEHLineParser extends MZTabHeaderLineParser {
         }
 
         int id = parseIndex(header, matcher.group(1));
-        if (metadata.getIdConfidenceMeasure().size() > 0) {
-            Parameter p = metadata.getIdConfidenceMeasure().get(id-1);
-            factory.addIdConfidenceMeasureColumn(p, id, Double.class, order);
-        } else {
-            throw new IllegalArgumentException("Id confidence measure column was not defined in metadata section!");
+        List<Parameter> measures = metadata.getIdConfidenceMeasure();
+        if (measures == null || id > measures.size()) {
+            throw new MZTabException(new MZTabError(LogicalErrorType.NotDefineInMetadata, lineNumber, header));
         }
+        factory.addIdConfidenceMeasureColumn(measures.get(id - 1), id, Double.class, order);
     }
 
     /**
