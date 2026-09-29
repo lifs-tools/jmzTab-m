@@ -59,14 +59,16 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - uses: jfrog/setup-jfrog-cli@v4
       if: github.event_name == 'push'
-      env:
-        JF_URL: https://m.lifs-tools.org/
-        # ARTIFACTORY_TOKEN is a reference token: pass it as an access token so the
-        # CLI does not try to exchange user/password for a token (rejected with HTTP 400)
-        JF_ACCESS_TOKEN: ${{ secrets.ARTIFACTORY_TOKEN }}
     - name: maven build
       if: github.event_name == 'push'
+      env:
+        ARTIFACTORY_TOKEN: ${{ secrets.ARTIFACTORY_TOKEN }}
+      # ARTIFACTORY_TOKEN only works as github-deployer's password (bearer use gives 401).
+      # --basic-auth-only stops the CLI from exchanging it for a new token (400 for reference
+      # tokens); --enc-password=false skips the password encryption call.
       run: |
+            printf '%s' "$ARTIFACTORY_TOKEN" | jf c add lifs-tools --url=https://m.lifs-tools.org/ --user=github-deployer --password-stdin --basic-auth-only --enc-password=false --interactive=false --overwrite
+            jf c use lifs-tools
             jf mvn-config --repo-deploy-releases=lifs-libs-release-local --repo-deploy-snapshots=lifs-libs-snapshot-local
             jf mvn -B deploy -DskipTests -DskipITs -Pjfrog --file pom.xml
             jf rt bp
