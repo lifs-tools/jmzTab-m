@@ -36,12 +36,12 @@ public class SmallMoleculeEvidenceColumn implements ISmallMoleculeEvidenceColumn
     private final IMZTabColumn column;
 
     SmallMoleculeEvidenceColumn(String name, Class dataType, boolean optional,
-        String order) {
+        int order) {
         this.column = new MZTabColumn(name, dataType, optional, order);
     }
 
     SmallMoleculeEvidenceColumn(String name, Class dataType, boolean optional,
-        String order, Integer id) {
+        int order, Integer id) {
         this.column = new MZTabColumn(name, dataType, optional, order, id);
     }
 
@@ -49,44 +49,44 @@ public class SmallMoleculeEvidenceColumn implements ISmallMoleculeEvidenceColumn
      * Stable {@link SmallMoleculeEvidenceColumn} definition templates.
      */
     public static enum Stable {
-        SME_ID(SmallMoleculeEvidence.JSON_PROPERTY_SME_ID.toUpperCase(), Integer.class, false, "01"),
-        EVIDENCE_INPUT_ID(SmallMoleculeEvidence.JSON_PROPERTY_EVIDENCE_INPUT_ID, Integer.class, false, "02"),
-        DATABASE_IDENTIFIER(SmallMoleculeEvidence.JSON_PROPERTY_DATABASE_IDENTIFIER, String.class, false, "03"),
+        SME_ID(SmallMoleculeEvidence.JSON_PROPERTY_SME_ID.toUpperCase(), Integer.class, false, 1),
+        EVIDENCE_INPUT_ID(SmallMoleculeEvidence.JSON_PROPERTY_EVIDENCE_INPUT_ID, Integer.class, false, 2),
+        DATABASE_IDENTIFIER(SmallMoleculeEvidence.JSON_PROPERTY_DATABASE_IDENTIFIER, String.class, false, 3),
         CHEMICAL_FORMULA(
-            SmallMoleculeEvidence.JSON_PROPERTY_CHEMICAL_FORMULA, String.class, true, "04"),
+            SmallMoleculeEvidence.JSON_PROPERTY_CHEMICAL_FORMULA, String.class, true, 4),
         SMILES(SmallMoleculeEvidence.JSON_PROPERTY_SMILES,
-            String.class, true, "05"),
+            String.class, true, 5),
         INCHI(SmallMoleculeEvidence.JSON_PROPERTY_INCHI,
-            String.class, true, "06"),
+            String.class, true, 6),
         CHEMICAL_NAME(
-            SmallMoleculeEvidence.JSON_PROPERTY_CHEMICAL_NAME, String.class, true, "07"),
+            SmallMoleculeEvidence.JSON_PROPERTY_CHEMICAL_NAME, String.class, true, 7),
         URI(SmallMoleculeEvidence.JSON_PROPERTY_URI,
-            java.net.URI.class, true, "08"),
-        DERIVATIZED_FORM(SmallMoleculeEvidence.JSON_PROPERTY_DERIVATIZED_FORM, String.class, true, "09"),
+            java.net.URI.class, true, 8),
+        DERIVATIZED_FORM(SmallMoleculeEvidence.JSON_PROPERTY_DERIVATIZED_FORM, String.class, true, 9),
         ADDUCT_ION(
-            SmallMoleculeEvidence.JSON_PROPERTY_ADDUCT_ION, String.class, false, "10"),
+            SmallMoleculeEvidence.JSON_PROPERTY_ADDUCT_ION, String.class, false, 10),
         EXP_MASS_TO_CHARGE(
-            SmallMoleculeEvidence.JSON_PROPERTY_EXP_MASS_TO_CHARGE, Double.class, false, "11"),
-        CHARGE(SmallMoleculeEvidence.JSON_PROPERTY_CHARGE, Integer.class, false, "12"),
+            SmallMoleculeEvidence.JSON_PROPERTY_EXP_MASS_TO_CHARGE, Double.class, false, 11),
+        CHARGE(SmallMoleculeEvidence.JSON_PROPERTY_CHARGE, Integer.class, false, 12),
         THEORETICAL_MASS_TO_CHARGE(SmallMoleculeEvidence.JSON_PROPERTY_THEORETICAL_MASS_TO_CHARGE, Double.class,
-            false, "13"),
-        SPECTRA_REF(SmallMoleculeEvidence.JSON_PROPERTY_SPECTRA_REF, StringList.class, false, "14"),
+            false, 13),
+        SPECTRA_REF(SmallMoleculeEvidence.JSON_PROPERTY_SPECTRA_REF, StringList.class, false, 14),
         IDENTIFICATION_METHOD(SmallMoleculeEvidence.JSON_PROPERTY_IDENTIFICATION_METHOD, Parameter.class, false,
-            "15"),
-        MS_LEVEL(SmallMoleculeEvidence.JSON_PROPERTY_MS_LEVEL, Parameter.class, false, "16"),
-        RANK(SmallMoleculeEvidence.JSON_PROPERTY_RANK, Integer.class, false, "17");
+            15),
+        MS_LEVEL(SmallMoleculeEvidence.JSON_PROPERTY_MS_LEVEL, Parameter.class, false, 16),
+        RANK(SmallMoleculeEvidence.JSON_PROPERTY_RANK, Integer.class, false, 17);
 
         private final ISmallMoleculeEvidenceColumn column;
 
         private Stable(String name, Class columnType, boolean optional,
-            String order) {
+            int order) {
             this.column = new SmallMoleculeEvidenceColumn(name, columnType,
                 optional,
                 order);
         }
 
         private Stable(String name, Class columnType, boolean optional,
-            String order, Integer id) {
+            int order, Integer id) {
             this.column = new SmallMoleculeEvidenceColumn(name, columnType,
                 optional,
                 order, id);
@@ -185,8 +185,8 @@ public class SmallMoleculeEvidenceColumn implements ISmallMoleculeEvidenceColumn
      * {@inheritDoc}
      */
     @Override
-    public String getLogicPosition() {
-        return this.column.getLogicPosition();
+    public ColumnPosition getPosition() {
+        return this.column.getPosition();
     }
 
     /**
@@ -201,7 +201,7 @@ public class SmallMoleculeEvidenceColumn implements ISmallMoleculeEvidenceColumn
      * {@inheritDoc}
      */
     @Override
-    public String getOrder() {
+    public int getOrder() {
         return this.column.getOrder();
     }
 
@@ -225,15 +225,7 @@ public class SmallMoleculeEvidenceColumn implements ISmallMoleculeEvidenceColumn
      * {@inheritDoc}
      */
     @Override
-    public void setLogicPosition(String logicPosition) {
-        this.column.setLogicPosition(logicPosition);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setOrder(String order) {
+    public void setOrder(int order) {
         this.column.setOrder(order);
     }
 

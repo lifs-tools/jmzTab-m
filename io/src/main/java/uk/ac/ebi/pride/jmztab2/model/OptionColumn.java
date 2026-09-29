@@ -66,18 +66,18 @@ public class OptionColumn extends MZTabColumn {
     }
 
     /**
-     * Create a optional column. Which header start with the prefix "opt_",
-     * logical position always stay the end of table.
+     * Create an optional column whose header starts with the prefix "opt_".
      *
      * @see #getHeader() generate optional column header.
-     * @param element if the value relates to all replicates, we use "global" in
-     * header. Here, if user set element is null for define for all replicates.
+     * @param element if the value relates to all replicates, use null, which
+     * results in "global" in the header.
      * @param value SHOULD NOT be empty.
      * @param columnType SHOULD NOT be empty.
-     * @param offset SHOULD be positive integer.
+     * @param order the column's order within its section, e.g. its 1-based
+     * header position.
      */
     public OptionColumn(Object element, String value, Class columnType,
-            int offset) {
-        super(getHeader(element, value), columnType, true, offset + 1 + "");
+            int order) {
+        super(getHeader(element, value), columnType, true, order);
     }
 }

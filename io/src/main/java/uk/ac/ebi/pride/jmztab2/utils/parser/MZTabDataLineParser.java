@@ -46,14 +46,13 @@ import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabException;
  * This class allows the validation and loading of the data into mzTab domain
  * objects.
  *
- * NOTICE: {@link uk.ac.ebi.pride.jmztab2.model.MZTabColumnFactory} maintain a
- * couple of {@link uk.ac.ebi.pride.jmztab2.model.IMZTabColumn} which have
- * internal logical position and order. In physical mzTab file, we allow user
- * not obey this logical position organized way, and provide their date with own
- * order. In order to distinguish them, we use physical position (a positive
- * integer) to record the column location in mzTab file. And use
- * {@link uk.ac.ebi.pride.jmztab2.utils.parser.PositionMapping} structure to
- * maintain the mapping between them.
+ * NOTICE: {@link uk.ac.ebi.pride.jmztab2.model.MZTabColumnFactory} registers
+ * each {@link uk.ac.ebi.pride.jmztab2.model.IMZTabColumn} at a stable order.
+ * Columns may still appear in a different order in the physical mzTab file,
+ * so we use the physical position (a positive integer, the 1-based header
+ * position) to record where each column is located in the file, and
+ * {@link uk.ac.ebi.pride.jmztab2.utils.parser.PositionMapping} maps physical
+ * positions to the corresponding columns.
  *
  * @param <T> the type of domain object the parser creates.
  * @see SMLLineParser
@@ -68,9 +67,8 @@ public abstract class MZTabDataLineParser<T> extends MZTabLineParser {
 
     protected MZTabColumnFactory factory;
     protected PositionMapping positionMapping;
-    protected SortedMap<String, Integer> exchangeMapping; // reverse the key and value of positionMapping.
 
-    protected SortedMap<Integer, IMZTabColumn> mapping;   // logical position --> offset
+    protected SortedMap<Integer, IMZTabColumn> mapping;   // offset --> column
     protected Metadata metadata;
 
     /**
@@ -87,14 +85,13 @@ public abstract class MZTabDataLineParser<T> extends MZTabLineParser {
     /**
      * Generate a mzTab data line parser.
      *
-     * NOTICE: {@link uk.ac.ebi.pride.jmztab2.model.MZTabColumnFactory} maintain
-     * a couple of {@link uk.ac.ebi.pride.jmztab2.model.IMZTabColumn} which have
-     * internal logical position and order. In physical mzTab file, we allow
-     * user not obey this logical position organized way, and provide their date
-     * with own order. In order to distinguish them, we use physical position (a
-     * positive integer) to record the column location in mzTab file. And use
-     * {@link uk.ac.ebi.pride.jmztab2.utils.parser.PositionMapping} structure
-     * the maintain the mapping between them.
+     * NOTICE: {@link uk.ac.ebi.pride.jmztab2.model.MZTabColumnFactory} registers
+     * each {@link uk.ac.ebi.pride.jmztab2.model.IMZTabColumn} at a stable
+     * order. Columns may still appear in a different order in the physical
+     * mzTab file, so we use the physical position (a positive integer, the
+     * 1-based header position) to record where each column is located in the
+     * file, and {@link uk.ac.ebi.pride.jmztab2.utils.parser.PositionMapping}
+     * maps physical positions to the corresponding columns.
      *
      * @param context the parser context, keeping dynamic state and lookup
      * associations.
@@ -115,7 +112,6 @@ public abstract class MZTabDataLineParser<T> extends MZTabLineParser {
         this.factory = factory;
 
         this.positionMapping = positionMapping;
-        this.exchangeMapping = positionMapping.reverse();
         this.mapping = factory.getOffsetColumnsMap();
 
         if (metadata == null) {

@@ -21,6 +21,9 @@ import org.lifstools.mztab2.model.MsRun;
 import org.lifstools.mztab2.model.Parameter;
 import org.lifstools.mztab2.model.SmallMoleculeSummary;
 import org.lifstools.mztab2.model.StudyVariable;
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import uk.ac.ebi.pride.jmztab2.model.MZBoolean;
@@ -37,12 +40,12 @@ import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabException;
 
 /**
  * A couple of common method used to parse a header line into {@link uk.ac.ebi.pride.jmztab2.model.MZTabColumnFactory} structure.
- * 
- * NOTICE: {@link uk.ac.ebi.pride.jmztab2.model.MZTabColumnFactory} maintain a couple of {@link MZTabColumn} which have internal logical
- * position and order. In physical mzTab file, we allow user not obey this logical position organized way,
- * and provide their date with own order. In order to distinguish them, we use physical position (a positive
- * integer) to record the column location in mzTab file. And use {@link uk.ac.ebi.pride.jmztab2.utils.parser.PositionMapping} structure the maintain
- * the mapping between them.
+ *
+ * NOTICE: {@link uk.ac.ebi.pride.jmztab2.model.MZTabColumnFactory} registers a couple of {@link MZTabColumn} keyed by
+ * {@link uk.ac.ebi.pride.jmztab2.model.ColumnPosition}. When parsing a header line, the column's physical (1-based)
+ * position in the header is used directly as its order, so columns are registered in the same order they appear
+ * in the file. {@link uk.ac.ebi.pride.jmztab2.utils.parser.PositionMapping} is then used to map those physical
+ * positions to the registered columns when parsing subsequent data lines.
  *
  * @author qingwei
  * @see SMHLineParser
@@ -87,13 +90,32 @@ public abstract class MZTabHeaderLineParser extends MZTabLineParser {
     public void parse(int lineNumber, String line, MZTabErrorList errorList) throws MZTabException {
         super.parse(lineNumber, line, errorList);
 
-        int offset = parseColumns();
+        checkDuplicateHeaders();
+        int offset;
+        try {
+            offset = parseColumns();
+        } catch (IllegalArgumentException e) {
+            throw new MZTabException(new MZTabError(LogicalErrorType.HeaderNotValid, lineNumber, section.getName(), e.getMessage(), "" + items.length));
+        }
         if (offset != items.length) {
             this.errorList.add(new MZTabError(LogicalErrorType.HeaderLine, lineNumber, section.getName(), "" + offset, "" + items.length));
         }
 
         refine();
 
+    }
+
+    /**
+     * Column headers are case-insensitive and MUST be unique within a section.
+     */
+    private void checkDuplicateHeaders() throws MZTabException {
+        Set<String> seen = new HashSet<>();
+        for (int i = 1; i < items.length; i++) {
+            String header = items[i].trim();
+            if (!seen.add(header.toLowerCase(Locale.ROOT))) {
+                throw new MZTabException(new MZTabError(LogicalErrorType.DuplicateColumnHeader, lineNumber, header, section.getName()));
+            }
+        }
     }
 
     /**
@@ -131,26 +153,17 @@ public abstract class MZTabHeaderLineParser extends MZTabLineParser {
     }
 
     /**
-     * <p>fromIndexToOrder.</p>
-     *
-     * @param index a {@link java.lang.Integer} object.
-     * @return a {@link java.lang.String} object.
-     */
-    protected String fromIndexToOrder(Integer index) {
-        return String.format("%02d", index);
-    }
-
-    /**
      * Additional columns can be added to the end of the protein table. These column headers MUST start with the prefix "opt_".
      * Column names MUST only contain the following characters: 'A'-'Z', 'a'-'z', '0'-'9', '_', '-', '[', ']', and ':'.
-     * 
+     *
      * the format: opt_{IndexedElement[id]}_{value}. Spaces within the parameter's name MUST be replaced by '_'.
      *
      * @param nameLabel a {@link java.lang.String} object.
+     * @param order the column's 1-based physical header position.
      * @return a boolean.
      * @throws uk.ac.ebi.pride.jmztab2.utils.errors.MZTabException if any structural or logical errors are encountered that prohibit further processing.
      */
-    protected boolean checkOptColumnName(String nameLabel) throws MZTabException {
+    protected boolean checkOptColumnName(String nameLabel, int order) throws MZTabException {
         nameLabel = nameLabel.trim();
 
         String regexp = MZTabConstants.REGEX_OPT_COLUMN_NAME;
@@ -174,9 +187,9 @@ public abstract class MZTabHeaderLineParser extends MZTabLineParser {
 
             if (object_id.contains(MZTabConstants.GLOBAL)) {
                 if (param == null) {
-                    factory.addOptionalColumn(value, dataType);
+                    factory.addOptionalColumn(value, dataType, order);
                 } else {
-                    factory.addOptionalColumn(param, dataType);
+                    factory.addOptionalColumn(param, dataType, order);
                 }
             } else {
                 id = parseIndex(nameLabel, matcher.group(3));
@@ -188,9 +201,9 @@ public abstract class MZTabHeaderLineParser extends MZTabLineParser {
                         error = new MZTabError(LogicalErrorType.AssayNotDefined, lineNumber, nameLabel);
                         throw new MZTabException(error);
                     } else if (param == null) {
-                        factory.addOptionalColumn(element, value, dataType);
+                        factory.addOptionalColumn(element, value, dataType, order);
                     } else {
-                        factory.addOptionalColumn(element, param, dataType);
+                        factory.addOptionalColumn(element, param, dataType, order);
                     }
                 } else if (object_id.contains(Metadata.JSON_PROPERTY_STUDY_VARIABLE)) {
                     StudyVariable element = context.getStudyVariableMap().get(id);
@@ -199,9 +212,9 @@ public abstract class MZTabHeaderLineParser extends MZTabLineParser {
                         error = new MZTabError(LogicalErrorType.StudyVariableNotDefined, lineNumber, nameLabel);
                         throw new MZTabException(error);
                     } else if (param == null) {
-                        factory.addOptionalColumn(element, value, dataType);
+                        factory.addOptionalColumn(element, value, dataType, order);
                     } else {
-                        factory.addOptionalColumn(element, param, dataType);
+                        factory.addOptionalColumn(element, param, dataType, order);
                     }
                 } else if (object_id.contains(Metadata.JSON_PROPERTY_MS_RUN)) {
                     // not found ms_run_id in metadata.
@@ -210,9 +223,9 @@ public abstract class MZTabHeaderLineParser extends MZTabLineParser {
                         error = new MZTabError(LogicalErrorType.MsRunNotDefined, lineNumber, nameLabel);
                         throw new MZTabException(error);
                     } else if (param == null) {
-                        factory.addOptionalColumn(element, value, dataType);
+                        factory.addOptionalColumn(element, value, dataType, order);
                     } else {
-                        factory.addOptionalColumn(element, param, dataType);
+                        factory.addOptionalColumn(element, param, dataType, order);
                     }
                 }
             }
@@ -257,7 +270,7 @@ public abstract class MZTabHeaderLineParser extends MZTabLineParser {
      * another is "decoy peptide" (MS:1002217), the data type is Boolean (0/1). Besides them, "opt_" start optional
      * column data type is String.
      *
-     * @see #checkOptColumnName(String)
+     * @see #checkOptColumnName(String, int)
      */
     private Class getDataType(Parameter param) {
         Class dataType;
@@ -281,11 +294,11 @@ public abstract class MZTabHeaderLineParser extends MZTabLineParser {
      * <p>checkAbundanceColumns.</p>
      *
      * @param offset a int.
-     * @param order a {@link java.lang.String} object.
+     * @param order the column's 1-based physical header position.
      * @return a int.
      * @throws uk.ac.ebi.pride.jmztab2.utils.errors.MZTabException if any structural or logical errors are encountered that prohibit further processing.
      */
-    protected int checkAbundanceColumns(int offset, String order) throws MZTabException {
+    protected int checkAbundanceColumns(int offset, int order) throws MZTabException {
         String headerString = items[offset];
         if (headerString.contains(SmallMoleculeSummary.JSON_PROPERTY_ABUNDANCE_ASSAY)) {
             checkAbundanceAssayColumn(headerString, order);
@@ -326,7 +339,7 @@ public abstract class MZTabHeaderLineParser extends MZTabLineParser {
         }
     }
 
-    private void checkAbundanceAssayColumn(String abundanceHeader, String order) throws MZTabException {
+    private void checkAbundanceAssayColumn(String abundanceHeader, int order) throws MZTabException {
         String valueLabel = checkAbundanceSection(abundanceHeader);
 
         Pattern pattern = Pattern.compile(MZTabConstants.REGEX_ABUNDANCE_ASSAY_COLUMN_NAME);
@@ -348,7 +361,7 @@ public abstract class MZTabHeaderLineParser extends MZTabLineParser {
 
 
     private void checkAbundanceStudyVariableColumns(String header,
-                                                    String order) throws MZTabException {
+                                                    int order) throws MZTabException {
         header = header.trim().toLowerCase();
 
         if (!header.contains(SmallMoleculeSummary.JSON_PROPERTY_ABUNDANCE_STUDY_VARIABLE
@@ -358,7 +371,7 @@ public abstract class MZTabHeaderLineParser extends MZTabLineParser {
         } else {
             StudyVariable abundanceStudyVariable = checkAbundanceStudyVariableColumn(header);
 
-            //adds both abundance_study_variable and abundance_coeffvar_study_variable columns
+            //adds one column: abundance_study_variable[n] or abundance_variation_study_variable[n], depending on the header
             factory.addAbundanceOptionalColumn(abundanceStudyVariable, checkAbundanceSection(header), order);
 
         }

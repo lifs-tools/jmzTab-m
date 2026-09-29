@@ -225,12 +225,41 @@ and
 for the io module, where `jmztab.version` is the version of jmztabm you wish to use, e.g. for a `SNAPSHOT` version:
 
   <properties>
-    <jmztabm.version>1.0.7-SNAPSHOT</jmztabm.version>
+    <jmztabm.version>2.1.0-SNAPSHOT</jmztabm.version>
   </properties>
 
 as defined in the properties section of your pom file.
 
 The SNAPSHOTS are also available from https://oss.sonatype.org/content/repositories/snapshots/org/lifstools/mztab/.
+
+== Version compatibility
+
+Starting with 2.1, the jmzTab-m `major.minor` version follows the version of the mzTab-M specification it implements. Patch releases contain only fixes and additive changes; breaking API changes are batched into the next specification-aligned release.
+
+[cols="1,1"]
+|===
+|jmzTab-m |mzTab-M specification
+
+|1.0.x
+|2.0.0-M
+
+|2.1.x
+|2.1.0-M
+|===
+
+== Migrating from 1.0.x to 2.1
+
+jmzTab-m 2.1 replaces the string-based logical column positions inherited from jmzTab 1.0, which limited the number of columns per table section (see https://github.com/lifs-tools/jmzTab-m/issues/187[#187]). Command-line users are not affected. If you use the column model (`uk.ac.ebi.pride.jmztab2.model`) directly:
+
+* `IMZTabColumn.getLogicPosition()` is now `getPosition()` and returns a `ColumnPosition(order, index, elementId)` record, compared numerically. `setLogicPosition(String)` was removed; the position is derived from order, index and element.
+* `getOrder()` / `setOrder(...)` use `int` instead of `String`. Stable column orders are `1..n`.
+* `MZTabColumnFactory` maps are keyed by `ColumnPosition` and are unmodifiable. Register columns via `addStableColumn(column, order)`, `addOptionalColumn(..., order)`, `addAbundanceOptionalColumn(..., order)` or `addIdConfidenceMeasureColumn(..., order)`; the variants without `order` append at `nextOrder()`. All `add...` methods return the assigned `ColumnPosition` and throw `IllegalArgumentException` if the position or header is already taken. `MZTabColumnFactory` also gained `nextOrder()` and `getAbundanceColumnMapping()`.
+* `AbundanceColumn.createOptionalColumns(Section, StudyVariable, String, String)` is now `createOptionalColumn(Section, StudyVariable, String, int)` and returns a single column. `OptionColumn` and `ParameterOptionColumn` constructors take the column's own order instead of the previous column's offset.
+* `AbundanceColumn.createOptionalColumn(Section, Assay, int)` keeps its signature, but the `int` argument is now the column's own order (previously an offset; the column was placed at `offset + 1`).
+* `AbundanceColumn.createOptionalColumns(Section, StudyVariable, int lastOrder)` still exists; it now places the study-variable and variation columns at `lastOrder + 1` and `lastOrder + 2` (previously `+2`/`+3`) and returns `SortedMap<ColumnPosition, MZTabColumn>`.
+* `id_confidence_measure[n]` columns created by `MZTabColumnFactory.addIdConfidenceMeasureColumn` now report `isOptional() == true` (previously `false`); they were already kept in the optional column mapping.
+* `PositionMapping` maps physical positions directly to `IMZTabColumn`; `reverse()` was removed.
+* Duplicate column headers in a table section are reported as the new logical error `DuplicateColumnHeader` (code 2062).
 
 == Using the API programmatically
 

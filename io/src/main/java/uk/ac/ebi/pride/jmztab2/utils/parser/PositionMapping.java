@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2018 Leibniz-Institut für Analytische Wissenschaften – ISAS – e.V..
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,17 +23,17 @@ import uk.ac.ebi.pride.jmztab2.model.IMZTabColumn;
 import uk.ac.ebi.pride.jmztab2.model.MZTabColumnFactory;
 
 /**
- * Create and maintain a couple of mappings between physical position and logical position.
- * Physical position: Integer, the position of mzTab file.
- * Logical position: String, the internal order of specification.
+ * Maps the physical position of each column in a header line to its column
+ * definition in the {@link MZTabColumnFactory}.
  *
  * @author qingwei
+ * @author nilshoffmann
  * @since 16/10/13
- * 
+ *
  */
 public final class PositionMapping {
-    // physicalPosition <--> logicalPosition
-    private final SortedMap<Integer, String> mappings = new TreeMap<>();
+
+    private final SortedMap<Integer, IMZTabColumn> mappings = new TreeMap<>();
 
     /**
      * <p>Constructor for PositionMapping.</p>
@@ -52,12 +52,10 @@ public final class PositionMapping {
      * @param headerList an array of {@link java.lang.String} objects.
      */
     public PositionMapping(MZTabColumnFactory factory, String[] headerList) {
-        String header;
         for (int physicalPosition = 0; physicalPosition < headerList.length; physicalPosition++) {
-            header = headerList[physicalPosition];
-            IMZTabColumn column = factory.findColumnByHeader(header);
+            IMZTabColumn column = factory.findColumnByHeader(headerList[physicalPosition]);
             if (column != null) {
-                put(physicalPosition, column.getLogicPosition());
+                put(physicalPosition, column);
             }
         }
     }
@@ -65,11 +63,11 @@ public final class PositionMapping {
     /**
      * <p>put.</p>
      *
-     * @param physicalPosition a {@link java.lang.Integer} object.
-     * @param logicalPosition a {@link java.lang.String} object.
+     * @param physicalPosition the 0-based index in the split header line.
+     * @param column the column at that position.
      */
-    public void put(Integer physicalPosition, String logicalPosition) {
-        this.mappings.put(physicalPosition, logicalPosition);
+    public void put(Integer physicalPosition, IMZTabColumn column) {
+        this.mappings.put(physicalPosition, column);
     }
 
     /**
@@ -112,37 +110,19 @@ public final class PositionMapping {
     /**
      * <p>values.</p>
      *
-     * @return a {@link java.util.Collection} object.
+     * @return the mapped columns in physical order.
      */
-    public Collection<String> values() {
+    public Collection<IMZTabColumn> values() {
         return mappings.values();
     }
 
     /**
      * <p>get.</p>
      *
-     * @param key a {@link java.lang.Integer} object.
-     * @return a {@link java.lang.String} object.
+     * @param key the 0-based index in the split header line.
+     * @return the column at that position, or null.
      */
-    public String get(Integer key) {
+    public IMZTabColumn get(Integer key) {
         return mappings.get(key);
-    }
-
-    /**
-     * Exchange key and value to "LogicalPosition, PhysicalPosition". This method used to simply the locate
-     * operation by logical position to physical position.
-     *
-     * @return a {@link java.util.SortedMap} object.
-     */
-    public SortedMap<String, Integer> reverse() {
-        SortedMap<String, Integer> reverseMappings = new TreeMap<>();
-
-        String logicalPosition;
-        for (Integer physicalPosition : mappings.keySet()) {
-            logicalPosition = mappings.get(physicalPosition);
-            reverseMappings.put(logicalPosition, physicalPosition);
-        }
-
-        return reverseMappings;
     }
 }

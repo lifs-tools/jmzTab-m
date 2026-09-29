@@ -43,10 +43,10 @@ public class ParameterOptionColumn extends OptionColumn {
      * @param element SHOULD not be null.
      * @param param SHOULD not be null.
      * @param columnType SHOULD not be null.
-     * @param offset SHOULD be non-negative integer.
+     * @param order the column's order within its section, e.g. its 1-based header position.
      */
-    public ParameterOptionColumn(Object element, Parameter param, Class columnType, int offset) {
-        super(element, CV + param.getCvAccession() + "_" + param.getName().replaceAll(" ", "_"), columnType, offset);
+    public ParameterOptionColumn(Object element, Parameter param, Class columnType, int order) {
+        super(element, CV + param.getCvAccession() + "_" + param.getName().replaceAll(" ", "_"), columnType, order);
         this.param = param;
     }
 
