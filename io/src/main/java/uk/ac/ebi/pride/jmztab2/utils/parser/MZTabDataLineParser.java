@@ -68,9 +68,8 @@ public abstract class MZTabDataLineParser<T> extends MZTabLineParser {
 
     protected MZTabColumnFactory factory;
     protected PositionMapping positionMapping;
-    protected SortedMap<String, Integer> exchangeMapping; // reverse the key and value of positionMapping.
 
-    protected SortedMap<Integer, IMZTabColumn> mapping;   // logical position --> offset
+    protected SortedMap<Integer, IMZTabColumn> mapping;   // offset --> column
     protected Metadata metadata;
 
     /**
@@ -115,7 +114,6 @@ public abstract class MZTabDataLineParser<T> extends MZTabLineParser {
         this.factory = factory;
 
         this.positionMapping = positionMapping;
-        this.exchangeMapping = positionMapping.reverse();
         this.mapping = factory.getOffsetColumnsMap();
 
         if (metadata == null) {

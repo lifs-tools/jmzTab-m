@@ -40,12 +40,12 @@ public class SmallMoleculeFeatureColumn implements ISmallMoleculeFeatureColumn {
     private final IMZTabColumn column;
 
     SmallMoleculeFeatureColumn(String name, Class dataType, boolean optional,
-        String order) {
+        int order) {
         this.column = new MZTabColumn(name, dataType, optional, order);
     }
 
     SmallMoleculeFeatureColumn(String name, Class dataType, boolean optional,
-        String order, Integer id) {
+        int order, Integer id) {
         this.column = new MZTabColumn(name, dataType, optional, order, id);
     }
 
@@ -53,34 +53,34 @@ public class SmallMoleculeFeatureColumn implements ISmallMoleculeFeatureColumn {
      * Stable {@link SmallMoleculeFeatureColumn} definition templates.
      */
     public static enum Stable {
-        SMF_ID(SmallMoleculeFeature.JSON_PROPERTY_SMF_ID.toUpperCase(), Integer.class, false, "01"),
-        SME_ID_REFS(SmallMoleculeFeature.JSON_PROPERTY_SME_ID_REFS.toUpperCase(), StringList.class, true, "02"),
+        SMF_ID(SmallMoleculeFeature.JSON_PROPERTY_SMF_ID.toUpperCase(), Integer.class, false, 1),
+        SME_ID_REFS(SmallMoleculeFeature.JSON_PROPERTY_SME_ID_REFS.toUpperCase(), StringList.class, true, 2),
         SME_ID_REF_AMBIGUITY_CODE("SME_ID_REF_ambiguity_code", Integer.class,
-            true, "03"),
+            true, 3),
         ADDUCT_ION(
-            SmallMoleculeFeature.JSON_PROPERTY_ADDUCT_ION, String.class, true, "04"),
-        ISOTOPOMER(SmallMoleculeFeature.JSON_PROPERTY_ISOTOPOMER, String.class, true, "05"),
+            SmallMoleculeFeature.JSON_PROPERTY_ADDUCT_ION, String.class, true, 4),
+        ISOTOPOMER(SmallMoleculeFeature.JSON_PROPERTY_ISOTOPOMER, String.class, true, 5),
         EXP_MASS_TO_CHARGE(
-            SmallMoleculeFeature.JSON_PROPERTY_EXP_MASS_TO_CHARGE, Double.class, false, "06"),
-        CHARGE(SmallMoleculeFeature.JSON_PROPERTY_CHARGE, Integer.class, true, "07"),
+            SmallMoleculeFeature.JSON_PROPERTY_EXP_MASS_TO_CHARGE, Double.class, false, 6),
+        CHARGE(SmallMoleculeFeature.JSON_PROPERTY_CHARGE, Integer.class, true, 7),
         RETENTION_TIME_IN_SECONDS(SmallMoleculeFeature.JSON_PROPERTY_RETENTION_TIME_IN_SECONDS, Double.class, true,
-            "08"),
+            8),
         RETENTION_TIME_IN_SECONDS_START(SmallMoleculeFeature.JSON_PROPERTY_RETENTION_TIME_IN_SECONDS_START,
-            Double.class, true, "09"),
+            Double.class, true, 9),
         RETENTION_TIME_IN_SECONDS_END(SmallMoleculeFeature.JSON_PROPERTY_RETENTION_TIME_IN_SECONDS_END, Double.class,
-            true, "10");
+            true, 10);
 
         private final ISmallMoleculeFeatureColumn column;
 
         private Stable(String name, Class columnType, boolean optional,
-            String order) {
+            int order) {
             this.column = new SmallMoleculeFeatureColumn(name, columnType,
                 optional,
                 order);
         }
 
         private Stable(String name, Class columnType, boolean optional,
-            String order, Integer id) {
+            int order, Integer id) {
             this.column = new SmallMoleculeFeatureColumn(name, columnType,
                 optional,
                 order, id);
@@ -179,8 +179,8 @@ public class SmallMoleculeFeatureColumn implements ISmallMoleculeFeatureColumn {
      * {@inheritDoc}
      */
     @Override
-    public String getLogicPosition() {
-        return this.column.getLogicPosition();
+    public ColumnPosition getPosition() {
+        return this.column.getPosition();
     }
 
     /**
@@ -195,7 +195,7 @@ public class SmallMoleculeFeatureColumn implements ISmallMoleculeFeatureColumn {
      * {@inheritDoc}
      */
     @Override
-    public String getOrder() {
+    public int getOrder() {
         return this.column.getOrder();
     }
 
@@ -219,15 +219,7 @@ public class SmallMoleculeFeatureColumn implements ISmallMoleculeFeatureColumn {
      * {@inheritDoc}
      */
     @Override
-    public void setLogicPosition(String logicPosition) {
-        this.column.setLogicPosition(logicPosition);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setOrder(String order) {
+    public void setOrder(int order) {
         this.column.setOrder(order);
     }
 

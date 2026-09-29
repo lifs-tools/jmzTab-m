@@ -41,12 +41,12 @@ public class SmallMoleculeColumn implements ISmallMoleculeColumn {
     private final IMZTabColumn column;
 
     SmallMoleculeColumn(String name, Class dataType, boolean optional,
-        String order) {
+        int order) {
         this.column = new MZTabColumn(name, dataType, optional, order);
     }
 
     SmallMoleculeColumn(String name, Class dataType, boolean optional,
-        String order, Integer id) {
+        int order, Integer id) {
         this.column = new MZTabColumn(name, dataType, optional, order, id);
     }
 
@@ -54,39 +54,39 @@ public class SmallMoleculeColumn implements ISmallMoleculeColumn {
      * Stable {@link SmallMoleculeColumn} definition templates.
      */
     public static enum Stable {
-        SML_ID(SmallMoleculeSummary.JSON_PROPERTY_SML_ID.toUpperCase(), String.class, false, "01"),
-        SMF_ID_REFS(SmallMoleculeSummary.JSON_PROPERTY_SMF_ID_REFS.toUpperCase(), SplitList.class, false, "02"),
-        DATABASE_IDENTIFIER(SmallMoleculeSummary.JSON_PROPERTY_DATABASE_IDENTIFIER, SplitList.class, false, "03"),
-        CHEMICAL_FORMULA(SmallMoleculeSummary.JSON_PROPERTY_CHEMICAL_FORMULA, String.class, false, "04"),
+        SML_ID(SmallMoleculeSummary.JSON_PROPERTY_SML_ID.toUpperCase(), String.class, false, 1),
+        SMF_ID_REFS(SmallMoleculeSummary.JSON_PROPERTY_SMF_ID_REFS.toUpperCase(), SplitList.class, false, 2),
+        DATABASE_IDENTIFIER(SmallMoleculeSummary.JSON_PROPERTY_DATABASE_IDENTIFIER, SplitList.class, false, 3),
+        CHEMICAL_FORMULA(SmallMoleculeSummary.JSON_PROPERTY_CHEMICAL_FORMULA, String.class, false, 4),
         SMILES(SmallMoleculeSummary.JSON_PROPERTY_SMILES,
-            SplitList.class, false, "05"),
+            SplitList.class, false, 5),
         INCHI(SmallMoleculeSummary.JSON_PROPERTY_INCHI,
-            SplitList.class, false, "06"),
+            SplitList.class, false, 6),
         CHEMICAL_NAME(
-            SmallMoleculeSummary.JSON_PROPERTY_CHEMICAL_NAME, SplitList.class, false, "07"),
+            SmallMoleculeSummary.JSON_PROPERTY_CHEMICAL_NAME, SplitList.class, false, 7),
         URI(SmallMoleculeSummary.JSON_PROPERTY_URI,
-            java.net.URI.class, false, "08"),
+            java.net.URI.class, false, 8),
         THEOR_NEUTRAL_MASS(
-            SmallMoleculeSummary.JSON_PROPERTY_THEORETICAL_NEUTRAL_MASS, Double.class, false, "09"),
+            SmallMoleculeSummary.JSON_PROPERTY_THEORETICAL_NEUTRAL_MASS, Double.class, false, 9),
         ADDUCT_IONS(
-            SmallMoleculeSummary.JSON_PROPERTY_ADDUCT_IONS, SplitList.class, false, "10"),
+            SmallMoleculeSummary.JSON_PROPERTY_ADDUCT_IONS, SplitList.class, false, 10),
         RELIABILITY(
-            SmallMoleculeSummary.JSON_PROPERTY_RELIABILITY, String.class, false, "11"),
+            SmallMoleculeSummary.JSON_PROPERTY_RELIABILITY, String.class, false, 11),
         BEST_ID_CONFIDENCE_MEASURE(
-            SmallMoleculeSummary.JSON_PROPERTY_BEST_ID_CONFIDENCE_MEASURE, Parameter.class, false, "12"),
+            SmallMoleculeSummary.JSON_PROPERTY_BEST_ID_CONFIDENCE_MEASURE, Parameter.class, false, 12),
         BEST_ID_CONFIDENCE_VALUE(
-            SmallMoleculeSummary.JSON_PROPERTY_BEST_ID_CONFIDENCE_VALUE, Double.class, false, "13");
+            SmallMoleculeSummary.JSON_PROPERTY_BEST_ID_CONFIDENCE_VALUE, Double.class, false, 13);
 
         private final ISmallMoleculeColumn column;
 
         private Stable(String name, Class columnType, boolean optional,
-            String order) {
+            int order) {
             this.column = new SmallMoleculeColumn(name, columnType, optional,
                 order);
         }
 
         private Stable(String name, Class columnType, boolean optional,
-            String order, Integer id) {
+            int order, Integer id) {
             this.column = new SmallMoleculeColumn(name, columnType, optional,
                 order, id);
         }
@@ -184,8 +184,8 @@ public class SmallMoleculeColumn implements ISmallMoleculeColumn {
      * {@inheritDoc}
      */
     @Override
-    public String getLogicPosition() {
-        return this.column.getLogicPosition();
+    public ColumnPosition getPosition() {
+        return this.column.getPosition();
     }
 
     /**
@@ -200,7 +200,7 @@ public class SmallMoleculeColumn implements ISmallMoleculeColumn {
      * {@inheritDoc}
      */
     @Override
-    public String getOrder() {
+    public int getOrder() {
         return this.column.getOrder();
     }
 
@@ -224,15 +224,7 @@ public class SmallMoleculeColumn implements ISmallMoleculeColumn {
      * {@inheritDoc}
      */
     @Override
-    public void setLogicPosition(String logicPosition) {
-        this.column.setLogicPosition(logicPosition);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setOrder(String order) {
+    public void setOrder(int order) {
         this.column.setOrder(order);
     }
 
