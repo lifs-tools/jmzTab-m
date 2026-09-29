@@ -104,6 +104,12 @@ public class MZTabColumnFactory {
     /**
      * Stable (non-optional) columns, keyed by position.
      *
+     * The returned view is unmodifiable. Registered columns themselves must
+     * not be mutated (e.g. via {@code setOrder}, {@code setElement} or
+     * {@code setHeader}), since that would desynchronize the column's
+     * position from this map's keys and from the header index used for
+     * lookups.
+     *
      * @return an unmodifiable view.
      */
     public SortedMap<ColumnPosition, IMZTabColumn> getStableColumnMapping() {
@@ -114,6 +120,12 @@ public class MZTabColumnFactory {
      * Optional columns (abundance, opt_, cv opt_, id_confidence_measure and
      * stable columns flagged optional), keyed by position.
      *
+     * The returned view is unmodifiable. Registered columns themselves must
+     * not be mutated (e.g. via {@code setOrder}, {@code setElement} or
+     * {@code setHeader}), since that would desynchronize the column's
+     * position from this map's keys and from the header index used for
+     * lookups.
+     *
      * @return an unmodifiable view.
      */
     public SortedMap<ColumnPosition, IMZTabColumn> getOptionalColumnMapping() {
@@ -123,6 +135,12 @@ public class MZTabColumnFactory {
     /**
      * Abundance columns, keyed by position.
      *
+     * The returned view is unmodifiable. Registered columns themselves must
+     * not be mutated (e.g. via {@code setOrder}, {@code setElement} or
+     * {@code setHeader}), since that would desynchronize the column's
+     * position from this map's keys and from the header index used for
+     * lookups.
+     *
      * @return an unmodifiable view.
      */
     public SortedMap<ColumnPosition, IMZTabColumn> getAbundanceColumnMapping() {
@@ -131,6 +149,12 @@ public class MZTabColumnFactory {
 
     /**
      * All columns, keyed by position.
+     *
+     * The returned view is unmodifiable. Registered columns themselves must
+     * not be mutated (e.g. via {@code setOrder}, {@code setElement} or
+     * {@code setHeader}), since that would desynchronize the column's
+     * position from this map's keys and from the header index used for
+     * lookups.
      *
      * @return an unmodifiable view.
      */
@@ -172,6 +196,11 @@ public class MZTabColumnFactory {
 
     /**
      * Register a stable column at the given order.
+     *
+     * NOTICE: the column's order is set to {@code order} before it is
+     * registered. If registration then fails with
+     * {@link IllegalArgumentException}, the passed-in {@code column} keeps
+     * that new order regardless.
      *
      * @param column a stable column instance, e.g. from
      * {@link SmallMoleculeColumn.Stable#columnFor(String)}.

@@ -40,12 +40,12 @@ import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabException;
 
 /**
  * A couple of common method used to parse a header line into {@link uk.ac.ebi.pride.jmztab2.model.MZTabColumnFactory} structure.
- * 
- * NOTICE: {@link uk.ac.ebi.pride.jmztab2.model.MZTabColumnFactory} maintain a couple of {@link MZTabColumn} which have internal logical
- * position and order. In physical mzTab file, we allow user not obey this logical position organized way,
- * and provide their date with own order. In order to distinguish them, we use physical position (a positive
- * integer) to record the column location in mzTab file. And use {@link uk.ac.ebi.pride.jmztab2.utils.parser.PositionMapping} structure the maintain
- * the mapping between them.
+ *
+ * NOTICE: {@link uk.ac.ebi.pride.jmztab2.model.MZTabColumnFactory} registers a couple of {@link MZTabColumn} keyed by
+ * {@link uk.ac.ebi.pride.jmztab2.model.ColumnPosition}. When parsing a header line, the column's physical (1-based)
+ * position in the header is used directly as its order, so columns are registered in the same order they appear
+ * in the file. {@link uk.ac.ebi.pride.jmztab2.utils.parser.PositionMapping} is then used to map those physical
+ * positions to the registered columns when parsing subsequent data lines.
  *
  * @author qingwei
  * @see SMHLineParser
@@ -371,7 +371,7 @@ public abstract class MZTabHeaderLineParser extends MZTabLineParser {
         } else {
             StudyVariable abundanceStudyVariable = checkAbundanceStudyVariableColumn(header);
 
-            //adds both abundance_study_variable and abundance_coeffvar_study_variable columns
+            //adds one column: abundance_study_variable[n] or abundance_variation_study_variable[n], depending on the header
             factory.addAbundanceOptionalColumn(abundanceStudyVariable, checkAbundanceSection(header), order);
 
         }

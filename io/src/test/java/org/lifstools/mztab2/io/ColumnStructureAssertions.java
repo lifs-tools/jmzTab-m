@@ -49,13 +49,32 @@ public final class ColumnStructureAssertions {
     }
 
     public static MzTab parseWithoutColumnErrors(Path file) throws IOException {
+        return parseWithoutColumnErrors(file, false);
+    }
+
+    /**
+     * Parses {@code file} and asserts either that no column-structure errors
+     * were reported ({@code strict == false}), or that the parser's Error
+     * level error list is empty entirely ({@code strict == true}).
+     *
+     * @param file the mzTab file to parse.
+     * @param strict if {@code true}, require the parser's error list to be
+     * empty rather than only free of column-structure errors.
+     * @return the parsed {@link MzTab}.
+     */
+    public static MzTab parseWithoutColumnErrors(Path file, boolean strict) throws IOException {
         MzTabFileParser parser = new MzTabFileParser(file.toFile());
         ByteArrayOutputStream log = new ByteArrayOutputStream();
         MZTabErrorList errors = parser.parse(log, MZTabErrorType.Level.Error, 100_000);
-        List<MZTabError> structural = errors.getErrorList().stream()
-            .filter(e -> COLUMN_STRUCTURE_ERRORS.contains(e.getType()))
-            .toList();
-        assertTrue(structural.isEmpty(), () -> "Column structure errors: " + structural);
+        if (strict) {
+            List<MZTabError> all = errors.getErrorList();
+            assertTrue(all.isEmpty(), () -> "Errors: " + all);
+        } else {
+            List<MZTabError> structural = errors.getErrorList().stream()
+                .filter(e -> COLUMN_STRUCTURE_ERRORS.contains(e.getType()))
+                .toList();
+            assertTrue(structural.isEmpty(), () -> "Column structure errors: " + structural);
+        }
         MzTab mzTab = parser.getMZTabFile();
         assertNotNull(mzTab, () -> "Parsing aborted:\n" + log.toString(StandardCharsets.UTF_8));
         return mzTab;

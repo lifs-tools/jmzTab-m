@@ -18,13 +18,17 @@ package uk.ac.ebi.pride.jmztab2.utils.parser;
 import java.util.ArrayList;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 import org.lifstools.mztab2.model.Assay;
 import org.lifstools.mztab2.model.Metadata;
 import org.lifstools.mztab2.model.Parameter;
+import uk.ac.ebi.pride.jmztab2.model.IMZTabColumn;
 import uk.ac.ebi.pride.jmztab2.model.MZTabColumnFactory;
+import uk.ac.ebi.pride.jmztab2.model.OptionColumn;
 import uk.ac.ebi.pride.jmztab2.model.Section;
 import uk.ac.ebi.pride.jmztab2.utils.errors.LogicalErrorType;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorList;
@@ -41,6 +45,11 @@ public class HeaderLineParserTest {
         "database_identifier", "chemical_formula", "smiles", "inchi", "chemical_name",
         "uri", "derivatized_form", "adduct_ion", "exp_mass_to_charge", "charge",
         "theoretical_mass_to_charge", "spectra_ref", "identification_method", "ms_level");
+
+    private static final List<String> SFH_STABLE = List.of("SMF_ID", "SME_ID_REFS",
+        "SME_ID_REF_ambiguity_code", "adduct_ion", "isotopomer", "exp_mass_to_charge",
+        "charge", "retention_time_in_seconds", "retention_time_in_seconds_start",
+        "retention_time_in_seconds_end");
 
     private static String header(String prefix, List<String> stable, String... extra) {
         List<String> cells = new ArrayList<>();
@@ -116,5 +125,19 @@ public class HeaderLineParserTest {
             parser.parse(1, header("SMH", SMH_STABLE), new MZTabErrorList()));
         assertEquals(LogicalErrorType.HeaderNotValid, e.getError().getType());
         assertTrue(e.getError().getMessage().contains("opt_global_b"), e.getError().getMessage());
+    }
+
+    @Test
+    public void optColumnHeaderContainingAbundanceIsParsedAsOptionColumn() throws MZTabException {
+        Metadata metadata = new Metadata();
+        metadata.setSmallMoleculeFeatureQuantificationUnit(new Parameter().name("qty"));
+        SFHLineParser parser = new SFHLineParser(new MZTabParserContext(), metadata);
+
+        parser.parse(1, header("SFH", SFH_STABLE, "opt_global_abundance_raw"), new MZTabErrorList());
+
+        IMZTabColumn column = parser.getFactory().findColumnByHeader("opt_global_abundance_raw");
+        assertNotNull(column, "opt_global_abundance_raw should have been registered as a column");
+        assertInstanceOf(OptionColumn.class, column,
+            () -> "Expected opt_global_abundance_raw to be parsed as an OptionColumn, but was " + column.getClass());
     }
 }

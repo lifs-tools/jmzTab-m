@@ -42,7 +42,7 @@ public class Issue187XcmsExampleTest {
     @Test
     public void parsesOptColumnsAfter213AssayColumns() throws IOException {
         File file = new File(EXTRACT_FILES.getBaseDir(), XCMS_MSIO_MTBLS4381_ONLY_SMF_TRIMMED.fileName());
-        MzTab mzTab = ColumnStructureAssertions.parseWithoutColumnErrors(file.toPath());
+        MzTab mzTab = ColumnStructureAssertions.parseWithoutColumnErrors(file.toPath(), true);
         assertEquals(25, mzTab.getSmallMoleculeFeature().size());
 
         String[] firstRow;
