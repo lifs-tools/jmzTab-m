@@ -59,7 +59,7 @@ jobs:
       run: ./mvnw --batch-mode -DskipTests -DskipITs -Pgithub-snapshot deploy
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    - uses: jfrog/setup-jfrog-cli@v4
+    - uses: jfrog/setup-jfrog-cli@v5
       if: github.event_name == 'push'
     - name: maven build
       if: github.event_name == 'push'
