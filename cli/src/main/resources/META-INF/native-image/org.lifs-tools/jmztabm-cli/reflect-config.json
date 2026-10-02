@@ -250,5 +250,19 @@
     "allPublicMethods": true,
     "allDeclaredFields": true,
     "allPublicFields": true
+  },
+  {
+    "name": "org.lifstools.mztab2.model.MzTabProfile",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true,
+    "allDeclaredClasses": true
+  },
+  {
+    "name": "org.lifstools.mztab2.model.StudyVariableGroup",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true,
+    "allDeclaredClasses": true
   }
 ]

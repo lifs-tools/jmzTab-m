@@ -130,9 +130,50 @@ jobs:
           path: cli/target/${{ matrix.binary }}
           if-no-files-found: error
 
+  parity:
+    name: Jar/native parity
+    # Native images can silently lose behaviour (e.g. through missing reflection
+    # metadata). Compare both builds on all example files before publishing.
+    needs: [build, native]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          lfs: 'true'
+      - name: Check out mzTab-M example files
+        uses: actions/checkout@v6
+        with:
+          repository: HUPO-PSI/mzTab-M
+          path: mztab-m-spec
+          sparse-checkout: examples
+      - name: Set up JDK 24
+        uses: actions/setup-java@v5
+        with:
+          java-version: '24'
+          distribution: 'temurin'
+      - name: Download CLI distribution
+        uses: actions/download-artifact@v4
+        with:
+          name: jmztabm-cli-dist
+          path: dist
+      - name: Download native binary
+        uses: actions/download-artifact@v4
+        with:
+          name: jmztabm-validator-amd64-linux
+          path: native
+      - name: Compare jar and native validator
+        env:
+          KNOWN_DIFFERENCES: .github/parity-known-differences.txt
+        run: |
+          unzip -q dist/jmztabm-cli-*-bin.zip -d dist
+          # Artifacts do not preserve file permissions.
+          chmod +x native/jmztabm-validator
+          .github/scripts/compare-jar-native.sh dist/jmztabm-cli/jmztabm-cli-*.jar native/jmztabm-validator \
+            test-utils/src/main/resources/metabolomics mztab-m-spec/examples
+
   publish-dev:
     name: Publish dev-latest pre-release
-    needs: [build, native]
+    needs: [build, native, parity]
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     permissions:
