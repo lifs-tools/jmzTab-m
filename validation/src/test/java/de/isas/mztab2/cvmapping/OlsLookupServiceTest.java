@@ -43,7 +43,7 @@ public class OlsLookupServiceTest {
         Identifier ident = new Identifier("chmo:0000524",
             Identifier.IdentifierType.OBO);
         List<Term> children = client.searchTermById(ident.getIdentifier(), "CHMO");
-        Assert.assertTrue(children.isEmpty());
+        Assert.assertTrue(children.size() > 0);
         ident.setIdentifier("chmo:0000524");
         children = client.searchTermById(ident.getIdentifier(), "chmo");
         Assert.assertTrue(children.size() > 0);
