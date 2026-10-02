@@ -4,10 +4,10 @@
     <parent>
         <artifactId>jmztabm</artifactId>
         <groupId>de.isas.mztab</groupId>
-        <version>1.0.6</version>
+        <version>1.0.7-SNAPSHOT</version>
     </parent>
     <artifactId>jmztabm-api</artifactId>
-    <version>1.0.6</version>
+    <version>1.0.7-SNAPSHOT</version>
     <packaging>jar</packaging>
     <properties>
         <swagger.api.spec>mzTab_m_swagger.yml</swagger.api.spec>
@@ -131,46 +131,6 @@
                     </execution>-->
                 </executions>
             </plugin>
-            <plugin>
-                <groupId>io.github.swagger2markup</groupId>
-                <artifactId>swagger2markup-maven-plugin</artifactId>
-                <version>${swagger2markup.version}</version>
-                <executions>
-                    <execution>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>convertSwagger2markup</goal>
-                        </goals>
-                        <configuration>
-                            <swaggerInput>${project.basedir}/src/main/resources/${swagger.api.spec}</swaggerInput>
-                            <outputDir>${project.build.directory}/generated-sources/mztab-adoc</outputDir>
-                            <config>
-                                <swagger2markup.markupLanguage>ASCIIDOC</swagger2markup.markupLanguage>
-                            </config>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <version>3.1.0</version>
-                <executions>
-                    <execution>
-                        <id>make-adoc-assembly</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                        <configuration>
-                            <descriptors>
-                                <descriptor>src/assembly/asciidoc-zip.xml</descriptor> <!-- path to the descriptor -->
-                            </descriptors>
-                            <finalName>mztab-api-adoc-${project.version}</finalName>
-                            <appendAssemblyId>true</appendAssemblyId>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
             <!--      <plugin>
               <groupId>org.owasp</groupId>
               <artifactId>dependency-check-maven</artifactId>
@@ -279,4 +239,55 @@
         </dependency>
     </dependencies>
     <description>The data model for the mzTab-M 2.0 data standard format for metabolomics.</description>
+    <profiles>
+        <!-- AsciiDoc API docs. swagger2markup's dependencies were only published
+             to the retired JCenter repository, so this is opt-in: -Papi-docs -->
+        <profile>
+            <id>api-docs</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>io.github.swagger2markup</groupId>
+                        <artifactId>swagger2markup-maven-plugin</artifactId>
+                        <version>${swagger2markup.version}</version>
+                        <executions>
+                            <execution>
+                                <phase>generate-sources</phase>
+                                <goals>
+                                    <goal>convertSwagger2markup</goal>
+                                </goals>
+                                <configuration>
+                                    <swaggerInput>${project.basedir}/src/main/resources/${swagger.api.spec}</swaggerInput>
+                                    <outputDir>${project.build.directory}/generated-sources/mztab-adoc</outputDir>
+                                    <config>
+                                        <swagger2markup.markupLanguage>ASCIIDOC</swagger2markup.markupLanguage>
+                                    </config>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <artifactId>maven-assembly-plugin</artifactId>
+                        <version>3.1.0</version>
+                        <executions>
+                            <execution>
+                                <id>make-adoc-assembly</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>single</goal>
+                                </goals>
+                                <configuration>
+                                    <descriptors>
+                                        <descriptor>src/assembly/asciidoc-zip.xml</descriptor> <!-- path to the descriptor -->
+                                    </descriptors>
+                                    <finalName>mztab-api-adoc-${project.version}</finalName>
+                                    <appendAssemblyId>true</appendAssemblyId>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
