@@ -17,6 +17,7 @@ package uk.ac.ebi.pride.jmztab2.utils.parser;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -26,11 +27,13 @@ import org.junit.jupiter.api.Test;
 import org.lifstools.mztab2.model.Assay;
 import org.lifstools.mztab2.model.Metadata;
 import org.lifstools.mztab2.model.Parameter;
+import org.lifstools.mztab2.model.StudyVariable;
 import uk.ac.ebi.pride.jmztab2.model.IMZTabColumn;
 import uk.ac.ebi.pride.jmztab2.model.MZTabColumnFactory;
 import uk.ac.ebi.pride.jmztab2.model.OptionColumn;
 import uk.ac.ebi.pride.jmztab2.model.Section;
 import uk.ac.ebi.pride.jmztab2.utils.errors.LogicalErrorType;
+import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabError;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorList;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabException;
 
@@ -139,5 +142,52 @@ public class HeaderLineParserTest {
         assertNotNull(column, "opt_global_abundance_raw should have been registered as a column");
         assertInstanceOf(OptionColumn.class, column,
             () -> "Expected opt_global_abundance_raw to be parsed as an OptionColumn, but was " + column.getClass());
+    }
+
+    private static List<String> notDefinedInHeader(MZTabErrorList errorList) {
+        return errorList.getErrorList().stream()
+            .filter(e -> e.getType() == LogicalErrorType.NotDefineInHeader)
+            .map(MZTabError::getMessage)
+            .collect(Collectors.toList());
+    }
+
+    @Test
+    public void allMissingSmlAbundanceColumnsAreReportedAssaysFirst() throws MZTabException {
+        MZTabParserContext context = new MZTabParserContext();
+        Metadata metadata = new Metadata();
+        metadata.setSmallMoleculeQuantificationUnit(new Parameter().name("qty"));
+        context.addAssay(metadata, new Assay().id(1).name("assay 1"));
+        context.addAssay(metadata, new Assay().id(2).name("assay 2"));
+        context.addStudyVariable(metadata, new StudyVariable().id(1).name("Group A"));
+        context.addStudyVariable(metadata, new StudyVariable().id(2).name("Group B"));
+        MZTabErrorList errorList = new MZTabErrorList();
+
+        new SMHLineParser(context, metadata).parse(1, header("SMH", SMH_STABLE,
+            "abundance_assay[1]", "abundance_study_variable[1]", "abundance_variation_study_variable[1]"),
+            errorList);
+
+        List<String> messages = notDefinedInHeader(errorList);
+        assertEquals(3, messages.size(), messages::toString);
+        assertTrue(messages.get(0).contains("abundance_assay[2]"), messages.get(0));
+        assertTrue(messages.get(1).contains("abundance_study_variable[2]"), messages.get(1));
+        assertTrue(messages.get(2).contains("abundance_variation_study_variable[2]"), messages.get(2));
+    }
+
+    @Test
+    public void allMissingSmfAbundanceColumnsAreReported() throws MZTabException {
+        MZTabParserContext context = new MZTabParserContext();
+        Metadata metadata = new Metadata();
+        metadata.setSmallMoleculeFeatureQuantificationUnit(new Parameter().name("qty"));
+        context.addAssay(metadata, new Assay().id(1).name("assay 1"));
+        context.addAssay(metadata, new Assay().id(2).name("assay 2"));
+        context.addAssay(metadata, new Assay().id(3).name("assay 3"));
+        MZTabErrorList errorList = new MZTabErrorList();
+
+        new SFHLineParser(context, metadata).parse(1, header("SFH", SFH_STABLE, "abundance_assay[2]"), errorList);
+
+        List<String> messages = notDefinedInHeader(errorList);
+        assertEquals(2, messages.size(), messages::toString);
+        assertTrue(messages.get(0).contains("abundance_assay[1]"), messages.get(0));
+        assertTrue(messages.get(1).contains("abundance_assay[3]"), messages.get(1));
     }
 }
