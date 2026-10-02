@@ -1,4 +1,4 @@
-FROM openjdk:11.0.16-jre-slim
+FROM eclipse-temurin:25-jre
 MAINTAINER Nils Hoffmann &lt;nils.hoffmann@isas.de&gt;
 VOLUME /tmp
 # receive jar file to host via argument
@@ -7,7 +7,7 @@ ARG APP_NAME
 ARG APP_PORT
 ARG APP_VERSION
 
-LABEL base.image="openjdk:11-jre-slim"
+LABEL base.image="eclipse-temurin:25-jre"
 LABEL version="${APP_VERSION}"
 LABEL software="jmztab-m-cli"
 LABEL software.version="${APP_VERSION}"

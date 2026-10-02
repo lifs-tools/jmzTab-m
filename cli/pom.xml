@@ -158,7 +158,7 @@
                     <plugin>
                         <groupId>org.graalvm.buildtools</groupId>
                         <artifactId>native-maven-plugin</artifactId>
-                        <version>0.11.5</version>
+                        <version>1.1.14</version>
                         <extensions>true</extensions>
                         <executions>
                             <execution>
@@ -172,6 +172,19 @@
                         <configuration>
                             <imageName>jmztabm-validator</imageName>
                             <mainClass>org.lifstools.mztab2.cli.MZTabCommandLine</mainClass>
+                            <metadataRepository>
+                                <enabled>true</enabled>
+                                <dependencies>
+                                    <!-- The repository's hibernate-validator metadata registers the
+                                         constraint validators for optional types (e.g. Joda-Time's
+                                         ReadablePartial), which fails the image build. -->
+                                    <dependency>
+                                        <groupId>org.hibernate.validator</groupId>
+                                        <artifactId>hibernate-validator</artifactId>
+                                        <excluded>true</excluded>
+                                    </dependency>
+                                </dependencies>
+                            </metadataRepository>
                             <buildArgs>
                                 <buildArg>--no-fallback</buildArg>
                                 <buildArg>--enable-url-protocols=https,http</buildArg>
