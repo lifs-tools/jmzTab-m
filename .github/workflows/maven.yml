@@ -15,7 +15,7 @@ jobs:
     outputs:
       version: ${{ steps.version.outputs.version }}
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
       with:
         lfs: 'true'
     - name: Set up JDK 24
@@ -103,7 +103,7 @@ jobs:
             binary: jmztabm-validator.exe
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           lfs: 'true'
       - name: Set up GraalVM JDK 24
@@ -137,11 +137,11 @@ jobs:
     needs: [build, native]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           lfs: 'true'
       - name: Check out mzTab-M example files
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           repository: HUPO-PSI/mzTab-M
           path: mztab-m-spec
