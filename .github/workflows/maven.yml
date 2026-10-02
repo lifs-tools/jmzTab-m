@@ -75,7 +75,7 @@ jobs:
             jf mvn -B deploy -DskipTests -DskipITs -Pjfrog --file pom.xml
             jf rt bp
     - name: Upload CLI distribution zip
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: jmztabm-cli-dist
         path: cli/target/jmztabm-cli-*-bin.zip
@@ -124,7 +124,7 @@ jobs:
         with:
           step: save
       - name: Upload native binary
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: jmztabm-validator-${{ matrix.platform }}
           path: cli/target/${{ matrix.binary }}
@@ -152,12 +152,12 @@ jobs:
           java-version: '24'
           distribution: 'temurin'
       - name: Download CLI distribution
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: jmztabm-cli-dist
           path: dist
       - name: Download native binary
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: jmztabm-validator-amd64-linux
           path: native
@@ -189,7 +189,7 @@ jobs:
       RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
     steps:
       - name: Download build artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           path: dist
       - name: Collect assets under stable names
