@@ -63,13 +63,6 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-site-plugin</artifactId>
                 <version>3.22.0</version>
-                <dependencies>
-                    <dependency><!-- add Asciidoctor Doxia Parser Module -->
-                        <groupId>org.asciidoctor</groupId>
-                        <artifactId>asciidoctor-maven-plugin</artifactId>
-                        <version>1.6.0</version>
-                    </dependency>
-                </dependencies>
                 <executions>
                     <execution>
                         <id>attach-descriptor</id>
@@ -571,7 +564,6 @@
         <jxpath.version>1.4.0</jxpath.version>
         <spring.version>6.2.19</spring.version>
         <logback.version>1.6.3</logback.version>
-        <diffutils.version>2.2</diffutils.version>
         <javaobjectdiff.version>0.95</javaobjectdiff.version>
         <jakarta.annotation-api.version>3.0.0</jakarta.annotation-api.version>
         <assembly.dir>${project.artifactId}</assembly.dir>
