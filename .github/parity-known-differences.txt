@@ -1,0 +1,5 @@
+# Example files whose jar and native validator results are known to differ,
+# one per line as "<file name> <issue>". They are reported as warnings by
+# .github/scripts/compare-jar-native.sh instead of failing the parity check.
+# Remove an entry once the issue is fixed.
+progenesis_2.4.6505.48857_MTBLS263.json https://github.com/lifs-tools/jmzTab-m/issues/195
