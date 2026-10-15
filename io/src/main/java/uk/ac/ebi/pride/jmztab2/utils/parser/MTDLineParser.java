@@ -1010,6 +1010,9 @@ public class MTDLineParser extends MZTabLineParser {
                     msRun = context.addMsRunHashMethod(metadata, id,
                         checkParameter(defineLabel, valueLabel));
                     break;
+                case MS_RUN_USI_IDENTIFIER:
+                    msRun = context.addMsRunUsiIdentifier(metadata, id, valueLabel);
+                    break;
                 default:
                     MZTabError error = new MZTabError(
                         FormatErrorType.MTDDefineLabel,

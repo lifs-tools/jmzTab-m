@@ -294,6 +294,11 @@ public final class LogicalErrorType extends MZTabErrorType {
      */
     public static final MZTabErrorType DuplicateColumnHeader = createError(Category.Logical, "DuplicateColumnHeader");
 
+    /**
+     * Constant <code>MsRunUsiIdentifierInvalid</code>
+     */
+    public static final MZTabErrorType MsRunUsiIdentifierInvalid = createWarn(Category.Logical, "MsRunUsiIdentifierInvalid");
+
     private static final MZTabErrorType[] VALUES = {
         NULL, NotNULL, LineOrder, HeaderLine, NoHeaderLine,
         MsRunNotDefined, AssayNotDefined, StudyVariableNotDefined, ProteinSearchEngineScoreNotDefined, PeptideSearchEngineScoreNotDefined, PSMSearchEngineScoreNotDefined, SmallMoleculeSearchEngineScoreNotDefined,
@@ -303,7 +308,8 @@ public final class LogicalErrorType extends MZTabErrorType {
         NoSmallMoleculeIdentificationReliability, ExternalStudyIdFormatNotDefined, ExternalStudyFormatNotDefined, NoDatabaseMustHaveNullPrefix, ItemNumberMismatch, UnknownRefId, SingleStudyVariableName, UndefinedStudyVariableNameOnceOnly,
         SpectraIdFormatNotValid, SpectraIdFormatNotSupported,
         ProfileInferred, ProfileTableMissing, ProfileTableForbidden, ProfileUnsupportedCombination, ProfileMSFDiscouraged, ProfileFieldMismatch,
-        ProfileSmfIdRefsForbidden, ProfileSmfIdRefsRequired, ProfileSmeIdRefsForbidden, ProfileAmbiguityCodeMustBeNull, DuplicateColumnHeader
+        ProfileSmfIdRefsForbidden, ProfileSmfIdRefsRequired, ProfileSmeIdRefsForbidden, ProfileAmbiguityCodeMustBeNull, DuplicateColumnHeader,
+        MsRunUsiIdentifierInvalid
     };
     
     public static MZTabErrorType[] getValues() {
