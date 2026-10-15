@@ -15,8 +15,10 @@
  */
 package org.lifstools.mztab2.cli;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
@@ -25,10 +27,16 @@ import java.nio.file.Path;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.PosixParser;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.lifstools.mztab2.model.Assay;
+import org.lifstools.mztab2.model.Metadata;
+import org.lifstools.mztab2.model.MzTab;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorType;
 
 /**
@@ -66,6 +74,82 @@ public class MZTabCommandLineTest {
         String output = bytes.toString("UTF-8");
         assertFalse(output.contains("[Error-"), "JSON must not be validated as mzTab: " + output);
         assertFalse(new File(json.getParentFile(), json.getName() + ".mztab").exists(), "No mzTab file should be written");
+    }
+
+    @Test
+    public void jsonNullFailsWithoutAnException() throws Exception {
+        // --toJson writes "null" for a file that it could not parse
+        File json = folder.resolve("null.json").toFile();
+        Files.writeString(json.toPath(), "null", StandardCharsets.UTF_8);
+        Options options = new Options();
+        String checkOpt = MZTabCommandLine.addCheckOption(options);
+        String checkSemanticOpt = MZTabCommandLine.addCheckSemanticOption(options);
+        MZTabCommandLine.addDeserializeOption(options);
+        CommandLine line = new PosixParser().parse(options, new String[]{"-c", json.getAbsolutePath(), "--fromJson"});
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+
+        boolean errorsOrWarnings = MZTabCommandLine.handleValidation(line, checkOpt,
+            new PrintStream(bytes, true, "UTF-8"), MZTabErrorType.Level.Info, checkSemanticOpt, false, true);
+
+        assertTrue(errorsOrWarnings, "JSON without an mzTab-M object must be reported as a failure");
+        assertFalse(new File(json.getParentFile(), json.getName() + ".mztab").exists(), "No mzTab file should be written");
+    }
+
+    /**
+     * JSON written by jmztabm-cli 1.0.6 (--toJson) from
+     * test-utils/src/main/resources/metabolomics/minimal-m-2.0.mztab.
+     * References between metadata elements are written as integer ids, e.g.
+     * "sample_ref": 1.
+     */
+    private static final String JSON_1_0_6 = "/json/minimal-m-2.0-jmztabm-1.0.6.json";
+
+    private MzTab read106Json() throws IOException {
+        try (InputStream is = getClass().getResourceAsStream(JSON_1_0_6)) {
+            assertNotNull(is, "Missing test resource " + JSON_1_0_6);
+            return MZTabCommandLine.createJsonMapper().readValue(is, MzTab.class);
+        }
+    }
+
+    @Test
+    public void readsIntegerReferencesWrittenBy106() throws IOException {
+        MzTab mzTab = read106Json();
+        Metadata metadata = mzTab.getMetadata();
+        Assay assay = metadata.getAssay().get(0);
+        // ids resolve to the objects defined in the metadata, not to copies
+        assertSame(metadata.getSample().get(0), assay.getSampleRef());
+        assertSame(metadata.getMsRun().get(0), assay.getMsRunRef().get(0));
+        assertSame(assay, metadata.getStudyVariable().get(0).getAssayRefs().get(0));
+    }
+
+    @Test
+    public void writesReferencesAsIntegerIds() throws IOException {
+        JsonNode metadata = MZTabCommandLine.createJsonMapper().
+            valueToTree(read106Json()).get("metadata");
+        JsonNode assay = metadata.get("assay").get(0);
+        assertTrue(assay.get("sample_ref").isInt(), "sample_ref should be written as id: " + assay);
+        assertEquals(1, assay.get("sample_ref").asInt());
+        assertEquals(1, assay.get("ms_run_ref").get(0).asInt());
+        assertEquals(1, metadata.get("study_variable").get(0).get("assay_refs").get(0).asInt());
+    }
+
+    @Test
+    public void fromJsonConvertsIntegerReferencesWrittenBy106() throws Exception {
+        File json = resource(JSON_1_0_6);
+        Options options = new Options();
+        String checkOpt = MZTabCommandLine.addCheckOption(options);
+        String checkSemanticOpt = MZTabCommandLine.addCheckSemanticOption(options);
+        MZTabCommandLine.addDeserializeOption(options);
+        CommandLine line = new PosixParser().parse(options, new String[]{"-c", json.getAbsolutePath(), "--fromJson"});
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+
+        MZTabCommandLine.handleValidation(line, checkOpt,
+            new PrintStream(bytes, true, "UTF-8"), MZTabErrorType.Level.Info, checkSemanticOpt, false, true);
+
+        File converted = new File(json.getParentFile(), json.getName() + ".mztab");
+        assertTrue(converted.isFile(), "JSON was not converted to mzTab");
+        String content = Files.readString(converted.toPath(), StandardCharsets.UTF_8);
+        assertTrue(content.contains("assay[1]-sample_ref\tsample[1]"), content);
+        assertTrue(content.contains("assay[1]-ms_run_ref\tms_run[1]"), content);
     }
 
     // one MUST rule that is evaluated offline: no sample declares a disease
