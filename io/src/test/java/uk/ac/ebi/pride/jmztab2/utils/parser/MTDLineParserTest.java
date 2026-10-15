@@ -358,6 +358,12 @@ public class MTDLineParserTest {
         assertTrue(msRun2.getHashMethod().
             getName().
             equals("SHA-1"));
+
+        parser.parse(1,
+            "MTD\tms_run[2]-usi_identifier\tmzspec:PXD000561:Adult_Frontalcortex_bRP_Elite_85_f09",
+            errorList);
+        assertEquals("mzspec:PXD000561:Adult_Frontalcortex_bRP_Elite_85_f09",
+            msRun2.getUsiIdentifier());
     }
 
     @Test

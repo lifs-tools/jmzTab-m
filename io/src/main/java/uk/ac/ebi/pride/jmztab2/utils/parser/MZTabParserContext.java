@@ -943,6 +943,36 @@ public class MZTabParserContext {
     }
 
     /**
+     * <p>addMsRunUsiIdentifier.</p>
+     *
+     * @param metadata a {@link org.lifstools.mztab2.model.Metadata} object.
+     * @param id a {@link java.lang.Integer} object.
+     * @param usiIdentifier a {@link java.lang.String} object, the MS run
+     * identifier, e.g. mzspec:&lt;collection&gt;:&lt;msRun&gt;.
+     * @return a {@link org.lifstools.mztab2.model.MsRun} object.
+     */
+    public MsRun addMsRunUsiIdentifier(Metadata metadata, Integer id, String usiIdentifier) {
+        if (id <= 0) {
+            throw new IllegalArgumentException("ms_run id should be greater than 0!");
+        }
+        if (isEmpty(usiIdentifier)) {
+            throw new IllegalArgumentException("ms_run usi_identifier should not be empty.");
+        }
+
+        MsRun msRun = msRunMap.get(id);
+        if (msRun == null) {
+            msRun = new MsRun();
+            msRun.id(id);
+            msRun.setUsiIdentifier(usiIdentifier);
+            msRunMap.put(id, msRun);
+            metadata.addMsRunItem(msRun);
+        } else {
+            msRun.setUsiIdentifier(usiIdentifier);
+        }
+        return msRun;
+    }
+
+    /**
      * <p>addMsRunHashMethod.</p>
      *
      * @param metadata a {@link org.lifstools.mztab2.model.Metadata} object.

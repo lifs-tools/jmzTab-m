@@ -94,6 +94,9 @@ public class MsRunSerializer extends StdSerializer<MsRun> {
             addSubElementParameter(jg, Section.Metadata.getPrefix(), msRun,
                 MsRun.JSON_PROPERTY_HASH_METHOD,
                 msRun.getHashMethod());
+            addLineWithProperty(jg, Section.Metadata.getPrefix(),
+                MsRun.JSON_PROPERTY_USI_IDENTIFIER,
+                msRun, msRun.getUsiIdentifier());
             addSubElementParameter(jg, Section.Metadata.getPrefix(), msRun,
                 MsRun.JSON_PROPERTY_FORMAT, msRun.getFormat());
             addSubElementParameters(jg, Section.Metadata.getPrefix(), msRun,
