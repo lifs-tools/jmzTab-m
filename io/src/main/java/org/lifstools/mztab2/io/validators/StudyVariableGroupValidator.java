@@ -24,6 +24,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
+import uk.ac.ebi.pride.jmztab2.utils.errors.Locations;
 import uk.ac.ebi.pride.jmztab2.utils.errors.LogicalErrorType;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabError;
 import uk.ac.ebi.pride.jmztab2.utils.parser.MZTabParserContext;
@@ -65,7 +66,7 @@ public class StudyVariableGroupValidator implements RefiningValidator<Metadata> 
             if (svg == null) {
                 errorList.add(new MZTabError(
                     LogicalErrorType.NotDefineInMetadata, -1,
-                    Metadata.JSON_PROPERTY_STUDY_VARIABLE_GROUP + "[" + id + "]"));
+                    Metadata.JSON_PROPERTY_STUDY_VARIABLE_GROUP + "[" + id + "]").location(Locations.metadataGroup(Metadata.JSON_PROPERTY_STUDY_VARIABLE_GROUP)));
                 continue;
             }
 
@@ -73,14 +74,14 @@ public class StudyVariableGroupValidator implements RefiningValidator<Metadata> 
                 errorList.add(new MZTabError(
                     LogicalErrorType.NotDefineInMetadata, -1,
                     Metadata.JSON_PROPERTY_STUDY_VARIABLE_GROUP + "[" + id + "]"
-                    + "\t<" + StudyVariableGroup.JSON_PROPERTY_PARAMETER + ">"));
+                    + "\t<" + StudyVariableGroup.JSON_PROPERTY_PARAMETER + ">").location(Locations.metadataGroup(Metadata.JSON_PROPERTY_STUDY_VARIABLE_GROUP)));
             }
 
             if (svg.getDescription() == null || svg.getDescription().isEmpty()) {
                 errorList.add(new MZTabError(
                     LogicalErrorType.NotDefineInMetadata, -1,
                     Metadata.JSON_PROPERTY_STUDY_VARIABLE_GROUP + "[" + id + "]-"
-                    + StudyVariableGroup.JSON_PROPERTY_DESCRIPTION));
+                    + StudyVariableGroup.JSON_PROPERTY_DESCRIPTION).location(Locations.metadataGroup(Metadata.JSON_PROPERTY_STUDY_VARIABLE_GROUP)));
             }
 
             // type MUST be from STATO if provided
@@ -91,7 +92,7 @@ public class StudyVariableGroupValidator implements RefiningValidator<Metadata> 
                     LogicalErrorType.NotDefineInMetadata, -1,
                     Metadata.JSON_PROPERTY_STUDY_VARIABLE_GROUP + "[" + id + "]-"
                     + StudyVariableGroup.JSON_PROPERTY_TYPE
-                    + " (MUST be a STATO ontology term, e.g. [STATO, STATO:0000252, categorical variable, ])"));
+                    + " (MUST be a STATO ontology term, e.g. [STATO, STATO:0000252, categorical variable, ])").location(Locations.metadataGroup(Metadata.JSON_PROPERTY_STUDY_VARIABLE_GROUP)));
             }
 
             // datatype MUST be one of the xsd: values if provided
@@ -101,7 +102,7 @@ public class StudyVariableGroupValidator implements RefiningValidator<Metadata> 
                     LogicalErrorType.NotDefineInMetadata, -1,
                     Metadata.JSON_PROPERTY_STUDY_VARIABLE_GROUP + "[" + id + "]-"
                     + StudyVariableGroup.JSON_PROPERTY_DATATYPE
-                    + " (MUST be one of: " + String.join(", ", VALID_XSD_DATATYPES) + ")"));
+                    + " (MUST be one of: " + String.join(", ", VALID_XSD_DATATYPES) + ")").location(Locations.metadataGroup(Metadata.JSON_PROPERTY_STUDY_VARIABLE_GROUP)));
             }
 
             // every group MUST reference at least one study variable
@@ -110,7 +111,7 @@ public class StudyVariableGroupValidator implements RefiningValidator<Metadata> 
                 errorList.add(new MZTabError(
                     LogicalErrorType.NotDefineInMetadata, -1,
                     Metadata.JSON_PROPERTY_STUDY_VARIABLE_GROUP + "[" + id + "]-"
-                    + StudyVariableGroup.JSON_PROPERTY_STUDY_VARIABLE_REFS));
+                    + StudyVariableGroup.JSON_PROPERTY_STUDY_VARIABLE_REFS).location(Locations.metadataGroup(Metadata.JSON_PROPERTY_STUDY_VARIABLE_GROUP)));
                 continue;
             }
 
@@ -124,7 +125,7 @@ public class StudyVariableGroupValidator implements RefiningValidator<Metadata> 
                         LogicalErrorType.NotDefineInMetadata, -1,
                         Metadata.JSON_PROPERTY_STUDY_VARIABLE_GROUP + "[" + id + "]-"
                         + StudyVariableGroup.JSON_PROPERTY_STUDY_VARIABLE_REFS
-                        + "\t" + Metadata.JSON_PROPERTY_STUDY_VARIABLE + "[" + refId + "]"));
+                        + "\t" + Metadata.JSON_PROPERTY_STUDY_VARIABLE + "[" + refId + "]").location(Locations.metadataGroup(Metadata.JSON_PROPERTY_STUDY_VARIABLE_GROUP)));
                 } else {
                     refs.set(i, referenced);
                     referenceCount.merge(refId, 1, Integer::sum);
@@ -140,12 +141,12 @@ public class StudyVariableGroupValidator implements RefiningValidator<Metadata> 
                 errorList.add(new MZTabError(
                     LogicalErrorType.StudyVariableNotDefined, -1,
                     Metadata.JSON_PROPERTY_STUDY_VARIABLE + "[" + svId + "]"
-                    + " is not referenced by any study_variable_group[n]-study_variable_refs"));
+                    + " is not referenced by any study_variable_group[n]-study_variable_refs").location(Locations.metadataGroup(Metadata.JSON_PROPERTY_STUDY_VARIABLE_GROUP)));
             } else if (count > 1) {
                 errorList.add(new MZTabError(
                     LogicalErrorType.DuplicationID, -1,
                     Metadata.JSON_PROPERTY_STUDY_VARIABLE + "[" + svId + "]"
-                    + " is referenced by more than one study_variable_group"));
+                    + " is referenced by more than one study_variable_group").location(Locations.metadataGroup(Metadata.JSON_PROPERTY_STUDY_VARIABLE_GROUP)));
             }
         }
 

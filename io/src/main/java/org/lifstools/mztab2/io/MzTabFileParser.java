@@ -24,13 +24,18 @@ import org.lifstools.mztab2.model.MzTabAccess;
 import org.lifstools.mztab2.model.SmallMoleculeEvidence;
 import org.lifstools.mztab2.model.SmallMoleculeFeature;
 import org.lifstools.mztab2.model.SmallMoleculeSummary;
+import org.lifstools.mztab2.model.ValidationLocation;
+import org.lifstools.mztab2.model.ValidationLocation.SectionEnum;
 import org.lifstools.mztab2.io.validators.MzTabProfileValidator;
 import java.io.*;
 import java.net.URI;
 import java.net.URL;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.SortedMap;
@@ -48,6 +53,7 @@ import uk.ac.ebi.pride.jmztab2.model.MZTabStringUtils;
 import uk.ac.ebi.pride.jmztab2.model.Section;
 import static uk.ac.ebi.pride.jmztab2.utils.MZTabProperties.*;
 import uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType;
+import uk.ac.ebi.pride.jmztab2.utils.errors.Locations;
 import uk.ac.ebi.pride.jmztab2.utils.errors.LogicalErrorType;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabError;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorList;
@@ -83,6 +89,8 @@ public class MzTabFileParser {
 
     private MZTabErrorList errorList;
     private MZTabParserContext context;
+    // location of each parsed line, keyed by line number
+    private Map<Integer, ValidationLocation> lineLocations;
 
     /**
      * Create a new {@code MZTabFileParser} for the given file.
@@ -137,6 +145,7 @@ public class MzTabFileParser {
         try {
             context = new MZTabParserContext();
             errorList = new MZTabErrorList(level, maxErrorCount);
+            lineLocations = new HashMap<>();
             check();
             refine();
         } catch (MZTabException e) {
@@ -154,6 +163,8 @@ public class MzTabFileParser {
             } else {
                 out.write(("Error Overflow exception did not contain a message!" + NEW_LINE).getBytes());
             }
+        } finally {
+            attachLineLocations();
         }
 
         errorList.print(out);
@@ -212,6 +223,81 @@ public class MzTabFileParser {
         String[] items = line.split("\\s*" + TAB + "\\s*");
         String section = items[0].trim();
         return Section.findSection(section);
+    }
+
+    /**
+     * Location of a line: the section, plus the metadata key for MTD lines and
+     * the 0-based row index within its table for SML, SMF and SME lines. Lines
+     * outside the mzTab-M sections get section FILE.
+     *
+     * @param section the line's section, may be null
+     * @param rowCounts number of data rows seen so far per table, updated here
+     */
+    private ValidationLocation lineLocation(Section section, String line,
+        Map<SectionEnum, Integer> rowCounts) {
+        SectionEnum sectionEnum = section == null ? null : Locations.sectionOf(
+            section.getPrefix());
+        if (sectionEnum == null) {
+            return Locations.section(SectionEnum.FILE);
+        }
+        switch (sectionEnum) {
+            case MTD:
+                String[] items = line.split("\\s*" + TAB + "\\s*");
+                if (items.length > 1 && !items[1].trim().isEmpty()) {
+                    return Locations.metadataKey(items[1].trim());
+                }
+                return Locations.section(SectionEnum.MTD);
+            case SML:
+            case SMF:
+            case SME:
+                int rowIndex = rowCounts.merge(sectionEnum, 1, Integer::sum) - 1;
+                return Locations.tableCell(sectionEnum, rowIndex, null);
+            default:
+                return Locations.section(sectionEnum);
+        }
+    }
+
+    /**
+     * Gives each error that names a parsed line and has no location yet its
+     * own copy of that line's location, with the error's column where the line
+     * is a table header or data row.
+     */
+    private void attachLineLocations() {
+        if (errorList == null || lineLocations == null) {
+            return;
+        }
+        for (MZTabError error : errorList.getErrorList()) {
+            if (error.getLocation() != null || error.getLineNumber() <= 0) {
+                continue;
+            }
+            ValidationLocation recorded = lineLocations.get(error.
+                getLineNumber());
+            if (recorded != null) {
+                error.location(locationFor(recorded, error.getColumn()));
+            }
+        }
+    }
+
+    private static ValidationLocation locationFor(ValidationLocation recorded,
+        String column) {
+        SectionEnum section = recorded.getSection();
+        switch (section) {
+            case SMH:
+            case SFH:
+            case SEH:
+                return column == null ? Locations.section(section) : Locations.
+                    headerColumn(section, column);
+            case SML:
+            case SMF:
+            case SME:
+                return Locations.tableCell(section, recorded.getRowIndex(),
+                    column);
+            case MTD:
+                return recorded.getMetadataKey() == null ? Locations.section(
+                    section) : Locations.metadataKey(recorded.getMetadataKey());
+            default:
+                return Locations.section(section);
+        }
     }
 
     private BufferedReader readFile(URI tabFile) throws IOException {
@@ -303,6 +389,7 @@ public class MzTabFileParser {
         int highWaterMark = 1;
         int lineNumber = 0;
         Section section;
+        Map<SectionEnum, Integer> rowCounts = new EnumMap<>(SectionEnum.class);
         try (BufferedReader reader = readFile(tabFile)) {
             while ((line = reader.readLine()) != null) {
                 try {
@@ -313,12 +400,17 @@ public class MzTabFileParser {
                     }
 
                     if (line.startsWith(Section.Comment.getPrefix())) {
+                        lineLocations.put(lineNumber, Locations.section(
+                            SectionEnum.COM));
                         comParser.parse(lineNumber, line, errorList);
                         commentMap.put(lineNumber, comParser.getComment());
                         continue;
                     }
 
                     section = getSection(line);
+                    // record before any check or line parser can report on this line
+                    lineLocations.put(lineNumber, lineLocation(section, line,
+                        rowCounts));
                     if (section == null) {
                         MZTabError sectionNullError = new MZTabError(
                             FormatErrorType.LinePrefix, lineNumber,

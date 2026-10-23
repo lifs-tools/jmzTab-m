@@ -20,6 +20,7 @@ import org.lifstools.mztab2.model.Metadata;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.SortedMap;
+import uk.ac.ebi.pride.jmztab2.utils.errors.Locations;
 import uk.ac.ebi.pride.jmztab2.utils.errors.LogicalErrorType;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabError;
 import uk.ac.ebi.pride.jmztab2.utils.parser.MZTabParserContext;
@@ -38,7 +39,7 @@ public class AssayValidator implements RefiningValidator<Metadata> {
         if (assayMap.isEmpty()) {
             errorList.add(new MZTabError(
                     LogicalErrorType.NotDefineInMetadata, -1,
-                    Metadata.JSON_PROPERTY_ASSAY + ""));
+                    Metadata.JSON_PROPERTY_ASSAY + "").location(Locations.metadataGroup(Metadata.JSON_PROPERTY_ASSAY)));
         }
 
         for (Integer id : assayMap.keySet()) {
@@ -53,7 +54,7 @@ public class AssayValidator implements RefiningValidator<Metadata> {
                             getMsRunRef().isEmpty()) {
                 errorList.add(new MZTabError(
                         LogicalErrorType.NotDefineInMetadata, -1,
-                        Metadata.JSON_PROPERTY_ASSAY + "[" + id + "]-" + Assay.JSON_PROPERTY_MS_RUN_REF));
+                        Metadata.JSON_PROPERTY_ASSAY + "[" + id + "]-" + Assay.JSON_PROPERTY_MS_RUN_REF).location(Locations.metadataGroup(Metadata.JSON_PROPERTY_ASSAY)));
             }
         }
         return errorList;
