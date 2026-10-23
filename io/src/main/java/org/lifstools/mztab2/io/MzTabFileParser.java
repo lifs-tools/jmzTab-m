@@ -30,9 +30,9 @@ import org.lifstools.mztab2.io.validators.MzTabProfileValidator;
 import java.io.*;
 import java.net.URI;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -89,8 +89,8 @@ public class MzTabFileParser {
 
     private MZTabErrorList errorList;
     private MZTabParserContext context;
-    // location of each parsed line, keyed by line number
-    private Map<Integer, ValidationLocation> lineLocations;
+    // where each parsed line belongs, for the locations of its errors
+    private LineIndex lineIndex;
 
     /**
      * Create a new {@code MZTabFileParser} for the given file.
@@ -145,7 +145,7 @@ public class MzTabFileParser {
         try {
             context = new MZTabParserContext();
             errorList = new MZTabErrorList(level, maxErrorCount);
-            lineLocations = new HashMap<>();
+            lineIndex = new LineIndex();
             check();
             refine();
         } catch (MZTabException e) {
@@ -226,77 +226,127 @@ public class MzTabFileParser {
     }
 
     /**
-     * Location of a line: the section, plus the metadata key for MTD lines and
-     * the 0-based row index within its table for SML, SMF and SME lines. Lines
-     * outside the mzTab-M sections get section FILE.
+     * Records the location of a line: the section, plus the metadata key for
+     * MTD lines and the 0-based row index within its table for SML, SMF and
+     * SME lines. Lines outside the mzTab-M sections get section FILE.
      *
      * @param section the line's section, may be null
-     * @param rowCounts number of data rows seen so far per table, updated here
      */
-    private ValidationLocation lineLocation(Section section, String line,
-        Map<SectionEnum, Integer> rowCounts) {
+    private void recordLine(int lineNumber, Section section, String line) {
         SectionEnum sectionEnum = section == null ? null : Locations.sectionOf(
             section.getPrefix());
         if (sectionEnum == null) {
-            return Locations.section(SectionEnum.FILE);
+            lineIndex.record(lineNumber, SectionEnum.FILE);
+            return;
         }
         switch (sectionEnum) {
             case MTD:
                 String[] items = line.split("\\s*" + TAB + "\\s*");
                 if (items.length > 1 && !items[1].trim().isEmpty()) {
-                    return Locations.metadataKey(items[1].trim());
+                    lineIndex.recordMetadataKey(lineNumber, items[1].trim());
+                } else {
+                    lineIndex.record(lineNumber, SectionEnum.MTD);
                 }
-                return Locations.section(SectionEnum.MTD);
+                break;
             case SML:
             case SMF:
             case SME:
-                int rowIndex = rowCounts.merge(sectionEnum, 1, Integer::sum) - 1;
-                return Locations.tableCell(sectionEnum, rowIndex, null);
+                lineIndex.recordRow(lineNumber, sectionEnum);
+                break;
             default:
-                return Locations.section(sectionEnum);
+                lineIndex.record(lineNumber, sectionEnum);
         }
     }
 
     /**
-     * Gives each error that names a parsed line and has no location yet its
-     * own copy of that line's location, with the error's column where the line
-     * is a table header or data row.
+     * Gives each error that names a parsed line and has no location yet a new
+     * location for that line, with the error's column where the line is a
+     * table header or data row.
      */
     private void attachLineLocations() {
-        if (errorList == null || lineLocations == null) {
+        if (errorList == null || lineIndex == null) {
             return;
         }
         for (MZTabError error : errorList.getErrorList()) {
             if (error.getLocation() != null || error.getLineNumber() <= 0) {
                 continue;
             }
-            ValidationLocation recorded = lineLocations.get(error.
-                getLineNumber());
-            if (recorded != null) {
-                error.location(locationFor(recorded, error.getColumn()));
+            ValidationLocation location = lineIndex.locationOf(error.
+                getLineNumber(), error.getColumn());
+            if (location != null) {
+                error.location(location);
             }
         }
     }
 
-    private static ValidationLocation locationFor(ValidationLocation recorded,
-        String column) {
-        SectionEnum section = recorded.getSection();
-        switch (section) {
-            case SMH:
-            case SFH:
-            case SEH:
-                return column == null ? Locations.section(section) : Locations.
-                    headerColumn(section, column);
-            case SML:
-            case SMF:
-            case SME:
-                return Locations.tableCell(section, recorded.getRowIndex(),
-                    column);
-            case MTD:
-                return recorded.getMetadataKey() == null ? Locations.section(
-                    section) : Locations.metadataKey(recorded.getMetadataKey());
-            default:
-                return Locations.section(section);
+    /**
+     * Compact per-line record of where each parsed line belongs: its section
+     * and, for table rows, the row index, in arrays indexed by line number; the
+     * key only for MTD lines. Locations are built on demand, only for lines
+     * that have errors, so large tables do not cost an object per line.
+     */
+    private static final class LineIndex {
+
+        private static final SectionEnum[] SECTIONS = SectionEnum.values();
+        private static final int INITIAL_CAPACITY = 1024;
+
+        // SectionEnum ordinal + 1 per line; 0 = line not recorded
+        private byte[] sections = new byte[INITIAL_CAPACITY];
+        // 0-based row index per SML/SMF/SME line
+        private int[] rowIndices = new int[INITIAL_CAPACITY];
+        private final Map<Integer, String> metadataKeys = new HashMap<>();
+        private final int[] rowCounts = new int[SECTIONS.length];
+
+        void record(int lineNumber, SectionEnum section) {
+            ensureCapacity(lineNumber);
+            sections[lineNumber] = (byte) (section.ordinal() + 1);
+        }
+
+        void recordRow(int lineNumber, SectionEnum section) {
+            record(lineNumber, section);
+            rowIndices[lineNumber] = rowCounts[section.ordinal()]++;
+        }
+
+        void recordMetadataKey(int lineNumber, String key) {
+            record(lineNumber, SectionEnum.MTD);
+            metadataKeys.put(lineNumber, key);
+        }
+
+        /**
+         * @return a new location for the line, or null if the line was not
+         * recorded
+         */
+        ValidationLocation locationOf(int lineNumber, String column) {
+            if (lineNumber >= sections.length || sections[lineNumber] == 0) {
+                return null;
+            }
+            SectionEnum section = SECTIONS[sections[lineNumber] - 1];
+            switch (section) {
+                case SMH:
+                case SFH:
+                case SEH:
+                    return column == null ? Locations.section(section) : Locations.
+                        headerColumn(section, column);
+                case SML:
+                case SMF:
+                case SME:
+                    return Locations.tableCell(section, rowIndices[lineNumber],
+                        column);
+                case MTD:
+                    String key = metadataKeys.get(lineNumber);
+                    return key == null ? Locations.section(section) : Locations.
+                        metadataKey(key);
+                default:
+                    return Locations.section(section);
+            }
+        }
+
+        private void ensureCapacity(int lineNumber) {
+            if (lineNumber >= sections.length) {
+                int capacity = Math.max(sections.length * 2, lineNumber + 1);
+                sections = Arrays.copyOf(sections, capacity);
+                rowIndices = Arrays.copyOf(rowIndices, capacity);
+            }
         }
     }
 
@@ -389,7 +439,6 @@ public class MzTabFileParser {
         int highWaterMark = 1;
         int lineNumber = 0;
         Section section;
-        Map<SectionEnum, Integer> rowCounts = new EnumMap<>(SectionEnum.class);
         try (BufferedReader reader = readFile(tabFile)) {
             while ((line = reader.readLine()) != null) {
                 try {
@@ -400,8 +449,7 @@ public class MzTabFileParser {
                     }
 
                     if (line.startsWith(Section.Comment.getPrefix())) {
-                        lineLocations.put(lineNumber, Locations.section(
-                            SectionEnum.COM));
+                        lineIndex.record(lineNumber, SectionEnum.COM);
                         comParser.parse(lineNumber, line, errorList);
                         commentMap.put(lineNumber, comParser.getComment());
                         continue;
@@ -409,8 +457,7 @@ public class MzTabFileParser {
 
                     section = getSection(line);
                     // record before any check or line parser can report on this line
-                    lineLocations.put(lineNumber, lineLocation(section, line,
-                        rowCounts));
+                    recordLine(lineNumber, section, line);
                     if (section == null) {
                         MZTabError sectionNullError = new MZTabError(
                             FormatErrorType.LinePrefix, lineNumber,
