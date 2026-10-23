@@ -38,6 +38,7 @@ public class MZTabErrorType implements Serializable {
     private Level level;
     private String original;
     private String cause;
+    private String fix;
 
     /**
      * <p>Constructor for MZTabErrorType.</p>
@@ -50,7 +51,7 @@ public class MZTabErrorType implements Serializable {
      * Original: Message expression pattern. "{?}" is a couple of parameters which can be filled during validate processing.
      * Cause: A readable text to describe the reason why raise this error/warn. Currently, these cause message coming from mztab specification mainly.
      */
-    private MZTabErrorType(Integer code, Category category, Level level, String original, String cause) {
+    private MZTabErrorType(Integer code, Category category, Level level, String original, String cause, String fix) {
         this.code = code;
 
         if (category == null) {
@@ -65,6 +66,7 @@ public class MZTabErrorType implements Serializable {
         }
         this.original = original.trim();
         this.cause = cause;
+        this.fix = fix;
     }
     
     public static MZTabErrorType forLevel(MZTabErrorType.Category category, Level level, String keyword) {
@@ -123,8 +125,9 @@ public class MZTabErrorType implements Serializable {
         Integer code = Integer.valueOf(MZTabProperties.getProperty(prefix + "code_" + keyword));
         String original = MZTabProperties.getProperty(prefix + "original_" + keyword);
         String cause = MZTabProperties.getProperty(prefix + "cause_" + keyword);
+        String fix = MZTabProperties.getProperty(prefix + "fix_" + keyword);
 
-        return new MZTabErrorType(code, category, level, original, cause);
+        return new MZTabErrorType(code, category, level, original, cause, fix);
     }
 
     /**
@@ -170,6 +173,18 @@ public class MZTabErrorType implements Serializable {
      */
     public String getCause() {
         return cause;
+    }
+
+    /**
+     * A plain-language template that tells the user how to fix the problem,
+     * read from <code>fix_{keyword}</code>. Placeholders {0}..{9} refer to the
+     * original's parameters by position; {element} and {allowed} are named
+     * extras (see {@link MZTabError#fillFix}).
+     *
+     * @return the template, or null if the type has none.
+     */
+    public String getFix() {
+        return fix;
     }
 
     @Override
