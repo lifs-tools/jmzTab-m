@@ -36,3 +36,9 @@ Again, follow the Guides from above. If everything looks good, publish the relea
   ./mvnw -Possrh-release nexus-staging:release -DstagingRepositoryId=deisasmztab-<NUMBER>
 
 Finally, create a release from the tag at https://github.com/lifs-tools/jmzTab-m/releases[GitHub].
+
+== Release notes
+
+=== 1.0.8 (unreleased)
+
+. Validation messages may carry `suggestion`, `rule_id` and `location` (optional, additive). Semantic messages about terms that are not allowed are now reported once per affected element, so their count can rise.

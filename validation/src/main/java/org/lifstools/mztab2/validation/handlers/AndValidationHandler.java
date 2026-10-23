@@ -19,8 +19,10 @@ import org.lifstools.mztab2.cvmapping.CvMappingUtils;
 import org.lifstools.mztab2.cvmapping.RuleEvaluationResult;
 import org.lifstools.mztab2.cvmapping.SetOperations;
 import org.lifstools.mztab2.io.serialization.ParameterConverter;
+import org.lifstools.mztab2.model.ValidationLocation;
 import org.lifstools.mztab2.model.ValidationMessage;
 import org.lifstools.mztab2.validation.CvTermValidationHandler;
+import org.lifstools.mztab2.validation.ModelLocations;
 import info.psidev.cvmapping.CvMappingRule;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -76,9 +78,24 @@ public class AndValidationHandler implements CvTermValidationHandler {
                         getCvElementPath(), CvMappingUtils.
                         niceToString(
                             result.getRule()));
-                messages.add(error.toValidationMessage());
+                messages.add(toMessage(error, result.getRule()));
             }
         }
         return messages;
+    }
+
+    /**
+     * Points the message at the metadata group or table column that the rule
+     * addresses, since the term is missing there.
+     */
+    private static ValidationMessage toMessage(MZTabError error,
+        CvMappingRule rule) {
+        ValidationLocation location = ModelLocations.ofRulePath(rule.
+            getCvElementPath());
+        return error.location(location).
+            ruleId(rule.getId()).
+            fixContext(ModelLocations.describe(location),
+                CvMappingUtils.allowedTermsText(rule)).
+            toValidationMessage();
     }
 }

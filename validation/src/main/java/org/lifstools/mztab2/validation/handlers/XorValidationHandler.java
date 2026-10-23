@@ -19,8 +19,10 @@ import org.lifstools.mztab2.cvmapping.CvMappingUtils;
 import static org.lifstools.mztab2.cvmapping.CvMappingUtils.toErrorLevel;
 import org.lifstools.mztab2.cvmapping.RuleEvaluationResult;
 import org.lifstools.mztab2.io.serialization.ParameterConverter;
+import org.lifstools.mztab2.model.ValidationLocation;
 import org.lifstools.mztab2.model.ValidationMessage;
 import org.lifstools.mztab2.validation.CvTermValidationHandler;
+import org.lifstools.mztab2.validation.ModelLocations;
 import info.psidev.cvmapping.CvMappingRule;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -81,7 +83,7 @@ public class XorValidationHandler implements CvTermValidationHandler {
                         getCvElementPath(), CvMappingUtils.
                         niceToString(
                             result.getRule()));
-                messages.add(error.toValidationMessage());
+                messages.add(toMessage(error, result.getRule()));
             }
         } else if (matchedParameters.size() > 1) {
             //Only one of the provided cv terms for "{1}" {0} be reported. You defined terms "{2}". Allowed terms are defined in rule "{3}".
@@ -97,8 +99,23 @@ public class XorValidationHandler implements CvTermValidationHandler {
                     value(), result.getRule().
                     getCvElementPath(), definedParameters,
                 CvMappingUtils.niceToString(result.getRule()));
-            messages.add(error.toValidationMessage());
+            messages.add(toMessage(error, result.getRule()));
         }
         return messages;
+    }
+
+    /**
+     * Points the message at the metadata group or table column that the rule
+     * addresses.
+     */
+    private static ValidationMessage toMessage(MZTabError error,
+        CvMappingRule rule) {
+        ValidationLocation location = ModelLocations.ofRulePath(rule.
+            getCvElementPath());
+        return error.location(location).
+            ruleId(rule.getId()).
+            fixContext(ModelLocations.describe(location),
+                CvMappingUtils.allowedTermsText(rule)).
+            toValidationMessage();
     }
 }

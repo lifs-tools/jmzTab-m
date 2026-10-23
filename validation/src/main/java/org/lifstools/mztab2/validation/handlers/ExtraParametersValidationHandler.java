@@ -20,8 +20,10 @@ import org.lifstools.mztab2.cvmapping.RuleEvaluationResult;
 import org.lifstools.mztab2.cvmapping.SetOperations;
 import org.lifstools.mztab2.io.serialization.ParameterConverter;
 import org.lifstools.mztab2.model.Parameter;
+import org.lifstools.mztab2.model.ValidationLocation;
 import org.lifstools.mztab2.model.ValidationMessage;
 import org.lifstools.mztab2.validation.CvTermValidationHandler;
+import org.lifstools.mztab2.validation.ModelLocations;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -47,10 +49,13 @@ public class ExtraParametersValidationHandler implements CvTermValidationHandler
             result.getAllowedParameters().
                 keySet());
         if (!extraObjectParams.isEmpty()) {
-            for (String s : extraObjectParams) {
-                Pair<Pointer, ? extends Parameter> p = result.
-                    getFoundParameters().
-                    get(s);
+            // one message per element that uses such a parameter
+            for (Pair<Pointer, Parameter> p : result.getFilteredSelection()) {
+                if (!extraObjectParams.contains(p.getValue().
+                    getCvAccession().
+                    toUpperCase())) {
+                    continue;
+                }
                 MZTabError error;
                 if (errorOnTermNotInRule) {
                     error = new MZTabError(CrossCheckErrorType.CvTermNotAllowed,
@@ -67,7 +72,14 @@ public class ExtraParametersValidationHandler implements CvTermValidationHandler
                             getCvElementPath(),
                         CvMappingUtils.niceToString(result.getRule()));
                 }
-                messages.add(error.toValidationMessage());
+                ValidationLocation location = ModelLocations.ofPointer(p.
+                    getKey());
+                messages.add(error.location(location).
+                    ruleId(result.getRule().
+                        getId()).
+                    fixContext(ModelLocations.describe(location),
+                        CvMappingUtils.allowedTermsText(result.getRule())).
+                    toValidationMessage());
             }
         }
         return messages;
