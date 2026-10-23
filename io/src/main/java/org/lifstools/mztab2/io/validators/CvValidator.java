@@ -19,6 +19,7 @@ import org.lifstools.mztab2.model.CV;
 import org.lifstools.mztab2.model.Metadata;
 import java.util.LinkedList;
 import java.util.List;
+import uk.ac.ebi.pride.jmztab2.utils.errors.Locations;
 import uk.ac.ebi.pride.jmztab2.utils.errors.LogicalErrorType;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabError;
 import uk.ac.ebi.pride.jmztab2.utils.parser.MZTabParserContext;
@@ -38,28 +39,28 @@ public class CvValidator implements RefiningValidator<Metadata> {
                 isEmpty()) {
             errorList.add(new MZTabError(
                     LogicalErrorType.NotDefineInMetadata, -1,
-                    Metadata.JSON_PROPERTY_CV + ""));
+                    Metadata.JSON_PROPERTY_CV + "").location(Locations.metadataGroup(Metadata.JSON_PROPERTY_CV)));
         } else {
             for (CV cv : metadata.getCv()) {
                 if (cv.getLabel() == null || cv.getLabel().isEmpty()) {
                     errorList.add(new MZTabError(
                             LogicalErrorType.NotDefineInMetadata, -1,
-                            Metadata.JSON_PROPERTY_CV + "[" + cv.getId() + "]-" + CV.JSON_PROPERTY_LABEL));
+                            Metadata.JSON_PROPERTY_CV + "[" + cv.getId() + "]-" + CV.JSON_PROPERTY_LABEL).location(Locations.metadataGroup(Metadata.JSON_PROPERTY_CV)));
                 }
                 if (cv.getFullName() == null || cv.getFullName().isEmpty()) {
                     errorList.add(new MZTabError(
                             LogicalErrorType.NotDefineInMetadata, -1,
-                            Metadata.JSON_PROPERTY_CV + "[" + cv.getId() + "]-" + CV.JSON_PROPERTY_FULL_NAME));
+                            Metadata.JSON_PROPERTY_CV + "[" + cv.getId() + "]-" + CV.JSON_PROPERTY_FULL_NAME).location(Locations.metadataGroup(Metadata.JSON_PROPERTY_CV)));
                 }
                 if (cv.getVersion() == null || cv.getVersion().isEmpty()) {
                     errorList.add(new MZTabError(
                             LogicalErrorType.NotDefineInMetadata, -1,
-                            Metadata.JSON_PROPERTY_CV + "[" + cv.getId() + "]-" + CV.JSON_PROPERTY_VERSION));
+                            Metadata.JSON_PROPERTY_CV + "[" + cv.getId() + "]-" + CV.JSON_PROPERTY_VERSION).location(Locations.metadataGroup(Metadata.JSON_PROPERTY_CV)));
                 }
                 if (cv.getUri() == null || cv.getUri().toASCIIString().isEmpty()) {
                     errorList.add(new MZTabError(
                             LogicalErrorType.NotDefineInMetadata, -1,
-                            Metadata.JSON_PROPERTY_CV + "[" + cv.getId() + "]-" + CV.JSON_PROPERTY_URI));
+                            Metadata.JSON_PROPERTY_CV + "[" + cv.getId() + "]-" + CV.JSON_PROPERTY_URI).location(Locations.metadataGroup(Metadata.JSON_PROPERTY_CV)));
                 }
             }
         }
