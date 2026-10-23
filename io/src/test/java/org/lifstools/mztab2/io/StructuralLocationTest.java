@@ -15,18 +15,23 @@
  */
 package org.lifstools.mztab2.io;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.fail;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.lifstools.mztab2.model.ValidationLocation.SectionEnum;
+import uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType;
 import uk.ac.ebi.pride.jmztab2.utils.errors.LogicalErrorType;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabError;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorType;
@@ -46,10 +51,37 @@ public class StructuralLocationTest {
     }
 
     @Test
+    void headerColumnKeepsTheCaseWrittenInTheFile() throws Exception {
+        MZTabError e = firstError("mixed-case-abundance-header.mzTab", FormatErrorType.AbundanceColumn);
+        assertEquals(SectionEnum.SMH, e.getLocation().getSection());
+        assertEquals("abundance_study_variable[A]", e.getLocation().getColumn());
+    }
+
+    @Test
     void dataRowErrorCarriesRowIndexAndColumn() throws Exception {
         MZTabError e = firstErrorOnLineStartingWith("bad-row-value.mzTab", "SML\t2\t");
         assertEquals(SectionEnum.SML, e.getLocation().getSection());
         assertEquals(1, e.getLocation().getRowIndex()); // second SML line
+        assertEquals("best_id_confidence_value", e.getLocation().getColumn());
+    }
+
+    @Test
+    void rowIndexHoldsBeyondTheFirstThousandLines(@TempDir Path dir) throws Exception {
+        List<String> lines = new ArrayList<>();
+        for (int i = 0; i < 3000; i++) {
+            lines.add("COM\tpadding " + i);
+        }
+        lines.addAll(Files.readAllLines(resource("bad-row-value.mzTab").toPath(), StandardCharsets.UTF_8));
+        Path file = dir.resolve("padded-bad-row-value.mzTab");
+        Files.write(file, lines, StandardCharsets.UTF_8);
+        int lineNumber = lines.indexOf(lines.stream().filter(l -> l.startsWith("SML\t2\t")).findFirst().orElseThrow()) + 1;
+
+        MZTabError e = parse(file.toFile()).getErrorList().getErrorList().stream()
+            .filter(err -> err.getLineNumber() == lineNumber)
+            .findFirst()
+            .orElseThrow();
+        assertEquals(SectionEnum.SML, e.getLocation().getSection());
+        assertEquals(1, e.getLocation().getRowIndex());
         assertEquals("best_id_confidence_value", e.getLocation().getColumn());
     }
 
@@ -81,8 +113,15 @@ public class StructuralLocationTest {
     }
 
     private static MzTabFileParser parse(String name) throws URISyntaxException, IOException {
-        MzTabFileParser parser = new MzTabFileParser(resource(name));
-        parser.parse(System.out, MZTabErrorType.Level.Info, 500);
+        return parse(resource(name));
+    }
+
+    private static MzTabFileParser parse(File file) throws IOException {
+        MzTabFileParser parser = new MzTabFileParser(file);
+        // The parser closes the stream it is given and writes to it afterwards:
+        // System.out would be closed for the whole test JVM, and
+        // OutputStream.nullOutputStream() throws once closed.
+        parser.parse(new ByteArrayOutputStream(), MZTabErrorType.Level.Info, 500);
         return parser;
     }
 
