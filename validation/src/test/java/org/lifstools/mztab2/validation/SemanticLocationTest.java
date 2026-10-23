@@ -98,6 +98,7 @@ public class SemanticLocationTest {
         ValidationMessage m = only(CrossCheckErrorType.RulePointerObjectNullOptional).get(0);
         assertEquals("sample", m.getLocation().getMetadataGroup());
         assertNull(m.getLocation().getMetadataKey());
+        assertNull(m.getLocation().getElementPath());
         assertEquals("sample_species_may", m.getRuleId());
         assertTrue(m.getSuggestion().startsWith("Add a value for sample[n]-species (optional)."));
     }

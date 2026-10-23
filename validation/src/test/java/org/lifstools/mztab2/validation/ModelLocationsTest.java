@@ -108,23 +108,28 @@ public class ModelLocationsTest {
 
     @Test
     public void rulePathGroups() {
-        assertEquals("sample", ModelLocations.ofRulePath("/metadata/sample/@species").getMetadataGroup());
-        assertEquals("general", ModelLocations.ofRulePath("/metadata/@quantificationMethod").getMetadataGroup());
+        ValidationLocation sample = ModelLocations.ofRulePath("/metadata/sample/@species");
+        assertEquals("sample", sample.getMetadataGroup());
+        assertNull(sample.getElementPath());
+        ValidationLocation scalar = ModelLocations.ofRulePath("/metadata/@quantificationMethod");
+        assertEquals("general", scalar.getMetadataGroup());
+        assertNull(scalar.getElementPath());
         assertEquals("id_confidence_measure", ModelLocations.ofRulePath("/metadata/@idConfidenceMeasure").getMetadataGroup());
         ValidationLocation t = ModelLocations.ofRulePath("/smallMoleculeEvidence/@msLevel");
         assertEquals(SectionEnum.SME, t.getSection());
         assertEquals("ms_level", t.getColumn());
         assertNull(t.getRowIndex());
+        assertNull(t.getElementPath());
     }
 
     @Test
     public void describeTexts() {
-        assertEquals("sample[n]-species", ModelLocations.describe(ModelLocations.ofRulePath("/metadata/sample/@species")));
+        assertEquals("sample[n]-species", ModelLocations.describeRulePath("/metadata/sample/@species"));
         assertEquals("best_id_confidence_measure in small molecule summary row 2",
             ModelLocations.describe(Locations.tableCell(SectionEnum.SML, 1, "best_id_confidence_measure")));
-        assertEquals("quantification_method", ModelLocations.describe(ModelLocations.ofRulePath("/metadata/@quantificationMethod")));
-        assertEquals("derivatization_agent[n]", ModelLocations.describe(ModelLocations.ofRulePath("/metadata/@derivatizationAgent")));
-        assertEquals("ms_level in small molecule evidence", ModelLocations.describe(ModelLocations.ofRulePath("/smallMoleculeEvidence/@msLevel")));
+        assertEquals("quantification_method", ModelLocations.describeRulePath("/metadata/@quantificationMethod"));
+        assertEquals("derivatization_agent[n]", ModelLocations.describeRulePath("/metadata/@derivatizationAgent"));
+        assertEquals("ms_level in small molecule evidence", ModelLocations.describeRulePath("/smallMoleculeEvidence/@msLevel"));
         assertEquals("instrument[2]-name", ModelLocations.describe(Locations.metadataKey("instrument[2]-name")));
     }
 

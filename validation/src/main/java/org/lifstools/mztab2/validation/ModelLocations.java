@@ -109,9 +109,11 @@ public final class ModelLocations {
      * The location closest to what a CV mapping rule's element path addresses:
      * the metadata group, or the table section and column (no row).
      *
+     * No element is matched, so no element path is set.
+     *
      * @param cvElementPath the rule's element path, e.g.
      * /metadata/sample/@species
-     * @return the location, with the rule's path as element path
+     * @return the location
      */
     public static ValidationLocation ofRulePath(String cvElementPath) {
         List<Segment> segments = parse(cvElementPath);
@@ -135,13 +137,27 @@ public final class ModelLocations {
                 }
             }
         }
-        return location.elementPath(cvElementPath);
+        return location;
+    }
+
+    /**
+     * Describes what a CV mapping rule's element path addresses in words for a
+     * suggested fix: the metadata key pattern (e.g. sample[n]-species or
+     * quantification_method), else the group or table column.
+     *
+     * @param cvElementPath the rule's element path, e.g.
+     * /metadata/sample/@species
+     * @return the description, or null if nothing is known
+     */
+    public static String describeRulePath(String cvElementPath) {
+        String pattern = keyPattern(parse(cvElementPath));
+        return pattern != null ? pattern : describe(ofRulePath(cvElementPath));
     }
 
     /**
      * Describes a location in words for a suggested fix: the metadata key, the
-     * key pattern of a rule's element path (e.g. sample[n]-species), or the
-     * table cell.
+     * table cell, or the key pattern of the element path (e.g.
+     * sample[n]-custom when the element has no id).
      *
      * @param location the location, may be null
      * @return the description, or null if nothing is known

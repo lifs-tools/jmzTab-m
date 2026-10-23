@@ -20,10 +20,8 @@ import org.lifstools.mztab2.cvmapping.RuleEvaluationResult;
 import org.lifstools.mztab2.cvmapping.SetOperations;
 import org.lifstools.mztab2.io.serialization.ParameterConverter;
 import org.lifstools.mztab2.model.Parameter;
-import org.lifstools.mztab2.model.ValidationLocation;
 import org.lifstools.mztab2.model.ValidationMessage;
 import org.lifstools.mztab2.validation.CvTermValidationHandler;
-import org.lifstools.mztab2.validation.ModelLocations;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -72,14 +70,8 @@ public class ExtraParametersValidationHandler implements CvTermValidationHandler
                             getCvElementPath(),
                         CvMappingUtils.niceToString(result.getRule()));
                 }
-                ValidationLocation location = ModelLocations.ofPointer(p.
-                    getKey());
-                messages.add(error.location(location).
-                    ruleId(result.getRule().
-                        getId()).
-                    fixContext(ModelLocations.describe(location),
-                        CvMappingUtils.allowedTermsText(result.getRule())).
-                    toValidationMessage());
+                messages.add(RuleMessages.atPointer(error, p.getKey(),
+                    result.getRule()));
             }
         }
         return messages;
