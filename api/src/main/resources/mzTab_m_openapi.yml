@@ -2494,3 +2494,45 @@ components:
         line_number:
           type: integer
           format: int64
+        suggestion:
+          type: string
+          description: Plain-language fix for the problem.
+        rule_id:
+          type: string
+          description: Identifier of the rule that produced the message.
+        location:
+          $ref: '#/components/schemas/ValidationLocation'
+    ValidationLocation:
+      type: object
+      description: Where in the mzTab-M document a validation message applies. A field is set only when it is known for certain.
+      properties:
+        section:
+          type: string
+          enum:
+            - mtd
+            - smh
+            - sml
+            - sfh
+            - smf
+            - seh
+            - sme
+            - com
+            - file
+          description: Document section the message applies to.
+        row_index:
+          type: integer
+          format: int32
+          minimum: 0
+          description: 0-based position of the row in the model list of its table (n-th SML, SMF or SME line in file order).
+        column:
+          type: string
+          description: Table column the message applies to, as named in the table header.
+        metadata_key:
+          type: string
+          description: Full MTD key the message applies to, e.g. sample[1]-species[1].
+        metadata_group:
+          type: string
+          description: Prefix of the MTD key before the first [, or general when the key has none.
+        element_path:
+          type: string
+          description: Pointer into the model that the rule evaluated, kept for diagnostics.
