@@ -17,9 +17,7 @@ package org.lifstools.mztab2.validation.handlers;
 
 import org.lifstools.mztab2.cvmapping.CvMappingUtils;
 import org.lifstools.mztab2.model.Parameter;
-import org.lifstools.mztab2.model.ValidationLocation;
 import org.lifstools.mztab2.model.ValidationMessage;
-import org.lifstools.mztab2.validation.ModelLocations;
 import info.psidev.cvmapping.CvMappingRule;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -48,18 +46,18 @@ public class EmptyRuleHandler {
                     getCvElementPath() + " did not yield any selected elements!");
             switch (rule.getRequirementLevel()) {
                 case MAY:
-                    return Arrays.asList(toMessage(new MZTabError(
+                    return Arrays.asList(RuleMessages.atRulePath(new MZTabError(
                             CrossCheckErrorType.RulePointerObjectNullOptional, -1,
                             rule.getCvElementPath(), rule.getId(), "optional",
                             CvMappingUtils.niceToString(rule)), rule));
                 case SHOULD:
-                    return Arrays.asList(toMessage(new MZTabError(
+                    return Arrays.asList(RuleMessages.atRulePath(new MZTabError(
                             CrossCheckErrorType.RulePointerObjectNullRecommended, -1,
                             rule.getCvElementPath(), rule.getId(), "recommended",
                             CvMappingUtils.niceToString(rule)), rule));
                 case MUST:
                     //The object "{0}" accessed by {1} is {2}, but was null or empty. Allowed terms are defined in {3}
-                    return Arrays.asList(toMessage(new MZTabError(
+                    return Arrays.asList(RuleMessages.atRulePath(new MZTabError(
                             CrossCheckErrorType.RulePointerObjectNullRequired, -1,
                             rule.getCvElementPath(), rule.getId(), "required",
                             CvMappingUtils.niceToString(rule)), rule));
@@ -75,21 +73,6 @@ public class EmptyRuleHandler {
             return new ArrayList<>();
         }
 
-    }
-
-    /**
-     * Points the message at the metadata group or table column that the rule
-     * addresses, since no element was selected.
-     */
-    private static ValidationMessage toMessage(MZTabError error,
-            CvMappingRule rule) {
-        ValidationLocation location = ModelLocations.ofRulePath(rule.
-                getCvElementPath());
-        return error.location(location).
-                ruleId(rule.getId()).
-                fixContext(ModelLocations.describe(location),
-                        CvMappingUtils.allowedTermsText(rule)).
-                toValidationMessage();
     }
 
 }

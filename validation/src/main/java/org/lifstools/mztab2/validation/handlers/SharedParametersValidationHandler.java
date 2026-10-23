@@ -20,10 +20,8 @@ import org.lifstools.mztab2.cvmapping.RuleEvaluationResult;
 import org.lifstools.mztab2.cvmapping.SetOperations;
 import org.lifstools.mztab2.io.serialization.ParameterConverter;
 import org.lifstools.mztab2.model.Parameter;
-import org.lifstools.mztab2.model.ValidationLocation;
 import org.lifstools.mztab2.model.ValidationMessage;
 import org.lifstools.mztab2.validation.CvTermValidationHandler;
-import org.lifstools.mztab2.validation.ModelLocations;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -69,7 +67,7 @@ public class SharedParametersValidationHandler implements CvTermValidationHandle
                                 getCvLabel(), allowedParameter.getCvLabel(),
                         CvMappingUtils.niceToString(result.getRule()));
 
-                messages.add(toMessage(error, p.getKey(), result));
+                messages.add(RuleMessages.atPointer(error, p.getKey(), result.getRule()));
             }
             if (!Optional.ofNullable(p.getValue().
                     getCvAccession()).
@@ -84,7 +82,7 @@ public class SharedParametersValidationHandler implements CvTermValidationHandle
                                 getCvAccession(), allowedParameter.getCvAccession(),
                         CvMappingUtils.niceToString(result.getRule()));
 
-                messages.add(toMessage(error, p.getKey(), result));
+                messages.add(RuleMessages.atPointer(error, p.getKey(), result.getRule()));
             }
             if (!Optional.ofNullable(p.getValue().
                     getName()).
@@ -99,23 +97,10 @@ public class SharedParametersValidationHandler implements CvTermValidationHandle
                                 getName(), allowedParameter.getName(),
                         CvMappingUtils.niceToString(result.getRule()));
 
-                messages.add(toMessage(error, p.getKey(), result));
+                messages.add(RuleMessages.atPointer(error, p.getKey(), result.getRule()));
             }
         }
         return messages;
     }
 
-    /**
-     * Points the message at the element that holds the malformed parameter.
-     */
-    private static ValidationMessage toMessage(MZTabError error,
-            Pointer pointer, RuleEvaluationResult result) {
-        ValidationLocation location = ModelLocations.ofPointer(pointer);
-        return error.location(location).
-                ruleId(result.getRule().
-                        getId()).
-                fixContext(ModelLocations.describe(location),
-                        CvMappingUtils.allowedTermsText(result.getRule())).
-                toValidationMessage();
-    }
 }
