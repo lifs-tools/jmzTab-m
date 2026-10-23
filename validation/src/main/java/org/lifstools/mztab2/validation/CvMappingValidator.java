@@ -310,7 +310,8 @@ public class CvMappingValidator implements Validator<MzTab> {
                 re);
             MZTabError error = new MZTabError(
                 CrossCheckErrorType.SemanticValidationException, -1, re.
-                    getMessage());
+                    getMessage()).
+                ruleId(rule.getId());
             messages.add(error.toValidationMessage());
         }
         return messages.isEmpty() ? Collections.emptyList() : messages;
