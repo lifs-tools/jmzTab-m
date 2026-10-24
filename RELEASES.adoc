@@ -42,3 +42,6 @@ Finally, create a release from the tag at https://github.com/lifs-tools/jmzTab-m
 === 2.1.0 (unreleased)
 
 . Validation messages may carry `suggestion`, `rule_id` and `location` (optional, additive). Semantic messages about terms that are not allowed are now reported once per affected element, so their count can rise: at most 100 messages per rule and term name their element, further elements with the same term are reported together in one message without location that gives their number.
+. A parameter with an undefined cv label (Error-3013) is reported once, where it is defined. Before, `CvMappingValidator` ran the check twice, and the check reported the parameter again for every reference that reaches it (ms_run, assay, study variable, evidence spectra_ref), e.g. 16 messages for one instrument name.
+. The parser builds the model unless there is an error; warnings and infos on data lines no longer drop it. Before, a file with such a warning (e.g. an unsupported `ms_run[1-n]-id_format`) got a model at level Error but none at level Info or Warn, so the reference, colunit and profile checks that need the model did not run and can now report further messages.
+. `MZTabErrorList.addAll` applies the level filter and the maximum number of messages like `add`; before, messages added through it were reported at every level. New `MZTabErrorList.hasErrors()`.
