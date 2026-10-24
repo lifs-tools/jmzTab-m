@@ -41,4 +41,4 @@ Finally, create a release from the tag at https://github.com/lifs-tools/jmzTab-m
 
 === 1.0.8 (unreleased)
 
-. Validation messages may carry `suggestion`, `rule_id` and `location` (optional, additive). Semantic messages about terms that are not allowed are now reported once per affected element, so their count can rise.
+. Validation messages may carry `suggestion`, `rule_id` and `location` (optional, additive). Semantic messages about terms that are not allowed are now reported once per affected element, so their count can rise: at most 100 messages per rule and term name their element, further elements with the same term are reported together in one message without location that gives their number.

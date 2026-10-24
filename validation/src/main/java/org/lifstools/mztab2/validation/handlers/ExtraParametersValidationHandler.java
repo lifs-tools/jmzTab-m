@@ -23,7 +23,10 @@ import org.lifstools.mztab2.model.Parameter;
 import org.lifstools.mztab2.model.ValidationMessage;
 import org.lifstools.mztab2.validation.CvTermValidationHandler;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import org.apache.commons.jxpath.Pointer;
 import org.apache.commons.lang3.tuple.Pair;
@@ -36,6 +39,13 @@ import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabError;
  */
 public class ExtraParametersValidationHandler implements CvTermValidationHandler {
 
+    /**
+     * The maximum number of messages with an exact location per rule and term;
+     * further elements with the same term are reported in one message without
+     * location.
+     */
+    static final int MAX_LOCATED_PER_TERM = 100;
+
     @Override
     public List<ValidationMessage> handleParameters(RuleEvaluationResult result,
         boolean errorOnTermNotInRule) {
@@ -47,33 +57,43 @@ public class ExtraParametersValidationHandler implements CvTermValidationHandler
             result.getAllowedParameters().
                 keySet());
         if (!extraObjectParams.isEmpty()) {
-            // one message per element that uses such a parameter
+            // one message per element that uses such a parameter, up to
+            // MAX_LOCATED_PER_TERM per term, then one for the further elements
+            Map<String, Integer> elementsPerTerm = new HashMap<>();
+            Map<String, Parameter> firstFurther = new LinkedHashMap<>();
             for (Pair<Pointer, Parameter> p : result.getFilteredSelection()) {
-                if (!extraObjectParams.contains(p.getValue().
+                String accession = p.getValue().
                     getCvAccession().
-                    toUpperCase())) {
+                    toUpperCase();
+                if (!extraObjectParams.contains(accession)) {
                     continue;
                 }
-                MZTabError error;
-                if (errorOnTermNotInRule) {
-                    error = new MZTabError(CrossCheckErrorType.CvTermNotAllowed,
-                        -1,
-                        new ParameterConverter().convert(p.
-                            getValue()), result.getRule().
-                            getCvElementPath(),
-                        CvMappingUtils.niceToString(result.getRule()));
-                } else {
-                    error = new MZTabError(CrossCheckErrorType.CvTermNotInRule,
-                        -1,
-                        new ParameterConverter().convert(p.
-                            getValue()), result.getRule().
-                            getCvElementPath(),
-                        CvMappingUtils.niceToString(result.getRule()));
+                int elements = elementsPerTerm.merge(accession, 1, Integer::sum);
+                if (elements > MAX_LOCATED_PER_TERM) {
+                    firstFurther.putIfAbsent(accession, p.getValue());
+                    continue;
                 }
-                messages.add(RuleMessages.atPointer(error, p.getKey(),
-                    result.getRule()));
+                messages.add(RuleMessages.atPointer(error(result, p.getValue(),
+                    errorOnTermNotInRule), p.getKey(), result.getRule()));
             }
+            firstFurther.forEach((accession, parameter) -> messages.add(
+                RuleMessages.onFurtherElements(error(result, parameter,
+                    errorOnTermNotInRule),
+                    elementsPerTerm.get(accession) - MAX_LOCATED_PER_TERM,
+                    result.getRule())));
         }
         return messages;
+    }
+
+    private static MZTabError error(RuleEvaluationResult result,
+        Parameter parameter, boolean errorOnTermNotInRule) {
+        return new MZTabError(errorOnTermNotInRule
+            ? CrossCheckErrorType.CvTermNotAllowed
+            : CrossCheckErrorType.CvTermNotInRule,
+            -1,
+            new ParameterConverter().convert(parameter),
+            result.getRule().
+                getCvElementPath(),
+            CvMappingUtils.niceToString(result.getRule()));
     }
 }

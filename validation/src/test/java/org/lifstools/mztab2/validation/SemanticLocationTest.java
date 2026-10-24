@@ -23,6 +23,7 @@ import info.psidev.cvmapping.CvReference;
 import info.psidev.cvmapping.CvTerm;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -94,6 +95,36 @@ public class SemanticLocationTest {
     }
 
     @Test
+    public void notAllowedTermIsLocatedOnTheFirstHundredElementsThenSummarised() {
+        List<ValidationMessage> ms = notAllowedInstrumentNames(
+            Collections.nCopies(250, "MS:1000040"));
+        assertEquals(101, ms.size());
+        List<ValidationMessage> located = ms.subList(0, 100);
+        for (int i = 0; i < located.size(); i++) {
+            assertEquals("instrument[" + (i + 1) + "]-name",
+                located.get(i).getLocation().getMetadataKey());
+        }
+        ValidationMessage summary = ms.get(100);
+        assertNull(summary.getLocation());
+        assertEquals("instrument_name_may", summary.getRuleId());
+        assertEquals(located.get(0).getMessage(), summary.getMessage());
+        assertEquals(located.get(0).getCode(), summary.getCode());
+        assertTrue(summary.getSuggestion().contains(
+            "Replace the term [MS, MS:1000040, m/z, ] on 150 further elements with a term"),
+            summary.getSuggestion());
+    }
+
+    @Test
+    public void notAllowedTermsBelowTheCapAreAllLocated() {
+        List<ValidationMessage> ms = notAllowedInstrumentNames(List.of(
+            "MS:1000040", "MS:1000041", "MS:1000040", "MS:1000041",
+            "MS:1000040", "MS:1000041"));
+        assertEquals(6, ms.size());
+        ms.forEach(m -> assertNotNull(m.getLocation(), m.getSuggestion()));
+        ms.forEach(m -> assertFalse(m.getSuggestion().contains("further elements")));
+    }
+
+    @Test
     public void missingElementPointsAtTheGroup() {
         ValidationMessage m = only(CrossCheckErrorType.RulePointerObjectNullOptional).get(0);
         assertEquals("sample", m.getLocation().getMetadataGroup());
@@ -150,6 +181,29 @@ public class SemanticLocationTest {
                 CvTermsCombinationLogic.AND,
                 term("MS", "MS:1000031", "instrument model", true, false),
                 term("MS", "MS:1000040", "m/z", false, true))));
+    }
+
+    /**
+     * Validates a file whose instruments are named by the given accessions
+     * against a rule that allows only instrument models.
+     */
+    private static List<ValidationMessage> notAllowedInstrumentNames(
+        List<String> accessions) {
+        MzTab file = MzTabValidatorTest.createTestFile();
+        List<Instrument> instruments = new ArrayList<>();
+        for (int i = 0; i < accessions.size(); i++) {
+            String accession = accessions.get(i);
+            instruments.add(new Instrument().id(i + 1).name(param("MS",
+                accession, "MS:1000040".equals(accession) ? "m/z" : "charge number")));
+        }
+        file.getMetadata().setInstrument(instruments);
+        return CvMappingValidator.of(mapping(
+            rule("instrument_name_may", "/metadata/instrument/@name",
+                CvTermsCombinationLogic.OR,
+                term("MS", "MS:1000031", "instrument model", true, true))),
+            LOOKUP, true).validate(file).stream().
+            filter(m -> is(m, CrossCheckErrorType.CvTermNotAllowed)).
+            collect(Collectors.toList());
     }
 
     private List<ValidationMessage> only(MZTabErrorType type) {
