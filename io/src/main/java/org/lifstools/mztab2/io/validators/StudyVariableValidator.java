@@ -21,6 +21,7 @@ import org.lifstools.mztab2.model.StudyVariable;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.SortedMap;
+import uk.ac.ebi.pride.jmztab2.utils.errors.Locations;
 import uk.ac.ebi.pride.jmztab2.utils.errors.LogicalErrorType;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabError;
 import uk.ac.ebi.pride.jmztab2.utils.parser.MZTabParserContext;
@@ -40,7 +41,7 @@ public class StudyVariableValidator implements RefiningValidator<Metadata> {
         List<MZTabError> errorList = new LinkedList<>();
         if (svMap.isEmpty()) {
             errorList.add(new MZTabError(
-                    LogicalErrorType.SingleStudyVariableName, -1));
+                    LogicalErrorType.SingleStudyVariableName, -1).location(Locations.metadataGroup(Metadata.JSON_PROPERTY_STUDY_VARIABLE)));
         } else {
             // Resolve deferred assay_refs against the (now complete) assay map.
             // Referenced assays may have been defined after the study variable.
@@ -57,7 +58,7 @@ public class StudyVariableValidator implements RefiningValidator<Metadata> {
                                 LogicalErrorType.NotDefineInMetadata, -1,
                                 Metadata.JSON_PROPERTY_STUDY_VARIABLE + "[" + sv.getId() + "]-"
                                 + StudyVariable.JSON_PROPERTY_ASSAY_REFS
-                                + "\t" + Metadata.JSON_PROPERTY_ASSAY + "[" + refId + "]"));
+                                + "\t" + Metadata.JSON_PROPERTY_ASSAY + "[" + refId + "]").location(Locations.metadataGroup(Metadata.JSON_PROPERTY_STUDY_VARIABLE)));
                     } else {
                         refs.set(i, resolved);
                     }
@@ -67,7 +68,7 @@ public class StudyVariableValidator implements RefiningValidator<Metadata> {
                 StudyVariable sv = svMap.get(Integer.valueOf(1));
                 if (sv.getName() == null || sv.getName().isEmpty()) {
                     errorList.add(new MZTabError(
-                            LogicalErrorType.SingleStudyVariableName, -1));
+                            LogicalErrorType.SingleStudyVariableName, -1).location(Locations.metadataGroup(Metadata.JSON_PROPERTY_STUDY_VARIABLE)));
                 }
             } else {
                 boolean undefinedDefined = false;
@@ -76,19 +77,19 @@ public class StudyVariableValidator implements RefiningValidator<Metadata> {
                     if (sv == null) {
                         errorList.add(new MZTabError(
                                 LogicalErrorType.NotDefineInMetadata, -1,
-                                Metadata.JSON_PROPERTY_STUDY_VARIABLE + "[" + id + "]" + "\t<" + StudyVariable.JSON_PROPERTY_NAME + ">"));
+                                Metadata.JSON_PROPERTY_STUDY_VARIABLE + "[" + id + "]" + "\t<" + StudyVariable.JSON_PROPERTY_NAME + ">").location(Locations.metadataGroup(Metadata.JSON_PROPERTY_STUDY_VARIABLE)));
                     } else {
                         if (sv.getName() == null) {
                             errorList.add(new MZTabError(
                                     LogicalErrorType.NotDefineInMetadata, -1,
-                                    Metadata.JSON_PROPERTY_STUDY_VARIABLE + "[" + id + "]" + "\t<" + StudyVariable.JSON_PROPERTY_NAME + ">"));
+                                    Metadata.JSON_PROPERTY_STUDY_VARIABLE + "[" + id + "]" + "\t<" + StudyVariable.JSON_PROPERTY_NAME + ">").location(Locations.metadataGroup(Metadata.JSON_PROPERTY_STUDY_VARIABLE)));
                         } else {
                             if (sv.getName().equals("undefined")) {
                                 if (undefinedDefined) {
                                     errorList.add(new MZTabError(
                                             LogicalErrorType.UndefinedStudyVariableNameOnceOnly, -1,
                                             Metadata.JSON_PROPERTY_STUDY_VARIABLE + "[" + id + "]" + "\t<" + StudyVariable.JSON_PROPERTY_NAME
-                                            + ">"));
+                                            + ">").location(Locations.metadataKey(Metadata.JSON_PROPERTY_STUDY_VARIABLE + "[" + id + "]")));
                                 } else {
                                     undefinedDefined = true;
                                 }
@@ -98,14 +99,14 @@ public class StudyVariableValidator implements RefiningValidator<Metadata> {
                                 getDescription() == null) {
                             errorList.add(new MZTabError(
                                     LogicalErrorType.NotDefineInMetadata, -1,
-                                    Metadata.JSON_PROPERTY_STUDY_VARIABLE + "[" + id + "]-" + StudyVariable.JSON_PROPERTY_DESCRIPTION));
+                                    Metadata.JSON_PROPERTY_STUDY_VARIABLE + "[" + id + "]-" + StudyVariable.JSON_PROPERTY_DESCRIPTION).location(Locations.metadataGroup(Metadata.JSON_PROPERTY_STUDY_VARIABLE)));
                         }
                         if (sv.
                                 getAssayRefs() == null || sv.getAssayRefs().
                                         isEmpty()) {
                             errorList.add(new MZTabError(
                                     LogicalErrorType.AssayRefs, -1,
-                                    Metadata.JSON_PROPERTY_STUDY_VARIABLE + "[" + id + "]-" + StudyVariable.JSON_PROPERTY_ASSAY_REFS));
+                                    Metadata.JSON_PROPERTY_STUDY_VARIABLE + "[" + id + "]-" + StudyVariable.JSON_PROPERTY_ASSAY_REFS).location(Locations.metadataGroup(Metadata.JSON_PROPERTY_STUDY_VARIABLE)));
                         }
                     }
                 }

@@ -186,7 +186,7 @@ public class SMFLineParser extends MZTabDataLineParser<SmallMoleculeFeature> {
                             FormatErrorType.RegexMismatch,
                             lineNumber, elementPropertyName,
                             element,
-                            "" + (i + 1), regularExpression));
+                            "" + (i + 1), regularExpression).column(elementPropertyName));
                     }
                 }
             }

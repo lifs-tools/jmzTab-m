@@ -34,6 +34,7 @@ import org.apache.commons.jxpath.JXPathContext;
 import org.apache.commons.jxpath.Pointer;
 import org.apache.commons.lang3.tuple.Pair;
 import uk.ac.ebi.pride.jmztab2.utils.errors.CrossCheckErrorType;
+import uk.ac.ebi.pride.jmztab2.utils.errors.Locations;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabError;
 
 /**
@@ -88,7 +89,8 @@ public class CvDefinitionValidationHandler implements Validator<MzTab> {
                         MZTabError error = new MZTabError(
                             CrossCheckErrorType.CvUndefinedInMetadata, -1,
                             param.getCvLabel(),
-                            new ParameterConverter().convert(param));
+                            new ParameterConverter().convert(param)).
+                            location(ModelLocations.ofPointer(t.getKey()));
                         messages.add(error.toValidationMessage());
                     }
                 }
@@ -104,6 +106,12 @@ public class CvDefinitionValidationHandler implements Validator<MzTab> {
                 MZTabError error = new MZTabError(
                     CrossCheckErrorType.CvUnused, -1,
                     cvLabel);
+                Integer id = cvTerms.get(cvLabel).
+                    getId();
+                if (id != null) {
+                    error.location(Locations.metadataKey(
+                        "cv[" + id + "]-label"));
+                }
                 messages.add(error.toValidationMessage());
             });
         return messages;

@@ -64,6 +64,9 @@ public class MsRunUsiIdentifierTest {
         assertEquals(1, warnings.size(), () -> "Expected one warning, got: " + warnings);
         assertEquals(MZTabErrorType.Level.Warn, warnings.get(0).getType().getLevel());
         assertTrue(warnings.get(0).getMessage().contains(usiIdentifier));
+        assertEquals("ms_run[1]-usi_identifier", warnings.get(0).getLocation().getMetadataKey());
+        assertEquals("ms_run", warnings.get(0).getLocation().getMetadataGroup());
+        assertTrue(warnings.get(0).getSuggestion().contains(usiIdentifier));
     }
 
     private List<MZTabError> usiIdentifierWarnings(String usiIdentifier) throws IOException {

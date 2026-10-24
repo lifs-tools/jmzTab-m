@@ -21,6 +21,7 @@ import org.lifstools.mztab2.model.Parameter;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.SortedMap;
+import uk.ac.ebi.pride.jmztab2.utils.errors.Locations;
 import uk.ac.ebi.pride.jmztab2.utils.errors.LogicalErrorType;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabError;
 import uk.ac.ebi.pride.jmztab2.utils.parser.MZTabParserContext;
@@ -41,14 +42,14 @@ public class MsRunValidator implements RefiningValidator<Metadata> {
                     getLocation() == null) {
                 errorList.add(new MZTabError(
                         LogicalErrorType.NotDefineInMetadata, -1,
-                        Metadata.JSON_PROPERTY_MS_RUN + "[" + id + "]-" + MsRun.JSON_PROPERTY_LOCATION));
+                        Metadata.JSON_PROPERTY_MS_RUN + "[" + id + "]-" + MsRun.JSON_PROPERTY_LOCATION).location(Locations.metadataGroup(Metadata.JSON_PROPERTY_MS_RUN)));
             }
             List<Parameter> scanPolarity = runMap.get(id).
                     getScanPolarity();
             if (scanPolarity == null || scanPolarity.isEmpty()) {
                 errorList.add(new MZTabError(
                         LogicalErrorType.NotDefineInMetadata, -1,
-                        Metadata.JSON_PROPERTY_MS_RUN + "[" + id + "]-" + MsRun.JSON_PROPERTY_SCAN_POLARITY));
+                        Metadata.JSON_PROPERTY_MS_RUN + "[" + id + "]-" + MsRun.JSON_PROPERTY_SCAN_POLARITY).location(Locations.metadataGroup(Metadata.JSON_PROPERTY_MS_RUN)));
             }
 
         }

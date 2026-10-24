@@ -81,7 +81,7 @@ public class XorValidationHandler implements CvTermValidationHandler {
                         getCvElementPath(), CvMappingUtils.
                         niceToString(
                             result.getRule()));
-                messages.add(error.toValidationMessage());
+                messages.add(RuleMessages.atRulePath(error, result.getRule()));
             }
         } else if (matchedParameters.size() > 1) {
             //Only one of the provided cv terms for "{1}" {0} be reported. You defined terms "{2}". Allowed terms are defined in rule "{3}".
@@ -97,7 +97,7 @@ public class XorValidationHandler implements CvTermValidationHandler {
                     value(), result.getRule().
                     getCvElementPath(), definedParameters,
                 CvMappingUtils.niceToString(result.getRule()));
-            messages.add(error.toValidationMessage());
+            messages.add(RuleMessages.atRulePath(error, result.getRule()));
         }
         return messages;
     }
