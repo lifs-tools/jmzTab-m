@@ -242,6 +242,27 @@ public class SemanticLocationTest {
     }
 
     @Test
+    public void aTermTheRuleDoesNotAllowHasTheLevelOfTheRule() {
+        Map<RequirementLevel, String> expected = Map.of(
+            RequirementLevel.MUST, "[Error-3005]",
+            RequirementLevel.SHOULD, "[Warn-3005]",
+            RequirementLevel.MAY, "[Info-3005]");
+        expected.forEach((level, code) -> {
+            CvMappingRule rule = rule("instrument_name", "/metadata/instrument/@name",
+                CvTermsCombinationLogic.OR,
+                term("MS", "MS:1000031", "instrument model", true, true));
+            rule.setRequirementLevel(level);
+            List<ValidationMessage> ms = CvMappingValidator.of(mapping(rule), LOOKUP, true).
+                validate(mzTab).stream().
+                filter(m -> is(m, CrossCheckErrorType.CvTermNotAllowed)).
+                collect(Collectors.toList());
+            assertEquals(2, ms.size(), () -> level + ": " + ms);
+            ms.forEach(m -> assertTrue(m.getCode().startsWith(code), () -> level + ": " + m.getCode()));
+            assertTrue(ms.get(0).getSuggestion().startsWith("Replace"), ms.get(0).getSuggestion());
+        });
+    }
+
+    @Test
     public void aRuleThatFailsIsReportedAloneAndTheOtherRulesStillRun() {
         // AND with several terms that allow children is rejected by the rule handler
         CvMappingRule broken = rule("broken_and", "/metadata/@quantificationMethod",
@@ -297,8 +318,9 @@ public class SemanticLocationTest {
         return messages.stream().filter(m -> is(m, type)).collect(Collectors.toList());
     }
 
+    /** By code only: the level of rule messages follows the rule's requirement level. */
     private static boolean is(ValidationMessage message, MZTabErrorType type) {
-        return message.getCode().startsWith("[" + type.getLevel() + "-" + type.getCode() + "]");
+        return message.getCode().matches("(?s)\\[[A-Za-z]+-" + type.getCode() + "\\].*");
     }
 
     private static List<String> keys(List<ValidationMessage> messages) {
