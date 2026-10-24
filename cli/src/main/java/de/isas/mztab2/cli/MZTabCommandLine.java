@@ -224,9 +224,12 @@ public class MZTabCommandLine {
             LOGGER.info("Redirecting validator output to file {}", outFile);
         }
 
-        try (PrintStream out = outFile == null ? System.out : new PrintStream(
-            new BufferedOutputStream(
-                new FileOutputStream(outFile, false)), true, "UTF8")) {
+        PrintStream out = System.out;
+        try {
+            if (outFile != null) {
+                out = new PrintStream(new BufferedOutputStream(
+                    new FileOutputStream(outFile, false)), true, "UTF8");
+            }
             System.setOut(out);
             System.setErr(out);
             LOGGER.info(getAppInfo());
@@ -254,7 +257,13 @@ public class MZTabCommandLine {
         } catch (IOException ex) {
             LOGGER.error(
                 "Caught an IO Exception: ", ex);
-            return false;
+            return true;
+        } finally {
+            // Only close a stream opened here: closing System.out would
+            // swallow all output that follows, including the error above.
+            if (outFile != null) {
+                out.close();
+            }
         }
     }
 
@@ -285,9 +294,20 @@ public class MZTabCommandLine {
             if (fromJson) {
                 File tmpFile = new File(inFile.getParentFile(),
                     inFile.getName() + ".mztab");
+                LOGGER.info("Parsing '{}', converting to mzTab file: '{}'",
+                    inFile.getAbsolutePath(), tmpFile.getAbsolutePath());
                 MzTabNonValidatingWriter w = new MzTabNonValidatingWriter();
                 ObjectMapper mapper = new ObjectMapper();
-                MzTab mzTab = mapper.readValue(inFile, MzTab.class);
+                MzTab mzTab;
+                try {
+                    mzTab = mapper.readValue(inFile, MzTab.class);
+                } catch (IOException ex) {
+                    // Do not continue: the JSON file itself is not mzTab and
+                    // would only produce misleading validation errors.
+                    LOGGER.error("Could not read '{}' as mzTab-M JSON: {}",
+                        inFile.getAbsolutePath(), ex.getMessage());
+                    return true;
+                }
                 LOGGER.info("Writing JSON as mzTab to file: {}", tmpFile.
                     getAbsolutePath());
                 w.write(tmpFile.toPath(), mzTab);

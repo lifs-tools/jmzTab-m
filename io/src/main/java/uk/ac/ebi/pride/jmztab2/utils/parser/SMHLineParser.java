@@ -147,16 +147,16 @@ public class SMHLineParser extends MZTabHeaderLineParser {
             new MZTabException(new MZTabError(LogicalErrorType.NoSmallMoleculeQuantificationUnit, lineNumber)));
 
         if (metadata.getSmallMoleculeIdentificationReliability() == null) {
-            throw new MZTabException(new MZTabError(LogicalErrorType.NoSmallMoleculeIdentificationReliability, lineNumber));
+            errorList.add(new MZTabError(LogicalErrorType.NoSmallMoleculeIdentificationReliability, lineNumber));
+        }
+        for (Assay assay : metadata.getAssay()) {
+            String assayLabel = "_"+Metadata.Properties.assay+"[" + assay.getId() + "]";
+            refineOptionalColumn(Section.Small_Molecule_Header, "abundance" + assayLabel);
         }
         for (StudyVariable studyVariable : metadata.getStudyVariable()) {
             String svLabel = "_"+Metadata.Properties.studyVariable+"[" + studyVariable.getId() + "]";
             refineOptionalColumn(Section.Small_Molecule_Header, "abundance" + svLabel);
             refineOptionalColumn(Section.Small_Molecule_Header, "abundance_variation" + svLabel);
-        }
-        for (Assay assay : metadata.getAssay()) {
-            String assayLabel = "_"+Metadata.Properties.assay+"[" + assay.getId() + "]";
-            refineOptionalColumn(Section.Small_Molecule_Header, "abundance" + assayLabel);
         }
     }
 }
