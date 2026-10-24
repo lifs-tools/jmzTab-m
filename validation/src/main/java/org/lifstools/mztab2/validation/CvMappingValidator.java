@@ -42,6 +42,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Unmarshaller;
@@ -293,13 +294,24 @@ public class CvMappingValidator implements Validator<MzTab> {
     }
 
     /**
+     * Metadata fields that the profile requires only together with a table,
+     * as in MzTabProfileValidator.
+     */
+    private static final Map<String, String> TABLE_OF_FIELD = Map.of(
+        "/metadata/@idConfidenceMeasure", "smallMoleculeEvidence",
+        "/metadata/@smallMoleculeQuantificationUnit", "smallMoleculeSummary",
+        "/metadata/@smallMoleculeFeatureQuantificationUnit", "smallMoleculeFeature");
+
+    /**
      * Returns true if the element path addresses a table (small molecule
-     * summary, feature or evidence) that has no rows. A rule on a table's
-     * column doesn't apply to a file without that table, e.g. a summary-only
-     * file has no evidence table.
+     * summary, feature or evidence), or a metadata field required only with
+     * that table, and the table has no rows. Such a rule doesn't apply to a
+     * file without that table, e.g. a summary-only file has no evidence table
+     * and needs no id_confidence_measure.
      */
     static boolean isTableAbsent(MzTab mzTab, String elementPath) {
-        String table = elementPath.replaceFirst("^/([^/\\[@]+).*$", "$1");
+        String table = TABLE_OF_FIELD.getOrDefault(elementPath,
+            elementPath.replaceFirst("^/([^/\\[@]+).*$", "$1"));
         List<?> rows;
         switch (table) {
             case "smallMoleculeSummary":
