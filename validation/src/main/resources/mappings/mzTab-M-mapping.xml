@@ -19,6 +19,7 @@ Alternative term roots should either be expressed as OR (for choose any, even fr
     <CvReference cvName="BTO" cvIdentifier="BTO"/>
     <CvReference cvName="NCBITaxon" cvIdentifier="NCBITaxon"/>
     <CvReference cvName="UO" cvIdentifier="UO"/>
+    <CvReference cvName="NCIT" cvIdentifier="NCIT"/>
     <CvReference cvName="PRIDE" cvIdentifier="PRIDE"/>
     <CvReference cvName="MSIO" cvIdentifier="MSIO"/>
     <CvReference cvName="CHEBI" cvIdentifier="CHEBI"/>
@@ -49,7 +50,7 @@ Alternative term roots should either be expressed as OR (for choose any, even fr
     </CvMappingRule> 
         
     <!-- sample processing -->
-    <CvMappingRule id="sample_processing_may" cvElementPath="/metadata/sampleProcessing/@sampleProcessing" requirementLevel="MAY"  scopePath="/metadata/sampleprocessing" cvTermsCombinationLogic="AND">
+    <CvMappingRule id="sample_processing_may" cvElementPath="/metadata/sampleProcessing/@sampleProcessing" requirementLevel="MAY"  scopePath="/metadata/sampleProcessing" cvTermsCombinationLogic="AND">
       <CvTerm termAccession="OBI:0000094" useTerm="false" termName="material processing" isRepeatable="true" allowChildren="true" cvIdentifierRef="MSIO"></CvTerm>
     </CvMappingRule> 
         
@@ -110,11 +111,11 @@ Alternative term roots should either be expressed as OR (for choose any, even fr
     </CvMappingRule>
         
     <!-- study variable -->
-    <CvMappingRule id="study_variable_average_function_may" cvElementPath="/metadata/studyVariable/@averageFunction" requirementLevel="MAY"  scopePath="/metadata/studyvariable" cvTermsCombinationLogic="AND">
+    <CvMappingRule id="study_variable_average_function_may" cvElementPath="/metadata/studyVariable/@averageFunction" requirementLevel="MAY"  scopePath="/metadata/studyVariable" cvTermsCombinationLogic="AND">
       <CvTerm termAccession="MS:1002882" useTerm="false" termName="study variable average function" isRepeatable="false" allowChildren="true" cvIdentifierRef="MS"></CvTerm>
     </CvMappingRule>
         
-    <CvMappingRule id="study_variable_variation_function_may" cvElementPath="/metadata/studyVariable/@variationFunction" requirementLevel="MAY"  scopePath="/metadata/studyvariable" cvTermsCombinationLogic="AND">
+    <CvMappingRule id="study_variable_variation_function_may" cvElementPath="/metadata/studyVariable/@variationFunction" requirementLevel="MAY"  scopePath="/metadata/studyVariable" cvTermsCombinationLogic="AND">
       <CvTerm termAccession="MS:1002884" useTerm="false" termName="study variable variation function" isRepeatable="false" allowChildren="true" cvIdentifierRef="MS"></CvTerm>
     </CvMappingRule>
         
@@ -129,6 +130,9 @@ Alternative term roots should either be expressed as OR (for choose any, even fr
       <CvTerm termAccession="UO:0000051" useTerm="false" termName="concentration unit" isRepeatable="false" allowChildren="true" cvIdentifierRef="UO"></CvTerm>
       <CvTerm termAccession="MS:1000043" useTerm="false" termName="intensity unit" isRepeatable="false" allowChildren="true" cvIdentifierRef="MS"></CvTerm>
       <CvTerm termAccession="UO:0000006" useTerm="false" termName="substance unit" isRepeatable="false" allowChildren="true" cvIdentifierRef="UO"></CvTerm>
+      <CvTerm termAccession="NCIT:C48207" useTerm="false" termName="Unit of Concentration" isRepeatable="false" allowChildren="true" cvIdentifierRef="NCIT"></CvTerm>
+      <CvTerm termAccession="NCIT:C48453" useTerm="false" termName="Unit of Amount of Substance" isRepeatable="false" allowChildren="true" cvIdentifierRef="NCIT"></CvTerm>
+      <CvTerm termAccession="MS:1001805" useTerm="false" termName="quantification datatype" isRepeatable="false" allowChildren="true" cvIdentifierRef="MS"></CvTerm>
     </CvMappingRule>
         
     <!-- small molecule feature quantification unit -->
@@ -137,6 +141,9 @@ Alternative term roots should either be expressed as OR (for choose any, even fr
       <CvTerm termAccession="UO:0000051" useTerm="false" termName="concentration unit" isRepeatable="false" allowChildren="true" cvIdentifierRef="UO"></CvTerm>
       <CvTerm termAccession="MS:1000043" useTerm="false" termName="intensity unit" isRepeatable="false" allowChildren="true" cvIdentifierRef="MS"></CvTerm>
       <CvTerm termAccession="UO:0000006" useTerm="false" termName="substance unit" isRepeatable="false" allowChildren="true" cvIdentifierRef="UO"></CvTerm>
+      <CvTerm termAccession="NCIT:C48207" useTerm="false" termName="Unit of Concentration" isRepeatable="false" allowChildren="true" cvIdentifierRef="NCIT"></CvTerm>
+      <CvTerm termAccession="NCIT:C48453" useTerm="false" termName="Unit of Amount of Substance" isRepeatable="false" allowChildren="true" cvIdentifierRef="NCIT"></CvTerm>
+      <CvTerm termAccession="MS:1001805" useTerm="false" termName="quantification datatype" isRepeatable="false" allowChildren="true" cvIdentifierRef="MS"></CvTerm>
     </CvMappingRule>
         
     <!-- small_molecule-identification_reliability -->
@@ -147,11 +154,13 @@ Alternative term roots should either be expressed as OR (for choose any, even fr
     <!-- id confidence measure --> 
     <CvMappingRule id="id_confidence_measure_must" cvElementPath="/metadata/@idConfidenceMeasure" requirementLevel="MUST"  scopePath="/metadata" cvTermsCombinationLogic="OR">
       <CvTerm termAccession="MS:1002888" useTerm="false" termName="small molecule confidence measure" isRepeatable="true" allowChildren="true" cvIdentifierRef="MS"></CvTerm>
+      <CvTerm termAccession="MS:1003303" useTerm="false" termName="spectral similarity" isRepeatable="true" allowChildren="true" cvIdentifierRef="MS"></CvTerm>
     </CvMappingRule>
         
     <!-- best id confidence measure --> 
-    <CvMappingRule id="best_id_confidence_measure_must" cvElementPath="/smallMoleculeSummary/@bestIdConfidenceMeasure" requirementLevel="MUST"  scopePath="/smallMoleculeSummary" cvTermsCombinationLogic="AND">
+    <CvMappingRule id="best_id_confidence_measure_must" cvElementPath="/smallMoleculeSummary/@bestIdConfidenceMeasure" requirementLevel="MUST"  scopePath="/smallMoleculeSummary" cvTermsCombinationLogic="OR">
       <CvTerm termAccession="MS:1002888" useTerm="false" termName="small molecule confidence measure" isRepeatable="false" allowChildren="true" cvIdentifierRef="MS"></CvTerm>
+      <CvTerm termAccession="MS:1003303" useTerm="false" termName="spectral similarity" isRepeatable="false" allowChildren="true" cvIdentifierRef="MS"></CvTerm>
     </CvMappingRule>
 
     <!-- derivatized form -->
@@ -160,7 +169,7 @@ Alternative term roots should either be expressed as OR (for choose any, even fr
     </CvMappingRule>
         
     <!-- ms level -->
-    <CvMappingRule id="ms_level_must" cvElementPath="/smallMoleculeEvidence/@msLevel" requirementLevel="MUST"  scopePath="/smallMoleculeSummary" cvTermsCombinationLogic="AND">
+    <CvMappingRule id="ms_level_must" cvElementPath="/smallMoleculeEvidence/@msLevel" requirementLevel="MUST"  scopePath="/smallMoleculeEvidence" cvTermsCombinationLogic="AND">
       <CvTerm termAccession="MS:1000511" useTerm="false" termName="ms level" isRepeatable="false" allowChildren="true" cvIdentifierRef="MS"></CvTerm>
     </CvMappingRule>
         
