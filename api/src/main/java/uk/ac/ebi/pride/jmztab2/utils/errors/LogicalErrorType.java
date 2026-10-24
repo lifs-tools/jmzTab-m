@@ -288,6 +288,18 @@ public final class LogicalErrorType extends MZTabErrorType {
      * Constant <code>ProfileAmbiguityCodeMustBeNull</code>
      */
     public static final MZTabErrorType ProfileAmbiguityCodeMustBeNull = createError(Category.Logical, "ProfileAmbiguityCodeMustBeNull");
+    /**
+     * Constant <code>UndefinedStudyVariableAssayRefs</code>
+     */
+    public static final MZTabErrorType UndefinedStudyVariableAssayRefs = createError(Category.Logical, "UndefinedStudyVariableAssayRefs");
+    /**
+     * Constant <code>InstrumentNotReferenced</code>
+     */
+    public static final MZTabErrorType InstrumentNotReferenced = createError(Category.Logical, "InstrumentNotReferenced");
+    /**
+     * Constant <code>SampleNotReferenced</code>
+     */
+    public static final MZTabErrorType SampleNotReferenced = createError(Category.Logical, "SampleNotReferenced");
 
     /**
      * Constant <code>DuplicateColumnHeader</code>
@@ -309,7 +321,7 @@ public final class LogicalErrorType extends MZTabErrorType {
         SpectraIdFormatNotValid, SpectraIdFormatNotSupported,
         ProfileInferred, ProfileTableMissing, ProfileTableForbidden, ProfileUnsupportedCombination, ProfileMSFDiscouraged, ProfileFieldMismatch,
         ProfileSmfIdRefsForbidden, ProfileSmfIdRefsRequired, ProfileSmeIdRefsForbidden, ProfileAmbiguityCodeMustBeNull, DuplicateColumnHeader,
-        MsRunUsiIdentifierInvalid
+        MsRunUsiIdentifierInvalid, UndefinedStudyVariableAssayRefs, InstrumentNotReferenced, SampleNotReferenced
     };
     
     public static MZTabErrorType[] getValues() {
