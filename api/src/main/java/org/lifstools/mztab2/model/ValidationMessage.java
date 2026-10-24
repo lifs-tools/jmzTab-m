@@ -291,7 +291,7 @@ public class ValidationMessage {
   }
 
   /**
-   * Plain-language fix for the problem.
+   * Plain-language description of how to fix the problem.
    * @return suggestion
    */
   @jakarta.annotation.Nullable
@@ -317,7 +317,7 @@ public class ValidationMessage {
   }
 
   /**
-   * Identifier of the rule that produced the message.
+   * Id of the CV mapping rule that produced a semantic message.
    * @return ruleId
    */
   @jakarta.annotation.Nullable
