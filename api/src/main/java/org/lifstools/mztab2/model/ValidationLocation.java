@@ -148,7 +148,7 @@ public class ValidationLocation {
   }
 
   /**
-   * 0-based position of the row in the model list of its table (n-th SML, SMF or SME line in file order).
+   * 0-based position of the row in the model list of its table, i.e. the n-th data row of that section in file order (not counting header, comment or blank lines).
    * minimum: 0
    * @return rowIndex
    */
@@ -175,7 +175,7 @@ public class ValidationLocation {
   }
 
   /**
-   * Table column the message applies to, as named in the table header.
+   * mzTab column header, e.g. abundance_assay[3].
    * @return column
    */
   @jakarta.annotation.Nullable
@@ -253,7 +253,7 @@ public class ValidationLocation {
   }
 
   /**
-   * Pointer into the model that the rule evaluated, kept for diagnostics.
+   * JXPath of the matched model element, e.g. /metadata/assay[3]/separation.
    * @return elementPath
    */
   @jakarta.annotation.Nullable
