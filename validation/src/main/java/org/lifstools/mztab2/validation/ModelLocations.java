@@ -68,7 +68,7 @@ public final class ModelLocations {
      */
     private static final Set<String> SELF_NAMED = Set.of(
         "software/parameter", "database/param",
-        "sampleProcessing/sampleProcessing");
+        "sampleProcessing/sampleProcessing", "studyVariableGroup/parameter");
     private static final Pattern SEGMENT = Pattern.compile(
         "@?([A-Za-z_][A-Za-z0-9_]*)(?:\\[(\\d+)\\])?");
 

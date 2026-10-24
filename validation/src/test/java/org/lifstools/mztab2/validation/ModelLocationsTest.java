@@ -37,6 +37,7 @@ import org.lifstools.mztab2.model.SmallMoleculeEvidence;
 import org.lifstools.mztab2.model.SmallMoleculeSummary;
 import org.lifstools.mztab2.model.Software;
 import org.lifstools.mztab2.model.StudyVariable;
+import org.lifstools.mztab2.model.StudyVariableGroup;
 import org.lifstools.mztab2.model.ValidationLocation;
 import org.lifstools.mztab2.model.ValidationLocation.SectionEnum;
 import uk.ac.ebi.pride.jmztab2.utils.errors.Locations;
@@ -87,6 +88,19 @@ public class ModelLocationsTest {
     public void selfNamedParameterLists() {
         assertEquals("software[1]", locate("/metadata/software/@parameter").getMetadataKey());
         assertEquals("database[1]", locate("/metadata/database/@param").getMetadataKey());
+    }
+
+    @Test
+    public void studyVariableGroupParameterIsWrittenUnderTheGroupKey() {
+        // written as MTD study_variable_group[2]  [PATO, PATO:0000383, sex, ]
+        mzTab.getMetadata().addStudyVariableGroupItem(new StudyVariableGroup().
+            id(2).parameter(param("PATO", "PATO:0000383", "sex")).
+            description("Sex of the individual"));
+        ValidationLocation l = locate("/metadata/studyVariableGroup/@parameter");
+        assertEquals("study_variable_group[2]", l.getMetadataKey());
+        assertEquals("study_variable_group", l.getMetadataGroup());
+        assertEquals("study_variable_group[n]",
+            ModelLocations.describeRulePath("/metadata/studyVariableGroup/@parameter"));
     }
 
     @Test
