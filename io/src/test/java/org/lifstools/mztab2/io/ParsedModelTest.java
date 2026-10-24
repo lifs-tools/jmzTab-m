@@ -93,6 +93,101 @@ public class ParsedModelTest {
         assertNotNull(parser.getMZTabFile(), "a missing reference must not drop the model");
     }
 
+    @ParameterizedTest
+    @org.junit.jupiter.params.provider.CsvSource({
+        "MTD\tms_run[1]-instrument_ref\t, MTD\tinstrument[1]-name\t",
+        "MTD\tassay[1]-sample_ref\t, MTD\tsample[1]\t",
+        "MTD\tassay[1]-ms_run_ref\t, MTD\tms_run[1]-location\t"})
+    void aReferenceAboveItsElementIsAnErrorAndIsResolved(String reference,
+            String definition) throws IOException {
+        Path file = withLineMovedAbove(reference, definition);
+        MzTabFileParser parser = new MzTabFileParser(file.toFile());
+        MZTabErrorList errors = parser.parse(new ByteArrayOutputStream(),
+            MZTabErrorType.Level.Info, 1000);
+        List<MZTabError> found = errors.getErrorList().stream().
+            filter(e -> e.getType() == LogicalErrorType.ReferenceBeforeDefinition).
+            collect(Collectors.toList());
+        assertEquals(1, found.size(), () -> errors.toString());
+        String key = reference.substring(4).trim();
+        assertEquals(key, found.get(0).getLocation().getMetadataKey());
+        assertTrue(found.get(0).getMessage().contains(key), found.get(0).getMessage());
+        // resolved: no unreferenced instrument or sample, no assay without ms_run
+        assertEquals(1, errors.getErrorList().stream().
+            filter(e -> e.getType().getLevel() == MZTabErrorType.Level.Error).
+            count(), () -> errors.toString());
+        assertNotNull(parser.getMZTabFile(), "the reference must not drop the model");
+        org.lifstools.mztab2.model.Metadata metadata = parser.getMZTabFile().getMetadata();
+        assertEquals(metadata.getInstrument().get(0), metadata.getMsRun().get(0).getInstrumentRef());
+        assertEquals(metadata.getSample().get(0), metadata.getAssay().get(0).getSampleRef());
+        assertEquals(List.of(metadata.getMsRun().get(0)), metadata.getAssay().get(0).getMsRunRef());
+    }
+
+    @org.junit.jupiter.api.Test
+    void aReferenceToAnUndefinedElementIsAnErrorThatKeepsTheModel() throws IOException {
+        Path file = variant("ms_run[1]-instrument_ref\tinstrument[1]",
+            "ms_run[1]-instrument_ref\tinstrument[2]");
+        MzTabFileParser parser = new MzTabFileParser(file.toFile());
+        MZTabErrorList errors = parser.parse(new ByteArrayOutputStream(),
+            MZTabErrorType.Level.Info, 1000);
+        List<MZTabError> found = errors.getErrorList().stream().
+            filter(e -> e.getType() == LogicalErrorType.NotDefineInMetadata).
+            collect(Collectors.toList());
+        assertEquals(1, found.size(), () -> errors.toString());
+        assertTrue(found.get(0).getMessage().contains("instrument[2]"), found.get(0).getMessage());
+        assertEquals("ms_run[1]-instrument_ref", found.get(0).getLocation().getMetadataKey());
+        assertNotNull(parser.getMZTabFile(), () -> errors.toString());
+        assertNull(parser.getMZTabFile().getMetadata().getMsRun().get(0).getInstrumentRef());
+    }
+
+    @ParameterizedTest
+    @org.junit.jupiter.params.provider.ValueSource(strings = {
+        "assay[1], assay[1]", "assay[1];assay[1]", "assay[1] |", "assay[1]||assay[1]",
+        "assay[1] assay[1]"})
+    void referenceListsMustBeSeparatedByBars(String assayRefs) throws IOException {
+        Path file = variant("study_variable[1]-assay_refs\tassay[1]",
+            "study_variable[1]-assay_refs\t" + assayRefs);
+        MzTabFileParser parser = new MzTabFileParser(file.toFile());
+        MZTabErrorList errors = parser.parse(new ByteArrayOutputStream(),
+            MZTabErrorType.Level.Info, 1000);
+        List<MZTabError> found = errors.getErrorList().stream().
+            filter(e -> e.getType() == uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType.IndexedElement).
+            collect(Collectors.toList());
+        assertEquals(1, found.size(), () -> errors.toString());
+        assertTrue(found.get(0).getMessage().contains(assayRefs.trim()), found.get(0).getMessage());
+    }
+
+    @ParameterizedTest
+    @org.junit.jupiter.params.provider.ValueSource(strings = {
+        "instrument[1]|instrument[1]", "instrument[1], instrument[2]", "instrument[1]x"})
+    void aSingleReferenceMustBeOneElement(String instrumentRef) throws IOException {
+        Path file = variant("ms_run[1]-instrument_ref\tinstrument[1]",
+            "ms_run[1]-instrument_ref\t" + instrumentRef);
+        MzTabFileParser parser = new MzTabFileParser(file.toFile());
+        MZTabErrorList errors = parser.parse(new ByteArrayOutputStream(),
+            MZTabErrorType.Level.Info, 1000);
+        assertEquals(1, errors.getErrorList().stream().
+            filter(e -> e.getType() == uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType.IndexedElement).
+            count(), () -> errors.toString());
+    }
+
+    private Path withLineMovedAbove(String prefix, String abovePrefix) throws IOException {
+        String text;
+        try (InputStream is = getClass().getResourceAsStream(BASE_FILE)) {
+            text = new String(is.readAllBytes(), StandardCharsets.UTF_8);
+        }
+        List<String> lines = new java.util.ArrayList<>(text.lines().collect(Collectors.toList()));
+        String moved = lines.stream().filter(line -> line.startsWith(prefix)).
+            findFirst().orElseThrow();
+        lines.remove(moved);
+        int target = java.util.stream.IntStream.range(0, lines.size()).
+            filter(i -> lines.get(i).startsWith(abovePrefix)).
+            findFirst().orElseThrow();
+        lines.add(target, moved);
+        Path file = tempDir.resolve("moved.mzTab");
+        Files.writeString(file, String.join("\n", lines) + "\n", StandardCharsets.UTF_8);
+        return file;
+    }
+
     private Path withoutLine(String prefix) throws IOException {
         String text;
         try (InputStream is = getClass().getResourceAsStream(BASE_FILE)) {

@@ -315,6 +315,10 @@ public final class LogicalErrorType extends MZTabErrorType {
      * Constant <code>StudyVariableFactorsRemoved</code>
      */
     public static final MZTabErrorType StudyVariableFactorsRemoved = createWarn(Category.Logical, "StudyVariableFactorsRemoved");
+    /**
+     * Constant <code>ReferenceBeforeDefinition</code>
+     */
+    public static final MZTabErrorType ReferenceBeforeDefinition = createError(Category.Logical, "ReferenceBeforeDefinition");
 
     private static final MZTabErrorType[] VALUES = {
         NULL, NotNULL, LineOrder, HeaderLine, NoHeaderLine,
@@ -327,7 +331,8 @@ public final class LogicalErrorType extends MZTabErrorType {
         ProfileInferred, ProfileTableMissing, ProfileTableForbidden, ProfileUnsupportedCombination, ProfileMSFDiscouraged, ProfileFieldMismatch,
         ProfileSmfIdRefsForbidden, ProfileSmfIdRefsRequired, ProfileSmeIdRefsForbidden, ProfileAmbiguityCodeMustBeNull, DuplicateColumnHeader,
         MsRunUsiIdentifierInvalid, UndefinedStudyVariableAssayRefs, InstrumentNotReferenced, SampleNotReferenced,
-        StudyVariableFactorsRemoved
+        StudyVariableFactorsRemoved,
+        ReferenceBeforeDefinition
     };
     
     public static MZTabErrorType[] getValues() {

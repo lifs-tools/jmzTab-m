@@ -20,6 +20,7 @@ import org.lifstools.mztab2.model.IndexedElementImpl;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -278,9 +279,10 @@ public class MZTabUtils {
             return null;
         }
         
+        // the whole value, so that "assay[1], assay[2]" is not read as assay[1]
         Pattern pattern = Pattern.compile(element + "\\[(\\d+)\\]");
         Matcher matcher = pattern.matcher(target);
-        if (matcher.find()) {
+        if (matcher.matches()) {
             Integer id = Integer.parseInt(matcher.group(1));
             IndexedElement p = new IndexedElementImpl(id, element);
             return p;
@@ -291,7 +293,8 @@ public class MZTabUtils {
 
     /**
      * Parse the target into a {@link org.lifstools.mztab2.model.IndexedElement} list.
-     * target is a '|' separated list of entries.
+     * target is a '|' separated list of entries. The list is empty if an entry
+     * is not an element of the given type, or is empty, as in "assay[1]|".
      *
      * @param target a {@link java.lang.String} object.
      * @param element a {@link uk.ac.ebi.pride.jmztab2.model.MetadataElement}
@@ -300,9 +303,15 @@ public class MZTabUtils {
      */
     public static List<IndexedElement> parseRefList(String target,
         MetadataElement element) {
-        List<String> list = parseStringList(MZTabConstants.BAR, target);
-        
         List<IndexedElement> indexedElementList = new ArrayList<>();
+        target = parseString(target);
+        if (target == null) {
+            return indexedElementList;
+        }
+        // limit -1 keeps a trailing empty entry
+        List<String> list = Arrays.asList(target.split(Pattern.quote(
+            MZTabConstants.BAR_S), -1));
+
         IndexedElement indexedElement;
         for (String item : list) {
             indexedElement = parseIndexedElement(item, element);
