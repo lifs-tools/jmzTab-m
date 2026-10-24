@@ -68,6 +68,26 @@ MTD	cv[2]-label	MSIO
 MTD	cv[2]-uri	https://www.ebi.ac.uk/ols/ontologies/msio
 MTD	cv[2]-version	1.0.1
 MTD	cv[2]-full_name	Metabolomics Standards Initiative Ontology (MSIO)
+MTD	cv[3]-label	NCBITaxon
+MTD	cv[3]-full_name	NCBI organismal classification
+MTD	cv[3]-version	2026-07-12
+MTD	cv[3]-uri	http://purl.obolibrary.org/obo/ncbitaxon.owl
+MTD	cv[4]-label	BTO
+MTD	cv[4]-full_name	The BRENDA Tissue Ontology (BTO)
+MTD	cv[4]-version	2021-10-26
+MTD	cv[4]-uri	http://purl.obolibrary.org/obo/bto.owl
+MTD	cv[5]-label	CL
+MTD	cv[5]-full_name	Cell Ontology
+MTD	cv[5]-version	2026-06-08
+MTD	cv[5]-uri	http://purl.obolibrary.org/obo/cl.owl
+MTD	cv[6]-label	DOID
+MTD	cv[6]-full_name	Human Disease Ontology
+MTD	cv[6]-version	2026-09-30
+MTD	cv[6]-uri	http://purl.obolibrary.org/obo/doid.owl
+MTD	cv[7]-label	UO
+MTD	cv[7]-full_name	Units of measurement ontology
+MTD	cv[7]-version	2026-10-12
+MTD	cv[7]-uri	http://purl.obolibrary.org/obo/uo.owl
 MTD	colunit-small_molecule	retention_time=[UO, UO:0000031, minute, ]
 MTD	custom[1]	[, , MS operator, Florian]
 MTD	database[1]	[, , "no database", null]
