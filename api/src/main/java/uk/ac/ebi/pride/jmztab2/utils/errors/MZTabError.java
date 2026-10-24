@@ -1,5 +1,6 @@
 package uk.ac.ebi.pride.jmztab2.utils.errors;
 
+import org.lifstools.mztab2.model.ValidationLocation;
 import org.lifstools.mztab2.model.ValidationMessage;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -34,6 +35,13 @@ public class MZTabError implements Serializable {
     private int lineNumber;
     private MZTabErrorType type;
     private String message;
+    private final List<String> values;
+    // ValidationLocation is not Serializable; the location is not carried across serialization.
+    private transient ValidationLocation location;
+    private String column;
+    private String ruleId;
+    private String fixElement;
+    private String fixAllowed;
 
     /**
      * System will fill a couple of values one by one, and generate a concrete
@@ -57,6 +65,7 @@ public class MZTabError implements Serializable {
             valueList.add(value == null ? "" : value);
         }
 
+        this.values = valueList;
         this.message = fill(0, valueList, type.getOriginal());
     }
 
@@ -82,6 +91,84 @@ public class MZTabError implements Serializable {
         } else {
             return message;
         }
+    }
+
+    private static final Pattern FIX_PLACEHOLDER = Pattern.compile("\\{(\\d|element|allowed)\\}");
+
+    /**
+     * Fill a fix template by index: {0}..{9} are replaced with
+     * <code>values.get(n)</code> (empty string if out of range), {element} with
+     * <code>element</code> (default "the element") and {allowed} with
+     * <code>allowed</code> (default "the terms listed in the validation profile").
+     *
+     * @param template the fix template.
+     * @param values the original's parameters.
+     * @param element the element the fix refers to, may be null.
+     * @param allowed a description of the allowed values, may be null.
+     * @return the filled text.
+     */
+    public static String fillFix(String template, List<String> values, String element, String allowed) {
+        Matcher matcher = FIX_PLACEHOLDER.matcher(template);
+        StringBuilder sb = new StringBuilder();
+        while (matcher.find()) {
+            String name = matcher.group(1);
+            String replacement;
+            if ("element".equals(name)) {
+                replacement = element != null ? element : "the element";
+            } else if ("allowed".equals(name)) {
+                replacement = allowed != null ? allowed : "the terms listed in the validation profile";
+            } else {
+                int n = Integer.parseInt(name);
+                replacement = n < values.size() ? values.get(n) : "";
+            }
+            matcher.appendReplacement(sb, Matcher.quoteReplacement(replacement));
+        }
+        matcher.appendTail(sb);
+        return sb.toString();
+    }
+
+    public MZTabError location(ValidationLocation location) {
+        this.location = location;
+        return this;
+    }
+
+    public ValidationLocation getLocation() {
+        return location;
+    }
+
+    public MZTabError column(String column) {
+        this.column = column;
+        return this;
+    }
+
+    public String getColumn() {
+        return column;
+    }
+
+    public MZTabError ruleId(String ruleId) {
+        this.ruleId = ruleId;
+        return this;
+    }
+
+    public String getRuleId() {
+        return ruleId;
+    }
+
+    /**
+     * Set the named extras used by the fix template's {element} and {allowed}.
+     */
+    public MZTabError fixContext(String element, String allowed) {
+        this.fixElement = element;
+        this.fixAllowed = allowed;
+        return this;
+    }
+
+    /**
+     * @return the filled fix text, or null if the type has no fix template.
+     */
+    public String getSuggestion() {
+        String template = type.getFix();
+        return template == null ? null : fillFix(template, values, fixElement, fixAllowed);
     }
 
     /**
@@ -166,7 +253,10 @@ public class MZTabError implements Serializable {
             category(category).
             messageType(level).
             message(getMessage()).
-            code(toString());
+            code(toString()).
+            suggestion(getSuggestion()).
+            ruleId(getRuleId()).
+            location(getLocation());
         return vr;
     }
 }

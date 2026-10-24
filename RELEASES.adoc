@@ -36,3 +36,11 @@ Again, follow the Guides from above. If everything looks good, publish the relea
   ./mvnw -Possrh-release nexus-staging:release -DstagingRepositoryId=deisasmztab-<NUMBER>
 
 Finally, create a release from the tag at https://github.com/lifs-tools/jmzTab-m/releases[GitHub].
+
+== Release notes
+
+=== 1.0.8 (unreleased)
+
+. All missing abundance columns in SMH and SFH headers are reported (one Error-2009 each, assay columns first); validation no longer stops at the first missing column, and a missing `small_molecule-identification_reliability` no longer ends header validation early.
+. CLI: with `--fromJson`, a JSON file that cannot be read now fails with the reason instead of being validated as mzTab text.
+. Validation messages may carry `suggestion`, `rule_id` and `location` (optional, additive). Semantic messages about terms that are not allowed are now reported once per affected element, so their count can rise: at most 100 messages per rule and term name their element, further elements with the same term are reported together in one message without location that gives their number.

@@ -267,9 +267,12 @@ public class MZTabCommandLine {
             LOGGER.info("Redirecting validator output to file {}", outFile);
         }
 
-        try (PrintStream out = outFile == null ? System.out : new PrintStream(
-            new BufferedOutputStream(
-                new FileOutputStream(outFile, false)), true, "UTF8")) {
+        PrintStream out = System.out;
+        try {
+            if (outFile != null) {
+                out = new PrintStream(new BufferedOutputStream(
+                    new FileOutputStream(outFile, false)), true, "UTF8");
+            }
             System.setOut(out);
             System.setErr(out);
             LOGGER.info(getAppInfo());
@@ -294,13 +297,17 @@ public class MZTabCommandLine {
             return handleValidation(line, checkOpt, out, level,
                 checkSemanticOpt,
                 serializeToJson, deserializeFromJson);
+        } catch (IOException ex) {
+            LOGGER.error(
+                "Caught an IO Exception: ", ex);
+            return true;
+        } finally {
+            // Only close a stream opened here: closing System.out would
+            // swallow all output that follows, including the error above.
+            if (outFile != null) {
+                out.close();
+            }
         }
-//        } catch (IOException ex) {
-//            LOGGER.error( 
-//                "Caught an IO Exception: {}", ex.getLocalizedMessage());
-//            ex.printStackTrace();
-//            return true;
-//        }
     }
 
     protected static void handleMsgOption(CommandLine line, String msgOpt,
@@ -328,22 +335,28 @@ public class MZTabCommandLine {
             }
             File inFile = new File(value.trim());
             if (fromJson) {
+                File tmpFile = new File(inFile.getParentFile(),
+                    inFile.getName() + ".mztab");
+                LOGGER.info("Parsing '{}', converting to mzTab file: '{}'",
+                    inFile.getAbsolutePath(), tmpFile.getAbsolutePath());
+                MzTabNonValidatingWriter w = new MzTabNonValidatingWriter();
+                ObjectMapper mapper = new ObjectMapper();
+                mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+                mapper.configure(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES, false);
+                MzTab mzTab;
                 try {
-                    File tmpFile = new File(inFile.getParentFile(),
-                        inFile.getName() + ".mztab");
-                    LOGGER.info("Parsing '{}', converting to mzTab file: '{}'", inFile.getAbsolutePath(), tmpFile.getAbsolutePath());
-                    MzTabNonValidatingWriter w = new MzTabNonValidatingWriter();
-                    ObjectMapper mapper = new ObjectMapper();
-                    mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-                    mapper.configure(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES, false);
-                    MzTab mzTab = mapper.readValue(inFile, MzTab.class);
-                    LOGGER.info("Writing JSON as mzTab to file: {}", tmpFile.
-                        getAbsolutePath());
-                    w.write(tmpFile.toPath(), mzTab);
-                    inFile = tmpFile;
-                } catch (IOException ioex) {
-                    LOGGER.error("Caught exception while reading JSON from file '" + inFile.getAbsolutePath() + "'", ioex);
+                    mzTab = mapper.readValue(inFile, MzTab.class);
+                } catch (IOException ex) {
+                    // Do not continue: the JSON file itself is not mzTab and
+                    // would only produce misleading validation errors.
+                    LOGGER.error("Could not read '{}' as mzTab-M JSON: {}",
+                        inFile.getAbsolutePath(), ex.getMessage());
+                    return true;
                 }
+                LOGGER.info("Writing JSON as mzTab to file: {}", tmpFile.
+                    getAbsolutePath());
+                w.write(tmpFile.toPath(), mzTab);
+                inFile = tmpFile;
             }
             LOGGER.info("Beginning validation of mztab file: {}", inFile.
                 getAbsolutePath());

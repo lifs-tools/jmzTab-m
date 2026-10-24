@@ -87,7 +87,7 @@ public class SMHLineParser extends MZTabHeaderLineParser {
                 try {
                     column = SmallMoleculeColumn.Stable.columnFor(header);
                 } catch(IllegalArgumentException iae) {
-                    throw new MZTabException(new MZTabError(LogicalErrorType.ColumnNotValid,lineNumber,header,section.getName()));
+                    throw new MZTabException(new MZTabError(LogicalErrorType.ColumnNotValid,lineNumber,header,section.getName()).column(header));
                 }
             }
 
@@ -139,7 +139,7 @@ public class SMHLineParser extends MZTabHeaderLineParser {
         for (Stable columnHeader : SmallMoleculeColumn.Stable.values()) {
             ISmallMoleculeColumn smc = Stable.columnFor(columnHeader);
             if (factory.findColumnByHeader(smc.getHeader()) == null) {
-                throw new MZTabException(new MZTabError(FormatErrorType.StableColumn, lineNumber, smc.getHeader()));
+                throw new MZTabException(new MZTabError(FormatErrorType.StableColumn, lineNumber, smc.getHeader()).column(smc.getHeader()));
             }
         }
 
@@ -149,14 +149,14 @@ public class SMHLineParser extends MZTabHeaderLineParser {
         if (metadata.getSmallMoleculeIdentificationReliability() == null) {
             errorList.add(new MZTabError(LogicalErrorType.NoSmallMoleculeIdentificationReliability, lineNumber));
         }
+        for (Assay assay : metadata.getAssay()) {
+            String assayLabel = "_"+Metadata.JSON_PROPERTY_ASSAY+"[" + assay.getId() + "]";
+            refineOptionalColumn(Section.Small_Molecule_Header, "abundance" + assayLabel);
+        }
         for (StudyVariable studyVariable : metadata.getStudyVariable()) {
             String svLabel = "_"+Metadata.JSON_PROPERTY_STUDY_VARIABLE+"[" + studyVariable.getId() + "]";
             refineOptionalColumn(Section.Small_Molecule_Header, "abundance" + svLabel);
             refineOptionalColumn(Section.Small_Molecule_Header, "abundance_variation" + svLabel);
-        }
-        for (Assay assay : metadata.getAssay()) {
-            String assayLabel = "_"+Metadata.JSON_PROPERTY_ASSAY+"[" + assay.getId() + "]";
-            refineOptionalColumn(Section.Small_Molecule_Header, "abundance" + assayLabel);
         }
     }
 }

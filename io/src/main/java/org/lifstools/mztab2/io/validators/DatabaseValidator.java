@@ -20,6 +20,7 @@ import org.lifstools.mztab2.model.Database;
 import org.lifstools.mztab2.model.Metadata;
 import java.util.LinkedList;
 import java.util.List;
+import uk.ac.ebi.pride.jmztab2.utils.errors.Locations;
 import uk.ac.ebi.pride.jmztab2.utils.errors.LogicalErrorType;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabError;
 import uk.ac.ebi.pride.jmztab2.utils.parser.MZTabParserContext;
@@ -48,25 +49,25 @@ public class DatabaseValidator implements RefiningValidator<Metadata> {
                         errorList.add(new MZTabError(
                                 LogicalErrorType.NoDatabaseMustHaveNullPrefix,
                                 -1,
-                                db.getId() + "", db.getPrefix()));
+                                db.getId() + "", db.getPrefix()).location(Locations.metadataGroup(Metadata.JSON_PROPERTY_DATABASE)));
                     }
                     if (db.getUri() != null && !db.getUri().
                             equals("null")) {
                         errorList.add(new MZTabError(
                                 LogicalErrorType.NotDefineInMetadata, -1,
-                                Metadata.JSON_PROPERTY_DATABASE + "[" + db.getId() + "]-" + Database.JSON_PROPERTY_URI));
+                                Metadata.JSON_PROPERTY_DATABASE + "[" + db.getId() + "]-" + Database.JSON_PROPERTY_URI).location(Locations.metadataGroup(Metadata.JSON_PROPERTY_DATABASE)));
                     }
                 } else {
                     if (db.getUri() == null) {
                         errorList.add(new MZTabError(
                                 LogicalErrorType.NotDefineInMetadata, -1,
-                                Metadata.JSON_PROPERTY_DATABASE + "[" + db.getId() + "]-" + Database.JSON_PROPERTY_URI));
+                                Metadata.JSON_PROPERTY_DATABASE + "[" + db.getId() + "]-" + Database.JSON_PROPERTY_URI).location(Locations.metadataGroup(Metadata.JSON_PROPERTY_DATABASE)));
                     }
                 }
                 if (db.getVersion() == null) {
                     errorList.add(new MZTabError(
                             LogicalErrorType.NotDefineInMetadata, -1,
-                            Metadata.JSON_PROPERTY_DATABASE + "[" + db.getId() + "]-" + Database.JSON_PROPERTY_VERSION));
+                            Metadata.JSON_PROPERTY_DATABASE + "[" + db.getId() + "]-" + Database.JSON_PROPERTY_VERSION).location(Locations.metadataGroup(Metadata.JSON_PROPERTY_DATABASE)));
                 }
             }
         }

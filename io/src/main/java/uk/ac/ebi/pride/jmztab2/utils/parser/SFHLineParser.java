@@ -84,7 +84,7 @@ public class SFHLineParser extends MZTabHeaderLineParser {
                 try {
                     column = SmallMoleculeFeatureColumn.Stable.columnFor(header);
                 } catch(IllegalArgumentException ex) {
-                    throw new MZTabException(new MZTabError(LogicalErrorType.ColumnNotValid,lineNumber,header,section.getName()));
+                    throw new MZTabException(new MZTabError(LogicalErrorType.ColumnNotValid,lineNumber,header,section.getName()).column(header));
                 }
                 
             }
@@ -143,7 +143,7 @@ public class SFHLineParser extends MZTabHeaderLineParser {
 
         for (String columnHeader : mandatoryColumnHeaders) {
             if (factory.findColumnByHeader(columnHeader) == null) {
-                throw new MZTabException(new MZTabError(FormatErrorType.StableColumn, lineNumber, columnHeader));
+                throw new MZTabException(new MZTabError(FormatErrorType.StableColumn, lineNumber, columnHeader).column(columnHeader));
             }
         }
 

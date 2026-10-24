@@ -120,13 +120,15 @@ public abstract class MZTabHeaderLineParser extends MZTabLineParser {
      * Refine optional columns and check, whether they were properly defined.
      * These re-validate operation will called in {@link #refine()} method.
      *
+     * A missing column is added to the error list instead of being thrown, so
+     * that all missing columns of a header line are reported, not only the first.
+     *
      * @param section a {@link Section} object defining the part of the document.
      * @param columnHeader a {@link java.lang.String} object.
-     * @throws uk.ac.ebi.pride.jmztab2.utils.errors.MZTabException if any structural or logical errors are encountered that prohibit further processing.
      */
-    protected void refineOptionalColumn(Section section, String columnHeader) throws MZTabException {
+    protected void refineOptionalColumn(Section section, String columnHeader) {
         if (factory.findColumnByHeader(columnHeader) == null) {
-            throw new MZTabException(new MZTabError(LogicalErrorType.NotDefineInHeader, lineNumber, columnHeader, section.getName()));
+            errorList.add(new MZTabError(LogicalErrorType.NotDefineInHeader, lineNumber, columnHeader, section.getName()).column(columnHeader));
         }
     }
 
@@ -185,7 +187,7 @@ public abstract class MZTabHeaderLineParser extends MZTabLineParser {
                     Assay element = context.getAssayMap().get(id);
                     // not found assay_id in metadata.
                     if (element == null) {
-                        error = new MZTabError(LogicalErrorType.AssayNotDefined, lineNumber, nameLabel);
+                        error = new MZTabError(LogicalErrorType.AssayNotDefined, lineNumber, nameLabel).column(nameLabel);
                         throw new MZTabException(error);
                     } else if (param == null) {
                         factory.addOptionalColumn(element, value, dataType);
@@ -196,7 +198,7 @@ public abstract class MZTabHeaderLineParser extends MZTabLineParser {
                     StudyVariable element = context.getStudyVariableMap().get(id);
                     // not found study_variable_id in metadata.
                     if (element == null) {
-                        error = new MZTabError(LogicalErrorType.StudyVariableNotDefined, lineNumber, nameLabel);
+                        error = new MZTabError(LogicalErrorType.StudyVariableNotDefined, lineNumber, nameLabel).column(nameLabel);
                         throw new MZTabException(error);
                     } else if (param == null) {
                         factory.addOptionalColumn(element, value, dataType);
@@ -207,7 +209,7 @@ public abstract class MZTabHeaderLineParser extends MZTabLineParser {
                     // not found ms_run_id in metadata.
                     MsRun element = context.getMsRunMap().get(id);
                     if (element == null) {
-                        error = new MZTabError(LogicalErrorType.MsRunNotDefined, lineNumber, nameLabel);
+                        error = new MZTabError(LogicalErrorType.MsRunNotDefined, lineNumber, nameLabel).column(nameLabel);
                         throw new MZTabException(error);
                     } else if (param == null) {
                         factory.addOptionalColumn(element, value, dataType);
@@ -219,7 +221,7 @@ public abstract class MZTabHeaderLineParser extends MZTabLineParser {
 
             return true;
         } else {
-            throw new MZTabException(new MZTabError(FormatErrorType.OptionalCVParamColumn, lineNumber, nameLabel));
+            throw new MZTabException(new MZTabError(FormatErrorType.OptionalCVParamColumn, lineNumber, nameLabel).column(nameLabel));
         }
     }
 
@@ -237,12 +239,12 @@ public abstract class MZTabHeaderLineParser extends MZTabLineParser {
 
         Parameter param;
         if (!matcher.find() || matcher.end() != valueLabel.length()) {
-            throw new MZTabException(new MZTabError(FormatErrorType.OptionalCVParamColumn, lineNumber, nameLabel));
+            throw new MZTabException(new MZTabError(FormatErrorType.OptionalCVParamColumn, lineNumber, nameLabel).column(nameLabel));
         } else {
             String accession = matcher.group(2);
             String name = matcher.group(4);
             if (name == null || name.trim().length() == 0) {
-                throw new MZTabException(new MZTabError(FormatErrorType.OptionalCVParamColumn, lineNumber, nameLabel));
+                throw new MZTabException(new MZTabError(FormatErrorType.OptionalCVParamColumn, lineNumber, nameLabel).column(nameLabel));
             }
 
             param = matcher.group(4) == null ? null : new Parameter().cvAccession(accession).name(name);
@@ -294,7 +296,7 @@ public abstract class MZTabHeaderLineParser extends MZTabLineParser {
             checkAbundanceStudyVariableColumns(headerString, order);
             return offset;
         } else {
-            MZTabError error = new MZTabError(FormatErrorType.AbundanceColumn, lineNumber, headerString);
+            MZTabError error = new MZTabError(FormatErrorType.AbundanceColumn, lineNumber, headerString).column(headerString);
             throw new MZTabException(error);
         }
     }
@@ -304,6 +306,8 @@ public abstract class MZTabHeaderLineParser extends MZTabLineParser {
      * For example, protein_abundance_std_error_study_variable[id], return study_variable[id].
      */
     private String checkAbundanceSection(String abundanceHeader) throws MZTabException {
+        // the column as written in the file; the message keeps the lower-cased header
+        String column = abundanceHeader;
         abundanceHeader = abundanceHeader.trim().toLowerCase();
 
         Pattern pattern = Pattern.compile(MZTabConstants.REGEX_ABUNDANCE_COLUMN_NAME);
@@ -321,7 +325,7 @@ public abstract class MZTabHeaderLineParser extends MZTabLineParser {
 //            MZTabError error = new MZTabError(FormatErrorType.AbundanceColumn, lineNumber, abundanceHeader);
 //            throw new MZTabException(error);
         } else {
-            MZTabError error = new MZTabError(FormatErrorType.AbundanceColumn, lineNumber, abundanceHeader);
+            MZTabError error = new MZTabError(FormatErrorType.AbundanceColumn, lineNumber, abundanceHeader).column(column);
             throw new MZTabException(error);
         }
     }
@@ -332,14 +336,14 @@ public abstract class MZTabHeaderLineParser extends MZTabLineParser {
         Pattern pattern = Pattern.compile(MZTabConstants.REGEX_ABUNDANCE_ASSAY_COLUMN_NAME);
         Matcher matcher = pattern.matcher(valueLabel);
         if (!matcher.find()) {
-            MZTabError error = new MZTabError(FormatErrorType.AbundanceColumn, lineNumber, abundanceHeader);
+            MZTabError error = new MZTabError(FormatErrorType.AbundanceColumn, lineNumber, abundanceHeader).column(abundanceHeader);
             throw new MZTabException(error);
         }
 
         int id = parseIndex(abundanceHeader, matcher.group(1));
         Assay assay = context.getAssayMap().get(id);
         if (assay == null) {
-            MZTabError error = new MZTabError(LogicalErrorType.AssayNotDefined, lineNumber, abundanceHeader);
+            MZTabError error = new MZTabError(LogicalErrorType.AssayNotDefined, lineNumber, abundanceHeader).column(abundanceHeader);
             throw new MZTabException(error);
         }
 
@@ -349,17 +353,19 @@ public abstract class MZTabHeaderLineParser extends MZTabLineParser {
 
     private void checkAbundanceStudyVariableColumns(String header,
                                                     String order) throws MZTabException {
+        // the column as written in the file; messages keep the lower-cased header
+        String column = header;
         header = header.trim().toLowerCase();
 
         if (!header.contains(SmallMoleculeSummary.JSON_PROPERTY_ABUNDANCE_STUDY_VARIABLE
             ) && !header.contains(SmallMoleculeSummary.JSON_PROPERTY_ABUNDANCE_VARIATION_STUDY_VARIABLE)) {
-            MZTabError error = new MZTabError(FormatErrorType.AbundanceColumn, lineNumber, header);
+            MZTabError error = new MZTabError(FormatErrorType.AbundanceColumn, lineNumber, header).column(column);
             throw new MZTabException(error);
         } else {
-            StudyVariable abundanceStudyVariable = checkAbundanceStudyVariableColumn(header);
+            StudyVariable abundanceStudyVariable = checkAbundanceStudyVariableColumn(header, column);
 
             //adds both abundance_study_variable and abundance_coeffvar_study_variable columns
-            factory.addAbundanceOptionalColumn(abundanceStudyVariable, checkAbundanceSection(header), order);
+            factory.addAbundanceOptionalColumn(abundanceStudyVariable, checkAbundanceSection(column), order);
 
         }
     }
@@ -367,21 +373,22 @@ public abstract class MZTabHeaderLineParser extends MZTabLineParser {
     /**
      * Check XXXX_abundance_study_variable[id], XXXX_abundance_stdev_study_variable[id], XXXX_abundance_std_error_study_variable[id]
      * column header. If parse error, stop validate and raise {@link MZTabException}.
+     * The lower-cased abundanceHeader goes into messages, column (as written in the file) into their location.
      */
-    private StudyVariable checkAbundanceStudyVariableColumn(String abundanceHeader) throws MZTabException {
-        String valueLabel = checkAbundanceSection(abundanceHeader);
+    private StudyVariable checkAbundanceStudyVariableColumn(String abundanceHeader, String column) throws MZTabException {
+        String valueLabel = checkAbundanceSection(column);
 
         Pattern pattern = Pattern.compile(MZTabConstants.REGEX_STUDY_VARIABLE_COLUMN_NAME);
         Matcher matcher = pattern.matcher(valueLabel);
         if (!matcher.find()) {
-            MZTabError error = new MZTabError(FormatErrorType.AbundanceColumn, lineNumber, abundanceHeader);
+            MZTabError error = new MZTabError(FormatErrorType.AbundanceColumn, lineNumber, abundanceHeader).column(column);
             throw new MZTabException(error);
         }
 
-        int id = parseIndex(abundanceHeader, matcher.group(1));
+        int id = parseIndex(abundanceHeader, matcher.group(1), column);
         StudyVariable studyVariable = context.getStudyVariableMap().get(id);
         if (studyVariable == null) {
-            MZTabError error = new MZTabError(LogicalErrorType.StudyVariableNotDefined, lineNumber, abundanceHeader);
+            MZTabError error = new MZTabError(LogicalErrorType.StudyVariableNotDefined, lineNumber, abundanceHeader).column(column);
             throw new MZTabException(error);
         }
 
@@ -398,6 +405,14 @@ public abstract class MZTabHeaderLineParser extends MZTabLineParser {
      * @throws uk.ac.ebi.pride.jmztab2.utils.errors.MZTabException if any structural or logical errors are encountered that prohibit further processing.
      */
     protected int parseIndex(String header, String id) throws MZTabException {
+        return parseIndex(header, id, header);
+    }
+
+    /**
+     * Like {@link #parseIndex(String, String)}, with the column as written in
+     * the file for the error's location when header was normalised.
+     */
+    private int parseIndex(String header, String id, String column) throws MZTabException {
         try {
             Integer index = Integer.parseInt(id);
             if (index < 1) {
@@ -406,7 +421,7 @@ public abstract class MZTabHeaderLineParser extends MZTabLineParser {
 
             return index;
         } catch (NumberFormatException e) {
-            MZTabError error = new MZTabError(LogicalErrorType.IdNumber, lineNumber, header, id);
+            MZTabError error = new MZTabError(LogicalErrorType.IdNumber, lineNumber, header, id).column(column);
             throw new MZTabException(error);
         }
     }

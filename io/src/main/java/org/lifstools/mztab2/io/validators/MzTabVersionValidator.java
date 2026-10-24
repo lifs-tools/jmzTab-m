@@ -19,6 +19,7 @@ import org.lifstools.mztab2.model.Metadata;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import uk.ac.ebi.pride.jmztab2.utils.errors.Locations;
 import uk.ac.ebi.pride.jmztab2.utils.errors.LogicalErrorType;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabError;
 import uk.ac.ebi.pride.jmztab2.utils.parser.MZTabParserContext;
@@ -36,7 +37,7 @@ public class MzTabVersionValidator implements RefiningValidator<Metadata> {
             return Arrays.asList(new MZTabError(
                     LogicalErrorType.NotDefineInMetadata, -1,
                     Metadata.JSON_PROPERTY_MZ_TAB_VERSION,
-                    metadata.getMzTabVersion()));
+                    metadata.getMzTabVersion()).location(Locations.metadataGroup(Locations.groupOf(Metadata.JSON_PROPERTY_MZ_TAB_VERSION))));
         }
         return Collections.emptyList();
     }

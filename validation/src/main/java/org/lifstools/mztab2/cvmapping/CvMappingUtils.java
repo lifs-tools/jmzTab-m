@@ -124,6 +124,29 @@ public class CvMappingUtils {
     }
 
     /**
+     * Lists the terms a mapping rule allows in plain words, for suggested
+     * fixes, e.g. "MS:1000031 (instrument model) or one of its child terms".
+     *
+     * @param rule the cv mapping rule
+     * @return the terms, joined with " and " for AND rules and " or " otherwise
+     */
+    public static String allowedTermsText(CvMappingRule rule) {
+        String separator = rule.getCvTermsCombinationLogic() == CvMappingRule.CvTermsCombinationLogic.AND ? " and " : " or ";
+        return rule.getCvTerm().
+            stream().
+            map((term) ->
+            {
+                String text = term.getTermAccession() + " (" + term.
+                    getTermName() + ")";
+                if (term.isAllowChildren()) {
+                    return term.isUseTerm() ? text + " or one of its child terms" : "a child term of " + text;
+                }
+                return text;
+            }).
+            collect(Collectors.joining(separator));
+    }
+
+    /**
      * Creates a string representation of a mapping rule.
      * @param rule the cv mapping rule
      * @return the string representation
