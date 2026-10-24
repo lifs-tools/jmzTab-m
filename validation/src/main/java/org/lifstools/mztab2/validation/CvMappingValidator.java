@@ -292,12 +292,43 @@ public class CvMappingValidator implements Validator<MzTab> {
         return messages.isEmpty() ? Collections.emptyList() : messages;
     }
 
+    /**
+     * Returns true if the element path addresses a table (small molecule
+     * summary, feature or evidence) that has no rows. A rule on a table's
+     * column doesn't apply to a file without that table, e.g. a summary-only
+     * file has no evidence table.
+     */
+    static boolean isTableAbsent(MzTab mzTab, String elementPath) {
+        String table = elementPath.replaceFirst("^/([^/\\[@]+).*$", "$1");
+        List<?> rows;
+        switch (table) {
+            case "smallMoleculeSummary":
+                rows = mzTab.getSmallMoleculeSummary();
+                break;
+            case "smallMoleculeFeature":
+                rows = mzTab.getSmallMoleculeFeature();
+                break;
+            case "smallMoleculeEvidence":
+                rows = mzTab.getSmallMoleculeEvidence();
+                break;
+            default:
+                return false;
+        }
+        return rows == null || rows.isEmpty();
+    }
+
     private void applyRule(JXPathContext context, CvMappingRule rule,
         boolean errorOnTermNotInRule, List<ValidationMessage> messages) {
         String path = rule.getCvElementPath();
         List<Pair<Pointer, Parameter>> selection = JxPathElement.
             toList(context, path, Parameter.class);
 
+        if (selection.isEmpty() && isTableAbsent((MzTab) context.
+            getContextBean(), path)) {
+            log.debug("Skipping rule {}: the file has no table for {}", rule.
+                getId(), path);
+            return;
+        }
         messages.addAll(emptyRuleHandler.handleRule(rule, selection));
         if (!messages.isEmpty()) {
             return;
