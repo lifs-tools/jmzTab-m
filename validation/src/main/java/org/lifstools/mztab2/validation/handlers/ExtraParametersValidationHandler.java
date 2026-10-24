@@ -30,8 +30,8 @@ import java.util.Map;
 import java.util.Set;
 import org.apache.commons.jxpath.Pointer;
 import org.apache.commons.lang3.tuple.Pair;
-import uk.ac.ebi.pride.jmztab2.utils.errors.CrossCheckErrorType;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabError;
+import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorType;
 
 /**
  * Implements handling of cv parameters (not user params) that are found at the object.
@@ -85,11 +85,18 @@ public class ExtraParametersValidationHandler implements CvTermValidationHandler
         return messages;
     }
 
+    /**
+     * A term the rule does not allow: its level follows the rule's
+     * requirement level (MUST: error, SHOULD: warning, MAY: info), like the
+     * rule's other messages.
+     */
     private static MZTabError error(RuleEvaluationResult result,
         Parameter parameter, boolean errorOnTermNotInRule) {
-        return new MZTabError(errorOnTermNotInRule
-            ? CrossCheckErrorType.CvTermNotAllowed
-            : CrossCheckErrorType.CvTermNotInRule,
+        MZTabErrorType type = MZTabErrorType.forLevel(
+            MZTabErrorType.Category.CrossCheck,
+            CvMappingUtils.toErrorLevel(result.getRule().getRequirementLevel()),
+            errorOnTermNotInRule ? "CvTermNotAllowed" : "CvTermNotInRule");
+        return new MZTabError(type,
             -1,
             new ParameterConverter().convert(parameter),
             result.getRule().

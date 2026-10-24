@@ -27,8 +27,10 @@ import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabError;
 import uk.ac.ebi.pride.jmztab2.utils.parser.MZTabParserContext;
 
 /**
- * Validates that the study variable section is present in metadata and is
- * linked to all assays and ms runs.
+ * Validates that the study variable section is present in metadata, resolves
+ * the assay references of the study variables and checks their names and
+ * descriptions. Whether study variables list their assays is checked by
+ * {@link StudyVariableAssayRefsValidator}.
  *
  * @author nilshoffmann
  */
@@ -65,8 +67,9 @@ public class StudyVariableValidator implements RefiningValidator<Metadata> {
                 }
             }
             if (svMap.size() == 1 && assayMap.size() > 0) {
-                StudyVariable sv = svMap.get(Integer.valueOf(1));
-                if (sv.getName() == null || sv.getName().isEmpty()) {
+                // the only study variable need not be study_variable[1]
+                StudyVariable sv = svMap.get(svMap.firstKey());
+                if (sv == null || sv.getName() == null || sv.getName().isEmpty()) {
                     errorList.add(new MZTabError(
                             LogicalErrorType.SingleStudyVariableName, -1).location(Locations.metadataGroup(Metadata.JSON_PROPERTY_STUDY_VARIABLE)));
                 }
@@ -100,13 +103,6 @@ public class StudyVariableValidator implements RefiningValidator<Metadata> {
                             errorList.add(new MZTabError(
                                     LogicalErrorType.NotDefineInMetadata, -1,
                                     Metadata.JSON_PROPERTY_STUDY_VARIABLE + "[" + id + "]-" + StudyVariable.JSON_PROPERTY_DESCRIPTION).location(Locations.metadataGroup(Metadata.JSON_PROPERTY_STUDY_VARIABLE)));
-                        }
-                        if (sv.
-                                getAssayRefs() == null || sv.getAssayRefs().
-                                        isEmpty()) {
-                            errorList.add(new MZTabError(
-                                    LogicalErrorType.AssayRefs, -1,
-                                    Metadata.JSON_PROPERTY_STUDY_VARIABLE + "[" + id + "]-" + StudyVariable.JSON_PROPERTY_ASSAY_REFS).location(Locations.metadataGroup(Metadata.JSON_PROPERTY_STUDY_VARIABLE)));
                         }
                     }
                 }

@@ -21,6 +21,7 @@ import org.lifstools.mztab2.cvmapping.CvParameterLookupService;
 import org.lifstools.mztab2.cvmapping.JxPathElement;
 import org.lifstools.mztab2.cvmapping.RemoveUserParams;
 import org.lifstools.mztab2.cvmapping.RuleEvaluationResult;
+import org.lifstools.mztab2.io.serialization.ParameterConverter;
 import org.lifstools.mztab2.model.MzTab;
 import org.lifstools.mztab2.model.Parameter;
 import org.lifstools.mztab2.model.ValidationMessage;
@@ -29,16 +30,19 @@ import org.lifstools.mztab2.validation.handlers.EmptyRuleHandler;
 import org.lifstools.mztab2.validation.handlers.ExtraParametersValidationHandler;
 import org.lifstools.mztab2.validation.handlers.OrValidationHandler;
 import org.lifstools.mztab2.validation.handlers.ResolvingCvRuleHandler;
+import org.lifstools.mztab2.validation.handlers.RuleMessages;
 import org.lifstools.mztab2.validation.handlers.SharedParametersValidationHandler;
 import org.lifstools.mztab2.validation.handlers.XorValidationHandler;
 import info.psidev.cvmapping.CvMapping;
 import info.psidev.cvmapping.CvMappingRule;
 import java.io.File;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Unmarshaller;
@@ -48,8 +52,6 @@ import org.apache.commons.jxpath.Pointer;
 import org.apache.commons.lang3.tuple.Pair;
 import uk.ac.ebi.pride.jmztab2.utils.errors.CrossCheckErrorType;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabError;
-import uk.ac.ebi.pride.utilities.ols.web.service.client.OLSClient;
-import uk.ac.ebi.pride.utilities.ols.web.service.config.OLSWsConfig;
 
 /**
  * Validator implementation that uses a provided xml mapping file with rules for
@@ -90,12 +92,8 @@ public class CvMappingValidator implements Validator<MzTab> {
      */
     public static CvMappingValidator of(File mappingFile,
         boolean errorIfTermNotInRule) throws JAXBException {
-        OLSWsConfig config = new OLSWsConfig(
-            "https://www.ebi.ac.uk/ols4/api"
-        );
-        OLSClient client = new OLSClient(config);
-        CvParameterLookupService service = new CvParameterLookupService(client);
-        return of(mappingFile, service, errorIfTermNotInRule);
+        return of(mappingFile, new CvParameterLookupService(),
+            errorIfTermNotInRule);
     }
 
     /**
@@ -161,10 +159,8 @@ public class CvMappingValidator implements Validator<MzTab> {
      */
     public static CvMappingValidator of(URL mappingFile,
         boolean errorIfTermNotInRule) throws JAXBException {
-        OLSWsConfig config = new OLSWsConfig();
-        OLSClient client = new OLSClient(config);
-        CvParameterLookupService service = new CvParameterLookupService(client);
-        return of(mappingFile, service, errorIfTermNotInRule);
+        return of(mappingFile, new CvParameterLookupService(),
+            errorIfTermNotInRule);
     }
 
     /**
@@ -231,11 +227,11 @@ public class CvMappingValidator implements Validator<MzTab> {
         preValidators.stream().
             forEach((validator) ->
             {
-                messages.addAll(validator.validate(mzTab));
+                messages.addAll(guarded(validator, mzTab));
             });
         // Always run once here; the factories no longer also register it as a
         // pre validator, which reported every undefined cv twice.
-        messages.addAll(new CvDefinitionValidationHandler().validate(mzTab));
+        messages.addAll(guarded(new CvDefinitionValidationHandler(), mzTab));
         JXPathContext context = JXPathContext.newContext(mzTab);
         log.debug("Applying {} cv rule mapping steps.", mapping.
             getCvMappingRuleList().
@@ -247,25 +243,119 @@ public class CvMappingValidator implements Validator<MzTab> {
             {
                 messages.addAll(handleRule(context, rule, errorIfTermNotInRule));
             });
-        log.debug("Applying {} post validation steps.", preValidators.size());
+        log.debug("Applying {} post validation steps.", postValidators.size());
         postValidators.stream().
             forEach((validator) ->
             {
-                messages.addAll(validator.validate(mzTab));
+                messages.addAll(guarded(validator, mzTab));
             });
         return messages;
     }
 
+    /**
+     * Runs a pre or post validator; an exception in it is reported as an
+     * error instead of ending the whole semantic validation.
+     */
+    private static List<ValidationMessage> guarded(Validator<MzTab> validator,
+        MzTab mzTab) {
+        try {
+            return validator.validate(mzTab);
+        } catch (RuntimeException re) {
+            log.warn("Validator {} failed: {}", validator.getClass().
+                getSimpleName(), re.toString());
+            log.debug("Validator failure", re);
+            return List.of(new MZTabError(
+                CrossCheckErrorType.SemanticValidationException, -1,
+                validator.getClass().
+                    getSimpleName() + ": " + re.getMessage()).
+                toValidationMessage());
+        }
+    }
+
+    /**
+     * Applies one rule. An exception while applying it is reported as an
+     * error of that rule, after the messages it produced so far, so that the
+     * other rules still run.
+     */
     private List<ValidationMessage> handleRule(JXPathContext context,
         CvMappingRule rule, boolean errorOnTermNotInRule) {
+        final List<ValidationMessage> messages = new ArrayList<>();
+        try {
+            applyRule(context, rule, errorOnTermNotInRule, messages);
+        } catch (RuntimeException re) {
+            log.warn("Rule {} could not be applied: {}", rule.getId(), re.
+                toString());
+            log.debug("Rule failure", re);
+            messages.add(RuleMessages.atRulePath(new MZTabError(
+                CrossCheckErrorType.SemanticValidationException, -1, re.
+                    getMessage()), rule));
+        }
+        return messages.isEmpty() ? Collections.emptyList() : messages;
+    }
+
+    /**
+     * Metadata fields that the profile requires only together with a table,
+     * as in MzTabProfileValidator.
+     */
+    private static final Map<String, String> TABLE_OF_FIELD = Map.of(
+        "/metadata/@idConfidenceMeasure", "smallMoleculeEvidence",
+        "/metadata/@smallMoleculeQuantificationUnit", "smallMoleculeSummary",
+        "/metadata/@smallMoleculeFeatureQuantificationUnit", "smallMoleculeFeature");
+
+    /**
+     * Returns true if the element path addresses a table (small molecule
+     * summary, feature or evidence), or a metadata field required only with
+     * that table, and the table has no rows. Such a rule doesn't apply to a
+     * file without that table, e.g. a summary-only file has no evidence table
+     * and needs no id_confidence_measure.
+     */
+    static boolean isTableAbsent(MzTab mzTab, String elementPath) {
+        String table = TABLE_OF_FIELD.getOrDefault(elementPath,
+            elementPath.replaceFirst("^/([^/\\[@]+).*$", "$1"));
+        List<?> rows;
+        switch (table) {
+            case "smallMoleculeSummary":
+                rows = mzTab.getSmallMoleculeSummary();
+                break;
+            case "smallMoleculeFeature":
+                rows = mzTab.getSmallMoleculeFeature();
+                break;
+            case "smallMoleculeEvidence":
+                rows = mzTab.getSmallMoleculeEvidence();
+                break;
+            default:
+                return false;
+        }
+        return rows == null || rows.isEmpty();
+    }
+
+    private void applyRule(JXPathContext context, CvMappingRule rule,
+        boolean errorOnTermNotInRule, List<ValidationMessage> messages) {
         String path = rule.getCvElementPath();
         List<Pair<Pointer, Parameter>> selection = JxPathElement.
             toList(context, path, Parameter.class);
 
-        final List<ValidationMessage> messages = emptyRuleHandler.handleRule(
-            rule, selection);
+        if (selection.isEmpty() && isTableAbsent((MzTab) context.
+            getContextBean(), path)) {
+            log.debug("Skipping rule {}: the file has no table for {}", rule.
+                getId(), path);
+            return;
+        }
+        messages.addAll(emptyRuleHandler.handleRule(rule, selection));
         if (!messages.isEmpty()) {
-            return messages;
+            return;
+        }
+
+        // a cv parameter whose term cannot be looked up is reported here;
+        // RemoveUserParams leaves it out of the rule's evaluation
+        for (Pair<Pointer, Parameter> pair : selection) {
+            Parameter p = pair.getValue();
+            if (RemoveUserParams.isMalformed(p)) {
+                messages.add(RuleMessages.atPointer(new MZTabError(
+                    CrossCheckErrorType.CvAccessionMalformed, -1,
+                    new ParameterConverter().convert(p), p.getCvLabel(), p.
+                    getCvAccession()), pair.getKey(), rule));
+            }
         }
 
         final List<Pair<Pointer, Parameter>> filteredSelection = cvTermSelectionHandler.
@@ -274,46 +364,33 @@ public class CvMappingValidator implements Validator<MzTab> {
         // and logic means that ALL of the defined terms or their children MUST appear
         // we only compare valid CVParameters here, user Params (no cv accession), are not compared!
         // if combination logic is AND, child expansion needs to be disabled to avoid nonsensical combinations
-        try {
-            RuleEvaluationResult result = ruleHandler.handleRule(rule,
-                filteredSelection);
+        RuleEvaluationResult result = ruleHandler.handleRule(rule,
+            filteredSelection);
 
-            switch (rule.getCvTermsCombinationLogic()) {
-                case AND:
-                    messages.addAll(andHandler.handleParameters(result,
-                        errorOnTermNotInRule));
-                    break;
-                case OR: // any of the terms or their children need to appear
-                    messages.addAll(orHandler.handleParameters(result,
-                        errorOnTermNotInRule));
-                    break;
-                case XOR:
-                    messages.addAll(xorHandler.handleParameters(result,
-                        errorOnTermNotInRule));
-                    break;
-                default:
-                    throw new IllegalArgumentException(
-                        "Unknown combination logic value: " + rule.
-                            getCvTermsCombinationLogic() + " on rule " + CvMappingUtils.
-                            niceToString(rule) + "! Supported are: " + Arrays.
-                        toString(CvMappingRule.CvTermsCombinationLogic.
-                            values()));
-            }
-            //        messages.addAll(sharedHandler.handleParameters(result, errorOnTermNotInRule));
-            messages.addAll(extraHandler.handleParameters(result,
-                errorOnTermNotInRule));
-        } catch (RuntimeException re) {
-            log.error(
-                "Caught exception while running semantic validation on rule " + CvMappingUtils.
-                    niceToString(rule) + " with selection " + filteredSelection,
-                re);
-            MZTabError error = new MZTabError(
-                CrossCheckErrorType.SemanticValidationException, -1, re.
-                    getMessage()).
-                ruleId(rule.getId());
-            messages.add(error.toValidationMessage());
+        switch (rule.getCvTermsCombinationLogic()) {
+            case AND:
+                messages.addAll(andHandler.handleParameters(result,
+                    errorOnTermNotInRule));
+                break;
+            case OR: // any of the terms or their children need to appear
+                messages.addAll(orHandler.handleParameters(result,
+                    errorOnTermNotInRule));
+                break;
+            case XOR:
+                messages.addAll(xorHandler.handleParameters(result,
+                    errorOnTermNotInRule));
+                break;
+            default:
+                throw new IllegalArgumentException(
+                    "Unknown combination logic value: " + rule.
+                        getCvTermsCombinationLogic() + " on rule " + CvMappingUtils.
+                        niceToString(rule) + "! Supported are: " + Arrays.
+                    toString(CvMappingRule.CvTermsCombinationLogic.
+                        values()));
         }
-        return messages.isEmpty() ? Collections.emptyList() : messages;
+        //        messages.addAll(sharedHandler.handleParameters(result, errorOnTermNotInRule));
+        messages.addAll(extraHandler.handleParameters(result,
+            errorOnTermNotInRule));
     }
 
 }

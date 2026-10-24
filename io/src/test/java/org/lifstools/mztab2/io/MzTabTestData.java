@@ -262,7 +262,8 @@ public class MzTabTestData {
             addFragmentationMethodItem(
                 new Parameter().cvLabel("MS").
                     cvAccession("MS:1000133").
-                    name("CID"));
+                    name("CID")).
+            instrumentRef(instrument1);
         mtd.addMsRunItem(msRun1);
         MsRun msRun2 = new MsRun().id(2).
             location(URI.create("ftp://ftp.ebi.ac.uk/path/to/file")).
@@ -276,7 +277,8 @@ public class MzTabTestData {
                     name("SHA-1")).
             addFragmentationMethodItem(new Parameter().cvLabel("MS").
                 cvAccession("MS:1000422").
-                name("HCD"));
+                name("HCD")).
+            instrumentRef(instrument2);
         mtd.addMsRunItem(msRun2);
         mtd.addCustomItem(new Parameter().
             id(1).

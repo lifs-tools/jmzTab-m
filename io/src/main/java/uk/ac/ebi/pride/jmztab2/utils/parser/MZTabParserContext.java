@@ -38,7 +38,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
+import java.util.SortedSet;
 import java.util.TreeMap;
+import java.util.TreeSet;
 import lombok.Data;
 import static uk.ac.ebi.pride.jmztab2.model.MZTabStringUtils.isEmpty;
 
@@ -68,6 +70,8 @@ public class MZTabParserContext {
     
     private SortedMap<Integer, Sample> sampleMap = new TreeMap<>();
     private SortedMap<Integer, StudyVariable> studyVariableMap = new TreeMap<>();
+    /** Ids of study variables with a study_variable[n]-factors line (mzTab-M 2.0, not kept in the 2.1 model). */
+    private SortedSet<Integer> studyVariablesWithFactors = new TreeSet<>();
     private SortedMap<Integer, StudyVariableGroup> studyVariableGroupMap = new TreeMap<>();
     private SortedMap<Integer, CV> cvMap = new TreeMap<>();
     private SortedMap<Integer, Database> databaseMap = new TreeMap<>();
@@ -75,7 +79,54 @@ public class MZTabParserContext {
     private List<ColumnParameterMapping> smallMoleculeFeatureColUnitList = new ArrayList<>();
     private List<ColumnParameterMapping> smallMoleculeEvidenceColUnitList = new ArrayList<>();
     private Map<String, String> colUnitMap = new HashMap<>();
-    
+    private List<ForwardReference> forwardReferences = new ArrayList<>();
+
+    /**
+     * Records a reference to an element that is not defined yet; see
+     * {@link #resolveForwardReferences(Metadata)}.
+     *
+     * @param reference the reference
+     */
+    public void addForwardReference(ForwardReference reference) {
+        forwardReferences.add(reference);
+    }
+
+    /**
+     * Sets the references that were read before the element they refer to,
+     * now that the metadata section has been read. References to elements
+     * that are still not defined stay unset.
+     *
+     * @param metadata a {@link org.lifstools.mztab2.model.Metadata} object.
+     */
+    public void resolveForwardReferences(Metadata metadata) {
+        for (ForwardReference reference : forwardReferences) {
+            Integer referrerId = reference.getReferrerId();
+            switch (reference.getTarget()) {
+                case INSTRUMENT:
+                    Instrument instrument = instrumentMap.get(reference.getTargetId());
+                    if (instrument != null) {
+                        addMsRunInstrumentRef(metadata, referrerId, instrument);
+                    }
+                    break;
+                case SAMPLE:
+                    Sample sample = sampleMap.get(reference.getTargetId());
+                    if (sample != null) {
+                        addAssaySample(metadata, referrerId, sample);
+                    }
+                    break;
+                case MS_RUN:
+                    MsRun msRun = msRunMap.get(reference.getTargetId());
+                    if (msRun != null) {
+                        addAssayMsRun(metadata, referrerId, msRun);
+                    }
+                    break;
+                default:
+                    throw new IllegalArgumentException(
+                        "Unsupported reference target: " + reference.getTarget());
+            }
+        }
+    }
+
     /**
      * Add a sample to metadata. Samples are NOT MANDATORY in mzTab, since many software packages cannot determine what
      * type of sample was analysed (e.g. whether biological or technical replication was performed).

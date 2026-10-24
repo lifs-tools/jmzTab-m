@@ -22,6 +22,7 @@ MTD	ms_run[1]-format	[MS, MS:1000584, mzML file, ]
 MTD	ms_run[1]-id_format	[MS, MS:1001530, mzML unique identifier, ]
 MTD	ms_run[1]-scan_polarity	[MS, MS:1000130, positive scan, ]
 MTD	ms_run[1]-location	ftp://ftp.ebi.ac.uk/path/to/file
+MTD	ms_run[1]-instrument_ref	instrument[1]
 MTD	sample[1]-species[1]	[NCBITaxon, NCBITaxon:9606, Homo sapiens (Human), ]
 MTD	sample[1]-tissue[1]	[BTO, BTO:0000759, liver, ]
 MTD	sample[1]-description	Hepatocellular carcinoma samples.
@@ -34,6 +35,18 @@ MTD	cv[1]-label	MS
 MTD	cv[1]-full_name	PSI-MS controlled vocabulary
 MTD	cv[1]-version	4.1.138
 MTD	cv[1]-uri	https://raw.githubusercontent.com/HUPO-PSI/psi-ms-CV/master/psi-ms.obo
+MTD	cv[2]-label	MSIO
+MTD	cv[2]-full_name	Metabolomics Standards Initiative Ontology (MSIO)
+MTD	cv[2]-version	1.0.1
+MTD	cv[2]-uri	https://raw.githubusercontent.com/MSI-Metabolomics-Standards-Initiative/MSIO/master/releases/latest_release/MSIO-merged-reasoned.owl
+MTD	cv[3]-label	NCBITaxon
+MTD	cv[3]-full_name	NCBI organismal classification
+MTD	cv[3]-version	2026-07-12
+MTD	cv[3]-uri	http://purl.obolibrary.org/obo/ncbitaxon.owl
+MTD	cv[4]-label	BTO
+MTD	cv[4]-full_name	The BRENDA Tissue Ontology (BTO)
+MTD	cv[4]-version	2021-10-26
+MTD	cv[4]-uri	http://purl.obolibrary.org/obo/bto.owl
 MTD	database[1]	[, , no database, null]
 MTD	database[1]-prefix	null
 MTD	database[1]-version	Unknown

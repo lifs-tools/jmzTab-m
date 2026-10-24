@@ -18,10 +18,15 @@ package uk.ac.ebi.pride.jmztab2.utils.parser;
 import org.lifstools.mztab2.io.validators.AssayValidator;
 import org.lifstools.mztab2.io.validators.CvValidator;
 import org.lifstools.mztab2.io.validators.DatabaseValidator;
+import org.lifstools.mztab2.io.validators.ForwardReferenceValidator;
+import org.lifstools.mztab2.io.validators.InstrumentValidator;
 import org.lifstools.mztab2.io.validators.MsRunValidator;
 import org.lifstools.mztab2.io.validators.MzTabIdValidator;
 import org.lifstools.mztab2.io.validators.MzTabVersionValidator;
+import org.lifstools.mztab2.io.validators.SampleValidator;
 import org.lifstools.mztab2.io.validators.SoftwareValidator;
+import org.lifstools.mztab2.io.validators.StudyVariableAssayRefsValidator;
+import org.lifstools.mztab2.io.validators.StudyVariableFactorsValidator;
 import org.lifstools.mztab2.io.validators.StudyVariableGroupValidator;
 import org.lifstools.mztab2.io.validators.StudyVariableValidator;
 import org.lifstools.mztab2.model.Assay;
@@ -773,11 +778,14 @@ public class MTDLineParser extends MZTabLineParser {
      * @throws uk.ac.ebi.pride.jmztab2.utils.errors.MZTabException if any.
      */
     public void refineNormalMetadata() throws MZTabException {
+        // references read above their element; reported in refineReferences
+        context.resolveForwardReferences(metadata);
         validate(metadata, new MzTabVersionValidator(), context, errorList);
         validate(metadata, new MzTabIdValidator(), context, errorList);
         validate(metadata, new SoftwareValidator(), context, errorList);
         validate(metadata, new AssayValidator(), context, errorList);
         validate(metadata, new StudyVariableValidator(), context, errorList);
+        validate(metadata, new StudyVariableFactorsValidator(), context, errorList);
         validate(metadata, new StudyVariableGroupValidator(), context, errorList);
         validate(metadata, new MsRunValidator(), context, errorList);
         validate(metadata, new CvValidator(), context, errorList);
@@ -789,6 +797,22 @@ public class MTDLineParser extends MZTabLineParser {
         // small_molecule_feature-quantification_unit and id_confidence_measure
         // are likewise handled there.
         validate(metadata, new DatabaseValidator(), context, errorList);
+    }
+
+    /**
+     * Checks the references between metadata elements: every study variable
+     * lists its assays, and every instrument and sample is referenced. A
+     * missing reference does not prevent reading the file, so these checks
+     * run after the model has been built.
+     *
+     * @throws uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorOverflowException
+     * if the maximum number of messages is exceeded.
+     */
+    public void refineReferences() {
+        validate(metadata, new ForwardReferenceValidator(), context, errorList);
+        validate(metadata, new StudyVariableAssayRefsValidator(), context, errorList);
+        validate(metadata, new InstrumentValidator(), context, errorList);
+        validate(metadata, new SampleValidator(), context, errorList);
     }
 
     /**
@@ -969,23 +993,19 @@ public class MTDLineParser extends MZTabLineParser {
                         defineLabel, valueLabel, true));
                     break;
                 case MS_RUN_INSTRUMENT_REF:
-                    List<IndexedElement> indexedElements = checkIndexedElementList(
-                        defineLabel, valueLabel,
-                        MetadataElement.INSTRUMENT);
-                    if (indexedElements != null && !indexedElements.isEmpty() && indexedElements.
-                        size() == 1) {
-                        Instrument instrument = context.getInstrumentMap().
-                            get(indexedElements.get(0).
-                                getId());
-                        if (instrument == null) {
-                            throw new MZTabException(new MZTabError(
-                                LogicalErrorType.NotDefineInMetadata, lineNumber,
-                                valueLabel,
-                                valueLabel));
-                        }
-                        msRun = context.addMsRunInstrumentRef(metadata, id,
-                            instrument);
+                    IndexedElement instrumentRef = checkIndexedElement(
+                        defineLabel, valueLabel, MetadataElement.INSTRUMENT);
+                    Instrument instrument = context.getInstrumentMap().
+                        get(instrumentRef.getId());
+                    if (instrument == null) {
+                        context.addForwardReference(new ForwardReference(
+                            lineNumber, defineLabel, valueLabel,
+                            MetadataElement.MS_RUN, id,
+                            MetadataElement.INSTRUMENT, instrumentRef.getId()));
+                        return;
                     }
+                    msRun = context.addMsRunInstrumentRef(metadata, id,
+                        instrument);
                     break;
                 case MS_RUN_FORMAT:
                     msRun = context.addMsRunFormat(metadata, id, checkParameter(
@@ -1125,29 +1145,28 @@ public class MTDLineParser extends MZTabLineParser {
                 case ASSAY_SAMPLE_REF:
                     indexedElement = checkIndexedElement(defineLabel, valueLabel,
                         MetadataElement.SAMPLE);
-                    if (indexedElement != null) {
-                        Sample sample = context.getSampleMap().
-                            get(indexedElement.getId());
-                        if (sample == null) {
-                            throw new MZTabException(new MZTabError(
-                                LogicalErrorType.NotDefineInMetadata, lineNumber,
-                                valueLabel,
-                                valueLabel));
-                        }
+                    Sample sample = context.getSampleMap().
+                        get(indexedElement.getId());
+                    if (sample == null) {
+                        context.addForwardReference(new ForwardReference(
+                            lineNumber, defineLabel, valueLabel,
+                            MetadataElement.ASSAY, id,
+                            MetadataElement.SAMPLE, indexedElement.getId()));
+                    } else {
                         context.addAssaySample(metadata, id, sample);
                     }
                     break;
                 case ASSAY_MS_RUN_REF:
                     indexedElement = checkIndexedElement(defineLabel, valueLabel,
                         MetadataElement.MS_RUN);
-                    if (indexedElement != null) {
-                        MsRun msRun = context.getMsRunMap().
-                            get(indexedElement.getId());
-                        if (msRun == null) {
-                            throw new MZTabException(new MZTabError(
-                                LogicalErrorType.NotDefineInMetadata, lineNumber,
-                                valueLabel));
-                        }
+                    MsRun msRun = context.getMsRunMap().
+                        get(indexedElement.getId());
+                    if (msRun == null) {
+                        context.addForwardReference(new ForwardReference(
+                            lineNumber, defineLabel, valueLabel,
+                            MetadataElement.ASSAY, id,
+                            MetadataElement.MS_RUN, indexedElement.getId()));
+                    } else {
                         context.addAssayMsRun(metadata, id, msRun);
                     }
                     break;
@@ -1166,8 +1185,14 @@ public class MTDLineParser extends MZTabLineParser {
         String valueLabel, Integer id) throws MZTabErrorOverflowException, MZTabException {
         List<IndexedElement> indexedElementList;
         if (property == null) {
-            context.addStudyVariable(metadata, new StudyVariable().id(id).
-                name(valueLabel));
+            StudyVariable existing = context.getStudyVariableMap().get(id);
+            if (existing != null) {
+                // properties read before the name line must not be lost
+                existing.setName(valueLabel);
+            } else {
+                context.addStudyVariable(metadata, new StudyVariable().id(id).
+                    name(valueLabel));
+            }
         } else {
             switch (property) {
                 case STUDY_VARIABLE_ASSAY_REFS:
@@ -1207,8 +1232,12 @@ public class MTDLineParser extends MZTabLineParser {
                         addStudyVariableDescription(metadata, id, valueLabel);
                     break;
                 case STUDY_VARIABLE_FACTORS:
-                    // study_variable[1-n]-factors was removed in version 2.1 and
-                    // is silently ignored for backwards compatibility.
+                    // mzTab-M 2.0; replaced by study_variable_group in 2.1. The
+                    // value is validated but not kept (jmzTab-m 1.0.x keeps it);
+                    // refineNormalMetadata reports it for 2.1 files.
+                    if (!checkParameterList(defineLabel, valueLabel).isEmpty()) {
+                        context.getStudyVariablesWithFactors().add(id);
+                    }
                     break;
                 default:
                     MZTabError error = new MZTabError(

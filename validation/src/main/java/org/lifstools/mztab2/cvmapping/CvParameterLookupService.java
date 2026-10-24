@@ -48,10 +48,24 @@ public class CvParameterLookupService {
     }
 
     /**
+     * The host name and base path of the EBI OLS4 service. The OLS client
+     * adds the protocol and the "/api/…" paths.
+     */
+    public static final String OLS_HOST = "www.ebi.ac.uk/ols4";
+
+    /**
+     * Returns the default configuration for the EBI OLS4 service.
+     * @return the OLS4 configuration
+     */
+    public static OLSWsConfig defaultConfig() {
+        return new OLSWsConfig(OLS_HOST);
+    }
+
+    /**
      * Create a new instance of the lookup service with default OLS configuration.
      */
     public CvParameterLookupService() {
-        this(new OLSClient(new OLSWsConfig()));
+        this(defaultConfig());
     }
 
     /**
