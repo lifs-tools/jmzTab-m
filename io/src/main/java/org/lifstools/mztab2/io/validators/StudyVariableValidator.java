@@ -20,7 +20,9 @@ import org.lifstools.mztab2.model.Metadata;
 import org.lifstools.mztab2.model.StudyVariable;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.SortedMap;
+import java.util.stream.Collectors;
 import uk.ac.ebi.pride.jmztab2.utils.errors.Locations;
 import uk.ac.ebi.pride.jmztab2.utils.errors.LogicalErrorType;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabError;
@@ -65,10 +67,18 @@ public class StudyVariableValidator implements RefiningValidator<Metadata> {
                 }
             }
             if (svMap.size() == 1 && assayMap.size() > 0) {
-                StudyVariable sv = svMap.get(Integer.valueOf(1));
-                if (sv.getName() == null || sv.getName().isEmpty()) {
+                // the only study variable need not be study_variable[1]
+                Integer id = svMap.firstKey();
+                StudyVariable sv = svMap.get(id);
+                if (sv == null || sv.getName() == null || sv.getName().isEmpty()) {
                     errorList.add(new MZTabError(
                             LogicalErrorType.SingleStudyVariableName, -1).location(Locations.metadataGroup(Metadata.JSON_PROPERTY_STUDY_VARIABLE)));
+                } else if (sv.getAssayRefs() == null || sv.getAssayRefs().isEmpty()) {
+                    errorList.add(new MZTabError(
+                            LogicalErrorType.AssayRefs, -1,
+                            Metadata.JSON_PROPERTY_STUDY_VARIABLE + "[" + id + "]-" + StudyVariable.JSON_PROPERTY_ASSAY_REFS).location(Locations.metadataKey(Metadata.JSON_PROPERTY_STUDY_VARIABLE + "[" + id + "]")));
+                } else if ("undefined".equals(sv.getName())) {
+                    checkUndefinedLinksAllAssays(id, sv, assayMap, errorList);
                 }
             } else {
                 boolean undefinedDefined = false;
@@ -114,6 +124,28 @@ public class StudyVariableValidator implements RefiningValidator<Metadata> {
         }
 
         return errorList;
+    }
+
+    /**
+     * The single study variable "undefined" stands for software that does not
+     * capture study variables and MUST link to all assays.
+     */
+    private static void checkUndefinedLinksAllAssays(Integer id,
+            StudyVariable sv, SortedMap<Integer, Assay> assayMap,
+            List<MZTabError> errorList) {
+        Set<Integer> referenced = sv.getAssayRefs().stream().
+                map(Assay::getId).
+                collect(Collectors.toSet());
+        String missing = assayMap.keySet().stream().
+                filter(assayId -> !referenced.contains(assayId)).
+                map(assayId -> Metadata.JSON_PROPERTY_ASSAY + "[" + assayId + "]").
+                collect(Collectors.joining(", "));
+        if (!missing.isEmpty()) {
+            String key = Metadata.JSON_PROPERTY_STUDY_VARIABLE + "[" + id + "]";
+            errorList.add(new MZTabError(
+                    LogicalErrorType.UndefinedStudyVariableAssayRefs, -1,
+                    key, missing).location(Locations.metadataKey(key + "-" + StudyVariable.JSON_PROPERTY_ASSAY_REFS)));
+        }
     }
 
 }

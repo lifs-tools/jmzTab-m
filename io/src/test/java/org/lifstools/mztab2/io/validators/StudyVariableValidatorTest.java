@@ -141,6 +141,53 @@ public class StudyVariableValidatorTest {
         assertEquals(expResult.get(0).toString(), result.get(0).toString());
     }
 
+    /** Assays 1..n and one study variable, all registered with the parser context. */
+    private static List<MZTabError> validateSingle(StudyVariable sv, int assays) {
+        Metadata metadata = new Metadata();
+        MZTabParserContext parserContext = new MZTabParserContext();
+        for (int i = 1; i <= assays; i++) {
+            // adds the assay to the metadata, too
+            parserContext.addAssay(metadata, new Assay().id(i));
+        }
+        parserContext.addStudyVariable(metadata, sv);
+        return new StudyVariableValidator().validateRefine(metadata, parserContext);
+    }
+
+    @Test
+    public void testSingleUndefinedStudyVariableWithoutAssayRefs() {
+        List<MZTabError> result = validateSingle(new StudyVariable().id(1).name("undefined").description("d"), 2);
+        assertEquals(1, result.size(), () -> result.toString());
+        assertEquals(LogicalErrorType.AssayRefs, result.get(0).getType());
+        assertEquals("study_variable[1]", result.get(0).getLocation().getMetadataKey());
+    }
+
+    @Test
+    public void testSingleStudyVariableThatIsNotTheFirst() {
+        // used to throw a NullPointerException: svMap.get(1) is null
+        List<MZTabError> result = validateSingle(new StudyVariable().id(2).name("undefined").description("d"), 1);
+        assertEquals(1, result.size(), () -> result.toString());
+        assertEquals(LogicalErrorType.AssayRefs, result.get(0).getType());
+        assertTrue(result.get(0).getMessage().contains("study_variable[2]-assay_refs"), result.get(0).getMessage());
+    }
+
+    @Test
+    public void testUndefinedStudyVariableMustLinkAllAssays() {
+        StudyVariable sv = new StudyVariable().id(1).name("undefined").description("d").
+                addAssayRefsItem(new Assay().id(1));
+        List<MZTabError> result = validateSingle(sv, 3);
+        assertEquals(1, result.size(), () -> result.toString());
+        assertEquals(LogicalErrorType.UndefinedStudyVariableAssayRefs, result.get(0).getType());
+        assertTrue(result.get(0).getMessage().contains("assay[2], assay[3]"), result.get(0).getMessage());
+        assertEquals("study_variable[1]-assay_refs", result.get(0).getLocation().getMetadataKey());
+    }
+
+    @Test
+    public void testUndefinedStudyVariableLinkingAllAssaysIsValid() {
+        StudyVariable sv = new StudyVariable().id(1).name("undefined").description("d").
+                addAssayRefsItem(new Assay().id(1)).addAssayRefsItem(new Assay().id(2));
+        assertTrue(validateSingle(sv, 2).isEmpty());
+    }
+
     @Test
     public void testStudyVariableAssayRefs() {
         Metadata metadata = new Metadata();
