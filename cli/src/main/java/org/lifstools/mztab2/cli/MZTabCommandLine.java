@@ -267,6 +267,8 @@ public class MZTabCommandLine {
             LOGGER.info("Redirecting validator output to file {}", outFile);
         }
 
+        PrintStream stdout = System.out;
+        PrintStream stderr = System.err;
         PrintStream out = System.out;
         try {
             if (outFile != null) {
@@ -298,9 +300,11 @@ public class MZTabCommandLine {
                 checkSemanticOpt,
                 serializeToJson, deserializeFromJson);
         } finally {
-            // Only close a stream opened here: System.out is also used as
-            // System.err, so closing it would swallow any later error output,
-            // e.g. the stack trace of an unexpected exception.
+            // Restore the console before closing a stream opened here, so
+            // that anything reported afterwards is not written to a closed
+            // stream; closing System.out itself would swallow it, too.
+            System.setOut(stdout);
+            System.setErr(stderr);
             if (outFile != null) {
                 out.close();
             }
@@ -374,8 +378,12 @@ public class MZTabCommandLine {
                         count();
                     errorsOrWarnings = nErrorsOrWarnings > 0;
                     //these are reported to std.err already.
-                    LOGGER.error(
-                        "There were " + errorList.size() + " validation messages including " + nErrorsOrWarnings + " warnings or errors during validation of your file, please check the output for details!");
+                    String summary = "There were " + errorList.size() + " validation messages including " + nErrorsOrWarnings + " warnings or errors during validation of your file, please check the output for details!";
+                    if (errorsOrWarnings) {
+                        LOGGER.error(summary);
+                    } else {
+                        LOGGER.info(summary);
+                    }
                 } else {
                     LOGGER.info("There were 0 validation messages during validation of your file!");
                 }
@@ -394,12 +402,13 @@ public class MZTabCommandLine {
                         LOGGER.error("Caught exception while writing mzTab to JSON file '" + jsonFile.getAbsolutePath() + "'", ioex);
                     }
                 }
-                errorsOrWarnings = errorsOrWarnings || handleSemanticValidation(line,
+                // not ||: semantic validation also runs after structural warnings
+                errorsOrWarnings |= handleSemanticValidation(line,
                     checkSemanticOpt, inFile, outFile,
                     mzTabParser, level);
                 LOGGER.info("Finished validation!");
-            } catch(IOException | IllegalArgumentException ioex) {
-                LOGGER.error("Validation of file '" + inFile.getAbsolutePath() + "' failed with exception: ", ioex);
+            } catch(IOException | RuntimeException ex) {
+                LOGGER.error("Validation of file '" + inFile.getAbsolutePath() + "' failed with exception: ", ex);
                 return true;
             }
         }
@@ -434,9 +443,14 @@ public class MZTabCommandLine {
 //                    return true;
 //                }
                 // read file from path
-                mappingFile = new File(semValue.trim()).
-                    getAbsoluteFile().
-                    toURI();
+                File mapping = new File(semValue.trim()).getAbsoluteFile();
+                if (!mapping.isFile() || !mapping.canRead()) {
+                    LOGGER.error(
+                        "Mapping file '{}' does not exist or is not readable; semantic validation was not run.",
+                        mapping);
+                    return true;
+                }
+                mappingFile = mapping.toURI();
             } else {
                 LOGGER.info(
                     "Using default mapping file from classpath: /mappings/mzTab-M-mapping.xml");
@@ -445,14 +459,35 @@ public class MZTabCommandLine {
                     "/mappings/mzTab-M-mapping.xml").
                     toURI();
             }
+            if (mzTabParser.getMZTabFile() == null) {
+                LOGGER.error(
+                    "Semantic validation was not run: the errors above prevent reading the file's content.");
+                return true;
+            }
             LOGGER.info(
                 "Beginning semantic validation of mztab file: " + inFile.
                     getAbsolutePath() + " with mapping file: " + mappingFile.
                     toASCIIString());
-            CvMappingValidator cvMappingValidator = CvMappingValidator.of(
-                mappingFile.toURL(), true);
-            List<ValidationMessage> validationMessages = cvMappingValidator.
-                validate(mzTabParser.getMZTabFile()).
+            CvMappingValidator cvMappingValidator;
+            try {
+                cvMappingValidator = CvMappingValidator.of(mappingFile.toURL(),
+                    true);
+            } catch (JAXBException ex) {
+                LOGGER.error(
+                    "Mapping file '{}' is not a valid CV mapping file: {}",
+                    mappingFile, rootCauseMessage(ex));
+                return true;
+            }
+            List<ValidationMessage> allMessages;
+            try {
+                allMessages = cvMappingValidator.validate(mzTabParser.
+                    getMZTabFile());
+            } catch (RuntimeException ex) {
+                LOGGER.error("Semantic validation was aborted: {}", ex.
+                    getMessage(), ex);
+                return true;
+            }
+            List<ValidationMessage> validationMessages = allMessages.
                 stream().
                 filter((message) ->
                 {
@@ -487,14 +522,30 @@ public class MZTabCommandLine {
                 }
             }
             if (!validationMessages.isEmpty()) {
-                LOGGER.error(
-                    "There were " + validationMessages.size() + " validation messages including " + nErrorsOrWarnings + " warnings or errors during semantic validation of your file, please check the output for details!");
+                String summary = "There were " + validationMessages.size() + " validation messages including " + nErrorsOrWarnings + " warnings or errors during semantic validation of your file, please check the output for details!";
+                if (errorsOrWarnings) {
+                    LOGGER.error(summary);
+                } else {
+                    LOGGER.info(summary);
+                }
             } else {
                 LOGGER.info(
                     "No errors found for semantic validation on level " + level);
             }
         }
         return errorsOrWarnings;
+    }
+
+    /**
+     * The message of the innermost cause, e.g. the missing file or the XML
+     * error behind a JAXBException, whose own message is often null.
+     */
+    private static String rootCauseMessage(Throwable t) {
+        Throwable cause = t;
+        while (cause.getCause() != null && cause.getCause() != cause) {
+            cause = cause.getCause();
+        }
+        return cause.getMessage() != null ? cause.getMessage() : cause.toString();
     }
 
 }
