@@ -24,12 +24,32 @@ import org.apache.commons.jxpath.Pointer;
 import org.apache.commons.lang3.tuple.Pair;
 
 /**
- * Removes user parameters from the provided selection.
+ * Removes user parameters, and cv parameters whose term cannot be looked up
+ * (see {@link #isMalformed(Parameter)}), from the provided selection.
  *
  * @author nilshoffmann
  */
 @Slf4j
 public class RemoveUserParams implements CvTermSelectionHandler {
+
+    /**
+     * Whether a cv parameter (one with an accession) has no cv label or an
+     * accession that is not of the form &lt;CV label&gt;:&lt;term number&gt;,
+     * e.g. [nan, nan, nan, ]. Its term cannot be looked up; the
+     * {@link org.lifstools.mztab2.validation.CvMappingValidator} reports it.
+     *
+     * @param p the parameter
+     * @return true if the parameter has an accession but is malformed
+     */
+    public static boolean isMalformed(Parameter p) {
+        if (p == null || p.getCvAccession() == null || p.getCvAccession().
+            isEmpty()) {
+            return false;
+        }
+        return p.getCvLabel() == null || p.getCvLabel().
+            isBlank() || !p.getCvAccession().
+                contains(":");
+    }
 
     @Override
     public List<Pair<Pointer, Parameter>> handleSelection(
@@ -48,20 +68,15 @@ public class RemoveUserParams implements CvTermSelectionHandler {
                         asPath() + " with value " + pair.getValue());
                     return false;
                 }
+                if (isMalformed(pair.getValue())) {
+                    log.debug("Removing malformed cv parameter for path " + pair.
+                        getKey().
+                        asPath() + " with value " + pair.getValue());
+                    return false;
+                }
                 return true;
             }).
             collect(Collectors.toList());
-        filteredSelection.forEach((pair) ->
-        {
-            Parameter p = pair.getValue();
-            if (!p.getCvAccession().
-                contains(":")) {
-                throw new RuntimeException(
-                    "Malformed cv accession '" + p.getCvAccession() + "' for " + pair.
-                    getKey().
-                    asPath() + ". Must be: <CV>:<TERMNUMBER>");
-            }
-        });
         return filteredSelection;
     }
 }

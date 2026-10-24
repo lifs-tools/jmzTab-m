@@ -18,10 +18,14 @@ package uk.ac.ebi.pride.jmztab2.utils.parser;
 import org.lifstools.mztab2.io.validators.AssayValidator;
 import org.lifstools.mztab2.io.validators.CvValidator;
 import org.lifstools.mztab2.io.validators.DatabaseValidator;
+import org.lifstools.mztab2.io.validators.InstrumentValidator;
 import org.lifstools.mztab2.io.validators.MsRunValidator;
 import org.lifstools.mztab2.io.validators.MzTabIdValidator;
 import org.lifstools.mztab2.io.validators.MzTabVersionValidator;
+import org.lifstools.mztab2.io.validators.SampleValidator;
 import org.lifstools.mztab2.io.validators.SoftwareValidator;
+import org.lifstools.mztab2.io.validators.StudyVariableAssayRefsValidator;
+import org.lifstools.mztab2.io.validators.StudyVariableFactorsValidator;
 import org.lifstools.mztab2.io.validators.StudyVariableGroupValidator;
 import org.lifstools.mztab2.io.validators.StudyVariableValidator;
 import org.lifstools.mztab2.model.Assay;
@@ -778,6 +782,7 @@ public class MTDLineParser extends MZTabLineParser {
         validate(metadata, new SoftwareValidator(), context, errorList);
         validate(metadata, new AssayValidator(), context, errorList);
         validate(metadata, new StudyVariableValidator(), context, errorList);
+        validate(metadata, new StudyVariableFactorsValidator(), context, errorList);
         validate(metadata, new StudyVariableGroupValidator(), context, errorList);
         validate(metadata, new MsRunValidator(), context, errorList);
         validate(metadata, new CvValidator(), context, errorList);
@@ -789,6 +794,21 @@ public class MTDLineParser extends MZTabLineParser {
         // small_molecule_feature-quantification_unit and id_confidence_measure
         // are likewise handled there.
         validate(metadata, new DatabaseValidator(), context, errorList);
+    }
+
+    /**
+     * Checks the references between metadata elements: every study variable
+     * lists its assays, and every instrument and sample is referenced. A
+     * missing reference does not prevent reading the file, so these checks
+     * run after the model has been built.
+     *
+     * @throws uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorOverflowException
+     * if the maximum number of messages is exceeded.
+     */
+    public void refineReferences() {
+        validate(metadata, new StudyVariableAssayRefsValidator(), context, errorList);
+        validate(metadata, new InstrumentValidator(), context, errorList);
+        validate(metadata, new SampleValidator(), context, errorList);
     }
 
     /**
@@ -1163,8 +1183,14 @@ public class MTDLineParser extends MZTabLineParser {
         String valueLabel, Integer id) throws MZTabErrorOverflowException, MZTabException {
         List<IndexedElement> indexedElementList;
         if (property == null) {
-            context.addStudyVariable(metadata, new StudyVariable().id(id).
-                name(valueLabel));
+            StudyVariable existing = context.getStudyVariableMap().get(id);
+            if (existing != null) {
+                // properties read before the name line must not be lost
+                existing.setName(valueLabel);
+            } else {
+                context.addStudyVariable(metadata, new StudyVariable().id(id).
+                    name(valueLabel));
+            }
         } else {
             switch (property) {
                 case STUDY_VARIABLE_ASSAY_REFS:
@@ -1204,8 +1230,10 @@ public class MTDLineParser extends MZTabLineParser {
                         addStudyVariableDescription(metadata, id, valueLabel);
                     break;
                 case STUDY_VARIABLE_FACTORS:
-                    // study_variable[1-n]-factors was removed in version 2.1 and
-                    // is silently ignored for backwards compatibility.
+                    // mzTab-M 2.0; replaced by study_variable_group in 2.1, which
+                    // refineNormalMetadata reports for 2.1 files
+                    context.addStudyVariableFactors(metadata, id,
+                        checkParameterList(defineLabel, valueLabel));
                     break;
                 default:
                     MZTabError error = new MZTabError(

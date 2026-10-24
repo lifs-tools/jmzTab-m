@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configuration scan="true" scanPeriod="30 seconds">
+<configuration>
 
     <contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator">
         <resetJUL>true</resetJUL>
@@ -13,7 +13,7 @@
 
     <logger name="org.lifstools" level="INFO"/>
 
-    <root level="${LOG_LEVEL:INFO}">">
+    <root level="${LOG_LEVEL:-INFO}">
         <appender-ref ref="console"/>
     </root>
 

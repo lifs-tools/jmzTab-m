@@ -288,6 +288,22 @@ public final class LogicalErrorType extends MZTabErrorType {
      * Constant <code>ProfileAmbiguityCodeMustBeNull</code>
      */
     public static final MZTabErrorType ProfileAmbiguityCodeMustBeNull = createError(Category.Logical, "ProfileAmbiguityCodeMustBeNull");
+    /**
+     * Constant <code>UndefinedStudyVariableAssayRefs</code>
+     */
+    public static final MZTabErrorType UndefinedStudyVariableAssayRefs = createError(Category.Logical, "UndefinedStudyVariableAssayRefs");
+    /**
+     * Constant <code>InstrumentNotReferenced</code>
+     */
+    public static final MZTabErrorType InstrumentNotReferenced = createError(Category.Logical, "InstrumentNotReferenced");
+    /**
+     * Constant <code>SampleNotReferenced</code>
+     */
+    public static final MZTabErrorType SampleNotReferenced = createError(Category.Logical, "SampleNotReferenced");
+    /**
+     * Constant <code>StudyVariableFactorsRemoved</code>
+     */
+    public static final MZTabErrorType StudyVariableFactorsRemoved = createWarn(Category.Logical, "StudyVariableFactorsRemoved");
 
     private static final MZTabErrorType[] VALUES = {
         NULL, NotNULL, LineOrder, HeaderLine, NoHeaderLine,
@@ -298,7 +314,8 @@ public final class LogicalErrorType extends MZTabErrorType {
         NoSmallMoleculeIdentificationReliability, ExternalStudyIdFormatNotDefined, ExternalStudyFormatNotDefined, NoDatabaseMustHaveNullPrefix, ItemNumberMismatch, UnknownRefId, SingleStudyVariableName, UndefinedStudyVariableNameOnceOnly,
         SpectraIdFormatNotValid, SpectraIdFormatNotSupported,
         ProfileInferred, ProfileTableMissing, ProfileTableForbidden, ProfileUnsupportedCombination, ProfileMSFDiscouraged, ProfileFieldMismatch,
-        ProfileSmfIdRefsForbidden, ProfileSmfIdRefsRequired, ProfileSmeIdRefsForbidden, ProfileAmbiguityCodeMustBeNull
+        ProfileSmfIdRefsForbidden, ProfileSmfIdRefsRequired, ProfileSmeIdRefsForbidden, ProfileAmbiguityCodeMustBeNull,
+        UndefinedStudyVariableAssayRefs, InstrumentNotReferenced, SampleNotReferenced, StudyVariableFactorsRemoved
     };
     
     public static MZTabErrorType[] getValues() {

@@ -18,10 +18,12 @@ MTD	sample[2]-description	Unstimulated human blood platelets
 MTD	ms_run[1]-location	file://c:/data/control.mzML																	
 MTD	ms_run[1]-format	[MS, MS:1000584, mzML file, ]																	
 MTD	ms_run[1]-id_format	[MS, MS:1000776, scan number only nativeID format, ]
+MTD	ms_run[1]-instrument_ref	instrument[1]
 MTD	ms_run[1]-scan_polarity[1]	[MS, MS:1000130, positive scan, ]																	
 MTD	ms_run[2]-location	file://c:/data/treatment.mzML																	
 MTD	ms_run[2]-format	[MS, MS:1000584, mzML file, ]																	
 MTD	ms_run[2]-id_format	[MS, MS:1000776, scan number only nativeID format, ]
+MTD	ms_run[2]-instrument_ref	instrument[1]
 MTD	ms_run[2]-scan_polarity[1]	[MS, MS:1000130, positive scan, ]																	
 MTD	assay[1]-sample_ref	sample[1]																	
 MTD	assay[1]-ms_run_ref	ms_run[1]																	

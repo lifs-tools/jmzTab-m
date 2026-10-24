@@ -31,11 +31,13 @@ MTD	ms_run[1]-id_format	[MS, MS:1001530, mzML unique identifier, ]
 MTD	ms_run[1]-scan_polarity	[MS, MS:1000130, positive scan, ]
 MTD	ms_run[1]-fragmentation_method	[MS, MS:1000133, CID, ]
 MTD	ms_run[1]-location	ftp://ftp.ebi.ac.uk/path/to/file
+MTD	ms_run[1]-instrument_ref	instrument[1]
 MTD	ms_run[2]-format	[MS, MS:1001062, Mascot MGF file, ]
 MTD	ms_run[2]-scan_polarity	[MS, MS:1000130, positive scan, ]
 MTD	ms_run[2]-location	ftp://ftp.ebi.ac.uk/path/to/file
 MTD	ms_run[2]-hash	de9f2c7fd25e1b3afad3e85a0bd17d9b100db4b3
 MTD	ms_run[2]-hash_method	[MS, MS:1000569, SHA-1, ]
+MTD	ms_run[2]-instrument_ref	instrument[2]
 MTD	sample[1]-species[1]	[NCBITaxon, NCBITaxon:9606, Homo sapiens (Human), ]
 MTD	sample[1]-species[2]	[NCBITaxon, NCBITaxon:573824, Human rhinovirus 1, ]
 MTD	sample[1]-tissue[1]	[BTO, BTO:0000759, liver, ]

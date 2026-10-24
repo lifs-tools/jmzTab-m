@@ -2139,6 +2139,8 @@ components:
         variation_function: The function used to calculate the study variable quantification variation value if it is reported and the operation used is not coefficient of variation (default) e.g. “standard error”.
 
         description: A textual description of the study variable.
+
+        factors: Additional parameters or factors, separated by bars, that are known about study variables allowing the capture of more complex, such as nested designs (mzTab-M 2.0; replaced by study_variable_group in 2.1).
       x-mztab-example: >
         MTD	study_variable[1]	control
 
@@ -2149,6 +2151,8 @@ components:
         MTD	study_variable-variation_function	[MS, MS:1002885, standard error, ]
 
         MTD	study_variable[1]-description	Group B (spike-in 0.74 fmol/uL)
+
+        MTD	study_variable[1]-factors	[,,rapamycin dose,0.5mg]
 
         MTD	study_variable[2]	1 minute 0.5mg rapamycin
       x-mztab-serialize-by-id: "true"
@@ -2177,6 +2181,12 @@ components:
         description:
           type: string
           description: A free-form description of this study variable.
+        factors:
+          type: array
+          default: []
+          items:
+            $ref: "#/components/schemas/Parameter"
+          description: Parameters indicating which factors were used for the assays referenced by this study variable, and at which levels (mzTab-M 2.0; replaced by study_variable_group in 2.1).
     StudyVariableGroup:
       description: >
         Specification of study_variable_group.

@@ -748,6 +748,9 @@ public class MzTabFileParser {
                 errorList.add(profileError);
             }
         }
+        // after the model: a missing reference between metadata elements is
+        // an error, but does not prevent reading the file
+        mtdParser.refineReferences();
 
     }
 

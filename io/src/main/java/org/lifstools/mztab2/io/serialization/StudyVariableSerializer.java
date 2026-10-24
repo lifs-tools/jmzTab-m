@@ -86,6 +86,10 @@ public class StudyVariableSerializer extends StdSerializer<StudyVariable> {
             addLineWithProperty(jg, Section.Metadata.getPrefix(),
                 StudyVariable.JSON_PROPERTY_DESCRIPTION,
                 studyVariable, studyVariable.getDescription());
+            // mzTab-M 2.0 only; written when the file had them
+            addSubElementParameters(jg, Section.Metadata.getPrefix(),
+                studyVariable, StudyVariable.JSON_PROPERTY_FACTORS,
+                studyVariable.getFactors(), true);
             addLineWithProperty(jg, Section.Metadata.getPrefix(),
                 StudyVariable.JSON_PROPERTY_AVERAGE_FUNCTION,
                 studyVariable, studyVariable.
