@@ -141,7 +141,10 @@ public class StudyVariableValidatorTest {
         assertEquals(expResult.get(0).toString(), result.get(0).toString());
     }
 
-    /** Assays 1..n and one study variable, all registered with the parser context. */
+    /**
+     * Assays 1..n and one study variable, all registered with the parser
+     * context; runs both study variable validators, as the parser does.
+     */
     private static List<MZTabError> validateSingle(StudyVariable sv, int assays) {
         Metadata metadata = new Metadata();
         MZTabParserContext parserContext = new MZTabParserContext();
@@ -150,7 +153,10 @@ public class StudyVariableValidatorTest {
             parserContext.addAssay(metadata, new Assay().id(i));
         }
         parserContext.addStudyVariable(metadata, sv);
-        return new StudyVariableValidator().validateRefine(metadata, parserContext);
+        List<MZTabError> errors = new java.util.ArrayList<>(
+                new StudyVariableValidator().validateRefine(metadata, parserContext));
+        errors.addAll(new StudyVariableAssayRefsValidator().validateRefine(metadata, parserContext));
+        return errors;
     }
 
     @Test
@@ -194,7 +200,7 @@ public class StudyVariableValidatorTest {
         metadata.addStudyVariableItem(new StudyVariable().id(1).name("undefined").description("A description"));
         MZTabParserContext parserContext = new MZTabParserContext();
         parserContext.addStudyVariable(metadata, metadata.getStudyVariable().get(0));
-        StudyVariableValidator instance = new StudyVariableValidator();
+        StudyVariableAssayRefsValidator instance = new StudyVariableAssayRefsValidator();
         List<MZTabError> expResult = Arrays.asList(
                 new MZTabError(
                         LogicalErrorType.AssayRefs, -1,

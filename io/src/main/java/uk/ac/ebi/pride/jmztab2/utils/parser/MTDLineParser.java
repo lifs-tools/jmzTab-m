@@ -18,10 +18,13 @@ package uk.ac.ebi.pride.jmztab2.utils.parser;
 import org.lifstools.mztab2.io.validators.AssayValidator;
 import org.lifstools.mztab2.io.validators.CvValidator;
 import org.lifstools.mztab2.io.validators.DatabaseValidator;
+import org.lifstools.mztab2.io.validators.InstrumentValidator;
 import org.lifstools.mztab2.io.validators.MsRunValidator;
 import org.lifstools.mztab2.io.validators.MzTabIdValidator;
 import org.lifstools.mztab2.io.validators.MzTabVersionValidator;
+import org.lifstools.mztab2.io.validators.SampleValidator;
 import org.lifstools.mztab2.io.validators.SoftwareValidator;
+import org.lifstools.mztab2.io.validators.StudyVariableAssayRefsValidator;
 import org.lifstools.mztab2.io.validators.StudyVariableGroupValidator;
 import org.lifstools.mztab2.io.validators.StudyVariableValidator;
 import org.lifstools.mztab2.model.Assay;
@@ -789,6 +792,21 @@ public class MTDLineParser extends MZTabLineParser {
         // small_molecule_feature-quantification_unit and id_confidence_measure
         // are likewise handled there.
         validate(metadata, new DatabaseValidator(), context, errorList);
+    }
+
+    /**
+     * Checks the references between metadata elements: every study variable
+     * lists its assays, and every instrument and sample is referenced. A
+     * missing reference does not prevent reading the file, so these checks
+     * run after the model has been built.
+     *
+     * @throws uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorOverflowException
+     * if the maximum number of messages is exceeded.
+     */
+    public void refineReferences() {
+        validate(metadata, new StudyVariableAssayRefsValidator(), context, errorList);
+        validate(metadata, new InstrumentValidator(), context, errorList);
+        validate(metadata, new SampleValidator(), context, errorList);
     }
 
     /**
