@@ -81,7 +81,9 @@ public class ExampleFilesValidationTestIT {
 
     static Stream<Arguments> data() {
         return Stream.of(
-            Arguments.of(XCMS_EXAMPLE, MZTabErrorType.Level.Info, 2, 15),
+            // no evidence table: its three rules (ms_level, identification_method,
+            // derivatized_form) don't apply
+            Arguments.of(XCMS_EXAMPLE, MZTabErrorType.Level.Info, 2, 12),
             Arguments.of(LIPIDOMICS_EXAMPLE, MZTabErrorType.Level.Info, 1, 6),
             Arguments.of(MTBLS263, MZTabErrorType.Level.Info, 1, 11),
             Arguments.of(STANDARDMIX_NEGATIVE_EXPORTPOSITIONLEVEL, MZTabErrorType.Level.Info, 1, 5),
