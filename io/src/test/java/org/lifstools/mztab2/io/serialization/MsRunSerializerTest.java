@@ -55,6 +55,7 @@ public class MsRunSerializerTest extends AbstractSerializerTest {
             hashMethod(new Parameter().cvLabel("MS").
                 cvAccession("MS:1000569").
                 name("SHA-1")).
+            usiIdentifier("mzspec:PXD000561:Adult_Frontalcortex_bRP_Elite_85_f09").
             addFragmentationMethodItem(
                 new Parameter().cvLabel("MS").
                     cvAccession("MS:1000133").
@@ -78,6 +79,8 @@ public class MsRunSerializerTest extends AbstractSerializerTest {
                 getHash() + NEW_LINE
             + MTD + TAB_STRING + Metadata.JSON_PROPERTY_MS_RUN + "[1]-hash_method" + TAB_STRING + new ParameterConverter().
                 convert(msRun1.getHashMethod()) + NEW_LINE
+            + MTD + TAB_STRING + Metadata.JSON_PROPERTY_MS_RUN + "[1]-usi_identifier" + TAB_STRING + msRun1.
+                getUsiIdentifier() + NEW_LINE
             + MTD + TAB_STRING + Metadata.JSON_PROPERTY_MS_RUN + "[1]-format" + TAB_STRING + new ParameterConverter().
                 convert(msRun1.getFormat()) + NEW_LINE
             + MTD + TAB_STRING + Metadata.JSON_PROPERTY_MS_RUN + "[1]-fragmentation_method[1]" + TAB_STRING + new ParameterConverter().

@@ -657,6 +657,8 @@ components:
             hash: Hash value of the corresponding external MS data file defined in ms_run[1-n]-location. If ms_run[1-n]-hash is present, ms_run[1-n]-hash_method SHOULD also be present.
 
             hash_method: A parameter specifying the hash methods used to generate the String in ms_run[1-n]-hash. Specifics of the hash method used MAY follow the definitions of the mzML format. If ms_run[1-n]-hash is present, ms_run[1-n]-hash_method SHOULD also be present.
+
+            usi_identifier: An identifier for the MS run based on the Universal Spectrum Identifier (USI) specification. Every deposited MS run can be referenced with a shortened form: mzspec:<collection>:<msRun>. A format suffix MAY be specified (e.g. mzspec:<collection>:<msRun>.RAW) to signify a specific file type. If specified, the format suffix should align with ms_run[1-n]-format and the ms_run[1-n]-location suffix.
           default: []
           items:
             $ref: "#/components/schemas/MsRun"
@@ -672,6 +674,7 @@ components:
             MTD	ms_run[1]-scan_polarity[2]	[MS, MS:1000129, negative scan, ]
             MTD	ms_run[1]-hash_method	[MS, MS:1000569, SHA-1, ]
             MTD	ms_run[1]-hash	de9f2c7fd25e1b3afad3e85a0bd17d9b100db4b3
+            MTD	ms_run[1]-usi_identifier	mzspec:PXD000561:Adult_Frontalcortex_bRP_Elite_85_f09
         assay:
           type: array
           description: >
@@ -2074,6 +2077,8 @@ components:
         hash: Hash value of the corresponding external MS data file defined in ms_run[1-n]-location. If ms_run[1-n]-hash is present, ms_run[1-n]-hash_method SHOULD also be present.
 
         hash_method: A parameter specifying the hash methods used to generate the String in ms_run[1-n]-hash. Specifics of the hash method used MAY follow the definitions of the mzML format. If ms_run[1-n]-hash is present, ms_run[1-n]-hash_method SHOULD also be present.
+
+        usi_identifier: An identifier for the MS run based on the Universal Spectrum Identifier (USI) specification. Every deposited MS run can be referenced with a shortened form: mzspec:<collection>:<msRun>. A format suffix MAY be specified (e.g. mzspec:<collection>:<msRun>.RAW) to signify a specific file type. If specified, the format suffix should align with ms_run[1-n]-format and the ms_run[1-n]-location suffix.
       x-mztab-example: |
         COM	location can be a local or remote URI
         MTD	ms_run[1]-location	file:///C:/path/to/my/file.mzML
@@ -2086,6 +2091,7 @@ components:
         MTD	ms_run[1]-scan_polarity[2]	[MS, MS:1000129, negative scan, ]
         MTD	ms_run[1]-hash_method	[MS, MS:1000569, SHA-1, ]
         MTD	ms_run[1]-hash	de9f2c7fd25e1b3afad3e85a0bd17d9b100db4b3
+        MTD	ms_run[1]-usi_identifier	mzspec:PXD000561:Adult_Frontalcortex_bRP_Elite_85_f09
       x-mztab-serialize-by-id: "true"
       type: object
       required:
@@ -2126,6 +2132,9 @@ components:
           description: The file hash value of this msRun's data file.
         hash_method:
           $ref: "#/components/schemas/Parameter"
+        usi_identifier:
+          type: string
+          description: The MS run identifier (MRI) of this msRun's data file in a public repository, based on the USI specification, e.g. mzspec:<collection>:<msRun>.
     StudyVariable:
       description: >
         Specification of study_variable.

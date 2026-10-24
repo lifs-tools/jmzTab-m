@@ -88,6 +88,13 @@ public class MzTabFileParser {
     private URI tabFile;
 
     private MZTabErrorList errorList;
+
+    /**
+     * MS run identifier (MRI) as defined by the HUPO-PSI USI specification:
+     * mzspec:&lt;collection&gt;:&lt;msRun&gt;, where msRun may contain a path and
+     * a format suffix.
+     */
+    private static final Pattern MS_RUN_IDENTIFIER = Pattern.compile("^mzspec:[^:]+:.+$");
     private MZTabParserContext context;
     // where each parsed line belongs, for the locations of its errors
     private LineIndex lineIndex;
@@ -400,6 +407,16 @@ public class MzTabFileParser {
                     LogicalErrorType.MsRunHashMethodNotDefined, -1, msRun.
                         getId().
                         toString()));
+            }
+            //ms_run[1-n]-usi_identifier SHOULD be an MS run identifier: mzspec:<collection>:<msRun>
+            if (msRun.getUsiIdentifier() != null && !MS_RUN_IDENTIFIER.matcher(
+                msRun.getUsiIdentifier()).matches()) {
+                errorList.add(new MZTabError(
+                    LogicalErrorType.MsRunUsiIdentifierInvalid, -1, msRun.
+                        getId().
+                        toString(), msRun.getUsiIdentifier()).location(
+                        Locations.metadataKey("ms_run[" + msRun.getId()
+                            + "]-usi_identifier")));
             }
         }
     }
