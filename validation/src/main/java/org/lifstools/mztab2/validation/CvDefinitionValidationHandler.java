@@ -24,7 +24,10 @@ import org.lifstools.mztab2.model.MzTab;
 import org.lifstools.mztab2.model.Parameter;
 import org.lifstools.mztab2.model.ValidationMessage;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -34,6 +37,7 @@ import org.apache.commons.jxpath.JXPathContext;
 import org.apache.commons.jxpath.Pointer;
 import org.apache.commons.lang3.tuple.Pair;
 import uk.ac.ebi.pride.jmztab2.utils.errors.CrossCheckErrorType;
+import uk.ac.ebi.pride.jmztab2.utils.errors.Locations;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabError;
 
 /**
@@ -71,7 +75,7 @@ public class CvDefinitionValidationHandler implements Validator<MzTab> {
         log.debug("Selected {} cv parameters!", parameters.size());
         Set<String> definedCvLabels = new HashSet<>(cvTerms.keySet());
         Set<String> usedCvLabels = new HashSet<>();
-        parameters.stream().
+        definedOnce(parameters).stream().
             forEach((t) ->
             {
                 Parameter param = t.getValue();
@@ -88,7 +92,8 @@ public class CvDefinitionValidationHandler implements Validator<MzTab> {
                         MZTabError error = new MZTabError(
                             CrossCheckErrorType.CvUndefinedInMetadata, -1,
                             param.getCvLabel(),
-                            new ParameterConverter().convert(param));
+                            new ParameterConverter().convert(param)).
+                            location(ModelLocations.ofPointer(t.getKey()));
                         messages.add(error.toValidationMessage());
                     }
                 }
@@ -104,8 +109,53 @@ public class CvDefinitionValidationHandler implements Validator<MzTab> {
                 MZTabError error = new MZTabError(
                     CrossCheckErrorType.CvUnused, -1,
                     cvLabel);
+                Integer id = cvTerms.get(cvLabel).
+                    getId();
+                if (id != null) {
+                    error.location(Locations.metadataKey(
+                        "cv[" + id + "]-label"));
+                }
                 messages.add(error.toValidationMessage());
             });
         return messages;
+    }
+
+    /**
+     * Prefers the path with the fewest references (msRunRef, instrumentRef,
+     * spectraRef, assayRefs, ...), then the shortest path.
+     */
+    private static final Comparator<Pair<Pointer, Parameter>> DEFINITION_FIRST = Comparator.
+        comparingLong((Pair<Pointer, Parameter> p) -> referenceHops(p.getKey().
+            asPath())).
+        thenComparingInt(p -> p.getKey().
+            asPath().
+            length());
+
+    /**
+     * The selection reaches a parameter once per path to it, e.g. an
+     * instrument's name also through every ms_run, assay, study variable and
+     * evidence row that refers to that instrument. Keeps each parameter object
+     * once, at the path where it is defined, in selection order.
+     */
+    static List<Pair<Pointer, Parameter>> definedOnce(
+        List<Pair<Pointer, Parameter>> selection) {
+        List<Pair<Pointer, Parameter>> unique = new ArrayList<>();
+        Map<Parameter, Integer> index = new IdentityHashMap<>();
+        for (Pair<Pointer, Parameter> p : selection) {
+            Integer i = index.putIfAbsent(p.getValue(), unique.size());
+            if (i == null) {
+                unique.add(p);
+            } else if (DEFINITION_FIRST.compare(p, unique.get(i)) < 0) {
+                unique.set(i, p);
+            }
+        }
+        return unique;
+    }
+
+    private static long referenceHops(String path) {
+        return Arrays.stream(path.split("/")).
+            map(step -> step.replaceAll("\\[\\d+\\]$", "")).
+            filter(step -> step.endsWith("Ref") || step.endsWith("Refs")).
+            count();
     }
 }

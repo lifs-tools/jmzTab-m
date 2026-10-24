@@ -67,7 +67,7 @@ public class SharedParametersValidationHandler implements CvTermValidationHandle
                                 getCvLabel(), allowedParameter.getCvLabel(),
                         CvMappingUtils.niceToString(result.getRule()));
 
-                messages.add(error.toValidationMessage());
+                messages.add(RuleMessages.atPointer(error, p.getKey(), result.getRule()));
             }
             if (!Optional.ofNullable(p.getValue().
                     getCvAccession()).
@@ -82,7 +82,7 @@ public class SharedParametersValidationHandler implements CvTermValidationHandle
                                 getCvAccession(), allowedParameter.getCvAccession(),
                         CvMappingUtils.niceToString(result.getRule()));
 
-                messages.add(error.toValidationMessage());
+                messages.add(RuleMessages.atPointer(error, p.getKey(), result.getRule()));
             }
             if (!Optional.ofNullable(p.getValue().
                     getName()).
@@ -97,7 +97,7 @@ public class SharedParametersValidationHandler implements CvTermValidationHandle
                                 getName(), allowedParameter.getName(),
                         CvMappingUtils.niceToString(result.getRule()));
 
-                messages.add(error.toValidationMessage());
+                messages.add(RuleMessages.atPointer(error, p.getKey(), result.getRule()));
             }
         }
         return messages;

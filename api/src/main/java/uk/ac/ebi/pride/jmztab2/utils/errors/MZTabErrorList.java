@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.BinaryOperator;
-import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.ebi.pride.jmztab2.model.MZTabConstants;
@@ -146,9 +145,12 @@ public class MZTabErrorList {
         if (errors == null) {
             throw new NullPointerException("Can not add a null list of errors.");
         }
-        return errors.stream().map((t) -> {
-            return errorList.add(t);
-        }).collect(Collectors.reducing((Boolean t, Boolean u) -> t || u)).orElse(Boolean.FALSE);
+        // through add, so that the level filter and the maximum apply
+        boolean added = false;
+        for (MZTabError error : errors) {
+            added |= add(error);
+        }
+        return added;
     }
 
     /**
@@ -229,6 +231,18 @@ public class MZTabErrorList {
      */
     public boolean isEmpty() {
         return errorList.isEmpty();
+    }
+
+    /**
+     * Returns {@code true} if this list contains an error of level
+     * {@link MZTabErrorType.Level#Error}; warnings and infos do not count.
+     *
+     * @return a boolean.
+     */
+    public boolean hasErrors() {
+        return errorList.stream().
+            anyMatch(e -> e.getType().
+            getLevel() == MZTabErrorType.Level.Error);
     }
 
     /**

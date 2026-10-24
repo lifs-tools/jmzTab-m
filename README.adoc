@@ -180,7 +180,7 @@ as defined in the properties section of your pom file.
 
 Every push to `master` replaces the https://github.com/lifs-tools/jmzTab-m/releases/tag/dev-latest[dev-latest] pre-release with the latest build, so the following links always point to the current development version (no login required):
 
-* Command-line interface (requires Java 24): https://github.com/lifs-tools/jmzTab-m/releases/download/dev-latest/jmztabm-cli-bin.zip
+* Command-line interface (requires Java 25): https://github.com/lifs-tools/jmzTab-m/releases/download/dev-latest/jmztabm-cli-bin.zip
 * Native validator for Linux (x86_64): https://github.com/lifs-tools/jmzTab-m/releases/download/dev-latest/jmztabm-validator-amd64-linux
 * Native validator for macOS (Apple Silicon): https://github.com/lifs-tools/jmzTab-m/releases/download/dev-latest/jmztabm-validator-aarch64-macos
 * Native validator for Windows (x86_64): https://github.com/lifs-tools/jmzTab-m/releases/download/dev-latest/jmztabm-validator-amd64-windows.exe

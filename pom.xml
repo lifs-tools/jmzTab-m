@@ -41,7 +41,7 @@
             <plugin>
                 <groupId>com.github.ferstl</groupId>
                 <artifactId>depgraph-maven-plugin</artifactId>
-                <version>4.0.3</version>
+                <version>4.0.5</version>
                 <configuration>
                     <graphFormat>gml</graphFormat>
                     <excludes>:::test</excludes>
@@ -131,7 +131,7 @@
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>buildnumber-maven-plugin</artifactId>
-                    <version>3.3.0</version>
+                    <version>3.3.1</version>
                     <executions>
                         <execution>
                             <phase>validate</phase>
@@ -148,12 +148,12 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-install-plugin</artifactId>
-                    <version>3.1.4</version>
+                    <version>3.2.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-deploy-plugin</artifactId>
-                    <version>3.1.4</version>
+                    <version>3.2.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -341,7 +341,7 @@
                             </goals>
                             <configuration>
                                 <from>
-                                    <image>openjdk:24-jre-slim</image>
+                                    <image>eclipse-temurin:25-jre</image>
                                 </from>
                                 <to>
                                     <image>${docker.image.prefix}/${docker.service.prefix}-${project.artifactId}</image>
@@ -544,7 +544,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!--<maven.compiler.source>1.8</maven.compiler.source>-->
         <!--<maven.compiler.target>1.8</maven.compiler.target>-->
-        <java.version>24</java.version>
+        <java.version>25</java.version>
         <maven.compiler.release>${java.version}</maven.compiler.release>
         <lombok.version>1.18.48</lombok.version>
         <hamcrest.version>3.0</hamcrest.version>
@@ -553,17 +553,18 @@
         <jackson.version>2.19.4</jackson.version>
         <jackson.databind.version>2.19.4</jackson.databind.version>
         <jackson.core.version>2.19.4</jackson.core.version>
-        <hibernate.validator.version>9.1.3.Final</hibernate.validator.version>
-        <slf4j.version>2.0.19</slf4j.version>
+        <hibernate.validator.version>9.1.5.Final</hibernate.validator.version>
+        <slf4j.version>2.0.20</slf4j.version>
         <commons-cli.version>1.11.0</commons-cli.version>
         <javax.el.version>4.0.2</javax.el.version>
         <maven-plugin-version>1.0.0</maven-plugin-version>
         <jacoco.version>0.8.15</jacoco.version>
-        <mockito.version>5.23.0</mockito.version>
+        <mockito.version>5.24.0</mockito.version>
         <olsclient.version>2.13</olsclient.version>
         <jxpath.version>1.4.0</jxpath.version>
         <spring.version>6.2.19</spring.version>
-        <logback.version>1.6.3</logback.version>
+        <logback.version>1.6.5</logback.version>
+        <diffutils.version>2.2</diffutils.version>
         <javaobjectdiff.version>0.95</javaobjectdiff.version>
         <jakarta.annotation-api.version>3.0.0</jakarta.annotation-api.version>
         <assembly.dir>${project.artifactId}</assembly.dir>

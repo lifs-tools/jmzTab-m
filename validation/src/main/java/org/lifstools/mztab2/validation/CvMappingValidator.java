@@ -126,8 +126,7 @@ public class CvMappingValidator implements Validator<MzTab> {
             sharedHandler(new SharedParametersValidationHandler()).
             cvTermSelectionHandler(new RemoveUserParams()).
             emptyRuleHandler(new EmptyRuleHandler()).
-            build().
-            withPreValidator(new CvDefinitionValidationHandler());
+            build();
     }
 
     /**
@@ -195,8 +194,7 @@ public class CvMappingValidator implements Validator<MzTab> {
             sharedHandler(new SharedParametersValidationHandler()).
             cvTermSelectionHandler(new RemoveUserParams()).
             emptyRuleHandler(new EmptyRuleHandler()).
-            build().
-            withPreValidator(new CvDefinitionValidationHandler());
+            build();
     }
 
     /**
@@ -223,8 +221,7 @@ public class CvMappingValidator implements Validator<MzTab> {
             sharedHandler(new SharedParametersValidationHandler()).
             cvTermSelectionHandler(new RemoveUserParams()).
             emptyRuleHandler(new EmptyRuleHandler()).
-            build().
-            withPreValidator(new CvDefinitionValidationHandler());
+            build();
     }
 
     @Override
@@ -236,6 +233,8 @@ public class CvMappingValidator implements Validator<MzTab> {
             {
                 messages.addAll(validator.validate(mzTab));
             });
+        // Always run once here; the factories no longer also register it as a
+        // pre validator, which reported every undefined cv twice.
         messages.addAll(new CvDefinitionValidationHandler().validate(mzTab));
         JXPathContext context = JXPathContext.newContext(mzTab);
         log.debug("Applying {} cv rule mapping steps.", mapping.
@@ -310,7 +309,8 @@ public class CvMappingValidator implements Validator<MzTab> {
                 re);
             MZTabError error = new MZTabError(
                 CrossCheckErrorType.SemanticValidationException, -1, re.
-                    getMessage());
+                    getMessage()).
+                ruleId(rule.getId());
             messages.add(error.toValidationMessage());
         }
         return messages.isEmpty() ? Collections.emptyList() : messages;
