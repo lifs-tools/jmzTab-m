@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Leibniz-Institut für Analytische Wissenschaften – ISAS – e.V..
+ * Copyright 2024 LIFS Tools Consortium.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
