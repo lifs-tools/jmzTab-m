@@ -1194,6 +1194,10 @@
         {
           "name": "getScanPolarity",
           "parameterTypes": []
+        },
+        {
+          "name": "getUsiIdentifier",
+          "parameterTypes": []
         }
       ]
     },
