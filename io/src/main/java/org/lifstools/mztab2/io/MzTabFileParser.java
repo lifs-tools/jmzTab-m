@@ -610,7 +610,9 @@ public class MzTabFileParser {
 
         mtdParser.refineNormalMetadata();
 
-        if (errorList.isEmpty()) {
+        // Warnings and infos do not prevent the model; with isEmpty() a file
+        // got a model at level Error but none at level Info.
+        if (!errorList.hasErrors()) {
             mzTabFile = new MzTab();
             mzTabFile.metadata(mtdParser.getMetadata());
             for (Integer id : commentMap.keySet()) {
