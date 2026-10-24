@@ -53,7 +53,14 @@ public enum ClassPathFile {
     OFFICIAL_PROFILE_M("/metabolomics/", "official-profile-m.mztab"),
     OFFICIAL_PROFILE_MS("/metabolomics/", "official-profile-ms.mztab"),
     OFFICIAL_PROFILE_MF("/metabolomics/", "official-profile-mf.mztab"),
-    OFFICIAL_PROFILE_MFE("/metabolomics/", "official-profile-mfe.mztab");
+    OFFICIAL_PROFILE_MFE("/metabolomics/", "official-profile-mfe.mztab"),
+    /**
+     * Trimmed copy (all MTD/SMH/SML/SFH lines, first 25 SMF rows) of
+     * HUPO-PSI/mzTab-M examples/2.1/pending-validator/xcms+MsIO_0.0.11_MTBLS4381_onlySMF.mztab,
+     * reproducing lifs-tools/jmzTab-m#187 (213 assay columns followed by two
+     * opt_global columns in SFH).
+     */
+    XCMS_MSIO_MTBLS4381_ONLY_SMF_TRIMMED("/metabolomics/", "xcms-msio-0.0.11-MTBLS4381-onlySMF-trimmed.mztab");
 
     private final String resourcePathPrefix;
     private final String fileName;

@@ -18,6 +18,7 @@ package uk.ac.ebi.pride.jmztab2.utils.parser;
 import org.lifstools.mztab2.io.validators.AssayValidator;
 import org.lifstools.mztab2.io.validators.CvValidator;
 import org.lifstools.mztab2.io.validators.DatabaseValidator;
+import org.lifstools.mztab2.io.validators.ForwardReferenceValidator;
 import org.lifstools.mztab2.io.validators.InstrumentValidator;
 import org.lifstools.mztab2.io.validators.MsRunValidator;
 import org.lifstools.mztab2.io.validators.MzTabIdValidator;
@@ -777,6 +778,8 @@ public class MTDLineParser extends MZTabLineParser {
      * @throws uk.ac.ebi.pride.jmztab2.utils.errors.MZTabException if any.
      */
     public void refineNormalMetadata() throws MZTabException {
+        // references read above their element; reported in refineReferences
+        context.resolveForwardReferences(metadata);
         validate(metadata, new MzTabVersionValidator(), context, errorList);
         validate(metadata, new MzTabIdValidator(), context, errorList);
         validate(metadata, new SoftwareValidator(), context, errorList);
@@ -806,6 +809,7 @@ public class MTDLineParser extends MZTabLineParser {
      * if the maximum number of messages is exceeded.
      */
     public void refineReferences() {
+        validate(metadata, new ForwardReferenceValidator(), context, errorList);
         validate(metadata, new StudyVariableAssayRefsValidator(), context, errorList);
         validate(metadata, new InstrumentValidator(), context, errorList);
         validate(metadata, new SampleValidator(), context, errorList);
@@ -989,23 +993,19 @@ public class MTDLineParser extends MZTabLineParser {
                         defineLabel, valueLabel, true));
                     break;
                 case MS_RUN_INSTRUMENT_REF:
-                    List<IndexedElement> indexedElements = checkIndexedElementList(
-                        defineLabel, valueLabel,
-                        MetadataElement.INSTRUMENT);
-                    if (indexedElements != null && !indexedElements.isEmpty() && indexedElements.
-                        size() == 1) {
-                        Instrument instrument = context.getInstrumentMap().
-                            get(indexedElements.get(0).
-                                getId());
-                        if (instrument == null) {
-                            throw new MZTabException(new MZTabError(
-                                LogicalErrorType.NotDefineInMetadata, lineNumber,
-                                valueLabel,
-                                valueLabel));
-                        }
-                        msRun = context.addMsRunInstrumentRef(metadata, id,
-                            instrument);
+                    IndexedElement instrumentRef = checkIndexedElement(
+                        defineLabel, valueLabel, MetadataElement.INSTRUMENT);
+                    Instrument instrument = context.getInstrumentMap().
+                        get(instrumentRef.getId());
+                    if (instrument == null) {
+                        context.addForwardReference(new ForwardReference(
+                            lineNumber, defineLabel, valueLabel,
+                            MetadataElement.MS_RUN, id,
+                            MetadataElement.INSTRUMENT, instrumentRef.getId()));
+                        return;
                     }
+                    msRun = context.addMsRunInstrumentRef(metadata, id,
+                        instrument);
                     break;
                 case MS_RUN_FORMAT:
                     msRun = context.addMsRunFormat(metadata, id, checkParameter(
@@ -1142,29 +1142,28 @@ public class MTDLineParser extends MZTabLineParser {
                 case ASSAY_SAMPLE_REF:
                     indexedElement = checkIndexedElement(defineLabel, valueLabel,
                         MetadataElement.SAMPLE);
-                    if (indexedElement != null) {
-                        Sample sample = context.getSampleMap().
-                            get(indexedElement.getId());
-                        if (sample == null) {
-                            throw new MZTabException(new MZTabError(
-                                LogicalErrorType.NotDefineInMetadata, lineNumber,
-                                valueLabel,
-                                valueLabel));
-                        }
+                    Sample sample = context.getSampleMap().
+                        get(indexedElement.getId());
+                    if (sample == null) {
+                        context.addForwardReference(new ForwardReference(
+                            lineNumber, defineLabel, valueLabel,
+                            MetadataElement.ASSAY, id,
+                            MetadataElement.SAMPLE, indexedElement.getId()));
+                    } else {
                         context.addAssaySample(metadata, id, sample);
                     }
                     break;
                 case ASSAY_MS_RUN_REF:
                     indexedElement = checkIndexedElement(defineLabel, valueLabel,
                         MetadataElement.MS_RUN);
-                    if (indexedElement != null) {
-                        MsRun msRun = context.getMsRunMap().
-                            get(indexedElement.getId());
-                        if (msRun == null) {
-                            throw new MZTabException(new MZTabError(
-                                LogicalErrorType.NotDefineInMetadata, lineNumber,
-                                valueLabel));
-                        }
+                    MsRun msRun = context.getMsRunMap().
+                        get(indexedElement.getId());
+                    if (msRun == null) {
+                        context.addForwardReference(new ForwardReference(
+                            lineNumber, defineLabel, valueLabel,
+                            MetadataElement.ASSAY, id,
+                            MetadataElement.MS_RUN, indexedElement.getId()));
+                    } else {
                         context.addAssayMsRun(metadata, id, msRun);
                     }
                     break;

@@ -102,5 +102,22 @@ public class OlsLookupServiceTest {
             name("mass spectrometer file format")), "Retrieved parent term equals reference");
     }
 
-    
+    @Test
+    public void testDefaultConfigUsesOls4() {
+        OLSWsConfig config = CvParameterLookupService.defaultConfig();
+        assertThat(config.getProtocol() + "://" + config.getHostName(), is(
+            "https://www.ebi.ac.uk/ols4"));
+    }
+
+    @Test
+    public void testDefaultLookupServiceResolvesParents() {
+        List<Parameter> parents = new CvParameterLookupService().
+            resolveParents(new Parameter().cvLabel("MS").
+                cvAccession("MS:1000564").
+                name("PSI mzData format"), 1);
+        assertThat(parents.size(), is(1));
+        assertThat(parents.get(0).
+            getCvAccession(), is("MS:1000560"));
+    }
+
 }

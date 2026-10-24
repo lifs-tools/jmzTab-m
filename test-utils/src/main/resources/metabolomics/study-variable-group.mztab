@@ -64,6 +64,10 @@ MTD	cv[5]-label	CHEBI
 MTD	cv[5]-full_name	Chemical Entities of Biological Interest
 MTD	cv[5]-version	08-02-2019																	
 MTD	cv[5]-uri	https://www.ebi.ac.uk/ols/ontologies/chebi
+MTD	cv[6]-label	STATO
+MTD	cv[6]-full_name	STATO: the statistical methods ontology
+MTD	cv[6]-version	2026-04-20
+MTD	cv[6]-uri	http://purl.obolibrary.org/obo/stato.owl
 MTD	database[1]	[, ,Golm Metabolite Database, ]																	
 MTD	database[1]-prefix	GMD																	
 MTD	database[1]-version	2.3																	

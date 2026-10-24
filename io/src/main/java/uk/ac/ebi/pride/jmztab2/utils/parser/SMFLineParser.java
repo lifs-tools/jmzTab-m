@@ -77,13 +77,10 @@ public class SMFLineParser extends MZTabDataLineParser<SmallMoleculeFeature> {
         String columnName;
         String target;
         int physicalPosition;
-        String logicalPosition;
         smallMoleculeFeature = new SmallMoleculeFeature();
 
         for (physicalPosition = 1; physicalPosition < items.length; physicalPosition++) {
-            logicalPosition = positionMapping.get(physicalPosition);
-            column = factory.getColumnMapping().
-                get(logicalPosition);
+            column = positionMapping.get(physicalPosition);
 
             if (column != null) {
                 columnName = column.getName();

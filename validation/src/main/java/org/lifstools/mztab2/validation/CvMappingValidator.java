@@ -42,6 +42,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Unmarshaller;
@@ -51,8 +52,6 @@ import org.apache.commons.jxpath.Pointer;
 import org.apache.commons.lang3.tuple.Pair;
 import uk.ac.ebi.pride.jmztab2.utils.errors.CrossCheckErrorType;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabError;
-import uk.ac.ebi.pride.utilities.ols.web.service.client.OLSClient;
-import uk.ac.ebi.pride.utilities.ols.web.service.config.OLSWsConfig;
 
 /**
  * Validator implementation that uses a provided xml mapping file with rules for
@@ -93,12 +92,8 @@ public class CvMappingValidator implements Validator<MzTab> {
      */
     public static CvMappingValidator of(File mappingFile,
         boolean errorIfTermNotInRule) throws JAXBException {
-        OLSWsConfig config = new OLSWsConfig(
-            "https://www.ebi.ac.uk/ols4/api"
-        );
-        OLSClient client = new OLSClient(config);
-        CvParameterLookupService service = new CvParameterLookupService(client);
-        return of(mappingFile, service, errorIfTermNotInRule);
+        return of(mappingFile, new CvParameterLookupService(),
+            errorIfTermNotInRule);
     }
 
     /**
@@ -164,10 +159,8 @@ public class CvMappingValidator implements Validator<MzTab> {
      */
     public static CvMappingValidator of(URL mappingFile,
         boolean errorIfTermNotInRule) throws JAXBException {
-        OLSWsConfig config = new OLSWsConfig();
-        OLSClient client = new OLSClient(config);
-        CvParameterLookupService service = new CvParameterLookupService(client);
-        return of(mappingFile, service, errorIfTermNotInRule);
+        return of(mappingFile, new CvParameterLookupService(),
+            errorIfTermNotInRule);
     }
 
     /**
@@ -300,12 +293,54 @@ public class CvMappingValidator implements Validator<MzTab> {
         return messages.isEmpty() ? Collections.emptyList() : messages;
     }
 
+    /**
+     * Metadata fields that the profile requires only together with a table,
+     * as in MzTabProfileValidator.
+     */
+    private static final Map<String, String> TABLE_OF_FIELD = Map.of(
+        "/metadata/@idConfidenceMeasure", "smallMoleculeEvidence",
+        "/metadata/@smallMoleculeQuantificationUnit", "smallMoleculeSummary",
+        "/metadata/@smallMoleculeFeatureQuantificationUnit", "smallMoleculeFeature");
+
+    /**
+     * Returns true if the element path addresses a table (small molecule
+     * summary, feature or evidence), or a metadata field required only with
+     * that table, and the table has no rows. Such a rule doesn't apply to a
+     * file without that table, e.g. a summary-only file has no evidence table
+     * and needs no id_confidence_measure.
+     */
+    static boolean isTableAbsent(MzTab mzTab, String elementPath) {
+        String table = TABLE_OF_FIELD.getOrDefault(elementPath,
+            elementPath.replaceFirst("^/([^/\\[@]+).*$", "$1"));
+        List<?> rows;
+        switch (table) {
+            case "smallMoleculeSummary":
+                rows = mzTab.getSmallMoleculeSummary();
+                break;
+            case "smallMoleculeFeature":
+                rows = mzTab.getSmallMoleculeFeature();
+                break;
+            case "smallMoleculeEvidence":
+                rows = mzTab.getSmallMoleculeEvidence();
+                break;
+            default:
+                return false;
+        }
+        return rows == null || rows.isEmpty();
+    }
+
     private void applyRule(JXPathContext context, CvMappingRule rule,
         boolean errorOnTermNotInRule, List<ValidationMessage> messages) {
         String path = rule.getCvElementPath();
         List<Pair<Pointer, Parameter>> selection = JxPathElement.
             toList(context, path, Parameter.class);
 
+        if (selection.isEmpty() && isTableAbsent((MzTab) context.
+            getContextBean(), path)) {
+            log.debug("Skipping rule {}: the file has no table for {}", rule.
+                getId(), path);
+            return;
+        }
         messages.addAll(emptyRuleHandler.handleRule(rule, selection));
         if (!messages.isEmpty()) {
             return;

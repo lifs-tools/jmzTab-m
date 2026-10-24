@@ -34,6 +34,21 @@
       ]
     },
     {
+      "type": "ch.qos.logback.classic.jul.LevelChangePropagator",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        },
+        {
+          "name": "setResetJUL",
+          "parameterTypes": [
+            "boolean"
+          ]
+        }
+      ]
+    },
+    {
       "type": "ch.qos.logback.classic.spi.LogbackServiceProvider"
     },
     {
@@ -478,6 +493,9 @@
       "type": "java.beans.PropertyVetoException"
     },
     {
+      "type": "java.io.Serializable"
+    },
+    {
       "type": "java.lang.Boolean",
       "jniAccessible": true,
       "methods": [
@@ -509,6 +527,9 @@
     },
     {
       "type": "java.lang.Class[]"
+    },
+    {
+      "type": "java.lang.Cloneable"
     },
     {
       "type": "java.lang.Comparable"
@@ -545,6 +566,9 @@
     },
     {
       "type": "java.lang.IntegerCustomizer"
+    },
+    {
+      "type": "java.lang.Iterable"
     },
     {
       "type": "java.lang.Number"
@@ -683,6 +707,9 @@
       "type": "java.net.URIXBeanInfo"
     },
     {
+      "type": "java.net.URI[]"
+    },
+    {
       "type": "java.security.AlgorithmParametersSpi"
     },
     {
@@ -701,6 +728,12 @@
       "type": "java.security.interfaces.RSAPublicKey"
     },
     {
+      "type": "java.util.AbstractCollection"
+    },
+    {
+      "type": "java.util.AbstractList"
+    },
+    {
       "type": "java.util.ArrayList",
       "methods": [
         {
@@ -708,6 +741,24 @@
           "parameterTypes": []
         }
       ]
+    },
+    {
+      "type": "java.util.Collection"
+    },
+    {
+      "type": "java.util.ImmutableCollections$AbstractImmutableCollection"
+    },
+    {
+      "type": "java.util.ImmutableCollections$AbstractImmutableList"
+    },
+    {
+      "type": "java.util.ImmutableCollections$ListN"
+    },
+    {
+      "type": "java.util.List"
+    },
+    {
+      "type": "java.util.RandomAccess"
     },
     {
       "type": "kotlin.Metadata"
@@ -803,6 +854,159 @@
       "type": "org.jdom.Document"
     },
     {
+      "type": "org.lifstools.mztab2.io.serialization.AssaySerializer",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "org.lifstools.mztab2.io.serialization.ContactSerializer",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "org.lifstools.mztab2.io.serialization.CvSerializer",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "org.lifstools.mztab2.io.serialization.DatabaseSerializer",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "org.lifstools.mztab2.io.serialization.InstrumentSerializer",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "org.lifstools.mztab2.io.serialization.MetadataSerializer",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "org.lifstools.mztab2.io.serialization.MsRunSerializer",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "org.lifstools.mztab2.io.serialization.ParameterConverter",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "org.lifstools.mztab2.io.serialization.PublicationSerializer",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "org.lifstools.mztab2.io.serialization.SampleProcessingSerializer",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "org.lifstools.mztab2.io.serialization.SampleSerializer",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "org.lifstools.mztab2.io.serialization.SmallMoleculeEvidenceSerializer",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "org.lifstools.mztab2.io.serialization.SmallMoleculeFeatureSerializer",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "org.lifstools.mztab2.io.serialization.SmallMoleculeSummarySerializer",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "org.lifstools.mztab2.io.serialization.SoftwareSerializer",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "org.lifstools.mztab2.io.serialization.StudyVariableGroupSerializer",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "org.lifstools.mztab2.io.serialization.StudyVariableSerializer",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
       "type": "org.lifstools.mztab2.model.Assay",
       "methods": [
         {
@@ -828,6 +1032,46 @@
         {
           "name": "getSampleRef",
           "parameterTypes": []
+        },
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        },
+        {
+          "name": "setCustom",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        },
+        {
+          "name": "setExternalUri",
+          "parameterTypes": [
+            "java.net.URI"
+          ]
+        },
+        {
+          "name": "setId",
+          "parameterTypes": [
+            "java.lang.Integer"
+          ]
+        },
+        {
+          "name": "setMsRunRef",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        },
+        {
+          "name": "setName",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setSampleRef",
+          "parameterTypes": [
+            "org.lifstools.mztab2.model.Sample"
+          ]
         }
       ]
     },
@@ -862,6 +1106,40 @@
         {
           "name": "getVersion",
           "parameterTypes": []
+        },
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        },
+        {
+          "name": "setFullName",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setId",
+          "parameterTypes": [
+            "java.lang.Integer"
+          ]
+        },
+        {
+          "name": "setLabel",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setUri",
+          "parameterTypes": [
+            "java.net.URI"
+          ]
+        },
+        {
+          "name": "setVersion",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
         }
       ]
     },
@@ -884,6 +1162,22 @@
         {
           "name": "getParam",
           "parameterTypes": []
+        },
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        },
+        {
+          "name": "setColumnName",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setParam",
+          "parameterTypes": [
+            "org.lifstools.mztab2.model.Parameter"
+          ]
         }
       ]
     },
@@ -910,6 +1204,28 @@
         {
           "name": "getPrefix",
           "parameterTypes": []
+        },
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        },
+        {
+          "name": "setLineNumber",
+          "parameterTypes": [
+            "java.lang.Integer"
+          ]
+        },
+        {
+          "name": "setMsg",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setPrefix",
+          "parameterTypes": [
+            "org.lifstools.mztab2.model.Comment$PrefixEnum"
+          ]
         }
       ]
     },
@@ -919,6 +1235,12 @@
         {
           "name": "getValue",
           "parameterTypes": []
+        },
+        {
+          "name": "fromValue",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
         }
       ]
     },
@@ -939,6 +1261,65 @@
     },
     {
       "type": "org.lifstools.mztab2.model.CommentXBeanInfo"
+    },
+    {
+      "type": "org.lifstools.mztab2.model.Contact",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        },
+        {
+          "name": "getAffiliation",
+          "parameterTypes": []
+        },
+        {
+          "name": "getEmail",
+          "parameterTypes": []
+        },
+        {
+          "name": "getId",
+          "parameterTypes": []
+        },
+        {
+          "name": "getName",
+          "parameterTypes": []
+        },
+        {
+          "name": "getOrcid",
+          "parameterTypes": []
+        },
+        {
+          "name": "setAffiliation",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setEmail",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setId",
+          "parameterTypes": [
+            "java.lang.Integer"
+          ]
+        },
+        {
+          "name": "setName",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setOrcid",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        }
+      ]
     },
     {
       "type": "org.lifstools.mztab2.model.Database",
@@ -962,6 +1343,40 @@
         {
           "name": "getVersion",
           "parameterTypes": []
+        },
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        },
+        {
+          "name": "setId",
+          "parameterTypes": [
+            "java.lang.Integer"
+          ]
+        },
+        {
+          "name": "setParam",
+          "parameterTypes": [
+            "org.lifstools.mztab2.model.Parameter"
+          ]
+        },
+        {
+          "name": "setPrefix",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setUri",
+          "parameterTypes": [
+            "java.net.URI"
+          ]
+        },
+        {
+          "name": "setVersion",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
         }
       ]
     },
@@ -996,6 +1411,40 @@
         {
           "name": "getSource",
           "parameterTypes": []
+        },
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        },
+        {
+          "name": "setAnalyzer",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        },
+        {
+          "name": "setDetector",
+          "parameterTypes": [
+            "org.lifstools.mztab2.model.Parameter"
+          ]
+        },
+        {
+          "name": "setId",
+          "parameterTypes": [
+            "java.lang.Integer"
+          ]
+        },
+        {
+          "name": "setName",
+          "parameterTypes": [
+            "org.lifstools.mztab2.model.Parameter"
+          ]
+        },
+        {
+          "name": "setSource",
+          "parameterTypes": [
+            "org.lifstools.mztab2.model.Parameter"
+          ]
         }
       ]
     },
@@ -1122,6 +1571,198 @@
         {
           "name": "getUri",
           "parameterTypes": []
+        },
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        },
+        {
+          "name": "getMzTabProfile",
+          "parameterTypes": []
+        },
+        {
+          "name": "getStudyVariableGroup",
+          "parameterTypes": []
+        },
+        {
+          "name": "setAssay",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        },
+        {
+          "name": "setColunitSmallMolecule",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        },
+        {
+          "name": "setColunitSmallMoleculeEvidence",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        },
+        {
+          "name": "setColunitSmallMoleculeFeature",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        },
+        {
+          "name": "setContact",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        },
+        {
+          "name": "setCustom",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        },
+        {
+          "name": "setCv",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        },
+        {
+          "name": "setDatabase",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        },
+        {
+          "name": "setDerivatizationAgent",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        },
+        {
+          "name": "setDescription",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setExternalStudyUri",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        },
+        {
+          "name": "setIdConfidenceMeasure",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        },
+        {
+          "name": "setInstrument",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        },
+        {
+          "name": "setMsRun",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        },
+        {
+          "name": "setMzTabID",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setMzTabProfile",
+          "parameterTypes": [
+            "org.lifstools.mztab2.model.MzTabProfile"
+          ]
+        },
+        {
+          "name": "setMzTabVersion",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setPrefix",
+          "parameterTypes": [
+            "org.lifstools.mztab2.model.Metadata$PrefixEnum"
+          ]
+        },
+        {
+          "name": "setPublication",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        },
+        {
+          "name": "setQuantificationMethod",
+          "parameterTypes": [
+            "org.lifstools.mztab2.model.Parameter"
+          ]
+        },
+        {
+          "name": "setSample",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        },
+        {
+          "name": "setSampleProcessing",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        },
+        {
+          "name": "setSmallMoleculeFeatureQuantificationUnit",
+          "parameterTypes": [
+            "org.lifstools.mztab2.model.Parameter"
+          ]
+        },
+        {
+          "name": "setSmallMoleculeIdentificationReliability",
+          "parameterTypes": [
+            "org.lifstools.mztab2.model.Parameter"
+          ]
+        },
+        {
+          "name": "setSmallMoleculeQuantificationUnit",
+          "parameterTypes": [
+            "org.lifstools.mztab2.model.Parameter"
+          ]
+        },
+        {
+          "name": "setSoftware",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        },
+        {
+          "name": "setStudyVariable",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        },
+        {
+          "name": "setStudyVariableGroup",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        },
+        {
+          "name": "setTitle",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setUri",
+          "parameterTypes": [
+            "java.util.List"
+          ]
         }
       ]
     },
@@ -1131,6 +1772,12 @@
         {
           "name": "getValue",
           "parameterTypes": []
+        },
+        {
+          "name": "fromValue",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
         }
       ]
     },
@@ -1194,6 +1841,70 @@
         {
           "name": "getScanPolarity",
           "parameterTypes": []
+        },
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        },
+        {
+          "name": "setFormat",
+          "parameterTypes": [
+            "org.lifstools.mztab2.model.Parameter"
+          ]
+        },
+        {
+          "name": "setFragmentationMethod",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        },
+        {
+          "name": "setHash",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setHashMethod",
+          "parameterTypes": [
+            "org.lifstools.mztab2.model.Parameter"
+          ]
+        },
+        {
+          "name": "setId",
+          "parameterTypes": [
+            "java.lang.Integer"
+          ]
+        },
+        {
+          "name": "setIdFormat",
+          "parameterTypes": [
+            "org.lifstools.mztab2.model.Parameter"
+          ]
+        },
+        {
+          "name": "setInstrumentRef",
+          "parameterTypes": [
+            "org.lifstools.mztab2.model.Instrument"
+          ]
+        },
+        {
+          "name": "setLocation",
+          "parameterTypes": [
+            "java.net.URI"
+          ]
+        },
+        {
+          "name": "setName",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setScanPolarity",
+          "parameterTypes": [
+            "java.util.List"
+          ]
         }
       ]
     },
@@ -1228,6 +1939,40 @@
         {
           "name": "getSmallMoleculeSummary",
           "parameterTypes": []
+        },
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        },
+        {
+          "name": "setComment",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        },
+        {
+          "name": "setMetadata",
+          "parameterTypes": [
+            "org.lifstools.mztab2.model.Metadata"
+          ]
+        },
+        {
+          "name": "setSmallMoleculeEvidence",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        },
+        {
+          "name": "setSmallMoleculeFeature",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        },
+        {
+          "name": "setSmallMoleculeSummary",
+          "parameterTypes": [
+            "java.util.List"
+          ]
         }
       ]
     },
@@ -1236,6 +1981,21 @@
     },
     {
       "type": "org.lifstools.mztab2.model.MzTabCustomizer"
+    },
+    {
+      "type": "org.lifstools.mztab2.model.MzTabProfile",
+      "methods": [
+        {
+          "name": "fromValue",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "getValue",
+          "parameterTypes": []
+        }
+      ]
     },
     {
       "type": "org.lifstools.mztab2.model.MzTabXBeanInfo"
@@ -1254,6 +2014,28 @@
         {
           "name": "getValue",
           "parameterTypes": []
+        },
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        },
+        {
+          "name": "setIdentifier",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setParam",
+          "parameterTypes": [
+            "org.lifstools.mztab2.model.Parameter"
+          ]
+        },
+        {
+          "name": "setValue",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
         }
       ]
     },
@@ -1284,6 +2066,44 @@
         {
           "name": "getValue",
           "parameterTypes": []
+        },
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        },
+        {
+          "name": "getId",
+          "parameterTypes": []
+        },
+        {
+          "name": "setCvAccession",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setCvLabel",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setId",
+          "parameterTypes": [
+            "java.lang.Integer"
+          ]
+        },
+        {
+          "name": "setName",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setValue",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
         }
       ]
     },
@@ -1306,6 +2126,22 @@
         {
           "name": "getPublicationItems",
           "parameterTypes": []
+        },
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        },
+        {
+          "name": "setId",
+          "parameterTypes": [
+            "java.lang.Integer"
+          ]
+        },
+        {
+          "name": "setPublicationItems",
+          "parameterTypes": [
+            "java.util.List"
+          ]
         }
       ]
     },
@@ -1325,6 +2161,22 @@
         {
           "name": "getType",
           "parameterTypes": []
+        },
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        },
+        {
+          "name": "setAccession",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setType",
+          "parameterTypes": [
+            "org.lifstools.mztab2.model.PublicationItem$TypeEnum"
+          ]
         }
       ]
     },
@@ -1334,6 +2186,12 @@
         {
           "name": "getValue",
           "parameterTypes": []
+        },
+        {
+          "name": "fromValue",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
         }
       ]
     },
@@ -1392,6 +2250,58 @@
         {
           "name": "getTissue",
           "parameterTypes": []
+        },
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        },
+        {
+          "name": "setCellType",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        },
+        {
+          "name": "setCustom",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        },
+        {
+          "name": "setDescription",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setDisease",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        },
+        {
+          "name": "setId",
+          "parameterTypes": [
+            "java.lang.Integer"
+          ]
+        },
+        {
+          "name": "setName",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setSpecies",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        },
+        {
+          "name": "setTissue",
+          "parameterTypes": [
+            "java.util.List"
+          ]
         }
       ]
     },
@@ -1411,6 +2321,22 @@
         {
           "name": "getSampleProcessing",
           "parameterTypes": []
+        },
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        },
+        {
+          "name": "setId",
+          "parameterTypes": [
+            "java.lang.Integer"
+          ]
+        },
+        {
+          "name": "setSampleProcessing",
+          "parameterTypes": [
+            "java.util.List"
+          ]
         }
       ]
     },
@@ -1516,6 +2442,133 @@
         {
           "name": "getUri",
           "parameterTypes": []
+        },
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "org.lifstools.mztab2.model.SmallMoleculeEvidence$PrefixEnum",
+            "org.lifstools.mztab2.model.SmallMoleculeEvidence$HeaderPrefixEnum"
+          ]
+        },
+        {
+          "name": "setAdductIon",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setCharge",
+          "parameterTypes": [
+            "java.lang.Integer"
+          ]
+        },
+        {
+          "name": "setChemicalFormula",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setChemicalName",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setComment",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        },
+        {
+          "name": "setDatabaseIdentifier",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setDerivatizedForm",
+          "parameterTypes": [
+            "org.lifstools.mztab2.model.Parameter"
+          ]
+        },
+        {
+          "name": "setEvidenceInputId",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setExpMassToCharge",
+          "parameterTypes": [
+            "java.lang.Double"
+          ]
+        },
+        {
+          "name": "setIdConfidenceMeasure",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        },
+        {
+          "name": "setIdentificationMethod",
+          "parameterTypes": [
+            "org.lifstools.mztab2.model.Parameter"
+          ]
+        },
+        {
+          "name": "setInchi",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setMsLevel",
+          "parameterTypes": [
+            "org.lifstools.mztab2.model.Parameter"
+          ]
+        },
+        {
+          "name": "setOpt",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        },
+        {
+          "name": "setRank",
+          "parameterTypes": [
+            "java.lang.Integer"
+          ]
+        },
+        {
+          "name": "setSmeId",
+          "parameterTypes": [
+            "java.lang.Integer"
+          ]
+        },
+        {
+          "name": "setSmiles",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setSpectraRef",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        },
+        {
+          "name": "setTheoreticalMassToCharge",
+          "parameterTypes": [
+            "java.lang.Double"
+          ]
+        },
+        {
+          "name": "setUri",
+          "parameterTypes": [
+            "java.net.URI"
+          ]
         }
       ]
     },
@@ -1525,6 +2578,12 @@
         {
           "name": "getValue",
           "parameterTypes": []
+        },
+        {
+          "name": "fromValue",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
         }
       ]
     },
@@ -1543,6 +2602,12 @@
         {
           "name": "getValue",
           "parameterTypes": []
+        },
+        {
+          "name": "fromValue",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
         }
       ]
     },
@@ -1626,6 +2691,91 @@
         {
           "name": "getSmfId",
           "parameterTypes": []
+        },
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "org.lifstools.mztab2.model.SmallMoleculeFeature$PrefixEnum",
+            "org.lifstools.mztab2.model.SmallMoleculeFeature$HeaderPrefixEnum"
+          ]
+        },
+        {
+          "name": "setAbundanceAssay",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        },
+        {
+          "name": "setAdductIon",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setCharge",
+          "parameterTypes": [
+            "java.lang.Integer"
+          ]
+        },
+        {
+          "name": "setComment",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        },
+        {
+          "name": "setExpMassToCharge",
+          "parameterTypes": [
+            "java.lang.Double"
+          ]
+        },
+        {
+          "name": "setIsotopomer",
+          "parameterTypes": [
+            "org.lifstools.mztab2.model.Parameter"
+          ]
+        },
+        {
+          "name": "setOpt",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        },
+        {
+          "name": "setRetentionTimeInSeconds",
+          "parameterTypes": [
+            "java.lang.Double"
+          ]
+        },
+        {
+          "name": "setRetentionTimeInSecondsEnd",
+          "parameterTypes": [
+            "java.lang.Double"
+          ]
+        },
+        {
+          "name": "setRetentionTimeInSecondsStart",
+          "parameterTypes": [
+            "java.lang.Double"
+          ]
+        },
+        {
+          "name": "setSmeIdRefAmbiguityCode",
+          "parameterTypes": [
+            "java.lang.Integer"
+          ]
+        },
+        {
+          "name": "setSmeIdRefs",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        },
+        {
+          "name": "setSmfId",
+          "parameterTypes": [
+            "java.lang.Integer"
+          ]
         }
       ]
     },
@@ -1635,6 +2785,12 @@
         {
           "name": "getValue",
           "parameterTypes": []
+        },
+        {
+          "name": "fromValue",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
         }
       ]
     },
@@ -1653,6 +2809,12 @@
         {
           "name": "getValue",
           "parameterTypes": []
+        },
+        {
+          "name": "fromValue",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
         }
       ]
     },
@@ -1756,6 +2918,121 @@
         {
           "name": "getUri",
           "parameterTypes": []
+        },
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "org.lifstools.mztab2.model.SmallMoleculeSummary$PrefixEnum",
+            "org.lifstools.mztab2.model.SmallMoleculeSummary$HeaderPrefixEnum"
+          ]
+        },
+        {
+          "name": "setAbundanceAssay",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        },
+        {
+          "name": "setAbundanceStudyVariable",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        },
+        {
+          "name": "setAbundanceVariationStudyVariable",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        },
+        {
+          "name": "setAdductIons",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        },
+        {
+          "name": "setBestIdConfidenceMeasure",
+          "parameterTypes": [
+            "org.lifstools.mztab2.model.Parameter"
+          ]
+        },
+        {
+          "name": "setBestIdConfidenceValue",
+          "parameterTypes": [
+            "java.lang.Double"
+          ]
+        },
+        {
+          "name": "setChemicalFormula",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        },
+        {
+          "name": "setChemicalName",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        },
+        {
+          "name": "setComment",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        },
+        {
+          "name": "setDatabaseIdentifier",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        },
+        {
+          "name": "setInchi",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        },
+        {
+          "name": "setOpt",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        },
+        {
+          "name": "setReliability",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setSmfIdRefs",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        },
+        {
+          "name": "setSmiles",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        },
+        {
+          "name": "setSmlId",
+          "parameterTypes": [
+            "java.lang.Integer"
+          ]
+        },
+        {
+          "name": "setTheoreticalNeutralMass",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        },
+        {
+          "name": "setUri",
+          "parameterTypes": [
+            "java.util.List"
+          ]
         }
       ]
     },
@@ -1765,6 +3042,12 @@
         {
           "name": "getValue",
           "parameterTypes": []
+        },
+        {
+          "name": "fromValue",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
         }
       ]
     },
@@ -1783,6 +3066,12 @@
         {
           "name": "getValue",
           "parameterTypes": []
+        },
+        {
+          "name": "fromValue",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
         }
       ]
     },
@@ -1818,6 +3107,28 @@
         {
           "name": "getSetting",
           "parameterTypes": []
+        },
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        },
+        {
+          "name": "setId",
+          "parameterTypes": [
+            "java.lang.Integer"
+          ]
+        },
+        {
+          "name": "setParameter",
+          "parameterTypes": [
+            "org.lifstools.mztab2.model.Parameter"
+          ]
+        },
+        {
+          "name": "setSetting",
+          "parameterTypes": [
+            "java.util.List"
+          ]
         }
       ]
     },
@@ -1840,6 +3151,22 @@
         {
           "name": "getReference",
           "parameterTypes": []
+        },
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        },
+        {
+          "name": "setMsRun",
+          "parameterTypes": [
+            "org.lifstools.mztab2.model.MsRun"
+          ]
+        },
+        {
+          "name": "setReference",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
         }
       ]
     },
@@ -1882,6 +3209,52 @@
         {
           "name": "getVariationFunction",
           "parameterTypes": []
+        },
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        },
+        {
+          "name": "setAssayRefs",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        },
+        {
+          "name": "setAverageFunction",
+          "parameterTypes": [
+            "org.lifstools.mztab2.model.Parameter"
+          ]
+        },
+        {
+          "name": "setDescription",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setFactors",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        },
+        {
+          "name": "setId",
+          "parameterTypes": [
+            "java.lang.Integer"
+          ]
+        },
+        {
+          "name": "setName",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setVariationFunction",
+          "parameterTypes": [
+            "org.lifstools.mztab2.model.Parameter"
+          ]
         }
       ]
     },
@@ -1890,6 +3263,85 @@
     },
     {
       "type": "org.lifstools.mztab2.model.StudyVariableCustomizer"
+    },
+    {
+      "type": "org.lifstools.mztab2.model.StudyVariableGroup",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        },
+        {
+          "name": "getDatatype",
+          "parameterTypes": []
+        },
+        {
+          "name": "getDescription",
+          "parameterTypes": []
+        },
+        {
+          "name": "getId",
+          "parameterTypes": []
+        },
+        {
+          "name": "getParameter",
+          "parameterTypes": []
+        },
+        {
+          "name": "getStudyVariableRefs",
+          "parameterTypes": []
+        },
+        {
+          "name": "getType",
+          "parameterTypes": []
+        },
+        {
+          "name": "getUnit",
+          "parameterTypes": []
+        },
+        {
+          "name": "setDatatype",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setDescription",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setId",
+          "parameterTypes": [
+            "java.lang.Integer"
+          ]
+        },
+        {
+          "name": "setParameter",
+          "parameterTypes": [
+            "org.lifstools.mztab2.model.Parameter"
+          ]
+        },
+        {
+          "name": "setStudyVariableRefs",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        },
+        {
+          "name": "setType",
+          "parameterTypes": [
+            "org.lifstools.mztab2.model.Parameter"
+          ]
+        },
+        {
+          "name": "setUnit",
+          "parameterTypes": [
+            "org.lifstools.mztab2.model.Parameter"
+          ]
+        }
+      ]
     },
     {
       "type": "org.lifstools.mztab2.model.StudyVariableXBeanInfo"
@@ -1904,6 +3356,22 @@
         {
           "name": "getValue",
           "parameterTypes": []
+        },
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        },
+        {
+          "name": "setId",
+          "parameterTypes": [
+            "java.lang.Integer"
+          ]
+        },
+        {
+          "name": "setValue",
+          "parameterTypes": [
+            "java.net.URI"
+          ]
         }
       ]
     },
@@ -2280,6 +3748,9 @@
     },
     {
       "type": "sun.util.resources.cldr.CalendarData"
+    },
+    {
+      "type": "uk.ac.ebi.pride.jmztab2.model.SplitList"
     },
     {
       "type": "uk.ac.ebi.pride.utilities.ols.web.service.model.Annotation",
