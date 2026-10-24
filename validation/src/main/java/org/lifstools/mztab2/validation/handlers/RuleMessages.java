@@ -29,7 +29,7 @@ import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabError;
  *
  * @author nilshoffmann
  */
-final class RuleMessages {
+public final class RuleMessages {
 
     private RuleMessages() {
     }
@@ -38,7 +38,7 @@ final class RuleMessages {
      * For errors without a selected element: points at the metadata group or
      * table column that the rule addresses.
      */
-    static ValidationMessage atRulePath(MZTabError error, CvMappingRule rule) {
+    public static ValidationMessage atRulePath(MZTabError error, CvMappingRule rule) {
         return error.location(ModelLocations.ofRulePath(rule.
             getCvElementPath())).
             ruleId(rule.getId()).
@@ -50,7 +50,7 @@ final class RuleMessages {
     /**
      * For errors about a selected element: points at that element.
      */
-    static ValidationMessage atPointer(MZTabError error, Pointer pointer,
+    public static ValidationMessage atPointer(MZTabError error, Pointer pointer,
         CvMappingRule rule) {
         ValidationLocation location = ModelLocations.ofPointer(pointer);
         return error.location(location).
@@ -64,7 +64,7 @@ final class RuleMessages {
      * For errors about elements beyond those reported with a location: no
      * location, the fix names the number of further elements.
      */
-    static ValidationMessage onFurtherElements(MZTabError error, int count,
+    public static ValidationMessage onFurtherElements(MZTabError error, int count,
         CvMappingRule rule) {
         return error.ruleId(rule.getId()).
             fixContext(count + " further elements",
