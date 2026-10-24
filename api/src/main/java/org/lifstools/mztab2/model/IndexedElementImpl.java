@@ -4,7 +4,7 @@ import org.lifstools.mztab2.model.IndexedElement;
 import java.util.Objects;
 
 /*
- * Copyright 2020 Leibniz-Institut für Analytische Wissenschaften – ISAS – e.V..
+ * Copyright 2020 LIFS Tools Consortium.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
