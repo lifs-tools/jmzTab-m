@@ -48,6 +48,12 @@ public class MZTabErrorFixTest {
     }
 
     @Test
+    void countMatchFixGivesNoNumbers() {
+        String s = new MZTabError(FormatErrorType.CountMatch, 7, "12", "10").getSuggestion();
+        assertEquals("Make the row have exactly as many tab-separated values as the header line has columns.", s);
+    }
+
+    @Test
     void errorWithoutExtrasStillHasNoPlaceholders() {
         String s = new MZTabError(CrossCheckErrorType.CvUnused, -1, "UO").getSuggestion();
         assertFalse(s.contains("{"));
