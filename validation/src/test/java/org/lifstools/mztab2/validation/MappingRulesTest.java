@@ -124,11 +124,32 @@ public class MappingRulesTest {
     }
 
     @Test
+    public void fieldsTheProfileRequiresOnlyWithATableAreNotMissingWithoutIt() {
+        // as MzTabProfileValidator: id_confidence_measure with SME, the quantification
+        // units with SML and SMF; this file has a summary table only
+        mzTab.getMetadata().setIdConfidenceMeasure(new java.util.ArrayList<>());
+        mzTab.getMetadata().setSmallMoleculeFeatureQuantificationUnit(null);
+        List<ValidationMessage> ms = messagesOf(List.of("id_confidence_measure_must",
+            "small_molecule_feature_quantification_unit_must"));
+        assertTrue(ms.isEmpty(), () -> ms.toString());
+
+        mzTab.addSmallMoleculeEvidenceItem(new SmallMoleculeEvidence().smeId(1).
+            msLevel(param("MS", "MS:1000511", "ms level")));
+        List<ValidationMessage> sme = messagesOf(List.of("id_confidence_measure_must"));
+        assertEquals(1, sme.size(), () -> sme.toString());
+        assertTrue(sme.get(0).getCode().startsWith("[Error-3010]"), sme.get(0).getCode());
+    }
+
+    @Test
     public void tableAbsenceIsDecidedByTheElementPath() {
         assertTrue(CvMappingValidator.isTableAbsent(mzTab, "/smallMoleculeEvidence/@msLevel"));
         assertTrue(CvMappingValidator.isTableAbsent(mzTab, "/smallMoleculeFeature/@charge"));
         assertFalse(CvMappingValidator.isTableAbsent(mzTab, "/smallMoleculeSummary/@bestIdConfidenceMeasure"));
         assertFalse(CvMappingValidator.isTableAbsent(mzTab, "/metadata/sample/@species"));
+        assertTrue(CvMappingValidator.isTableAbsent(mzTab, "/metadata/@idConfidenceMeasure"));
+        assertTrue(CvMappingValidator.isTableAbsent(mzTab, "/metadata/@smallMoleculeFeatureQuantificationUnit"));
+        assertFalse(CvMappingValidator.isTableAbsent(mzTab, "/metadata/@smallMoleculeQuantificationUnit"));
+        assertFalse(CvMappingValidator.isTableAbsent(mzTab, "/metadata/@quantificationMethod"));
     }
 
     private List<ValidationMessage> messagesOf(List<String> ruleIds) {
