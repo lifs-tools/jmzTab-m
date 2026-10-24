@@ -1,5 +1,5 @@
 /*
- * Copyright 2026 Leibniz-Institut für Analytische Wissenschaften – ISAS – e.V..
+ * Copyright 2026 LIFS Tools Consortium.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -139,6 +139,26 @@ public class SemanticLocationTest {
         ValidationMessage m = only(CrossCheckErrorType.CvUndefinedInMetadata).get(0);
         assertEquals("instrument[2]-name", m.getLocation().getMetadataKey());
         assertNull(m.getRuleId());
+    }
+
+    @Test
+    public void undefinedCvIsReportedOnce() {
+        assertEquals(1, only(CrossCheckErrorType.CvUndefinedInMetadata).size());
+        assertEquals(1, only(CrossCheckErrorType.CvUnused).size());
+    }
+
+    @Test
+    public void undefinedCvOfAReferencedParameterIsReportedOnceWhereItIsDefined() {
+        // ms_run[1] refers to instrument[2]: its name is reachable from both
+        mzTab.getMetadata().getMsRun().get(0).
+            setInstrumentRef(mzTab.getMetadata().getInstrument().get(1));
+        List<ValidationMessage> ms = CvMappingValidator.of(mapping(), LOOKUP, true).
+            validate(mzTab).stream().
+            filter(m -> is(m, CrossCheckErrorType.CvUndefinedInMetadata)).
+            collect(Collectors.toList());
+        assertEquals(1, ms.size(), () -> ms.toString());
+        assertEquals("instrument[2]-name", ms.get(0).getLocation().getMetadataKey());
+        assertEquals("/metadata/instrument[2]/name", ms.get(0).getLocation().getElementPath());
     }
 
     @Test

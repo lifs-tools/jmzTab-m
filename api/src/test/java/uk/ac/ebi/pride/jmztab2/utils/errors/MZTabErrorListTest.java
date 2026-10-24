@@ -60,6 +60,38 @@ public class MZTabErrorListTest {
     }
 
     /**
+     * Test of addAll method, of class MZTabErrorList: the same level filter and
+     * maximum as add.
+     */
+    @Test
+    public void testAddAllFiltersByLevelAndKeepsTheMaximum() {
+        MZTabErrorList list = new MZTabErrorList(MZTabErrorType.Level.Error, 2);
+        list.addAll(java.util.List.of(
+            new MZTabError(LogicalErrorType.NotNULL, 0, "testcolumn"),
+            new MZTabError(LogicalErrorType.NoSmallMoleculeFeatureSection, 0),
+            new MZTabError(FormatErrorType.MTDLine, 0, "MTD\tTEST LINE")));
+        Assertions.assertEquals(1, list.size());
+        Assertions.assertThrows(MZTabErrorOverflowException.class,
+            () -> list.addAll(java.util.List.of(
+                new MZTabError(FormatErrorType.MTDLine, 1, "MTD\tTEST LINE"),
+                new MZTabError(FormatErrorType.MTDLine, 2, "MTD\tTEST LINE"))));
+        Assertions.assertEquals(2, list.size());
+    }
+
+    /**
+     * Test of hasErrors method, of class MZTabErrorList.
+     */
+    @Test
+    public void testHasErrorsIgnoresWarningsAndInfos() {
+        MZTabErrorList list = new MZTabErrorList(MZTabErrorType.Level.Info, 5);
+        list.add(new MZTabError(LogicalErrorType.NotNULL, 0, "testcolumn"));
+        list.add(new MZTabError(LogicalErrorType.NoSmallMoleculeFeatureSection, 0));
+        Assertions.assertFalse(list.hasErrors());
+        list.add(new MZTabError(FormatErrorType.MTDLine, 0, "MTD\tTEST LINE"));
+        Assertions.assertTrue(list.hasErrors());
+    }
+
+    /**
      * Test of getMaxErrorCount method, of class MZTabErrorList.
      */
     @Test
