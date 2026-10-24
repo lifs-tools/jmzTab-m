@@ -33,7 +33,7 @@ import jakarta.validation.Valid;
 import org.hibernate.validator.constraints.*;
 
 /**
- * Specification of study_variable. (empty) name: A name for each study variable (experimental condition or factor), to serve as a list of the study variables that MUST be reported in the following tables. For software that does not capture study variables, a single study variable MUST be reported, linking to all assays. This single study variable MUST have the identifier “undefined“. assay_refs: Bar-separated references to the IDs of assays grouped in the study variable. average_function: The function used to calculate the study variable quantification value and the operation used is not arithmetic mean (default) e.g. “geometric mean”, “median”. The 1-n refers to different study variables. variation_function: The function used to calculate the study variable quantification variation value if it is reported and the operation used is not coefficient of variation (default) e.g. “standard error”. description: A textual description of the study variable. 
+ * Specification of study_variable. (empty) name: A name for each study variable (experimental condition or factor), to serve as a list of the study variables that MUST be reported in the following tables. For software that does not capture study variables, a single study variable MUST be reported, linking to all assays. This single study variable MUST have the identifier “undefined“. assay_refs: Bar-separated references to the IDs of assays grouped in the study variable. average_function: The function used to calculate the study variable quantification value and the operation used is not arithmetic mean (default) e.g. “geometric mean”, “median”. The 1-n refers to different study variables. variation_function: The function used to calculate the study variable quantification variation value if it is reported and the operation used is not coefficient of variation (default) e.g. “standard error”. description: A textual description of the study variable. factors: Additional parameters or factors, separated by bars, that are known about study variables allowing the capture of more complex, such as nested designs (mzTab-M 2.0; replaced by study_variable_group in 2.1).
  */
 @JsonPropertyOrder({
   StudyVariable.JSON_PROPERTY_ID,
@@ -41,7 +41,8 @@ import org.hibernate.validator.constraints.*;
   StudyVariable.JSON_PROPERTY_ASSAY_REFS,
   StudyVariable.JSON_PROPERTY_AVERAGE_FUNCTION,
   StudyVariable.JSON_PROPERTY_VARIATION_FUNCTION,
-  StudyVariable.JSON_PROPERTY_DESCRIPTION
+  StudyVariable.JSON_PROPERTY_DESCRIPTION,
+  StudyVariable.JSON_PROPERTY_FACTORS
 })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-04-29T15:34:38.183974+02:00[Europe/Berlin]", comments = "Generator version: 7.17.0")
 public class StudyVariable {
@@ -68,6 +69,10 @@ public class StudyVariable {
   public static final String JSON_PROPERTY_DESCRIPTION = "description";
   @jakarta.annotation.Nullable
   private String description;
+
+  public static final String JSON_PROPERTY_FACTORS = "factors";
+  @jakarta.annotation.Nullable
+  private List<@Valid Parameter> factors = new ArrayList<>();
 
   public StudyVariable() {
   }
@@ -242,6 +247,41 @@ public class StudyVariable {
     this.description = description;
   }
 
+  public StudyVariable factors(@jakarta.annotation.Nullable List<@Valid Parameter> factors) {
+
+    this.factors = factors;
+    return this;
+  }
+
+  public StudyVariable addFactorsItem(Parameter factorsItem) {
+    if (this.factors == null) {
+      this.factors = new ArrayList<>();
+    }
+    this.factors.add(factorsItem);
+    return this;
+  }
+
+  /**
+   * Parameters indicating which factors were used for the assays referenced by this study variable, and at which levels (mzTab-M 2.0; replaced by study_variable_group in 2.1).
+   * @return factors
+   */
+  @jakarta.annotation.Nullable
+  @Valid
+
+  @JsonProperty(value = JSON_PROPERTY_FACTORS, required = false)
+  @JsonInclude(value = JsonInclude.Include.NON_EMPTY)
+
+  public List<@Valid Parameter> getFactors() {
+    return factors;
+  }
+
+
+  @JsonProperty(value = JSON_PROPERTY_FACTORS, required = false)
+  @JsonInclude(value = JsonInclude.Include.NON_EMPTY)
+  public void setFactors(@jakarta.annotation.Nullable List<@Valid Parameter> factors) {
+    this.factors = factors;
+  }
+
 
   @Override
   public boolean equals(Object o) {
@@ -257,12 +297,13 @@ public class StudyVariable {
         Objects.equals(this.assayRefs, studyVariable.assayRefs) &&
         Objects.equals(this.averageFunction, studyVariable.averageFunction) &&
         Objects.equals(this.variationFunction, studyVariable.variationFunction) &&
-        Objects.equals(this.description, studyVariable.description);
+        Objects.equals(this.description, studyVariable.description) &&
+        Objects.equals(this.factors, studyVariable.factors);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, name, assayRefs, averageFunction, variationFunction, description);
+    return Objects.hash(id, name, assayRefs, averageFunction, variationFunction, description, factors);
   }
 
   @Override
@@ -275,6 +316,7 @@ public class StudyVariable {
     sb.append("    averageFunction: ").append(toIndentedString(averageFunction)).append("\n");
     sb.append("    variationFunction: ").append(toIndentedString(variationFunction)).append("\n");
     sb.append("    description: ").append(toIndentedString(description)).append("\n");
+    sb.append("    factors: ").append(toIndentedString(factors)).append("\n");
     sb.append("}");
     return sb.toString();
   }

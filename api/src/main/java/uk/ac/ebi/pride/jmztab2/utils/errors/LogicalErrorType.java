@@ -300,6 +300,10 @@ public final class LogicalErrorType extends MZTabErrorType {
      * Constant <code>SampleNotReferenced</code>
      */
     public static final MZTabErrorType SampleNotReferenced = createError(Category.Logical, "SampleNotReferenced");
+    /**
+     * Constant <code>StudyVariableFactorsRemoved</code>
+     */
+    public static final MZTabErrorType StudyVariableFactorsRemoved = createWarn(Category.Logical, "StudyVariableFactorsRemoved");
 
     private static final MZTabErrorType[] VALUES = {
         NULL, NotNULL, LineOrder, HeaderLine, NoHeaderLine,
@@ -311,7 +315,7 @@ public final class LogicalErrorType extends MZTabErrorType {
         SpectraIdFormatNotValid, SpectraIdFormatNotSupported,
         ProfileInferred, ProfileTableMissing, ProfileTableForbidden, ProfileUnsupportedCombination, ProfileMSFDiscouraged, ProfileFieldMismatch,
         ProfileSmfIdRefsForbidden, ProfileSmfIdRefsRequired, ProfileSmeIdRefsForbidden, ProfileAmbiguityCodeMustBeNull,
-        UndefinedStudyVariableAssayRefs, InstrumentNotReferenced, SampleNotReferenced
+        UndefinedStudyVariableAssayRefs, InstrumentNotReferenced, SampleNotReferenced, StudyVariableFactorsRemoved
     };
     
     public static MZTabErrorType[] getValues() {
