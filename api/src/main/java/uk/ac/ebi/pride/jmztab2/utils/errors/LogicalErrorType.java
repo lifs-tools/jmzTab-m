@@ -311,6 +311,11 @@ public final class LogicalErrorType extends MZTabErrorType {
      */
     public static final MZTabErrorType MsRunUsiIdentifierInvalid = createWarn(Category.Logical, "MsRunUsiIdentifierInvalid");
 
+    /**
+     * Constant <code>StudyVariableFactorsRemoved</code>
+     */
+    public static final MZTabErrorType StudyVariableFactorsRemoved = createWarn(Category.Logical, "StudyVariableFactorsRemoved");
+
     private static final MZTabErrorType[] VALUES = {
         NULL, NotNULL, LineOrder, HeaderLine, NoHeaderLine,
         MsRunNotDefined, AssayNotDefined, StudyVariableNotDefined, ProteinSearchEngineScoreNotDefined, PeptideSearchEngineScoreNotDefined, PSMSearchEngineScoreNotDefined, SmallMoleculeSearchEngineScoreNotDefined,
@@ -321,7 +326,8 @@ public final class LogicalErrorType extends MZTabErrorType {
         SpectraIdFormatNotValid, SpectraIdFormatNotSupported,
         ProfileInferred, ProfileTableMissing, ProfileTableForbidden, ProfileUnsupportedCombination, ProfileMSFDiscouraged, ProfileFieldMismatch,
         ProfileSmfIdRefsForbidden, ProfileSmfIdRefsRequired, ProfileSmeIdRefsForbidden, ProfileAmbiguityCodeMustBeNull, DuplicateColumnHeader,
-        MsRunUsiIdentifierInvalid, UndefinedStudyVariableAssayRefs, InstrumentNotReferenced, SampleNotReferenced
+        MsRunUsiIdentifierInvalid, UndefinedStudyVariableAssayRefs, InstrumentNotReferenced, SampleNotReferenced,
+        StudyVariableFactorsRemoved
     };
     
     public static MZTabErrorType[] getValues() {

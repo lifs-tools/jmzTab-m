@@ -38,7 +38,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
+import java.util.SortedSet;
 import java.util.TreeMap;
+import java.util.TreeSet;
 import lombok.Data;
 import static uk.ac.ebi.pride.jmztab2.model.MZTabStringUtils.isEmpty;
 
@@ -68,6 +70,8 @@ public class MZTabParserContext {
     
     private SortedMap<Integer, Sample> sampleMap = new TreeMap<>();
     private SortedMap<Integer, StudyVariable> studyVariableMap = new TreeMap<>();
+    /** Ids of study variables with a study_variable[n]-factors line (mzTab-M 2.0, not kept in the 2.1 model). */
+    private SortedSet<Integer> studyVariablesWithFactors = new TreeSet<>();
     private SortedMap<Integer, StudyVariableGroup> studyVariableGroupMap = new TreeMap<>();
     private SortedMap<Integer, CV> cvMap = new TreeMap<>();
     private SortedMap<Integer, Database> databaseMap = new TreeMap<>();
