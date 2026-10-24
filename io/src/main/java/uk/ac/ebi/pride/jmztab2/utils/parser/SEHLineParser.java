@@ -72,7 +72,7 @@ public class SEHLineParser extends MZTabHeaderLineParser {
                 try {
                     column = SmallMoleculeEvidenceColumn.Stable.columnFor(header);
                 } catch(IllegalArgumentException ex) {
-                    throw new MZTabException(new MZTabError(LogicalErrorType.ColumnNotValid,lineNumber,header,section.getName()));
+                    throw new MZTabException(new MZTabError(LogicalErrorType.ColumnNotValid,lineNumber,header,section.getName()).column(header));
                 }
             }
 
@@ -89,14 +89,14 @@ public class SEHLineParser extends MZTabHeaderLineParser {
         Pattern pattern = Pattern.compile(SmallMoleculeEvidence.JSON_PROPERTY_ID_CONFIDENCE_MEASURE+MZTabConstants.REGEX_INDEXED_VALUE);
         Matcher matcher = pattern.matcher(valueLabel);
         if (!matcher.find()) {
-            MZTabError error = new MZTabError(FormatErrorType.StableColumn, lineNumber, header);
+            MZTabError error = new MZTabError(FormatErrorType.StableColumn, lineNumber, header).column(header);
             throw new MZTabException(error);
         }
 
         int id = parseIndex(header, matcher.group(1));
         List<Parameter> measures = metadata.getIdConfidenceMeasure();
         if (measures == null || id > measures.size()) {
-            throw new MZTabException(new MZTabError(LogicalErrorType.NotDefineInMetadata, lineNumber, header));
+            throw new MZTabException(new MZTabError(LogicalErrorType.NotDefineInMetadata, lineNumber, header).column(header));
         }
         factory.addIdConfidenceMeasureColumn(measures.get(id - 1), id, Double.class, order);
     }
@@ -127,7 +127,7 @@ public class SEHLineParser extends MZTabHeaderLineParser {
 
         for (String columnHeader : mandatoryColumnHeaders) {
             if (factory.findColumnByHeader(columnHeader) == null) {
-                throw new MZTabException(new MZTabError(FormatErrorType.StableColumn, lineNumber, columnHeader));
+                throw new MZTabException(new MZTabError(FormatErrorType.StableColumn, lineNumber, columnHeader).column(columnHeader));
             }
         }
     }

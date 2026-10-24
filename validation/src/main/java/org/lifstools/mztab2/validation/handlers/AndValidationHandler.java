@@ -76,7 +76,7 @@ public class AndValidationHandler implements CvTermValidationHandler {
                         getCvElementPath(), CvMappingUtils.
                         niceToString(
                             result.getRule()));
-                messages.add(error.toValidationMessage());
+                messages.add(RuleMessages.atRulePath(error, result.getRule()));
             }
         }
         return messages;

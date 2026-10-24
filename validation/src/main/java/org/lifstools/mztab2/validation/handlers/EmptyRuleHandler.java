@@ -46,24 +46,21 @@ public class EmptyRuleHandler {
                     getCvElementPath() + " did not yield any selected elements!");
             switch (rule.getRequirementLevel()) {
                 case MAY:
-                    return Arrays.asList(new MZTabError(
+                    return Arrays.asList(RuleMessages.atRulePath(new MZTabError(
                             CrossCheckErrorType.RulePointerObjectNullOptional, -1,
                             rule.getCvElementPath(), rule.getId(), "optional",
-                            CvMappingUtils.niceToString(rule)).
-                            toValidationMessage());
+                            CvMappingUtils.niceToString(rule)), rule));
                 case SHOULD:
-                    return Arrays.asList(new MZTabError(
+                    return Arrays.asList(RuleMessages.atRulePath(new MZTabError(
                             CrossCheckErrorType.RulePointerObjectNullRecommended, -1,
                             rule.getCvElementPath(), rule.getId(), "recommended",
-                            CvMappingUtils.niceToString(rule)).
-                            toValidationMessage());
+                            CvMappingUtils.niceToString(rule)), rule));
                 case MUST:
                     //The object "{0}" accessed by {1} is {2}, but was null or empty. Allowed terms are defined in {3}
-                    return Arrays.asList(new MZTabError(
+                    return Arrays.asList(RuleMessages.atRulePath(new MZTabError(
                             CrossCheckErrorType.RulePointerObjectNullRequired, -1,
                             rule.getCvElementPath(), rule.getId(), "required",
-                            CvMappingUtils.niceToString(rule)).
-                            toValidationMessage());
+                            CvMappingUtils.niceToString(rule)), rule));
                 default:
                     throw new IllegalArgumentException(
                             "Unknown requirement level value: " + rule.

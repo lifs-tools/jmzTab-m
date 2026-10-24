@@ -1,0 +1,394 @@
+{
+  "metadata" : {
+    "prefix" : "MTD",
+    "mzTab-version" : "2.0.0-M",
+    "mzTab-ID" : "PRIDE_1234",
+    "title" : "My first test experiment",
+    "description" : "An experiment investigating the effects of Il-6.",
+    "contact" : [ {
+      "id" : 1,
+      "name" : "James D. Watson",
+      "affiliation" : "Cambridge University, UK",
+      "email" : "watson@cam.ac.uk"
+    }, {
+      "id" : 2,
+      "name" : "Francis Crick",
+      "affiliation" : "Cambridge University, UK",
+      "email" : "crick@cam.ac.uk"
+    } ],
+    "publication" : [ {
+      "id" : 1,
+      "publicationItems" : [ {
+        "type" : "pubmed",
+        "accession" : "21063943"
+      }, {
+        "type" : "doi",
+        "accession" : "10.1007/978-1-60761-987-1_6"
+      } ]
+    }, {
+      "id" : 2,
+      "publicationItems" : [ {
+        "type" : "pubmed",
+        "accession" : "20615486"
+      }, {
+        "type" : "doi",
+        "accession" : "10.1016/j.jprot.2010.06.008"
+      } ]
+    } ],
+    "uri" : [ {
+      "id" : 1,
+      "value" : "http://www.ebi.ac.uk/pride/uri/to/experiment"
+    }, {
+      "id" : 2,
+      "value" : "http://proteomecentral.proteomexchange.org/cgi/GetDataset"
+    } ],
+    "external_study_uri" : null,
+    "instrument" : [ {
+      "id" : 1,
+      "name" : {
+        "id" : null,
+        "cv_label" : "MS",
+        "cv_accession" : "MS:100049",
+        "name" : "LTQ Orbitrap",
+        "value" : null
+      },
+      "source" : {
+        "id" : null,
+        "cv_label" : "MS",
+        "cv_accession" : "MS:1000073",
+        "name" : "ESI",
+        "value" : null
+      },
+      "analyzer" : [ {
+        "id" : null,
+        "cv_label" : "MS",
+        "cv_accession" : "MS:1000291",
+        "name" : "linear ion trap",
+        "value" : null
+      } ],
+      "detector" : {
+        "id" : null,
+        "cv_label" : "MS",
+        "cv_accession" : "MS:1000253",
+        "name" : "electron multiplier",
+        "value" : null
+      }
+    }, {
+      "id" : 2,
+      "name" : {
+        "id" : null,
+        "cv_label" : "MS",
+        "cv_accession" : "MS:1000031",
+        "name" : "Instrument model",
+        "value" : "name of the instrument not included in the CV"
+      },
+      "source" : {
+        "id" : null,
+        "cv_label" : "MS",
+        "cv_accession" : "MS:1000598",
+        "name" : "ETD",
+        "value" : null
+      },
+      "analyzer" : [ {
+        "id" : null,
+        "cv_label" : "MS",
+        "cv_accession" : "MS:1000484",
+        "name" : "orbitrap",
+        "value" : null
+      } ],
+      "detector" : {
+        "id" : null,
+        "cv_label" : "MS",
+        "cv_accession" : "MS:1000348",
+        "name" : "focal plane collector",
+        "value" : null
+      }
+    } ],
+    "quantification_method" : {
+      "id" : null,
+      "cv_label" : "MS",
+      "cv_accession" : "MS:1001834",
+      "name" : "LC-MS label-free quantitation analysis",
+      "value" : null
+    },
+    "sample" : [ {
+      "id" : 1,
+      "name" : null,
+      "custom" : [ {
+        "id" : null,
+        "cv_label" : "",
+        "cv_accession" : "",
+        "name" : "Extraction date",
+        "value" : "2011-12-21"
+      }, {
+        "id" : null,
+        "cv_label" : "",
+        "cv_accession" : "",
+        "name" : "Extraction reason",
+        "value" : "liver biopsy"
+      } ],
+      "species" : [ {
+        "id" : null,
+        "cv_label" : "NCBITaxon",
+        "cv_accession" : "NCBITaxon:9606",
+        "name" : "Homo sapiens (Human)",
+        "value" : null
+      }, {
+        "id" : null,
+        "cv_label" : "NCBITaxon",
+        "cv_accession" : "NCBITaxon:573824",
+        "name" : "Human rhinovirus 1",
+        "value" : null
+      } ],
+      "tissue" : [ {
+        "id" : null,
+        "cv_label" : "BTO",
+        "cv_accession" : "BTO:0000759",
+        "name" : "liver",
+        "value" : null
+      } ],
+      "cell_type" : [ {
+        "id" : null,
+        "cv_label" : "CL",
+        "cv_accession" : "CL:0000182",
+        "name" : "hepatocyte",
+        "value" : null
+      } ],
+      "disease" : [ {
+        "id" : null,
+        "cv_label" : "DOID",
+        "cv_accession" : "DOID:684",
+        "name" : "hepatocellular carcinoma",
+        "value" : null
+      }, {
+        "id" : null,
+        "cv_label" : "DOID",
+        "cv_accession" : "DOID:9452",
+        "name" : "fatty liver disease",
+        "value" : null
+      } ],
+      "description" : "Hepatocellular carcinoma samples."
+    }, {
+      "id" : 2,
+      "name" : null,
+      "custom" : null,
+      "species" : [ {
+        "id" : null,
+        "cv_label" : "NCBITaxon",
+        "cv_accession" : "NCBITaxon:9606",
+        "name" : "Homo sapiens (Human)",
+        "value" : null
+      }, {
+        "id" : null,
+        "cv_label" : "NCBITaxon",
+        "cv_accession" : "NCBITaxon:12130",
+        "name" : "Human rhinovirus 2",
+        "value" : null
+      } ],
+      "tissue" : null,
+      "cell_type" : null,
+      "disease" : null,
+      "description" : "Healthy control samples."
+    } ],
+    "sample_processing" : [ {
+      "id" : 1,
+      "sampleProcessing" : [ {
+        "id" : null,
+        "cv_label" : "MSIO",
+        "cv_accession" : "MSIO:0000148",
+        "name" : "high performance liquid chromatography",
+        "value" : null
+      } ]
+    } ],
+    "software" : [ {
+      "id" : 1,
+      "parameter" : {
+        "id" : null,
+        "cv_label" : "MS",
+        "cv_accession" : "MS:1001207",
+        "name" : "Mascot",
+        "value" : "2.3"
+      },
+      "setting" : [ "Fragment tolerance = 0.1Da", "Parent tolerance = 0.5Da" ]
+    }, {
+      "id" : 2,
+      "parameter" : {
+        "id" : null,
+        "cv_label" : "MS",
+        "cv_accession" : "MS:1001561",
+        "name" : "Scaffold",
+        "value" : "1.0"
+      },
+      "setting" : null
+    } ],
+    "derivatization_agent" : null,
+    "ms_run" : [ {
+      "id" : 1,
+      "name" : null,
+      "location" : "ftp://ftp.ebi.ac.uk/path/to/file",
+      "instrument_ref" : null,
+      "format" : {
+        "id" : null,
+        "cv_label" : "MS",
+        "cv_accession" : "MS:1000584",
+        "name" : "mzML file",
+        "value" : null
+      },
+      "id_format" : {
+        "id" : null,
+        "cv_label" : "MS",
+        "cv_accession" : "MS:1001530",
+        "name" : "mzML unique identifier",
+        "value" : null
+      },
+      "fragmentation_method" : [ {
+        "id" : null,
+        "cv_label" : "MS",
+        "cv_accession" : "MS:1000133",
+        "name" : "CID",
+        "value" : null
+      } ],
+      "scan_polarity" : [ {
+        "id" : null,
+        "cv_label" : "MS",
+        "cv_accession" : "MS:1000130",
+        "name" : "positive scan",
+        "value" : null
+      } ],
+      "hash" : null,
+      "hash_method" : null
+    }, {
+      "id" : 2,
+      "name" : null,
+      "location" : "ftp://ftp.ebi.ac.uk/path/to/file",
+      "instrument_ref" : null,
+      "format" : {
+        "id" : null,
+        "cv_label" : "MS",
+        "cv_accession" : "MS:1001062",
+        "name" : "Mascot MGF file",
+        "value" : null
+      },
+      "id_format" : null,
+      "fragmentation_method" : null,
+      "scan_polarity" : [ {
+        "id" : null,
+        "cv_label" : "MS",
+        "cv_accession" : "MS:1000130",
+        "name" : "positive scan",
+        "value" : null
+      } ],
+      "hash" : "de9f2c7fd25e1b3afad3e85a0bd17d9b100db4b3",
+      "hash_method" : {
+        "id" : null,
+        "cv_label" : "MS",
+        "cv_accession" : "MS:1000569",
+        "name" : "SHA-1",
+        "value" : null
+      }
+    } ],
+    "assay" : [ {
+      "id" : 1,
+      "name" : null,
+      "custom" : null,
+      "external_uri" : null,
+      "sample_ref" : 1,
+      "ms_run_ref" : [ 1 ]
+    }, {
+      "id" : 2,
+      "name" : null,
+      "custom" : null,
+      "external_uri" : null,
+      "sample_ref" : 2,
+      "ms_run_ref" : [ 2 ]
+    } ],
+    "study_variable" : [ {
+      "id" : 1,
+      "name" : "Group A",
+      "assay_refs" : [ 1 ],
+      "average_function" : null,
+      "variation_function" : null,
+      "description" : "Group B (spike-in 0.74 fmol/uL)",
+      "factors" : null
+    }, {
+      "id" : 2,
+      "name" : "Group B",
+      "assay_refs" : [ 1 ],
+      "average_function" : null,
+      "variation_function" : null,
+      "description" : "Group B (spike-in 0.74 fmol/uL)",
+      "factors" : null
+    } ],
+    "custom" : [ {
+      "id" : 1,
+      "cv_label" : "",
+      "cv_accession" : "",
+      "name" : "MS operator",
+      "value" : "Florian"
+    } ],
+    "cv" : [ {
+      "id" : 1,
+      "label" : "MS",
+      "full_name" : "MS",
+      "version" : "3.54.0",
+      "uri" : "http://psidev.cvs.sourceforge.net/viewvc/psidev/psi/psi-ms/mzML/controlledVocabulary/psi-ms.obo"
+    }, {
+      "id" : 2,
+      "label" : "MSIO",
+      "full_name" : "Metabolomics Standards Initiative Ontology (MSIO)",
+      "version" : "1.0.1",
+      "uri" : "https://www.ebi.ac.uk/ols/ontologies/msio"
+    } ],
+    "small_molecule-quantification_unit" : {
+      "id" : null,
+      "cv_label" : "MS",
+      "cv_accession" : "MS:1002887",
+      "name" : "Progenesis QI normalised abundance",
+      "value" : null
+    },
+    "small_molecule_feature-quantification_unit" : {
+      "id" : null,
+      "cv_label" : "MS",
+      "cv_accession" : "MS:1002887",
+      "name" : "Progenesis QI normalised abundance",
+      "value" : null
+    },
+    "small_molecule-identification_reliability" : null,
+    "database" : [ {
+      "id" : 1,
+      "param" : {
+        "id" : null,
+        "cv_label" : "",
+        "cv_accession" : "",
+        "name" : "no database",
+        "value" : "null"
+      },
+      "prefix" : "null",
+      "version" : "Unknown",
+      "uri" : null
+    } ],
+    "id_confidence_measure" : [ {
+      "id" : 1,
+      "cv_label" : "MS",
+      "cv_accession" : "MS:1002889",
+      "name" : "Progenesis MetaScope Score",
+      "value" : null
+    } ],
+    "colunit-small_molecule" : [ {
+      "column_name" : "retention_time",
+      "param" : {
+        "id" : null,
+        "cv_label" : "UO",
+        "cv_accession" : "UO:0000031",
+        "name" : "minute",
+        "value" : null
+      }
+    } ],
+    "colunit-small_molecule_feature" : null,
+    "colunit-small_molecule_evidence" : null
+  },
+  "smallMoleculeSummary" : [ ],
+  "smallMoleculeFeature" : [ ],
+  "smallMoleculeEvidence" : [ ],
+  "comment" : null
+}

@@ -35,7 +35,10 @@ import org.hibernate.validator.constraints.*;
   ValidationMessage.JSON_PROPERTY_CATEGORY,
   ValidationMessage.JSON_PROPERTY_MESSAGE_TYPE,
   ValidationMessage.JSON_PROPERTY_MESSAGE,
-  ValidationMessage.JSON_PROPERTY_LINE_NUMBER
+  ValidationMessage.JSON_PROPERTY_LINE_NUMBER,
+  ValidationMessage.JSON_PROPERTY_SUGGESTION,
+  ValidationMessage.JSON_PROPERTY_RULE_ID,
+  ValidationMessage.JSON_PROPERTY_LOCATION
 })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-04-29T15:34:38.183974+02:00[Europe/Berlin]", comments = "Generator version: 7.17.0")
 public class ValidationMessage {
@@ -132,6 +135,18 @@ public class ValidationMessage {
   public static final String JSON_PROPERTY_LINE_NUMBER = "line_number";
   @jakarta.annotation.Nullable
   private Long lineNumber;
+
+  public static final String JSON_PROPERTY_SUGGESTION = "suggestion";
+  @jakarta.annotation.Nullable
+  private String suggestion;
+
+  public static final String JSON_PROPERTY_RULE_ID = "rule_id";
+  @jakarta.annotation.Nullable
+  private String ruleId;
+
+  public static final String JSON_PROPERTY_LOCATION = "location";
+  @jakarta.annotation.Nullable
+  private ValidationLocation location;
 
   public ValidationMessage() {
   }
@@ -269,6 +284,85 @@ public class ValidationMessage {
     this.lineNumber = lineNumber;
   }
 
+  public ValidationMessage suggestion(@jakarta.annotation.Nullable String suggestion) {
+    
+    this.suggestion = suggestion;
+    return this;
+  }
+
+  /**
+   * Plain-language description of how to fix the problem.
+   * @return suggestion
+   */
+  @jakarta.annotation.Nullable
+
+  @JsonProperty(value = JSON_PROPERTY_SUGGESTION, required = false)
+  @JsonInclude(value = JsonInclude.Include.NON_NULL)
+
+  public String getSuggestion() {
+    return suggestion;
+  }
+
+
+  @JsonProperty(value = JSON_PROPERTY_SUGGESTION, required = false)
+  @JsonInclude(value = JsonInclude.Include.NON_NULL)
+  public void setSuggestion(@jakarta.annotation.Nullable String suggestion) {
+    this.suggestion = suggestion;
+  }
+
+  public ValidationMessage ruleId(@jakarta.annotation.Nullable String ruleId) {
+    
+    this.ruleId = ruleId;
+    return this;
+  }
+
+  /**
+   * Id of the CV mapping rule that produced a semantic message.
+   * @return ruleId
+   */
+  @jakarta.annotation.Nullable
+
+  @JsonProperty(value = JSON_PROPERTY_RULE_ID, required = false)
+  @JsonInclude(value = JsonInclude.Include.NON_NULL)
+
+  public String getRuleId() {
+    return ruleId;
+  }
+
+
+  @JsonProperty(value = JSON_PROPERTY_RULE_ID, required = false)
+  @JsonInclude(value = JsonInclude.Include.NON_NULL)
+  public void setRuleId(@jakarta.annotation.Nullable String ruleId) {
+    this.ruleId = ruleId;
+  }
+
+  public ValidationMessage location(@jakarta.annotation.Nullable ValidationLocation location) {
+    
+    this.location = location;
+    return this;
+  }
+
+  /**
+   * Get location
+   * @return location
+   */
+  @jakarta.annotation.Nullable
+  @Valid
+
+  @JsonProperty(value = JSON_PROPERTY_LOCATION, required = false)
+  @JsonInclude(value = JsonInclude.Include.NON_NULL)
+
+  public ValidationLocation getLocation() {
+    return location;
+  }
+
+
+  @JsonProperty(value = JSON_PROPERTY_LOCATION, required = false)
+  @JsonInclude(value = JsonInclude.Include.NON_NULL)
+  public void setLocation(@jakarta.annotation.Nullable ValidationLocation location) {
+    this.location = location;
+  }
+
 
   @Override
   public boolean equals(Object o) {
@@ -283,12 +377,15 @@ public class ValidationMessage {
         Objects.equals(this.category, validationMessage.category) &&
         Objects.equals(this.messageType, validationMessage.messageType) &&
         Objects.equals(this.message, validationMessage.message) &&
-        Objects.equals(this.lineNumber, validationMessage.lineNumber);
+        Objects.equals(this.lineNumber, validationMessage.lineNumber) &&
+        Objects.equals(this.suggestion, validationMessage.suggestion) &&
+        Objects.equals(this.ruleId, validationMessage.ruleId) &&
+        Objects.equals(this.location, validationMessage.location);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(code, category, messageType, message, lineNumber);
+    return Objects.hash(code, category, messageType, message, lineNumber, suggestion, ruleId, location);
   }
 
   @Override
@@ -300,6 +397,9 @@ public class ValidationMessage {
     sb.append("    messageType: ").append(toIndentedString(messageType)).append("\n");
     sb.append("    message: ").append(toIndentedString(message)).append("\n");
     sb.append("    lineNumber: ").append(toIndentedString(lineNumber)).append("\n");
+    sb.append("    suggestion: ").append(toIndentedString(suggestion)).append("\n");
+    sb.append("    ruleId: ").append(toIndentedString(ruleId)).append("\n");
+    sb.append("    location: ").append(toIndentedString(location)).append("\n");
     sb.append("}");
     return sb.toString();
   }

@@ -46,9 +46,11 @@ import org.hibernate.validator.constraints.*;
   MsRun.JSON_PROPERTY_FRAGMENTATION_METHOD,
   MsRun.JSON_PROPERTY_SCAN_POLARITY,
   MsRun.JSON_PROPERTY_HASH,
-  MsRun.JSON_PROPERTY_HASH_METHOD
+  MsRun.JSON_PROPERTY_HASH_METHOD,
+  MsRun.JSON_PROPERTY_USI_IDENTIFIER
 })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-04-29T15:34:38.183974+02:00[Europe/Berlin]", comments = "Generator version: 7.17.0")
+@com.fasterxml.jackson.annotation.JsonIdentityInfo(generator = com.fasterxml.jackson.annotation.ObjectIdGenerators.PropertyGenerator.class, property = "id", scope = MsRun.class)
 public class MsRun {
   public static final String JSON_PROPERTY_ID = "id";
   @jakarta.annotation.Nonnull
@@ -89,6 +91,10 @@ public class MsRun {
   public static final String JSON_PROPERTY_HASH_METHOD = "hash_method";
   @jakarta.annotation.Nullable
   private Parameter hashMethod;
+
+  public static final String JSON_PROPERTY_USI_IDENTIFIER = "usi_identifier";
+  @jakarta.annotation.Nullable
+  private String usiIdentifier;
 
   public MsRun() {
   }
@@ -379,6 +385,32 @@ public class MsRun {
     this.hashMethod = hashMethod;
   }
 
+  public MsRun usiIdentifier(@jakarta.annotation.Nullable String usiIdentifier) {
+    
+    this.usiIdentifier = usiIdentifier;
+    return this;
+  }
+
+  /**
+   * The MS run identifier (MRI) of this msRun&#39;s data file in a public repository, based on the USI specification, e.g. mzspec:&lt;collection&gt;:&lt;msRun&gt;.
+   * @return usiIdentifier
+   */
+  @jakarta.annotation.Nullable
+
+  @JsonProperty(value = JSON_PROPERTY_USI_IDENTIFIER, required = false)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getUsiIdentifier() {
+    return usiIdentifier;
+  }
+
+
+  @JsonProperty(value = JSON_PROPERTY_USI_IDENTIFIER, required = false)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setUsiIdentifier(@jakarta.annotation.Nullable String usiIdentifier) {
+    this.usiIdentifier = usiIdentifier;
+  }
+
 
   @Override
   public boolean equals(Object o) {
@@ -398,12 +430,13 @@ public class MsRun {
         Objects.equals(this.fragmentationMethod, msRun.fragmentationMethod) &&
         Objects.equals(this.scanPolarity, msRun.scanPolarity) &&
         Objects.equals(this.hash, msRun.hash) &&
-        Objects.equals(this.hashMethod, msRun.hashMethod);
+        Objects.equals(this.hashMethod, msRun.hashMethod) &&
+        Objects.equals(this.usiIdentifier, msRun.usiIdentifier);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, name, location, instrumentRef, format, idFormat, fragmentationMethod, scanPolarity, hash, hashMethod);
+    return Objects.hash(id, name, location, instrumentRef, format, idFormat, fragmentationMethod, scanPolarity, hash, hashMethod, usiIdentifier);
   }
 
   @Override
@@ -420,6 +453,7 @@ public class MsRun {
     sb.append("    scanPolarity: ").append(toIndentedString(scanPolarity)).append("\n");
     sb.append("    hash: ").append(toIndentedString(hash)).append("\n");
     sb.append("    hashMethod: ").append(toIndentedString(hashMethod)).append("\n");
+    sb.append("    usiIdentifier: ").append(toIndentedString(usiIdentifier)).append("\n");
     sb.append("}");
     return sb.toString();
   }

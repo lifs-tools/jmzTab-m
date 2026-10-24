@@ -234,7 +234,7 @@ public class SMLLineParser extends MZTabDataLineParser<SmallMoleculeSummary> {
                     if (!m.matches()) {
                         errorList.add(new MZTabError(FormatErrorType.RegexMismatch,
                             lineNumber, elementPropertyName, element,
-                            "" + (i + 1), regularExpression));
+                            "" + (i + 1), regularExpression).column(elementPropertyName));
                     }
                 }
             }
@@ -250,7 +250,7 @@ public class SMLLineParser extends MZTabDataLineParser<SmallMoleculeSummary> {
             errorList.add(new MZTabError(LogicalErrorType.ItemNumberMismatch,
                 lineNumber, toCheckPropertyName, "" + toCheck.
                 size(), referencePropertyName, "" + reference.
-                size()));
+                size()).column(toCheckPropertyName));
         }
     }
 
