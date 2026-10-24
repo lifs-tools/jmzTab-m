@@ -192,6 +192,10 @@ MTD	cv[6]-label	BTO
 MTD	cv[6]-uri	https://www.ebi.ac.uk/ols/ontologies/bto
 MTD	cv[6]-version	2016-05-05
 MTD	cv[6]-full_name	BRENDA tissue / enzyme source
+MTD	cv[7]-label	UO
+MTD	cv[7]-full_name	Units of measurement ontology
+MTD	cv[7]-version	2026-10-12
+MTD	cv[7]-uri	http://purl.obolibrary.org/obo/uo.owl
 MTD	small_molecule-quantification_unit	[PRIDE, PRIDE:0000330, Arbitrary quantification unit, ]
 MTD	small_molecule_feature-quantification_unit	[PRIDE, PRIDE:0000330, Arbitrary quantification unit, ]
 MTD	small_molecule-identification_reliability	[MS, MS:1002896, compound identification confidence level, ]
