@@ -203,6 +203,73 @@ public class SemanticLocationTest {
                 term("MS", "MS:1000040", "m/z", false, true))));
     }
 
+    private static final CvMappingRule SAMPLE_SPECIES_MAY = rule("sample_species_may",
+        "/metadata/sample/@species", CvTermsCombinationLogic.OR,
+        term("NCBITaxon", "NCBITaxon:1", "root", true, true));
+
+    private List<ValidationMessage> validateWithQuantificationUnit(Parameter unit,
+        CvMappingRule... more) {
+        mzTab.getMetadata().setSmallMoleculeQuantificationUnit(unit);
+        List<CvMappingRule> rules = new ArrayList<>(List.of(
+            rule("smqu_may", "/metadata/@smallMoleculeQuantificationUnit",
+                CvTermsCombinationLogic.OR,
+                term("UO", "UO:0000072", "picomolal", false, true)),
+            SAMPLE_SPECIES_MAY));
+        rules.addAll(List.of(more));
+        return CvMappingValidator.of(mapping(rules.toArray(CvMappingRule[]::new)),
+            LOOKUP, true).validate(mzTab);
+    }
+
+    @Test
+    public void malformedAccessionIsReportedAtTheParameterAndTheOtherRulesStillRun() {
+        for (Parameter unit : List.of(param("nan", "nan", "nan"),
+            param("NCIT", "C12345", "x"), param("", "NCIT:C1", "x"))) {
+            List<ValidationMessage> ms = validateWithQuantificationUnit(unit);
+            List<ValidationMessage> malformed = ms.stream().
+                filter(m -> is(m, CrossCheckErrorType.CvAccessionMalformed)).
+                collect(Collectors.toList());
+            assertEquals(1, malformed.size(), () -> unit + ": " + ms);
+            ValidationMessage m = malformed.get(0);
+            assertEquals("[Error-3016]", m.getCode().substring(0, 12));
+            assertEquals("small_molecule-quantification_unit", m.getLocation().getMetadataKey());
+            assertEquals("smqu_may", m.getRuleId());
+            assertTrue(m.getSuggestion().contains("small_molecule-quantification_unit"), m.getSuggestion());
+            assertTrue(ms.stream().anyMatch(x -> "sample_species_may".equals(x.getRuleId())),
+                () -> "the other rule must still run: " + ms);
+            assertFalse(ms.stream().anyMatch(x -> is(x, CrossCheckErrorType.SemanticValidationException)),
+                () -> unit + ": " + ms);
+        }
+    }
+
+    @Test
+    public void aRuleThatFailsIsReportedAloneAndTheOtherRulesStillRun() {
+        // AND with several terms that allow children is rejected by the rule handler
+        CvMappingRule broken = rule("broken_and", "/metadata/@quantificationMethod",
+            CvTermsCombinationLogic.AND,
+            term("MS", "MS:1000031", "instrument model", true, true),
+            term("MS", "MS:1000040", "m/z", true, true));
+        List<ValidationMessage> ms = validateWithQuantificationUnit(
+            param("UO", "UO:0000072", "picomolal"), broken);
+        List<ValidationMessage> failed = ms.stream().
+            filter(m -> is(m, CrossCheckErrorType.SemanticValidationException)).
+            collect(Collectors.toList());
+        assertEquals(1, failed.size(), () -> ms.toString());
+        assertEquals("broken_and", failed.get(0).getRuleId());
+        assertTrue(ms.stream().anyMatch(x -> "sample_species_may".equals(x.getRuleId())));
+    }
+
+    @Test
+    public void aCvLabelDefinedTwiceDoesNotAbortTheValidation() {
+        mzTab.getMetadata().addCvItem(new CV().id(5).label("MS").
+            fullName("PSI-MS again").version("4.1.0").
+            uri(URI.create("https://www.ebi.ac.uk/ols/ontologies/ms")));
+        List<ValidationMessage> ms = validateWithQuantificationUnit(
+            param("UO", "UO:0000072", "picomolal"));
+        assertFalse(ms.stream().anyMatch(x -> is(x, CrossCheckErrorType.SemanticValidationException)),
+            () -> ms.toString());
+        assertTrue(ms.stream().anyMatch(x -> "sample_species_may".equals(x.getRuleId())));
+    }
+
     /**
      * Validates a file whose instruments are named by the given accessions
      * against a rule that allows only instrument models.

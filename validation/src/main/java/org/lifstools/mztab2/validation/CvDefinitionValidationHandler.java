@@ -67,6 +67,11 @@ public class CvDefinitionValidationHandler implements Validator<MzTab> {
             }, (value) ->
             {
                 return value;
+            }, (first, repeated) ->
+            {
+                // a label defined twice must not abort the check: keep the
+                // first definition
+                return first;
             }));
         List<ValidationMessage> messages = new ArrayList<>();
         List<Pair<Pointer, Parameter>> parameters = JxPathElement.
