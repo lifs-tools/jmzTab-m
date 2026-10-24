@@ -81,14 +81,14 @@ public class ExampleFilesValidationTestIT {
 
     static Stream<Arguments> data() {
         return Stream.of(
-            Arguments.of(XCMS_EXAMPLE, MZTabErrorType.Level.Info, 1, 15),
-            Arguments.of(LIPIDOMICS_EXAMPLE, MZTabErrorType.Level.Info, 0, 6),
-            Arguments.of(MTBLS263, MZTabErrorType.Level.Info, 0, 11),
-            Arguments.of(STANDARDMIX_NEGATIVE_EXPORTPOSITIONLEVEL, MZTabErrorType.Level.Info, 0, 5),
-            Arguments.of(STANDARDMIX_NEGATIVE_EXPORTSPECIESLEVEL, MZTabErrorType.Level.Info, 0, 5),
-            Arguments.of(STANDARDMIX_POSITIVE_EXPORTPOSITIONLEVEL, MZTabErrorType.Level.Info, 0, 5),
-            Arguments.of(STANDARDMIX_POSITIVE_EXPORTSPECIESLEVEL, MZTabErrorType.Level.Info, 0, 5),
-            Arguments.of(GCXGC_MS_EXAMPLE, MZTabErrorType.Level.Info, 0, 4),
+            Arguments.of(XCMS_EXAMPLE, MZTabErrorType.Level.Info, 2, 15),
+            Arguments.of(LIPIDOMICS_EXAMPLE, MZTabErrorType.Level.Info, 1, 6),
+            Arguments.of(MTBLS263, MZTabErrorType.Level.Info, 1, 11),
+            Arguments.of(STANDARDMIX_NEGATIVE_EXPORTPOSITIONLEVEL, MZTabErrorType.Level.Info, 1, 5),
+            Arguments.of(STANDARDMIX_NEGATIVE_EXPORTSPECIESLEVEL, MZTabErrorType.Level.Info, 1, 5),
+            Arguments.of(STANDARDMIX_POSITIVE_EXPORTPOSITIONLEVEL, MZTabErrorType.Level.Info, 1, 5),
+            Arguments.of(STANDARDMIX_POSITIVE_EXPORTSPECIESLEVEL, MZTabErrorType.Level.Info, 1, 5),
+            Arguments.of(GCXGC_MS_EXAMPLE, MZTabErrorType.Level.Info, 1, 4),
             Arguments.of(GCXGC_MS_EXAMPLE, MZTabErrorType.Level.Warn, 0, 0),
             Arguments.of(LIPIDOMICS_EXAMPLE, MZTabErrorType.Level.Warn, 0, 0),
             Arguments.of(LIPIDOMICS_EXAMPLE, MZTabErrorType.Level.Error, 0, 0)
