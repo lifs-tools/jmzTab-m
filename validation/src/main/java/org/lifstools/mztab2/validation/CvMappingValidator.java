@@ -51,8 +51,6 @@ import org.apache.commons.jxpath.Pointer;
 import org.apache.commons.lang3.tuple.Pair;
 import uk.ac.ebi.pride.jmztab2.utils.errors.CrossCheckErrorType;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabError;
-import uk.ac.ebi.pride.utilities.ols.web.service.client.OLSClient;
-import uk.ac.ebi.pride.utilities.ols.web.service.config.OLSWsConfig;
 
 /**
  * Validator implementation that uses a provided xml mapping file with rules for
@@ -93,12 +91,8 @@ public class CvMappingValidator implements Validator<MzTab> {
      */
     public static CvMappingValidator of(File mappingFile,
         boolean errorIfTermNotInRule) throws JAXBException {
-        OLSWsConfig config = new OLSWsConfig(
-            "https://www.ebi.ac.uk/ols4/api"
-        );
-        OLSClient client = new OLSClient(config);
-        CvParameterLookupService service = new CvParameterLookupService(client);
-        return of(mappingFile, service, errorIfTermNotInRule);
+        return of(mappingFile, new CvParameterLookupService(),
+            errorIfTermNotInRule);
     }
 
     /**
@@ -164,10 +158,8 @@ public class CvMappingValidator implements Validator<MzTab> {
      */
     public static CvMappingValidator of(URL mappingFile,
         boolean errorIfTermNotInRule) throws JAXBException {
-        OLSWsConfig config = new OLSWsConfig();
-        OLSClient client = new OLSClient(config);
-        CvParameterLookupService service = new CvParameterLookupService(client);
-        return of(mappingFile, service, errorIfTermNotInRule);
+        return of(mappingFile, new CvParameterLookupService(),
+            errorIfTermNotInRule);
     }
 
     /**
