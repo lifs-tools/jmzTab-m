@@ -52,8 +52,8 @@ public class MZTabErrorTypeMapTest {
         Map<Integer, MZTabErrorType> result = instance.getTypeMap();
         // 100 base error types + 1 format (MZTabProfile) + 10 logical profile types
         // + 1 cross check (CvAccessionMalformed) + 3 logical reference checks
-        // + 1 logical StudyVariableFactorsRemoved.
-        assertEquals(116, result.size());
+        // + 1 logical StudyVariableFactorsRemoved, + 1 logical ReferenceBeforeDefinition.
+        assertEquals(117, result.size());
     }
     
 }
