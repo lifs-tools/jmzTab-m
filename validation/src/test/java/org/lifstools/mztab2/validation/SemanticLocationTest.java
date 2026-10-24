@@ -142,6 +142,26 @@ public class SemanticLocationTest {
     }
 
     @Test
+    public void undefinedCvIsReportedOnce() {
+        assertEquals(1, only(CrossCheckErrorType.CvUndefinedInMetadata).size());
+        assertEquals(1, only(CrossCheckErrorType.CvUnused).size());
+    }
+
+    @Test
+    public void undefinedCvOfAReferencedParameterIsReportedOnceWhereItIsDefined() {
+        // ms_run[1] refers to instrument[2]: its name is reachable from both
+        mzTab.getMetadata().getMsRun().get(0).
+            setInstrumentRef(mzTab.getMetadata().getInstrument().get(1));
+        List<ValidationMessage> ms = CvMappingValidator.of(mapping(), LOOKUP, true).
+            validate(mzTab).stream().
+            filter(m -> is(m, CrossCheckErrorType.CvUndefinedInMetadata)).
+            collect(Collectors.toList());
+        assertEquals(1, ms.size(), () -> ms.toString());
+        assertEquals("instrument[2]-name", ms.get(0).getLocation().getMetadataKey());
+        assertEquals("/metadata/instrument[2]/name", ms.get(0).getLocation().getElementPath());
+    }
+
+    @Test
     public void unusedCvPointsAtItsLabelKey() {
         ValidationMessage m = only(CrossCheckErrorType.CvUnused).get(0);
         assertEquals("cv[4]-label", m.getLocation().getMetadataKey());
