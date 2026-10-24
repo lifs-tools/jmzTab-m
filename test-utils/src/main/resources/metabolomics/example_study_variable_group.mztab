@@ -107,7 +107,7 @@ MTD	cv[3]-uri	https://purl.obolibrary.org/obo/stato.owl
 MTD	small_molecule-quantification_unit	[MS, MS:1002887, Progenesis QI normalised abundance, ]
 MTD	small_molecule_feature-quantification_unit	[MS, MS:1002887, Progenesis QI normalised abundance, ]
 MTD	small_molecule-identification_reliability	[MS, MS:1002896, compound identification confidence level, ]
-MTD	database[1]	[MIRIAM, MIR:00100079, HMDB, ]
+MTD	database[1]	[, , HMDB, ]
 MTD	database[1]-prefix	hmdb
 MTD	database[1]-version	3.6
 MTD	database[1]-uri	http://www.hmdb.ca/
