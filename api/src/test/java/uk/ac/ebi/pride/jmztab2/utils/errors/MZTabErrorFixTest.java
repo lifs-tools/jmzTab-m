@@ -39,6 +39,15 @@ public class MZTabErrorFixTest {
     }
 
     @Test
+    void unknownRefIdFixNamesRowAndTargetSection() {
+        // arguments as passed by MzTabFileParser: ref id, column, row id, from and to section
+        String s = new MZTabError(LogicalErrorType.UnknownRefId, -1, "3",
+            "smf_id_refs", "5", "smallMoleculeSummary", "smallMoleculeFeature").getSuggestion();
+        assertEquals("Change the value \"3\" in column \"smf_id_refs\" of the smallMoleculeSummary row with id 5"
+            + " so that it refers to an existing smallMoleculeFeature entry, or add the missing entry.", s);
+    }
+
+    @Test
     void errorWithoutExtrasStillHasNoPlaceholders() {
         String s = new MZTabError(CrossCheckErrorType.CvUnused, -1, "UO").getSuggestion();
         assertFalse(s.contains("{"));
