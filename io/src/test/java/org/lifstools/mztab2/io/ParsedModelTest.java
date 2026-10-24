@@ -21,6 +21,9 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
+import java.util.stream.Collectors;
+import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabError;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -69,6 +72,39 @@ public class ParsedModelTest {
         MZTabErrorList errors = parser.parse(new ByteArrayOutputStream(), level, 1000);
         assertTrue(errors.hasErrors(), () -> errors.toString());
         assertNull(parser.getMZTabFile());
+    }
+
+    @ParameterizedTest
+    @org.junit.jupiter.params.provider.CsvSource({
+        "MTD\tms_run[1]-instrument_ref\t, 2065, instrument[1]-name",
+        "MTD\tassay[1]-sample_ref\t, 2066, sample[1]"})
+    void unreferencedElementsAreErrorsThatKeepTheModel(String removedLine, int code,
+            String key) throws IOException {
+        Path file = withoutLine(removedLine);
+        MzTabFileParser parser = new MzTabFileParser(file.toFile());
+        MZTabErrorList errors = parser.parse(new ByteArrayOutputStream(),
+            MZTabErrorType.Level.Info, 1000);
+        List<MZTabError> found = errors.getErrorList().stream().
+            filter(e -> e.getType().getCode() == code).
+            collect(Collectors.toList());
+        assertEquals(1, found.size(), () -> errors.toString());
+        assertEquals(MZTabErrorType.Level.Error, found.get(0).getType().getLevel());
+        assertEquals(key, found.get(0).getLocation().getMetadataKey());
+        assertNotNull(parser.getMZTabFile(), "a missing reference must not drop the model");
+    }
+
+    private Path withoutLine(String prefix) throws IOException {
+        String text;
+        try (InputStream is = getClass().getResourceAsStream(BASE_FILE)) {
+            text = new String(is.readAllBytes(), StandardCharsets.UTF_8);
+        }
+        String kept = text.lines().
+            filter(line -> !line.startsWith(prefix)).
+            collect(Collectors.joining("\n", "", "\n"));
+        assertTrue(kept.length() < text.length(), prefix);
+        Path file = tempDir.resolve("without.mzTab");
+        Files.writeString(file, kept, StandardCharsets.UTF_8);
+        return file;
     }
 
     private Path variant(String from, String to) throws IOException {

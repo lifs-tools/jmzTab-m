@@ -22,6 +22,7 @@ MTD	ms_run[1]-format	[MS, MS:1000584, mzML file, ]
 MTD	ms_run[1]-id_format	[MS, MS:1001530, mzML unique identifier, ]
 MTD	ms_run[1]-scan_polarity	[MS, MS:1000130, positive scan, ]
 MTD	ms_run[1]-location	ftp://ftp.ebi.ac.uk/path/to/file
+MTD	ms_run[1]-instrument_ref	instrument[1]
 MTD	sample[1]-species[1]	[NCBITaxon, NCBITaxon:9606, Homo sapiens (Human), ]
 MTD	sample[1]-tissue[1]	[BTO, BTO:0000759, liver, ]
 MTD	sample[1]-description	Hepatocellular carcinoma samples.
