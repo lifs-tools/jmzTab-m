@@ -59,4 +59,16 @@ final class RuleMessages {
                 CvMappingUtils.allowedTermsText(rule)).
             toValidationMessage();
     }
+
+    /**
+     * For errors about elements beyond those reported with a location: no
+     * location, the fix names the number of further elements.
+     */
+    static ValidationMessage onFurtherElements(MZTabError error, int count,
+        CvMappingRule rule) {
+        return error.ruleId(rule.getId()).
+            fixContext(count + " further elements",
+                CvMappingUtils.allowedTermsText(rule)).
+            toValidationMessage();
+    }
 }
