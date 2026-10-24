@@ -1,0 +1,616 @@
+{
+  "metadata" : {
+    "prefix" : "MTD",
+    "mzTab-version" : "2.0.0-M",
+    "mzTab-ID" : "ISAS-2018-1234",
+    "mzTab-profile" : null,
+    "title" : null,
+    "description" : "Minimal proposed sample file for identification and quantification of lipids",
+    "contact" : [ ],
+    "publication" : [ {
+      "id" : 1,
+      "publicationItems" : [ {
+        "type" : "pubmed",
+        "accession" : "29039908"
+      }, {
+        "type" : "doi",
+        "accession" : "10.1021/acs.analchem.7b03576"
+      } ]
+    } ],
+    "uri" : [ ],
+    "external_study_uri" : [ {
+      "id" : 1,
+      "value" : "file:///C:/data/prm.sky.zip"
+    } ],
+    "instrument" : [ {
+      "id" : 1,
+      "name" : {
+        "id" : null,
+        "cv_label" : "MS",
+        "cv_accession" : "MS:1001911",
+        "name" : "Q Exactive",
+        "value" : null
+      },
+      "source" : {
+        "id" : null,
+        "cv_label" : "MS",
+        "cv_accession" : "MS:1000073",
+        "name" : "electrospray ionization",
+        "value" : null
+      },
+      "analyzer" : [ {
+        "id" : null,
+        "cv_label" : "MS",
+        "cv_accession" : "MS:1000081",
+        "name" : "quadrupole",
+        "value" : null
+      }, {
+        "id" : null,
+        "cv_label" : "MS",
+        "cv_accession" : "MS:1000484",
+        "name" : "orbitrap",
+        "value" : null
+      } ],
+      "detector" : {
+        "id" : null,
+        "cv_label" : "MS",
+        "cv_accession" : "MS:1000624",
+        "name" : "inductive detector",
+        "value" : null
+      }
+    } ],
+    "quantification_method" : {
+      "id" : null,
+      "cv_label" : "MS",
+      "cv_accession" : "MS:1001838",
+      "name" : "SRM quantitation analysis",
+      "value" : null
+    },
+    "sample" : [ {
+      "id" : 1,
+      "name" : "QEx-1273-prm-sp1",
+      "custom" : [ ],
+      "species" : [ ],
+      "tissue" : [ ],
+      "cell_type" : [ ],
+      "disease" : [ ],
+      "description" : "Sphingolipids with concentration reported as picomolar per mg of protein, abundances are reported after calibration correction."
+    } ],
+    "sample_processing" : [ {
+      "id" : 1,
+      "sampleProcessing" : [ {
+        "id" : null,
+        "cv_label" : "MSIO",
+        "cv_accession" : "MSIO:0000148",
+        "name" : "high performance liquid chromatography",
+        "value" : null
+      } ]
+    } ],
+    "software" : [ {
+      "id" : 1,
+      "parameter" : {
+        "id" : null,
+        "cv_label" : "MS",
+        "cv_accession" : "MS:1000532",
+        "name" : "Xcalibur",
+        "value" : "2.8-280502/2.8.1.2806"
+      },
+      "setting" : [ "ScheduledSRMWindow: 2 min", "CycleTime: 2 s" ]
+    }, {
+      "id" : 2,
+      "parameter" : {
+        "id" : null,
+        "cv_label" : "MS",
+        "cv_accession" : "MS:1000922",
+        "name" : "Skyline",
+        "value" : "3.5.0.9319"
+      },
+      "setting" : [ "MSMSmassrange: (50.0, 1800.0)" ]
+    } ],
+    "derivatization_agent" : [ ],
+    "ms_run" : [ {
+      "id" : 1,
+      "name" : null,
+      "location" : "file:///C:/data/QEx-1273-prm-sp1.mzML",
+      "instrument_ref" : 1,
+      "format" : {
+        "id" : null,
+        "cv_label" : "MS",
+        "cv_accession" : "MS:1000584",
+        "name" : "mzML file",
+        "value" : null
+      },
+      "id_format" : {
+        "id" : null,
+        "cv_label" : "MS",
+        "cv_accession" : "MS:1000768",
+        "name" : "Thermo nativeID format",
+        "value" : null
+      },
+      "fragmentation_method" : [ ],
+      "scan_polarity" : [ {
+        "id" : null,
+        "cv_label" : "MS",
+        "cv_accession" : "MS:1000130",
+        "name" : "positive scan",
+        "value" : null
+      } ],
+      "hash" : null,
+      "hash_method" : null,
+      "usi_identifier" : null
+    } ],
+    "assay" : [ {
+      "id" : 1,
+      "name" : "Description of assay 1",
+      "custom" : [ ],
+      "external_uri" : null,
+      "sample_ref" : 1,
+      "ms_run_ref" : [ 1 ]
+    } ],
+    "study_variable_group" : [ ],
+    "study_variable" : [ {
+      "id" : 1,
+      "name" : "Sphingolipid SRM Quantitation",
+      "assay_refs" : [ 1 ],
+      "average_function" : {
+        "id" : null,
+        "cv_label" : "MS",
+        "cv_accession" : "MS:1002883",
+        "name" : "median",
+        "value" : null
+      },
+      "variation_function" : {
+        "id" : null,
+        "cv_label" : "MS",
+        "cv_accession" : "MS:1002885",
+        "name" : "standard error",
+        "value" : null
+      },
+      "description" : "sphingolipid srm quantitation"
+    } ],
+    "custom" : [ ],
+    "cv" : [ {
+      "id" : 1,
+      "label" : "MS",
+      "full_name" : "PSI-MS controlled vocabulary",
+      "version" : "4.0.18",
+      "uri" : "https://github.com/HUPO-PSI/psi-ms-CV/blob/master/psi-ms.obo"
+    }, {
+      "id" : 2,
+      "label" : "MSIO",
+      "full_name" : "Metabolomics Standards Initiative Ontology (MSIO)",
+      "version" : "1.0.1",
+      "uri" : "https://www.ebi.ac.uk/ols/ontologies/msio"
+    }, {
+      "id" : 3,
+      "label" : "UO",
+      "full_name" : "Units of Measurement Ontology",
+      "version" : "2017-09-25",
+      "uri" : "http://purl.obolibrary.org/obo/uo.owl"
+    } ],
+    "small_molecule-quantification_unit" : {
+      "id" : null,
+      "cv_label" : "UO",
+      "cv_accession" : "UO:0000072",
+      "name" : "picomolal",
+      "value" : null
+    },
+    "small_molecule_feature-quantification_unit" : {
+      "id" : null,
+      "cv_label" : "UO",
+      "cv_accession" : "UO:0000072",
+      "name" : "picomolal",
+      "value" : null
+    },
+    "small_molecule-identification_reliability" : {
+      "id" : null,
+      "cv_label" : "MS",
+      "cv_accession" : "MS:1002896",
+      "name" : "compound identification confidence level",
+      "value" : null
+    },
+    "database" : [ {
+      "id" : 1,
+      "param" : {
+        "id" : null,
+        "cv_label" : "",
+        "cv_accession" : "",
+        "name" : "Pubchem",
+        "value" : null
+      },
+      "prefix" : "PUBCHEM-CPD",
+      "version" : "02.12.2017",
+      "uri" : "https://www.ncbi.nlm.nih.gov/pccompound"
+    }, {
+      "id" : 2,
+      "param" : {
+        "id" : null,
+        "cv_label" : "",
+        "cv_accession" : "",
+        "name" : "LipidMaps",
+        "value" : null
+      },
+      "prefix" : "LM",
+      "version" : "2017-12",
+      "uri" : "http://www.lipidmaps.org/"
+    }, {
+      "id" : 3,
+      "param" : {
+        "id" : null,
+        "cv_label" : "",
+        "cv_accession" : "",
+        "name" : "LipidCreator Transitions",
+        "value" : null
+      },
+      "prefix" : "LCTR",
+      "version" : "2018-07",
+      "uri" : "https://lifs.isas.de/lipidcreator"
+    } ],
+    "id_confidence_measure" : [ {
+      "id" : null,
+      "cv_label" : "MS",
+      "cv_accession" : "MS:1002890",
+      "name" : "fragmentation score",
+      "value" : null
+    } ],
+    "colunit-small_molecule" : [ ],
+    "colunit-small_molecule_feature" : [ ],
+    "colunit-small_molecule_evidence" : [ {
+      "column_name" : "opt_global_mass_error",
+      "param" : {
+        "id" : null,
+        "cv_label" : "UO",
+        "cv_accession" : "UO:0000169",
+        "name" : "parts per million",
+        "value" : null
+      }
+    } ]
+  },
+  "smallMoleculeSummary" : [ {
+    "prefix" : "SML",
+    "header_prefix" : "SMH",
+    "sml_id" : 1,
+    "smf_id_refs" : [ 1, 2, 3, 4 ],
+    "database_identifier" : [ "LM:LMSP02010012" ],
+    "chemical_formula" : [ "C42H83NO3" ],
+    "smiles" : [ "CCCCCCCCCCCCCCCCCCCCCCCC(=O)N[C@@H](CO)[C@H](O)/C=C/CCCCCCCCCCCCC" ],
+    "inchi" : [ "InChI=1S/C42H83NO3/c1-3-5-7-9-11-13-15-17-18-19-20-21-22-23-24-26-28-30-32-34-36-38-42(46)43-40(39-44)41(45)37-35-33-31-29-27-25-16-14-12-10-8-6-4-2/h35,37,40-41,44-45H,3-34,36,38-39H2,1-2H3,(H,43,46)/b37-35+/t40-,41+/m0/s1" ],
+    "chemical_name" : [ "Cer(d18:1/24:0)" ],
+    "uri" : [ "http://www.lipidmaps.org/data/LMSDRecord.php?LM_ID=LMSP02010012" ],
+    "theoretical_neutral_mass" : [ 649.6373 ],
+    "adduct_ions" : [ "[M+H]+" ],
+    "reliability" : "2",
+    "best_id_confidence_measure" : {
+      "id" : null,
+      "cv_label" : "",
+      "cv_accession" : "",
+      "name" : "qualifier ions exact mass",
+      "value" : null
+    },
+    "best_id_confidence_value" : 0.958,
+    "abundance_assay" : [ 4.448784E-5 ],
+    "abundance_study_variable" : [ 4.448784E-5 ],
+    "abundance_variation_study_variable" : [ 0.0 ],
+    "opt" : [ {
+      "identifier" : "global_lipid_category",
+      "param" : null,
+      "value" : "Sphingolipids"
+    }, {
+      "identifier" : "global_lipid_species",
+      "param" : null,
+      "value" : "Cer 42:1"
+    }, {
+      "identifier" : "global_lipid_best_id_level",
+      "param" : null,
+      "value" : "Cer d18:1/24:0"
+    } ],
+    "comment" : [ ]
+  } ],
+  "smallMoleculeFeature" : [ {
+    "prefix" : "SMF",
+    "header_prefix" : "SFH",
+    "smf_id" : 1,
+    "sme_id_refs" : [ 1 ],
+    "sme_id_ref_ambiguity_code" : null,
+    "adduct_ion" : "[M+H]1+",
+    "isotopomer" : null,
+    "exp_mass_to_charge" : 650.6432,
+    "charge" : 1,
+    "retention_time_in_seconds" : 821.2341,
+    "retention_time_in_seconds_start" : 756.0,
+    "retention_time_in_seconds_end" : 954.0,
+    "abundance_assay" : [ 4.448784E-5 ],
+    "opt" : [ {
+      "identifier" : "global_quantifiers_SMF_ID_REFS",
+      "param" : null,
+      "value" : "3"
+    } ],
+    "comment" : [ ]
+  }, {
+    "prefix" : "SMF",
+    "header_prefix" : "SFH",
+    "smf_id" : 2,
+    "sme_id_refs" : [ 2 ],
+    "sme_id_ref_ambiguity_code" : null,
+    "adduct_ion" : "null",
+    "isotopomer" : null,
+    "exp_mass_to_charge" : 252.2677,
+    "charge" : 1,
+    "retention_time_in_seconds" : 821.2341,
+    "retention_time_in_seconds_start" : 756.0,
+    "retention_time_in_seconds_end" : 954.0,
+    "abundance_assay" : [ 6.673176E-6 ],
+    "opt" : [ {
+      "identifier" : "global_quantifiers_SMF_ID_REFS",
+      "param" : null,
+      "value" : "null"
+    } ],
+    "comment" : [ ]
+  }, {
+    "prefix" : "SMF",
+    "header_prefix" : "SFH",
+    "smf_id" : 3,
+    "sme_id_refs" : [ 3 ],
+    "sme_id_ref_ambiguity_code" : null,
+    "adduct_ion" : "null",
+    "isotopomer" : null,
+    "exp_mass_to_charge" : 264.2689,
+    "charge" : 1,
+    "retention_time_in_seconds" : 821.2341,
+    "retention_time_in_seconds_start" : 756.0,
+    "retention_time_in_seconds_end" : 954.0,
+    "abundance_assay" : [ 1.3346352E-5 ],
+    "opt" : [ {
+      "identifier" : "global_quantifiers_SMF_ID_REFS",
+      "param" : null,
+      "value" : "null"
+    } ],
+    "comment" : [ ]
+  }, {
+    "prefix" : "SMF",
+    "header_prefix" : "SFH",
+    "smf_id" : 4,
+    "sme_id_refs" : [ 4 ],
+    "sme_id_ref_ambiguity_code" : null,
+    "adduct_ion" : "null",
+    "isotopomer" : null,
+    "exp_mass_to_charge" : 282.2788,
+    "charge" : 1,
+    "retention_time_in_seconds" : 821.2341,
+    "retention_time_in_seconds_start" : 756.0,
+    "retention_time_in_seconds_end" : 954.0,
+    "abundance_assay" : [ 9.831813E-6 ],
+    "opt" : [ {
+      "identifier" : "global_quantifiers_SMF_ID_REFS",
+      "param" : null,
+      "value" : "null"
+    } ],
+    "comment" : [ ]
+  } ],
+  "smallMoleculeEvidence" : [ {
+    "prefix" : "SME",
+    "header_prefix" : "SEH",
+    "sme_id" : 1,
+    "evidence_input_id" : "1",
+    "database_identifier" : "LM:LMSP0501AB02",
+    "chemical_formula" : "C42H83NO3",
+    "smiles" : "CCCCCCCCCCCCCCCCCCCCCCCC(=O)N[C@@H](CO)[C@H](O)/C=C/CCCCCCCCCCCCC",
+    "inchi" : "InChI=1S/C42H83NO3/c1-3-5-7-9-11-13-15-17-18-19-20-21-22-23-24-26-28-30-32-34-36-38-42(46)43-40(39-44)41(45)37-35-33-31-29-27-25-16-14-12-10-8-6-4-2/h35,37,40-41,44-45H,3-34,36,38-39H2,1-2H3,(H,43,46)/b37-35+/t40-,41+/m0/s1",
+    "chemical_name" : "LacCer d18:1/12:0",
+    "uri" : "http://www.lipidmaps.org/data/LMSDRecord.php?LM_ID=LMSP02010012",
+    "derivatized_form" : null,
+    "adduct_ion" : "[M+H]1+",
+    "exp_mass_to_charge" : 650.6432,
+    "charge" : 1,
+    "theoretical_mass_to_charge" : 650.6446,
+    "spectra_ref" : [ {
+      "ms_run" : 1,
+      "reference" : "controllerType=0 controllerNumber=1 scan=731"
+    } ],
+    "identification_method" : {
+      "id" : null,
+      "cv_label" : "",
+      "cv_accession" : "",
+      "name" : "qualifier ions exact mass",
+      "value" : null
+    },
+    "ms_level" : {
+      "id" : null,
+      "cv_label" : "MS",
+      "cv_accession" : "MS:1000511",
+      "name" : "ms level",
+      "value" : "1"
+    },
+    "id_confidence_measure" : [ 0.958 ],
+    "rank" : 1,
+    "opt" : [ {
+      "identifier" : "global_mass_error",
+      "param" : null,
+      "value" : "-2.1517"
+    }, {
+      "identifier" : "global_qualifiers_evidence_grouping_ID_REFS",
+      "param" : null,
+      "value" : "2"
+    } ],
+    "comment" : [ ]
+  }, {
+    "prefix" : "SME",
+    "header_prefix" : "SEH",
+    "sme_id" : 2,
+    "evidence_input_id" : "2",
+    "database_identifier" : "LCTR:LCTR0809812",
+    "chemical_formula" : "C17H33N",
+    "smiles" : "null",
+    "inchi" : "null",
+    "chemical_name" : "Cer d18:1/24:0 W' - CHO",
+    "uri" : null,
+    "derivatized_form" : null,
+    "adduct_ion" : "null",
+    "exp_mass_to_charge" : 252.2677,
+    "charge" : 1,
+    "theoretical_mass_to_charge" : 252.2686,
+    "spectra_ref" : [ {
+      "ms_run" : 1,
+      "reference" : "controllerType=0 controllerNumber=1 scan=732"
+    } ],
+    "identification_method" : {
+      "id" : null,
+      "cv_label" : "",
+      "cv_accession" : "",
+      "name" : "exact mass",
+      "value" : null
+    },
+    "ms_level" : {
+      "id" : null,
+      "cv_label" : "MS",
+      "cv_accession" : "MS:1000511",
+      "name" : "ms level",
+      "value" : "2"
+    },
+    "id_confidence_measure" : [ 0.978 ],
+    "rank" : 1,
+    "opt" : [ {
+      "identifier" : "global_mass_error",
+      "param" : null,
+      "value" : "-3.5676"
+    }, {
+      "identifier" : "global_qualifiers_evidence_grouping_ID_REFS",
+      "param" : null,
+      "value" : "null"
+    } ],
+    "comment" : [ ]
+  }, {
+    "prefix" : "SME",
+    "header_prefix" : "SEH",
+    "sme_id" : 3,
+    "evidence_input_id" : "2",
+    "database_identifier" : "LCTR:LCTR0871245",
+    "chemical_formula" : "C18H33N",
+    "smiles" : "null",
+    "inchi" : "null",
+    "chemical_name" : "Cer d18:1/24:0 W''",
+    "uri" : null,
+    "derivatized_form" : null,
+    "adduct_ion" : "null",
+    "exp_mass_to_charge" : 264.2689,
+    "charge" : 1,
+    "theoretical_mass_to_charge" : 264.2686,
+    "spectra_ref" : [ {
+      "ms_run" : 1,
+      "reference" : "controllerType=0 controllerNumber=1 scan=732"
+    } ],
+    "identification_method" : {
+      "id" : null,
+      "cv_label" : "",
+      "cv_accession" : "",
+      "name" : "exact mass",
+      "value" : null
+    },
+    "ms_level" : {
+      "id" : null,
+      "cv_label" : "MS",
+      "cv_accession" : "MS:1000511",
+      "name" : "ms level",
+      "value" : "2"
+    },
+    "id_confidence_measure" : [ 0.75 ],
+    "rank" : 1,
+    "opt" : [ {
+      "identifier" : "global_mass_error",
+      "param" : null,
+      "value" : "-1.1352"
+    }, {
+      "identifier" : "global_qualifiers_evidence_grouping_ID_REFS",
+      "param" : null,
+      "value" : "null"
+    } ],
+    "comment" : [ ]
+  }, {
+    "prefix" : "SME",
+    "header_prefix" : "SEH",
+    "sme_id" : 4,
+    "evidence_input_id" : "2",
+    "database_identifier" : "LCTR:LCTR0809711",
+    "chemical_formula" : "C18H35NO",
+    "smiles" : "null",
+    "inchi" : "null",
+    "chemical_name" : "Cer d18:1/24:0 W'",
+    "uri" : null,
+    "derivatized_form" : null,
+    "adduct_ion" : "null",
+    "exp_mass_to_charge" : 282.2788,
+    "charge" : 1,
+    "theoretical_mass_to_charge" : 282.2791,
+    "spectra_ref" : [ {
+      "ms_run" : 1,
+      "reference" : "controllerType=0 controllerNumber=1 scan=732"
+    } ],
+    "identification_method" : {
+      "id" : null,
+      "cv_label" : "",
+      "cv_accession" : "",
+      "name" : "exact mass",
+      "value" : null
+    },
+    "ms_level" : {
+      "id" : null,
+      "cv_label" : "MS",
+      "cv_accession" : "MS:1000511",
+      "name" : "ms level",
+      "value" : "2"
+    },
+    "id_confidence_measure" : [ 0.876 ],
+    "rank" : 1,
+    "opt" : [ {
+      "identifier" : "global_mass_error",
+      "param" : null,
+      "value" : "-1.0628"
+    }, {
+      "identifier" : "global_qualifiers_evidence_grouping_ID_REFS",
+      "param" : null,
+      "value" : "null"
+    } ],
+    "comment" : [ ]
+  } ],
+  "comment" : [ {
+    "prefix" : "COM",
+    "msg" : "Meta data section",
+    "line_number" : 1
+  }, {
+    "prefix" : "COM",
+    "msg" : "MTD",
+    "line_number" : 60
+  }, {
+    "prefix" : "COM",
+    "msg" : "\"MzTab 2.0.0-M \"\"proposed\"\" specification\"",
+    "line_number" : 65
+  }, {
+    "prefix" : "COM",
+    "msg" : "Summary rows.",
+    "line_number" : 66
+  }, {
+    "prefix" : "COM",
+    "msg" : "Evidences (e.g. multiple modifications, adducts incl. charge variants are summarized).",
+    "line_number" : 67
+  }, {
+    "prefix" : "COM",
+    "msg" : "For most use cases this summary lines may be sufficient.",
+    "line_number" : 68
+  }, {
+    "prefix" : "COM",
+    "msg" : "Negative and positive scan polarities are currently not explicitly included, this is still under debate in the mzTAB community.",
+    "line_number" : 69
+  }, {
+    "prefix" : "COM",
+    "msg" : "MS feature rows , used to report m/z and individual abundance information for quantification",
+    "line_number" : 73
+  }, {
+    "prefix" : "COM",
+    "msg" : "Evidence rows for parent / fragment ions.",
+    "line_number" : 80
+  }, {
+    "prefix" : "COM",
+    "msg" : "Primary use case: report single hits from spectral library or accurate mass searches without quantification. -> Qualification",
+    "line_number" : 81
+  } ]
+}
