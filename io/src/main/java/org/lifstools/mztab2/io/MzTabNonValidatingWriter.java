@@ -19,6 +19,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import org.lifstools.mztab2.model.MzTab;
+import org.lifstools.mztab2.model.MzTabProfile;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -27,6 +28,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabException;
@@ -106,13 +109,31 @@ public class MzTabNonValidatingWriter implements MzTabWriter<Void> {
 
     void writeMzTab(MzTab mzTab, final Writer writer) throws IOException {
         writeMetadataWithJackson(mzTab, writer);
-        writer.write("\n");
-        writeSmallMoleculeSummaryWithJackson(mzTab, writer);
-        writer.write("\n");
-        writeSmallMoleculeFeaturesWithJackson(mzTab, writer);
-        writer.write("\n");
-        writeSmallMoleculeEvidenceWithJackson(mzTab, writer);
+        MzTabProfile profile = mzTab.getMetadata() == null ? null : mzTab.
+            getMetadata().getMzTabProfile();
+        if (isWritten(mzTab.getSmallMoleculeSummary(), profile, "S")) {
+            writer.write("\n");
+            writeSmallMoleculeSummaryWithJackson(mzTab, writer);
+        }
+        if (isWritten(mzTab.getSmallMoleculeFeature(), profile, "F")) {
+            writer.write("\n");
+            writeSmallMoleculeFeaturesWithJackson(mzTab, writer);
+        }
+        if (isWritten(mzTab.getSmallMoleculeEvidence(), profile, "E")) {
+            writer.write("\n");
+            writeSmallMoleculeEvidenceWithJackson(mzTab, writer);
+        }
         writer.flush();
+    }
+
+    /**
+     * A table without rows is written (as its header) only if the file
+     * declares no profile, as in mzTab-M 2.0, or its profile has the table.
+     * Otherwise e.g. a profile "M" file would be written with three tables.
+     */
+    static boolean isWritten(List<?> rows, MzTabProfile profile, String table) {
+        return (rows != null && !rows.isEmpty()) || profile == null || Arrays.
+            asList(profile.getValue().split("\\+")).contains(table);
     }
 
     void writeMetadataWithJackson(MzTab mztabfile, Writer writer) throws IOException {
