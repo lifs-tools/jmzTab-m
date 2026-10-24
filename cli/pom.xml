@@ -107,6 +107,15 @@
                             <mainClass>org.lifstools.mztab2.cli.MZTabCommandLine</mainClass>
                         </transformer>
                     </transformers>
+                    <filters>
+                        <!-- Logback prefers logback-test.xml over the CLI's logback.xml. -->
+                        <filter>
+                            <artifact>*:*</artifact>
+                            <excludes>
+                                <exclude>logback-test.xml</exclude>
+                            </excludes>
+                        </filter>
+                    </filters>
                 </configuration>
                 <executions>
                     <execution>
