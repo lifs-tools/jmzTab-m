@@ -534,7 +534,7 @@
         <olsclient.version>2.13</olsclient.version>
         <jxpath.version>1.4.0</jxpath.version>
         <spring.version>7.0.10</spring.version>
-        <logback.version>1.6.5</logback.version>
+        <logback.version>1.6.6</logback.version>
         <diffutils.version>2.2</diffutils.version>
         <javaobjectdiff.version>0.95</javaobjectdiff.version>
         <jakarta.annotation-api.version>3.0.0</jakarta.annotation-api.version>
