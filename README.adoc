@@ -234,7 +234,7 @@ The SNAPSHOTS are also available from https://oss.sonatype.org/content/repositor
 
 == Column model changes in 1.0.8
 
-jmzTab-m 1.0.8 (and 2.1) replaces the string-based logical column positions inherited from jmzTab 1.0, which limited the number of columns per table section (see https://github.com/lifs-tools/jmzTab-m/issues/187[#187]). Command-line users are not affected. If you use the column model (`uk.ac.ebi.pride.jmztab2.model`) directly:
+jmzTab-m 1.0.8 (and 2.1) replaces the string-based logical column positions inherited from jmzTab 1.0, which limited the number of columns per table section (see https://github.com/lifs-tools/jmzTab-m/issues/187[#187]). This is a breaking API change in a patch release, made as an exception because files with many columns could not be read at all. Command-line users, and code that only reads, validates and writes files, are not affected. If you use the column model (`uk.ac.ebi.pride.jmztab2.model`) directly:
 
 * `IMZTabColumn.getLogicPosition()` is now `getPosition()` and returns a `ColumnPosition(order, index, elementId)` record, compared numerically. `setLogicPosition(String)` was removed; the position is derived from order, index and element.
 * `getOrder()` / `setOrder(...)` use `int` instead of `String`. Stable column orders are `1..n`.
