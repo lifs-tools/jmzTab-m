@@ -900,6 +900,12 @@ public class MTDLineParser extends MZTabLineParser {
                 throw new MZTabException(error);
         }
         if (instrument == null) {
+            if (param == null) {
+                // the value is not a parameter, e.g. a name with unquoted
+                // commas: reported by checkParameter (Error-1012), and the
+                // other lines are still checked
+                return;
+            }
             throw new MZTabException(new MZTabError(LogicalErrorType.NULL,
                 lineNumber, Metadata.JSON_PROPERTY_INSTRUMENT + "[" + id + "]"));
         }
@@ -909,7 +915,7 @@ public class MTDLineParser extends MZTabLineParser {
         MetadataProperty property,
         String defineLabel,
         String valueLabel, Integer id) throws MZTabErrorOverflowException, MZTabException {
-        Parameter param;
+        Parameter param = null;
         Software software = null;
         if (property == null) {
             param = checkParameter(defineLabel, valueLabel);
@@ -935,6 +941,11 @@ public class MTDLineParser extends MZTabLineParser {
             }
         }
         if (software == null) {
+            if (property == null && param == null) {
+                // the value is not a parameter: reported by checkParameter
+                // (Error-1012), and the other lines are still checked
+                return;
+            }
             throw new MZTabException(new MZTabError(LogicalErrorType.NULL,
                 lineNumber, Metadata.JSON_PROPERTY_SOFTWARE + "[" + id + "]"));
         }
@@ -984,6 +995,9 @@ public class MTDLineParser extends MZTabLineParser {
         Integer id,
         String defineLabel, String valueLabel) throws MZTabException {
         MsRun msRun = null;
+        // set for the properties whose value is a parameter
+        boolean paramProperty = false;
+        Parameter param = null;
         if (property == null) {
             msRun = context.addMsRun(metadata, new MsRun().id(id).
                 name(valueLabel));
@@ -1009,27 +1023,32 @@ public class MTDLineParser extends MZTabLineParser {
                         instrument);
                     break;
                 case MS_RUN_FORMAT:
-                    msRun = context.addMsRunFormat(metadata, id, checkParameter(
-                        defineLabel, valueLabel));
+                    paramProperty = true;
+                    param = checkParameter(defineLabel, valueLabel);
+                    msRun = context.addMsRunFormat(metadata, id, param);
                     break;
                 case MS_RUN_ID_FORMAT:
-                    msRun = context.addMsRunIdFormat(metadata, id,
-                        checkParameter(defineLabel, valueLabel));
+                    paramProperty = true;
+                    param = checkParameter(defineLabel, valueLabel);
+                    msRun = context.addMsRunIdFormat(metadata, id, param);
                     break;
                 case MS_RUN_FRAGMENTATION_METHOD:
-                    msRun = context.addMsRunFragmentationMethod(metadata, id,
-                        checkParameter(defineLabel, valueLabel));
+                    paramProperty = true;
+                    param = checkParameter(defineLabel, valueLabel);
+                    msRun = context.addMsRunFragmentationMethod(metadata, id, param);
                     break;
                 case MS_RUN_SCAN_POLARITY:
-                    msRun = context.addMsRunScanPolarity(metadata, id,
-                        checkParameter(defineLabel, valueLabel));
+                    paramProperty = true;
+                    param = checkParameter(defineLabel, valueLabel);
+                    msRun = context.addMsRunScanPolarity(metadata, id, param);
                     break;
                 case MS_RUN_HASH:
                     msRun = context.addMsRunHash(metadata, id, valueLabel);
                     break;
                 case MS_RUN_HASH_METHOD:
-                    msRun = context.addMsRunHashMethod(metadata, id,
-                        checkParameter(defineLabel, valueLabel));
+                    paramProperty = true;
+                    param = checkParameter(defineLabel, valueLabel);
+                    msRun = context.addMsRunHashMethod(metadata, id, param);
                     break;
                 default:
                     MZTabError error = new MZTabError(
@@ -1039,6 +1058,11 @@ public class MTDLineParser extends MZTabLineParser {
             }
         }
         if (msRun == null) {
+            if (paramProperty && param == null) {
+                // the value is not a parameter: reported by checkParameter
+                // (Error-1012), and the other lines are still checked
+                return;
+            }
             throw new MZTabException(new MZTabError(LogicalErrorType.NULL,
                 lineNumber, Metadata.JSON_PROPERTY_MS_RUN + "[" + id + "]"));
         }

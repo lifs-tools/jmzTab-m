@@ -124,16 +124,10 @@ public class MTDLineValidateTest {
             LOGGER.debug(e.getMessage());
         }
 
-        // param error.
-        try {
-            parser.parse(1,
-                "MTD\tinstrument[1]-analyzer[1]\t[MS, MS:1000291, ,]", errorList);
-            assertTrue(false);
-        } catch (MZTabException e) {
-            assertTrue(e.getError().
-                getType() == LogicalErrorType.NULL);
-            LOGGER.debug(e.getMessage());
-        }
+        // param error: reported, it no longer ends the validation with
+        // Error-2000 for instrument[1]
+        parser.parse(1,
+            "MTD\tinstrument[1]-analyzer[1]\t[MS, MS:1000291, ,]", errorList);
         assertTrue(errorList.size() == 4);
         assertTrue(errorList.getError(3).
             getType() == FormatErrorType.Param);
