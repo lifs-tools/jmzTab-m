@@ -516,7 +516,19 @@ public abstract class MZTabDataLineParser<T> extends MZTabLineParser {
                     lineNumber, column.getHeader(), result, "" + splitChar).column(column.getHeader()));
         }
 
-        return stringList.stream().map(uri -> URI.create(uri)).toList();
+        // as for the uri of SME: an item that is not a URI is reported, it
+        // must not end the validation (#251)
+        List<URI> uris = new ArrayList<>();
+        for (String item : stringList) {
+            URI uri = parseURI(item);
+            if (uri == null) {
+                this.errorList.add(new MZTabError(FormatErrorType.URI, lineNumber,
+                        "Column " + column.getHeader(), item).column(column.getHeader()));
+            } else {
+                uris.add(uri);
+            }
+        }
+        return uris;
     }   
 
     /**
