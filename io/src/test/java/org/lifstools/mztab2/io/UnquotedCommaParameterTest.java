@@ -26,14 +26,22 @@ import java.util.List;
 import java.util.stream.Collectors;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.lifstools.mztab2.model.Metadata;
+import org.lifstools.mztab2.model.MsRun;
 import uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType;
+import uk.ac.ebi.pride.jmztab2.utils.errors.LogicalErrorType;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabError;
+import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorList;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorType;
+import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabException;
+import uk.ac.ebi.pride.jmztab2.utils.parser.MTDLineParser;
+import uk.ac.ebi.pride.jmztab2.utils.parser.MZTabParserContext;
 
 /**
  * A parameter name or value with commas must be quoted (mzTab-M 2.0:
@@ -55,6 +63,15 @@ public class UnquotedCommaParameterTest {
         = "MTD\tms_run[1]-fragmentation_method\t[MS, MS:1000133, CID, ]";
     private static final String UNQUOTED_NAME
         = "qtof 9000 (example vendor, city, country)";
+    private static final String MS_RUN_1_FORMAT
+        = "MTD\tms_run[1]-format\t[MS, MS:1000584, mzML file, ]";
+    private static final String INSTRUMENT_2
+        = "MTD\tinstrument[2]-name\t[MS, MS:1000031, Instrument model, name of the instrument not included in the CV]\n"
+        + "MTD\tinstrument[2]-source\t[MS, MS:1000598, ETD, ]\n"
+        + "MTD\tinstrument[2]-analyzer\t[MS, MS:1000484, orbitrap, ]\n"
+        + "MTD\tinstrument[2]-detector\t[MS, MS:1000348, focal plane collector, ]\n";
+    private static final String INSTRUMENT_REF_2
+        = "MTD\tms_run[2]-instrument_ref\tinstrument[2]";
 
     @TempDir
     Path tempDir;
@@ -128,14 +145,15 @@ public class UnquotedCommaParameterTest {
 
     @ParameterizedTest
     @ValueSource(strings = {
-        "MTD\tms_run[3]-fragmentation_method[1]\t[, , CID, 35 eV, ]",
+        "MTD\tms_run[1]-fragmentation_method[1]\t[, , CID, 35 eV, ]",
         "MTD\tsoftware[3]\t[, , my tool, version 1, build 2]"})
     void invalidParameterOnTheFirstLineOfAnElementDoesNotEndTheValidation(String line) throws IOException {
-        // ms_run[3] and software[3] do not exist before this line; a second
-        // invalid parameter after it shows that the validation goes on
+        // the line comes before the other lines of ms_run[1] and is the only
+        // line of software[3]; a second invalid parameter after it shows
+        // that the validation goes on
         String later = "MTD\tsample[2]-custom[1]\t[, , extraction, 4 degrees, dark]";
-        String text = replace(replace(base(), FRAGMENTATION_METHOD,
-            FRAGMENTATION_METHOD + "\n" + line),
+        String text = replace(replace(base(), MS_RUN_1_FORMAT,
+            line + "\n" + MS_RUN_1_FORMAT),
             "MTD\tsample[2]-description\tHealthy control samples.",
             "MTD\tsample[2]-description\tHealthy control samples.\n" + later);
         List<MZTabError> errors = errorsAndWarnings(parse(text));
@@ -148,12 +166,78 @@ public class UnquotedCommaParameterTest {
     }
 
     @Test
+    void instrumentWithABadNameIsStillDefinedForItsReferences() throws IOException {
+        // the name is the only line of instrument[2], and
+        // ms_run[2]-instrument_ref refers to it: no "instrument[2] MUST be
+        // defined" (Error-2008) at the reference
+        String name = "MTD\tinstrument[2]-name\t[MS, MS:1002584, " + UNQUOTED_NAME + ", ]";
+        String text = replace(base(), INSTRUMENT_2, name + "\n");
+        List<MZTabError> errors = errorsAndWarnings(parse(text));
+        assertEquals(List.of(FormatErrorType.Param.getCode() + "@" + lineOf(text, name)),
+            errors.stream().
+                map(e -> e.getType().getCode() + "@" + e.getLineNumber()).
+                collect(Collectors.toList()));
+    }
+
+    @Test
+    void referenceToAnUndefinedInstrumentIsStillReported() throws IOException {
+        String ref = "MTD\tms_run[2]-instrument_ref\tinstrument[9]";
+        String text = replace(base(), INSTRUMENT_REF_2, ref);
+        List<MZTabError> undefined = parse(text).getErrorList().getErrorList().
+            stream().
+            filter(e -> e.getType() == LogicalErrorType.NotDefineInMetadata).
+            collect(Collectors.toList());
+        assertEquals(1, undefined.size(), undefined::toString);
+        assertEquals(lineOf(text, ref), undefined.get(0).getLineNumber());
+        assertTrue(undefined.get(0).getMessage().contains("instrument[9]"),
+            undefined.get(0).getMessage());
+    }
+
+    @Test
+    void instrumentWithABadNameIsDefinedWithoutName() throws MZTabException {
+        Metadata metadata = parseLine(
+            "MTD\tinstrument[1]-name\t[MS, MS:1002584, " + UNQUOTED_NAME + ", ]");
+        assertEquals(1, metadata.getInstrument().size());
+        assertEquals(1, metadata.getInstrument().get(0).getId());
+        assertNull(metadata.getInstrument().get(0).getName());
+    }
+
+    @Test
+    void softwareWithABadParameterIsDefinedWithoutParameter() throws MZTabException {
+        Metadata metadata = parseLine(
+            "MTD\tsoftware[1]\t[, , my tool, version 1, build 2]");
+        assertEquals(1, metadata.getSoftware().size());
+        assertEquals(1, metadata.getSoftware().get(0).getId());
+        assertNull(metadata.getSoftware().get(0).getParameter());
+    }
+
+    @Test
+    void msRunWithABadParameterIsDefinedWithoutIt() throws MZTabException {
+        Metadata metadata = parseLine(
+            "MTD\tms_run[1]-fragmentation_method[1]\t[, , CID, 35 eV, ]");
+        assertEquals(1, metadata.getMsRun().size());
+        MsRun msRun = metadata.getMsRun().get(0);
+        assertEquals(1, msRun.getId());
+        assertTrue(msRun.getFragmentationMethod() == null
+            || msRun.getFragmentationMethod().isEmpty(), msRun::toString);
+    }
+
+    @Test
     void psiMsNameOfTheInstrumentIsValid() throws IOException {
         MzTabFileParser parser = parse(replace(base(), INSTRUMENT_NAME,
             "MTD\tinstrument[1]-name\t[MS, MS:1002584, TripleTOF 5600+, ]"));
         assertEquals(List.of(), errorsAndWarnings(parser));
         assertEquals("TripleTOF 5600+", parser.getMZTabFile().getMetadata().
             getInstrument().get(0).getName().getName());
+    }
+
+    private static Metadata parseLine(String line) throws MZTabException {
+        MTDLineParser parser = new MTDLineParser(new MZTabParserContext());
+        MZTabErrorList errors = new MZTabErrorList();
+        parser.parse(1, line, errors);
+        assertEquals(1, errors.size(), errors::toString);
+        assertEquals(FormatErrorType.Param, errors.getError(0).getType());
+        return parser.getMetadata();
     }
 
     private String base() throws IOException {
