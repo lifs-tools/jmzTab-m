@@ -99,12 +99,11 @@ public class SMHLineParser extends MZTabHeaderLineParser {
     @Override
     protected void refine() throws MZTabException {
 
+        List<String> mandatoryColumnHeaders = new ArrayList<>();
         for (Stable columnHeader : SmallMoleculeColumn.Stable.values()) {
-            ISmallMoleculeColumn smc = Stable.columnFor(columnHeader);
-            if (factory.findColumnByHeader(smc.getHeader()) == null) {
-                throw new MZTabException(new MZTabError(FormatErrorType.StableColumn, lineNumber, smc.getHeader()).column(smc.getHeader()));
-            }
+            mandatoryColumnHeaders.add(Stable.columnFor(columnHeader).getHeader());
         }
+        checkMandatoryColumns(mandatoryColumnHeaders);
 
         Parameter smallMoleculeQuantificationUnit = Optional.ofNullable(metadata.getSmallMoleculeQuantificationUnit()).orElseThrow(() ->
             new MZTabException(new MZTabError(LogicalErrorType.NoSmallMoleculeQuantificationUnit, lineNumber)));
