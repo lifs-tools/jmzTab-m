@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -542,24 +543,36 @@ public class MZTabUtils {
         String accession;
         PublicationItem item;
         for (String pub : list) {
-            pub = parseString(pub).
-                toLowerCase();
+            pub = parseString(pub);
             if (pub == null) {
+                // an empty item: reported as an invalid publication
                 publication.getPublicationItems().
                     clear();
                 return publication;
             }
-            String[] items = pub.split("" + COLON);
-            if (items.length == 2) {
+            // split at the first ':' only, a DOI may contain ':' itself;
+            // only the type is case-insensitive, the accession is kept as
+            // written (#249)
+            int colon = pub.indexOf(COLON);
+            String[] items = colon < 0 ? new String[]{pub} : new String[]{
+                pub.substring(0, colon), pub.substring(colon + 1)};
+            if (items.length == 2 && !items[1].trim().isEmpty()) {
                 try {
-                    type = PublicationItem.TypeEnum.fromValue(items[0]);
+                    type = PublicationItem.TypeEnum.fromValue(items[0].
+                        toLowerCase(Locale.ROOT));
                     if (type == null) {
                         throw new MZTabException(new MZTabError(
                             FormatErrorType.Publication, lineNumber, target, pub));
                     }
-                    type = PublicationItem.TypeEnum.fromValue(items[0]);
                 
                     accession = items[1].trim();
+                    if (type == PublicationItem.TypeEnum.PUBMED
+                        && accession.indexOf(COLON) >= 0) {
+                        // a PubMed id has no ':', e.g. "/" instead of "|"
+                        // before the next item
+                        throw new MZTabException(new MZTabError(
+                            FormatErrorType.Publication, lineNumber, target, pub));
+                    }
                     item = new PublicationItem().type(type).
                         accession(accession);
                     publication.addPublicationItemsItem(item);

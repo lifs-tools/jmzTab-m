@@ -256,7 +256,9 @@ public abstract class MZTabHeaderLineParser extends MZTabLineParser {
         } else {
             String accession = matcher.group(2);
             String name = matcher.group(4);
-            if (name == null || name.trim().length() == 0) {
+            // e.g. opt_global_cv_MS:1002217: the accession is read as the
+            // name, there is no accession (#251)
+            if (accession == null || name == null || name.trim().length() == 0) {
                 throw new MZTabException(new MZTabError(FormatErrorType.OptionalCVParamColumn, lineNumber, nameLabel).column(nameLabel));
             }
 
