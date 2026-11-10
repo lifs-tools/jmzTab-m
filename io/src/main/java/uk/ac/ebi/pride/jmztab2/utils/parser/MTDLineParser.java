@@ -902,8 +902,10 @@ public class MTDLineParser extends MZTabLineParser {
         if (instrument == null) {
             if (param == null) {
                 // the value is not a parameter, e.g. a name with unquoted
-                // commas: reported by checkParameter (Error-1012), and the
-                // other lines are still checked
+                // commas: reported by checkParameter (Error-1012). The
+                // instrument is still defined, so that references to it
+                // resolve, and the other lines are still checked.
+                context.addInstrument(metadata, new Instrument().id(id));
                 return;
             }
             throw new MZTabException(new MZTabError(LogicalErrorType.NULL,
@@ -943,7 +945,9 @@ public class MTDLineParser extends MZTabLineParser {
         if (software == null) {
             if (property == null && param == null) {
                 // the value is not a parameter: reported by checkParameter
-                // (Error-1012), and the other lines are still checked
+                // (Error-1012). The software is still defined, and the
+                // other lines are still checked.
+                context.addSoftware(metadata, new Software().id(id));
                 return;
             }
             throw new MZTabException(new MZTabError(LogicalErrorType.NULL,
@@ -1060,7 +1064,10 @@ public class MTDLineParser extends MZTabLineParser {
         if (msRun == null) {
             if (paramProperty && param == null) {
                 // the value is not a parameter: reported by checkParameter
-                // (Error-1012), and the other lines are still checked
+                // (Error-1012). The ms_run is still defined, so that
+                // references to it resolve, and the other lines are still
+                // checked.
+                context.addMsRun(metadata, new MsRun().id(id));
                 return;
             }
             throw new MZTabException(new MZTabError(LogicalErrorType.NULL,
