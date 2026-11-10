@@ -29,6 +29,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.lifstools.mztab2.model.PublicationItem;
 import org.lifstools.mztab2.model.ValidationLocation.SectionEnum;
 import uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType;
@@ -117,6 +119,25 @@ public class ReportedInsteadOfCrashTest {
         assertEquals(2, items.size());
         assertEquals(PublicationItem.TypeEnum.DOI, items.get(1).getType());
         assertEquals(doi, items.get(1).getAccession());
+    }
+
+    /**
+     * Splitting at the first ':' must not let a DOI URL or a doubled prefix
+     * through: 1.0.6 reported these as an invalid publication, and only a DOI
+     * itself (10.…) may contain ':'.
+     */
+    @ParameterizedTest
+    @ValueSource(strings = {
+        "doi:https://doi.org/10.1021/acs.analchem.7b03576",
+        "doi:http://dx.doi.org/10.1021/acs.analchem.7b03576",
+        "doi:doi:10.1021/acs.analchem.7b03576",
+        "pubmed:29039908 | DOI:https://doi.org/10.1021/acs.analchem.7b03576"})
+    void doiUrlOrDoubledPrefixIsAnInvalidPublication(String value) throws IOException {
+        MzTabFileParser parser = parse(replace(
+            "pubmed:29039908 | doi:10.1021/acs.analchem.7b03576", value));
+        MZTabError e = single(parser.getErrorList(), FormatErrorType.Publication);
+        assertEquals("publication[1]", e.getLocation().getMetadataKey());
+        assertNoNullError(parser.getErrorList());
     }
 
     private static MZTabError single(MZTabErrorList errors, MZTabErrorType type) {
