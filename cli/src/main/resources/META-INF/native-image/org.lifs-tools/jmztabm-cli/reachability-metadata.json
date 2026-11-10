@@ -129,6 +129,15 @@
       "type": "com.ctc.wstx.stax.WstxOutputFactory"
     },
     {
+      "type": "com.fasterxml.jackson.annotation.SimpleObjectIdResolver",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
       "type": "com.fasterxml.jackson.core.JsonGenerator"
     },
     {
@@ -517,7 +526,13 @@
       "type": "java.lang.CharSequence"
     },
     {
-      "type": "java.lang.Class"
+      "type": "java.lang.Class",
+      "methods": [
+        {
+          "name": "isRecord",
+          "parameterTypes": []
+        }
+      ]
     },
     {
       "type": "java.lang.ClassBeanInfo"

@@ -1645,8 +1645,23 @@ public class MZTabParserContext {
      * @param metadata a {@link org.lifstools.mztab2.model.Metadata} object.
      * @param uri a {@link java.lang.String} object.
      * @return a {@link org.lifstools.mztab2.model.CV} object.
+     * @throws IllegalArgumentException if uri is not a valid URI.
      */
     public CV addCVURI(Metadata metadata, Integer id, String uri) {
+        return addCVURI(metadata, id, URI.create(uri));
+    }
+
+    /**
+     * Add a cv[id]-uri. The URI of the controlled vocabulary/ontology used in
+     * the mzTab file.
+     *
+     * @param id SHOULD be positive integer.
+     * @param metadata a {@link org.lifstools.mztab2.model.Metadata} object.
+     * @param uri the URI, may be null if the value in the file is not a valid
+     * URI.
+     * @return a {@link org.lifstools.mztab2.model.CV} object.
+     */
+    public CV addCVURI(Metadata metadata, Integer id, URI uri) {
         if (id <= 0) {
             throw new IllegalArgumentException("controlled vocabularies id should be greater than 0!");
         }
@@ -1658,7 +1673,7 @@ public class MZTabParserContext {
             metadata.addCvItem(cv);
         }
 
-        cv.setUri(URI.create(uri));
+        cv.setUri(uri);
         return cvMap.put(id, cv);
     }
 

@@ -21,7 +21,9 @@ import org.lifstools.mztab2.model.MsRun;
 import org.lifstools.mztab2.model.Parameter;
 import org.lifstools.mztab2.model.SmallMoleculeSummary;
 import org.lifstools.mztab2.model.StudyVariable;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -137,6 +139,32 @@ public abstract class MZTabHeaderLineParser extends MZTabLineParser {
      */
     protected abstract void refine() throws MZTabException;
 
+
+    /**
+     * Checks that the mandatory columns are present. Every missing column is
+     * reported as {@link FormatErrorType#StableColumn} at its column, not only
+     * the first (#244); then the validation ends, as for a single missing
+     * column: the last missing column is thrown, the others are added to the
+     * error list before.
+     *
+     * @param columnHeaders the headers of the mandatory columns, in order.
+     * @throws uk.ac.ebi.pride.jmztab2.utils.errors.MZTabException if a
+     * mandatory column is missing.
+     */
+    protected void checkMandatoryColumns(List<String> columnHeaders) throws MZTabException {
+        List<MZTabError> missing = new ArrayList<>();
+        for (String columnHeader : columnHeaders) {
+            if (factory.findColumnByHeader(columnHeader) == null) {
+                missing.add(new MZTabError(FormatErrorType.StableColumn, lineNumber, columnHeader).column(columnHeader));
+            }
+        }
+        if (!missing.isEmpty()) {
+            for (MZTabError error : missing.subList(0, missing.size() - 1)) {
+                errorList.add(error);
+            }
+            throw new MZTabException(missing.get(missing.size() - 1));
+        }
+    }
 
     /**
      * Refine optional columns and check, whether they were properly defined.
@@ -256,7 +284,9 @@ public abstract class MZTabHeaderLineParser extends MZTabLineParser {
         } else {
             String accession = matcher.group(2);
             String name = matcher.group(4);
-            if (name == null || name.trim().length() == 0) {
+            // e.g. opt_global_cv_MS:1002217: the accession is read as the
+            // name, there is no accession (#251)
+            if (accession == null || name == null || name.trim().length() == 0) {
                 throw new MZTabException(new MZTabError(FormatErrorType.OptionalCVParamColumn, lineNumber, nameLabel).column(nameLabel));
             }
 

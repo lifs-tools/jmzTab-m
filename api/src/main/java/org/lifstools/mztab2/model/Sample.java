@@ -45,6 +45,7 @@ import org.hibernate.validator.constraints.*;
   Sample.JSON_PROPERTY_DESCRIPTION
 })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-04-29T15:34:38.183974+02:00[Europe/Berlin]", comments = "Generator version: 7.17.0")
+@com.fasterxml.jackson.annotation.JsonIdentityInfo(generator = com.fasterxml.jackson.annotation.ObjectIdGenerators.PropertyGenerator.class, property = "id", scope = Sample.class)
 public class Sample {
   public static final String JSON_PROPERTY_ID = "id";
   @jakarta.annotation.Nullable

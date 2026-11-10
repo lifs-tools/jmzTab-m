@@ -3,44 +3,88 @@ Nils Hoffmann https://github.com/nilshoffmann
 
 == Read the docs
 
-. https://central.sonatype.org/pages/ossrh-guide.html[Sonatype Guide]
-. https://central.sonatype.org/pages/apache-maven.html#performing-a-release-deployment[Release deployment with Maven]
-. Prepare your PGP environment
+. https://central.sonatype.org/publish/publish-portal-maven/[Publishing to Maven Central with the Central Portal and Maven]
+. https://central.sonatype.org/publish/requirements/[Requirements of Maven Central] (POM metadata, sources, javadoc and signatures)
+. https://central.sonatype.org/publish/requirements/gpg/[GPG signing]
+
+OSSRH (`oss.sonatype.org`, `s01.oss.sonatype.org`) was shut down on 2025-06-30. The `ossrh-snapshot` and `ossrh-release` profiles were replaced by `central-release`.
 
 == Publishing a snapshot
 
-  ./mvnw -Possrh-snapshot deploy
- 
-== Publishing a release 
+The CI workflow publishes snapshots on every push to `master` and `1.0.x`: to GitHub Packages (`-Pgithub-snapshot`) and to the LIFS Tools Artifactory (`-Pjfrog`, https://m.lifs-tools.org/artifactory/lifs-libs-snapshot-local/). Snapshots are not published to Maven Central.
 
-Create a release branch:
-  
-  git branch <RELEASE_VERSION>
-  git checkout <RELEASE_VERSION>
+== Publishing a release
 
-Set the release version, commit and tag:
+=== Credentials (once)
 
-  ./mvnw versions:set -DnewVersion<RELEASE_VERSION>
-  git add **/pom.xml pom.xml
-  git commit -m "Release <RELEASE_VERSION>"
-  git tag release-<RELEASE_VERSION>
-  git push --tags
+. A user token of the Central Portal (https://central.sonatype.com/account, "Generate User Token") for an account that may publish to the namespace `org.lifs-tools`. Add it to `~/.m2/settings.xml` as server `central`:
++
+----
+<servers>
+  <server>
+    <id>central</id>
+    <username><!-- token username --></username>
+    <password><!-- token password --></password>
+  </server>
+</servers>
+----
+. A GPG key whose public key is on a key server, e.g. `gpg --keyserver keyserver.ubuntu.com --send-keys <KEY_ID>`. The default key is used; pass `-Dgpg.keyname=<KEY_ID>` for another one. The passphrase comes from the gpg agent or from the environment variable `MAVEN_GPG_PASSPHRASE`.
 
-Build the release and deploy to OSSRH staging 
+=== Steps
 
-  ./mvnw -Possrh-release deploy
+The example releases 1.0.8 from the `1.0.x` branch.
 
-Copy the ID of the staging repository, something like deisasmztab-<NUMBER>.
-Again, follow the Guides from above. If everything looks good, publish the release to central (subsitute the stagingRepositoryId with the proper one):
-
-  ./mvnw -Possrh-release nexus-staging:release -DstagingRepositoryId=deisasmztab-<NUMBER>
-
-Finally, create a release from the tag at https://github.com/lifs-tools/jmzTab-m/releases[GitHub].
+. Check that the CI build of the branch passed, and run `./mvnw -B verify` locally: the CI build runs `package` only, so it does not run the integration tests.
+. In the release notes below, replace "(unreleased)" with the release date.
+. Set the release version, commit and tag:
++
+----
+./mvnw versions:set -DnewVersion=1.0.8 -DgenerateBackupPoms=false
+git commit -am "Release 1.0.8"
+git tag release-1.0.8
+----
+. Build, sign and upload all modules to the Central Portal:
++
+----
+./mvnw -B -Pcentral-release deploy
+----
++
+The deployment is uploaded and validated, but not published (`autoPublish` is `false`).
+. Open the deployment "jmzTab-m 1.0.8" at https://central.sonatype.com/publishing/deployments. It must contain the six modules `jmztabm` (parent POM), `jmztabm-api`, `jmztabm-io`, `jmztabm-validation`, `jmztabm-cli` and `jmztabm-test-utils`, each with its POM, jar, sources and javadoc jars and their `.asc` signatures. Then click "Publish". If something is wrong, "Drop" the deployment, fix it and deploy again: a published version cannot be changed or deleted.
+. Push the release commit and the tag:
++
+----
+git push origin 1.0.x release-1.0.8
+----
+. Create the GitHub release `release-1.0.8` at https://github.com/lifs-tools/jmzTab-m/releases with the release notes of the version and these files:
+* the CLI distribution, `cli/target/jmztabm-cli-1.0.8-bin.zip`;
+* the native validators from the workflow run of the release commit (Actions, the run, "Artifacts"), under the names of the `dev-latest` pre-release: `jmztabm-validator-amd64-linux`, `jmztabm-validator-aarch64-macos` and `jmztabm-validator-amd64-windows.exe`.
++
+For example, with the GitHub CLI:
++
+----
+gh run download <RUN_ID> -R lifs-tools/jmzTab-m -D dist
+mkdir release
+cp cli/target/jmztabm-cli-1.0.8-bin.zip release/
+cp dist/jmztabm-validator-amd64-linux/jmztabm-validator release/jmztabm-validator-amd64-linux
+cp dist/jmztabm-validator-aarch64-macos/jmztabm-validator release/jmztabm-validator-aarch64-macos
+cp dist/jmztabm-validator-amd64-windows/jmztabm-validator.exe release/jmztabm-validator-amd64-windows.exe
+gh release create release-1.0.8 -R lifs-tools/jmzTab-m --verify-tag --title "jmzTab-m 1.0.8" --notes-file notes.md release/*
+----
+. Set the next development version, e.g. `./mvnw versions:set -DnewVersion=1.0.9-SNAPSHOT -DgenerateBackupPoms=false`, add a new "(unreleased)" section to the release notes, commit and push.
 
 == Release notes
 
 === 1.0.8 (unreleased)
 
+. *Migration from 1.0.6:* 1.0.8 is the first release with the Maven `groupId` `org.lifs-tools`; up to 1.0.6 it was `de.isas.mztab` (1.0.7 was not released). The `artifactId`s are unchanged. The Java packages `de.isas.mztab2.*` are now `org.lifstools.mztab2.*`, and `de.isas.lipidomics.mztab2.validation.*` (bean validation in `jmztabm-api`) is now `org.lifstools.mztab2.validation.*`; `uk.ac.ebi.pride.jmztab2.*` is unchanged. Releases are published through the Central Portal (see "Publishing a release").
+. JSON (#194, from #218): metadata elements with an id (`ms_run`, `assay`, `sample`, `study_variable`, `instrument`, `cv`, `database`, …; the 13 schemas marked `x-mztab-serialize-by-id`) are read from and written as their id when they are referenced, as in 1.0.6. Before, JSON written by 1.0.6 (e.g. `"sample_ref": 1`) could not be read, and `--toJson` wrote nested copies instead of ids. The annotation is now declared in the OpenAPI spec, so a regenerated model keeps it. With `--fromJson`, a file that contains only `null` fails with a message instead of a NullPointerException. Still not readable: JSON whose `scan_polarity` is a string instead of a list of parameters, as in the MetaboScape example of HUPO-PSI/mzTab-M.
+. Values that ended the validation with an exception, or were reported as a generic Error-2000, are reported at the value (#251, #249): a `cv[1-n]-uri` or an SML `uri` that is not a URI (e.g. it contains a space) is Error-1015; before, an IllegalArgumentException ended the run. An `opt_` column like `opt_global_cv_MS:1002217`, which has no accession, is Error-1007 at the column. An empty publication item (`pubmed:1||doi:…`) is Error-1014.
+. *Behaviour change:* a publication item is split at its first `:`, so a DOI that contains `:` is valid, and only the type is case-insensitive: the accession keeps its spelling (before, it was lowercased) (#249). A PubMed id that contains `:` is still Error-1014, so a wrong separator after it is still found; after a DOI it is not.
+. The messages of the list errors (Error-1021, 1022, 1033) name the split character as the third value, `{2}`, so tools that fill the templates by index, as the fix texts are filled, show the split character instead of the value; the message and cause of Error-1021 no longer start with `=` (#243).
+. All missing mandatory columns of an SMH, SFH or SEH header are reported, one Error-1004 each (#244). Before, validation stopped at the first.
+. `MzTabFileParser.parse` no longer closes the stream it writes to after an error that ends the validation, or after too many messages. The CLI and the native validator pass the console there, so they printed nothing after the stack trace: neither the messages found before, e.g. the other missing columns (#244), nor the summary.
+. A metadata parameter with more than four fields, e.g. a name with unquoted commas (`[MS, MS:1002584, qtof 9000 (example vendor, city, country), ]`), is reported as Error-1012 at its line, and the validation goes on. The `instrument[n]`, `software[n]` or `ms_run[n]` is still defined, without that property, so references to it resolve. Before, on the first line of an `instrument[n]`, `software[n]` or `ms_run[n]` it also ended the validation with Error-2000 ("Column "instrument[1]" is an empty cell"), and the lines after it were not checked. The messages of Error-1012 and Error-1013 now say that a parameter has the four fields [CV label, accession, name, value] and that a name or value with commas must be in double quotes (`[, , "a, b", ]`).
 . All missing abundance columns in SMH and SFH headers are reported (one Error-2009 each, assay columns first); validation no longer stops at the first missing column, and a missing `small_molecule-identification_reliability` no longer ends header validation early.
 . CLI: with `--fromJson`, a JSON file that cannot be read now fails with the reason instead of being validated as mzTab text.
 . Validation messages may carry `suggestion`, `rule_id` and `location` (optional, additive). Semantic messages about terms that are not allowed are now reported once per affected element, so their count can rise: at most 100 messages per rule and term name their element, further elements with the same term are reported together in one message without location that gives their number.

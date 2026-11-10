@@ -102,11 +102,7 @@ public class SFHLineParser extends MZTabHeaderLineParser {
         Parameter smallMoleculeFeatureQuantificationUnit = Optional.ofNullable(metadata.getSmallMoleculeFeatureQuantificationUnit()).orElseThrow(() -> 
             new MZTabException(new MZTabError(LogicalErrorType.NoSmallMoleculeFeatureQuantificationUnit, lineNumber)));
 
-        for (String columnHeader : mandatoryColumnHeaders) {
-            if (factory.findColumnByHeader(columnHeader) == null) {
-                throw new MZTabException(new MZTabError(FormatErrorType.StableColumn, lineNumber, columnHeader).column(columnHeader));
-            }
-        }
+        checkMandatoryColumns(mandatoryColumnHeaders);
 
         for (Assay assay : metadata.getAssay()) {
             String assayLabel = "_"+Metadata.JSON_PROPERTY_ASSAY+"[" + assay.getId() + "]";

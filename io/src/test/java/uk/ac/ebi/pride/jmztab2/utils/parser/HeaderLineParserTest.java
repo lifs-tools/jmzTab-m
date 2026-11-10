@@ -32,6 +32,7 @@ import uk.ac.ebi.pride.jmztab2.model.IMZTabColumn;
 import uk.ac.ebi.pride.jmztab2.model.MZTabColumnFactory;
 import uk.ac.ebi.pride.jmztab2.model.OptionColumn;
 import uk.ac.ebi.pride.jmztab2.model.Section;
+import uk.ac.ebi.pride.jmztab2.utils.errors.FormatErrorType;
 import uk.ac.ebi.pride.jmztab2.utils.errors.LogicalErrorType;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabError;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabErrorList;
@@ -208,5 +209,53 @@ public class HeaderLineParserTest {
         assertEquals(2, messages.size(), messages::toString);
         assertTrue(messages.get(0).contains("abundance_assay[1]"), messages.get(0));
         assertTrue(messages.get(1).contains("abundance_assay[3]"), messages.get(1));
+    }
+
+    private static List<String> without(List<String> columns, String... removed) {
+        List<String> kept = new ArrayList<>(columns);
+        assertTrue(kept.removeAll(List.of(removed)));
+        return kept;
+    }
+
+    /**
+     * Parses a header line that lacks mandatory columns. Returns the columns
+     * of all Error-1004: those in the error list and the thrown one, which
+     * the file parser adds to the list.
+     */
+    private static List<String> missingStableColumns(MZTabHeaderLineParser parser, String line) {
+        MZTabErrorList errorList = new MZTabErrorList();
+        MZTabException thrown = assertThrows(MZTabException.class, () -> parser.parse(1, line, errorList));
+        List<MZTabError> errors = new ArrayList<>(errorList.getErrorList());
+        errors.add(thrown.getError());
+        assertEquals(FormatErrorType.StableColumn, thrown.getError().getType());
+        return errors.stream()
+            .filter(e -> e.getType() == FormatErrorType.StableColumn)
+            .map(MZTabError::getColumn)
+            .collect(Collectors.toList());
+    }
+
+    @Test
+    public void allMissingMandatorySmhColumnsAreReported() {
+        Metadata metadata = new Metadata();
+        List<String> missing = missingStableColumns(new SMHLineParser(new MZTabParserContext(), metadata),
+            header("SMH", without(SMH_STABLE, "smiles", "inchi", "reliability")));
+        assertEquals(List.of("smiles", "inchi", "reliability"), missing);
+    }
+
+    @Test
+    public void allMissingMandatorySfhColumnsAreReported() {
+        Metadata metadata = new Metadata();
+        metadata.setSmallMoleculeFeatureQuantificationUnit(new Parameter().name("qty"));
+        List<String> missing = missingStableColumns(new SFHLineParser(new MZTabParserContext(), metadata),
+            header("SFH", without(SFH_STABLE, "adduct_ion", "charge")));
+        assertEquals(List.of("adduct_ion", "charge"), missing);
+    }
+
+    @Test
+    public void allMissingMandatorySehColumnsAreReported() {
+        Metadata metadata = new Metadata();
+        List<String> missing = missingStableColumns(new SEHLineParser(new MZTabParserContext(), metadata),
+            header("SEH", without(SEH_STABLE, "chemical_formula", "spectra_ref"), "rank"));
+        assertEquals(List.of("chemical_formula", "spectra_ref"), missing);
     }
 }

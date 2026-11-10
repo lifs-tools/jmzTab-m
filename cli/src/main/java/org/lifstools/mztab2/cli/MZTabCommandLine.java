@@ -345,17 +345,21 @@ public class MZTabCommandLine {
                 LOGGER.info("Parsing '{}', converting to mzTab file: '{}'",
                     inFile.getAbsolutePath(), tmpFile.getAbsolutePath());
                 MzTabNonValidatingWriter w = new MzTabNonValidatingWriter();
-                ObjectMapper mapper = new ObjectMapper();
-                mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-                mapper.configure(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES, false);
                 MzTab mzTab;
                 try {
-                    mzTab = mapper.readValue(inFile, MzTab.class);
+                    mzTab = createJsonMapper().readValue(inFile, MzTab.class);
                 } catch (IOException ex) {
                     // Do not continue: the JSON file itself is not mzTab and
                     // would only produce misleading validation errors.
                     LOGGER.error("Could not read '{}' as mzTab-M JSON: {}",
                         inFile.getAbsolutePath(), ex.getMessage());
+                    return true;
+                }
+                if (mzTab == null) {
+                    // e.g. the "null" that --toJson writes for a file it
+                    // could not parse
+                    LOGGER.error("Could not read '{}' as mzTab-M JSON: the file contains no mzTab-M object",
+                        inFile.getAbsolutePath());
                     return true;
                 }
                 LOGGER.info("Writing JSON as mzTab to file: {}", tmpFile.
@@ -417,6 +421,19 @@ public class MZTabCommandLine {
             }
         }
         return errorsOrWarnings;
+    }
+
+    /**
+     * Creates the mapper used to read mzTab-M JSON. Unknown and ignored
+     * properties are tolerated.
+     *
+     * @return the object mapper
+     */
+    protected static ObjectMapper createJsonMapper() {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        mapper.configure(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES, false);
+        return mapper;
     }
 
     protected static boolean handleSemanticValidation(CommandLine line,

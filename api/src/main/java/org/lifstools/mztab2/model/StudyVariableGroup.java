@@ -43,6 +43,7 @@ import org.hibernate.validator.constraints.*;
   StudyVariableGroup.JSON_PROPERTY_STUDY_VARIABLE_REFS
 })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-04-29T15:34:38.183974+02:00[Europe/Berlin]", comments = "Generator version: 7.17.0")
+@com.fasterxml.jackson.annotation.JsonIdentityInfo(generator = com.fasterxml.jackson.annotation.ObjectIdGenerators.PropertyGenerator.class, property = "id", scope = StudyVariableGroup.class)
 public class StudyVariableGroup {
   public static final String JSON_PROPERTY_ID = "id";
   @jakarta.annotation.Nonnull
