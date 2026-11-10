@@ -47,6 +47,7 @@ import org.lifstools.mztab2.model.StudyVariable;
 import org.lifstools.mztab2.model.StudyVariableGroup;
 import org.lifstools.mztab2.model.Uri;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
@@ -489,7 +490,7 @@ public class MTDLineParser extends MZTabLineParser {
         MetadataProperty property;
         id = checkIndex(defineLabel, matcher.group(3));
         property = checkProperty(element, matcher.group(5));
-        addCv(context, metadata, property, id, valueLabel);
+        addCv(context, metadata, property, id, defineLabel, valueLabel);
     }
 
     protected void handleStudyVariable(String defineLabel, Matcher matcher,
@@ -1335,7 +1336,7 @@ public class MTDLineParser extends MZTabLineParser {
     }
 
     private void addCv(MZTabParserContext context, Metadata metadata,
-        MetadataProperty property, Integer id,
+        MetadataProperty property, Integer id, String defineLabel,
         String valueLabel) throws MZTabException {
         if (property == null) {
             context.addCV(metadata, new CV().id(id));
@@ -1351,7 +1352,16 @@ public class MTDLineParser extends MZTabLineParser {
                     context.addCVVersion(metadata, id, valueLabel);
                     break;
                 case CV_URI:
-                    context.addCVURI(metadata, id, valueLabel);
+                    // a value that is not a URI is reported, it must not end
+                    // the validation (#251)
+                    URI uri = null;
+                    try {
+                        uri = new URI(valueLabel);
+                    } catch (URISyntaxException e) {
+                        errorList.add(new MZTabError(FormatErrorType.URI,
+                            lineNumber, Error_Header + defineLabel, valueLabel));
+                    }
+                    context.addCVURI(metadata, id, uri);
                     break;
                 default:
                     MZTabError error = new MZTabError(

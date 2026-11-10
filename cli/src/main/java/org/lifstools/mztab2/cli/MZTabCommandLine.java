@@ -347,6 +347,13 @@ public class MZTabCommandLine {
                 LOGGER.info("Parsing '{}', converting to mzTab file: '{}'", inFile.getAbsolutePath(), tmpFile.getAbsolutePath());
                 try {
                     MzTab mzTab = createJsonMapper().readValue(inFile, MzTab.class);
+                    if (mzTab == null) {
+                        // e.g. the "null" that --toJson writes for a file it
+                        // could not parse
+                        LOGGER.error("Could not read '{}' as mzTab-M JSON: the file contains no mzTab-M object",
+                            inFile.getAbsolutePath());
+                        return true;
+                    }
                     LOGGER.info("Writing JSON as mzTab to file: {}", tmpFile.
                         getAbsolutePath());
                     new MzTabNonValidatingWriter().write(tmpFile.toPath(), mzTab);

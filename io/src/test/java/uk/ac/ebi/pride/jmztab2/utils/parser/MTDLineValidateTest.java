@@ -156,12 +156,17 @@ public class MTDLineValidateTest {
         assertTrue(errorList.getError(1).
             getType() == FormatErrorType.Publication);
 
-        // split char error.
+        // split char error after a DOI: a DOI may contain ':' (#249), and
+        // the DOI itself is not checked, so this is read as one DOI.
         parser.parse(1, "MTD\tpublication[1]\tdoi:21063943/pubmed:21063943",
             errorList);
-        assertTrue(errorList.size() == 3);
-        assertTrue(errorList.getError(2).
-            getType() == FormatErrorType.Publication);
+        assertTrue(errorList.size() == 2);
+
+        // a DOI that contains ':'
+        parser.parse(1,
+            "MTD\tpublication[1]\tdoi:10.1002/(SICI)1097-0258(19980815/30)17:15/16<1661::AID-SIM968>3.0.CO;2-2",
+            errorList);
+        assertTrue(errorList.size() == 2);
     }
 
     @Test

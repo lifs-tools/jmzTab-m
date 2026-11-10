@@ -125,10 +125,6 @@ public class SEHLineParser extends MZTabHeaderLineParser {
             mandatoryColumnHeaders.add(SmallMoleculeEvidence.JSON_PROPERTY_ID_CONFIDENCE_MEASURE+"["+(i+1)+"]");
         });
 
-        for (String columnHeader : mandatoryColumnHeaders) {
-            if (factory.findColumnByHeader(columnHeader) == null) {
-                throw new MZTabException(new MZTabError(FormatErrorType.StableColumn, lineNumber, columnHeader).column(columnHeader));
-            }
-        }
+        checkMandatoryColumns(mandatoryColumnHeaders);
     }
 }

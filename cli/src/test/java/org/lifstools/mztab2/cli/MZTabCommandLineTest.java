@@ -102,6 +102,16 @@ public class MZTabCommandLineTest {
         assertFalse(converted.exists(), "No mzTab file should be written for unreadable JSON");
     }
 
+    @Test
+    public void testFromJsonFailsOnJsonNullWithAMessage() throws Exception {
+        // --toJson writes "null" for a file that it could not parse
+        File json = tempDir.resolve("null.json").toFile();
+        Files.writeString(json.toPath(), "null", StandardCharsets.UTF_8);
+        assertTrue(validateFromJson(json), "JSON without an mzTab-M object must be reported as failure");
+        File converted = new File(json.getParentFile(), json.getName() + ".mztab");
+        assertFalse(converted.exists(), "No mzTab file should be written for JSON null");
+    }
+
     private MzTab read106Json() throws IOException {
         try (InputStream is = getClass().getResourceAsStream(JSON_1_0_6)) {
             assertNotNull(is, "Missing test resource " + JSON_1_0_6);

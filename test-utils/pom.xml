@@ -16,5 +16,6 @@
       <scope>compile</scope>
     </dependency>
   </dependencies>
+    <name>jmzTab-m test utilities</name>
     <description>Utilities for extracting and testing of mzTab-M test files.</description>
 </project>
