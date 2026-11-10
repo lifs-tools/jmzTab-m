@@ -3,44 +3,81 @@ Nils Hoffmann https://github.com/nilshoffmann
 
 == Read the docs
 
-. https://central.sonatype.org/pages/ossrh-guide.html[Sonatype Guide]
-. https://central.sonatype.org/pages/apache-maven.html#performing-a-release-deployment[Release deployment with Maven]
-. Prepare your PGP environment
+. https://central.sonatype.org/publish/publish-portal-maven/[Publishing to Maven Central with the Central Portal and Maven]
+. https://central.sonatype.org/publish/requirements/[Requirements of Maven Central] (POM metadata, sources, javadoc and signatures)
+. https://central.sonatype.org/publish/requirements/gpg/[GPG signing]
+
+OSSRH (`oss.sonatype.org`, `s01.oss.sonatype.org`) was shut down on 2025-06-30. The `ossrh-snapshot` and `ossrh-release` profiles were replaced by `central-release`.
 
 == Publishing a snapshot
 
-  ./mvnw -Possrh-snapshot deploy
- 
-== Publishing a release 
+The CI workflow publishes snapshots on every push to `master` and `1.0.x`: to GitHub Packages (`-Pgithub-snapshot`) and to the LIFS Tools Artifactory (`-Pjfrog`, https://m.lifs-tools.org/artifactory/lifs-libs-snapshot-local/). Snapshots are not published to Maven Central.
 
-Create a release branch:
-  
-  git branch <RELEASE_VERSION>
-  git checkout <RELEASE_VERSION>
+== Publishing a release
 
-Set the release version, commit and tag:
+=== Credentials (once)
 
-  ./mvnw versions:set -DnewVersion<RELEASE_VERSION>
-  git add **/pom.xml pom.xml
-  git commit -m "Release <RELEASE_VERSION>"
-  git tag release-<RELEASE_VERSION>
-  git push --tags
+. A user token of the Central Portal (https://central.sonatype.com/account, "Generate User Token") for an account that may publish to the namespace `org.lifs-tools`. Add it to `~/.m2/settings.xml` as server `central`:
++
+----
+<servers>
+  <server>
+    <id>central</id>
+    <username><!-- token username --></username>
+    <password><!-- token password --></password>
+  </server>
+</servers>
+----
+. A GPG key whose public key is on a key server, e.g. `gpg --keyserver keyserver.ubuntu.com --send-keys <KEY_ID>`. The default key is used; pass `-Dgpg.keyname=<KEY_ID>` for another one. The passphrase comes from the gpg agent or from the environment variable `MAVEN_GPG_PASSPHRASE`.
 
-Build the release and deploy to OSSRH staging 
+=== Steps
 
-  ./mvnw -Possrh-release deploy
+The example releases 2.1.0 from `master`. A 1.0.x release is made the same way from the `1.0.x` branch.
 
-Copy the ID of the staging repository, something like deisasmztab-<NUMBER>.
-Again, follow the Guides from above. If everything looks good, publish the release to central (subsitute the stagingRepositoryId with the proper one):
-
-  ./mvnw -Possrh-release nexus-staging:release -DstagingRepositoryId=deisasmztab-<NUMBER>
-
-Finally, create a release from the tag at https://github.com/lifs-tools/jmzTab-m/releases[GitHub].
+. Check that the CI build of the branch passed, and run `./mvnw -B verify` locally: the CI build runs `package` only, so it does not run the integration tests.
+. In the release notes below, replace "(unreleased)" with the release date.
+. Set the release version, commit and tag:
++
+----
+./mvnw versions:set -DnewVersion=2.1.0 -DgenerateBackupPoms=false
+git commit -am "Release 2.1.0"
+git tag release-2.1.0
+----
+. Build, sign and upload all modules to the Central Portal:
++
+----
+./mvnw -B -Pcentral-release deploy
+----
++
+The deployment is uploaded and validated, but not published (`autoPublish` is `false`).
+. Open the deployment "jmzTab-m 2.1.0" at https://central.sonatype.com/publishing/deployments. It must contain the six modules `jmztabm` (parent POM), `jmztabm-api`, `jmztabm-io`, `jmztabm-validation`, `jmztabm-cli` and `jmztabm-test-utils`, each with its POM, jar, sources and javadoc jars and their `.asc` signatures. Then click "Publish". If something is wrong, "Drop" the deployment, fix it and deploy again: a published version cannot be changed or deleted.
+. Push the release commit and the tag:
++
+----
+git push origin master release-2.1.0
+----
+. Create the GitHub release `release-2.1.0` at https://github.com/lifs-tools/jmzTab-m/releases with the release notes of the version and these files:
+* the CLI distribution, `cli/target/jmztabm-cli-2.1.0-bin.zip`;
+* the native validators from the workflow run of the release commit (Actions, the run, "Artifacts"), under the names of the `dev-latest` pre-release: `jmztabm-validator-amd64-linux`, `jmztabm-validator-aarch64-macos` and `jmztabm-validator-amd64-windows.exe`.
++
+For example, with the GitHub CLI:
++
+----
+gh run download <RUN_ID> -R lifs-tools/jmzTab-m -D dist
+mkdir release
+cp cli/target/jmztabm-cli-2.1.0-bin.zip release/
+cp dist/jmztabm-validator-amd64-linux/jmztabm-validator release/jmztabm-validator-amd64-linux
+cp dist/jmztabm-validator-aarch64-macos/jmztabm-validator release/jmztabm-validator-aarch64-macos
+cp dist/jmztabm-validator-amd64-windows/jmztabm-validator.exe release/jmztabm-validator-amd64-windows.exe
+gh release create release-2.1.0 -R lifs-tools/jmzTab-m --verify-tag --title "jmzTab-m 2.1.0" --notes-file notes.md release/*
+----
+. Set the next development version, e.g. `./mvnw versions:set -DnewVersion=2.1.1-SNAPSHOT -DgenerateBackupPoms=false`, add a new "(unreleased)" section to the release notes, commit and push.
 
 == Release notes
 
 === 2.1.0 (unreleased)
 
+. *Migration from 1.0.6:* the Maven `groupId` is `org.lifs-tools`; up to 1.0.6 it was `de.isas.mztab` (1.0.7 was not released, 1.0.8 is the first 1.0.x release with the new `groupId`). The `artifactId`s are unchanged. The Java packages `de.isas.mztab2.*` are now `org.lifstools.mztab2.*`, and `de.isas.lipidomics.mztab2.validation.*` (bean validation in `jmztabm-api`) is now `org.lifstools.mztab2.validation.*`; `uk.ac.ebi.pride.jmztab2.*` is unchanged. Releases are published through the Central Portal (see "Publishing a release"); OSSRH was shut down.
 . Validation messages may carry `suggestion`, `rule_id` and `location` (optional, additive). Semantic messages about terms that are not allowed are now reported once per affected element, so their count can rise: at most 100 messages per rule and term name their element, further elements with the same term are reported together in one message without location that gives their number.
 . A parameter with an undefined cv label (Error-3013) is reported once, where it is defined. Before, `CvMappingValidator` ran the check twice, and the check reported the parameter again for every reference that reaches it (ms_run, assay, study variable, evidence spectra_ref), e.g. 16 messages for one instrument name.
 . The parser builds the model unless there is an error; warnings and infos on data lines no longer drop it. Before, a file with such a warning (e.g. an unsupported `ms_run[1-n]-id_format`) got a model at level Error but none at level Info or Warn, so the reference, colunit and profile checks that need the model did not run and can now report further messages.
