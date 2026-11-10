@@ -511,7 +511,13 @@
       "type": "java.lang.CharSequence"
     },
     {
-      "type": "java.lang.Class"
+      "type": "java.lang.Class",
+      "methods": [
+        {
+          "name": "isRecord",
+          "parameterTypes": []
+        }
+      ]
     },
     {
       "type": "java.lang.ClassBeanInfo"

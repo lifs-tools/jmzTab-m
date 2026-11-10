@@ -1765,6 +1765,8 @@ components:
         …
         MTD	instrument[2]-detector	[MS, MS:1000348, focal plane collector,]
       x-mztab-serialize-by-id: "true"
+      # written and read as its id when referenced again, as in 1.0.6 (#194)
+      x-class-extra-annotation: '@com.fasterxml.jackson.annotation.JsonIdentityInfo(generator = com.fasterxml.jackson.annotation.ObjectIdGenerators.PropertyGenerator.class, property = "id", scope = Instrument.class)'
       type: object
       properties:
         id:
@@ -1803,6 +1805,8 @@ components:
 
         MTD	sample_processing[4]	[MSIO, MSIO:0000141, silylation,]
       x-mztab-serialize-by-id: "true"
+      # written and read as its id when referenced again, as in 1.0.6 (#194)
+      x-class-extra-annotation: '@com.fasterxml.jackson.annotation.JsonIdentityInfo(generator = com.fasterxml.jackson.annotation.ObjectIdGenerators.PropertyGenerator.class, property = "id", scope = SampleProcessing.class)'
       type: object
       properties:
         id:
@@ -1830,6 +1834,8 @@ components:
         …
         MTD	software[2]-setting	Parent tolerance = 0.5 Da
       x-mztab-serialize-by-id: "true"
+      # written and read as its id when referenced again, as in 1.0.6 (#194)
+      x-class-extra-annotation: '@com.fasterxml.jackson.annotation.JsonIdentityInfo(generator = com.fasterxml.jackson.annotation.ObjectIdGenerators.PropertyGenerator.class, property = "id", scope = Software.class)'
       type: object
       properties:
         id:
@@ -1858,6 +1864,8 @@ components:
         MTD	publication[1]	pubmed:21063943|doi:10.1007/978-1-60761-987-1_6
         MTD	publication[2]	pubmed:20615486|doi:10.1016/j.jprot.2010.06.008
       x-mztab-serialize-by-id: "true"
+      # written and read as its id when referenced again, as in 1.0.6 (#194)
+      x-class-extra-annotation: '@com.fasterxml.jackson.annotation.JsonIdentityInfo(generator = com.fasterxml.jackson.annotation.ObjectIdGenerators.PropertyGenerator.class, property = "id", scope = Publication.class)'
       type: object
       required:
         - publicationItems
@@ -1942,6 +1950,8 @@ components:
         MTD	contact[2]-email	crick@cam.ac.uk
         MTD	contact[2]-orcid	0000-0002-1825-0097
       x-mztab-serialize-by-id: "true"
+      # written and read as its id when referenced again, as in 1.0.6 (#194)
+      x-class-extra-annotation: '@com.fasterxml.jackson.annotation.JsonIdentityInfo(generator = com.fasterxml.jackson.annotation.ObjectIdGenerators.PropertyGenerator.class, property = "id", scope = Contact.class)'
       type: object
       properties:
         id:
@@ -1973,6 +1983,8 @@ components:
         MTD	external_study_uri[1]	https://www.ebi.ac.uk/metabolights/MTBLS517/files/i_Investigation.txt
       type: object
       x-mztab-serialize-by-id: "true"
+      # written and read as its id when referenced again, as in 1.0.6 (#194)
+      x-class-extra-annotation: '@com.fasterxml.jackson.annotation.JsonIdentityInfo(generator = com.fasterxml.jackson.annotation.ObjectIdGenerators.PropertyGenerator.class, property = "id", scope = Uri.class)'
       properties:
         id:
           type: integer
@@ -2016,6 +2028,8 @@ components:
         MTD	sample[2]-cell_type[1]	[CL, CL:0000182, hepatocyte, ]
         MTD	sample[2]-description	Healthy control samples.
       x-mztab-serialize-by-id: "true"
+      # written and read as its id when referenced again, as in 1.0.6 (#194)
+      x-class-extra-annotation: '@com.fasterxml.jackson.annotation.JsonIdentityInfo(generator = com.fasterxml.jackson.annotation.ObjectIdGenerators.PropertyGenerator.class, property = "id", scope = Sample.class)'
       type: object
       properties:
         id:
@@ -2093,6 +2107,8 @@ components:
         MTD	ms_run[1]-hash	de9f2c7fd25e1b3afad3e85a0bd17d9b100db4b3
         MTD	ms_run[1]-usi_identifier	mzspec:PXD000561:Adult_Frontalcortex_bRP_Elite_85_f09
       x-mztab-serialize-by-id: "true"
+      # written and read as its id when referenced again, as in 1.0.6 (#194)
+      x-class-extra-annotation: '@com.fasterxml.jackson.annotation.JsonIdentityInfo(generator = com.fasterxml.jackson.annotation.ObjectIdGenerators.PropertyGenerator.class, property = "id", scope = MsRun.class)'
       type: object
       required:
         - id
@@ -2161,6 +2177,8 @@ components:
 
         MTD	study_variable[2]	1 minute 0.5mg rapamycin
       x-mztab-serialize-by-id: "true"
+      # written and read as its id when referenced again, as in 1.0.6 (#194)
+      x-class-extra-annotation: '@com.fasterxml.jackson.annotation.JsonIdentityInfo(generator = com.fasterxml.jackson.annotation.ObjectIdGenerators.PropertyGenerator.class, property = "id", scope = StudyVariable.class)'
       type: object
       required:
         - id
@@ -2232,6 +2250,8 @@ components:
 
         MTD	study_variable[2]-assay_refs	assay[4]| assay[5]| assay[6]
       x-mztab-serialize-by-id: "true"
+      # written and read as its id when referenced again, as in 1.0.6 (#194)
+      x-class-extra-annotation: '@com.fasterxml.jackson.annotation.JsonIdentityInfo(generator = com.fasterxml.jackson.annotation.ObjectIdGenerators.PropertyGenerator.class, property = "id", scope = StudyVariableGroup.class)'
       type: object
       required:
         - id
@@ -2296,6 +2316,8 @@ components:
 
         MTD	assay[1]-ms_run_ref	ms_run[1]
       x-mztab-serialize-by-id: "true"
+      # written and read as its id when referenced again, as in 1.0.6 (#194)
+      x-class-extra-annotation: '@com.fasterxml.jackson.annotation.JsonIdentityInfo(generator = com.fasterxml.jackson.annotation.ObjectIdGenerators.PropertyGenerator.class, property = "id", scope = Assay.class)'
       type: object
       required:
         - name
@@ -2347,6 +2369,8 @@ components:
 
         MTD	cv[1]-uri	https://raw.githubusercontent.com/HUPO-PSI/psi-ms-CV/master/psi-ms.obo
       x-mztab-serialize-by-id: "true"
+      # written and read as its id when referenced again, as in 1.0.6 (#194)
+      x-class-extra-annotation: '@com.fasterxml.jackson.annotation.JsonIdentityInfo(generator = com.fasterxml.jackson.annotation.ObjectIdGenerators.PropertyGenerator.class, property = "id", scope = CV.class)'
       type: object
       required:
         - label
@@ -2396,6 +2420,8 @@ components:
         MTD	database[3]-version	Unknown
         MTD	database[3]-uri	null
       x-mztab-serialize-by-id: "true"
+      # written and read as its id when referenced again, as in 1.0.6 (#194)
+      x-class-extra-annotation: '@com.fasterxml.jackson.annotation.JsonIdentityInfo(generator = com.fasterxml.jackson.annotation.ObjectIdGenerators.PropertyGenerator.class, property = "id", scope = Database.class)'
       type: object
       required:
         - param
