@@ -17,6 +17,7 @@ package org.lifstools.mztab2.cvmapping;
 
 import static org.lifstools.mztab2.cvmapping.CvMappingUtils.isEqualTo;
 import org.lifstools.mztab2.model.Parameter;
+import java.util.Arrays;
 import java.util.List;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -28,6 +29,9 @@ import org.junit.jupiter.api.Test;
 import uk.ac.ebi.pride.utilities.ols.web.service.client.OLSClient;
 import uk.ac.ebi.pride.utilities.ols.web.service.config.OLSWsConfig;
 import uk.ac.ebi.pride.utilities.ols.web.service.model.Identifier;
+import uk.ac.ebi.pride.utilities.ols.web.service.model.QueryFields;
+import uk.ac.ebi.pride.utilities.ols.web.service.model.SearchQuery;
+import uk.ac.ebi.pride.utilities.ols.web.service.model.SearchResult;
 import uk.ac.ebi.pride.utilities.ols.web.service.model.Term;
 
 /**
@@ -38,15 +42,32 @@ public class OlsLookupServiceTest {
 
     @Test
     public void checkChildTermLookupInvalidPrefix() {
+        // OLSClient.searchTermById searches with exact=on but without
+        // queryFields, which OLS4 no longer answers (no hits). Search the
+        // obo_id field instead.
         OLSWsConfig config = new OLSWsConfig();
         OLSClient client = new OLSClient(config);
-        Identifier ident = new Identifier("chmo:0000524",
-            Identifier.IdentifierType.OBO);
-        List<Term> children = client.searchTermById(ident.getIdentifier(), "CHMO");
-        assertTrue(children.size() > 0);
-        ident.setIdentifier("chmo:0000524");
-        children = client.searchTermById(ident.getIdentifier(), "chmo");
-        assertTrue(children.size() > 0);
+        client.setQueryField(new QueryFields.QueryFieldBuilder().setOboId().
+            build().toString());
+        // a lowercase prefix finds the term, with the ontology name in
+        // either case, and the term has the canonical id
+        for (String ontology : List.of("CHMO", "chmo")) {
+            List<SearchResult> found = searchByOboId(client, "chmo:0000524",
+                ontology);
+            assertThat(ontology, found.size(), is(1));
+            assertThat(found.get(0).getOboId().getIdentifier(),
+                is("CHMO:0000524"));
+        }
+        // the prefix of another ontology finds nothing
+        assertThat(searchByOboId(client, "MS:0000524", "chmo").size(), is(0));
+    }
+
+    private static List<SearchResult> searchByOboId(OLSClient client,
+        String oboId, String ontology) {
+        SearchQuery query = client.getSearchQuery(0, oboId, ontology, true,
+            null, false, 10);
+        SearchResult[] results = query.getResponse().getSearchResults();
+        return results == null ? List.of() : Arrays.asList(results);
     }
 
     @Test
