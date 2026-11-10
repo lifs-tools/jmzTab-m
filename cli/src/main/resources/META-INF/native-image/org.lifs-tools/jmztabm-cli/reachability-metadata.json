@@ -34,6 +34,21 @@
       ]
     },
     {
+      "type": "ch.qos.logback.classic.jul.LevelChangePropagator",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        },
+        {
+          "name": "setResetJUL",
+          "parameterTypes": [
+            "boolean"
+          ]
+        }
+      ]
+    },
+    {
       "type": "ch.qos.logback.classic.spi.LogbackServiceProvider"
     },
     {
