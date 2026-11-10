@@ -157,14 +157,12 @@ public class MzTabFileParser {
             refine();
         } catch (MZTabException e) {
             out.write(e.getMessage().getBytes());
-            try (PrintStream ps = new PrintStream(out)) {
-                e.printStackTrace(ps);
-            }
+            // not closed: the stream belongs to the caller (the CLI passes
+            // System.out), and the error list is written to it below
+            printStackTrace(e, out);
             errorList.add(e.getError());
         } catch (MZTabErrorOverflowException e) {
-            try (PrintStream ps = new PrintStream(out)) {
-                e.printStackTrace(ps);
-            }
+            printStackTrace(e, out);
             if(e.getMessage() != null) {
                 out.write(e.getMessage().getBytes());
             } else {
@@ -181,6 +179,12 @@ public class MzTabFileParser {
                     getBytes());
         }
         return errorList;
+    }
+
+    private static void printStackTrace(Exception e, OutputStream out) {
+        PrintStream ps = new PrintStream(out);
+        e.printStackTrace(ps);
+        ps.flush();
     }
 
     /**
