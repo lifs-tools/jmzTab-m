@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" child.project.url.inherit.append.path="false">
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.lifs-tools</groupId>
     <artifactId>jmztabm</artifactId>
@@ -31,10 +31,10 @@
         <name>Center For Biotechnology, Bielefeld University, Bielefeld, Germany</name>
         <url>https://cebitec.uni-bielefeld.de</url>
     </organization>
-    <scm>
-        <connection>scm:git:git://github.com/lifs-tools/jmztab-m.git</connection>
-        <developerConnection>scm:git:ssh://github.com:lifs-tools/jmztab-m.git</developerConnection>
-        <url>https://github.com/lifs-tools/jmztab-m/tree/master</url>
+    <scm child.scm.connection.inherit.append.path="false" child.scm.developerConnection.inherit.append.path="false" child.scm.url.inherit.append.path="false">
+        <connection>scm:git:https://github.com/lifs-tools/jmzTab-m.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/lifs-tools/jmzTab-m.git</developerConnection>
+        <url>https://github.com/lifs-tools/jmzTab-m</url>
     </scm>
     <build>
         <plugins>
@@ -572,16 +572,6 @@
         </repository>
     </repositories>
     
-    <pluginRepositories>
-        <pluginRepository>
-            <id>oss-sonatype-snapshots</id>
-            <name>Sonatype Snapshot Repository</name>
-            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots> 
-        </pluginRepository>
-    </pluginRepositories>
     <reporting>
         <plugins>
             <plugin>
@@ -738,27 +728,12 @@
             </distributionManagement>
         </profile>
         <profile>
-            <id>ossrh-snapshot</id>
-            <distributionManagement>
-                <snapshotRepository>
-                    <id>ossrh</id>
-                    <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-                </snapshotRepository>
-                <repository>
-                    <id>ossrh</id>
-                    <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-                </repository>
-                <site>
-                    <id>jmztabm-github</id>
-                    <url>scm:git:ssh://git@github.com/lifs-tools/jmztab-m.git</url>
-                </site>
-            </distributionManagement>
+            <!-- Publishes a release to Maven Central through the Central
+            Portal (https://central.sonatype.com), see RELEASES.adoc. The
+            portal token goes into settings.xml as server "central". -->
+            <id>central-release</id>
             <build>
                 <plugins>
-                    <plugin>
-                        <groupId>org.owasp</groupId>
-                        <artifactId>dependency-check-maven</artifactId>
-                    </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-source-plugin</artifactId>
@@ -782,75 +757,7 @@
                                 </goals>
                                 <configuration>
                                     <detectJavaApiLink>false</detectJavaApiLink>
-                                    <additionalparam>-Xdoclint:none</additionalparam>
-                                    <docfilessubdirs>true</docfilessubdirs>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <profile>
-            <id>ossrh-release</id>
-            <properties>
-                <gpg.executable>${gpg.executable}</gpg.executable>
-                <gpg.keyname>${gpg.keyname}</gpg.keyname>
-                <gpg.passphrase>${gpg.passphrase}</gpg.passphrase>
-                <gpg.defaultKeyring>true</gpg.defaultKeyring>
-                <gpg.publicKeyring>${gpg.dir}/pubring.gpg</gpg.publicKeyring>
-                <gpg.secretKeyring>${gpg.dir}/secring.gpg</gpg.secretKeyring>
-            </properties>
-            <activation>
-                <property>
-                    <name>performRelease</name>
-                    <value>true</value>
-                </property>
-            </activation>
-            <distributionManagement>
-                <snapshotRepository>
-                    <id>ossrh</id>
-                    <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-                </snapshotRepository>
-                <repository>
-                    <id>ossrh</id>
-                    <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-                </repository>
-                <site>
-                    <id>jmztabm-github</id>
-                    <url>scm:git:ssh://git@github.com/lifs-tools/jmztab-m.git</url>
-                </site>
-            </distributionManagement>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.owasp</groupId>
-                        <artifactId>dependency-check-maven</artifactId>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-source-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>attach-sources</id>
-                                <goals>
-                                    <goal>jar-no-fork</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-javadoc-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>attach-javadocs</id>
-                                <goals>
-                                    <goal>jar</goal>
-                                </goals>
-                                <configuration>
-                                    <detectJavaApiLink>false</detectJavaApiLink>
-                                    <additionalparam>-Xdoclint:none</additionalparam>
+                                    <doclint>none</doclint>
                                     <docfilessubdirs>true</docfilessubdirs>
                                 </configuration>
                             </execution>
@@ -859,7 +766,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
-                        <version>1.6</version>
+                        <version>3.2.8</version>
                         <executions>
                             <execution>
                                 <id>sign-artifacts</id>
@@ -871,14 +778,16 @@
                         </executions>
                     </plugin>
                     <plugin>
-                        <groupId>org.sonatype.plugins</groupId>
-                        <artifactId>nexus-staging-maven-plugin</artifactId>
-                        <version>1.7.0</version>
+                        <groupId>org.sonatype.central</groupId>
+                        <artifactId>central-publishing-maven-plugin</artifactId>
+                        <version>0.12.0</version>
                         <extensions>true</extensions>
                         <configuration>
-                            <serverId>ossrh</serverId>
-                            <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-                            <autoReleaseAfterClose>false</autoReleaseAfterClose>
+                            <publishingServerId>central</publishingServerId>
+                            <!-- upload and validate only; publish in the portal -->
+                            <autoPublish>false</autoPublish>
+                            <waitUntil>validated</waitUntil>
+                            <deploymentName>jmzTab-m ${project.version}</deploymentName>
                         </configuration>
                     </plugin>
                 </plugins>

@@ -179,5 +179,6 @@
             <type>jar</type>
         </dependency>
     </dependencies>
+    <name>jmzTab-m API</name>
     <description>The data model for the mzTab-M 2.0 data standard format for metabolomics.</description>
 </project>

@@ -2,7 +2,7 @@
 Nils Hoffmann <n.hoffmann@fz-juelich.de>
 :toc: macro
 
-image:https://github.com/lifs-tools/jmzTab-m/actions/workflows/maven.yml/badge.svg["Java CI with Maven", link="https://github.com/lifs-tools/jmzTab-m/actions/workflows/maven.yml"] image:https://img.shields.io/maven-central/v/org.lifs-tools.mztab/jmztabm-cli.svg["Maven Central", link="https://search.maven.org/search?q=a:jmztabm-cli"] image:https://img.shields.io/github/release/lifs-tools/jmzTab-m.svg["Latest Release", link="https://github.com/lifs-tools/jmzTab-m/releases/latest"] image:https://zenodo.org/badge/DOI/10.5281/zenodo.3361472.svg["DOI", link="https://doi.org/10.5281/zenodo.3361472"] image:https://img.shields.io/badge/install%20with-docker-important.svg?style=flat-square&logo=docker["BioContainers", link="https://biocontainers.pro/#/tools/jmztab-m"] image:https://anaconda.org/bioconda/jmztab-m/badges/installer/conda.svg["Install with Conda", link="https://anaconda.org/bioconda/jmztab-m"]
+image:https://github.com/lifs-tools/jmzTab-m/actions/workflows/maven.yml/badge.svg["Java CI with Maven", link="https://github.com/lifs-tools/jmzTab-m/actions/workflows/maven.yml"] image:https://img.shields.io/maven-central/v/org.lifs-tools/jmztabm-cli.svg["Maven Central", link="https://central.sonatype.com/artifact/org.lifs-tools/jmztabm-cli"] image:https://img.shields.io/github/release/lifs-tools/jmzTab-m.svg["Latest Release", link="https://github.com/lifs-tools/jmzTab-m/releases/latest"] image:https://zenodo.org/badge/DOI/10.5281/zenodo.3361472.svg["DOI", link="https://doi.org/10.5281/zenodo.3361472"] image:https://img.shields.io/badge/install%20with-docker-important.svg?style=flat-square&logo=docker["BioContainers", link="https://biocontainers.pro/#/tools/jmztab-m"] image:https://anaconda.org/bioconda/jmztab-m/badges/installer/conda.svg["Install with Conda", link="https://anaconda.org/bioconda/jmztab-m"]
 
 NOTE: If you use the jmzTab-M library or the web application, please cite the following paper: +
 https://pubs.acs.org/doi/10.1021/acs.analchem.9b01987[N. Hoffmann et al., Analytical Chemistry 2019; Oct 15;91(20):12615-12618..] https://www.ncbi.nlm.nih.gov/pubmed/31525911[PubMed record].
@@ -61,7 +61,7 @@ The `cli` sub-project provides a command line interface for validation of files 
 NOTE: Currently, we do not plan to provide a CLI-based validator for mzTab 1.0, since that is still being provided by the original https://github.com/PRIDE-Utilities/jmzTab[jmzTab project].
 
 After building the project as mentioned above with `./mvnw install`, the `cli/target` folder will contain the `cli-<version>-jmztabm-deployment.zip` file. Alternatively, you can download the latest
-cli zip file from Maven central: https://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.lifs-tools.mztab%22%20AND%20a%3A%22jmztabm-cli%22%20[Search for latest cli artefact] and click on "bin.zip" to download.
+cli zip file from Maven central: https://central.sonatype.com/artifact/org.lifs-tools/jmztabm-cli[latest cli artefact], under "Browse", or from the https://github.com/lifs-tools/jmzTab-m/releases/latest[latest GitHub release] ("bin.zip").
 
 In order to run the validator, unzip that file, change into the unzipped folder and run
 
@@ -146,7 +146,7 @@ arguments that you would pass normally will work in the same way (please replace
 
 == Using the project code releases via Maven Central
 
-NOTE: As of version 1.0.7, the `groupId` has changed from `de.isas.mztab` to `org.lifs-tools` to reflect the project's GitHub organization.
+NOTE: As of version 1.0.8, the `groupId` has changed from `de.isas.mztab` to `org.lifs-tools` to reflect the project's GitHub organization (1.0.7 was not released).
 
 The library release artifacts are available from Maven Central.
 If you want to use them, add the following lines to your own Maven pom file:
@@ -171,7 +171,7 @@ To use the semantic validation with the mapping file in your own Maven project, 
 where `jmztab.version` is the version of jmztabm you wish to use, e.g. for a release version:
 
   <properties>
-    <jmztabm.version>1.0.7</jmztabm.version>
+    <jmztabm.version>1.0.8</jmztabm.version>
   </properties>
 
 as defined in the properties section of your pom file.
@@ -189,14 +189,14 @@ These builds are for testing only and are not stable releases. The release notes
 
 == Using development snapshots
 
-The library development artifacts are available as SNAPSHOT (development versions) from Sonatype's OSSRH repository.
+The library development artifacts are available as SNAPSHOT (development versions) from the LIFS Tools Artifactory.
 If you want to use them, add the following lines to your own Maven pom file:
 
   <repositories>
     <repository>
-      <name>Sonatype Snapshot Repository</name>
-      <id>oss-sonatype-snapshots</id>
-      <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+      <name>LIFS Tools Snapshot Repository</name>
+      <id>lifs-tools-snapshots</id>
+      <url>https://m.lifs-tools.org/artifactory/lifs-libs-snapshot-local/</url>
       <snapshots>
         <enabled>true</enabled>
       </snapshots>
@@ -225,12 +225,12 @@ and
 for the io module, where `jmztab.version` is the version of jmztabm you wish to use, e.g. for a `SNAPSHOT` version:
 
   <properties>
-    <jmztabm.version>1.0.7-SNAPSHOT</jmztabm.version>
+    <jmztabm.version>1.0.8-SNAPSHOT</jmztabm.version>
   </properties>
 
 as defined in the properties section of your pom file.
 
-The SNAPSHOTS are also available from https://oss.sonatype.org/content/repositories/snapshots/org/lifstools/mztab/.
+The SNAPSHOTS are also available from GitHub Packages (https://maven.pkg.github.com/lifs-tools/jmzTab-m, requires a GitHub token).
 
 == Column model changes in 1.0.8
 
@@ -250,7 +250,7 @@ jmzTab-m 1.0.8 (and 2.1) replaces the string-based logical column positions inhe
 
 === Reading mzTab 2.0 with structural and logical validation
 
-NOTE: As of version 1.0.7, the package structure has been adapted to the new `groupId`. In your imports, please replace `de.isas` with `org.lifstools`
+NOTE: As of version 1.0.8, the package structure has been adapted to the new `groupId`. In your imports, please replace `de.isas.mztab2` and `de.isas.lipidomics.mztab2` with `org.lifstools.mztab2`
 
 The following snippet will parse an mzTabFile from a file on disk:
 
