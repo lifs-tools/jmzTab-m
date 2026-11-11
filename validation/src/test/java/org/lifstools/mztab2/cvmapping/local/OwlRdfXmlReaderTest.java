@@ -18,12 +18,16 @@ package org.lifstools.mztab2.cvmapping.local;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -119,22 +123,59 @@ public class OwlRdfXmlReaderTest {
         assertTrue(e.getMessage().contains("not OWL in RDF/XML"), e.getMessage());
     }
 
+    private static final String RDF_OPEN = "<?xml version=\"1.0\"?>%s<rdf:RDF"
+        + " xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\""
+        + " xmlns:owl=\"http://www.w3.org/2002/07/owl#\""
+        + " xmlns:rdfs=\"http://www.w3.org/2000/01/rdf-schema#\">";
+
     @Test
     public void externalEntitiesAreNotLoaded() throws IOException {
-        String xml = "<?xml version=\"1.0\"?><!DOCTYPE rdf:RDF [<!ENTITY x SYSTEM \"file:///etc/hosts\">]>"
-            + "<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\""
-            + " xmlns:owl=\"http://www.w3.org/2002/07/owl#\""
-            + " xmlns:rdfs=\"http://www.w3.org/2000/01/rdf-schema#\">"
+        String xml = String.format(RDF_OPEN, "<!DOCTYPE rdf:RDF [<!ENTITY x SYSTEM \"file:///etc/hosts\">]>")
             + "<owl:Class rdf:about=\"http://purl.obolibrary.org/obo/X_1\"><rdfs:label>a&x;b</rdfs:label>"
             + "</owl:Class></rdf:RDF>";
         List<TermRecord> terms = new ArrayList<>();
-        try {
-            new OwlRdfXmlReader().read(new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8)),
-                terms::add, i -> { }, v -> { });
-        } catch (IOException expected) {
-            return;
-        }
+        new OwlRdfXmlReader().read(new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8)),
+            terms::add, i -> { }, v -> { });
+        // the entity resolves to nothing; the file is not read
         assertEquals("ab", terms.get(0).label());
+    }
+
+    @Test
+    public void aLargeFileWithEntityPrefixesInEveryAttributeParses(@TempDir Path dir) throws IOException {
+        Path file = dir.resolve("big.owl");
+        try (BufferedWriter w = Files.newBufferedWriter(file, StandardCharsets.UTF_8)) {
+            w.write(String.format(RDF_OPEN, "<!DOCTYPE rdf:RDF [<!ENTITY obo \"http://purl.obolibrary.org/obo/\">]>"));
+            for (int i = 0; i < 200_000; i++) {
+                w.write("<owl:Class rdf:about=\"&obo;BIG_" + i + "\"><rdfs:subClassOf rdf:resource=\"&obo;BIG_"
+                    + (i / 2) + "\"/></owl:Class>\n");
+            }
+            w.write("</rdf:RDF>");
+        }
+        int[] count = {0};
+        try (InputStream in = Files.newInputStream(file)) {
+            new OwlRdfXmlReader().read(in, t -> count[0]++, i -> { }, v -> { });
+        }
+        assertEquals(200_000, count[0]);
+    }
+
+    @Test
+    public void aBillionLaughsDocumentIsRejectedByTheEntityLimits() {
+        StringBuilder dtd = new StringBuilder("<!DOCTYPE rdf:RDF [<!ENTITY l0 \"lol\">");
+        for (int i = 1; i <= 9; i++) {
+            dtd.append("<!ENTITY l").append(i).append(" \"");
+            for (int k = 0; k < 10; k++) {
+                dtd.append("&l").append(i - 1).append(';');
+            }
+            dtd.append("\">");
+        }
+        dtd.append("]>");
+        String xml = String.format(RDF_OPEN, dtd)
+            + "<owl:Class rdf:about=\"http://purl.obolibrary.org/obo/X_1\"><rdfs:label>&l9;</rdfs:label>"
+            + "</owl:Class></rdf:RDF>";
+        IOException e = assertTimeoutPreemptively(Duration.ofSeconds(10), () -> assertThrows(IOException.class,
+            () -> new OwlRdfXmlReader().read(new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8)),
+                t -> { }, i -> { }, v -> { })));
+        assertTrue(e.getMessage().startsWith("OWL file exceeds the XML entity limits"), e.getMessage());
     }
 
     @Test

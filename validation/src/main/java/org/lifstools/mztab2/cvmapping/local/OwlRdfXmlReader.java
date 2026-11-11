@@ -67,12 +67,19 @@ public final class OwlRdfXmlReader {
     private static final XMLInputFactory FACTORY = newFactory();
 
     private static XMLInputFactory newFactory() {
-        XMLInputFactory factory = XMLInputFactory.newFactory();
+        // the JDK's own StAX implementation, so the jdk.xml.* limits below are honoured
+        XMLInputFactory factory = XMLInputFactory.newDefaultFactory();
         factory.setProperty(XMLInputFactory.IS_COALESCING, true);
         // internal entities (&obo;) are declared in a DOCTYPE and must expand
         factory.setProperty(XMLInputFactory.SUPPORT_DTD, true);
         factory.setProperty(XMLInputFactory.IS_REPLACING_ENTITY_REFERENCES, true);
         factory.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, false);
+        // OBO-style files use &obo; in nearly every attribute: the JDK default of
+        // 2500 expansions is far too low, yet some limit must stay against
+        // entity-expansion attacks ("billion laughs"); a single entity stays short
+        factory.setProperty("jdk.xml.entityExpansionLimit", 10_000_000);
+        factory.setProperty("jdk.xml.maxGeneralEntitySizeLimit", 4096);
+        factory.setProperty("jdk.xml.totalEntitySizeLimit", 500_000_000);
         // an external entity or DTD resolves to nothing
         factory.setXMLResolver((publicId, systemId, baseUri, namespace) -> new ByteArrayInputStream(new byte[0]));
         return factory;
@@ -134,6 +141,9 @@ public final class OwlRdfXmlReader {
                 }
             }
         } catch (XMLStreamException e) {
+            if (String.valueOf(e.getMessage()).matches("(?s).*(JAXP0001000\\d|jdk\\.xml\\.).*")) {
+                throw new IOException("OWL file exceeds the XML entity limits: " + e.getMessage(), e);
+            }
             throw new IOException(NOT_OWL + ": " + e.getMessage(), e);
         } finally {
             if (xml != null) {
