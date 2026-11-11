@@ -1,0 +1,112 @@
+format-version: 1.2
+data-version: 1.0.0
+date: 11:11:2026 12:00
+saved-by: LIFS Tools test fixture
+default-namespace: mapping_rules
+remark: The terms of MappingRulesTest's fixture, with exactly the relations StubLookupService encodes.
+remark: It mixes the prefixes MS, NCIT, UO, NCBITaxon, BTO, CL and DOID; each vocabulary of the test reads this file.
+remark: Parents carry the names the mapping gives their rule terms.
+ontology: mapping_rules
+
+[Term]
+id: MS:1000040
+name: m/z
+
+[Term]
+id: MS:1000129
+name: negative scan
+
+[Term]
+id: MS:1000130
+name: positive scan
+
+[Term]
+id: MS:1000584
+name: mzML file
+
+[Term]
+id: MS:1001530
+name: mzML unique identifier
+
+[Term]
+id: MS:1001805
+name: quantification datatype
+
+[Term]
+id: MS:1001844
+name: MS1 feature area
+is_a: MS:1001805 ! quantification datatype
+
+[Term]
+id: MS:1002887
+name: Progenesis QI normalised abundance
+is_a: MS:1001805 ! quantification datatype
+
+[Term]
+id: MS:1003303
+name: spectral similarity
+
+[Term]
+id: MS:1003306
+name: shared peak count
+is_a: MS:1003303 ! spectral similarity
+
+[Term]
+id: MS:1002888
+name: small molecule confidence measure
+
+[Term]
+id: MS:1002890
+name: fragmentation score
+is_a: MS:1002888 ! small molecule confidence measure
+
+[Term]
+id: NCIT:C48207
+name: Unit of Concentration
+
+[Term]
+id: NCIT:C67432
+name: Nanomole per Liter
+is_a: NCIT:C48207 ! Unit of Concentration
+
+[Term]
+id: NCIT:C48453
+name: Unit of Amount of Substance
+
+[Term]
+id: NCIT:C48512
+name: Mole
+is_a: NCIT:C48453 ! Unit of Amount of Substance
+
+[Term]
+id: UO:0000051
+name: concentration unit
+
+[Term]
+id: UO:0000065
+name: nanomolar
+is_a: UO:0000051 ! concentration unit
+
+[Term]
+id: NCBITaxon:9606
+name: Homo sapiens
+
+[Term]
+id: NCBITaxon:12134
+name: Human rhinovirus 1
+
+[Term]
+id: BTO:0000759
+name: liver
+
+[Term]
+id: CL:0000182
+name: hepatocyte
+
+[Term]
+id: DOID:684
+name: hepatocellular carcinoma
+
+[Term]
+id: DOID:9452
+name: fatty liver disease
