@@ -4,9 +4,12 @@
 #   - the exit code,
 #   - the validation messages ([Info-…], [Warn-…], [Error-…]),
 #   - the converted output (--toJson for mzTab files, --fromJson for JSON files).
-# With CV_CACHE set, every file also gets a semantic validation with the local
-# CV lookup, offline (-s --cvOffline --cvCache), whose exit code, validation
-# messages and "CV <label>: ..." report lines must agree as well.
+# With CV_CACHE set, every file of at most 512 KiB also gets a semantic
+# validation with the local CV lookup, offline (-s --cvOffline --cvCache),
+# whose exit code, validation messages and "CV <label>: ..." report lines must
+# agree as well. Larger files are skipped for it, and listed: the semantic
+# validation of the large examples takes many minutes in the native build.
+# The check fails if no semantic run resolved a vocabulary from the cache.
 # A non-zero exit without any validation message or logged error counts as a
 # failure as well, since it leaves users without any hint about what went wrong.
 #
@@ -35,6 +38,12 @@ SUMMARY="${GITHUB_STEP_SUMMARY:-/dev/null}"
 KNOWN="${KNOWN_DIFFERENCES:-}"
 CV_SOURCE_CACHE="${CV_CACHE:+$(realpath "$CV_CACHE")}"
 CV_RESOURCES_FILE="${CV_RESOURCES:+$(realpath "$CV_RESOURCES")}"
+# files above this size get no semantic run (wc -c: GNU and BSD stat differ)
+CV_MAX_BYTES=524288
+if [ -n "${CV_CACHE:-}" ] && { [ ! -d "$CV_SOURCE_CACHE" ] || [ -z "$(ls -A "$CV_SOURCE_CACHE")" ]; }; then
+  echo "::error title=No CV cache::CV_CACHE '${CV_CACHE}' is not a folder with a pre-filled cache."
+  exit 1
+fi
 
 WORK=$(mktemp -d)
 trap 'rm -rf "$WORK"' EXIT
@@ -71,7 +80,10 @@ run_semantic() {
   base=$(basename "$file")
   [[ "$base" == *.json ]] && args+=(--fromJson)
   rm -rf "$cache"
-  cp -R "$CV_SOURCE_CACHE" "$cache"
+  if ! cp -R "$CV_SOURCE_CACHE" "$cache"; then
+    echo "::error title=No CV cache::Could not copy ${CV_SOURCE_CACHE} to ${cache}."
+    exit 1
+  fi
   mkdir -p "$dir"
   cp "$file" "$dir/"
   (cd "$dir" && "$@" -c "$base" "${args[@]}" -l Info > out.log 2>&1; echo $? > exit.code)
@@ -100,15 +112,23 @@ fi
 {
   echo "### Jar vs. native validator"
   echo
-  echo "| File | Exit (jar / native) | Result |"
-  echo "|------|---------------------|--------|"
+  echo "| File | Exit (jar / native) | Semantic exit (jar / native) | Result |"
+  echo "|------|---------------------|------------------------------|--------|"
 } >> "$SUMMARY"
 
 FAIL_COUNT=0
 KNOWN_COUNT=0
+SEMANTIC_RUNS=0
+SEMANTIC_LOCAL=0
+SEMANTIC_SKIPPED=()
 i=0
 for file in "${FILES[@]}"; do
   i=$((i + 1))
+  # set again for each file, so that a skipped file never shows another one's semantic run
+  semantic_ran=false
+  semantic_exits="–"
+  jar_sem=""
+  native_sem=""
   jar_dir="$WORK/$i/jar"
   native_dir="$WORK/$i/native"
   run_build "$jar_dir" "$file" java -jar "$JAR"
@@ -128,7 +148,13 @@ for file in "${FILES[@]}"; do
   fi
   silent_failure "$jar_dir" && problems+=("jar exited ${jar_exit} without any message")
   silent_failure "$native_dir" && problems+=("native exited ${native_exit} without any message")
-  if [ -n "$CV_SOURCE_CACHE" ]; then
+  size=$(wc -c < "$file" | tr -d '[:space:]')
+  if [ -n "$CV_SOURCE_CACHE" ] && [ "$size" -gt "$CV_MAX_BYTES" ]; then
+    echo "Skipping the semantic run of ${file}: ${size} bytes, above ${CV_MAX_BYTES}"
+    SEMANTIC_SKIPPED+=("${file} (${size} bytes)")
+    semantic_exits="skipped (${size} bytes)"
+  elif [ -n "$CV_SOURCE_CACHE" ]; then
+    semantic_ran=true
     jar_sem="$WORK/$i/jar-semantic"
     native_sem="$WORK/$i/native-semantic"
     run_semantic "$jar_sem" "$file" java -jar "$JAR"
@@ -139,6 +165,9 @@ for file in "${FILES[@]}"; do
     cmp -s "$jar_sem/messages.txt" "$native_sem/messages.txt" || problems+=("semantic validation messages differ")
     silent_failure "$jar_sem" && problems+=("jar exited ${jar_sem_exit} without any semantic message")
     silent_failure "$native_sem" && problems+=("native exited ${native_sem_exit} without any semantic message")
+    semantic_exits="${jar_sem_exit} / ${native_sem_exit}"
+    SEMANTIC_RUNS=$((SEMANTIC_RUNS + 1))
+    grep -q '^CV ' "$jar_sem/messages.txt" && SEMANTIC_LOCAL=$((SEMANTIC_LOCAL + 1))
   fi
 
   if [ ${#problems[@]} -eq 0 ]; then
@@ -146,7 +175,7 @@ for file in "${FILES[@]}"; do
     if issue=$(known_issue "$(basename "$file")"); then
       echo "::notice file=${file},title=Known difference resolved::Jar and native now agree; remove this file from ${KNOWN} (${issue})."
     fi
-    echo "| \`${file}\` | ${jar_exit} / ${native_exit} | ✅ identical |" >> "$SUMMARY"
+    echo "| \`${file}\` | ${jar_exit} / ${native_exit} | ${semantic_exits} | ✅ identical |" >> "$SUMMARY"
     continue
   fi
 
@@ -155,11 +184,11 @@ for file in "${FILES[@]}"; do
   if issue=$(known_issue "$(basename "$file")"); then
     KNOWN_COUNT=$((KNOWN_COUNT + 1))
     echo "::warning file=${file},title=Known jar/native difference::${details} (${issue})"
-    echo "| \`${file}\` | ${jar_exit} / ${native_exit} | ⚠️ known: ${details} (${issue}) |" >> "$SUMMARY"
+    echo "| \`${file}\` | ${jar_exit} / ${native_exit} | ${semantic_exits} | ⚠️ known: ${details} (${issue}) |" >> "$SUMMARY"
   else
     FAIL_COUNT=$((FAIL_COUNT + 1))
     echo "::error file=${file},title=Jar/native difference::${details}"
-    echo "| \`${file}\` | ${jar_exit} / ${native_exit} | ❌ ${details} |" >> "$SUMMARY"
+    echo "| \`${file}\` | ${jar_exit} / ${native_exit} | ${semantic_exits} | ❌ ${details} |" >> "$SUMMARY"
   fi
   echo "::group::Details for ${file}"
   echo "--- validation messages (jar vs. native)"
@@ -172,7 +201,7 @@ for file in "${FILES[@]}"; do
   tail -20 "$jar_dir/out.log"
   echo "--- native log (tail)"
   tail -20 "$native_dir/out.log"
-  if [ -n "$CV_SOURCE_CACHE" ]; then
+  if $semantic_ran; then
     echo "--- semantic validation messages (jar vs. native)"
     diff "$jar_sem/messages.txt" "$native_sem/messages.txt"
     echo "--- semantic jar log (tail)"
@@ -185,6 +214,24 @@ done
 
 echo "" >> "$SUMMARY"
 echo "Compared ${#FILES[@]} files: ${FAIL_COUNT} unexpected and ${KNOWN_COUNT} known difference(s)."
+if [ -n "$CV_SOURCE_CACHE" ]; then
+  echo "Semantic runs: ${SEMANTIC_RUNS}, ${SEMANTIC_LOCAL} of them resolved a vocabulary from the cache; ${#SEMANTIC_SKIPPED[@]} file(s) above ${CV_MAX_BYTES} bytes skipped."
+  {
+    echo "Semantic runs with the local CV lookup: ${SEMANTIC_RUNS}, ${SEMANTIC_LOCAL} of them resolved a vocabulary from the cache."
+    if [ ${#SEMANTIC_SKIPPED[@]} -gt 0 ]; then
+      echo
+      echo "Skipped for the semantic run (above ${CV_MAX_BYTES} bytes):"
+      echo
+      for skipped in "${SEMANTIC_SKIPPED[@]}"; do
+        echo "- \`${skipped}\`"
+      done
+    fi
+  } >> "$SUMMARY"
+  if [ "$SEMANTIC_LOCAL" -eq 0 ]; then
+    echo "::error title=Semantic parity tested nothing::No semantic run resolved a vocabulary from the pre-filled cache; check CV_CACHE and CV_RESOURCES."
+    exit 1
+  fi
+fi
 if [ "$FAIL_COUNT" -ne 0 ]; then
   echo "::error title=Jar/native parity::${FAIL_COUNT} of ${#FILES[@]} file(s) behave differently in the jar and the native validator."
   exit 1
