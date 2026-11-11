@@ -361,6 +361,11 @@ public class MZTabCommandLine {
             }
             File inFile = new File(value.trim());
             LookupPolicy policy = null;
+            List<String> lookupOptions = CvLookupOptions.given(line);
+            if (!line.hasOption(checkSemanticOpt) && !lookupOptions.isEmpty()) {
+                LOGGER.warn("{} {} ignored without -s (semantic validation)",
+                    String.join(", ", lookupOptions), lookupOptions.size() == 1 ? "is" : "are");
+            }
             if (line.hasOption(checkSemanticOpt)) {
                 // stop before any validation on an invalid lookup option
                 try {

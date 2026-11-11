@@ -284,12 +284,82 @@ public class MZTabCommandLineTest {
 
         Run forced = run("-c", minimal(), "-s", msMapping(), "--cvOffline", "--cvCache", cache.toString(),
             "--cvResources", resources.toString(), "--cvForce");
+        // the exit rule is unchanged: the 3018 warning (and ETD's error) fail the run at level Info
+        assertTrue(forced.failed);
         assertFalse(forced.output.contains("-3017]"), forced.output);
         String substituted = forced.lines().stream().filter(l -> l.contains("[Warn-3018]")).findFirst()
             .orElseThrow(() -> new AssertionError(forced.output));
         assertTrue(substituted.contains(DECLARED_MS) && substituted.contains(LISTED_MS), substituted);
         assertTrue(forced.lines().contains("CV MS: " + LISTED_MS + " (SUBSTITUTE_NEWER) from "
             + "http://localhost.invalid/MS/" + LISTED_MS + "/psi-ms.obo"), forced.output);
+    }
+
+    @Test
+    public void aForcedRunFailsOnItsWarningsOnlyBelowLevelError() throws Exception {
+        // the cached release knows both sources of the file, so the only problem is the substitute
+        Path cache = prefilledMs(LISTED_MS);
+        Files.writeString(cache.resolve("MS").resolve(LISTED_MS).resolve("psi-ms.obo"), """
+
+            [Term]
+            id: MS:1000598
+            name: electron transfer dissociation
+            is_a: MS:1000008 ! ionization type (test fixture only)
+            """, java.nio.file.StandardOpenOption.APPEND);
+        Path resources = Files.writeString(tempDir.resolve("resources.json"), USER_MS.formatted("DOTTED", LISTED_MS));
+        String[] forced = {"-c", minimal(), "-s", msMapping(), "--cvOffline", "--cvCache", cache.toString(),
+            "--cvResources", resources.toString(), "--cvForce"};
+
+        Run info = run(forced);
+        assertTrue(info.failed, info.output);
+        assertTrue(info.output.contains("[Warn-3018]"), info.output);
+        assertFalse(info.output.contains("[Error-"), info.output);
+
+        Run error = run(concat(forced, "-l", "Error"));
+        assertFalse(error.failed, error.output);
+        assertTrue(error.lines().contains("CV MS: " + LISTED_MS + " (SUBSTITUTE_NEWER) from "
+            + "http://localhost.invalid/MS/" + LISTED_MS + "/psi-ms.obo"), error.output);
+    }
+
+    @Test
+    public void aForcedOfflineRunSubstitutesOnlyFromTheCache() throws Exception {
+        // the listed release is not cached, and offline nothing else is asked
+        Path cache = Files.createDirectories(tempDir.resolve("cv-cache"));
+        Path resources = Files.writeString(tempDir.resolve("resources.json"), USER_MS.formatted("DOTTED", LISTED_MS));
+
+        Run run = run("-c", minimal(), "-s", msMapping(), "--cvOffline", "--cvCache", cache.toString(),
+            "--cvResources", resources.toString(), "--cvForce");
+
+        assertTrue(run.failed);
+        String unavailable = run.lines().stream().filter(l -> l.contains("[Error-3017]")).findFirst()
+            .orElseThrow(() -> new AssertionError(run.output));
+        assertTrue(unavailable.contains("\"MS\"") && unavailable.contains("OLS (not asked offline)"), unavailable);
+        assertFalse(run.output.contains("[Warn-3018]"), run.output);
+    }
+
+    @Test
+    public void olsAndOfflineAreRejectedTogether() throws Exception {
+        Run run = run("-c", minimal(), "-s", msMapping(), "--cvSource", "ols", "--cvOffline");
+
+        assertTrue(run.failed);
+        assertTrue(run.output.contains("--cvSource ols") && run.output.contains("--cvOffline"), run.output);
+        assertFalse(run.output.contains("Beginning validation"), run.output);
+    }
+
+    @Test
+    public void ignoredLookupOptionsAreReported() throws Exception {
+        Run withoutSemantic = run("-c", minimal(), "--cvOffline", "--cvForce");
+        assertTrue(withoutSemantic.output.contains("--cvOffline, --cvForce")
+            && withoutSemantic.output.contains("ignored without -s"), withoutSemantic.output);
+
+        Path cache = tempDir.resolve("untouched");
+        Run ols = run("-c", minimal(), "-s", msMapping(), "--cvSource", "ols", "--cvCache", cache.toString());
+        assertTrue(ols.output.contains("--cvCache is ignored with --cvSource ols"), ols.output);
+    }
+
+    private static String[] concat(String[] first, String... more) {
+        List<String> all = new java.util.ArrayList<>(List.of(first));
+        all.addAll(List.of(more));
+        return all.toArray(String[]::new);
     }
 
     @Test

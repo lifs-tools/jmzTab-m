@@ -15,8 +15,10 @@
  */
 package org.lifstools.mztab2.cvmapping.local;
 
+import java.util.List;
 import java.util.Optional;
 import org.lifstools.mztab2.cvmapping.AncestorSource;
+import org.lifstools.mztab2.model.Parameter;
 
 /**
  * The last fallback of a forced run, and the source of a run that asks OLS
@@ -41,4 +43,34 @@ public interface CurrentReleaseSource extends AncestorSource {
      * asked
      */
     Optional<String> currentVersion(String cvLabel);
+
+    /**
+     * The current-release source of an offline run (Ruling R-S): it names no
+     * current release, so a forced run substitutes only from the cache and
+     * a vocabulary that cannot be had there is an Error-3017. It is never
+     * asked for ancestors, since it names no release to answer from.
+     *
+     * @param name the name of the source that is not asked, e.g. {@code OLS}
+     * @return a source named {@code <name> (not asked offline)}
+     */
+    static CurrentReleaseSource offline(String name) {
+        String offlineName = name + " (not asked offline)";
+        return new CurrentReleaseSource() {
+            @Override
+            public String name() {
+                return offlineName;
+            }
+
+            @Override
+            public Optional<String> currentVersion(String cvLabel) {
+                return Optional.empty();
+            }
+
+            @Override
+            public List<Parameter> ancestors(Parameter term) {
+                throw new IllegalStateException(offlineName + " was asked for the ancestors of "
+                    + term.getCvAccession() + ", but it names no current release");
+            }
+        };
+    }
 }

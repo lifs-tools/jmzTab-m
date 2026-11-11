@@ -517,7 +517,7 @@ public final class VocabularyCache {
     }
 
     /** The version of {@code obo/<id>/releases/<v>/<file>} or {@code obo/<id>/<v>/<file>}. */
-    private static Optional<String> purlVersion(String iri) {
+    static Optional<String> purlVersion(String iri) {
         if (!iri.startsWith(OBO_PURL)) {
             return Optional.empty();
         }

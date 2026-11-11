@@ -65,15 +65,24 @@ public final class OlsCurrentReleaseSource implements CurrentReleaseSource {
      * Asks OLS for the ontology whose id is the label in lower case (OLS's
      * ontology ids are lower case, e.g. {@code ms}).
      *
-     * @return {@code config.version}, or empty if OLS has no such ontology,
-     * gives no version, or cannot be reached
+     * @return {@code config.version}; else the version that
+     * {@code config.versionIri} names as a versioned OBO PURL
+     * ({@code .../obo/ms/4.2.15/ms.owl} or
+     * {@code .../obo/doid/releases/2026-10-29/doid.owl}), as OLS4 reports
+     * e.g. PSI-MS; else empty: OLS has no such ontology, names no version,
+     * or cannot be reached
      */
     @Override
     public Optional<String> currentVersion(String cvLabel) {
         try {
             Ontology ontology = client.getOntology(cvLabel.toLowerCase(Locale.ROOT));
             Config config = ontology == null ? null : ontology.getConfig();
-            return Optional.ofNullable(config == null ? null : config.getVersion()).filter(v -> !v.isBlank());
+            if (config == null) {
+                return Optional.empty();
+            }
+            Optional<String> version = Optional.ofNullable(config.getVersion()).filter(v -> !v.isBlank());
+            return version.isPresent() ? version
+                : Optional.ofNullable(config.getVersionIri()).flatMap(VocabularyCache::purlVersion);
         } catch (RestClientException e) {
             LOG.debug("OLS names no current version of {}: {}", cvLabel, e.toString());
             return Optional.empty();

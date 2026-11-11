@@ -16,12 +16,14 @@
 package org.lifstools.mztab2.cvmapping.local;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.lifstools.mztab2.model.Parameter;
 import uk.ac.ebi.pride.utilities.ols.web.service.client.OLSClient;
 import uk.ac.ebi.pride.utilities.ols.web.service.config.OLSWsConfig;
 
@@ -71,5 +73,36 @@ public class OlsCurrentReleaseSourceTest {
 
         assertEquals(Optional.empty(), source.currentVersion("NOV"));
         assertEquals(Optional.empty(), source.currentVersion("XYZ"));
+    }
+
+    @Test
+    public void withoutAConfigVersionTheVersionIriNamesIt() {
+        // OLS4 reports PSI-MS this way: no config.version, a versioned PURL as versionIri
+        ontology("ms", "\"versionIri\": \"http://purl.obolibrary.org/obo/ms/4.2.15/ms.owl\"");
+        ontology("doid", "\"version\": \"\", \"versionIri\": \"http://purl.obolibrary.org/obo/doid/releases/2026-10-29/doid.owl\"");
+        ontology("nov", "\"versionIri\": \"http://purl.obolibrary.org/obo/nov.owl\"");
+
+        assertEquals(Optional.of("4.2.15"), source.currentVersion("MS"));
+        assertEquals(Optional.of("2026-10-29"), source.currentVersion("DOID"));
+        // a versionIri that names no version: none, as without one
+        assertEquals(Optional.empty(), source.currentVersion("NOV"));
+    }
+
+    @Test
+    public void anOfflineSourceNamesNothingAndIsNeverAsked() {
+        CurrentReleaseSource offline = CurrentReleaseSource.offline("OLS");
+
+        assertEquals("OLS (not asked offline)", offline.name());
+        assertEquals(Optional.empty(), offline.currentVersion("MS"));
+        assertThrows(IllegalStateException.class,
+            () -> offline.ancestors(new Parameter().cvLabel("MS").cvAccession("MS:1000073")));
+    }
+
+    private void ontology(String id, String config) {
+        server.route("/ols4/api/ontologies/" + id, x -> {
+            x.getResponseHeaders().add("Content-Type", "application/json");
+            TestServer.send(x, 200, ("{\"ontologyId\": \"" + id + "\", \"config\": {\"id\": \"" + id + "\", "
+                + config + "}}").getBytes(StandardCharsets.UTF_8));
+        });
     }
 }

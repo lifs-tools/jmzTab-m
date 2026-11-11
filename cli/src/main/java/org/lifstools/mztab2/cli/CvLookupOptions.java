@@ -17,10 +17,13 @@ package org.lifstools.mztab2.cli;
 
 import java.nio.file.Path;
 import java.time.Duration;
+import java.util.List;
 import java.util.Locale;
+import java.util.stream.Stream;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Options;
 import org.lifstools.mztab2.cvmapping.CvParameterLookupService;
+import org.lifstools.mztab2.cvmapping.local.CurrentReleaseSource;
 import org.lifstools.mztab2.cvmapping.local.Downloader;
 import org.lifstools.mztab2.cvmapping.local.InvalidResourcesException;
 import org.lifstools.mztab2.cvmapping.local.LookupPolicy;
@@ -44,7 +47,8 @@ import uk.ac.ebi.pride.utilities.ols.web.service.client.OLSClient;
  * {@link VocabularyCache#defaultRoot()};</li>
  * <li>{@code --cvResources <file>}: a preferred-resources file whose entries
  * replace the shipped default's;</li>
- * <li>{@code --cvOffline}: download nothing;</li>
+ * <li>{@code --cvOffline}: use no network: download nothing, and do not ask
+ * OLS;</li>
  * <li>{@code --cvForce}: a vocabulary version that cannot be had is a
  * warning, and a substitute is used.</li>
  * </ul>
@@ -82,10 +86,11 @@ final class CvLookupOptions {
             "Example: --cvResources my-resources.json. A preferred-resources file (schema"
             + " cv/preferred-resources.schema.json) whose entries replace the default's, per vocabulary.");
         options.addOption(null, OFFLINE, false,
-            "Example: --cvOffline. Download nothing: a vocabulary release that is not in the cache cannot be had.");
+            "Example: --cvOffline. Use no network: download nothing and do not ask OLS; a vocabulary release"
+            + " that is not in the cache cannot be had. Not with --cvSource ols.");
         options.addOption(null, FORCE, false,
             "Example: --cvForce. A vocabulary release that cannot be had is a warning instead of an error:"
-            + " the nearest newer release, then the latest, then OLS is used instead.");
+            + " the nearest newer release, then the latest, then OLS (not with --cvOffline) is used instead.");
     }
 
     /**
@@ -93,13 +98,25 @@ final class CvLookupOptions {
      *
      * @param line the parsed command line
      * @return the policy
+     * <p>With {@code --cvOffline}, no network is used at all (Ruling R-S):
+     * OLS is never asked, so a forced run substitutes only from the cache.</p>
+     *
      * @throws IllegalArgumentException if {@code --cvSource} is neither
-     * {@code local} nor {@code ols}, or the {@code --cvResources} file is
-     * invalid; the message says why
+     * {@code local} nor {@code ols}, if {@code --cvSource ols} is given with
+     * {@code --cvOffline}, or if the {@code --cvResources} file is invalid;
+     * the message says why
      */
     static LookupPolicy policy(CommandLine line) {
         Source source = source(line.getOptionValue(SOURCE, "local"));
         boolean forced = line.hasOption(FORCE);
+        boolean offline = line.hasOption(OFFLINE);
+        if (source == Source.OLS && offline) {
+            throw new IllegalArgumentException("--" + SOURCE + " ols cannot be used with --" + OFFLINE
+                + ": OLS is reached only over the network; semantic validation was not run.");
+        }
+        if (source == Source.OLS && line.hasOption(CACHE)) {
+            LOGGER.warn("--{} is ignored with --{} ols, which uses no cache", CACHE, SOURCE);
+        }
         PreferredResources resources = PreferredResources.defaults();
         if (line.hasOption(RESOURCES)) {
             Path file = Path.of(line.getOptionValue(RESOURCES).trim());
@@ -110,14 +127,14 @@ final class CvLookupOptions {
                     + " is invalid; semantic validation was not run: " + e.getMessage(), e);
             }
         }
-        OlsCurrentReleaseSource ols = new OlsCurrentReleaseSource(
-            new OLSClient(CvParameterLookupService.defaultConfig()));
+        CurrentReleaseSource current = offline
+            ? CurrentReleaseSource.offline("OLS")
+            : new OlsCurrentReleaseSource(new OLSClient(CvParameterLookupService.defaultConfig()));
         VocabularyCache cache = null;
         if (source == Source.LOCAL) {
             Path root = line.hasOption(CACHE)
                 ? Path.of(line.getOptionValue(CACHE).trim())
                 : VocabularyCache.defaultRoot();
-            boolean offline = line.hasOption(OFFLINE);
             cache = new VocabularyCache(root, Downloader.http(DOWNLOAD_TIMEOUT), offline, null);
             LOGGER.info("Looking up CV terms in local vocabulary releases ({}, {}), cache folder: {}",
                 forced ? "forced" : "strict", offline ? "offline" : "downloads allowed", root.toAbsolutePath());
@@ -125,7 +142,20 @@ final class CvLookupOptions {
             LOGGER.info("Looking up CV terms in OLS ({}); OLS serves only its current releases",
                 forced ? "forced" : "strict");
         }
-        return new LookupPolicy(source, forced, cache, resources, ols);
+        return new LookupPolicy(source, forced, cache, resources, current);
+    }
+
+    /**
+     * The lookup options given, for the warning that they are ignored
+     * without {@code -s}.
+     *
+     * @param line the parsed command line
+     * @return the given options as {@code --name}, in the order of
+     * {@link #addTo(Options)}; empty if none
+     */
+    static List<String> given(CommandLine line) {
+        return Stream.of(SOURCE, CACHE, RESOURCES, OFFLINE, FORCE).filter(line::hasOption)
+            .map(name -> "--" + name).toList();
     }
 
     private static Source source(String value) {
