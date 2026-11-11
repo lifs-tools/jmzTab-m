@@ -42,6 +42,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.attribute.FileTime;
 import java.nio.file.attribute.PosixFilePermissions;
 import java.security.MessageDigest;
 import java.time.Clock;
@@ -588,6 +589,21 @@ public class VocabularyCacheTest {
         assertArrayEquals(miniMs, Files.readAllBytes(r.original()));
         assertTrue(Files.isRegularFile(stale.resolve("release.json")));
         assertNoTemporaryFolders();
+    }
+
+    @Test
+    public void aTemporaryFolderLeftForADayIsRemoved() throws Exception {
+        server.file(MS_PATH, miniMs);
+        Path key = Files.createDirectories(root.resolve("MS"));
+        Path old = Files.createDirectory(key.resolve(".tmp-old"));
+        Files.writeString(old.resolve("psi-ms.obo"), "half");
+        Files.setLastModifiedTime(old, FileTime.from(Instant.now().minus(Duration.ofHours(25))));
+        Path recent = Files.createDirectory(key.resolve(".tmp-recent"));
+
+        cache(false).get(ms(Map.of()), "4.1.200");
+
+        assertFalse(Files.exists(old));
+        assertTrue(Files.isDirectory(recent));
     }
 
     @Test
