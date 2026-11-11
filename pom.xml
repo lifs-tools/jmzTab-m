@@ -233,6 +233,7 @@
                         <parallel>classes</parallel>
                         <threadCount>2</threadCount>
                         <trimStackTrace>false</trimStackTrace>
+                        <excludedGroups>${test.excludedGroups}</excludedGroups>
                         <workingDirectory>${project.build.directory}/surefire-files</workingDirectory>
                     </configuration>
                 </plugin>
@@ -245,6 +246,7 @@
                         <parallel>classes</parallel>
                         <threadCount>2</threadCount>
                         <trimStackTrace>false</trimStackTrace>
+                        <excludedGroups>${test.excludedGroups}</excludedGroups>
                         <workingDirectory>${project.build.directory}/failsafe-files</workingDirectory>
                         <additionalClasspathElements>
                             <additionalClasspathElement>${basedir}/target/classes</additionalClasspathElement>
@@ -523,6 +525,8 @@
         <hamcrest.version>3.0</hamcrest.version>
         <!--<javax.validation.version>2.0.1.Final</javax.validation.version>-->
         <junit.jupiter.version>6.1.3</junit.jupiter.version>
+        <!-- JUnit tags left out of surefire and failsafe; the network profile clears it -->
+        <test.excludedGroups>network</test.excludedGroups>
         <jackson.version>2.23.0</jackson.version>
         <hibernate.validator.version>9.1.6.Final</hibernate.validator.version>
         <slf4j.version>2.0.20</slf4j.version>
@@ -658,6 +662,13 @@
         </plugins>
     </reporting>
     <profiles>
+        <profile>
+            <!-- Runs the tests tagged "network" too: ./mvnw -B verify -Pnetwork -->
+            <id>network</id>
+            <properties>
+                <test.excludedGroups></test.excludedGroups>
+            </properties>
+        </profile>
         <profile>
             <id>github-snapshot</id>
             <build>

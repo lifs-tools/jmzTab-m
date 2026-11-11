@@ -35,6 +35,7 @@ import uk.ac.ebi.pride.utilities.ols.web.service.model.Identifier;
 public class CvParameterLookupService {
 
     private final OLSClient client;
+    private final AncestorSource source;
     private final Map<Parameter, List<Parameter>> childCache;
     private final Map<Parameter, List<Parameter>> parentCache;
 
@@ -73,7 +74,21 @@ public class CvParameterLookupService {
      * @param client the custom OLS client
      */
     public CvParameterLookupService(OLSClient client) {
+        this(client, new OlsAncestorSource(client));
+    }
+
+    /**
+     * Create a new instance of the lookup service that gets ancestors from the given source.
+     * Children are still resolved through OLS with the default configuration.
+     * @param source the source of ancestors
+     */
+    public CvParameterLookupService(AncestorSource source) {
+        this(new OLSClient(defaultConfig()), source);
+    }
+
+    private CvParameterLookupService(OLSClient client, AncestorSource source) {
         this.client = client;
+        this.source = source;
         this.childCache = lruCache(4096);
         this.parentCache = lruCache(4096);
     }
@@ -121,12 +136,17 @@ public class CvParameterLookupService {
             log.debug("Cache hit for parameter "+parameter+" in parent cache!");
             return parentCache.get(parameter);
         }
-        Identifier ident = new Identifier(parameter.getCvAccession(),
-            Identifier.IdentifierType.OBO);
-        List<Parameter> parents = client.getTermParents(ident, parameter.getCvLabel(), levels).
-            stream().
-            map(CvMappingUtils::asParameter).
-            collect(Collectors.toList());
+        List<Parameter> parents;
+        if (levels == -1) {
+            parents = source.ancestors(parameter);
+        } else {
+            Identifier ident = new Identifier(parameter.getCvAccession(),
+                Identifier.IdentifierType.OBO);
+            parents = client.getTermParents(ident, parameter.getCvLabel(), levels).
+                stream().
+                map(CvMappingUtils::asParameter).
+                collect(Collectors.toList());
+        }
         parentCache.put(parameter, parents);
         return parents;
     }

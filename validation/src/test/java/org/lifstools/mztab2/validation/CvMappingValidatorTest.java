@@ -36,6 +36,7 @@ import org.apache.commons.jxpath.Pointer;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Assertions;
 import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -48,6 +49,7 @@ public class CvMappingValidatorTest {
      * Test of handleParameters method, of class AndValidationHandler.
      */
     @Test
+    @Tag("network")
     public void testHandleParametersWithExistingElement() {
         org.lifstools.mztab2.validation.handlers.AndValidationHandler handler = new org.lifstools.mztab2.validation.handlers.AndValidationHandler();
         CvMappingRule instrumentNameMay = prepareRule();
@@ -66,6 +68,7 @@ public class CvMappingValidatorTest {
      * Test of handleParameters method, of class AndValidationHandler.
      */
     @Test
+    @Tag("network")
     public void testHandleParametersWithMissingElement() {
         org.lifstools.mztab2.validation.handlers.AndValidationHandler handler = new org.lifstools.mztab2.validation.handlers.AndValidationHandler();
         CvMappingRule instrumentNameMay = prepareRule();

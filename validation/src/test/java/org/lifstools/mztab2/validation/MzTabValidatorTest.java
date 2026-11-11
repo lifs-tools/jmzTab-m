@@ -35,6 +35,7 @@ import jakarta.validation.ValidatorFactory;
 import jakarta.xml.bind.JAXBException;
 import java.net.URI;
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -186,6 +187,7 @@ public class MzTabValidatorTest {
     }
 
     @Test
+    @Tag("network")
     public void testJaxbCvMapping() throws JAXBException {
         MzTab mzTab = createTestFile();
         CvMappingValidator validator = CvMappingValidator.of(

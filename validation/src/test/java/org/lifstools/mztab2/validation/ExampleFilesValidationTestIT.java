@@ -43,6 +43,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import jakarta.xml.bind.JAXBException;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Tag;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -60,6 +61,7 @@ import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabException;
  * @author nilshoffmann
  */
 @Slf4j
+@Tag("network")
 public class ExampleFilesValidationTestIT {
 
     public static final CvParameterLookupService LOOKUP_SERVICE = new CvParameterLookupService();
