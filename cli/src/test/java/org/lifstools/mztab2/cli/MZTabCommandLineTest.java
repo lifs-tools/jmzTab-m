@@ -337,6 +337,24 @@ public class MZTabCommandLineTest {
     }
 
     @Test
+    public void offlineAPreFilledCacheAnswersAVersionThatNamesNoRelease() throws Exception {
+        // Ruling R-AF, the final review's probe: cv[1]-version 2020, MS pre-filled by hand, default resources
+        Path cache = prefilledMs(DECLARED_MS);
+        Path file = Files.writeString(tempDir.resolve("version-2020.mztab"),
+            Files.readString(Path.of(minimal()), StandardCharsets.UTF_8)
+                .replace("cv[1]-version\t" + DECLARED_MS, "cv[1]-version\t2020"), StandardCharsets.UTF_8);
+
+        Run run = run("-c", file.toString(), "-s", msMapping(), "--cvOffline", "--cvCache", cache.toString());
+
+        assertFalse(run.output.contains("-3017]"), run.output);
+        assertTrue(run.output.contains("[Warn-3021]"), run.output);
+        assertTrue(run.lines().stream().anyMatch(l -> l.contains("[Info-3022]")
+            && l.contains("\"" + DECLARED_MS + "\" (the newest release in the cache")), run.output);
+        assertTrue(run.lines().contains("CV MS: " + DECLARED_MS + " (LATEST) from "
+            + "https://raw.githubusercontent.com/HUPO-PSI/psi-ms-CV/v" + DECLARED_MS + "/psi-ms.obo"), run.output);
+    }
+
+    @Test
     public void olsAndOfflineAreRejectedTogether() throws Exception {
         Run run = run("-c", minimal(), "-s", msMapping(), "--cvSource", "ols", "--cvOffline");
 

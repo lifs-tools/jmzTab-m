@@ -535,6 +535,118 @@ public class VocabularyResolverTest {
         assertEquals(List.of(CrossCheckErrorType.CvVersionSubstituted), types(forced.messages()));
     }
 
+    // ---- Ruling R-AF: offline, a pre-filled cache names its newest release as the latest ----
+
+    @Test
+    public void offlineAPreFilledCacheAnswersAnUndeclaredOrUnrecognisedVersionWithItsNewestRelease() throws Exception {
+        Fixture f = new Fixture(Reason.NO_SUCH_RELEASE, Set.of());
+        PreferredResources github = PreferredResources.load(f.writeResources(List.of(githubMsEntry(f))));
+        f.prefill("MS", V100, "psi-ms.obo", miniMs);
+        f.prefill("MS", V150, "psi-ms.obo", miniMs);
+        // neither a newer folder that holds no release nor a name outside the scheme counts
+        f.prefill("MS", "4.1.900", "notes.txt", miniMs);
+        f.prefill("MS", "old", "psi-ms.obo", miniMs);
+
+        // not declared at all, and declared with a value that names no release
+        VocabularyResolver undeclared = f.offline(github, false);
+        assertFalse(undeclared.ancestors(ESI).isEmpty());
+        assertCachedLatest(undeclared, null, List.of(CrossCheckErrorType.CvVersionNotDeclared));
+        VocabularyResolver unrecognised = f.offline(github, false, cv("MS", "2020"));
+        assertFalse(unrecognised.ancestors(ESI).isEmpty());
+        assertCachedLatest(unrecognised, "2020",
+            List.of(CrossCheckErrorType.CvVersionNotRecognised, CrossCheckErrorType.CvVersionNotDeclared));
+        assertEquals(0, f.server.totalHits(), "offline means no network");
+        assertFalse(Files.exists(f.root.resolve("MS").resolve("latest.json")), "a guess from the cache is not kept");
+        assertTrue(Files.exists(f.root.resolve("MS").resolve("4.1.900").resolve("notes.txt")), "nothing is removed");
+    }
+
+    @Test
+    public void offlineADeclaredDateWithoutAReleaseListIsStrictAndForcedSubstitutesTheNewestCachedRelease()
+        throws Exception {
+        Fixture f = new Fixture(Reason.NO_SUCH_RELEASE, Set.of());
+        PreferredResources github = PreferredResources.load(f.writeResources(List.of(githubMsEntry(f))));
+        f.prefill("MS", V100, "psi-ms.obo", miniMs);
+        f.prefill("MS", V150, "psi-ms.obo", miniMs);
+
+        // a date names a release only through the release list, which offline is not in the cache
+        VocabularyResolver strict = f.offline(github, false, cv("MS", "14-06-2024"));
+        VocabularyUnavailableException e = assertThrows(VocabularyUnavailableException.class,
+            () -> strict.ancestors(ESI));
+        assertEquals(Optional.of(Reason.OFFLINE_NOT_CACHED), e.kind());
+        assertEquals("14-06-2024", e.versionWanted());
+        assertEquals(List.of(), strict.messages());
+
+        VocabularyResolver forced = f.offline(github, true, cv("MS", "14-06-2024"));
+        assertFalse(forced.ancestors(ESI).isEmpty());
+        assertSubstitute(forced, "14-06-2024", "SUBSTITUTE_LATEST", V150, "the local cache (its newest release)");
+        // so does a declared release that is not cached
+        VocabularyResolver missing = f.offline(github, true, cv("MS", V200));
+        assertFalse(missing.ancestors(ESI).isEmpty());
+        assertSubstitute(missing, V200, "SUBSTITUTE_LATEST", V150, "the local cache (its newest release)");
+        assertEquals(0, f.server.totalHits(), "offline means no network");
+        assertEquals(0, f.current.versionCalls.get(), "offline, the current-release source is not asked");
+    }
+
+    @Test
+    public void offlineTheNewestReleaseOfAnUnlistedNewestReleaseEntryComesFromTheCacheToo() throws Exception {
+        Fixture f = new Fixture(Reason.NO_SUCH_RELEASE, Set.of());
+        PreferredResources unlisted = PreferredResources.load(f.writeResources(List.of(btoEntry(f,
+            "{\"kind\": \"githubTags\", \"repo\": \"o/bto\", \"tagPattern\": \"v{version}\","
+            + " \"dates\": \"githubReleases\"}"))));
+        f.prefill("BTO", "2021-04-30", "bto.obo", miniMs);
+        f.prefill("BTO", "2022-10-26", "bto.obo", miniMs);
+
+        VocabularyResolver resolver = f.offline(unlisted, false);
+        assertFalse(resolver.ancestors(BTO_TERM).isEmpty());
+        ResolvedVocabulary bto = only(resolver.resolved());
+        assertEquals("LATEST", bto.reason());
+        assertEquals("2022-10-26", bto.versionUsed());
+        assertEquals(0, f.server.totalHits());
+    }
+
+    @Test
+    public void offlineAnEmptyCacheStillCannotNameALatestRelease() throws Exception {
+        Fixture f = new Fixture(Reason.NO_SUCH_RELEASE, Set.of());
+        PreferredResources github = PreferredResources.load(f.writeResources(List.of(githubMsEntry(f))));
+
+        VocabularyResolver strict = f.offline(github, false);
+        VocabularyUnavailableException e = assertThrows(VocabularyUnavailableException.class,
+            () -> strict.ancestors(ESI));
+        assertEquals(Optional.of(Reason.OFFLINE_NOT_CACHED), e.kind());
+        assertEquals("latest", e.versionWanted());
+        assertTrue(e.reason().contains("nor any release of MS"), e.reason());
+        // forced, there is no substitute either: the current-release source is offline
+        f.current.version = Optional.empty();
+        VocabularyResolver forced = f.offline(github, true);
+        assertThrows(VocabularyUnavailableException.class, () -> forced.ancestors(ESI));
+    }
+
+    /** An MS entry shaped like the shipped one: GitHub tags and the latest tag, nothing listed. */
+    private static String githubMsEntry(Fixture f) {
+        return """
+            "MS": {
+              "labels": ["MS"],
+              "oboPrefix": "MS",
+              "location": {"format": "OBO", "urlTemplate": "%s/ms/v{version}/psi-ms.obo"},
+              "scheme": "DOTTED",
+              "releases": {"kind": "githubTags", "repo": "o/ms", "tagPattern": "v{version}", "dates": "githubReleases"},
+              "latest": {"kind": "githubLatestTag", "repo": "o/ms", "tagPattern": "v{version}"}
+            }""".formatted(f.server.base());
+    }
+
+    private static void assertCachedLatest(VocabularyResolver resolver, String declaredOriginal,
+        List<MZTabErrorType> types) {
+        ResolvedVocabulary ms = only(resolver.resolved());
+        assertEquals("LATEST", ms.reason());
+        assertEquals(V150, ms.versionUsed());
+        assertEquals(declaredOriginal, ms.declaredOriginal());
+        assertEquals(V150, ms.release().orElseThrow().version());
+        assertEquals(types, types(resolver.messages()));
+        assertEquals("No version is declared for the controlled vocabulary \"MS\"; the latest version \"4.1.150\""
+            + " (the newest release in the cache, as downloads are off) was used.",
+            resolver.messages().get(resolver.messages().size() - 1).getMessage());
+    }
+
     private static String btoEntry(Fixture f, String releases) {
         return """
             "BTO": {
@@ -676,9 +788,23 @@ public class VocabularyResolverTest {
         }
 
         private VocabularyResolver resolver(Source source, PreferredResources resources, boolean forced, CV... cvs) {
-            LookupPolicy policy = new LookupPolicy(source, forced, cache(reason == Reason.OFFLINE_NOT_CACHED),
-                resources, current);
+            return resolver(source, resources, forced, reason == Reason.OFFLINE_NOT_CACHED, cvs);
+        }
+
+        VocabularyResolver offline(PreferredResources resources, boolean forced, CV... cvs) {
+            return resolver(Source.LOCAL, resources, forced, true, cvs);
+        }
+
+        private VocabularyResolver resolver(Source source, PreferredResources resources, boolean forced,
+            boolean offline, CV... cvs) {
+            LookupPolicy policy = new LookupPolicy(source, forced, cache(offline), resources, current);
             return new VocabularyResolver(policy, List.of(cvs), Map.of());
+        }
+
+        /** Puts a release's file alone into its cache folder, as an operator pre-fills it. */
+        void prefill(String key, String version, String file, byte[] content) throws IOException {
+            Path folder = Files.createDirectories(root.resolve(key).resolve(version));
+            Files.write(folder.resolve(file), content);
         }
 
         private String msEntry(Map<String, String> knownSha256) {

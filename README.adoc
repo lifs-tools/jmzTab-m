@@ -112,7 +112,7 @@ These options change where and how the terms are looked up. They have no short f
 
 * Only the vocabularies in which a rule looks up a term are resolved, by the cv label of the parameter. A vocabulary that is declared but not used gets the Warn-3014 as before, and nothing is downloaded for it.
 * A declared version that names a release is used as is. A date, e.g. `20-06-2018` or `2018-06-20`, is read as the release that was current on that date. Any other value is treated as undeclared, with Warn-3021.
-* A vocabulary without a declared version is checked against its latest release, with Info-3022. "Latest" is always resolved to a concrete release. Which release is the latest, and the list of a vocabulary's releases, are kept in the cache for 24 hours.
+* A vocabulary without a declared version is checked against its latest release, with Info-3022. "Latest" is always resolved to a concrete release. Which release is the latest, and the list of a vocabulary's releases, are kept in the cache for 24 hours (`<KEY>/latest.json` and `<KEY>/releases.json`); with `--cvOffline` they are used whatever their age. Offline, if the cache holds no latest release kept by an online run, the latest is the newest release in the cache, and the Info-3022 says so.
 
 After the semantic messages, the CLI prints one line per vocabulary used, the release it used, why, and where it came from, for example:
 
@@ -140,6 +140,8 @@ The exit code follows the same rule as before: the run fails if a message at or 
 * An OWL vocabulary's imports are downloaded and cached with it, under `<cache>/_imports/`. An import whose IRI names no version is kept as it was first downloaded; delete its folder to download it again.
 * The GitHub API, which lists the releases of e.g. PSI-MS and MSIO, allows 60 requests per hour without a token. Set the environment variable `GITHUB_TOKEN` to a GitHub token to use your own limit.
 * To validate without network, pre-fill the cache: copy a cache folder from a machine that has the releases, or put the vocabulary file alone into `<cache>/<KEY>/<version>/`, under the name of its download (the last part of its URL, e.g. `MS/4.1.2/psi-ms.obo`). The first run that needs it builds its index and writes its `release.json`, also with `--cvOffline`.
+** A pre-filled release answers a file that declares that release. A file without a version, or with a value that names no release, is checked against the latest release: offline, that is the one an earlier online run kept, else the newest release in the cache.
+** A declared date, e.g. `20-06-2018`, needs the list of the vocabulary's releases with their dates. Offline, only a list that an earlier online run kept (`<KEY>/releases.json`, so copy a whole cache folder), or one written out in a `--cvResources` entry (`"releases": {"kind": "listed", ...}`, see below), gives it. Without one, a date is an Error-3017 offline; with `--cvForce`, the newest release in the cache is used instead, with a Warn-3018.
 
 ==== The resources file
 

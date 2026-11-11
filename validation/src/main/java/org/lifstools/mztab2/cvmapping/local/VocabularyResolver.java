@@ -80,6 +80,13 @@ import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabError;
  * strict run.</p>
  *
  * <p>
+ * Offline, with no latest release kept by an earlier online run, the latest
+ * release is the newest one the cache holds (Ruling R-AF): a pre-filled cache
+ * answers an undeclared or unrecognised version (Info-3022 says the latest
+ * came from the cache), and a forced run substitutes from it. A declared date
+ * still needs the release list, so offline without one it fails as before.</p>
+ *
+ * <p>
  * The terms of a cached release are answered from its index, which holds its
  * OWL imports too: OBI's terms under MSIO come from MSIO's release. Each
  * ancestor carries the vocabulary's OBO prefix as its cv label, as OLS gives
@@ -104,6 +111,13 @@ public final class VocabularyResolver implements AncestorSource {
 
     /** The source named in Warn-3018 for a substitute from the cache. */
     private static final String LOCAL = "local";
+    /**
+     * The source named in Warn-3018 for the newest release in the cache,
+     * used offline when no latest release is kept (Ruling R-AF).
+     */
+    private static final String LOCAL_NEWEST = "the local cache (its newest release)";
+    /** Said in Info-3022 of a latest release that is the newest in the cache (Ruling R-AF). */
+    private static final String CACHED_LATEST = " (the newest release in the cache, as downloads are off)";
     private static final String LATEST = "latest";
     private static final String ONLY_OLS =
         "only OLS could answer it, and OLS serves only its current release";
@@ -240,7 +254,14 @@ public final class VocabularyResolver implements AncestorSource {
     @FunctionalInterface
     private interface VersionLookup {
 
-        Optional<String> version() throws ResolutionException;
+        Optional<Pick> version() throws ResolutionException;
+    }
+
+    /**
+     * A version chosen; cached is true for the newest release in the cache,
+     * taken offline as the latest (Ruling R-AF).
+     */
+    private record Pick(String version, boolean cached) {
     }
 
     /** A forced run's substitute: why it is used, and which version it is. */
@@ -296,16 +317,17 @@ public final class VocabularyResolver implements AncestorSource {
                 // a date names a release only through the release list; any other value is undeclared
                 return unavailable(declaredText.trim(), unlisted.reason(),
                     "its releases cannot be listed, so the declared date cannot be turned into a release: "
-                    + unlisted.getMessage(), unlisted, List.of(latest(e)));
+                    + unlisted.getMessage(), unlisted, List.of(latestSubstitute(e)));
             }
             normalised = version.normalised();
             VersionChoice choice = VersionRule.choose(name, version, mapping, e.scheme());
             messages.addAll(choice.messages());
             String wanted = choice.version();
+            String latestNote = "";
             if (wanted == null) {
-                Optional<String> latest;
+                Optional<Pick> latest;
                 try {
-                    latest = cache.latest(e);
+                    latest = latest(e);
                 } catch (ResolutionException x) {
                     return unavailable(LATEST, x.reason(), x.getMessage(), x, List.of());
                 }
@@ -313,12 +335,14 @@ public final class VocabularyResolver implements AncestorSource {
                     return unavailable(LATEST, Reason.NO_SUCH_RELEASE, "no latest release can be named", null,
                         List.of());
                 }
-                wanted = latest.get();
+                wanted = latest.get().version();
+                latestNote = latest.get().cached() ? CACHED_LATEST : "";
             }
             try {
                 Answer answer = local(e, wanted, choice.reason().name());
                 if (choice.reason() == VersionChoice.Reason.LATEST) {
-                    messages.add(new MZTabError(CrossCheckErrorType.CvVersionNotDeclared, -1, name, wanted));
+                    messages.add(new MZTabError(CrossCheckErrorType.CvVersionNotDeclared, -1, name, wanted,
+                        latestNote));
                 }
                 return answer;
             } catch (ResolutionException x) {
@@ -339,7 +363,7 @@ public final class VocabularyResolver implements AncestorSource {
                 }
                 List<Substitute> substitutes = choice.reason() == VersionChoice.Reason.LATEST
                     ? List.of()
-                    : List.of(newer(wanted, releases, e.scheme()), latest(e));
+                    : List.of(newer(wanted, releases, e.scheme()), latestSubstitute(e));
                 return unavailable(wanted, failure.reason(), failure.getMessage(), failure, substitutes);
             }
         }
@@ -382,13 +406,14 @@ public final class VocabularyResolver implements AncestorSource {
             Set<String> tried = new HashSet<>(Set.of(wanted));
             for (Substitute s : substitutes) {
                 try {
-                    Optional<String> version = s.lookup().version();
-                    if (version.isEmpty() || !tried.add(version.get())) {
+                    Optional<Pick> pick = s.lookup().version();
+                    if (pick.isEmpty() || !tried.add(pick.get().version())) {
                         continue;
                     }
-                    Answer answer = local(entry.orElseThrow(), version.get(), s.reason());
+                    String version = pick.get().version();
+                    Answer answer = local(entry.orElseThrow(), version, s.reason());
                     messages.add(new MZTabError(CrossCheckErrorType.CvVersionSubstituted, -1, name, wanted, reason,
-                        version.get(), LOCAL));
+                        version, pick.get().cached() ? LOCAL_NEWEST : LOCAL));
                     return answer;
                 } catch (ResolutionException x) {
                     LOG.debug("{} substitute for {} {} cannot be had: {}", s.reason(), name, wanted,
@@ -433,11 +458,36 @@ public final class VocabularyResolver implements AncestorSource {
             return new Substitute("SUBSTITUTE_NEWER", () -> releases.stream()
                 .map(Release::version)
                 .filter(v -> scheme.compare(v, version).map(c -> c > 0).orElse(false))
-                .min((a, b) -> scheme.compare(a, b).orElse(0)));
+                .min((a, b) -> scheme.compare(a, b).orElse(0))
+                .map(v -> new Pick(v, false)));
         }
 
-        private Substitute latest(VocabularyEntry e) {
-            return new Substitute("SUBSTITUTE_LATEST", () -> policy.cache().latest(e));
+        private Substitute latestSubstitute(VocabularyEntry e) {
+            return new Substitute("SUBSTITUTE_LATEST", () -> latest(e));
+        }
+
+        /**
+         * The latest release. Offline, without a kept latest release or
+         * release index, it is the newest release in the cache (Ruling R-AF):
+         * a pre-filled cache then answers an undeclared version, and a forced
+         * run substitutes from it.
+         */
+        private Optional<Pick> latest(VocabularyEntry e) throws ResolutionException {
+            VocabularyCache cache = policy.cache();
+            try {
+                return cache.latest(e).map(v -> new Pick(v, false));
+            } catch (ResolutionException x) {
+                if (x.reason() != Reason.OFFLINE_NOT_CACHED) {
+                    throw x;
+                }
+                Optional<String> newest = cache.newestCached(e);
+                if (newest.isEmpty()) {
+                    throw new ResolutionException(x.reason(), x.getMessage() + ", nor any release of " + e.key(), x);
+                }
+                LOG.info("Offline, the latest release of {} is taken to be {}, the newest in the cache ({})",
+                    e.key(), newest.get(), x.getMessage());
+                return newest.map(v -> new Pick(v, true));
+            }
         }
     }
 

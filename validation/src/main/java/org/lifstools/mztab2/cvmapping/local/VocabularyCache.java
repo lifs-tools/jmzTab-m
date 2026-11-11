@@ -106,7 +106,9 @@ import org.slf4j.LoggerFactory;
  * <p>
  * Offline, nothing is downloaded: a release not in the cache is
  * {@link Reason#OFFLINE_NOT_CACHED}, and {@link #latest} and
- * {@link #releases} answer from their cached files whatever their age.</p>
+ * {@link #releases} answer from their cached files whatever their age.
+ * Without such a file, {@link #newestCached} names the newest release the
+ * cache holds.</p>
  *
  * <p>
  * What a release index holds, and which release is the latest, is read over
@@ -921,6 +923,46 @@ public final class VocabularyCache {
         } finally {
             lock.unlock();
         }
+    }
+
+    /**
+     * The newest release of a vocabulary that the cache holds (Ruling R-AF),
+     * for an offline run that has no kept latest release: a folder
+     * {@code <key>/<version>/} whose name fits the vocabulary's scheme and
+     * that holds a release.json, or the file a download would give it (a
+     * pre-filled release). Nothing is downloaded, written or removed, and the
+     * answer is not kept: it is no latest release its source named.
+     *
+     * @param e the vocabulary
+     * @return the newest such release, or empty if the cache holds none
+     */
+    Optional<String> newestCached(VocabularyEntry e) {
+        Path keyFolder = keyFolder(e);
+        if (!Files.isDirectory(keyFolder)) {
+            return Optional.empty();
+        }
+        List<Release> held = new ArrayList<>();
+        try (DirectoryStream<Path> folders = Files.newDirectoryStream(keyFolder, Files::isDirectory)) {
+            for (Path folder : folders) {
+                String version = folder.getFileName().toString();
+                if (!e.scheme().accepts(version)) {
+                    continue;
+                }
+                URI url;
+                try {
+                    url = e.location().url(version);
+                } catch (IllegalArgumentException x) {
+                    continue;
+                }
+                if (isEntry(folder) || Files.isRegularFile(folder.resolve(expectedFileName(e, url)))) {
+                    held.add(new Release(version, Optional.empty()));
+                }
+            }
+        } catch (IOException x) {
+            LOG.debug("The releases in {} cannot be listed: {}", keyFolder, message(x));
+            return Optional.empty();
+        }
+        return ReleaseIndexReader.newest(e.scheme(), held);
     }
 
     private Optional<String> lookUpLatest(VocabularyEntry e) throws ResolutionException {

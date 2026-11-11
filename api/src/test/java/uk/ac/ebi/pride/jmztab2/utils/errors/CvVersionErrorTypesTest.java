@@ -38,7 +38,7 @@ class CvVersionErrorTypesTest {
             new Row(CrossCheckErrorType.CvVersionOlderThanMapping, 3019, Level.Warn, "UO", "2020-01-01", "2023-05-01"),
             new Row(CrossCheckErrorType.CvVersionsNotComparable, 3020, Level.Warn, "UO", "vX", "2023-05-01"),
             new Row(CrossCheckErrorType.CvVersionNotRecognised, 3021, Level.Warn, "UO", "latest-ish"),
-            new Row(CrossCheckErrorType.CvVersionNotDeclared, 3022, Level.Info, "UO", "2023-05-01"),
+            new Row(CrossCheckErrorType.CvVersionNotDeclared, 3022, Level.Info, "UO", "2023-05-01", " (the newest release in the cache)"),
             new Row(CrossCheckErrorType.CvDeclaredTwice, 3023, Level.Warn, "UO", "2023-05-01", "2020-01-01"));
         for (Row row : rows) {
             assertEquals(row.code(), row.type().getCode());
