@@ -21,9 +21,11 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -183,6 +185,55 @@ public class TermIndexTest {
         TermIndexWriter.write(List.of(term("X:1", "one", false, Map.of())), file);
         Path plain = Files.createFile(dir.resolve("plain"));
         assertEquals(Files.getPosixFilePermissions(plain), Files.getPosixFilePermissions(file));
+    }
+
+    @Test
+    public void aTruncatedIndexIsRejected() throws IOException {
+        Path file = dir.resolve("terms.idx");
+        TermIndexWriter.write(OboReaderTest.readMiniMs().values(), file);
+        byte[] whole = Files.readAllBytes(file);
+        for (int cut : List.of(1, 3, 40)) {
+            Path truncated = dir.resolve("truncated-" + cut + ".idx");
+            Files.write(truncated, Arrays.copyOf(whole, whole.length - cut));
+            IOException e = assertThrows(IOException.class, () -> TermIndex.open(truncated));
+            assertTrue(e.getMessage().contains("not a term index: truncated records"), e.getMessage());
+        }
+        Path extended = dir.resolve("extended.idx");
+        Files.write(extended, Arrays.copyOf(whole, whole.length + 4));
+        assertThrows(IOException.class, () -> TermIndex.open(extended));
+    }
+
+    @Test
+    public void aHeaderClaimingTooManyRelationsIsRejected() throws IOException {
+        Path file = dir.resolve("terms.idx");
+        ByteBuffer header = ByteBuffer.allocate(16).put("JMZTIDX1".getBytes(StandardCharsets.US_ASCII))
+            .putInt(0).putInt(Integer.MAX_VALUE);
+        Files.write(file, header.array());
+        IOException e = assertThrows(IOException.class, () -> TermIndex.open(file));
+        assertTrue(e.getMessage().contains("truncated header"), e.getMessage());
+    }
+
+    @Test
+    public void aParentOrdinalOutsideTheTableIsACorruptIndex() throws IOException {
+        Path file = dir.resolve("terms.idx");
+        TermIndexWriter.write(List.of(term("X:1", "one", false, Map.of("is_a", List.of("X:2"))),
+            term("X:2", "two", false, Map.of())), file);
+        byte[] bytes = Files.readAllBytes(file);
+        ByteBuffer buffer = ByteBuffer.wrap(bytes);
+        // header: magic, counts, one relation name "is_a"; then two offsets
+        long firstRecord = buffer.getLong(8 + 4 + 4 + 4 + 4);
+        // X:1's record: id, label, obsolete byte, is_a count, then the parent ordinal
+        int ordinalAt = (int) firstRecord + 4 + 3 + 4 + 3 + 1 + 2;
+        assertEquals(1, buffer.getInt(ordinalAt));
+        buffer.putInt(ordinalAt, 99);
+        Files.write(file, bytes);
+        try (TermIndex index = TermIndex.open(file)) {
+            IllegalStateException e = assertThrows(IllegalStateException.class,
+                () -> index.ancestors("X:1"));
+            assertTrue(e.getMessage().contains("is corrupt"), e.getMessage());
+            assertThrows(IllegalStateException.class, () -> index.term("X:1"));
+            assertEquals("two", index.term("X:2").get().label());
+        }
     }
 
     @Test

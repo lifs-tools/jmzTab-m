@@ -106,6 +106,9 @@ public final class TermIndex implements Closeable {
             if (termCount < 0 || relationCount < 0) {
                 throw new IOException(file + " is not a term index: negative counts");
             }
+            if (relationCount > (size - headerSize) / 4) {
+                throw new IOException(file + " is not a term index: truncated header");
+            }
             List<String> relations = new ArrayList<>(relationCount);
             long position = headerSize;
             for (int r = 0; r < relationCount; r++) {
@@ -122,8 +125,48 @@ public final class TermIndex implements Closeable {
             if (position + 8L * termCount > size) {
                 throw new IOException(file + " is not a term index: truncated offset table");
             }
+            if (recordsEnd(segment, position, termCount, relationCount) != size) {
+                throw new IOException(file + " is not a term index: truncated records");
+            }
             return new TermIndex(file, segment, termCount, List.copyOf(relations), position);
         }
+    }
+
+    /**
+     * Where the records end, if the first record starts right after the offset
+     * table and the last one lies within the file; -1 otherwise. The writer
+     * writes the records in table order, so the last record ends the file.
+     */
+    private static long recordsEnd(MemorySegment segment, long tableStart, int termCount,
+        int relationCount) {
+        long size = segment.byteSize();
+        long recordsStart = tableStart + 8L * termCount;
+        if (termCount == 0) {
+            return recordsStart;
+        }
+        long first = segment.get(LONG, tableStart);
+        long position = segment.get(LONG, tableStart + 8L * (termCount - 1));
+        if (first != recordsStart || position < first) {
+            return -1;
+        }
+        for (int field = 0; field < 2; field++) {
+            if (position + 4 > size) {
+                return -1;
+            }
+            int length = segment.get(INT, position);
+            if (length < 0) {
+                return -1;
+            }
+            position += 4L + length;
+        }
+        position += 1;
+        for (int r = 0; r < relationCount; r++) {
+            if (position + 2 > size) {
+                return -1;
+            }
+            position += 2 + 4L * Short.toUnsignedInt(segment.get(SHORT, position));
+        }
+        return position;
     }
 
     /**
@@ -131,6 +174,8 @@ public final class TermIndex implements Closeable {
      *
      * @param oboId the obo id, e.g. {@code MS:1000073}; case-sensitive
      * @return the term, or empty if the release has no such term
+     * @throws IllegalStateException if a stored parent is not a term of the
+     * index: the file is corrupt
      */
     public Optional<TermRecord> term(String oboId) {
         int ordinal = ordinal(oboId);
@@ -144,6 +189,8 @@ public final class TermIndex implements Closeable {
      *
      * @param oboId the obo id; case-sensitive
      * @return the ancestors, nearest first; empty for an unknown id or a root
+     * @throws IllegalStateException if a stored parent is not a term of the
+     * index: the file is corrupt
      */
     public List<TermRecord> ancestors(String oboId) {
         int start = ordinal(oboId);
@@ -161,7 +208,7 @@ public final class TermIndex implements Closeable {
                 int count = Short.toUnsignedInt(segment.get(SHORT, position));
                 position += 2;
                 for (int p = 0; p < count; p++) {
-                    int parent = segment.get(INT, position);
+                    int parent = parentOrdinal(position);
                     position += 4;
                     if (seen.add(parent)) {
                         queue.add(parent);
@@ -202,6 +249,16 @@ public final class TermIndex implements Closeable {
         if (closed) {
             throw new IllegalStateException(this + " is closed");
         }
+    }
+
+    /** A stored parent ordinal; one outside the table means the file is corrupt. */
+    private int parentOrdinal(long position) {
+        int ordinal = segment.get(INT, position);
+        if (ordinal < 0 || ordinal >= termCount) {
+            throw new IllegalStateException(file + " is corrupt: the parent ordinal " + ordinal
+                + " at byte " + position + " is not one of its " + termCount + " terms");
+        }
+        return ordinal;
     }
 
     private long offset(int ordinal) {
@@ -267,7 +324,7 @@ public final class TermIndex implements Closeable {
             if (count > 0) {
                 List<String> ids = new ArrayList<>(count);
                 for (int p = 0; p < count; p++) {
-                    ids.add(id(segment.get(INT, position)));
+                    ids.add(id(parentOrdinal(position)));
                     position += 4;
                 }
                 parents.put(relation, ids);
