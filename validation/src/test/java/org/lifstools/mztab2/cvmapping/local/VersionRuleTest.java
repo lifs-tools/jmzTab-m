@@ -94,7 +94,7 @@ public class VersionRuleTest {
 
         assertNull(c.version());
         assertEquals(Reason.LATEST, c.reason());
-        // the resolver adds Info-3022 once the latest is a concrete version
+        // the resolver adds Info-3022 once the latest release has been resolved
         assertEquals(List.of(), c.messages());
         // a value that names nothing is undeclared, with its warning
         VersionChoice unrecognised = choose("v-final", null);

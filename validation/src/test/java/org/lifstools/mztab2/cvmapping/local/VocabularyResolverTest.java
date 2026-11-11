@@ -239,11 +239,17 @@ public class VocabularyResolverTest {
         // no older or newer release is tried for a latest that fails
         assertEquals(0, f.server.hits(f.msPath(V150)));
         assertEquals(0, f.server.hits(f.msPath(V100)));
-        assertEquals(List.of(CrossCheckErrorType.CvVersionNotDeclared, CrossCheckErrorType.CvVersionSubstituted),
-            types(resolver.messages()));
-        assertTrue(resolver.messages().get(1).getMessage().contains("\"MS\" in version \"4.1.200\" is not"
-            + " available"), resolver.messages().get(1).getMessage());
+        // no 3022: the latest was not used, and the 3018 says what was
+        assertEquals(List.of(CrossCheckErrorType.CvVersionSubstituted), types(resolver.messages()));
+        assertTrue(resolver.messages().get(0).getMessage().contains("\"MS\" in version \"4.1.200\" is not"
+            + " available"), resolver.messages().get(0).getMessage());
         assertEquals("OLS", only(resolver.resolved()).reason());
+        // strict: only the 3017
+        VocabularyResolver strict = f.resolver(false);
+        VocabularyUnavailableException e = assertThrows(VocabularyUnavailableException.class,
+            () -> strict.ancestors(ESI));
+        assertEquals(V200, e.versionWanted());
+        assertEquals(List.of(), strict.messages());
     }
 
     @Test
@@ -406,6 +412,45 @@ public class VocabularyResolverTest {
         assertEquals(V200, only(unrecognised.resolved()).versionUsed());
     }
 
+    @Test
+    public void withoutAReleaseListOnlyADeclaredDateFails() throws Exception {
+        Fixture f = new Fixture(Reason.NO_SUCH_RELEASE, Set.of());
+        // the release index (GitHub tags) fails; the latest comes from the unversioned file's header
+        f.server.route("/api/repos/o/ms/tags", x -> TestServer.send(x, 500, new byte[0]));
+        f.server.file("/ms/psi-ms.obo", miniMs);
+        PreferredResources unlisted = PreferredResources.load(f.writeResources(List.of("""
+            "MS": {
+              "labels": ["MS"],
+              "oboPrefix": "MS",
+              "location": {"format": "OBO", "urlTemplate": "%1$s/ms/v{version}/psi-ms.obo"},
+              "scheme": "DOTTED",
+              "releases": {"kind": "githubTags", "repo": "o/ms", "tagPattern": "v{version}", "dates": "githubReleases"},
+              "latest": {"kind": "header", "url": "%1$s/ms/psi-ms.obo"}
+            }""".formatted(f.server.base()))));
+
+        // a value that names nothing is undeclared, as with a release list: 3021, then the latest
+        VocabularyResolver junk = f.resolver(unlisted, false, cv("MS", "final"));
+        assertFalse(junk.ancestors(ESI).isEmpty());
+        assertEquals(List.of(CrossCheckErrorType.CvVersionNotRecognised, CrossCheckErrorType.CvVersionNotDeclared),
+            types(junk.messages()));
+        ResolvedVocabulary ms = only(junk.resolved());
+        assertEquals("LATEST", ms.reason());
+        assertEquals(V200, ms.versionUsed());
+        // a plain release name needs no list either
+        VocabularyResolver release = f.resolver(unlisted, false, cv("MS", V150));
+        assertFalse(release.ancestors(ESI).isEmpty());
+        assertEquals("FILE", only(release.resolved()).reason());
+
+        // a date names a release only through the list: strict, the list's failure
+        VocabularyResolver date = f.resolver(unlisted, false, cv("MS", "14-06-2024"));
+        VocabularyUnavailableException e = assertThrows(VocabularyUnavailableException.class,
+            () -> date.ancestors(ESI));
+        assertEquals(Optional.of(Reason.DOWNLOAD_FAILED), e.kind());
+        assertEquals("14-06-2024", e.versionWanted());
+        assertTrue(e.reason().startsWith("its releases cannot be listed"), e.reason());
+        assertEquals(List.of(), date.messages());
+    }
+
     // ---- assertions ----
 
     private static void assertLatest(VocabularyResolver resolver, String declaredOriginal) {
@@ -527,6 +572,14 @@ public class VocabularyResolverTest {
         }
 
         VocabularyResolver resolver(Source source, boolean forced, CV... cvs) {
+            return resolver(source, resources, forced, cvs);
+        }
+
+        VocabularyResolver resolver(PreferredResources resources, boolean forced, CV... cvs) {
+            return resolver(Source.LOCAL, resources, forced, cvs);
+        }
+
+        private VocabularyResolver resolver(Source source, PreferredResources resources, boolean forced, CV... cvs) {
             LookupPolicy policy = new LookupPolicy(source, forced, cache(reason == Reason.OFFLINE_NOT_CACHED),
                 resources, current);
             return new VocabularyResolver(policy, List.of(cvs), Map.of());
@@ -561,7 +614,7 @@ public class VocabularyResolverTest {
                 }""".formatted(server.base());
         }
 
-        private Path writeResources(List<String> entries) throws IOException {
+        Path writeResources(List<String> entries) throws IOException {
             Path file = Files.createTempFile(temp, "resources", ".json");
             Files.writeString(file, "{\"vocabularies\": {" + String.join(", ", entries) + "}}",
                 StandardCharsets.UTF_8);

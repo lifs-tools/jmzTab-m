@@ -98,6 +98,17 @@ public record DeclaredVersion(String original, Optional<String> normalised, Kind
         return releases.stream().anyMatch(r -> value.equals(r.version()));
     }
 
+    /**
+     * Whether a declared value is in one of the recognised date forms, which
+     * name a release only through the release list.
+     *
+     * @param declared the declared version text, may be null
+     * @return true for a date, whatever the releases
+     */
+    static boolean isDate(String declared) {
+        return declared != null && parseDate(declared.trim()).isPresent();
+    }
+
     private static Optional<LocalDate> parseDate(String value) {
         for (DateTimeFormatter f : DATE_TIMES) {
             try {

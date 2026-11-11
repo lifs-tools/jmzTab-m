@@ -37,8 +37,8 @@ import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabError;
  * <tr><td>a version, the mapping none</td><td>the file's (FILE)</td>
  * <td>none</td></tr>
  * <tr><td>none, the mapping none</td><td>the latest (LATEST)</td>
- * <td>Info-3022, which the resolver adds once the latest is a concrete
- * version</td></tr>
+ * <td>Info-3022, which the resolver adds once the latest release has
+ * been resolved</td></tr>
  * <tr><td>not comparable with the mapping's</td><td>the file's (FILE)</td>
  * <td>Warn-3020</td></tr>
  * </table>

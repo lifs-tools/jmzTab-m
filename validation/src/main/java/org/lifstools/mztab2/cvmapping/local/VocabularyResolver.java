@@ -92,8 +92,9 @@ import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabError;
  * further {@code cv[n]} entry of a label (made when the resolver is built,
  * since it is a property of the file, so it is reported even if the label is
  * never looked up), then for each label as it is resolved Warn-3021,
- * Warn-3019 or Warn-3020, Info-3022 once the latest is a concrete version,
- * and Warn-3018. The Error-3017 is only in the exception.</p>
+ * Warn-3019 or Warn-3020, Info-3022 once the latest release has been
+ * resolved (a latest that fails gives only the 3018 or the 3017), and
+ * Warn-3018. The Error-3017 is only in the exception.</p>
  *
  * <p>
  * Each label is resolved once, also when asked from several threads at
@@ -285,10 +286,11 @@ public final class VocabularyResolver implements AncestorSource {
                 unlisted = x;
             }
             DeclaredVersion version = DeclaredVersion.of(declaredText, e.scheme(), releases);
-            if (unlisted != null && version.kind() == DeclaredVersion.Kind.NOT_RECOGNISED) {
-                // a date, or a value that names nothing: without the releases it can't be told
+            if (unlisted != null && version.kind() == DeclaredVersion.Kind.NOT_RECOGNISED
+                && DeclaredVersion.isDate(declaredText)) {
+                // a date names a release only through the release list; any other value is undeclared
                 return unavailable(declaredText.trim(), unlisted.reason(),
-                    "its releases cannot be listed, so the declared version cannot be read: "
+                    "its releases cannot be listed, so the declared date cannot be turned into a release: "
                     + unlisted.getMessage(), unlisted, List.of(latest(e)));
             }
             normalised = version.normalised();
@@ -307,10 +309,13 @@ public final class VocabularyResolver implements AncestorSource {
                         List.of());
                 }
                 wanted = latest.get();
-                messages.add(new MZTabError(CrossCheckErrorType.CvVersionNotDeclared, -1, name, wanted));
             }
             try {
-                return local(e, wanted, choice.reason().name());
+                Answer answer = local(e, wanted, choice.reason().name());
+                if (choice.reason() == VersionChoice.Reason.LATEST) {
+                    messages.add(new MZTabError(CrossCheckErrorType.CvVersionNotDeclared, -1, name, wanted));
+                }
+                return answer;
             } catch (ResolutionException x) {
                 List<Substitute> substitutes = choice.reason() == VersionChoice.Reason.LATEST
                     ? List.of()
