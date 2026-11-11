@@ -110,7 +110,7 @@ import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabError;
 public final class VocabularyResolver implements AncestorSource {
 
     /** The source named in Warn-3018 for a substitute from the cache. */
-    private static final String LOCAL = "local";
+    private static final String LOCAL = "the local cache";
     /**
      * The source named in Warn-3018 for the newest release in the cache,
      * used offline when no latest release is kept (Ruling R-AF).
@@ -119,6 +119,7 @@ public final class VocabularyResolver implements AncestorSource {
     /** Said in Info-3022 of a latest release that is the newest in the cache (Ruling R-AF). */
     private static final String CACHED_LATEST = " (the newest release in the cache, as downloads are off)";
     private static final String LATEST = "latest";
+    private static final String NO_VERSION = "(none)";
     private static final String ONLY_OLS =
         "only OLS could answer it, and OLS serves only its current release";
     private static final String OLS_REASON = "OLS";
@@ -158,7 +159,7 @@ public final class VocabularyResolver implements AncestorSource {
             CV kept = first.putIfAbsent(key(cv.getLabel()), cv);
             if (kept != null) {
                 messages.add(new MZTabError(CrossCheckErrorType.CvDeclaredTwice, -1, kept.getLabel(),
-                    kept.getVersion(), cv.getVersion()));
+                    versionOrNone(kept), versionOrNone(cv)));
             }
         }
         this.declared = first;
@@ -200,6 +201,11 @@ public final class VocabularyResolver implements AncestorSource {
         synchronized (messages) {
             return List.copyOf(messages);
         }
+    }
+
+    /** A cv entry's version for Warn-3023, "(none)" if it has none (final review M3). */
+    private static String versionOrNone(CV cv) {
+        return cv.getVersion() == null || cv.getVersion().isBlank() ? NO_VERSION : cv.getVersion();
     }
 
     private static String key(String label) {
@@ -376,7 +382,7 @@ public final class VocabularyResolver implements AncestorSource {
                 index = TermIndexStore.open(release);
             } catch (IOException x) {
                 throw new ResolutionException(Reason.PARSE_FAILED,
-                    "its index " + release.index() + " cannot be read: " + x.getMessage(), x);
+                    "its index " + release.index() + " cannot be read: " + VocabularyCache.message(x), x);
             }
             used = new ResolvedVocabulary(name, declaredText, normalised, mapping, version, reason,
                 Optional.of(release), Optional.empty(), Optional.empty(), true);

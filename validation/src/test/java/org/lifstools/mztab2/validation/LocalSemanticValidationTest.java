@@ -131,7 +131,7 @@ public class LocalSemanticValidationTest {
             .orElseThrow(() -> new AssertionError(messages.toString()));
         assertEquals(ValidationMessage.MessageTypeEnum.WARN, ms.getMessageType());
         assertTrue(ms.getMessage().contains(DECLARED_MS) && ms.getMessage().contains(CACHED_MS)
-            && ms.getMessage().contains("local"), ms.getMessage());
+            && ms.getMessage().contains("from the local cache"), ms.getMessage());
 
         // the rules ran to the end: rules of other vocabularies after the MS ones were applied
         Set<String> ruleIds = messages.stream().map(ValidationMessage::getRuleId).filter(r -> r != null)

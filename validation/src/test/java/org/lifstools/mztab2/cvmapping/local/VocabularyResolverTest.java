@@ -190,7 +190,7 @@ public class VocabularyResolverTest {
             Fixture newer = new Fixture(reason, Set.of(V100));
             VocabularyResolver resolver = newer.resolver(true, cv("MS", V100));
             assertFalse(resolver.ancestors(ESI).isEmpty());
-            assertSubstitute(resolver, V100, "SUBSTITUTE_NEWER", V150, "local");
+            assertSubstitute(resolver, V100, "SUBSTITUTE_NEWER", V150, "the local cache");
             assertTrue(only(resolver.resolved()).reRunnable());
             assertEquals(0, newer.current.versionCalls.get());
 
@@ -198,7 +198,7 @@ public class VocabularyResolverTest {
             Fixture latest = new Fixture(reason, Set.of(V100, V150));
             resolver = latest.resolver(true, cv("MS", V100));
             assertFalse(resolver.ancestors(ESI).isEmpty());
-            assertSubstitute(resolver, V100, "SUBSTITUTE_LATEST", V200, "local");
+            assertSubstitute(resolver, V100, "SUBSTITUTE_LATEST", V200, "the local cache");
             assertTrue(only(resolver.resolved()).reRunnable());
             assertEquals(0, latest.current.versionCalls.get());
         }
@@ -378,6 +378,17 @@ public class VocabularyResolverTest {
     }
 
     @Test
+    public void aDuplicateEntryWithoutAVersionIsNamedAsSuch() throws Exception {
+        // final review M3
+        Fixture f = new Fixture(Reason.NO_SUCH_RELEASE, Set.of());
+        VocabularyResolver resolver = f.resolver(false, cv("MS", V150), cv("MS", null));
+
+        String message = only(resolver.messages()).getMessage();
+        assertTrue(message.startsWith("The controlled vocabulary \"MS\" is declared twice, in version"
+            + " \"4.1.150\" and in version \"(none)\";"), message);
+    }
+
+    @Test
     public void anImportedTermIsAnswered() throws Exception {
         Fixture f = new Fixture(Reason.NO_SUCH_RELEASE, Set.of());
         f.server.file("/msio/v1.0.1/msio.owl", resource("/cv/mini-msio.owl"));
@@ -533,6 +544,76 @@ public class VocabularyResolverTest {
         assertEquals("SUBSTITUTE_LATEST", substitute.reason());
         assertEquals("2023-03-01", substitute.versionUsed());
         assertEquals(List.of(CrossCheckErrorType.CvVersionSubstituted), types(forced.messages()));
+    }
+
+    // ---- Rulings R-AE and R-AD: an unlisted ISO date that is no release ----
+
+    @Test
+    public void anUnlistedIsoDateBeforeTheFirstReleaseThatIsNoReleaseIsNoSuchRelease() throws Exception {
+        // Ruling R-AE: it was tried as a release name and its source has none; there is no date to fall back on
+        Fixture f = new Fixture(Reason.NO_SUCH_RELEASE, Set.of());
+        f.server.file("/bto/v2022-10-26/bto.obo", miniMs);
+        PreferredResources listed = PreferredResources.load(f.writeResources(List.of(btoEntry(f,
+            "{\"kind\": \"listed\", \"releases\": [{\"version\": \"2022-10-26\", \"date\": \"2021-10-26\"}]}"))));
+
+        VocabularyResolver strict = f.resolver(listed, false, cv("BTO", "2020-01-01"));
+        VocabularyUnavailableException e = assertThrows(VocabularyUnavailableException.class,
+            () -> strict.ancestors(BTO_TERM));
+        assertEquals(Optional.of(Reason.NO_SUCH_RELEASE), e.kind());
+        assertEquals("2020-01-01", e.versionWanted());
+        assertEquals(List.of(), strict.messages(), "not NOT_RECOGNISED: no Warn-3021");
+        assertEquals(1, f.server.hits("/bto/v2020-01-01/bto.obo"), "it was tried as a release");
+
+        VocabularyResolver forced = f.resolver(listed, true, cv("BTO", "2020-01-01"));
+        assertFalse(forced.ancestors(BTO_TERM).isEmpty());
+        ResolvedVocabulary substitute = only(forced.resolved());
+        assertEquals("SUBSTITUTE_NEWER", substitute.reason());
+        assertEquals("2022-10-26", substitute.versionUsed());
+        assertEquals(List.of(CrossCheckErrorType.CvVersionSubstituted), types(forced.messages()));
+    }
+
+    @Test
+    public void offlineAnUnlistedIsoDateThatIsNotCachedHasNoDateFallback() throws Exception {
+        // Ruling R-AD: offline cannot tell a missing release from an unlisted real one
+        Fixture f = new Fixture(Reason.NO_SUCH_RELEASE, Set.of());
+        PreferredResources listed = PreferredResources.load(f.writeResources(List.of(btoEntry(f,
+            "{\"kind\": \"listed\", \"releases\": [{\"version\": \"2021-04-30\", \"date\": \"2021-04-30\"},"
+            + " {\"version\": \"2022-10-26\", \"date\": \"2021-10-26\"}]}"))));
+        // the release the date fallback would give is cached
+        f.prefill("BTO", "2022-10-26", "bto.obo", miniMs);
+
+        VocabularyResolver strict = f.offline(listed, false, cv("BTO", "2021-10-26"));
+        VocabularyUnavailableException e = assertThrows(VocabularyUnavailableException.class,
+            () -> strict.ancestors(BTO_TERM));
+        assertEquals(Optional.of(Reason.OFFLINE_NOT_CACHED), e.kind());
+        assertEquals("2021-10-26", e.versionWanted());
+        assertEquals(List.of(), strict.resolved());
+
+        // forced, it substitutes from the cache as usual (Ruling R-S)
+        VocabularyResolver forced = f.offline(listed, true, cv("BTO", "2021-10-26"));
+        assertFalse(forced.ancestors(BTO_TERM).isEmpty());
+        ResolvedVocabulary substitute = only(forced.resolved());
+        assertEquals("SUBSTITUTE_NEWER", substitute.reason());
+        assertEquals("2022-10-26", substitute.versionUsed());
+        assertEquals(0, f.server.totalHits(), "offline means no network");
+    }
+
+    @Test
+    public void anUnreadableIndexNamesItsFailure() throws Exception {
+        // final review M4: the reason is the I/O failure's message (VocabularyCache.message, never "null")
+        Fixture f = new Fixture(Reason.NO_SUCH_RELEASE, Set.of());
+        CachedRelease release = f.cache(false).get(f.resources.forLabel("MS").orElseThrow(), V150);
+        // a valid header over a truncated body: the cache keeps it, opening it fails
+        byte[] whole = Files.readAllBytes(release.index());
+        Files.write(release.index(), java.util.Arrays.copyOf(whole, whole.length - 1));
+        VocabularyResolver resolver = f.resolver(false, cv("MS", V150));
+
+        VocabularyUnavailableException e = assertThrows(VocabularyUnavailableException.class,
+            () -> resolver.ancestors(ESI));
+
+        assertEquals(Optional.of(Reason.PARSE_FAILED), e.kind());
+        assertTrue(e.reason().startsWith("its index " + release.index() + " cannot be read: " + release.index()
+            + " is not a term index: truncated records"), e.reason());
     }
 
     // ---- Ruling R-AF: offline, a pre-filled cache names its newest release as the latest ----
