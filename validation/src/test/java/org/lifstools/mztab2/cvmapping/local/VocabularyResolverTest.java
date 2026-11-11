@@ -769,9 +769,7 @@ public class VocabularyResolverTest {
         }
 
         VocabularyCache cache(boolean offline) {
-            Downloader http = Downloader.http(Duration.ofSeconds(10));
-            Downloader purlToServer = uri -> http.get(URI.create(uri.toString().replace(PURL, server.base() + "/")));
-            return new VocabularyCache(root, purlToServer, offline, DAY, Clock.systemUTC(), server.api(),
+            return new VocabularyCache(root, VocabularyCacheTest.purlToServer(server), offline, DAY, Clock.systemUTC(), server.api(),
                 Optional.empty());
         }
 

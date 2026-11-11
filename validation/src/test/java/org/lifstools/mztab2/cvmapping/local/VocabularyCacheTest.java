@@ -80,6 +80,7 @@ import org.slf4j.LoggerFactory;
 public class VocabularyCacheTest {
 
     private static final String PURL = "http://purl.obolibrary.org/";
+    private static final String HTTPS_PURL = "https://purl.obolibrary.org/";
     private static final String MS_REPO = "HUPO-PSI/psi-ms-CV";
     private static final String MS_PATH = "/ms/v4.1.200/psi-ms.obo";
     private static final String TAGS = "/api/repos/" + MS_REPO + "/tags";
@@ -374,6 +375,13 @@ public class VocabularyCacheTest {
         assertEquals("ro", roImport.key());
         assertEquals("2024-04-24", roImport.version());
         assertImportFolder(roImport, ro, roCore);
+        // fetched over https, recorded as written (Ruling R-AG)
+        JsonNode recorded = new ObjectMapper().readTree(r.original().resolveSibling("release.json").toFile());
+        assertEquals(PURL + "obo/mini-obi.owl", recorded.path("imports").get(0).path("source").asText());
+        JsonNode obiJson = new ObjectMapper().readTree(
+            obiImport.original().resolveSibling("release.json").toFile());
+        assertEquals(PURL + "obo/mini-obi.owl", obiJson.path("iri").asText());
+        assertEquals(server.base() + "/obo/mini-obi.owl", obiJson.path("finalUrl").asText());
         // one index of the release and everything it imports
         TermIndex index = TermIndexStore.open(r);
         assertEquals("material processing", index.term("OBI:0000094").orElseThrow().label());
@@ -390,6 +398,18 @@ public class VocabularyCacheTest {
         assertTrue(TermIndexStore.open(next).term("RO:0002000").isPresent());
         // and the cached release reads its imports back
         assertEquals(r, cache(true).get(msio(), "1.0.1"));
+    }
+
+    @Test
+    public void onlyAPlainOboPurlIsFetchedOverHttps() {
+        assertEquals(URI.create("https://purl.obolibrary.org/obo/ro/releases/2024-04-24/ro-core.owl"),
+            VocabularyCache.fetchUri(URI.create(PURL + "obo/ro/releases/2024-04-24/ro-core.owl")));
+        assertEquals(URI.create("https://purl.obolibrary.org/obo/uo.owl"),
+            VocabularyCache.fetchUri(URI.create("HTTP://PURL.obolibrary.org/obo/uo.owl")));
+        for (String asWritten : List.of(HTTPS_PURL + "obo/uo.owl", "http://example.org/obo/uo.owl",
+            "http://purl.obolibrary.org:8080/obo/uo.owl")) {
+            assertEquals(URI.create(asWritten), VocabularyCache.fetchUri(URI.create(asWritten)));
+        }
     }
 
     /** An index of the layout before index versions (Ruling R-AB): magic JMZTIDX1, then the counts. */
@@ -1055,10 +1075,22 @@ public class VocabularyCacheTest {
         });
     }
 
-    /** A downloader that fetches the purl.obolibrary.org IRIs from the test server. */
+    /**
+     * A downloader that fetches the purl.obolibrary.org IRIs from the test
+     * server, over https only (Ruling R-AG): a plaintext PURL fails the test.
+     */
     private Downloader purlToServer() {
+        return purlToServer(server);
+    }
+
+    static Downloader purlToServer(TestServer server) {
         Downloader http = Downloader.http(Duration.ofSeconds(10));
-        return uri -> http.get(URI.create(uri.toString().replace(PURL, server.base() + "/")));
+        return uri -> {
+            if (uri.toString().startsWith(PURL)) {
+                throw new AssertionError("a PURL is fetched over plain http: " + uri);
+            }
+            return http.get(URI.create(uri.toString().replace(HTTPS_PURL, server.base() + "/")));
+        };
     }
 
     private static Set<String> names(Path folder) throws IOException {

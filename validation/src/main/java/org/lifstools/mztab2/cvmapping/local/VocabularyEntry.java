@@ -83,7 +83,7 @@ public record VocabularyEntry(String key, Set<String> labels, String oboPrefix, 
     /**
      * Where one release is downloaded: either a URL template with
      * {@code {version}}, or an OBO Foundry id for
-     * {@code http://purl.obolibrary.org/obo/{id}/releases/{version}/{id}.{ext}}.
+     * {@code https://purl.obolibrary.org/obo/{id}/releases/{version}/{id}.{ext}}.
      */
     public record Location(Format format, Optional<String> urlTemplate, Optional<String> oboFoundryId) {
 
@@ -106,7 +106,7 @@ public record VocabularyEntry(String key, Set<String> labels, String oboPrefix, 
             }
             String template = urlTemplate.orElseGet(() -> {
                 String id = oboFoundryId.orElseThrow();
-                return "http://purl.obolibrary.org/obo/" + id + "/releases/" + VERSION + "/" + id + "."
+                return "https://purl.obolibrary.org/obo/" + id + "/releases/" + VERSION + "/" + id + "."
                     + format.extension();
             });
             return URI.create(template.replace(VERSION, version));

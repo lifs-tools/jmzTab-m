@@ -230,15 +230,24 @@ public class PreferredResourcesTest {
     }
 
     @Test
-    public void anOboFoundryLocationUsesTheVersionedPurl() {
+    public void anOboFoundryLocationUsesTheVersionedPurlOverHttps() {
         Location obo = new Location(Format.OBO, Optional.empty(), Optional.of("doid"));
-        assertEquals(URI.create("http://purl.obolibrary.org/obo/doid/releases/2026-09-30/doid.obo"),
+        assertEquals(URI.create("https://purl.obolibrary.org/obo/doid/releases/2026-09-30/doid.obo"),
             obo.url("2026-09-30"));
         Location gz = new Location(Format.OBO_GZ, Optional.empty(), Optional.of("x"));
-        assertEquals(URI.create("http://purl.obolibrary.org/obo/x/releases/1/x.obo.gz"), gz.url("1"));
+        assertEquals(URI.create("https://purl.obolibrary.org/obo/x/releases/1/x.obo.gz"), gz.url("1"));
         Location owl = new Location(Format.OWL_RDFXML, Optional.empty(), Optional.of("obi"));
-        assertEquals(URI.create("http://purl.obolibrary.org/obo/obi/releases/2026-07-27/obi.owl"),
+        assertEquals(URI.create("https://purl.obolibrary.org/obo/obi/releases/2026-07-27/obi.owl"),
             owl.url("2026-07-27"));
+    }
+
+    @Test
+    public void everyDefaultDownloadStartsOverHttps() {
+        // Ruling R-AG: a cached release is kept and checksummed for good, so its first hop must not be plaintext
+        for (VocabularyEntry e : PreferredResources.defaults().entries()) {
+            URI url = e.location().url("1");
+            assertEquals("https", url.getScheme(), e.key() + ": " + url);
+        }
     }
 
     @Test

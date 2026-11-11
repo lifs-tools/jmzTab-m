@@ -101,7 +101,9 @@ import org.slf4j.LoggerFactory;
  * <p>
  * The term index of an OWL release holds its own terms and the terms of
  * every {@code owl:imports} read with it, recursively; each import is also
- * downloaded, checked and cached on its own.</p>
+ * downloaded, checked and cached on its own. An import IRI on
+ * {@code http://purl.obolibrary.org} is fetched over https; release.json
+ * records the IRI as written, and the URL it came from.</p>
  *
  * <p>
  * Offline, nothing is downloaded: a release not in the cache is
@@ -149,6 +151,7 @@ public final class VocabularyCache {
     private static final String UNVERSIONED = "unversioned";
     private static final Pattern SAFE_NAME = Pattern.compile("[A-Za-z0-9][A-Za-z0-9._-]*");
     private static final String OBO_PURL = "http://purl.obolibrary.org/obo/";
+    private static final String OBO_PURL_HOST = "purl.obolibrary.org";
     private static final Pattern IMPORT_VERSION = Pattern.compile("v?\\d[A-Za-z0-9._-]*");
     private static final int BUFFER_SIZE = 1 << 16;
 
@@ -560,7 +563,7 @@ public final class VocabularyCache {
         Path temporary = createTemporaryFolder(folder.getParent());
         try {
             Path original = temporary.resolve(fileName(uri, "import.owl"));
-            Fetched fetched = download(uri, original, "import " + iri, "import " + iri + ": ");
+            Fetched fetched = download(fetchUri(uri), original, "import " + iri, "import " + iri + ": ");
             List<String> versionIris = new ArrayList<>();
             parse(Format.OWL_RDFXML, original, writer, NO_NAMES, imports, versionIris::add, "import " + iri);
             String[] keyAndVersion = importKeyAndVersion(iri, versionIris);
@@ -579,6 +582,20 @@ public final class VocabularyCache {
         }
         return readImportEntry(folder, uri).orElseThrow(() -> new ResolutionException(Reason.WRITE_FAILED,
             "the import folder " + folder + " vanished after it was written"));
+    }
+
+    /**
+     * Where an import is fetched from (Ruling R-AG): an OBO PURL IRI,
+     * {@code http://purl.obolibrary.org/...}, over https, as the PURL server
+     * serves both and a release is cached and checksummed for good; any other
+     * IRI as it is written. The IRI itself stays the import's key and source.
+     */
+    static URI fetchUri(URI iri) {
+        if ("http".equalsIgnoreCase(iri.getScheme()) && OBO_PURL_HOST.equalsIgnoreCase(iri.getHost())
+            && iri.getPort() == -1) {
+            return URI.create("https" + iri.toString().substring(iri.getScheme().length()));
+        }
+        return iri;
     }
 
     private static URI importUri(String iri) throws ResolutionException {

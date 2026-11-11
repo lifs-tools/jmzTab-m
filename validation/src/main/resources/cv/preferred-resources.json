@@ -1,6 +1,6 @@
 {
   "$schema": "preferred-resources.schema.json",
-  "$comment": "jmzTab-m's default preferred resources (design 4.3): OBO Foundry's versioned PURLs where they are current, else the vocabulary's own releases. Every location was checked on 2026-11-11 with a ranged GET of one concrete version; the HTTP status is in each entry's $comment.",
+  "$comment": "jmzTab-m's default preferred resources (design 4.3): OBO Foundry's versioned PURLs where they are current, else the vocabulary's own releases. Every location was checked on 2026-11-11 with a ranged GET of one concrete version; the HTTP status is in each entry's $comment. Every download starts over https (Ruling R-AG): a release is cached and checksummed for good, so its first hop must not be plaintext; a redirect from https to http is refused.",
   "vocabularies": {
     "MS": {
       "$comment": "PSI-MS from its GitHub tags (design 4.3). Checked 2026-11-11: tag v4.2.15, https://raw.githubusercontent.com/HUPO-PSI/psi-ms-CV/v4.2.15/psi-ms.obo HTTP 206. OBO Foundry's versioned PURL (ms/4.2.15/ms.obo) answers 404. The repository has 193 tags and 185 GitHub releases (the dates).",
@@ -12,7 +12,7 @@
       "latest": {"kind": "githubLatestTag", "repo": "HUPO-PSI/psi-ms-CV", "tagPattern": "v{version}"}
     },
     "DOID": {
-      "$comment": "OBO Foundry versioned PURL, which redirects to the tagged src/ontology/doid.obo of DiseaseOntology/HumanDiseaseOntology. Checked 2026-11-11: http://purl.obolibrary.org/obo/doid/releases/2026-10-29/doid.obo HTTP 206 (OLS: 2026-10-29). Tags are v<date>; the stray tag vv2016-06-10 is outside the scheme.",
+      "$comment": "OBO Foundry versioned PURL, which redirects to the tagged src/ontology/doid.obo of DiseaseOntology/HumanDiseaseOntology. Checked 2026-11-11: http://purl.obolibrary.org/obo/doid/releases/2026-10-29/doid.obo HTTP 206 (OLS: 2026-10-29); over https (R-AG), checked 2026-11-11: https://purl.obolibrary.org/obo/doid/releases/2026-10-29/doid.obo 302 to https://raw.githubusercontent.com/..., HTTP 206. Tags are v<date>; the stray tag vv2016-06-10 is outside the scheme.",
       "labels": ["DOID"],
       "oboPrefix": "DOID",
       "location": {"format": "OBO", "oboFoundryId": "doid"},
@@ -21,7 +21,7 @@
       "latest": {"kind": "githubLatestTag", "repo": "DiseaseOntology/HumanDiseaseOntology", "tagPattern": "v{version}"}
     },
     "CL": {
-      "$comment": "OBO Foundry versioned PURL, which redirects to the GitHub release asset cl.obo of obophenotype/cell-ontology. Checked 2026-11-11: http://purl.obolibrary.org/obo/cl/releases/2026-06-08/cl.obo HTTP 206 (OLS: 2026-06-08).",
+      "$comment": "OBO Foundry versioned PURL, which redirects to the GitHub release asset cl.obo of obophenotype/cell-ontology. Checked 2026-11-11: http://purl.obolibrary.org/obo/cl/releases/2026-06-08/cl.obo HTTP 206 (OLS: 2026-06-08); over https (R-AG), checked 2026-11-11: https://purl.obolibrary.org/obo/cl/releases/2026-06-08/cl.obo 302 to https://github.com/... and https://release-assets.githubusercontent.com/..., HTTP 206.",
       "labels": ["CL"],
       "oboPrefix": "CL",
       "location": {"format": "OBO", "oboFoundryId": "cl"},
@@ -30,7 +30,7 @@
       "latest": {"kind": "githubLatestTag", "repo": "obophenotype/cell-ontology", "tagPattern": "v{version}"}
     },
     "BTO": {
-      "$comment": "OBO Foundry versioned PURL, which redirects to the tagged bto.obo of BRENDA-Enzymes/BTO. Checked 2026-11-11: http://purl.obolibrary.org/obo/bto/releases/2022-10-26/bto.obo HTTP 206. The newest tag, v2022-10-26, holds data-version releases/2021-10-26 and its GitHub release was published on 2021-10-26; 2021-10-26 is the version OLS and OBO Foundry name, but there is no tag v2021-10-26 (its PURL answers 404). Dates come from the GitHub releases: a declared 2021-10-26 is first looked for as a release, and as its PURL answers 404 it is read as a date and resolves to the tag v2022-10-26 (FILE_DATE_FALLBACK, Ruling R-Y).",
+      "$comment": "OBO Foundry versioned PURL, which redirects to the tagged bto.obo of BRENDA-Enzymes/BTO. Checked 2026-11-11: http://purl.obolibrary.org/obo/bto/releases/2022-10-26/bto.obo HTTP 206; over https (R-AG), checked 2026-11-11: https://purl.obolibrary.org/obo/bto/releases/2022-10-26/bto.obo 302 to https://raw.githubusercontent.com/..., HTTP 206. The newest tag, v2022-10-26, holds data-version releases/2021-10-26 and its GitHub release was published on 2021-10-26; 2021-10-26 is the version OLS and OBO Foundry name, but there is no tag v2021-10-26 (its PURL answers 404). Dates come from the GitHub releases: a declared 2021-10-26 is first looked for as a release, and as its PURL answers 404 it is read as a date and resolves to the tag v2022-10-26 (FILE_DATE_FALLBACK, Ruling R-Y).",
       "labels": ["BTO"],
       "oboPrefix": "BTO",
       "location": {"format": "OBO", "oboFoundryId": "bto"},
@@ -39,16 +39,16 @@
       "latest": {"kind": "githubLatestTag", "repo": "BRENDA-Enzymes/BTO", "tagPattern": "v{version}"}
     },
     "NCBITaxon": {
-      "$comment": "OBO Foundry versioned PURL in the form of NCBITaxon's owl:versionIRI (no releases/ segment; the releases/ form answers 404), which redirects to the GitHub release asset of obophenotype/ncbitaxon. Gzipped OBO, as the file is large. Checked 2026-11-11: http://purl.obolibrary.org/obo/ncbitaxon/2026-11-09/ncbitaxon.obo.gz HTTP 206 (OLS: 2026-11-09).",
+      "$comment": "OBO Foundry versioned PURL in the form of NCBITaxon's owl:versionIRI (no releases/ segment; the releases/ form answers 404), which redirects to the GitHub release asset of obophenotype/ncbitaxon. Gzipped OBO, as the file is large. Checked 2026-11-11: http://purl.obolibrary.org/obo/ncbitaxon/2026-11-09/ncbitaxon.obo.gz HTTP 206 (OLS: 2026-11-09); over https (R-AG), checked 2026-11-11: https://purl.obolibrary.org/obo/ncbitaxon/2026-11-09/ncbitaxon.obo.gz 302 to https://github.com/... and https://release-assets.githubusercontent.com/..., HTTP 206.",
       "labels": ["NCBITaxon"],
       "oboPrefix": "NCBITaxon",
-      "location": {"format": "OBO_GZ", "urlTemplate": "http://purl.obolibrary.org/obo/ncbitaxon/{version}/ncbitaxon.obo.gz"},
+      "location": {"format": "OBO_GZ", "urlTemplate": "https://purl.obolibrary.org/obo/ncbitaxon/{version}/ncbitaxon.obo.gz"},
       "scheme": "ISO_DATE",
       "releases": {"kind": "githubTags", "repo": "obophenotype/ncbitaxon", "tagPattern": "v{version}", "dates": "version"},
       "latest": {"kind": "githubLatestTag", "repo": "obophenotype/ncbitaxon", "tagPattern": "v{version}"}
     },
     "UO": {
-      "$comment": "OBO Foundry versioned PURL, which redirects to the tagged uo.obo of bio-ontology-research-group/unit-ontology. Checked 2026-11-11: http://purl.obolibrary.org/obo/uo/releases/2026-10-12/uo.obo HTTP 206 (OLS: 2026-10-12). The repository has 5 tags, the oldest v2023-05-23.",
+      "$comment": "OBO Foundry versioned PURL, which redirects to the tagged uo.obo of bio-ontology-research-group/unit-ontology. Checked 2026-11-11: http://purl.obolibrary.org/obo/uo/releases/2026-10-12/uo.obo HTTP 206 (OLS: 2026-10-12); over https (R-AG), checked 2026-11-11: https://purl.obolibrary.org/obo/uo/releases/2026-10-12/uo.obo 302 to https://raw.githubusercontent.com/..., HTTP 206. The repository has 5 tags, the oldest v2023-05-23.",
       "labels": ["UO"],
       "oboPrefix": "UO",
       "location": {"format": "OBO", "oboFoundryId": "uo"},
@@ -57,7 +57,7 @@
       "latest": {"kind": "githubLatestTag", "repo": "bio-ontology-research-group/unit-ontology", "tagPattern": "v{version}"}
     },
     "NCIT": {
-      "$comment": "The NCIt OBO Edition (ncit-obo-org/ncit-obo-edition), through its OBO Foundry versioned PURL, which redirects to the GitHub release asset ncit.obo. It is the file OLS loads; OLS reports its owl:versionInfo (2026-03-19 holds NCI release 26.02d). NCI's own monthly releases (EVS, e.g. 26.02d) come as zipped OWL with NCI IRIs, which no reader here takes, so the OBO Edition is used although it lags NCI. Its versions are ISO dates, as in its URLs. Checked 2026-11-11: http://purl.obolibrary.org/obo/ncit/releases/2026-03-19/ncit.obo HTTP 206. Older OBO Edition releases (2022-08-19 to 2024-05-07) are tagged in NCI-Thesaurus/thesaurus-obo-edition; their PURLs still resolve, but they are not in this index.",
+      "$comment": "The NCIt OBO Edition (ncit-obo-org/ncit-obo-edition), through its OBO Foundry versioned PURL, which redirects to the GitHub release asset ncit.obo. It is the file OLS loads; OLS reports its owl:versionInfo (2026-03-19 holds NCI release 26.02d). NCI's own monthly releases (EVS, e.g. 26.02d) come as zipped OWL with NCI IRIs, which no reader here takes, so the OBO Edition is used although it lags NCI. Its versions are ISO dates, as in its URLs. Checked 2026-11-11: http://purl.obolibrary.org/obo/ncit/releases/2026-03-19/ncit.obo HTTP 206; over https (R-AG), checked 2026-11-11: https://purl.obolibrary.org/obo/ncit/releases/2026-03-19/ncit.obo 302 to https://github.com/... and https://release-assets.githubusercontent.com/..., HTTP 206. Older OBO Edition releases (2022-08-19 to 2024-05-07) are tagged in NCI-Thesaurus/thesaurus-obo-edition; their PURLs still resolve, but they are not in this index.",
       "labels": ["NCIT"],
       "oboPrefix": "NCIT",
       "location": {"format": "OBO", "oboFoundryId": "ncit"},
@@ -84,19 +84,19 @@
       "latest": {"kind": "githubLatestTag", "repo": "MSI-Metabolomics-Standards-Initiative/MSIO", "tagPattern": "v{version}"}
     },
     "CHEBI": {
-      "$comment": "OBO Foundry versioned PURL in the form of ChEBI's owl:versionIRI (chebi/<release>/), which redirects to the EBI FTP archive: archive/rel<n>/ontology/ for 245 and later, chebi_legacy/archive/rel<n>/ontology/ before. Gzipped OBO, as the file is large. The current release (257, ontology/chebi.obo) is archived only when the next one is published, so latest is the newest archived release. Checked 2026-11-11: http://purl.obolibrary.org/obo/chebi/256/chebi.obo.gz HTTP 206, chebi/200/chebi.obo.gz HTTP 206, chebi/257/chebi.obo answers 404. The archive index lists rel245 to rel256 only; its folder times are archiving times, not release dates, so no dates are known.",
+      "$comment": "The EBI FTP archive over https, archive/rel<n>/ontology/chebi.obo.gz (Ruling R-AG). ChEBI's OBO Foundry versioned PURL (chebi/<release>/chebi.obo.gz, the form of its owl:versionIRI) redirects even an https request to plain http://ftp.ebi.ac.uk/..., which the downloader refuses, so the archive is asked directly. Releases before 245 sit under archive/chebi_legacy/archive/rel<n>/ontology/, which this template does not reach: a file that declares one needs a --cvResources entry with that location. Gzipped OBO, as the file is large. The current release (257, ontology/chebi.obo) is archived only when the next one is published, so latest is the newest archived release. Checked 2026-11-11: http://purl.obolibrary.org/obo/chebi/256/chebi.obo.gz HTTP 206, chebi/200/chebi.obo.gz HTTP 206, chebi/257/chebi.obo answers 404; https://purl.obolibrary.org/obo/chebi/256/chebi.obo.gz 302 to http://ftp.ebi.ac.uk/pub/databases/chebi/archive/rel256/ontology/chebi.obo.gz, chebi/200/ to http://ftp.ebi.ac.uk/pub/databases/chebi/archive/chebi_legacy/archive/rel200/ontology/chebi.obo.gz. Over https (R-AG), checked 2026-11-11: https://ftp.ebi.ac.uk/pub/databases/chebi/archive/rel256/ontology/chebi.obo.gz HTTP 206, rel245 HTTP 206, rel200 404; https://ftp.ebi.ac.uk/pub/databases/chebi/archive/chebi_legacy/archive/rel200/ontology/chebi.obo.gz HTTP 206. The archive index lists rel245 to rel256 only; its folder times are archiving times, not release dates, so no dates are known.",
       "labels": ["CHEBI"],
       "oboPrefix": "CHEBI",
-      "location": {"format": "OBO_GZ", "urlTemplate": "http://purl.obolibrary.org/obo/chebi/{version}/chebi.obo.gz"},
+      "location": {"format": "OBO_GZ", "urlTemplate": "https://ftp.ebi.ac.uk/pub/databases/chebi/archive/rel{version}/ontology/chebi.obo.gz"},
       "scheme": "RELEASE_NUMBER",
       "releases": {"kind": "directoryListing", "url": "https://ftp.ebi.ac.uk/pub/databases/chebi/archive/", "entryPattern": "rel{version}/", "dates": "none"},
       "latest": {"kind": "newestRelease"}
     },
     "OBI": {
-      "$comment": "OBI as the vocabulary of MSIO's rule term OBI:0000094. OBO Foundry versioned PURL in the form of OBI's owl:versionIRI (obi/<date>/obi.owl), which redirects to the tagged obi.owl of obi-ontology/obi; the releases/ form answers 200 with a SourceForge HTML page. The shipped MSIO file is merged and imports nothing; MSIO's edit file imports http://purl.obolibrary.org/obo/MSIO_OBI_import.owl, which does not resolve (503). Checked 2026-11-11: http://purl.obolibrary.org/obo/obi/2026-07-27/obi.owl HTTP 206 (OLS: 2026-07-27; no owl:imports).",
+      "$comment": "OBI as the vocabulary of MSIO's rule term OBI:0000094. OBO Foundry versioned PURL in the form of OBI's owl:versionIRI (obi/<date>/obi.owl), which redirects to the tagged obi.owl of obi-ontology/obi; the releases/ form answers 200 with a SourceForge HTML page. The shipped MSIO file is merged and imports nothing; MSIO's edit file imports http://purl.obolibrary.org/obo/MSIO_OBI_import.owl, which does not resolve (503). Checked 2026-11-11: http://purl.obolibrary.org/obo/obi/2026-07-27/obi.owl HTTP 206 (OLS: 2026-07-27; no owl:imports); over https (R-AG), checked 2026-11-11: https://purl.obolibrary.org/obo/obi/2026-07-27/obi.owl 302 to https://raw.githubusercontent.com/..., HTTP 206.",
       "labels": ["OBI"],
       "oboPrefix": "OBI",
-      "location": {"format": "OWL_RDFXML", "urlTemplate": "http://purl.obolibrary.org/obo/obi/{version}/obi.owl"},
+      "location": {"format": "OWL_RDFXML", "urlTemplate": "https://purl.obolibrary.org/obo/obi/{version}/obi.owl"},
       "scheme": "ISO_DATE",
       "releases": {"kind": "githubTags", "repo": "obi-ontology/obi", "tagPattern": "v{version}", "dates": "version"},
       "latest": {"kind": "githubLatestTag", "repo": "obi-ontology/obi", "tagPattern": "v{version}"}

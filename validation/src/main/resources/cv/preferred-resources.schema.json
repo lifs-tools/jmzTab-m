@@ -69,7 +69,7 @@
       }
     },
     "location": {
-      "description": "Where one release is downloaded: a URL template with {version}, or an OBO Foundry id for http://purl.obolibrary.org/obo/{id}/releases/{version}/{id}.{ext}.",
+      "description": "Where one release is downloaded: a URL template with {version}, or an OBO Foundry id for https://purl.obolibrary.org/obo/{id}/releases/{version}/{id}.{ext}.",
       "type": "object",
       "additionalProperties": false,
       "required": ["format"],
