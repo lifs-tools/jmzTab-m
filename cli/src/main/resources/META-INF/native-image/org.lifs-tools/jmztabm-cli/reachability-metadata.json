@@ -129,6 +129,9 @@
       "type": "com.ctc.wstx.stax.WstxOutputFactory"
     },
     {
+      "type": "com.ethlo.time.ITU"
+    },
+    {
       "type": "com.fasterxml.jackson.annotation.SimpleObjectIdResolver",
       "methods": [
         {
@@ -147,6 +150,15 @@
       "type": "com.fasterxml.jackson.databind.deser.BeanDeserializerModifier[]"
     },
     {
+      "type": "com.fasterxml.jackson.databind.deser.Deserializers[]"
+    },
+    {
+      "type": "com.fasterxml.jackson.databind.deser.KeyDeserializers[]"
+    },
+    {
+      "type": "com.fasterxml.jackson.databind.deser.ValueInstantiators[]"
+    },
+    {
       "type": "com.fasterxml.jackson.databind.ext.Java7SupportImpl",
       "methods": [
         {
@@ -157,6 +169,9 @@
     },
     {
       "type": "com.fasterxml.jackson.databind.ser.BeanSerializerModifier[]"
+    },
+    {
+      "type": "com.fasterxml.jackson.databind.ser.Serializers[]"
     },
     {
       "type": "com.fasterxml.jackson.dataformat.cbor.CBORFactory"
@@ -174,7 +189,13 @@
       "type": "com.fasterxml.jackson.datatype.jdk8.Jdk8Module"
     },
     {
-      "type": "com.fasterxml.jackson.datatype.jsr310.JavaTimeModule"
+      "type": "com.fasterxml.jackson.datatype.jsr310.JavaTimeModule",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
     },
     {
       "type": "com.fasterxml.jackson.module.paramnames.ParameterNamesModule"
@@ -499,6 +520,9 @@
       ]
     },
     {
+      "type": "java.awt.Image"
+    },
+    {
       "type": "java.beans.PropertyVetoException"
     },
     {
@@ -779,6 +803,9 @@
       "type": "kotlin.Metadata"
     },
     {
+      "type": "kotlin.reflect.full.KClasses"
+    },
+    {
       "type": "kotlinx.serialization.cbor.Cbor"
     },
     {
@@ -801,6 +828,21 @@
     },
     {
       "type": "org.apache.commons.jxpath.ri.model.dom.DOMPointerFactory",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "org.apache.commons.logging.LogFactory"
+    },
+    {
+      "type": "org.apache.commons.logging.impl.SLF4JLogFactory"
+    },
+    {
+      "type": "org.apache.commons.logging.impl.WeakHashtable",
       "methods": [
         {
           "name": "<init>",
@@ -1335,6 +1377,15 @@
           ]
         }
       ]
+    },
+    {
+      "type": "org.lifstools.mztab2.model.ContactBeanInfo"
+    },
+    {
+      "type": "org.lifstools.mztab2.model.ContactCustomizer"
+    },
+    {
+      "type": "org.lifstools.mztab2.model.ContactXBeanInfo"
     },
     {
       "type": "org.lifstools.mztab2.model.Database",
@@ -3769,6 +3820,9 @@
       "type": "sun.util.resources.cldr.CalendarData"
     },
     {
+      "type": "tools.jackson.databind.ObjectMapper"
+    },
+    {
       "type": "uk.ac.ebi.pride.jmztab2.model.SplitList"
     },
     {
@@ -3783,6 +3837,129 @@
           "parameterTypes": [
             "java.lang.String",
             "java.lang.String[]"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "uk.ac.ebi.pride.utilities.ols.web.service.model.Config",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        },
+        {
+          "name": "setAnnotations",
+          "parameterTypes": [
+            "uk.ac.ebi.pride.utilities.ols.web.service.model.Annotation"
+          ]
+        },
+        {
+          "name": "setBaseUris",
+          "parameterTypes": [
+            "java.lang.String[]"
+          ]
+        },
+        {
+          "name": "setCreators",
+          "parameterTypes": [
+            "java.lang.String[]"
+          ]
+        },
+        {
+          "name": "setDefinitionProperties",
+          "parameterTypes": [
+            "java.lang.String[]"
+          ]
+        },
+        {
+          "name": "setDescription",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setFileLocation",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setHiddenProperties",
+          "parameterTypes": [
+            "java.lang.String[]"
+          ]
+        },
+        {
+          "name": "setHierarchicalProperties",
+          "parameterTypes": [
+            "java.lang.String[]"
+          ]
+        },
+        {
+          "name": "setHomePage",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setId",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setLabelProperty",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setMailingList",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setName",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setNamespace",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setOboLims",
+          "parameterTypes": [
+            "boolean"
+          ]
+        },
+        {
+          "name": "setPreferredPrefix",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setSynonymProperties",
+          "parameterTypes": [
+            "java.lang.String[]"
+          ]
+        },
+        {
+          "name": "setVersion",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setVersionIri",
+          "parameterTypes": [
+            "java.lang.String"
           ]
         }
       ]
@@ -3874,6 +4051,75 @@
     },
     {
       "type": "uk.ac.ebi.pride.utilities.ols.web.service.model.OboDefinitionCitation[]"
+    },
+    {
+      "type": "uk.ac.ebi.pride.utilities.ols.web.service.model.Ontology",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        },
+        {
+          "name": "setConfig",
+          "parameterTypes": [
+            "uk.ac.ebi.pride.utilities.ols.web.service.model.Config"
+          ]
+        },
+        {
+          "name": "setLink",
+          "parameterTypes": [
+            "uk.ac.ebi.pride.utilities.ols.web.service.model.Link"
+          ]
+        },
+        {
+          "name": "setLoadedDate",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setMessage",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setNumberOfIndividuals",
+          "parameterTypes": [
+            "int"
+          ]
+        },
+        {
+          "name": "setNumberOfProperties",
+          "parameterTypes": [
+            "int"
+          ]
+        },
+        {
+          "name": "setNumberOfTerms",
+          "parameterTypes": [
+            "int"
+          ]
+        },
+        {
+          "name": "setStatus",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setUpdatedDate",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setVersion",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        }
+      ]
     },
     {
       "type": "uk.ac.ebi.pride.utilities.ols.web.service.model.Page",
@@ -4146,6 +4392,45 @@
     {
       "module": "java.base",
       "glob": "sun/net/idn/uidna.spp"
+    },
+    {
+      "glob": "META-INF/services/java.nio.channels.spi.SelectorProvider"
+    },
+    {
+      "glob": "META-INF/services/java.util.spi.ResourceBundleControlProvider"
+    },
+    {
+      "glob": "META-INF/services/org.apache.commons.logging.LogFactory"
+    },
+    {
+      "glob": "ch/qos/logback/classic/logback-classic-version.properties"
+    },
+    {
+      "glob": "ch/qos/logback/core/logback-core-version.properties"
+    },
+    {
+      "glob": "commons-logging.properties"
+    },
+    {
+      "glob": "cv/preferred-resources.json"
+    },
+    {
+      "glob": "cv/preferred-resources.schema.json"
+    },
+    {
+      "glob": "jsv-messages.properties"
+    },
+    {
+      "glob": "jsv-messages_en.properties"
+    },
+    {
+      "glob": "logback.xml"
+    },
+    {
+      "glob": "mappings/mzTab-M-mapping.xml"
+    },
+    {
+      "bundle": "jsv-messages"
     }
   ]
 }

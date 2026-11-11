@@ -164,7 +164,11 @@ jobs:
       - name: Compare jar and native validator
         env:
           KNOWN_DIFFERENCES: .github/parity-known-differences.txt
+          # a semantic validation per file with the local CV lookup, offline, on a pre-filled cache
+          CV_CACHE: ${{ runner.temp }}/cv-cache
+          CV_RESOURCES: .github/parity-cv/resources.json
         run: |
+          .github/scripts/parity-cv-cache.sh "$CV_CACHE"
           unzip -q dist/jmztabm-cli-*-bin.zip -d dist
           # Artifacts do not preserve file permissions.
           chmod +x native/jmztabm-validator

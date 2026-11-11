@@ -43,6 +43,7 @@ import java.util.Properties;
 import java.util.stream.Collectors;
 import jakarta.xml.bind.JAXBException;
 import org.apache.commons.cli.*;
+import org.apache.commons.jxpath.JXPathContextFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabError;
@@ -112,6 +113,7 @@ public class MZTabCommandLine {
      */
     @SuppressWarnings("static-access")
     public static void main(String[] args) throws Exception {
+        nameTheJXPathFactory();
         MZTabErrorTypeMap typeMap = new MZTabErrorTypeMap();
         CommandLineParser parser = new PosixParser();
         Options options = new Options();
@@ -151,6 +153,20 @@ public class MZTabCommandLine {
             if (hadErrorsOrWarnings) {
                 System.exit(1);
             }
+        }
+    }
+
+    /**
+     * Names JXPath's context factory, unless a system property already does.
+     * Without it, JXPath 1.4 looks for {@code $java.home/lib/jxpath.properties}
+     * first; a native image has no {@code java.home}, and the semantic
+     * validation failed there with a NullPointerException in
+     * {@code JXPathContextFactory}'s initializer.
+     */
+    private static void nameTheJXPathFactory() {
+        if (System.getProperty(JXPathContextFactory.FACTORY_NAME_PROPERTY) == null) {
+            System.setProperty(JXPathContextFactory.FACTORY_NAME_PROPERTY,
+                "org.apache.commons.jxpath.ri.JXPathContextFactoryReferenceImpl");
         }
     }
 
