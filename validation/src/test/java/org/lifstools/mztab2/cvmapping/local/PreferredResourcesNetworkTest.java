@@ -69,19 +69,16 @@ public class PreferredResourcesNetworkTest {
         String version = latest(e).orElseThrow(() -> new AssertionError(e.key() + ": no latest version"));
         assertTrue(e.scheme().accepts(version), e.key() + ": latest " + version + " is outside " + e.scheme());
         URI url = e.location().url(version);
-        HttpResponse<InputStream> response = HTTP.send(HttpRequest.newBuilder(url)
-            .timeout(TIMEOUT)
-            .header("User-Agent", "jmztabm-tests")
-            .header("Range", "bytes=0-1023")
-            .GET().build(), HttpResponse.BodyHandlers.ofInputStream());
+        // the cache's own downloader: it upgrades an https-to-http redirect (R-AJ), as CHEBI's PURL needs
         byte[] head;
-        try (InputStream in = response.body()) {
+        URI finalUrl;
+        try (InputStream in = Downloader.http(TIMEOUT).get(url)) {
+            finalUrl = ((Downloader.Download) in).location();
             head = in.readNBytes(1024);
         }
-        int status = response.statusCode();
-        assertTrue(status == 200 || status == 206, e.key() + " " + version + ": " + url + " answered " + status);
+        assertTrue("https".equals(finalUrl.getScheme()), e.key() + " " + version + ": " + url + " ended at " + finalUrl);
         assertTrue(looksLike(e.location().format(), head),
-            e.key() + " " + version + ": " + response.uri() + " is not " + e.location().format());
+            e.key() + " " + version + ": " + finalUrl + " is not " + e.location().format());
     }
 
     private static Optional<String> latest(VocabularyEntry e) throws IOException, InterruptedException {

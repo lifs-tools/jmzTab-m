@@ -642,6 +642,22 @@ public class VocabularyResolverTest {
     }
 
     @Test
+    public void offlineTheNewestCachedReleaseIsOrderedByTheSchemeNotByTheString() throws Exception {
+        Fixture f = new Fixture(Reason.NO_SUCH_RELEASE, Set.of());
+        PreferredResources github = PreferredResources.load(f.writeResources(List.of(githubMsEntry(f))));
+        // as strings "4.1.9" is the greater of the two; as dotted versions 4.1.10 is
+        f.prefill("MS", "4.1.9", "psi-ms.obo", miniMs);
+        f.prefill("MS", "4.1.10", "psi-ms.obo", miniMs);
+
+        VocabularyResolver resolver = f.offline(github, false);
+        assertFalse(resolver.ancestors(ESI).isEmpty());
+        ResolvedVocabulary ms = only(resolver.resolved());
+        assertEquals("LATEST", ms.reason());
+        assertEquals("4.1.10", ms.versionUsed());
+        assertEquals(0, f.server.totalHits(), "offline means no network");
+    }
+
+    @Test
     public void offlineADeclaredDateWithoutAReleaseListIsStrictAndForcedSubstitutesTheNewestCachedRelease()
         throws Exception {
         Fixture f = new Fixture(Reason.NO_SUCH_RELEASE, Set.of());

@@ -24,6 +24,13 @@ import org.junit.jupiter.api.Test;
 public class VersionSchemeTest {
 
     @Test
+    public void dottedVersionsAreNotOrderedAsStrings() {
+        assertTrue("4.1.9".compareTo("4.1.10") > 0, "as strings 4.1.9 is greater");
+        assertTrue(VersionScheme.DOTTED.compare("4.1.9", "4.1.10").get() < 0);
+        assertTrue(VersionScheme.DOTTED.compare("4.1.10", "4.1.9").get() > 0);
+    }
+
+    @Test
     public void dottedVersionsCompareNumericallyPerComponent() {
         assertTrue(VersionScheme.DOTTED.compare("4.1.30", "4.1.200").get() < 0);
         assertTrue(VersionScheme.DOTTED.compare("4.1.200", "4.1.30").get() > 0);

@@ -38,6 +38,7 @@ import java.util.concurrent.CompletionStage;
 import java.util.concurrent.Flow;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
+import java.util.function.UnaryOperator;
 
 /**
  * Fetches files for the {@link VocabularyCache}: vocabulary releases, OWL
@@ -73,7 +74,10 @@ public interface Downloader {
 
     /**
      * A downloader over HTTP(S), with the User-Agent {@code jmzTab-m}. It
-     * follows up to ten redirects, but none from https to http. A 404 is a
+     * follows up to ten redirects. It does not follow one from https to http:
+     * it asks the same host, path and query over https instead, follows that
+     * if it answers with a file or a redirect, and otherwise refuses the
+     * downgrade. A 404 is a
      * {@link NotFoundException}; any other status but 2xx is an
      * {@link IOException} that names the status.
      *
@@ -161,8 +165,15 @@ final class HttpDownloader implements Downloader {
 
     private final Duration timeout;
     private final HttpClient client;
+    /** Maps the URL a request names to the one that is sent; the identity, except in tests that have no TLS. */
+    private final UnaryOperator<URI> wire;
 
     HttpDownloader(Duration timeout) {
+        this(timeout, UnaryOperator.identity());
+    }
+
+    HttpDownloader(Duration timeout, UnaryOperator<URI> wire) {
+        this.wire = Objects.requireNonNull(wire, "wire");
         this.timeout = Objects.requireNonNull(timeout, "timeout");
         // redirects are followed by hand: no https to http, and no extra headers to another origin
         this.client = HttpClient.newBuilder()
@@ -180,12 +191,22 @@ final class HttpDownloader implements Downloader {
     public InputStream get(URI uri, Map<String, String> headers) throws IOException {
         URI current = uri;
         Map<String, String> extra = headers;
+        HttpResponse<InputStream> pending = null;
         for (int hop = 0; hop <= MAX_REDIRECTS; hop++) {
-            HttpResponse<InputStream> response = send(current, extra);
+            HttpResponse<InputStream> response = pending != null ? pending : send(current, extra);
+            pending = null;
             int status = response.statusCode();
             if (REDIRECTS.contains(status)) {
                 response.body().close();
                 URI next = redirect(current, status, response);
+                if (isDowngrade(current, next)) {
+                    URI upgraded = upgrade(next);
+                    pending = tryUpgrade(upgraded, sameOrigin(current, upgraded) ? extra : Map.of());
+                    if (pending == null) {
+                        throw new IOException("redirect from " + current + " to " + next + " refused: https to http");
+                    }
+                    next = upgraded;
+                }
                 if (!sameOrigin(current, next)) {
                     extra = Map.of();
                 }
@@ -206,7 +227,7 @@ final class HttpDownloader implements Downloader {
 
     private HttpResponse<InputStream> send(URI uri, Map<String, String> headers) throws IOException {
         try {
-            HttpRequest.Builder request = HttpRequest.newBuilder(uri)
+            HttpRequest.Builder request = HttpRequest.newBuilder(wire.apply(uri))
                 .timeout(timeout)
                 .header("User-Agent", USER_AGENT)
                 .GET();
@@ -236,10 +257,53 @@ final class HttpDownloader implements Downloader {
         if (!scheme.equals("http") && !scheme.equals("https")) {
             throw new IOException("redirect from " + from + " to " + next + " refused: not http(s)");
         }
-        if ("https".equalsIgnoreCase(from.getScheme()) && scheme.equals("http")) {
-            throw new IOException("redirect from " + from + " to " + next + " refused: https to http");
-        }
         return next;
+    }
+
+    /** A redirect from https to plain http. */
+    static boolean isDowngrade(URI from, URI next) {
+        return "https".equalsIgnoreCase(from.getScheme()) && "http".equalsIgnoreCase(next.getScheme());
+    }
+
+    /** The URL of a plain-http redirect target over https: the same host, path and query. */
+    static URI upgrade(URI http) {
+        String authority = http.getRawAuthority();
+        if (http.getPort() == 80) {
+            // the http default port is not the https one
+            authority = http.getRawUserInfo() == null ? http.getHost() : http.getRawUserInfo() + "@" + http.getHost();
+        }
+        StringBuilder url = new StringBuilder("https://").append(authority);
+        if (http.getRawPath() != null) {
+            url.append(http.getRawPath());
+        }
+        if (http.getRawQuery() != null) {
+            url.append('?').append(http.getRawQuery());
+        }
+        return URI.create(url.toString());
+    }
+
+    /** Whether an upgraded request answered: with a file or with a redirect. */
+    static boolean answered(int status) {
+        return status / 100 == 2 || REDIRECTS.contains(status);
+    }
+
+    /** The answer of the upgraded URL if it answered, else null (the downgrade is then refused). */
+    private HttpResponse<InputStream> tryUpgrade(URI upgraded, Map<String, String> headers) {
+        HttpResponse<InputStream> response;
+        try {
+            response = send(upgraded, headers);
+        } catch (IOException e) {
+            return null;
+        }
+        if (answered(response.statusCode())) {
+            return response;
+        }
+        try {
+            response.body().close();
+        } catch (IOException ignored) {
+            // the answer is refused anyway
+        }
+        return null;
     }
 
     private static boolean sameOrigin(URI a, URI b) {
