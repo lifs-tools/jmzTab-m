@@ -87,42 +87,39 @@ public class TermIndexTest {
     @Test
     public void roundTripsEveryRecord() throws IOException {
         Map<String, TermRecord> terms = OboReaderTest.readMiniMs();
-        try (TermIndex index = miniMsIndex()) {
-            // UO:0000000, a parent without a stanza, is a stub term of its own (Ruling R-AA), named as
-            // mini-ms.obo's "is_a: UO:0000000 ! unit" names it (minor 8 of the Task 11 review)
-            assertEquals(terms.size() + 1, index.size());
-            for (TermRecord t : terms.values()) {
-                assertEquals(Optional.of(t), index.term(t.id()), t.id());
-            }
-            assertEquals(Optional.of(term("UO:0000000", "unit", false, Map.of())), index.term("UO:0000000"));
+        TermIndex index = miniMsIndex();
+        // UO:0000000, a parent without a stanza, is a stub term of its own (Ruling R-AA), named as
+        // mini-ms.obo's "is_a: UO:0000000 ! unit" names it (minor 8 of the Task 11 review)
+        assertEquals(terms.size() + 1, index.size());
+        for (TermRecord t : terms.values()) {
+            assertEquals(Optional.of(t), index.term(t.id()), t.id());
         }
+        assertEquals(Optional.of(term("UO:0000000", "unit", false, Map.of())), index.term("UO:0000000"));
     }
 
     @Test
     public void ancestorsFollowIsAAndPartOfButNotHasUnits() throws IOException {
-        try (TermIndex index = miniMsIndex()) {
-            assertEquals(List.of("MS:1000008", "MS:1000458", "MS:1000463", "MS:0000000"),
-                ids(index.ancestors("MS:1000073")));
-            assertEquals(List.of("MS:1000494", "MS:1000483", "MS:1000031", "MS:1000463",
-                "MS:0000000"), ids(index.ancestors("MS:1001742")));
-            assertEquals(List.of("MS:1000455", "MS:0000000"),
-                ids(index.ancestors("MS:1000744")));
-            assertEquals(Optional.of(term("MS:1000008", "ionization type", false,
-                Map.of("part_of", List.of("MS:1000458")))),
-                index.ancestors("MS:1000073").stream().findFirst());
-            assertEquals(List.of(), index.ancestors("MS:0000000"));
-        }
+        TermIndex index = miniMsIndex();
+        assertEquals(List.of("MS:1000008", "MS:1000458", "MS:1000463", "MS:0000000"),
+            ids(index.ancestors("MS:1000073")));
+        assertEquals(List.of("MS:1000494", "MS:1000483", "MS:1000031", "MS:1000463",
+            "MS:0000000"), ids(index.ancestors("MS:1001742")));
+        assertEquals(List.of("MS:1000455", "MS:0000000"),
+            ids(index.ancestors("MS:1000744")));
+        assertEquals(Optional.of(term("MS:1000008", "ionization type", false,
+            Map.of("part_of", List.of("MS:1000458")))),
+            index.ancestors("MS:1000073").stream().findFirst());
+        assertEquals(List.of(), index.ancestors("MS:0000000"));
     }
 
     @Test
     public void cyclesEndTheWalkAndAParentWithoutAStanzaIsAnAncestor() throws IOException {
-        try (TermIndex index = miniMsIndex()) {
-            assertEquals(List.of("MS:9999902", "MS:0000000"), ids(index.ancestors("MS:9999901")));
-            assertEquals(List.of("MS:9999901", "MS:0000000"), ids(index.ancestors("MS:9999902")));
-            // MS:1000040 is_a UO:0000000, which has no stanza in the vocabulary (Ruling R-AA)
-            assertEquals(List.of("UO:0000000"), ids(index.ancestors("MS:1000040")));
-            assertEquals(Map.of("is_a", List.of("UO:0000000")), index.term("MS:1000040").get().parentsByRelation());
-        }
+        TermIndex index = miniMsIndex();
+        assertEquals(List.of("MS:9999902", "MS:0000000"), ids(index.ancestors("MS:9999901")));
+        assertEquals(List.of("MS:9999901", "MS:0000000"), ids(index.ancestors("MS:9999902")));
+        // MS:1000040 is_a UO:0000000, which has no stanza in the vocabulary (Ruling R-AA)
+        assertEquals(List.of("UO:0000000"), ids(index.ancestors("MS:1000040")));
+        assertEquals(Map.of("is_a", List.of("UO:0000000")), index.term("MS:1000040").get().parentsByRelation());
     }
 
     @Test
@@ -132,13 +129,12 @@ public class TermIndexTest {
         TermIndexWriter.write(List.of(
             term("M:1", "one", false, Map.of("is_a", List.of("ZZ:9", "A:0"), "part_of", List.of("M:2"))),
             term("M:2", "two", false, Map.of("part_of", List.of("ZZ:9")))), file);
-        try (TermIndex index = TermIndex.open(file)) {
-            assertEquals(4, index.size());
-            assertEquals(Optional.of(term("ZZ:9", "ZZ:9", false, Map.of())), index.term("ZZ:9"));
-            assertEquals(Optional.of(term("A:0", "A:0", false, Map.of())), index.term("A:0"));
-            assertEquals(Set.of("ZZ:9", "A:0", "M:2"), Set.copyOf(ids(index.ancestors("M:1"))));
-            assertEquals(List.of(), index.ancestors("ZZ:9"));
-        }
+        TermIndex index = TermIndex.open(file);
+        assertEquals(4, index.size());
+        assertEquals(Optional.of(term("ZZ:9", "ZZ:9", false, Map.of())), index.term("ZZ:9"));
+        assertEquals(Optional.of(term("A:0", "A:0", false, Map.of())), index.term("A:0"));
+        assertEquals(Set.of("ZZ:9", "A:0", "M:2"), Set.copyOf(ids(index.ancestors("M:1"))));
+        assertEquals(List.of(), index.ancestors("ZZ:9"));
         // the first non-empty name a parent line gives a stub is its label; a term keeps its own name
         Path named = dir.resolve("named.idx");
         try (TermIndexWriter writer = TermIndexWriter.open(named)) {
@@ -152,13 +148,12 @@ public class TermIndexTest {
             writer.parentName("Q:1", "no one's parent");
             writer.commit();
         }
-        try (TermIndex index = TermIndex.open(named)) {
-            assertEquals(4, index.size());
-            assertEquals(Optional.of(term("ZZ:9", "nine", false, Map.of())), index.term("ZZ:9"));
-            assertEquals(Optional.of(term("A:0", "A:0", false, Map.of())), index.term("A:0"));
-            assertEquals("two", index.term("M:2").orElseThrow().label());
-            assertEquals(Optional.empty(), index.term("Q:1"));
-        }
+        TermIndex withNames = TermIndex.open(named);
+        assertEquals(4, withNames.size());
+        assertEquals(Optional.of(term("ZZ:9", "nine", false, Map.of())), withNames.term("ZZ:9"));
+        assertEquals(Optional.of(term("A:0", "A:0", false, Map.of())), withNames.term("A:0"));
+        assertEquals("two", withNames.term("M:2").orElseThrow().label());
+        assertEquals(Optional.empty(), withNames.term("Q:1"));
         try (Stream<Path> left = Files.list(dir)) {
             assertEquals(Set.of("terms.idx", "named.idx"),
                 left.map(f -> f.getFileName().toString()).collect(Collectors.toSet()), "no temporary file is left");
@@ -272,12 +267,11 @@ public class TermIndexTest {
 
     @Test
     public void anUnknownIdIsEmpty() throws IOException {
-        try (TermIndex index = miniMsIndex()) {
-            for (String id : List.of("MS:0000001", "MS:100007", "MS:10000730", "A:1", "ZZ:9",
-                "", "UO:0000001", "ms:1000073")) {
-                assertEquals(Optional.empty(), index.term(id), id);
-                assertEquals(List.of(), index.ancestors(id), id);
-            }
+        TermIndex index = miniMsIndex();
+        for (String id : List.of("MS:0000001", "MS:100007", "MS:10000730", "A:1", "ZZ:9",
+            "", "UO:0000001", "ms:1000073")) {
+            assertEquals(Optional.empty(), index.term(id), id);
+            assertEquals(List.of(), index.ancestors(id), id);
         }
     }
 
@@ -291,12 +285,11 @@ public class TermIndexTest {
                 "part_of", List.of("X:2"))),
             term("X:3", "three", false, Map.of()),
             term("X:1", "other", true, Map.of("is_a", List.of("X:2")))), file);
-        try (TermIndex index = TermIndex.open(file)) {
-            assertEquals(3, index.size());
-            assertEquals(Optional.of(term("X:1", "one", true, Map.of(
-                "is_a", List.of("X:2", "X:3"), "part_of", List.of("X:2")))), index.term("X:1"));
-            assertEquals(List.of("X:2", "X:3"), ids(index.ancestors("X:1")));
-        }
+        TermIndex index = TermIndex.open(file);
+        assertEquals(3, index.size());
+        assertEquals(Optional.of(term("X:1", "one", true, Map.of(
+            "is_a", List.of("X:2", "X:3"), "part_of", List.of("X:2")))), index.term("X:1"));
+        assertEquals(List.of("X:2", "X:3"), ids(index.ancestors("X:1")));
     }
 
     @Test
@@ -312,22 +305,20 @@ public class TermIndexTest {
     }
 
     @Test
-    public void aClosedIndexAnswersNoMore() throws IOException {
-        TermIndex index = miniMsIndex();
-        index.close();
-        assertThrows(IllegalStateException.class, () -> index.term("MS:1000073"));
-        assertThrows(IllegalStateException.class, () -> index.ancestors("MS:1000073"));
-        assertThrows(IllegalStateException.class, index::size);
+    public void anIndexCannotBeClosedByItsUsers() {
+        // Ruling R-AI: an index from TermIndexStore is shared by the process, so no user may end it
+        assertFalse(AutoCloseable.class.isAssignableFrom(TermIndex.class), "TermIndex is AutoCloseable");
+        assertTrue(Arrays.stream(TermIndex.class.getDeclaredMethods()).noneMatch(m -> m.getName().equals("close")),
+            "TermIndex has a close()");
     }
 
     @Test
     public void anEmptyIndexHasNoTerms() throws IOException {
         Path file = dir.resolve("terms.idx");
         TermIndexWriter.write(List.of(), file);
-        try (TermIndex index = TermIndex.open(file)) {
-            assertEquals(0, index.size());
-            assertEquals(Optional.empty(), index.term("MS:1000073"));
-        }
+        TermIndex index = TermIndex.open(file);
+        assertEquals(0, index.size());
+        assertEquals(Optional.empty(), index.term("MS:1000073"));
     }
 
     @Test
@@ -335,10 +326,9 @@ public class TermIndexTest {
         Path file = dir.resolve("terms.idx");
         TermIndexWriter.write(List.of(term("X:1", "one", false, Map.of())), file);
         TermIndexWriter.write(List.of(term("Y:1", "why", false, Map.of())), file);
-        try (TermIndex index = TermIndex.open(file)) {
-            assertEquals(Optional.empty(), index.term("X:1"));
-            assertEquals("why", index.term("Y:1").get().label());
-        }
+        TermIndex index = TermIndex.open(file);
+        assertEquals(Optional.empty(), index.term("X:1"));
+        assertEquals("why", index.term("Y:1").get().label());
         try (Stream<Path> left = Files.list(dir)) {
             assertEquals(List.of(file), left.toList());
         }
@@ -393,13 +383,12 @@ public class TermIndexTest {
         assertEquals(1, buffer.getInt(ordinalAt));
         buffer.putInt(ordinalAt, 99);
         Files.write(file, bytes);
-        try (TermIndex index = TermIndex.open(file)) {
-            IllegalStateException e = assertThrows(IllegalStateException.class,
-                () -> index.ancestors("X:1"));
-            assertTrue(e.getMessage().contains("is corrupt"), e.getMessage());
-            assertThrows(IllegalStateException.class, () -> index.term("X:1"));
-            assertEquals("two", index.term("X:2").get().label());
-        }
+        TermIndex index = TermIndex.open(file);
+        IllegalStateException e = assertThrows(IllegalStateException.class,
+            () -> index.ancestors("X:1"));
+        assertTrue(e.getMessage().contains("is corrupt"), e.getMessage());
+        assertThrows(IllegalStateException.class, () -> index.term("X:1"));
+        assertEquals("two", index.term("X:2").get().label());
     }
 
     @Test
@@ -442,34 +431,32 @@ public class TermIndexTest {
         long openStart = System.nanoTime();
         TermIndex index = TermIndex.open(file);
         long openMillis = (System.nanoTime() - openStart) / 1_000_000;
-        try (index) {
-            assertEquals(count, index.size());
-            Random random = new Random(20261111L);
-            int calls = 10_000;
-            long answered = 0;
-            long walkStart = System.nanoTime();
-            for (int n = 0; n < calls; n++) {
-                answered += index.ancestors("T:" + random.nextInt(count)).size();
-            }
-            double perCallMillis = (System.nanoTime() - walkStart) / 1e6 / calls;
-            System.out.printf("terms.idx: %d terms, %d bytes; write %d ms; open %d ms; "
-                + "ancestors %.4f ms per call (%d ancestors in all); max heap %d MB%n",
-                count, Files.size(file), writeMillis, openMillis, perCallMillis, answered,
-                Runtime.getRuntime().maxMemory() / (1024 * 1024));
-
-            assertTrue(openMillis < 200, "open took " + openMillis + " ms");
-            assertTrue(perCallMillis < 5, "ancestors took " + perCallMillis + " ms per call");
-            // the deepest term of an odd chain: 29 in its own chain, 29 in its neighbour, the root
-            int deepOdd = 1 + depth + depth - 1;
-            Set<String> expected = Stream.concat(
-                Stream.iterate(deepOdd - 1, i -> i > depth, i -> i - 1),
-                Stream.concat(Stream.iterate(depth - 1, i -> i >= 1, i -> i - 1), Stream.of(0)))
-                .map(i -> "T:" + i).collect(Collectors.toSet());
-            List<String> ancestors = ids(index.ancestors("T:" + deepOdd));
-            assertEquals(expected, Set.copyOf(ancestors));
-            assertEquals(expected.size(), ancestors.size());
-            assertEquals(List.of("T:" + (deepOdd - 1), "T:" + (deepOdd - depth - 1)),
-                ancestors.subList(0, 2));
+        assertEquals(count, index.size());
+        Random random = new Random(20261111L);
+        int calls = 10_000;
+        long answered = 0;
+        long walkStart = System.nanoTime();
+        for (int n = 0; n < calls; n++) {
+            answered += index.ancestors("T:" + random.nextInt(count)).size();
         }
+        double perCallMillis = (System.nanoTime() - walkStart) / 1e6 / calls;
+        System.out.printf("terms.idx: %d terms, %d bytes; write %d ms; open %d ms; "
+            + "ancestors %.4f ms per call (%d ancestors in all); max heap %d MB%n",
+            count, Files.size(file), writeMillis, openMillis, perCallMillis, answered,
+            Runtime.getRuntime().maxMemory() / (1024 * 1024));
+
+        assertTrue(openMillis < 200, "open took " + openMillis + " ms");
+        assertTrue(perCallMillis < 5, "ancestors took " + perCallMillis + " ms per call");
+        // the deepest term of an odd chain: 29 in its own chain, 29 in its neighbour, the root
+        int deepOdd = 1 + depth + depth - 1;
+        Set<String> expected = Stream.concat(
+            Stream.iterate(deepOdd - 1, i -> i > depth, i -> i - 1),
+            Stream.concat(Stream.iterate(depth - 1, i -> i >= 1, i -> i - 1), Stream.of(0)))
+            .map(i -> "T:" + i).collect(Collectors.toSet());
+        List<String> ancestors = ids(index.ancestors("T:" + deepOdd));
+        assertEquals(expected, Set.copyOf(ancestors));
+        assertEquals(expected.size(), ancestors.size());
+        assertEquals(List.of("T:" + (deepOdd - 1), "T:" + (deepOdd - depth - 1)),
+            ancestors.subList(0, 2));
     }
 }

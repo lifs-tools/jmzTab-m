@@ -15,7 +15,6 @@
  */
 package org.lifstools.mztab2.cvmapping.local;
 
-import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.foreign.Arena;
@@ -59,13 +58,17 @@ import java.util.Set;
  * reader that produced the terms decided which relations are hierarchical.</p>
  *
  * <p>
- * Safe for use by several threads; using it after {@link #close()} throws
- * {@link IllegalStateException}. The mapping is released by the garbage
- * collector once the index is unreachable, not by {@link #close()}: a native
- * image supports closing a mapping that several threads share only with an
- * experimental build option.</p>
+ * Safe for use by several threads. An index cannot be closed (Ruling R-AI):
+ * the index of a cached release is owned by {@link TermIndexStore}, which
+ * shares one per file with every validation run and thread of the process
+ * and keeps it for the life of the process, so no user could end it without
+ * ending it for all. Its mapping is released by the garbage collector once
+ * the index is unreachable ({@code Arena.ofAuto()}): a native image supports
+ * closing a mapping that several threads share only with an experimental
+ * build option. An index opened with {@link #open} outside the store is
+ * likewise released when it is no longer referenced.</p>
  */
-public final class TermIndex implements Closeable {
+public final class TermIndex {
 
     static final byte[] MAGIC = "JMZTIDX2".getBytes(StandardCharsets.US_ASCII);
     /** The magic of the layout before index versions, which counts as version 1. */
@@ -147,8 +150,6 @@ public final class TermIndex implements Closeable {
     private final List<String> relations;
     private final long tableStart;
 
-    private volatile boolean closed;
-
     private TermIndex(Path file, MemorySegment segment, int termCount, List<String> relations,
         long tableStart) {
         this.file = file;
@@ -159,7 +160,8 @@ public final class TermIndex implements Closeable {
     }
 
     /**
-     * Maps an index file.
+     * Maps an index file. A validation run gets its indexes from
+     * {@link TermIndexStore}, which shares them; this maps a private one.
      *
      * @param file a file written by {@link TermIndexWriter}
      * @return the index
@@ -306,14 +308,7 @@ public final class TermIndex implements Closeable {
      * @return the term count
      */
     public int size() {
-        checkOpen();
         return termCount;
-    }
-
-    /** Ends the use of this index; the mapping goes once the index is unreachable. */
-    @Override
-    public void close() {
-        closed = true;
     }
 
     @Override
@@ -323,12 +318,6 @@ public final class TermIndex implements Closeable {
 
     static String utf8(MemorySegment segment, long position, int length) {
         return new String(segment.asSlice(position, length).toArray(BYTE), StandardCharsets.UTF_8);
-    }
-
-    private void checkOpen() {
-        if (closed) {
-            throw new IllegalStateException(this + " is closed");
-        }
     }
 
     /** A stored parent ordinal; one outside the table means the file is corrupt. */
@@ -347,7 +336,6 @@ public final class TermIndex implements Closeable {
 
     /** Binary search over the offset table, comparing UTF-8 bytes unsigned. */
     private int ordinal(String oboId) {
-        checkOpen();
         MemorySegment key = MemorySegment.ofArray(oboId.getBytes(StandardCharsets.UTF_8));
         long keyLength = key.byteSize();
         int low = 0;

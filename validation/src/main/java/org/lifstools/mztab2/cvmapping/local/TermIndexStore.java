@@ -26,9 +26,10 @@ import java.util.concurrent.ConcurrentHashMap;
  * by every validation run and thread (Ruling P2).
  *
  * <p>
- * A cached release never changes, so its index stays open for the life of the
- * process. Callers must not {@link TermIndex#close() close} an index they got
- * here: closing it ends its use for every thread.</p>
+ * The store owns the indexes it hands out (Ruling R-AI). A cached release
+ * never changes, so its index stays open for the life of the process, and no
+ * caller can close it: {@link TermIndex} has no {@code close()}, since
+ * closing a shared index would end it for every run and thread.</p>
  */
 public final class TermIndexStore {
 
@@ -41,7 +42,7 @@ public final class TermIndexStore {
      * The index of a release, opened on first use.
      *
      * @param release a release of the {@link VocabularyCache}
-     * @return the shared index; never close it
+     * @return the shared index, owned by the store
      * @throws IOException if the index cannot be read
      * @throws IllegalArgumentException for an import, which has no index of
      * its own

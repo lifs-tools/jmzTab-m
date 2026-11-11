@@ -207,10 +207,9 @@ public class OwlRdfXmlReaderTest {
             }
             writer.commit();
         }
-        try (TermIndex index = TermIndex.open(file)) {
-            assertEquals("material processing", index.term("OBI:0000094").orElseThrow().label());
-            assertEquals(List.of("OBI:0000011"),
-                index.ancestors("OBI:0000094").stream().map(TermRecord::id).toList());
-        }
+        TermIndex index = TermIndex.open(file);
+        assertEquals("material processing", index.term("OBI:0000094").orElseThrow().label());
+        assertEquals(List.of("OBI:0000011"),
+            index.ancestors("OBI:0000094").stream().map(TermRecord::id).toList());
     }
 }

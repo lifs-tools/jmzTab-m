@@ -450,9 +450,8 @@ public class VocabularyCacheTest {
         assertEquals(cached, offline.get(ms(Map.of()), "4.1.200"));
 
         assertTrue(TermIndex.isCurrent(cached.index()));
-        try (TermIndex index = TermIndex.open(cached.index())) {
-            assertEquals("instrument model", index.term("MS:1000031").orElseThrow().label());
-        }
+        TermIndex index = TermIndex.open(cached.index());
+        assertEquals("instrument model", index.term("MS:1000031").orElseThrow().label());
         assertArrayEquals(releaseJson, Files.readAllBytes(folder.resolve("release.json")));
         assertArrayEquals(miniMs, Files.readAllBytes(cached.original()));
         // the older build's index stays, untouched (Ruling R-N)
@@ -488,10 +487,9 @@ public class VocabularyCacheTest {
             server.api(), Optional.empty());
         assertEquals(cached, offline.get(msio(), "1.0.1"));
 
-        try (TermIndex index = TermIndex.open(cached.index())) {
-            // OBI:0000094 comes from the cached import
-            assertEquals("material processing", index.term("OBI:0000094").orElseThrow().label());
-        }
+        TermIndex index = TermIndex.open(cached.index());
+        // OBI:0000094 comes from the cached import
+        assertEquals("material processing", index.term("OBI:0000094").orElseThrow().label());
         assertEquals(1, server.hits("/obo/mini-obi.owl"));
         assertNoTemporaryFolders();
     }
