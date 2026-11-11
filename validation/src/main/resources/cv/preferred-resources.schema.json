@@ -1,0 +1,205 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "jmzTab-m preferred resources",
+  "description": "Per controlled vocabulary: the identifiers it is known by, where its versioned releases are downloaded, its version scheme, how its releases and their dates are listed, and how its latest release is found.",
+  "type": "object",
+  "required": ["vocabularies"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {"type": "string"},
+    "$comment": {"type": "string"},
+    "vocabularies": {
+      "description": "The entries, by key. The key is the cvIdentifier of the mapping's CvReference.",
+      "type": "object",
+      "propertyNames": {"$ref": "#/$defs/identifier"},
+      "additionalProperties": {"$ref": "#/$defs/vocabulary"}
+    }
+  },
+  "$defs": {
+    "identifier": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9_.-]*$"
+    },
+    "nameWithVersion": {
+      "description": "A tag or file name with exactly one {version} placeholder, e.g. v{version}.",
+      "type": "string",
+      "pattern": "^[^{}\\s]*\\{version\\}[^{}\\s]*$"
+    },
+    "repo": {
+      "description": "A GitHub repository as owner/name.",
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$"
+    },
+    "httpUrl": {
+      "type": "string",
+      "pattern": "^https?://[^{}\\s]+$"
+    },
+    "vocabulary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["labels", "oboPrefix", "location", "scheme", "releases", "latest"],
+      "properties": {
+        "$comment": {
+          "description": "Where the entry's locations come from and when they were checked.",
+          "type": "string"
+        },
+        "labels": {
+          "description": "The mzTab-M cv[n]-label values this vocabulary is known by, matched ignoring case.",
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/identifier"}
+        },
+        "oboPrefix": {
+          "description": "The prefix of the vocabulary's term ids, e.g. MS for MS:1000031; matched ignoring case like a label.",
+          "$ref": "#/$defs/identifier"
+        },
+        "location": {"$ref": "#/$defs/location"},
+        "scheme": {
+          "description": "How release names are compared: DOTTED (4.1.30), ISO_DATE (2023-05-25) or RELEASE_NUMBER (230).",
+          "enum": ["DOTTED", "ISO_DATE", "RELEASE_NUMBER"]
+        },
+        "releases": {"$ref": "#/$defs/releaseIndex"},
+        "latest": {"$ref": "#/$defs/latest"},
+        "knownSha256": {
+          "description": "Known SHA-256 checksums of downloaded release files, by version.",
+          "type": "object",
+          "additionalProperties": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+        }
+      }
+    },
+    "location": {
+      "description": "Where one release is downloaded: a URL template with {version}, or an OBO Foundry id for http://purl.obolibrary.org/obo/{id}/releases/{version}/{id}.{ext}.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["format"],
+      "properties": {
+        "format": {
+          "description": "OBO, gzip-compressed OBO, or OWL as RDF/XML.",
+          "enum": ["OBO", "OBO_GZ", "OWL_RDFXML"]
+        },
+        "urlTemplate": {
+          "type": "string",
+          "pattern": "^https?://([^{}\\s]|\\{version\\})*\\{version\\}([^{}\\s]|\\{version\\})*$"
+        },
+        "oboFoundryId": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*$"
+        }
+      },
+      "oneOf": [
+        {"required": ["urlTemplate"]},
+        {"required": ["oboFoundryId"]}
+      ]
+    },
+    "releaseIndex": {
+      "description": "How the releases are listed, and how their dates are found.",
+      "type": "object",
+      "required": ["kind"],
+      "properties": {
+        "kind": {"enum": ["githubTags", "directoryListing", "listed"]}
+      },
+      "allOf": [
+        {
+          "if": {"required": ["kind"], "properties": {"kind": {"const": "githubTags"}}},
+          "then": {"$ref": "#/$defs/githubTags"}
+        },
+        {
+          "if": {"required": ["kind"], "properties": {"kind": {"const": "directoryListing"}}},
+          "then": {"$ref": "#/$defs/directoryListing"}
+        },
+        {
+          "if": {"required": ["kind"], "properties": {"kind": {"const": "listed"}}},
+          "then": {"$ref": "#/$defs/listed"}
+        }
+      ]
+    },
+    "githubTags": {
+      "description": "The repository's tags that match tagPattern, from the GitHub tags API. dates: githubReleases (published_at of the GitHub release of that tag; a tag without a release has no date), version (an ISO_DATE version is its own date) or none.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "repo", "tagPattern", "dates"],
+      "properties": {
+        "kind": {"const": "githubTags"},
+        "repo": {"$ref": "#/$defs/repo"},
+        "tagPattern": {"$ref": "#/$defs/nameWithVersion"},
+        "dates": {"enum": ["githubReleases", "version", "none"]}
+      }
+    },
+    "directoryListing": {
+      "description": "The links of an HTTP directory index whose names match entryPattern. dates: version (an ISO_DATE version is its own date) or none.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "url", "entryPattern", "dates"],
+      "properties": {
+        "kind": {"const": "directoryListing"},
+        "url": {"$ref": "#/$defs/httpUrl"},
+        "entryPattern": {"$ref": "#/$defs/nameWithVersion"},
+        "dates": {"enum": ["version", "none"]}
+      }
+    },
+    "listed": {
+      "description": "The releases, written out; each one's date is given with it, if known.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "releases"],
+      "properties": {
+        "kind": {"const": "listed"},
+        "releases": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["version"],
+            "properties": {
+              "version": {"type": "string", "minLength": 1},
+              "date": {"type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"}
+            }
+          }
+        }
+      }
+    },
+    "latest": {
+      "description": "How the latest release is found: githubLatestTag (the newest matching tag by the scheme), header (data-version or owl:versionIRI of the unversioned file at url) or newestRelease (the newest of the release index by the scheme).",
+      "type": "object",
+      "required": ["kind"],
+      "properties": {
+        "kind": {"enum": ["githubLatestTag", "header", "newestRelease"]}
+      },
+      "allOf": [
+        {
+          "if": {"required": ["kind"], "properties": {"kind": {"const": "githubLatestTag"}}},
+          "then": {
+            "additionalProperties": false,
+            "required": ["kind", "repo", "tagPattern"],
+            "properties": {
+              "kind": {"const": "githubLatestTag"},
+              "repo": {"$ref": "#/$defs/repo"},
+              "tagPattern": {"$ref": "#/$defs/nameWithVersion"}
+            }
+          }
+        },
+        {
+          "if": {"required": ["kind"], "properties": {"kind": {"const": "header"}}},
+          "then": {
+            "additionalProperties": false,
+            "required": ["kind", "url"],
+            "properties": {
+              "kind": {"const": "header"},
+              "url": {"$ref": "#/$defs/httpUrl"}
+            }
+          }
+        },
+        {
+          "if": {"required": ["kind"], "properties": {"kind": {"const": "newestRelease"}}},
+          "then": {
+            "additionalProperties": false,
+            "properties": {
+              "kind": {"const": "newestRelease"}
+            }
+          }
+        }
+      ]
+    }
+  }
+}
