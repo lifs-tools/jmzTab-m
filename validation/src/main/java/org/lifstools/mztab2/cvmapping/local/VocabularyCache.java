@@ -84,7 +84,10 @@ import org.slf4j.LoggerFactory;
  * <p>
  * A release folder is built as {@code <key>/.tmp-<uuid>/}, with release.json
  * written last, and appears by one atomic rename. A folder without
- * release.json is not an entry. If another process renamed its copy first,
+ * release.json is not an entry: if it holds only the vocabulary file, under
+ * the name a download would give it, it is a pre-filled release and is
+ * adopted in place; anything else is never moved or deleted, and the
+ * release fails until it is cleared. If another process renamed its copy first,
  * the loser deletes its own and uses the winner's. Temporary entries left
  * for a day by a killed process are removed when the next release of their
  * folder is built. In one JVM, one lock per
@@ -209,7 +212,7 @@ public final class VocabularyCache {
         Path folder = keyFolder.resolve(version);
         Optional<CachedRelease> cached = readRelease(folder);
         if (cached.isEmpty()) {
-            if (offline) {
+            if (offline && !Files.exists(folder)) {
                 throw new ResolutionException(Reason.OFFLINE_NOT_CACHED,
                     "downloads are off, and the cache holds no copy in " + folder);
             }
@@ -217,7 +220,14 @@ public final class VocabularyCache {
             try {
                 cached = readRelease(folder);
                 if (cached.isEmpty()) {
-                    cached = Optional.of(build(e, version, url, keyFolder, folder));
+                    if (Files.exists(folder)) {
+                        cached = Optional.of(adopt(e, version, url, keyFolder, folder));
+                    } else if (offline) {
+                        throw new ResolutionException(Reason.OFFLINE_NOT_CACHED,
+                            "downloads are off, and the cache holds no copy in " + folder);
+                    } else {
+                        cached = Optional.of(build(e, version, url, keyFolder, folder));
+                    }
                 }
             } finally {
                 lock.unlock();
@@ -237,47 +247,153 @@ public final class VocabularyCache {
         throws ResolutionException {
         Path temporary = createTemporaryFolder(keyFolder);
         try {
-            Path original = temporary.resolve(fileName(url, "release." + e.location().format().extension()));
+            Path original = temporary.resolve(expectedFileName(e, url));
             Fetched fetched = download(url, original, e.key() + " " + version, "");
-            String known = e.knownSha256().get(version);
-            if (known != null && !known.equalsIgnoreCase(fetched.sha256())) {
-                throw new ResolutionException(Reason.CHECKSUM_MISMATCH, "the file at " + url + " has SHA-256 "
-                    + fetched.sha256() + ", but the resources file expects " + known);
-            }
-            List<CachedRelease> imports;
-            try (TermIndexWriter writer = TermIndexWriter.open(temporary.resolve(INDEX))) {
-                imports = readTerms(e.location().format(), original, url, writer);
-                commit(writer);
-            } catch (IOException x) {
-                // opening or closing the writer
-                throw writeFailed(x);
-            }
-            ObjectNode json = JSON.createObjectNode();
-            json.put("key", e.key());
-            json.put("version", version);
-            json.put("source", url.toString());
-            json.put("finalUrl", fetched.location().toString());
-            json.put("sha256", fetched.sha256());
-            json.put("original", original.getFileName().toString());
-            json.put("index", INDEX);
-            ArrayNode list = json.putArray("imports");
-            for (CachedRelease i : imports) {
-                ObjectNode item = list.addObject();
-                item.put("key", i.key());
-                item.put("version", i.version());
-                item.put("source", i.source().toString());
-                item.put("sha256", i.sha256());
-                item.put("original", relative(folder, i.original()));
-                item.putNull("index");
-            }
-            json.put("downloaded", clock.instant().toString());
-            writeJson(temporary.resolve(RELEASE_JSON), json);
+            checkKnownSha256(e, version, fetched.sha256(), "the file at " + url);
+            List<CachedRelease> imports = writeIndex(e.location().format(), original, url, temporary.resolve(INDEX));
+            writeJson(temporary.resolve(RELEASE_JSON),
+                releaseJson(e, version, url, fetched.location(), fetched.sha256(), original.getFileName().toString(),
+                    imports, folder));
             publish(temporary, folder);
             return readRelease(folder).orElseThrow(() -> new ResolutionException(Reason.WRITE_FAILED,
                 "the release folder " + folder + " vanished after it was written"));
         } finally {
             deleteQuietly(temporary);
         }
+    }
+
+    /**
+     * Adopts a folder without release.json (Ruling R-N): a pre-filled release
+     * is the vocabulary file alone, under the name a download would give it
+     * (a {@code terms.idx} that an interrupted adoption left may sit beside
+     * it). Its index and release.json are built in a temporary folder and
+     * moved in, release.json last. Anything else is left untouched and fails.
+     * Works offline, as long as an OWL release's imports are cached.
+     */
+    private CachedRelease adopt(VocabularyEntry e, String version, URI url, Path keyFolder, Path folder)
+        throws ResolutionException {
+        String name = expectedFileName(e, url);
+        Path original = folder.resolve(name);
+        List<String> names;
+        try (Stream<Path> files = Files.list(folder)) {
+            names = files.map(p -> p.getFileName().toString()).toList();
+        } catch (IOException x) {
+            throw notAnEntry(folder, name);
+        }
+        boolean prefilled = Files.isRegularFile(original) && names.stream()
+            .allMatch(n -> n.equals(name) || n.equals(INDEX) && Files.isRegularFile(folder.resolve(INDEX)));
+        if (!prefilled) {
+            throw notAnEntry(folder, name);
+        }
+        LOG.info("Adopting the pre-filled {} as {} {}", original, e.key(), version);
+        String sha256 = sha256Of(original);
+        checkKnownSha256(e, version, sha256, "the pre-filled file " + original);
+        Path temporary = createTemporaryFolder(keyFolder);
+        try {
+            List<CachedRelease> imports = writeIndex(e.location().format(), original, url, temporary.resolve(INDEX));
+            writeJson(temporary.resolve(RELEASE_JSON),
+                releaseJson(e, version, url, null, sha256, name, imports, folder));
+            try {
+                Files.move(temporary.resolve(INDEX), folder.resolve(INDEX), StandardCopyOption.ATOMIC_MOVE);
+                Files.move(temporary.resolve(RELEASE_JSON), folder.resolve(RELEASE_JSON),
+                    StandardCopyOption.ATOMIC_MOVE);
+            } catch (IOException x) {
+                throw writeFailed(x);
+            }
+            return readRelease(folder).orElseThrow(() -> new ResolutionException(Reason.WRITE_FAILED,
+                "the release folder " + folder + " has no " + RELEASE_JSON + " after it was written"));
+        } finally {
+            deleteQuietly(temporary);
+        }
+    }
+
+    /** A folder at a release's place that is neither an entry nor a pre-filled release. */
+    private ResolutionException notAnEntry(Path folder, String name) {
+        return new ResolutionException(offline ? Reason.OFFLINE_NOT_CACHED : Reason.WRITE_FAILED,
+            notAnEntryMessage(folder, "the vocabulary file " + name));
+    }
+
+    private static String notAnEntryMessage(Path folder, String file) {
+        return "the folder " + folder + " holds no " + RELEASE_JSON + " and is not a pre-filled release;"
+            + " remove it, or leave only " + file + " in it";
+    }
+
+    /** The name a release's file gets: the URL's last path segment if it makes a safe name. */
+    private static String expectedFileName(VocabularyEntry e, URI url) {
+        return fileName(url, "release." + e.location().format().extension());
+    }
+
+    private static void checkKnownSha256(VocabularyEntry e, String version, String sha256, String what)
+        throws ResolutionException {
+        String known = e.knownSha256().get(version);
+        if (known != null && !known.equalsIgnoreCase(sha256)) {
+            throw new ResolutionException(Reason.CHECKSUM_MISMATCH, what + " has SHA-256 " + sha256
+                + ", but the resources file expects " + known);
+        }
+    }
+
+    private static String sha256Of(Path file) throws ResolutionException {
+        MessageDigest digest = sha256();
+        try (InputStream in = Files.newInputStream(file)) {
+            byte[] buffer = new byte[BUFFER_SIZE];
+            for (int n = in.read(buffer); n >= 0; n = in.read(buffer)) {
+                digest.update(buffer, 0, n);
+            }
+        } catch (IOException x) {
+            throw new ResolutionException(Reason.PARSE_FAILED, "the file " + file + " cannot be read: "
+                + message(x), x);
+        }
+        return HexFormat.of().formatHex(digest.digest());
+    }
+
+    /** Writes the index of a release and its imports; the imports read. */
+    private List<CachedRelease> writeIndex(Format format, Path original, URI url, Path index)
+        throws ResolutionException {
+        try (TermIndexWriter writer = TermIndexWriter.open(index)) {
+            List<CachedRelease> imports = readTerms(format, original, url, writer);
+            commit(writer);
+            return imports;
+        } catch (IOException x) {
+            // opening or closing the writer
+            throw writeFailed(x);
+        }
+    }
+
+    /**
+     * The release.json of a release, its paths relative to {@code folder}. A
+     * download (a final URL) records that URL and its time; a pre-filled
+     * release (no final URL) {@code "prefilled": true} and the time it was
+     * adopted.
+     */
+    private ObjectNode releaseJson(VocabularyEntry e, String version, URI url, URI finalUrl, String sha256,
+        String original, List<CachedRelease> imports, Path folder) {
+        ObjectNode json = JSON.createObjectNode();
+        json.put("key", e.key());
+        json.put("version", version);
+        json.put("source", url.toString());
+        if (finalUrl != null) {
+            json.put("finalUrl", finalUrl.toString());
+        }
+        json.put("sha256", sha256);
+        json.put("original", original);
+        json.put("index", INDEX);
+        ArrayNode list = json.putArray("imports");
+        for (CachedRelease i : imports) {
+            ObjectNode item = list.addObject();
+            item.put("key", i.key());
+            item.put("version", i.version());
+            item.put("source", i.source().toString());
+            item.put("sha256", i.sha256());
+            item.put("original", relative(folder, i.original()));
+            item.putNull("index");
+        }
+        if (finalUrl != null) {
+            json.put("downloaded", clock.instant().toString());
+        } else {
+            json.put("prefilled", true);
+            json.put("adopted", clock.instant().toString());
+        }
+        return json;
     }
 
     /**
@@ -715,6 +831,7 @@ public final class VocabularyCache {
         ObjectNode json = JSON.createObjectNode();
         json.put("definition", definition);
         json.put("time", clock.instant().toString());
+        json.put("ttl", latestTtl.toString());
         return json;
     }
 
@@ -835,47 +952,21 @@ public final class VocabularyCache {
     /**
      * Renames a complete temporary folder onto its entry. If the entry exists,
      * another process won: its copy is used. A folder in the way that is no
-     * entry (no release.json) is moved aside and removed first.
+     * entry (no release.json) is never moved or deleted: it may be someone's
+     * copy in progress.
      */
     private static void publish(Path temporary, Path folder) throws ResolutionException {
         try {
             Files.move(temporary, folder, StandardCopyOption.ATOMIC_MOVE);
-            return;
         } catch (IOException e) {
             if (isEntry(folder)) {
                 return;
             }
-            if (!Files.isDirectory(folder)) {
-                throw writeFailed(e);
-            }
-        }
-        // a stale folder that is no entry: an interrupted copy into the cache
-        Path aside = folder.resolveSibling(TEMPORARY + UUID.randomUUID());
-        try {
-            Files.move(folder, aside, StandardCopyOption.ATOMIC_MOVE);
-        } catch (IOException e) {
-            if (isEntry(folder)) {
-                return;
+            if (Files.isDirectory(folder)) {
+                throw new ResolutionException(Reason.WRITE_FAILED,
+                    notAnEntryMessage(folder, "the vocabulary file"), e);
             }
             throw writeFailed(e);
-        }
-        if (isEntry(aside)) {
-            // it became an entry meanwhile: put it back and use it
-            try {
-                Files.move(aside, folder, StandardCopyOption.ATOMIC_MOVE);
-                return;
-            } catch (IOException e) {
-                // fall through to ours
-            }
-        }
-        LOG.info("Replacing {}, a folder without {}", folder, RELEASE_JSON);
-        deleteQuietly(aside);
-        try {
-            Files.move(temporary, folder, StandardCopyOption.ATOMIC_MOVE);
-        } catch (IOException e) {
-            if (!isEntry(folder)) {
-                throw writeFailed(e);
-            }
         }
     }
 

@@ -28,6 +28,8 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 import java.io.ByteArrayOutputStream;
@@ -335,7 +337,9 @@ public class VocabularyCacheTest {
         clock.advance(Duration.ofHours(23));
         assertEquals(Optional.of("4.2.15"), cache(false).latest(ms(Map.of())));
         assertEquals(1, server.hits(TAGS));
-        assertTrue(Files.isRegularFile(root.resolve("MS").resolve("latest.json")));
+        JsonNode latest = new ObjectMapper().readTree(root.resolve("MS").resolve("latest.json").toFile());
+        assertEquals("PT24H", latest.path("ttl").asText(), latest.toString());
+        assertEquals("2026-11-11T10:00:00Z", latest.path("time").asText(), latest.toString());
 
         serveMsTags(List.of("v4.1.200", "v4.2.15", "v4.2.16"));
         clock.advance(Duration.ofHours(2));
@@ -510,6 +514,8 @@ public class VocabularyCacheTest {
         assertEquals(new Release("4.0.10", Optional.empty()), releases.get(10));
         assertEquals(new Release("4.1.200", Optional.of(LocalDate.of(2025, 1, 15))), releases.get(100));
         assertEquals(2, server.hits(TAGS));
+        JsonNode kept = new ObjectMapper().readTree(root.resolve("MS").resolve("releases.json").toFile());
+        assertEquals("PT24H", kept.path("ttl").asText(), kept.toString());
     }
 
     @Test
@@ -578,17 +584,205 @@ public class VocabularyCacheTest {
             && e.getFormattedMessage().equals(expected)), appender.list.toString());
     }
 
+    // ---- folders without release.json (Ruling R-N) ----
+
     @Test
-    public void aFolderWithoutReleaseJsonIsReplaced() throws Exception {
-        server.file(MS_PATH, miniMs);
-        Path stale = Files.createDirectories(root.resolve("MS").resolve("4.1.200"));
-        Files.writeString(stale.resolve("psi-ms.obo"), "half");
+    public void aPrefilledFileIsAdoptedInPlace() throws Exception {
+        Path folder = Files.createDirectories(root.resolve("MS").resolve("4.1.200"));
+        Files.write(folder.resolve("psi-ms.obo"), miniMs);
+        VocabularyCache cache = new VocabularyCache(root, failingDownloader(), false, DAY, clock, server.api(),
+            Optional.empty());
 
-        CachedRelease r = cache(false).get(ms(Map.of()), "4.1.200");
+        CachedRelease r = cache.get(ms(Map.of("4.1.200", sha256(miniMs))), "4.1.200");
 
+        assertEquals(folder.resolve("psi-ms.obo"), r.original());
+        assertEquals(folder.resolve("terms.idx"), r.index());
+        assertEquals(sha256(miniMs), r.sha256());
+        assertEquals(URI.create(server.base() + MS_PATH), r.source());
         assertArrayEquals(miniMs, Files.readAllBytes(r.original()));
-        assertTrue(Files.isRegularFile(stale.resolve("release.json")));
+        assertTrue(TermIndexStore.open(r).term("MS:1000031").isPresent());
+        JsonNode json = new ObjectMapper().readTree(folder.resolve("release.json").toFile());
+        assertTrue(json.path("prefilled").asBoolean(false), json.toString());
+        assertTrue(json.has("adopted"), json.toString());
+        assertFalse(json.has("finalUrl"), json.toString());
+        assertEquals(r, cache(true).get(ms(Map.of()), "4.1.200"));
         assertNoTemporaryFolders();
+    }
+
+    @Test
+    public void aPrefilledFileIsAdoptedOffline() throws Exception {
+        Path folder = Files.createDirectories(root.resolve("MS").resolve("4.1.200"));
+        Files.write(folder.resolve("psi-ms.obo"), miniMs);
+        // the index an interrupted adoption left is replaced
+        Files.writeString(folder.resolve("terms.idx"), "half an index");
+
+        CachedRelease r = cache(true).get(ms(Map.of()), "4.1.200");
+
+        assertTrue(TermIndexStore.open(r).term("MS:1000031").isPresent());
+        assertEquals(Set.of("psi-ms.obo", "terms.idx", "release.json"), names(folder));
+        assertEquals(0, server.totalHits());
+    }
+
+    @Test
+    public void aPrefilledFileThatFailsIsLeftAsItWas() throws Exception {
+        Path folder = Files.createDirectories(root.resolve("MS").resolve("4.1.200"));
+        Files.write(folder.resolve("psi-ms.obo"), miniMs);
+
+        ResolutionException mismatch = assertThrows(ResolutionException.class,
+            () -> cache(true).get(ms(Map.of("4.1.200", "0".repeat(64))), "4.1.200"));
+        assertEquals(Reason.CHECKSUM_MISMATCH, mismatch.reason());
+        assertTrue(mismatch.getMessage().contains(sha256(miniMs)), mismatch.getMessage());
+        assertEquals(Set.of("psi-ms.obo"), names(folder));
+
+        Files.writeString(folder.resolve("psi-ms.obo"), "<!DOCTYPE html>\n<html></html>\n");
+        ResolutionException html = assertThrows(ResolutionException.class,
+            () -> cache(false).get(ms(Map.of()), "4.1.200"));
+        assertEquals(Reason.PARSE_FAILED, html.reason());
+        assertTrue(html.getMessage().contains("not an OBO file"), html.getMessage());
+        assertEquals(Set.of("psi-ms.obo"), names(folder));
+        assertEquals(0, server.totalHits());
+        assertNoTemporaryFolders();
+    }
+
+    @Test
+    public void aPrefilledOwlReleaseNeedsItsImportsCachedOffline() throws Exception {
+        Path folder = Files.createDirectories(root.resolve("MSIO").resolve("1.0.1"));
+        Files.write(folder.resolve("msio.owl"), resource("/cv/mini-msio.owl"));
+
+        ResolutionException e = assertThrows(ResolutionException.class, () -> cache(true).get(msio(), "1.0.1"));
+
+        assertEquals(Reason.OFFLINE_NOT_CACHED, e.reason());
+        assertTrue(e.getMessage().contains("import " + PURL + "obo/mini-obi.owl"), e.getMessage());
+        assertEquals(Set.of("msio.owl"), names(folder));
+        // online, the import is downloaded and the release adopted
+        server.file("/obo/mini-obi.owl", resource("/cv/mini-obi.owl"));
+        CachedRelease r = new VocabularyCache(root, purlToServer(), false, DAY, clock, server.api(),
+            Optional.empty()).get(msio(), "1.0.1");
+        assertEquals(1, r.imports().size());
+        assertTrue(TermIndexStore.open(r).term("OBI:0000011").isPresent());
+    }
+
+    @Test
+    public void aFolderThatIsNoEntryIsNeverTouched() throws Exception {
+        server.file(MS_PATH, miniMs);
+        Path folder = Files.createDirectories(root.resolve("MS").resolve("4.1.200"));
+        Files.write(folder.resolve("psi-ms.obo"), miniMs);
+        Files.writeString(folder.resolve("notes.txt"), "an operator's copy in progress");
+
+        ResolutionException online = assertThrows(ResolutionException.class,
+            () -> cache(false).get(ms(Map.of()), "4.1.200"));
+        ResolutionException offline = assertThrows(ResolutionException.class,
+            () -> cache(true).get(ms(Map.of()), "4.1.200"));
+
+        assertEquals(Reason.WRITE_FAILED, online.reason());
+        assertEquals(Reason.OFFLINE_NOT_CACHED, offline.reason());
+        for (ResolutionException e : List.of(online, offline)) {
+            assertTrue(e.getMessage().contains(folder.toString()), e.getMessage());
+            assertTrue(e.getMessage().contains("holds no release.json"), e.getMessage());
+            assertTrue(e.getMessage().contains("remove it, or leave only the vocabulary file psi-ms.obo"),
+                e.getMessage());
+        }
+        assertEquals(Set.of("psi-ms.obo", "notes.txt"), names(folder));
+        // a file under another name, and an empty folder, are no pre-filled release either
+        Files.delete(folder.resolve("psi-ms.obo"));
+        Files.delete(folder.resolve("notes.txt"));
+        assertEquals(Reason.WRITE_FAILED,
+            assertThrows(ResolutionException.class, () -> cache(false).get(ms(Map.of()), "4.1.200")).reason());
+        Files.writeString(folder.resolve("partial"), "half");
+        assertEquals(Reason.WRITE_FAILED,
+            assertThrows(ResolutionException.class, () -> cache(false).get(ms(Map.of()), "4.1.200")).reason());
+        assertEquals(Set.of("partial"), names(folder));
+        assertEquals(0, server.hits(MS_PATH));
+    }
+
+    @Test
+    public void aFolderThatAppearsDuringADownloadIsNotReplaced() throws Exception {
+        server.file(MS_PATH, miniMs);
+        Path folder = root.resolve("MS").resolve("4.1.200");
+        Downloader http = Downloader.http(Duration.ofSeconds(10));
+        Downloader copying = uri -> {
+            Files.createDirectories(folder);
+            Files.writeString(folder.resolve("psi-ms.obo"), "being copied");
+            Files.writeString(folder.resolve("more"), "being copied");
+            return http.get(uri);
+        };
+
+        ResolutionException e = assertThrows(ResolutionException.class,
+            () -> new VocabularyCache(root, copying, false, DAY, clock, server.api(), Optional.empty())
+                .get(ms(Map.of()), "4.1.200"));
+
+        assertEquals(Reason.WRITE_FAILED, e.reason());
+        assertTrue(e.getMessage().contains("holds no release.json"), e.getMessage());
+        assertEquals(Set.of("psi-ms.obo", "more"), names(folder));
+        assertNoTemporaryFolders();
+    }
+
+    // ---- redirects ----
+
+    @Test
+    public void aRedirectToAnotherOriginGetsNoToken() throws Exception {
+        try (Server other = new Server()) {
+            server.redirect(TAGS, other.base() + "/elsewhere/tags", 302);
+            other.json("/elsewhere/tags", page -> "[{\"name\": \"v4.1.200\"}]");
+            VocabularyCache cache = new VocabularyCache(root, Downloader.http(Duration.ofSeconds(10)), false, DAY,
+                clock, server.api(), Optional.of("s3cret"));
+
+            assertEquals(Optional.of("4.1.200"), cache.latest(ms(Map.of())));
+
+            assertEquals(List.of("Bearer s3cret"), server.authorizations(TAGS));
+            assertEquals(1, other.hits("/elsewhere/tags"));
+            assertEquals(List.of(), other.authorizations("/elsewhere/tags"));
+        }
+    }
+
+    @Test
+    public void aRedirectWithinTheOriginKeepsTheHeaders() throws Exception {
+        server.redirect("/api/a/start", server.base() + "/api/b/end", 307);
+        server.file("/api/b/end", "y".getBytes(StandardCharsets.UTF_8));
+
+        try (InputStream in = Downloader.http(Duration.ofSeconds(10))
+            .get(URI.create(server.base() + "/api/a/start"), Map.of("Authorization", "Bearer s3cret"))) {
+            assertEquals("y", new String(in.readAllBytes(), StandardCharsets.UTF_8));
+            assertEquals(URI.create(server.base() + "/api/b/end"), ((Downloader.Download) in).location());
+        }
+        assertEquals(List.of("Bearer s3cret"), server.authorizations("/api/b/end"));
+    }
+
+    @Test
+    public void aRelativeLocationIsResolved() throws Exception {
+        server.redirect("/a/start", "next", 301);
+        server.redirect("/a/next", "/b/end", 303);
+        server.file("/b/end", "z".getBytes(StandardCharsets.UTF_8));
+
+        try (InputStream in = Downloader.http(Duration.ofSeconds(10)).get(URI.create(server.base() + "/a/start"))) {
+            assertEquals("z", new String(in.readAllBytes(), StandardCharsets.UTF_8));
+            assertEquals(URI.create(server.base() + "/b/end"), ((Downloader.Download) in).location());
+        }
+        assertEquals(1, server.hits("/a/next"));
+    }
+
+    @Test
+    public void aMissingFileAfterARedirectNamesBothUrls() {
+        server.redirect(MS_PATH, "/moved/psi-ms.obo", 302);
+
+        ResolutionException e = assertThrows(ResolutionException.class,
+            () -> cache(false).get(ms(Map.of()), "4.1.200"));
+
+        assertEquals(Reason.NO_SUCH_RELEASE, e.reason());
+        assertTrue(e.getMessage().contains(server.base() + MS_PATH), e.getMessage());
+        assertTrue(e.getMessage().contains(server.base() + "/moved/psi-ms.obo"), e.getMessage());
+    }
+
+    @Test
+    public void moreThanTenRedirectsFail() {
+        server.redirect(MS_PATH, MS_PATH, 302);
+
+        ResolutionException e = assertThrows(ResolutionException.class,
+            () -> cache(false).get(ms(Map.of()), "4.1.200"));
+
+        assertEquals(Reason.DOWNLOAD_FAILED, e.reason());
+        assertTrue(e.getMessage().contains("more than 10 redirects"), e.getMessage());
+        assertEquals(11, server.hits(MS_PATH));
     }
 
     @Test
@@ -711,6 +905,12 @@ public class VocabularyCacheTest {
     private Downloader purlToServer() {
         Downloader http = Downloader.http(Duration.ofSeconds(10));
         return uri -> http.get(URI.create(uri.toString().replace(PURL, server.base() + "/")));
+    }
+
+    private static Set<String> names(Path folder) throws IOException {
+        try (Stream<Path> files = Files.list(folder)) {
+            return files.map(p -> p.getFileName().toString()).collect(java.util.stream.Collectors.toSet());
+        }
     }
 
     private static Downloader failingDownloader() {
@@ -886,6 +1086,13 @@ public class VocabularyCacheTest {
 
         void route(String path, Route route) {
             routes.put(path, route);
+        }
+
+        void redirect(String path, String location, int status) {
+            route(path, x -> {
+                x.getResponseHeaders().add("Location", location);
+                x.sendResponseHeaders(status, -1);
+            });
         }
 
         void file(String path, byte[] body) {
