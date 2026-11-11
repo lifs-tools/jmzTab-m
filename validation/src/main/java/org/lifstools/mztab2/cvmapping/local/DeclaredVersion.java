@@ -25,6 +25,17 @@ import java.util.Optional;
 
 /**
  * The version a file declares for a vocabulary, turned into a release.
+ * Rules, in order:
+ * <ol>
+ * <li>null or blank: NONE.</li>
+ * <li>a value that fits the scheme and is one of the known releases, or any
+ * value of an ISO_DATE scheme that fits it: RELEASE, as is.</li>
+ * <li>a value in a recognised date form: FROM_DATE, the newest release dated
+ * on or before it, or NOT_RECOGNISED if there is none.</li>
+ * <li>a value that fits the scheme but is no known release and no date
+ * (e.g. 4.1.999): RELEASE, as is, so that a strict check can report it.</li>
+ * <li>anything else: NOT_RECOGNISED.</li>
+ * </ol>
  *
  * @param original the declared text, as given (may be null)
  * @param normalised the release it stands for, if any
@@ -66,14 +77,25 @@ public record DeclaredVersion(String original, Optional<String> normalised, Kind
             return new DeclaredVersion(declared, Optional.empty(), Kind.NONE);
         }
         String value = declared.trim();
-        if (scheme.accepts(value)) {
+        boolean fits = scheme.accepts(value);
+        if (fits && (scheme == VersionScheme.ISO_DATE || isListed(value, releases))) {
             return new DeclaredVersion(declared, Optional.of(value), Kind.RELEASE);
         }
-        Optional<String> release = parseDate(value).flatMap(d -> currentOn(d, scheme, releases));
-        if (release.isPresent()) {
-            return new DeclaredVersion(declared, release, Kind.FROM_DATE);
+        Optional<LocalDate> date = parseDate(value);
+        if (date.isPresent()) {
+            Optional<String> release = currentOn(date.get(), scheme, releases);
+            return release.isPresent()
+                    ? new DeclaredVersion(declared, release, Kind.FROM_DATE)
+                    : new DeclaredVersion(declared, Optional.empty(), Kind.NOT_RECOGNISED);
+        }
+        if (fits) {
+            return new DeclaredVersion(declared, Optional.of(value), Kind.RELEASE);
         }
         return new DeclaredVersion(declared, Optional.empty(), Kind.NOT_RECOGNISED);
+    }
+
+    private static boolean isListed(String value, List<Release> releases) {
+        return releases.stream().anyMatch(r -> value.equals(r.version()));
     }
 
     private static Optional<LocalDate> parseDate(String value) {

@@ -105,7 +105,22 @@ public class DeclaredVersionTest {
         DeclaredVersion v = DeclaredVersion.of("20.03.2026", VersionScheme.RELEASE_NUMBER, rs);
         assertEquals(Kind.FROM_DATE, v.kind());
         assertEquals(Optional.of("229"), v.normalised());
-        // under DOTTED the same text fits the scheme and is taken as a release name
-        assertEquals(Kind.RELEASE, of("20.03.2026").kind());
+    }
+
+    @Test
+    public void aDateShapedValueThatFitsTheSchemeButIsNoReleaseIsADate() {
+        DeclaredVersion v = of("20.03.2026");
+        assertEquals(Kind.FROM_DATE, v.kind());
+        assertEquals(Optional.of("4.1.200"), v.normalised());
+    }
+
+    @Test
+    public void aListedReleaseShapedLikeADateStaysARelease() {
+        List<Release> rs = List.of(
+                new Release("4.1.100", Optional.of(LocalDate.of(2022, 6, 1))),
+                new Release("20.03.2026", Optional.of(LocalDate.of(2026, 3, 20))));
+        DeclaredVersion v = DeclaredVersion.of("20.03.2026", VersionScheme.DOTTED, rs);
+        assertEquals(Kind.RELEASE, v.kind());
+        assertEquals(Optional.of("20.03.2026"), v.normalised());
     }
 }
