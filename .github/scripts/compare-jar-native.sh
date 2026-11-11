@@ -9,7 +9,8 @@
 # whose exit code, validation messages and "CV <label>: ..." report lines must
 # agree as well. Larger files are skipped for it, and listed: the semantic
 # validation of the large examples takes many minutes in the native build.
-# The check fails if no semantic run resolved a vocabulary from the cache.
+# The check fails if fewer than half of the semantic runs (or none) resolved a
+# vocabulary from the cache.
 # A non-zero exit without any validation message or logged error counts as a
 # failure as well, since it leaves users without any hint about what went wrong.
 #
@@ -229,6 +230,12 @@ if [ -n "$CV_SOURCE_CACHE" ]; then
   } >> "$SUMMARY"
   if [ "$SEMANTIC_LOCAL" -eq 0 ]; then
     echo "::error title=Semantic parity tested nothing::No semantic run resolved a vocabulary from the pre-filled cache; check CV_CACHE and CV_RESOURCES."
+    exit 1
+  fi
+  # a file whose structural errors stop the semantic validation names no CV;
+  # most files must, or the cache has fallen behind the corpus
+  if [ $((2 * SEMANTIC_LOCAL)) -lt "$SEMANTIC_RUNS" ]; then
+    echo "::error title=Semantic parity tested too little::Only ${SEMANTIC_LOCAL} of ${SEMANTIC_RUNS} semantic runs resolved a vocabulary from the pre-filled cache; add the versions the corpus declares to CV_RESOURCES and parity-cv-cache.sh."
     exit 1
   fi
 fi

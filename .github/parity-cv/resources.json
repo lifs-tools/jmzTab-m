@@ -1,6 +1,6 @@
 {
   "$schema": "../../validation/src/main/resources/cv/preferred-resources.schema.json",
-  "$comment": "Resources of the jar/native parity check (.github/scripts/compare-jar-native.sh): each vocabulary has one listed release, dated 2000-01-01, so that a declared date names it; .github/scripts/parity-cv-cache.sh pre-fills the cache with it, from the mini vocabularies of validation/src/test/resources/cv/. The URLs are never asked: the runs are offline.",
+  "$comment": "Resources of the jar/native parity check (.github/scripts/compare-jar-native.sh). Each listed release is dated 2000-01-01, so that a declared date names the newest of them. MS lists every dotted MS version that a file of the CI corpus declares (test-utils/src/main/resources/metabolomics and the examples of HUPO-PSI/mzTab-M), so that those files resolve MS from the cache too; MSIO lists the one MSIO version they declare. .github/scripts/parity-cv-cache.sh pre-fills the cache with every listed release, from the mini vocabularies of validation/src/test/resources/cv/. The URLs are never asked: the runs are offline.",
   "vocabularies": {
     "MS": {
       "labels": [
@@ -16,7 +16,31 @@
         "kind": "listed",
         "releases": [
           {
-            "version": "1.0.0",
+            "version": "3.54.0",
+            "date": "2000-01-01"
+          },
+          {
+            "version": "4.0.9",
+            "date": "2000-01-01"
+          },
+          {
+            "version": "4.0.18",
+            "date": "2000-01-01"
+          },
+          {
+            "version": "4.1.11",
+            "date": "2000-01-01"
+          },
+          {
+            "version": "4.1.138",
+            "date": "2000-01-01"
+          },
+          {
+            "version": "4.1.192",
+            "date": "2000-01-01"
+          },
+          {
+            "version": "4.1.199",
             "date": "2000-01-01"
           }
         ]
