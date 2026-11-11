@@ -63,9 +63,31 @@ public final class CrossCheckErrorType extends MZTabErrorType {
     /** Constant <code>CvAccessionMalformed</code> */
     public static final MZTabErrorType CvAccessionMalformed = createError(Category.CrossCheck, "CvAccessionMalformed");
 
+    /** Constant <code>CvVersionUnavailable</code> */
+    public static final MZTabErrorType CvVersionUnavailable = createError(Category.CrossCheck, "CvVersionUnavailable");
+
+    /** Constant <code>CvVersionSubstituted</code> */
+    public static final MZTabErrorType CvVersionSubstituted = createWarn(Category.CrossCheck, "CvVersionSubstituted");
+
+    /** Constant <code>CvVersionOlderThanMapping</code> */
+    public static final MZTabErrorType CvVersionOlderThanMapping = createWarn(Category.CrossCheck, "CvVersionOlderThanMapping");
+
+    /** Constant <code>CvVersionsNotComparable</code> */
+    public static final MZTabErrorType CvVersionsNotComparable = createWarn(Category.CrossCheck, "CvVersionsNotComparable");
+
+    /** Constant <code>CvVersionNotRecognised</code> */
+    public static final MZTabErrorType CvVersionNotRecognised = createWarn(Category.CrossCheck, "CvVersionNotRecognised");
+
+    /** Constant <code>CvVersionNotDeclared</code> */
+    public static final MZTabErrorType CvVersionNotDeclared = createInfo(Category.CrossCheck, "CvVersionNotDeclared");
+
+    /** Constant <code>CvDeclaredTwice</code> */
+    public static final MZTabErrorType CvDeclaredTwice = createWarn(Category.CrossCheck, "CvDeclaredTwice");
+
     private static final MZTabErrorType[] VALUES = {
         Species, CvTermNotAllowed, CvTermRequired, CvTermRecommended, CvTermOptional, CvTermNotInRule, RulePointerObjectNullRequired, RulePointerObjectNullRecommended, RulePointerObjectNullOptional,
-        CvTermXor, CvTermMalformed, CvUndefinedInMetadata, CvUnused, SemanticValidationException, CvAccessionMalformed
+        CvTermXor, CvTermMalformed, CvUndefinedInMetadata, CvUnused, SemanticValidationException, CvAccessionMalformed,
+        CvVersionUnavailable, CvVersionSubstituted, CvVersionOlderThanMapping, CvVersionsNotComparable, CvVersionNotRecognised, CvVersionNotDeclared, CvDeclaredTwice
     };
     
     public static MZTabErrorType[] getValues() {
