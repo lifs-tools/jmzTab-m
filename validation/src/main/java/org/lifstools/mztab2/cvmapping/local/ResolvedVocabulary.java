@@ -33,8 +33,10 @@ import java.util.Optional;
  * @param mappingVersion the version the mapping's rules were written for
  * @param versionUsed the concrete version the terms were checked against;
  * never null nor "latest"
- * @param reason why that version: FILE, FILE_DATE, MAPPING, LATEST,
- * SUBSTITUTE_NEWER, SUBSTITUTE_LATEST (forced substitutes from the cache) or
+ * @param reason why that version: FILE, FILE_DATE, FILE_DATE_FALLBACK (an
+ * unlisted ISO date that is no release at its source, read as the release
+ * current on that date; Ruling R-Y), MAPPING, LATEST, SUBSTITUTE_NEWER,
+ * SUBSTITUTE_LATEST (forced substitutes from the cache) or
  * OLS (the current-release source)
  * @param release the cached release, with its source URL, SHA-256 and OWL
  * imports; empty for OLS

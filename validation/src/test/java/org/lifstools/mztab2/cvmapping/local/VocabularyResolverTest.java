@@ -85,6 +85,8 @@ public class VocabularyResolverTest {
     private static final Duration DAY = Duration.ofHours(24);
 
     private static final Parameter ESI = param("MS", "MS:1000073", "electrospray ionization");
+    /** A term of the mini MS file, asked for under the label BTO. */
+    private static final Parameter BTO_TERM = param("BTO", "MS:1000073", "electrospray ionization");
     private static final Parameter VELOS = param("MS", "MS:1001742", "LTQ Orbitrap Velos");
 
     @TempDir
@@ -449,6 +451,100 @@ public class VocabularyResolverTest {
         assertEquals("14-06-2024", e.versionWanted());
         assertTrue(e.reason().startsWith("its releases cannot be listed"), e.reason());
         assertEquals(List.of(), date.messages());
+    }
+
+    @Test
+    public void anUnlistedIsoDateIsTriedAsAReleaseThenReadAsADate() throws Exception {
+        // Ruling R-Y (amended), shaped like BTO: the tag 2022-10-26 holds data-version 2021-10-26, released that day
+        Fixture f = new Fixture(Reason.NO_SUCH_RELEASE, Set.of());
+        f.server.file("/bto/v2022-10-26/bto.obo", miniMs);
+        f.server.file("/bto/v2023-03-01/bto.obo", miniMs);
+        PreferredResources listed = PreferredResources.load(f.writeResources(List.of(btoEntry(f,
+            "{\"kind\": \"listed\", \"releases\": [{\"version\": \"2021-04-30\", \"date\": \"2021-04-30\"},"
+            + " {\"version\": \"2022-10-26\", \"date\": \"2021-10-26\"}]}"))));
+
+        // an unlisted real release is used as is
+        VocabularyResolver real = f.resolver(listed, false, cv("BTO", "2023-03-01"));
+        assertFalse(real.ancestors(BTO_TERM).isEmpty());
+        ResolvedVocabulary asIs = only(real.resolved());
+        assertEquals("FILE", asIs.reason());
+        assertEquals("2023-03-01", asIs.versionUsed());
+        assertEquals(Optional.of("2023-03-01"), asIs.declaredNormalised());
+        assertEquals(List.of(), real.messages());
+
+        // an unlisted date that is no release goes through the fallback, and says so
+        VocabularyResolver date = f.resolver(listed, false, cv("BTO", "2021-10-26"));
+        assertFalse(date.ancestors(BTO_TERM).isEmpty());
+        ResolvedVocabulary fallback = only(date.resolved());
+        assertEquals("FILE_DATE_FALLBACK", fallback.reason());
+        assertEquals("2022-10-26", fallback.versionUsed());
+        assertEquals("2021-10-26", fallback.declaredOriginal());
+        assertEquals(Optional.of("2022-10-26"), fallback.declaredNormalised());
+        assertEquals(List.of(), date.messages());
+        assertFalse(Files.exists(f.root.resolve("BTO").resolve("2021-10-26")), "no folder for a release that is none");
+
+        // a listed release that is not at its source has no fallback: strict, NO_SUCH_RELEASE
+        VocabularyResolver missing = f.resolver(listed, false, cv("BTO", "2021-04-30"));
+        VocabularyUnavailableException e = assertThrows(VocabularyUnavailableException.class,
+            () -> missing.ancestors(BTO_TERM));
+        assertEquals(Optional.of(Reason.NO_SUCH_RELEASE), e.kind());
+        assertEquals("2021-04-30", e.versionWanted());
+    }
+
+    @Test
+    public void anIsoDateWithoutAReleaseListIsOnlyTriedAsARelease() throws Exception {
+        Fixture f = new Fixture(Reason.NO_SUCH_RELEASE, Set.of());
+        f.server.file("/bto/v2022-10-26/bto.obo", miniMs);
+        f.server.route("/api/repos/o/bto/tags", x -> TestServer.send(x, 500, new byte[0]));
+        PreferredResources unlisted = PreferredResources.load(f.writeResources(List.of(btoEntry(f,
+            "{\"kind\": \"githubTags\", \"repo\": \"o/bto\", \"tagPattern\": \"v{version}\","
+            + " \"dates\": \"githubReleases\"}"))));
+
+        VocabularyResolver real = f.resolver(unlisted, false, cv("BTO", "2022-10-26"));
+        assertFalse(real.ancestors(BTO_TERM).isEmpty());
+        assertEquals("FILE", only(real.resolved()).reason());
+
+        // with no list there is no date to fall back on: the release's own failure, strict
+        VocabularyResolver date = f.resolver(unlisted, false, cv("BTO", "2021-10-26"));
+        VocabularyUnavailableException e = assertThrows(VocabularyUnavailableException.class,
+            () -> date.ancestors(BTO_TERM));
+        assertEquals(Optional.of(Reason.NO_SUCH_RELEASE), e.kind());
+        assertEquals("2021-10-26", e.versionWanted());
+    }
+
+    @Test
+    public void aFallbackThatCannotBeHadEitherNamesBothAndForcedSubstitutesAsBefore() throws Exception {
+        Fixture f = new Fixture(Reason.NO_SUCH_RELEASE, Set.of());
+        f.server.file("/bto/v2023-03-01/bto.obo", miniMs);
+        PreferredResources listed = PreferredResources.load(f.writeResources(List.of(btoEntry(f,
+            "{\"kind\": \"listed\", \"releases\": [{\"version\": \"2022-10-26\", \"date\": \"2021-10-26\"},"
+            + " {\"version\": \"2023-03-01\", \"date\": \"2023-03-01\"}]}"))));
+
+        VocabularyResolver strict = f.resolver(listed, false, cv("BTO", "2021-10-26"));
+        VocabularyUnavailableException e = assertThrows(VocabularyUnavailableException.class,
+            () -> strict.ancestors(BTO_TERM));
+        assertEquals(Optional.of(Reason.NO_SUCH_RELEASE), e.kind());
+        assertEquals("2021-10-26", e.versionWanted());
+        assertTrue(e.reason().contains("read as a date it is 2022-10-26"), e.reason());
+
+        VocabularyResolver forced = f.resolver(listed, true, cv("BTO", "2021-10-26"));
+        assertFalse(forced.ancestors(BTO_TERM).isEmpty());
+        ResolvedVocabulary substitute = only(forced.resolved());
+        assertEquals("SUBSTITUTE_LATEST", substitute.reason());
+        assertEquals("2023-03-01", substitute.versionUsed());
+        assertEquals(List.of(CrossCheckErrorType.CvVersionSubstituted), types(forced.messages()));
+    }
+
+    private static String btoEntry(Fixture f, String releases) {
+        return """
+            "BTO": {
+              "labels": ["BTO"],
+              "oboPrefix": "MS",
+              "location": {"format": "OBO", "urlTemplate": "%s/bto/v{version}/bto.obo"},
+              "scheme": "ISO_DATE",
+              "releases": %s,
+              "latest": {"kind": "newestRelease"}
+            }""".formatted(f.server.base(), releases);
     }
 
     // ---- assertions ----

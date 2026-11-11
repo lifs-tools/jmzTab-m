@@ -119,7 +119,7 @@ After the semantic messages, the CLI prints one line per vocabulary used, the re
   CV MS: 4.1.2 (SUBSTITUTE_NEWER) from https://raw.githubusercontent.com/HUPO-PSI/psi-ms-CV/v4.1.2/psi-ms.obo
   CV MSIO: 1.0.1 (FILE) from https://raw.githubusercontent.com/MSI-Metabolomics-Standards-Initiative/MSIO/v1.0.1/releases/1.0.1/MSIO-merged-reasoned.owl
 
-The reasons are `FILE` (the declared release), `FILE_DATE` (the release current on the declared date), `MAPPING` (the mapping's version; the bundled mapping names no versions yet, so this comes only once mappings carry versions), `LATEST`, and, in a forced run, `SUBSTITUTE_NEWER`, `SUBSTITUTE_LATEST` and `OLS`. A vocabulary answered by OLS is marked `not re-runnable`: OLS may answer differently once it serves another release.
+The reasons are `FILE` (the declared release), `FILE_DATE` (the release current on the declared date), `FILE_DATE_FALLBACK` (a declared ISO date such as `2021-10-26` that is not a listed release is first looked for as a release of that name; only if it does not exist at its source is it read as a date, and the release current then is used), `MAPPING` (the mapping's version; the bundled mapping names no versions yet, so this comes only once mappings carry versions), `LATEST`, and, in a forced run, `SUBSTITUTE_NEWER`, `SUBSTITUTE_LATEST` and `OLS`. A vocabulary answered by OLS is marked `not re-runnable`: OLS may answer differently once it serves another release.
 
 ==== Strict and forced runs
 

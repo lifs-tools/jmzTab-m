@@ -28,24 +28,43 @@ import java.util.Optional;
  * Rules, in order:
  * <ol>
  * <li>null or blank: NONE.</li>
- * <li>a value that fits the scheme and is one of the known releases, or a
- * value of an ISO_DATE scheme that fits it when no release is known (the
- * release list cannot be read): RELEASE, as is.</li>
+ * <li>a value that fits the scheme and is one of the known releases:
+ * RELEASE, as is.</li>
+ * <li>a value of an ISO_DATE scheme that fits it but is not listed (or no
+ * release list could be read): RELEASE, as is, to be tried at its URL first
+ * (Ruling R-Y, amended). Its {@link #dateFallback()} is the newest release
+ * dated on or before it, if the list has one; the resolver uses it only when
+ * the release itself is not at its source (NO_SUCH_RELEASE). So BTO's
+ * 2021-10-26, the data-version of the tag v2022-10-26 released that day, is
+ * looked for as a release and then becomes 2022-10-26, while an unlisted
+ * real release is used as is.</li>
  * <li>a value in a recognised date form: FROM_DATE, the newest release dated
- * on or before it, or NOT_RECOGNISED if there is none. Under ISO_DATE this
- * holds for an unlisted value too (Ruling R-Y): BTO's 2021-10-26, the
- * data-version of the tag v2022-10-26 released that day, becomes
- * 2022-10-26.</li>
+ * on or before it, or NOT_RECOGNISED if there is none.</li>
  * <li>a value that fits the scheme but is no known release and no date
  * (e.g. 4.1.999): RELEASE, as is, so that a strict check can report it.</li>
  * <li>anything else: NOT_RECOGNISED.</li>
  * </ol>
+ * This class only classifies; it reads no source.
  *
  * @param original the declared text, as given (may be null)
  * @param normalised the release it stands for, if any
  * @param kind how the declaration was understood
+ * @param dateFallback for an unlisted ISO_DATE release only: the release
+ * current on that date, to use if the release itself is not at its source
  */
-public record DeclaredVersion(String original, Optional<String> normalised, Kind kind) {
+public record DeclaredVersion(String original, Optional<String> normalised, Kind kind,
+        Optional<String> dateFallback) {
+
+    /**
+     * A declaration without a date fallback.
+     *
+     * @param original the declared text, as given (may be null)
+     * @param normalised the release it stands for, if any
+     * @param kind how the declaration was understood
+     */
+    public DeclaredVersion(String original, Optional<String> normalised, Kind kind) {
+        this(original, normalised, kind, Optional.empty());
+    }
 
     public enum Kind {
         /** Nothing declared (null or blank). */
@@ -82,10 +101,15 @@ public record DeclaredVersion(String original, Optional<String> normalised, Kind
         }
         String value = declared.trim();
         boolean fits = scheme.accepts(value);
-        if (fits && (isListed(value, releases) || scheme == VersionScheme.ISO_DATE && releases.isEmpty())) {
+        if (fits && isListed(value, releases)) {
             return new DeclaredVersion(declared, Optional.of(value), Kind.RELEASE);
         }
         Optional<LocalDate> date = parseDate(value);
+        if (fits && scheme == VersionScheme.ISO_DATE) {
+            Optional<String> fallback = date.flatMap(d -> currentOn(d, scheme, releases))
+                    .filter(r -> !r.equals(value));
+            return new DeclaredVersion(declared, Optional.of(value), Kind.RELEASE, fallback);
+        }
         if (date.isPresent()) {
             Optional<String> release = currentOn(date.get(), scheme, releases);
             return release.isPresent()

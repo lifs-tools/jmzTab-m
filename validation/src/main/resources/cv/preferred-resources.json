@@ -30,7 +30,7 @@
       "latest": {"kind": "githubLatestTag", "repo": "obophenotype/cell-ontology", "tagPattern": "v{version}"}
     },
     "BTO": {
-      "$comment": "OBO Foundry versioned PURL, which redirects to the tagged bto.obo of BRENDA-Enzymes/BTO. Checked 2026-11-11: http://purl.obolibrary.org/obo/bto/releases/2022-10-26/bto.obo HTTP 206. The newest tag, v2022-10-26, holds data-version releases/2021-10-26 and its GitHub release was published on 2021-10-26; 2021-10-26 is the version OLS and OBO Foundry name, but there is no tag v2021-10-26 (its PURL answers 404). Dates come from the GitHub releases, so a declared 2021-10-26 is read as a date and resolves to the tag v2022-10-26.",
+      "$comment": "OBO Foundry versioned PURL, which redirects to the tagged bto.obo of BRENDA-Enzymes/BTO. Checked 2026-11-11: http://purl.obolibrary.org/obo/bto/releases/2022-10-26/bto.obo HTTP 206. The newest tag, v2022-10-26, holds data-version releases/2021-10-26 and its GitHub release was published on 2021-10-26; 2021-10-26 is the version OLS and OBO Foundry name, but there is no tag v2021-10-26 (its PURL answers 404). Dates come from the GitHub releases: a declared 2021-10-26 is first looked for as a release, and as its PURL answers 404 it is read as a date and resolves to the tag v2022-10-26 (FILE_DATE_FALLBACK, Ruling R-Y).",
       "labels": ["BTO"],
       "oboPrefix": "BTO",
       "location": {"format": "OBO", "oboFoundryId": "bto"},

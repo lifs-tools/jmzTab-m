@@ -91,26 +91,40 @@ public class DeclaredVersionTest {
         DeclaredVersion v = DeclaredVersion.of("2024-01-01", VersionScheme.ISO_DATE, rs);
         assertEquals(Kind.RELEASE, v.kind());
         assertEquals(Optional.of("2024-01-01"), v.normalised());
+        assertEquals(Optional.empty(), v.dateFallback());
     }
 
     @Test
-    public void anUnlistedIsoDateUnderTheIsoDateSchemeIsADate() {
-        // Ruling R-Y: BTO's tag v2022-10-26 holds data-version 2021-10-26, released on 2021-10-26
+    public void anUnlistedIsoDateIsAReleaseWithTheReleaseCurrentOnItsDateAsFallback() {
+        // Ruling R-Y (amended): BTO's tag v2022-10-26 holds data-version 2021-10-26, released on 2021-10-26;
+        // 2021-10-26 is tried at its URL first, and only on NO_SUCH_RELEASE read as that date
         List<Release> rs = List.of(new Release("2021-04-30", Optional.of(LocalDate.of(2021, 4, 30))),
                 new Release("2022-10-26", Optional.of(LocalDate.of(2021, 10, 26))));
         DeclaredVersion v = DeclaredVersion.of("2021-10-26", VersionScheme.ISO_DATE, rs);
-        assertEquals(Kind.FROM_DATE, v.kind());
-        assertEquals(Optional.of("2022-10-26"), v.normalised());
+        assertEquals(Kind.RELEASE, v.kind());
+        assertEquals(Optional.of("2021-10-26"), v.normalised());
+        assertEquals(Optional.of("2022-10-26"), v.dateFallback());
         assertEquals(Optional.of("2021-04-30"),
-                DeclaredVersion.of("2021-10-25", VersionScheme.ISO_DATE, rs).normalised());
-        assertEquals(Kind.NOT_RECOGNISED, DeclaredVersion.of("2020-01-01", VersionScheme.ISO_DATE, rs).kind());
+                DeclaredVersion.of("2021-10-25", VersionScheme.ISO_DATE, rs).dateFallback());
+        // before the first release: no fallback, the release name alone
+        DeclaredVersion early = DeclaredVersion.of("2020-01-01", VersionScheme.ISO_DATE, rs);
+        assertEquals(Kind.RELEASE, early.kind());
+        assertEquals(Optional.of("2020-01-01"), early.normalised());
+        assertEquals(Optional.empty(), early.dateFallback());
     }
 
     @Test
-    public void anIsoDateWithoutAReleaseListStaysARelease() {
+    public void anIsoDateWithoutAReleaseListStaysAReleaseWithoutFallback() {
         DeclaredVersion v = DeclaredVersion.of("2024-01-01", VersionScheme.ISO_DATE, List.of());
         assertEquals(Kind.RELEASE, v.kind());
         assertEquals(Optional.of("2024-01-01"), v.normalised());
+        assertEquals(Optional.empty(), v.dateFallback());
+    }
+
+    @Test
+    public void otherSchemesHaveNoDateFallback() {
+        assertEquals(Optional.empty(), of("4.1.999").dateFallback());
+        assertEquals(Optional.empty(), of("14-06-2024").dateFallback());
     }
 
     @Test

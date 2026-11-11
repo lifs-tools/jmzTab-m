@@ -108,6 +108,11 @@ public final class VocabularyResolver implements AncestorSource {
     private static final String ONLY_OLS =
         "only OLS could answer it, and OLS serves only its current release";
     private static final String OLS_REASON = "OLS";
+    /**
+     * The reason for an unlisted ISO date that is no release, read as the
+     * release current on that date (Ruling R-Y, amended).
+     */
+    static final String FILE_DATE_FALLBACK = "FILE_DATE_FALLBACK";
 
     private static final Logger LOG = LoggerFactory.getLogger(VocabularyResolver.class);
 
@@ -317,10 +322,25 @@ public final class VocabularyResolver implements AncestorSource {
                 }
                 return answer;
             } catch (ResolutionException x) {
+                ResolutionException failure = x;
+                Optional<String> fallback = version.dateFallback();
+                if (x.reason() == Reason.NO_SUCH_RELEASE && choice.reason() == VersionChoice.Reason.FILE
+                    && fallback.isPresent() && version.normalised().equals(Optional.of(wanted))) {
+                    // Ruling R-Y (amended): an unlisted ISO date that is no release is read as a date
+                    Optional<String> asRelease = normalised;
+                    normalised = fallback;
+                    try {
+                        return local(e, fallback.get(), FILE_DATE_FALLBACK);
+                    } catch (ResolutionException y) {
+                        normalised = asRelease;
+                        failure = new ResolutionException(y.reason(), x.getMessage() + "; read as a date it is "
+                            + fallback.get() + ", which cannot be had either: " + y.getMessage(), y);
+                    }
+                }
                 List<Substitute> substitutes = choice.reason() == VersionChoice.Reason.LATEST
                     ? List.of()
                     : List.of(newer(wanted, releases, e.scheme()), latest(e));
-                return unavailable(wanted, x.reason(), x.getMessage(), x, substitutes);
+                return unavailable(wanted, failure.reason(), failure.getMessage(), failure, substitutes);
             }
         }
 
