@@ -22,6 +22,7 @@ import org.lifstools.mztab2.cvmapping.JxPathElement;
 import org.lifstools.mztab2.cvmapping.RemoveUserParams;
 import org.lifstools.mztab2.cvmapping.RuleEvaluationResult;
 import org.lifstools.mztab2.cvmapping.local.LookupPolicy;
+import org.lifstools.mztab2.cvmapping.local.ResolvedVocabulary;
 import org.lifstools.mztab2.cvmapping.local.VocabularyResolver;
 import org.lifstools.mztab2.cvmapping.local.VocabularyUnavailableException;
 import org.lifstools.mztab2.io.serialization.ParameterConverter;
@@ -251,6 +252,18 @@ public class CvMappingValidator implements Validator<MzTab> {
             cvTermSelectionHandler(new RemoveUserParams()).
             emptyRuleHandler(new EmptyRuleHandler()).
             build();
+    }
+
+    /**
+     * The vocabulary releases the lookup used, for a validator made with a
+     * {@link LookupPolicy}; see
+     * {@link CvParameterLookupService#resolvedVocabularies()}.
+     *
+     * @return the vocabularies so far, in the order they were resolved; empty
+     * for OLS and for a validator built without a lookup service
+     */
+    public List<ResolvedVocabulary> resolvedVocabularies() {
+        return client == null ? List.of() : client.resolvedVocabularies();
     }
 
     /** The lookup service the rule handler asks, for tests. */

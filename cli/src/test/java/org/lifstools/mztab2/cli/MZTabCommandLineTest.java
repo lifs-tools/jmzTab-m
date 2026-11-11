@@ -25,11 +25,15 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.time.Instant;
+import java.util.List;
+import java.util.Optional;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Options;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.lifstools.mztab2.cvmapping.local.ResolvedVocabulary;
 import org.lifstools.mztab2.model.Assay;
 import org.lifstools.mztab2.model.Metadata;
 import org.lifstools.mztab2.model.MzTab;
@@ -154,8 +158,10 @@ public class MZTabCommandLineTest {
         Options options = new Options();
         String checkOpt = MZTabCommandLine.addCheckOption(options);
         String checkSemanticOpt = MZTabCommandLine.addCheckSemanticOption(options);
+        CvLookupOptions.addTo(options);
         CommandLine line = new DefaultParser().parse(options,
-            new String[]{"-" + checkOpt, file.getAbsolutePath(), "-" + checkSemanticOpt, mapping});
+            new String[]{"-" + checkOpt, file.getAbsolutePath(), "-" + checkSemanticOpt, mapping,
+                "--cvOffline", "--cvCache", tempDir.resolve("cv-cache").toString()});
         return MZTabCommandLine.handleValidation(line, checkOpt,
             new PrintStream(bytes, true, "UTF-8"), MZTabErrorType.Level.Info, checkSemanticOpt, false, false);
     }
@@ -200,5 +206,170 @@ public class MZTabCommandLineTest {
 
         assertTrue(validateSemantics(file, mapping.toString(), bytes));
         assertFalse(bytes.toString("UTF-8").contains("sample_disease_must"));
+    }
+
+    // ---- the local CV lookup (--cvSource, --cvCache, --cvResources, --cvOffline, --cvForce) ----
+
+    /** One MAY rule on the instrument sources, all in PSI-MS: only MS is looked up. */
+    private static final String MS_MAPPING = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+        + "<CvMapping modelName=\"test\" modelURI=\"https://example.org/model\" modelVersion=\"2.0.0\">\n"
+        + "  <CvReferenceList><CvReference cvName=\"MS\" cvIdentifier=\"MS\"/></CvReferenceList>\n"
+        + "  <CvMappingRuleList>\n"
+        + "    <CvMappingRule id=\"instrument_source_may\" cvElementPath=\"/metadata/instrument/@source\" requirementLevel=\"MAY\""
+        + " scopePath=\"/metadata/instrument\" cvTermsCombinationLogic=\"OR\">\n"
+        + "      <CvTerm termAccession=\"MS:1000458\" useTerm=\"false\" termName=\"source\" isRepeatable=\"false\" allowChildren=\"true\" cvIdentifierRef=\"MS\"/>\n"
+        + "    </CvMappingRule>\n"
+        + "  </CvMappingRuleList>\n"
+        + "</CvMapping>\n";
+
+    /** The version of PSI-MS that minimal-m-2.0.mztab declares. */
+    private static final String DECLARED_MS = "3.54.0";
+    /** The release a forced run substitutes: the only one the test resources list. */
+    private static final String LISTED_MS = "4.1.200";
+
+    /** A user's MS entry: one listed release, at a URL that is never asked (the runs are offline). */
+    private static final String USER_MS = """
+        {"vocabularies": {"MS": {
+          "labels": ["MS"],
+          "oboPrefix": "MS",
+          "location": {"format": "OBO", "urlTemplate": "http://localhost.invalid/MS/{version}/psi-ms.obo"},
+          "scheme": "%s",
+          "releases": {"kind": "listed", "releases": [{"version": "%s"}]},
+          "latest": {"kind": "newestRelease"}
+        }}}""";
+
+    @Test
+    public void localLookupIsTheDefault() throws Exception {
+        Path cache = prefilledMs(DECLARED_MS);
+
+        Run run = run("-c", minimal(), "-s", msMapping(), "--cvOffline", "--cvCache", cache.toString());
+
+        // the pre-filled release was adopted: its index was built and its record written
+        assertTrue(Files.isRegularFile(cache.resolve("MS").resolve(DECLARED_MS).resolve("release.json")), run.output);
+        assertFalse(run.output.contains("-3017]"), run.output);
+        // ESI is a source in the cached release, ETD is not a term of it
+        assertTrue(run.output.contains("MS:1000598"), run.output);
+        assertFalse(run.output.contains("MS:1000073"), run.output);
+    }
+
+    @Test
+    public void theReportListsTheVocabulariesUsed() throws Exception {
+        Path cache = prefilledMs(DECLARED_MS);
+
+        Run run = run("-c", minimal(), "-s", msMapping(), "--cvOffline", "--cvCache", cache.toString());
+
+        assertTrue(run.lines().contains("CV MS: " + DECLARED_MS + " (FILE) from "
+            + "https://raw.githubusercontent.com/HUPO-PSI/psi-ms-CV/v" + DECLARED_MS + "/psi-ms.obo"), run.output);
+    }
+
+    @Test
+    public void theReportMarksAnOlsAnswerAsNotReRunnable() {
+        ResolvedVocabulary ols = new ResolvedVocabulary("MS", DECLARED_MS, Optional.of(DECLARED_MS),
+            Optional.empty(), "4.2.15", "OLS", Optional.empty(), Optional.of("4.2.15"),
+            Optional.of(Instant.parse("2026-11-11T10:00:00Z")), false);
+
+        assertEquals("CV MS: 4.2.15 (OLS) from OLS (version 4.2.15), not re-runnable",
+            CvLookupOptions.reportLine(ols));
+    }
+
+    @Test
+    public void cvForceTurnsAMissingReleaseIntoAWarning() throws Exception {
+        Path cache = prefilledMs(LISTED_MS);
+        Path resources = Files.writeString(tempDir.resolve("resources.json"), USER_MS.formatted("DOTTED", LISTED_MS));
+
+        Run strict = run("-c", minimal(), "-s", msMapping(), "--cvOffline", "--cvCache", cache.toString(),
+            "--cvResources", resources.toString());
+        assertTrue(strict.failed);
+        assertTrue(strict.output.contains("[Error-3017]"), strict.output);
+
+        Run forced = run("-c", minimal(), "-s", msMapping(), "--cvOffline", "--cvCache", cache.toString(),
+            "--cvResources", resources.toString(), "--cvForce");
+        assertFalse(forced.output.contains("-3017]"), forced.output);
+        String substituted = forced.lines().stream().filter(l -> l.contains("[Warn-3018]")).findFirst()
+            .orElseThrow(() -> new AssertionError(forced.output));
+        assertTrue(substituted.contains(DECLARED_MS) && substituted.contains(LISTED_MS), substituted);
+        assertTrue(forced.lines().contains("CV MS: " + LISTED_MS + " (SUBSTITUTE_NEWER) from "
+            + "http://localhost.invalid/MS/" + LISTED_MS + "/psi-ms.obo"), forced.output);
+    }
+
+    @Test
+    public void olsWithoutForceFailsTheValidation() throws Exception {
+        Path cache = tempDir.resolve("untouched");
+
+        Run run = run("-c", minimal(), "-s", msMapping(), "--cvSource", "ols", "--cvCache", cache.toString());
+
+        assertTrue(run.failed);
+        String unavailable = run.lines().stream().filter(l -> l.contains("[Error-3017]")).findFirst()
+            .orElseThrow(() -> new AssertionError(run.output));
+        assertTrue(unavailable.contains("OLS"), unavailable);
+        assertFalse(Files.exists(cache), "an OLS run uses no cache");
+    }
+
+    @Test
+    public void anInvalidResourcesFileStopsWithItsEntry() throws Exception {
+        Path resources = Files.writeString(tempDir.resolve("resources.json"), USER_MS.formatted("semver", LISTED_MS));
+
+        Run run = run("-c", minimal(), "-s", msMapping(), "--cvOffline", "--cvCache",
+            tempDir.resolve("cv-cache").toString(), "--cvResources", resources.toString());
+
+        assertTrue(run.failed);
+        assertTrue(run.output.contains("MS") && run.output.contains("/vocabularies/MS/scheme"), run.output);
+        // nothing was validated
+        assertFalse(run.output.contains("Beginning validation"), run.output);
+        assertFalse(run.output.contains("instrument_source_may"), run.output);
+    }
+
+    @Test
+    public void anUnknownCvSourceStopsTheRun() throws Exception {
+        Run run = run("-c", minimal(), "-s", msMapping(), "--cvSource", "elsewhere");
+
+        assertTrue(run.failed);
+        assertTrue(run.output.contains("elsewhere"), run.output);
+        assertFalse(run.output.contains("Beginning validation"), run.output);
+    }
+
+    /** What a run printed with -o, and whether it failed (a non-zero exit). */
+    private record Run(boolean failed, String output) {
+
+        List<String> lines() {
+            return output.lines().toList();
+        }
+    }
+
+    /** Runs the CLI as main does, with -o, so that messages and log lines all land in one file. */
+    private Run run(String... args) throws Exception {
+        Options options = new Options();
+        String outOpt = MZTabCommandLine.addOutFileOption(options);
+        String checkOpt = MZTabCommandLine.addCheckOption(options);
+        String levelOpt = MZTabCommandLine.addLevelOption(options);
+        String serializeOpt = MZTabCommandLine.addSerializeOption(options);
+        String deserializeOpt = MZTabCommandLine.addDeserializeOption(options);
+        String checkSemanticOpt = MZTabCommandLine.addCheckSemanticOption(options);
+        CvLookupOptions.addTo(options);
+        Path out = tempDir.resolve("out-" + System.nanoTime() + ".txt");
+        List<String> all = new java.util.ArrayList<>(List.of(args));
+        all.addAll(List.of("-o", out.toString()));
+        CommandLine line = new DefaultParser().parse(options, all.toArray(String[]::new));
+        boolean failed = MZTabCommandLine.handleValidationOptions(line, outOpt, levelOpt, serializeOpt,
+            deserializeOpt, checkOpt, checkSemanticOpt);
+        return new Run(failed, Files.readString(out, StandardCharsets.UTF_8));
+    }
+
+    private String minimal() throws IOException {
+        return resource("/metabolomics/minimal-m-2.0.mztab").getAbsolutePath();
+    }
+
+    private String msMapping() throws IOException {
+        return Files.writeString(tempDir.resolve("ms-mapping.xml"), MS_MAPPING).toString();
+    }
+
+    /** An operator's pre-fill: the mini PSI-MS alone in the release folder, under its download name. */
+    private Path prefilledMs(String version) throws IOException {
+        Path root = tempDir.resolve("cv-cache");
+        Path folder = Files.createDirectories(root.resolve("MS").resolve(version));
+        try (InputStream in = getClass().getResourceAsStream("/cv/mini-ms.obo")) {
+            Files.copy(in, folder.resolve("psi-ms.obo"));
+        }
+        return root;
     }
 }
