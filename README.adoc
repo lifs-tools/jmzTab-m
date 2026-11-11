@@ -135,6 +135,7 @@ The exit code follows the same rule as before: the run fails if a message at or 
 
 * The cache holds one folder per vocabulary and release, `<cache>/<KEY>/<version>/`, with the downloaded file, its index `terms.idx` and a `release.json` that records where the file came from, its SHA-256 checksum and when it was downloaded. `KEY` is the key of the vocabulary in the resources file, e.g. `MS` or `NCBITaxon`.
 * A release is never downloaded again. Files are written under a temporary name and then renamed, so several runs can share one cache folder.
+* When an upgrade of jmzTab-m changes how vocabulary files are read, the first run that needs a cached release rebuilds its `terms.idx` from the cached file, without downloading it again and also with `--cvOffline`.
 * The first run that needs a release downloads it, and logs its size, e.g. `Downloading MS 4.1.2 (699.3 kB) from https://...`. Some vocabularies are large: the releases of NCBITaxon, NCIT and CHEBI are hundreds of MB each. There is no size limit.
 * An OWL vocabulary's imports are downloaded and cached with it, under `<cache>/_imports/`. An import whose IRI names no version is kept as it was first downloaded; delete its folder to download it again.
 * The GitHub API, which lists the releases of e.g. PSI-MS and MSIO, allows 60 requests per hour without a token. Set the environment variable `GITHUB_TOKEN` to a GitHub token to use your own limit.

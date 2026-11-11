@@ -25,13 +25,18 @@ import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
+import java.util.HexFormat;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.OptionalInt;
 import java.util.Random;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
@@ -61,19 +66,13 @@ public class TermIndexTest {
     public void roundTripsEveryRecord() throws IOException {
         Map<String, TermRecord> terms = OboReaderTest.readMiniMs();
         try (TermIndex index = miniMsIndex()) {
-            assertEquals(terms.size(), index.size());
+            // UO:0000000, a parent without a stanza, is a stub term of its own (Ruling R-AA)
+            assertEquals(terms.size() + 1, index.size());
             for (TermRecord t : terms.values()) {
-                // a parent that is not in the vocabulary is not stored
-                Map<String, List<String>> kept = new LinkedHashMap<>();
-                t.parentsByRelation().forEach((relation, parents) -> {
-                    List<String> known = parents.stream().filter(terms::containsKey).toList();
-                    if (!known.isEmpty()) {
-                        kept.put(relation, known);
-                    }
-                });
-                TermRecord expected = term(t.id(), t.label(), t.obsolete(), kept);
-                assertEquals(Optional.of(expected), index.term(t.id()), t.id());
+                assertEquals(Optional.of(t), index.term(t.id()), t.id());
             }
+            assertEquals(Optional.of(term("UO:0000000", "UO:0000000", false, Map.of())),
+                index.term("UO:0000000"));
         }
     }
 
@@ -94,21 +93,99 @@ public class TermIndexTest {
     }
 
     @Test
-    public void cyclesAndDanglingParentsEndTheWalk() throws IOException {
+    public void cyclesEndTheWalkAndAParentWithoutAStanzaIsAnAncestor() throws IOException {
         try (TermIndex index = miniMsIndex()) {
             assertEquals(List.of("MS:9999902", "MS:0000000"), ids(index.ancestors("MS:9999901")));
             assertEquals(List.of("MS:9999901", "MS:0000000"), ids(index.ancestors("MS:9999902")));
-            // MS:1000040 is_a UO:0000000, which is not in the vocabulary
-            assertEquals(List.of(), index.ancestors("MS:1000040"));
-            assertEquals(Map.of(), index.term("MS:1000040").get().parentsByRelation());
+            // MS:1000040 is_a UO:0000000, which has no stanza in the vocabulary (Ruling R-AA)
+            assertEquals(List.of("UO:0000000"), ids(index.ancestors("MS:1000040")));
+            assertEquals(Map.of("is_a", List.of("UO:0000000")), index.term("MS:1000040").get().parentsByRelation());
         }
+    }
+
+    @Test
+    public void parentsWithoutAStanzaAreStubTermsThatPassTheOpenChecks() throws IOException {
+        Path file = dir.resolve("terms.idx");
+        // the stubs sort first and last, so the record-end check reads a stub
+        TermIndexWriter.write(List.of(
+            term("M:1", "one", false, Map.of("is_a", List.of("ZZ:9", "A:0"), "part_of", List.of("M:2"))),
+            term("M:2", "two", false, Map.of("part_of", List.of("ZZ:9")))), file);
+        try (TermIndex index = TermIndex.open(file)) {
+            assertEquals(4, index.size());
+            assertEquals(Optional.of(term("ZZ:9", "ZZ:9", false, Map.of())), index.term("ZZ:9"));
+            assertEquals(Optional.of(term("A:0", "A:0", false, Map.of())), index.term("A:0"));
+            assertEquals(Set.of("ZZ:9", "A:0", "M:2"), Set.copyOf(ids(index.ancestors("M:1"))));
+            assertEquals(List.of(), index.ancestors("ZZ:9"));
+        }
+        Path truncated = dir.resolve("truncated.idx");
+        byte[] whole = Files.readAllBytes(file);
+        Files.write(truncated, Arrays.copyOf(whole, whole.length - 1));
+        IOException e = assertThrows(IOException.class, () -> TermIndex.open(truncated));
+        assertTrue(e.getMessage().contains("not a term index: truncated records"), e.getMessage());
+    }
+
+    /**
+     * The reader rules of each index version (Ruling R-AB): a version stands
+     * for one set of rules, so changing a rule means a new version here and
+     * in {@link TermIndex#VERSION}.
+     */
+    private static final Map<Integer, String> READER_FINGERPRINTS = Map.of(2, "9b132577b8052951");
+
+    /** The reader rules that decide an index's ancestors, as one canonical text. */
+    static String readerRules() {
+        return "obo.hierarchical=" + new TreeSet<>(OboReader.HIERARCHICAL)
+            + ";owl.hierarchicalProperties=" + new TreeSet<>(OwlRdfXmlReader.HIERARCHICAL_PROPERTIES)
+            + ";owl.notParents=" + new TreeSet<>(OwlRdfXmlReader.NOT_PARENTS);
+    }
+
+    /** The first 16 hex digits of the SHA-256 of the text. */
+    static String fingerprint(String rules) {
+        try {
+            byte[] hash = MessageDigest.getInstance("SHA-256").digest(rules.getBytes(StandardCharsets.UTF_8));
+            return HexFormat.of().formatHex(hash).substring(0, 16);
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
+    @Test
+    public void theIndexVersionCoversTheReaderRules() {
+        String fingerprint = fingerprint(readerRules());
+        assertEquals(TermIndex.READER_FINGERPRINT, fingerprint, "the reader rules changed (" + readerRules()
+            + "): bump TermIndex.VERSION, set READER_FINGERPRINT to " + fingerprint
+            + " and add the new version to READER_FINGERPRINTS");
+        assertEquals(READER_FINGERPRINTS.get(TermIndex.VERSION), TermIndex.READER_FINGERPRINT,
+            "READER_FINGERPRINT changed without a new TermIndex.VERSION");
+    }
+
+    @Test
+    public void anIndexRecordsItsVersionAndAnOlderOneIsRefused() throws IOException {
+        Path file = dir.resolve("terms.idx");
+        TermIndexWriter.write(OboReaderTest.readMiniMs().values(), file);
+        assertEquals(OptionalInt.of(TermIndex.VERSION), TermIndex.version(file));
+        assertTrue(TermIndex.isCurrent(file));
+
+        // the layout before index versions: magic JMZTIDX1, then the counts
+        Path old = dir.resolve("old.idx");
+        Files.write(old, ByteBuffer.allocate(16).put("JMZTIDX1".getBytes(StandardCharsets.US_ASCII))
+            .putInt(0).putInt(0).array());
+        assertEquals(OptionalInt.of(1), TermIndex.version(old));
+        assertFalse(TermIndex.isCurrent(old));
+        IOException e = assertThrows(IOException.class, () -> TermIndex.open(old));
+        assertTrue(e.getMessage().contains("index version 1"), e.getMessage());
+
+        Path text = dir.resolve("text.idx");
+        Files.writeString(text, "format-version: 1.2\n", StandardCharsets.UTF_8);
+        assertEquals(OptionalInt.empty(), TermIndex.version(text));
+        assertEquals(OptionalInt.empty(), TermIndex.version(dir.resolve("missing.idx")));
+        assertFalse(TermIndex.isCurrent(dir.resolve("missing.idx")));
     }
 
     @Test
     public void anUnknownIdIsEmpty() throws IOException {
         try (TermIndex index = miniMsIndex()) {
             for (String id : List.of("MS:0000001", "MS:100007", "MS:10000730", "A:1", "ZZ:9",
-                "", "UO:0000000", "ms:1000073")) {
+                "", "UO:0000001", "ms:1000073")) {
                 assertEquals(Optional.empty(), index.term(id), id);
                 assertEquals(List.of(), index.ancestors(id), id);
             }
@@ -206,8 +283,8 @@ public class TermIndexTest {
     @Test
     public void aHeaderClaimingTooManyRelationsIsRejected() throws IOException {
         Path file = dir.resolve("terms.idx");
-        ByteBuffer header = ByteBuffer.allocate(16).put("JMZTIDX1".getBytes(StandardCharsets.US_ASCII))
-            .putInt(0).putInt(Integer.MAX_VALUE);
+        ByteBuffer header = ByteBuffer.allocate(20).put("JMZTIDX2".getBytes(StandardCharsets.US_ASCII))
+            .putInt(TermIndex.VERSION).putInt(0).putInt(Integer.MAX_VALUE);
         Files.write(file, header.array());
         IOException e = assertThrows(IOException.class, () -> TermIndex.open(file));
         assertTrue(e.getMessage().contains("truncated header"), e.getMessage());
@@ -220,8 +297,8 @@ public class TermIndexTest {
             term("X:2", "two", false, Map.of())), file);
         byte[] bytes = Files.readAllBytes(file);
         ByteBuffer buffer = ByteBuffer.wrap(bytes);
-        // header: magic, counts, one relation name "is_a"; then two offsets
-        long firstRecord = buffer.getLong(8 + 4 + 4 + 4 + 4);
+        // header: magic, version, counts, one relation name "is_a"; then two offsets
+        long firstRecord = buffer.getLong(8 + 4 + 4 + 4 + 4 + 4);
         // X:1's record: id, label, obsolete byte, is_a count, then the parent ordinal
         int ordinalAt = (int) firstRecord + 4 + 3 + 4 + 3 + 1 + 2;
         assertEquals(1, buffer.getInt(ordinalAt));

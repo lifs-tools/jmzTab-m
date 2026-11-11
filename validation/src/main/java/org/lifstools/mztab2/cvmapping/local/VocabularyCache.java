@@ -51,6 +51,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.OptionalInt;
 import java.util.OptionalLong;
 import java.util.Set;
 import java.util.UUID;
@@ -234,6 +235,9 @@ public final class VocabularyCache {
             }
         }
         CachedRelease release = cached.get();
+        if (!TermIndex.isCurrent(release.index())) {
+            reindex(e, release, url, keyFolder, folder);
+        }
         String known = e.knownSha256().get(version);
         if (known != null && !known.equalsIgnoreCase(release.sha256())) {
             throw new ResolutionException(Reason.CHECKSUM_MISMATCH, "the cached copy in " + folder
@@ -259,6 +263,41 @@ public final class VocabularyCache {
                 "the release folder " + folder + " vanished after it was written"));
         } finally {
             deleteQuietly(temporary);
+        }
+    }
+
+    /**
+     * Rebuilds the index of a cached release written with another index
+     * version (Ruling R-AB), from the cached file and its cached imports: no
+     * download (it works offline), and release.json, with its SHA-256, stays
+     * as it is. The new index is built in a temporary folder and moved over
+     * the old one atomically, under the release's lock; nothing else in the
+     * folder is touched.
+     */
+    private void reindex(VocabularyEntry e, CachedRelease release, URI url, Path keyFolder, Path folder)
+        throws ResolutionException {
+        ReentrantLock lock = lock(folder);
+        try {
+            if (TermIndex.isCurrent(release.index())) {
+                // another thread rebuilt it
+                return;
+            }
+            OptionalInt old = TermIndex.version(release.index());
+            LOG.info("Rebuilding the index of {} {} from {}: it was written with index version {}, this build"
+                + " uses {}", e.key(), release.version(), release.original(),
+                old.isPresent() ? String.valueOf(old.getAsInt()) : "(none)", TermIndex.VERSION);
+            Path temporary = createTemporaryFolder(keyFolder);
+            try {
+                writeIndex(e.location().format(), release.original(), url, temporary.resolve(INDEX));
+                Files.move(temporary.resolve(INDEX), release.index(), StandardCopyOption.ATOMIC_MOVE,
+                    StandardCopyOption.REPLACE_EXISTING);
+            } catch (IOException x) {
+                throw writeFailed(x);
+            } finally {
+                deleteQuietly(temporary);
+            }
+        } finally {
+            lock.unlock();
         }
     }
 

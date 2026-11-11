@@ -39,6 +39,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.UUID;
 import java.util.function.Consumer;
 import lombok.extern.slf4j.Slf4j;
@@ -57,7 +58,11 @@ import lombok.extern.slf4j.Slf4j;
  * <p>
  * A term given more than once is merged: its label is the first non-empty
  * one, its parents are the union per relation, and it is obsolete if any of
- * its records says so. A parent that is not among the terms is left out.</p>
+ * its records says so. A parent that is not among the terms, one named in
+ * the file without a stanza of its own, is kept as a stub term (Ruling
+ * R-AA): its id, its id as label, not obsolete, no parents. OLS lists such
+ * parents too (PRIDE's BFO:0000001), and leaving one out could hide a rule
+ * term's ancestor.</p>
  *
  * <p>
  * Not thread-safe.</p>
@@ -187,32 +192,41 @@ public final class TermIndexWriter implements Consumer<TermRecord>, Closeable {
         spillOut.close();
         entries.sort((a, b) -> compareIds(a.id(), b.id()));
         int[] groupStarts = groupStarts(entries);
-        int termCount = groupStarts.length - 1;
-        String[] ids = new String[termCount];
-        for (int t = 0; t < termCount; t++) {
-            ids[t] = entries.get(groupStarts[t]).id();
+        int groupCount = groupStarts.length - 1;
+        String[] termIds = new String[groupCount];
+        for (int g = 0; g < groupCount; g++) {
+            termIds[g] = entries.get(groupStarts[g]).id();
         }
         List<String> relationOrder = List.copyOf(relations.keySet());
         List<byte[]> relationNames = relationOrder.stream()
             .map(r -> r.getBytes(StandardCharsets.UTF_8)).toList();
-        long headerSize = TermIndex.MAGIC.length + 4L + 4L;
+        long headerSize = TermIndex.MAGIC.length + 4L + 4L + 4L;
         for (byte[] relationName : relationNames) {
             headerSize += 4L + relationName.length;
         }
-        long dataStart = headerSize + 8L * termCount;
-        long[] offsets = new long[termCount];
         try (Arena arena = Arena.ofConfined();
             FileChannel spilled = FileChannel.open(spill, StandardOpenOption.READ);
             FileChannel out = FileChannel.open(output, StandardOpenOption.WRITE,
                 StandardOpenOption.TRUNCATE_EXISTING)) {
             MemorySegment spillSegment = spilled.map(FileChannel.MapMode.READ_ONLY, 0, spillSize, arena);
+            Set<String> stubs = parentsWithoutStanza(spillSegment, termIds);
+            String[] ids = merge(termIds, stubs);
+            int termCount = ids.length;
+            long dataStart = headerSize + 8L * termCount;
+            long[] offsets = new long[termCount];
             out.position(dataStart);
             OutputStream records = new BufferedOutputStream(Channels.newOutputStream(out), BUFFER_SIZE);
             long position = dataStart;
+            int group = 0;
             for (int t = 0; t < termCount; t++) {
                 offsets[t] = position;
-                writeTerm(spillSegment, entries.subList(groupStarts[t], groupStarts[t + 1]), ids,
-                    relationOrder);
+                if (group < groupCount && termIds[group].equals(ids[t])) {
+                    writeTerm(spillSegment, entries.subList(groupStarts[group], groupStarts[group + 1]), ids,
+                        relationOrder);
+                    group++;
+                } else {
+                    writeStub(ids[t], relationOrder.size());
+                }
                 recordBytes.writeTo(records);
                 position += recordBytes.size();
             }
@@ -266,6 +280,61 @@ public final class TermIndexWriter implements Consumer<TermRecord>, Closeable {
     }
 
     /** The first entry of each distinct id, then the entry count. */
+    /** The parent ids, over all spilled records, that are none of the terms. */
+    private Set<String> parentsWithoutStanza(MemorySegment spilled, String[] termIds) {
+        Set<String> stubs = new TreeSet<>(TermIndexWriter::compareIds);
+        for (Entry entry : entries) {
+            SpillReader in = new SpillReader(spilled, entry.spillOffset());
+            in.string();
+            in.string();
+            in.bool();
+            int relationCount = in.integer();
+            for (int r = 0; r < relationCount; r++) {
+                in.integer();
+                int parentCount = in.integer();
+                for (int p = 0; p < parentCount; p++) {
+                    String parent = in.string();
+                    if (Arrays.binarySearch(termIds, parent, TermIndexWriter::compareIds) < 0) {
+                        stubs.add(parent);
+                    }
+                }
+            }
+        }
+        if (!stubs.isEmpty()) {
+            log.debug("{}: {} parents without a stanza of their own are kept as stub terms, e.g. {}",
+                target.getFileName(), stubs.size(), stubs.iterator().next());
+        }
+        return stubs;
+    }
+
+    /** The sorted term ids and the sorted stub ids, in one sorted array. */
+    private static String[] merge(String[] termIds, Set<String> stubs) {
+        String[] ids = new String[termIds.length + stubs.size()];
+        int t = 0;
+        int i = 0;
+        for (String stub : stubs) {
+            while (t < termIds.length && compareIds(termIds[t], stub) < 0) {
+                ids[i++] = termIds[t++];
+            }
+            ids[i++] = stub;
+        }
+        while (t < termIds.length) {
+            ids[i++] = termIds[t++];
+        }
+        return ids;
+    }
+
+    /** A parent without a stanza: its id as label, not obsolete, no parents. */
+    private void writeStub(String id, int relationCount) throws IOException {
+        recordBytes.reset();
+        writeString(record, id);
+        writeString(record, id);
+        record.writeBoolean(false);
+        for (int r = 0; r < relationCount; r++) {
+            record.writeShort(0);
+        }
+    }
+
     private static int[] groupStarts(List<Entry> sorted) {
         int[] starts = new int[sorted.size() + 1];
         int groups = 0;
@@ -314,12 +383,11 @@ public final class TermIndexWriter implements Consumer<TermRecord>, Closeable {
             int count = 0;
             for (String parent : parents.get(r)) {
                 int ordinal = Arrays.binarySearch(ids, parent, TermIndexWriter::compareIds);
-                if (ordinal >= 0) {
-                    ordinals[count++] = ordinal;
-                } else {
-                    log.debug("{}: the {} parent {} of {} is not among the terms; it is left out",
-                        target.getFileName(), relationNames.get(r), parent, id);
+                if (ordinal < 0) {
+                    throw new IllegalStateException("the " + relationNames.get(r) + " parent " + parent + " of "
+                        + id + " is neither a term nor a stub of " + target);
                 }
+                ordinals[count++] = ordinal;
             }
             if (count > TermIndex.MAX_PARENTS) {
                 throw new IOException(id + " has " + count + " " + relationNames.get(r)
@@ -334,12 +402,12 @@ public final class TermIndexWriter implements Consumer<TermRecord>, Closeable {
 
     private void writeHeader(FileChannel out, int termCount, List<byte[]> relationNames)
         throws IOException {
-        int size = TermIndex.MAGIC.length + 8;
+        int size = TermIndex.MAGIC.length + 12;
         for (byte[] name : relationNames) {
             size += 4 + name.length;
         }
         ByteBuffer header = ByteBuffer.allocate(size);
-        header.put(TermIndex.MAGIC).putInt(termCount).putInt(relationNames.size());
+        header.put(TermIndex.MAGIC).putInt(TermIndex.VERSION).putInt(termCount).putInt(relationNames.size());
         for (byte[] name : relationNames) {
             header.putInt(name.length).put(name);
         }

@@ -17,12 +17,15 @@ package org.lifstools.mztab2.cvmapping.local;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.foreign.Arena;
 import java.lang.foreign.MemorySegment;
 import java.lang.foreign.ValueLayout;
+import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayDeque;
@@ -33,6 +36,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.OptionalInt;
 import java.util.Set;
 
 /**
@@ -42,7 +46,8 @@ import java.util.Set;
  * <p>
  * The layout, big-endian:</p>
  * <pre>
- * magic "JMZTIDX1" (8 bytes) | int termCount | int relationCount | relation names (int length + UTF-8)
+ * magic "JMZTIDX2" (8 bytes) | int index version | int termCount | int relationCount
+ * relation names (int length + UTF-8)
  * long[termCount] record offsets, sorted by obo id (UTF-8 bytes, unsigned)
  * records: id, label (int length + UTF-8), byte obsolete,
  *          per relation: unsigned short count + int[count] term ordinals
@@ -61,7 +66,63 @@ import java.util.Set;
  */
 public final class TermIndex implements Closeable {
 
-    static final byte[] MAGIC = "JMZTIDX1".getBytes(StandardCharsets.US_ASCII);
+    static final byte[] MAGIC = "JMZTIDX2".getBytes(StandardCharsets.US_ASCII);
+    /** The magic of the layout before index versions, which counts as version 1. */
+    private static final byte[] MAGIC_1 = "JMZTIDX1".getBytes(StandardCharsets.US_ASCII);
+
+    /**
+     * The index version (Ruling R-AB): the file layout and the rules that
+     * decided its ancestors, those of the readers ({@link OboReader#HIERARCHICAL},
+     * {@link OwlRdfXmlReader#HIERARCHICAL_PROPERTIES},
+     * {@link OwlRdfXmlReader#NOT_PARENTS}) and of {@link TermIndexWriter} (a
+     * parent without a stanza is a stub term). The cache rebuilds an index of
+     * another version from its cached file. Bump it with any change of these
+     * rules, together with {@link #READER_FINGERPRINT}. Version 1: the layout
+     * {@code JMZTIDX1}; 2: the version in the header, part_of as
+     * {@code BFO:0000050}, no {@code owl:Thing} parent, stub parents.
+     */
+    static final int VERSION = 2;
+
+    /**
+     * The fingerprint of the reader rules of {@link #VERSION} (the first 16 hex
+     * digits of the SHA-256 of their canonical text): {@code TermIndexTest}
+     * compares it with the readers' sets and pins it per version, so a rule
+     * change without a new version fails.
+     */
+    static final String READER_FINGERPRINT = "9b132577b8052951";
+
+    /**
+     * The index version an index file was written with.
+     *
+     * @param file an index file
+     * @return the version (1 for the layout before versions); empty if the file
+     * is missing, unreadable or no term index
+     */
+    static OptionalInt version(Path file) {
+        byte[] head = new byte[MAGIC.length + 4];
+        int read;
+        try (InputStream in = Files.newInputStream(file)) {
+            read = in.readNBytes(head, 0, head.length);
+        } catch (IOException e) {
+            return OptionalInt.empty();
+        }
+        if (read >= MAGIC_1.length && Arrays.equals(Arrays.copyOf(head, MAGIC_1.length), MAGIC_1)) {
+            return OptionalInt.of(1);
+        }
+        if (read == head.length && Arrays.equals(Arrays.copyOf(head, MAGIC.length), MAGIC)) {
+            return OptionalInt.of(ByteBuffer.wrap(head, MAGIC.length, 4).getInt());
+        }
+        return OptionalInt.empty();
+    }
+
+    /**
+     * @param file an index file
+     * @return true if it exists and was written with {@link #VERSION}
+     */
+    static boolean isCurrent(Path file) {
+        return version(file).equals(OptionalInt.of(VERSION));
+    }
+
     static final int MAX_PARENTS = 0xFFFF;
     static final ValueLayout.OfByte BYTE = ValueLayout.JAVA_BYTE;
     static final ValueLayout.OfShort SHORT = ValueLayout.JAVA_SHORT_UNALIGNED.withOrder(ByteOrder.BIG_ENDIAN);
@@ -97,12 +158,17 @@ public final class TermIndex implements Closeable {
             MemorySegment segment = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size(),
                 Arena.ofAuto());
             long size = segment.byteSize();
-            long headerSize = MAGIC.length + 8L;
+            long headerSize = MAGIC.length + 12L;
+            OptionalInt version = version(file);
+            if (version.isPresent() && version.getAsInt() != VERSION) {
+                throw new IOException(file + " is a term index of index version " + version.getAsInt()
+                    + ", but this build reads version " + VERSION + "; the cache rebuilds it");
+            }
             if (size < headerSize || !Arrays.equals(segment.asSlice(0, MAGIC.length).toArray(BYTE), MAGIC)) {
                 throw new IOException(file + " is not a term index");
             }
-            int termCount = segment.get(INT, MAGIC.length);
-            int relationCount = segment.get(INT, MAGIC.length + 4L);
+            int termCount = segment.get(INT, MAGIC.length + 4L);
+            int relationCount = segment.get(INT, MAGIC.length + 8L);
             if (termCount < 0 || relationCount < 0) {
                 throw new IOException(file + " is not a term index: negative counts");
             }

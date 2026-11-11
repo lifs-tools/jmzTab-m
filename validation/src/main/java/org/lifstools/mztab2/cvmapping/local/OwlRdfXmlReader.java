@@ -62,8 +62,12 @@ public final class OwlRdfXmlReader {
     private static final String RDFS = "http://www.w3.org/2000/01/rdf-schema#";
     private static final String XML = "http://www.w3.org/XML/1998/namespace";
     private static final String OBO = "http://purl.obolibrary.org/obo/";
-    /** The top class, which OLS lists among no term's hierarchical parents. */
-    private static final String THING = OWL + "Thing";
+    /**
+     * The classes never taken as a parent: {@code owl:Thing}, the top class,
+     * which OLS lists among no term's hierarchical parents (parity with OLS:
+     * {@code msio/MSIO_0000148}).
+     */
+    static final Set<String> NOT_PARENTS = Set.of(OWL + "Thing");
     private static final Pattern OBO_LOCAL = Pattern.compile("([^_/#]+)_([^/#]+)");
     private static final String NOT_OWL = "not OWL in RDF/XML";
 
@@ -239,7 +243,7 @@ public final class OwlRdfXmlReader {
         throws XMLStreamException {
         String named = resolve(xml.getAttributeValue(RDF, "resource"), base);
         if (named != null) {
-            if (!named.equals(THING)) {
+            if (!NOT_PARENTS.contains(named)) {
                 parents.computeIfAbsent("is_a", k -> new ArrayList<>()).add(oboId(named));
             }
             skip(xml);

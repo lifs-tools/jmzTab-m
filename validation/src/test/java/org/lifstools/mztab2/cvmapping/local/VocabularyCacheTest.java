@@ -392,6 +392,57 @@ public class VocabularyCacheTest {
         assertEquals(r, cache(true).get(msio(), "1.0.1"));
     }
 
+    /** An index of the layout before index versions (Ruling R-AB): magic JMZTIDX1, then the counts. */
+    private static void writeOldIndex(Path index) throws IOException {
+        Files.write(index, java.nio.ByteBuffer.allocate(16)
+            .put("JMZTIDX1".getBytes(StandardCharsets.US_ASCII)).putInt(0).putInt(0).array());
+    }
+
+    @Test
+    public void anIndexOfAnOlderVersionIsRebuiltFromTheCachedFile() throws Exception {
+        server.file(MS_PATH, miniMs);
+        CachedRelease cached = cache(false).get(ms(Map.of()), "4.1.200");
+        Path folder = root.resolve("MS").resolve("4.1.200");
+        byte[] releaseJson = Files.readAllBytes(folder.resolve("release.json"));
+        writeOldIndex(cached.index());
+        assertFalse(TermIndex.isCurrent(cached.index()));
+
+        // offline and without a downloader: the index comes from the cached file alone
+        VocabularyCache offline = new VocabularyCache(root, failingDownloader(), true, DAY, clock,
+            server.api(), Optional.empty());
+        assertEquals(cached, offline.get(ms(Map.of()), "4.1.200"));
+
+        assertTrue(TermIndex.isCurrent(cached.index()));
+        try (TermIndex index = TermIndex.open(cached.index())) {
+            assertEquals("instrument model", index.term("MS:1000031").orElseThrow().label());
+        }
+        assertArrayEquals(releaseJson, Files.readAllBytes(folder.resolve("release.json")));
+        assertArrayEquals(miniMs, Files.readAllBytes(cached.original()));
+        assertEquals(1, server.hits(MS_PATH));
+        assertEquals(Set.of("psi-ms.obo", "terms.idx", "release.json"), names(folder));
+        assertNoTemporaryFolders();
+    }
+
+    @Test
+    public void anOwlIndexOfAnOlderVersionIsRebuiltWithItsCachedImports() throws Exception {
+        server.file("/msio/v1.0.1/msio.owl", resource("/cv/mini-msio.owl"));
+        server.file("/obo/mini-obi.owl", resource("/cv/mini-obi.owl"));
+        CachedRelease cached = new VocabularyCache(root, purlToServer(), false, DAY, clock, server.api(),
+            Optional.empty()).get(msio(), "1.0.1");
+        writeOldIndex(cached.index());
+
+        VocabularyCache offline = new VocabularyCache(root, failingDownloader(), true, DAY, clock,
+            server.api(), Optional.empty());
+        assertEquals(cached, offline.get(msio(), "1.0.1"));
+
+        try (TermIndex index = TermIndex.open(cached.index())) {
+            // OBI:0000094 comes from the cached import
+            assertEquals("material processing", index.term("OBI:0000094").orElseThrow().label());
+        }
+        assertEquals(1, server.hits("/obo/mini-obi.owl"));
+        assertNoTemporaryFolders();
+    }
+
     @Test
     public void anImportThatCannotBeDownloadedFailsTheRelease() throws Exception {
         server.file("/msio/v1.0.1/msio.owl", resource("/cv/mini-msio.owl"));
