@@ -30,15 +30,11 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpServer;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UncheckedIOException;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystems;
@@ -59,15 +55,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 import java.util.zip.GZIPOutputStream;
 import org.junit.jupiter.api.AfterEach;
@@ -96,14 +89,14 @@ public class VocabularyCacheTest {
     @TempDir
     Path temp;
 
-    private Server server;
+    private TestServer server;
     private Path root;
     private MutableClock clock;
     private byte[] miniMs;
 
     @BeforeEach
     public void start() throws IOException {
-        server = new Server();
+        server = new TestServer();
         root = temp.resolve("cache");
         clock = new MutableClock(Instant.parse("2026-11-11T10:00:00Z"));
         miniMs = resource("/cv/mini-ms.obo");
@@ -208,7 +201,7 @@ public class VocabularyCacheTest {
                 // a handler that fails makes the server drop the connection
                 throw new IOException("the server breaks off the download");
             } else {
-                send(x, 200, miniMs);
+                TestServer.send(x, 200, miniMs);
             }
         });
         VocabularyCache cache = cache(false);
@@ -260,7 +253,7 @@ public class VocabularyCacheTest {
     public void concurrentResolutionsDownloadOnce() throws Exception {
         server.route(MS_PATH, x -> {
             sleep(300);
-            send(x, 200, miniMs);
+            TestServer.send(x, 200, miniMs);
         });
         VocabularyCache cache = cache(false);
         int threads = 8;
@@ -410,7 +403,7 @@ public class VocabularyCacheTest {
         assertEquals(Reason.NO_SUCH_RELEASE, missing.reason());
         assertTrue(missing.getMessage().startsWith("import " + PURL + "obo/mini-obi.owl: "), missing.getMessage());
         assertFalse(Files.exists(root.resolve("MSIO").resolve("1.0.1")));
-        server.route("/obo/mini-obi.owl", x -> send(x, 500, new byte[0]));
+        server.route("/obo/mini-obi.owl", x -> TestServer.send(x, 500, new byte[0]));
         ResolutionException failed = assertThrows(ResolutionException.class, () -> cache.get(msio(), "1.0.1"));
         assertEquals(Reason.DOWNLOAD_FAILED, failed.reason());
         assertTrue(failed.getMessage().contains(PURL + "obo/mini-obi.owl"), failed.getMessage());
@@ -434,7 +427,7 @@ public class VocabularyCacheTest {
 
     @Test
     public void aServerErrorIsDownloadFailed() {
-        server.route(MS_PATH, x -> send(x, 503, "busy".getBytes(StandardCharsets.UTF_8)));
+        server.route(MS_PATH, x -> TestServer.send(x, 503, "busy".getBytes(StandardCharsets.UTF_8)));
 
         ResolutionException e = assertThrows(ResolutionException.class,
             () -> cache(false).get(ms(Map.of()), "4.1.200"));
@@ -471,7 +464,7 @@ public class VocabularyCacheTest {
 
     @Test
     public void aDirectoryListingNamesTheReleasesAndAnyVersionDownloads() throws Exception {
-        server.route("/chebi/archive/", x -> send(x, 200, ("<html><body>"
+        server.route("/chebi/archive/", x -> TestServer.send(x, 200, ("<html><body>"
             + "<a href=\"../\">Parent</a> <a href=\"rel245/\">rel245/</a> <a href='rel256/'>rel256/</a>"
             + " <a href=\"/pub/databases/chebi/archive/rel250/\">rel250/</a> <a href=\"README\">README</a>"
             + " <a href=\"relx/\">relx/</a></body></html>").getBytes(StandardCharsets.UTF_8)));
@@ -721,7 +714,7 @@ public class VocabularyCacheTest {
 
     @Test
     public void aRedirectToAnotherOriginGetsNoToken() throws Exception {
-        try (Server other = new Server()) {
+        try (TestServer other = new TestServer()) {
             server.redirect(TAGS, other.base() + "/elsewhere/tags", 302);
             other.json("/elsewhere/tags", page -> "[{\"name\": \"v4.1.200\"}]");
             VocabularyCache cache = new VocabularyCache(root, Downloader.http(Duration.ofSeconds(10)), false, DAY,
@@ -994,13 +987,6 @@ public class VocabularyCacheTest {
         }
     }
 
-    private static void send(HttpExchange x, int status, byte[] body) throws IOException {
-        x.sendResponseHeaders(status, body.length);
-        try (OutputStream out = x.getResponseBody()) {
-            out.write(body);
-        }
-    }
-
     private static final class MutableClock extends Clock {
 
         private volatile Instant now;
@@ -1026,113 +1012,6 @@ public class VocabularyCacheTest {
         @Override
         public Instant instant() {
             return now;
-        }
-    }
-
-    /** A local HTTP server: routes by path, counts the requests and keeps their headers. */
-    private static final class Server implements AutoCloseable {
-
-        interface Route {
-            void handle(HttpExchange exchange) throws IOException;
-        }
-
-        interface Page {
-            String json(int page);
-        }
-
-        private final HttpServer http;
-        private final ExecutorService executor = Executors.newCachedThreadPool();
-        private final Map<String, Route> routes = new ConcurrentHashMap<>();
-        private final Map<String, List<HttpExchange>> requests = new ConcurrentHashMap<>();
-        private final Map<String, List<String>> authorizations = new ConcurrentHashMap<>();
-        private final Map<String, List<String>> userAgents = new ConcurrentHashMap<>();
-        private final AtomicInteger total = new AtomicInteger();
-
-        Server() throws IOException {
-            http = HttpServer.create(new InetSocketAddress(InetAddress.getLoopbackAddress(), 0), 0);
-            http.createContext("/", x -> {
-                String path = x.getRequestURI().getPath();
-                total.incrementAndGet();
-                requests.computeIfAbsent(path, p -> new CopyOnWriteArrayList<>()).add(x);
-                authorizations.computeIfAbsent(path, p -> new CopyOnWriteArrayList<>());
-                String auth = x.getRequestHeaders().getFirst("Authorization");
-                if (auth != null) {
-                    authorizations.get(path).add(auth);
-                }
-                userAgents.computeIfAbsent(path, p -> new CopyOnWriteArrayList<>())
-                    .add(String.valueOf(x.getRequestHeaders().getFirst("User-Agent")));
-                Route route = routes.get(path);
-                try {
-                    if (route == null) {
-                        send(x, 404, "not found".getBytes(StandardCharsets.UTF_8));
-                    } else {
-                        route.handle(x);
-                    }
-                } finally {
-                    x.close();
-                }
-            });
-            http.setExecutor(executor);
-            http.start();
-        }
-
-        String base() {
-            return "http://127.0.0.1:" + http.getAddress().getPort();
-        }
-
-        URI api() {
-            return URI.create(base() + "/api");
-        }
-
-        void route(String path, Route route) {
-            routes.put(path, route);
-        }
-
-        void redirect(String path, String location, int status) {
-            route(path, x -> {
-                x.getResponseHeaders().add("Location", location);
-                x.sendResponseHeaders(status, -1);
-            });
-        }
-
-        void file(String path, byte[] body) {
-            route(path, x -> send(x, 200, body));
-        }
-
-        void json(String path, Page pages) {
-            route(path, x -> {
-                String query = String.valueOf(x.getRequestURI().getQuery());
-                int page = 1;
-                for (String part : query.split("&")) {
-                    if (part.startsWith("page=")) {
-                        page = Integer.parseInt(part.substring(5));
-                    }
-                }
-                x.getResponseHeaders().add("Content-Type", "application/json");
-                send(x, 200, pages.json(page).getBytes(StandardCharsets.UTF_8));
-            });
-        }
-
-        int hits(String path) {
-            return requests.getOrDefault(path, List.of()).size();
-        }
-
-        int totalHits() {
-            return total.get();
-        }
-
-        List<String> authorizations(String path) {
-            return authorizations.getOrDefault(path, List.of());
-        }
-
-        List<String> userAgents(String path) {
-            return userAgents.getOrDefault(path, List.of());
-        }
-
-        @Override
-        public void close() {
-            http.stop(0);
-            executor.shutdownNow();
         }
     }
 }
