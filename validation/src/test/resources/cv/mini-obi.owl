@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://purl.obolibrary.org/obo/mini-obi.owl#"
+     xml:base="http://purl.obolibrary.org/obo/mini-obi.owl"
+     xmlns:obo="http://purl.obolibrary.org/obo/"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    <owl:Ontology rdf:about="http://purl.obolibrary.org/obo/mini-obi.owl"/>
+
+    <owl:Class rdf:about="http://purl.obolibrary.org/obo/OBI_0000011">
+        <rdfs:label>planned process</rdfs:label>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://purl.obolibrary.org/obo/OBI_0000094">
+        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/OBI_0000011"/>
+        <rdfs:label xml:lang="en">material processing</rdfs:label>
+    </owl:Class>
+</rdf:RDF>
