@@ -856,7 +856,10 @@ public final class VocabularyCache {
     /**
      * The latest release of a vocabulary, as a concrete version. The answer
      * is kept in {@code <key>/latest.json} for the time to live; offline, the
-     * kept answer is used whatever its age.
+     * kept answer is used whatever its age. Online, if looking it up again
+     * fails to download (the source is down, or GitHub's rate limit is
+     * reached), a kept answer is used whatever its age, with a warning that
+     * names its age; the kept file stays as it was.
      *
      * @param e the vocabulary
      * @return the latest release, or empty if none can be named (no tag, no
@@ -888,7 +891,18 @@ public final class VocabularyCache {
             if (kept.isPresent() && fresh(kept.get())) {
                 return version(kept.get().json());
             }
-            Optional<String> latest = lookUpLatest(e);
+            Optional<String> latest;
+            try {
+                latest = lookUpLatest(e);
+            } catch (ResolutionException x) {
+                if (x.reason() != Reason.DOWNLOAD_FAILED || kept.isEmpty()) {
+                    throw x;
+                }
+                Optional<String> stale = version(kept.get().json());
+                LOG.warn("The latest release of {} cannot be looked up, so {}, looked up {} ago, is used: {}",
+                    e.key(), stale.orElse("none"), age(kept.get().time()), x.getMessage());
+                return stale;
+            }
             ObjectNode json = keptJson(definition);
             json.put("version", latest.orElse(null));
             keep(file, json);
@@ -1016,6 +1030,12 @@ public final class VocabularyCache {
             LOG.warn("The cache file {} cannot be read and is ignored: {}", file, e.getMessage());
             return Optional.empty();
         }
+    }
+
+    /** How long ago a kept answer was looked up, in whole hours, or minutes below an hour. */
+    private String age(Instant time) {
+        Duration age = Duration.between(time, clock.instant());
+        return age.toHours() >= 1 ? age.toHours() + " hours" : Math.max(0, age.toMinutes()) + " minutes";
     }
 
     private boolean fresh(Kept kept) {

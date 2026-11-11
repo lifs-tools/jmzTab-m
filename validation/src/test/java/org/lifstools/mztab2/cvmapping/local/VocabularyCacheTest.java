@@ -342,6 +342,34 @@ public class VocabularyCacheTest {
     }
 
     @Test
+    public void aStaleLatestIsUsedWithAWarningWhenItsLookupFails() throws Exception {
+        // final review M2: GitHub down or rate-limited must not turn a kept latest into a 3017
+        serveMsTags(List.of("v4.1.200", "v4.2.15"));
+        assertEquals(Optional.of("4.2.15"), cache(false).latest(ms(Map.of())));
+        server.route(TAGS, x -> TestServer.send(x, 503, new byte[0]));
+        clock.advance(Duration.ofHours(30));
+        Logger logger = (Logger) LoggerFactory.getLogger(VocabularyCache.class);
+        ListAppender<ILoggingEvent> appender = new ListAppender<>();
+        appender.start();
+        logger.addAppender(appender);
+        try {
+            assertEquals(Optional.of("4.2.15"), cache(false).latest(ms(Map.of())));
+        } finally {
+            logger.detachAppender(appender);
+        }
+        assertTrue(appender.list.stream().anyMatch(e -> e.getLevel() == ch.qos.logback.classic.Level.WARN
+            && e.getFormattedMessage().contains("4.2.15")
+            && e.getFormattedMessage().contains("looked up 30 hours ago")), appender.list.toString());
+        JsonNode latest = new ObjectMapper().readTree(root.resolve("MS").resolve("latest.json").toFile());
+        assertEquals("2026-11-11T10:00:00Z", latest.path("time").asText(), "the kept answer stays as it was");
+
+        // without a kept answer, the failure is reported as before
+        Files.delete(root.resolve("MS").resolve("latest.json"));
+        ResolutionException e = assertThrows(ResolutionException.class, () -> cache(false).latest(ms(Map.of())));
+        assertEquals(Reason.DOWNLOAD_FAILED, e.reason());
+    }
+
+    @Test
     public void anOwlReleaseCachesItsImports() throws Exception {
         byte[] msio = resource("/cv/mini-msio.owl");
         String ro = PURL + "obo/ro/releases/2024-04-24/ro-core.owl";
