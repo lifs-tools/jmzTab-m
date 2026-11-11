@@ -1,0 +1,24 @@
+{
+  "term" : {
+    "obo_id" : "NCIT:C48207",
+    "label" : "Unit of Concentration",
+    "iri" : "http://purl.obolibrary.org/obo/NCIT_C48207",
+    "ontology_prefix" : "NCIT"
+  },
+  "ancestors" : [ {
+    "obo_id" : "NCIT:C20189",
+    "label" : "Property or Attribute",
+    "iri" : "http://purl.obolibrary.org/obo/NCIT_C20189",
+    "ontology_prefix" : "NCIT"
+  }, {
+    "obo_id" : "NCIT:C25709",
+    "label" : "Unit of Measure",
+    "iri" : "http://purl.obolibrary.org/obo/NCIT_C25709",
+    "ontology_prefix" : "NCIT"
+  }, {
+    "obo_id" : "NCIT:C42568",
+    "label" : "Unit by Category",
+    "iri" : "http://purl.obolibrary.org/obo/NCIT_C42568",
+    "ontology_prefix" : "NCIT"
+  } ]
+}

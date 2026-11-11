@@ -1,0 +1,9 @@
+{
+  "term" : {
+    "obo_id" : "NCBITaxon:1",
+    "label" : "root",
+    "iri" : "http://purl.obolibrary.org/obo/NCBITaxon_1",
+    "ontology_prefix" : "NCBITaxon"
+  },
+  "ancestors" : [ ]
+}

@@ -1,0 +1,39 @@
+{
+  "term" : {
+    "obo_id" : "MS:1000922",
+    "label" : "Skyline",
+    "iri" : "http://purl.obolibrary.org/obo/MS_1000922",
+    "ontology_prefix" : "MS"
+  },
+  "ancestors" : [ {
+    "obo_id" : "MS:0000000",
+    "label" : "Proteomics Standards Initiative Mass Spectrometry Vocabularies",
+    "iri" : "http://purl.obolibrary.org/obo/MS_0000000",
+    "ontology_prefix" : "MS"
+  }, {
+    "obo_id" : "MS:1000531",
+    "label" : "software",
+    "iri" : "http://purl.obolibrary.org/obo/MS_1000531",
+    "ontology_prefix" : "MS"
+  }, {
+    "obo_id" : "MS:1000871",
+    "label" : "SRM software",
+    "iri" : "http://purl.obolibrary.org/obo/MS_1000871",
+    "ontology_prefix" : "MS"
+  }, {
+    "obo_id" : "MS:1001000",
+    "label" : "spectrum interpretation",
+    "iri" : "http://purl.obolibrary.org/obo/MS_1001000",
+    "ontology_prefix" : "MS"
+  }, {
+    "obo_id" : "MS:1001129",
+    "label" : "quantification information",
+    "iri" : "http://purl.obolibrary.org/obo/MS_1001129",
+    "ontology_prefix" : "MS"
+  }, {
+    "obo_id" : "MS:1001139",
+    "label" : "quantitation software name",
+    "iri" : "http://purl.obolibrary.org/obo/MS_1001139",
+    "ontology_prefix" : "MS"
+  } ]
+}

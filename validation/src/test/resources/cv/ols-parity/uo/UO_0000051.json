@@ -1,0 +1,14 @@
+{
+  "term" : {
+    "obo_id" : "UO:0000051",
+    "label" : "concentration unit",
+    "iri" : "http://purl.obolibrary.org/obo/UO_0000051",
+    "ontology_prefix" : "UO"
+  },
+  "ancestors" : [ {
+    "obo_id" : "UO:0000000",
+    "label" : "unit",
+    "iri" : "http://purl.obolibrary.org/obo/UO_0000000",
+    "ontology_prefix" : "UO"
+  } ]
+}

@@ -1,0 +1,44 @@
+{
+  "term" : {
+    "obo_id" : "BTO:0000759",
+    "label" : "liver",
+    "iri" : "http://purl.obolibrary.org/obo/BTO_0000759",
+    "ontology_prefix" : "BTO"
+  },
+  "ancestors" : [ {
+    "obo_id" : "BTO:0000000",
+    "label" : "tissues, cell types and enzyme sources",
+    "iri" : "http://purl.obolibrary.org/obo/BTO_0000000",
+    "ontology_prefix" : "BTO"
+  }, {
+    "obo_id" : "BTO:0000042",
+    "label" : "animal",
+    "iri" : "http://purl.obolibrary.org/obo/BTO_0000042",
+    "ontology_prefix" : "BTO"
+  }, {
+    "obo_id" : "BTO:0000345",
+    "label" : "digestive gland",
+    "iri" : "http://purl.obolibrary.org/obo/BTO_0000345",
+    "ontology_prefix" : "BTO"
+  }, {
+    "obo_id" : "BTO:0000522",
+    "label" : "gland",
+    "iri" : "http://purl.obolibrary.org/obo/BTO_0000522",
+    "ontology_prefix" : "BTO"
+  }, {
+    "obo_id" : "BTO:0001488",
+    "label" : "endocrine gland",
+    "iri" : "http://purl.obolibrary.org/obo/BTO_0001488",
+    "ontology_prefix" : "BTO"
+  }, {
+    "obo_id" : "BTO:0001489",
+    "label" : "whole body",
+    "iri" : "http://purl.obolibrary.org/obo/BTO_0001489",
+    "ontology_prefix" : "BTO"
+  }, {
+    "obo_id" : "BTO:0001491",
+    "label" : "viscus",
+    "iri" : "http://purl.obolibrary.org/obo/BTO_0001491",
+    "ontology_prefix" : "BTO"
+  } ]
+}

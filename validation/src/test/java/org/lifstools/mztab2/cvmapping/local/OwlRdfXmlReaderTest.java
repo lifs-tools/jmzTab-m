@@ -129,6 +129,24 @@ public class OwlRdfXmlReaderTest {
         + " xmlns:rdfs=\"http://www.w3.org/2000/01/rdf-schema#\">";
 
     @Test
+    public void owlThingIsNoParent() throws IOException {
+        // OLS lists no owl:Thing among the hierarchical parents (MSIO's merged file names it for BFO:0000001)
+        String xml = String.format(RDF_OPEN, "")
+            + "<owl:Class rdf:about=\"http://purl.obolibrary.org/obo/BFO_0000001\">"
+            + "<rdfs:subClassOf rdf:resource=\"http://www.w3.org/2002/07/owl#Thing\"/></owl:Class>"
+            + "<owl:Class rdf:about=\"http://purl.obolibrary.org/obo/BFO_0000002\">"
+            + "<rdfs:subClassOf rdf:resource=\"http://www.w3.org/2002/07/owl#Thing\"/>"
+            + "<rdfs:subClassOf rdf:resource=\"http://purl.obolibrary.org/obo/BFO_0000001\"/></owl:Class>"
+            + "</rdf:RDF>";
+        List<TermRecord> terms = new ArrayList<>();
+        new OwlRdfXmlReader().read(new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8)),
+            terms::add, i -> { }, v -> { });
+        Map<String, TermRecord> byId = byId(terms);
+        assertEquals(Map.of(), byId.get("BFO:0000001").parentsByRelation());
+        assertEquals(Map.of("is_a", List.of("BFO:0000001")), byId.get("BFO:0000002").parentsByRelation());
+    }
+
+    @Test
     public void externalEntitiesAreNotLoaded() throws IOException {
         String xml = String.format(RDF_OPEN, "<!DOCTYPE rdf:RDF [<!ENTITY x SYSTEM \"file:///etc/hosts\">]>")
             + "<owl:Class rdf:about=\"http://purl.obolibrary.org/obo/X_1\"><rdfs:label>a&x;b</rdfs:label>"

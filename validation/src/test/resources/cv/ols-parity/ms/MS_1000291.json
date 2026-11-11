@@ -1,0 +1,39 @@
+{
+  "term" : {
+    "obo_id" : "MS:1000291",
+    "label" : "linear ion trap",
+    "iri" : "http://purl.obolibrary.org/obo/MS_1000291",
+    "ontology_prefix" : "MS"
+  },
+  "ancestors" : [ {
+    "obo_id" : "MS:0000000",
+    "label" : "Proteomics Standards Initiative Mass Spectrometry Vocabularies",
+    "iri" : "http://purl.obolibrary.org/obo/MS_0000000",
+    "ontology_prefix" : "MS"
+  }, {
+    "obo_id" : "MS:1000264",
+    "label" : "ion trap",
+    "iri" : "http://purl.obolibrary.org/obo/MS_1000264",
+    "ontology_prefix" : "MS"
+  }, {
+    "obo_id" : "MS:1000443",
+    "label" : "mass analyzer type",
+    "iri" : "http://purl.obolibrary.org/obo/MS_1000443",
+    "ontology_prefix" : "MS"
+  }, {
+    "obo_id" : "MS:1000451",
+    "label" : "mass analyzer",
+    "iri" : "http://purl.obolibrary.org/obo/MS_1000451",
+    "ontology_prefix" : "MS"
+  }, {
+    "obo_id" : "MS:1000463",
+    "label" : "instrument",
+    "iri" : "http://purl.obolibrary.org/obo/MS_1000463",
+    "ontology_prefix" : "MS"
+  }, {
+    "obo_id" : "MS:1001458",
+    "label" : "spectrum generation information",
+    "iri" : "http://purl.obolibrary.org/obo/MS_1001458",
+    "ontology_prefix" : "MS"
+  } ]
+}

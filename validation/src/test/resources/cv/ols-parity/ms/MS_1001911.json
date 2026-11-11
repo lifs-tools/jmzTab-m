@@ -1,0 +1,49 @@
+{
+  "term" : {
+    "obo_id" : "MS:1001911",
+    "label" : "Q Exactive",
+    "iri" : "http://purl.obolibrary.org/obo/MS_1001911",
+    "ontology_prefix" : "MS"
+  },
+  "ancestors" : [ {
+    "obo_id" : "MS:0000000",
+    "label" : "Proteomics Standards Initiative Mass Spectrometry Vocabularies",
+    "iri" : "http://purl.obolibrary.org/obo/MS_0000000",
+    "ontology_prefix" : "MS"
+  }, {
+    "obo_id" : "MS:1000031",
+    "label" : "instrument model",
+    "iri" : "http://purl.obolibrary.org/obo/MS_1000031",
+    "ontology_prefix" : "MS"
+  }, {
+    "obo_id" : "MS:1000463",
+    "label" : "instrument",
+    "iri" : "http://purl.obolibrary.org/obo/MS_1000463",
+    "ontology_prefix" : "MS"
+  }, {
+    "obo_id" : "MS:1000483",
+    "label" : "Thermo Fisher Scientific instrument model",
+    "iri" : "http://purl.obolibrary.org/obo/MS_1000483",
+    "ontology_prefix" : "MS"
+  }, {
+    "obo_id" : "MS:1000494",
+    "label" : "Thermo Scientific instrument model",
+    "iri" : "http://purl.obolibrary.org/obo/MS_1000494",
+    "ontology_prefix" : "MS"
+  }, {
+    "obo_id" : "MS:1001458",
+    "label" : "spectrum generation information",
+    "iri" : "http://purl.obolibrary.org/obo/MS_1001458",
+    "ontology_prefix" : "MS"
+  }, {
+    "obo_id" : "MS:1003761",
+    "label" : "instrument class",
+    "iri" : "http://purl.obolibrary.org/obo/MS_1003761",
+    "ontology_prefix" : "MS"
+  }, {
+    "obo_id" : "MS:1003769",
+    "label" : "quadrupole orbitrap instrument",
+    "iri" : "http://purl.obolibrary.org/obo/MS_1003769",
+    "ontology_prefix" : "MS"
+  } ]
+}

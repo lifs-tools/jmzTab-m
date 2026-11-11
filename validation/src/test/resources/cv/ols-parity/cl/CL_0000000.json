@@ -1,0 +1,34 @@
+{
+  "term" : {
+    "obo_id" : "CL:0000000",
+    "label" : "cell",
+    "iri" : "http://purl.obolibrary.org/obo/CL_0000000",
+    "ontology_prefix" : "CL"
+  },
+  "ancestors" : [ {
+    "obo_id" : "BFO:0000004",
+    "label" : "BFO_0000004",
+    "iri" : "http://purl.obolibrary.org/obo/BFO_0000004",
+    "ontology_prefix" : "CL"
+  }, {
+    "obo_id" : "BFO:0000040",
+    "label" : "BFO_0000040",
+    "iri" : "http://purl.obolibrary.org/obo/BFO_0000040",
+    "ontology_prefix" : "CL"
+  }, {
+    "obo_id" : "UBERON:0000061",
+    "label" : "anatomical structure",
+    "iri" : "http://purl.obolibrary.org/obo/UBERON_0000061",
+    "ontology_prefix" : "CL"
+  }, {
+    "obo_id" : "UBERON:0000465",
+    "label" : "material anatomical entity",
+    "iri" : "http://purl.obolibrary.org/obo/UBERON_0000465",
+    "ontology_prefix" : "CL"
+  }, {
+    "obo_id" : "UBERON:0001062",
+    "label" : "anatomical entity",
+    "iri" : "http://purl.obolibrary.org/obo/UBERON_0001062",
+    "ontology_prefix" : "CL"
+  } ]
+}

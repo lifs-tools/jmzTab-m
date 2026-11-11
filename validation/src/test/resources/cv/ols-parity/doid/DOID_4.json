@@ -1,0 +1,9 @@
+{
+  "term" : {
+    "obo_id" : "DOID:4",
+    "label" : "disease",
+    "iri" : "http://purl.obolibrary.org/obo/DOID_4",
+    "ontology_prefix" : "DOID"
+  },
+  "ancestors" : [ ]
+}

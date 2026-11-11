@@ -68,6 +68,16 @@ public class OboReaderTest {
     }
 
     @Test
+    public void partOfWrittenAsItsIdIsHierarchical() throws IOException {
+        // ROBOT's OBO files (e.g. cl.obo) write part_of as BFO:0000050, which OLS counts
+        List<TermRecord> terms = new ArrayList<>();
+        new OboReader().read(stream("format-version: 1.2\n\n[Term]\nid: CL:1\nname: x\n"
+            + "relationship: BFO:0000050 UBERON:2 ! part of y\nrelationship: RO:0002202 CL:3 ! develops from z\n"),
+            terms::add, v -> { });
+        assertEquals(Map.of("BFO:0000050", List.of("UBERON:2")), terms.get(0).parentsByRelation());
+    }
+
+    @Test
     public void skipsTypedefsAndComments() throws IOException {
         Map<String, TermRecord> terms = readMiniMs();
 

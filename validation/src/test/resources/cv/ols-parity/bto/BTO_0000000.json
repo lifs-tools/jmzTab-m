@@ -1,0 +1,9 @@
+{
+  "term" : {
+    "obo_id" : "BTO:0000000",
+    "label" : "tissues, cell types and enzyme sources",
+    "iri" : "http://purl.obolibrary.org/obo/BTO_0000000",
+    "ontology_prefix" : "BTO"
+  },
+  "ancestors" : [ ]
+}

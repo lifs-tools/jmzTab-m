@@ -1,0 +1,14 @@
+{
+  "term" : {
+    "obo_id" : "OBI:0000094",
+    "label" : "obsolete material processing",
+    "iri" : "http://purl.obolibrary.org/obo/OBI_0000094",
+    "ontology_prefix" : "OBI"
+  },
+  "ancestors" : [ {
+    "obo_id" : "OIO:ObsoleteClass",
+    "label" : "Obsolete Class",
+    "iri" : "http://www.geneontology.org/formats/oboInOwl#ObsoleteClass",
+    "ontology_prefix" : "OBI"
+  } ]
+}

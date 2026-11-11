@@ -41,7 +41,8 @@ import javax.xml.stream.XMLStreamReader;
  * {@code rdf:RDF}) with its IRI turned into an obo id, its {@code rdfs:label}
  * (one without language or {@code en} is preferred, else the first),
  * {@code owl:deprecated}, its {@code rdfs:subClassOf} to a named class
- * ({@code is_a}) and its {@code rdfs:subClassOf} restriction with a
+ * ({@code is_a}; {@code owl:Thing} is left out, as OLS leaves it out) and
+ * its {@code rdfs:subClassOf} restriction with a
  * {@code someValuesFrom} over {@link #HIERARCHICAL_PROPERTIES}
  * ({@code part_of}). The ontology's {@code owl:imports} and
  * {@code owl:versionIRI} are reported. Everything else is ignored: anonymous
@@ -61,6 +62,8 @@ public final class OwlRdfXmlReader {
     private static final String RDFS = "http://www.w3.org/2000/01/rdf-schema#";
     private static final String XML = "http://www.w3.org/XML/1998/namespace";
     private static final String OBO = "http://purl.obolibrary.org/obo/";
+    /** The top class, which OLS lists among no term's hierarchical parents. */
+    private static final String THING = OWL + "Thing";
     private static final Pattern OBO_LOCAL = Pattern.compile("([^_/#]+)_([^/#]+)");
     private static final String NOT_OWL = "not OWL in RDF/XML";
 
@@ -236,7 +239,9 @@ public final class OwlRdfXmlReader {
         throws XMLStreamException {
         String named = resolve(xml.getAttributeValue(RDF, "resource"), base);
         if (named != null) {
-            parents.computeIfAbsent("is_a", k -> new ArrayList<>()).add(oboId(named));
+            if (!named.equals(THING)) {
+                parents.computeIfAbsent("is_a", k -> new ArrayList<>()).add(oboId(named));
+            }
             skip(xml);
             return;
         }

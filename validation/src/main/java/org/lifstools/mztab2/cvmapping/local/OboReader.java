@@ -45,9 +45,11 @@ public final class OboReader {
      * The relationship names counted as hierarchical parents, besides
      * {@code is_a}: the relations OLS counts as hierarchical parents. The term
      * index walks every relation it was written with, so this set alone decides
-     * which relations an ancestor walk follows.
+     * which relations an ancestor walk follows. {@code BFO:0000050} is
+     * {@code part_of} by its id, as ROBOT writes it in OBO files such as
+     * {@code cl.obo} (parity with OLS: {@code cl/CL_0000182}).
      */
-    static final Set<String> HIERARCHICAL = Set.of("part_of");
+    static final Set<String> HIERARCHICAL = Set.of("part_of", "BFO:0000050");
 
     private static final String IS_A = "is_a";
     private static final Pattern TAG_VALUE = Pattern.compile("[A-Za-z][A-Za-z0-9_-]*:.*");

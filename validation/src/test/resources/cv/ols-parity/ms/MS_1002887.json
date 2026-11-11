@@ -1,0 +1,34 @@
+{
+  "term" : {
+    "obo_id" : "MS:1002887",
+    "label" : "Progenesis QI normalised abundance",
+    "iri" : "http://purl.obolibrary.org/obo/MS_1002887",
+    "ontology_prefix" : "MS"
+  },
+  "ancestors" : [ {
+    "obo_id" : "MS:0000000",
+    "label" : "Proteomics Standards Initiative Mass Spectrometry Vocabularies",
+    "iri" : "http://purl.obolibrary.org/obo/MS_0000000",
+    "ontology_prefix" : "MS"
+  }, {
+    "obo_id" : "MS:1001000",
+    "label" : "spectrum interpretation",
+    "iri" : "http://purl.obolibrary.org/obo/MS_1001000",
+    "ontology_prefix" : "MS"
+  }, {
+    "obo_id" : "MS:1001129",
+    "label" : "quantification information",
+    "iri" : "http://purl.obolibrary.org/obo/MS_1001129",
+    "ontology_prefix" : "MS"
+  }, {
+    "obo_id" : "MS:1001805",
+    "label" : "quantification datatype",
+    "iri" : "http://purl.obolibrary.org/obo/MS_1001805",
+    "ontology_prefix" : "MS"
+  }, {
+    "obo_id" : "MS:1002886",
+    "label" : "small molecule quantification datatype",
+    "iri" : "http://purl.obolibrary.org/obo/MS_1002886",
+    "ontology_prefix" : "MS"
+  } ]
+}

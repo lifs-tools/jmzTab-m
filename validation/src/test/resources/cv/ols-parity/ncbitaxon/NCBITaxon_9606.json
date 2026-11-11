@@ -1,0 +1,164 @@
+{
+  "term" : {
+    "obo_id" : "NCBITaxon:9606",
+    "label" : "Homo sapiens",
+    "iri" : "http://purl.obolibrary.org/obo/NCBITaxon_9606",
+    "ontology_prefix" : "NCBITaxon"
+  },
+  "ancestors" : [ {
+    "obo_id" : "NCBITaxon:1",
+    "label" : "root",
+    "iri" : "http://purl.obolibrary.org/obo/NCBITaxon_1",
+    "ontology_prefix" : "NCBITaxon"
+  }, {
+    "obo_id" : "NCBITaxon:117570",
+    "label" : "Teleostomi",
+    "iri" : "http://purl.obolibrary.org/obo/NCBITaxon_117570",
+    "ontology_prefix" : "NCBITaxon"
+  }, {
+    "obo_id" : "NCBITaxon:117571",
+    "label" : "Euteleostomi",
+    "iri" : "http://purl.obolibrary.org/obo/NCBITaxon_117571",
+    "ontology_prefix" : "NCBITaxon"
+  }, {
+    "obo_id" : "NCBITaxon:131567",
+    "label" : "cellular organisms",
+    "iri" : "http://purl.obolibrary.org/obo/NCBITaxon_131567",
+    "ontology_prefix" : "NCBITaxon"
+  }, {
+    "obo_id" : "NCBITaxon:1338369",
+    "label" : "Dipnotetrapodomorpha",
+    "iri" : "http://purl.obolibrary.org/obo/NCBITaxon_1338369",
+    "ontology_prefix" : "NCBITaxon"
+  }, {
+    "obo_id" : "NCBITaxon:1437010",
+    "label" : "Boreoeutheria",
+    "iri" : "http://purl.obolibrary.org/obo/NCBITaxon_1437010",
+    "ontology_prefix" : "NCBITaxon"
+  }, {
+    "obo_id" : "NCBITaxon:207598",
+    "label" : "Homininae",
+    "iri" : "http://purl.obolibrary.org/obo/NCBITaxon_207598",
+    "ontology_prefix" : "NCBITaxon"
+  }, {
+    "obo_id" : "NCBITaxon:2759",
+    "label" : "Eukaryota",
+    "iri" : "http://purl.obolibrary.org/obo/NCBITaxon_2759",
+    "ontology_prefix" : "NCBITaxon"
+  }, {
+    "obo_id" : "NCBITaxon:314146",
+    "label" : "Euarchontoglires",
+    "iri" : "http://purl.obolibrary.org/obo/NCBITaxon_314146",
+    "ontology_prefix" : "NCBITaxon"
+  }, {
+    "obo_id" : "NCBITaxon:314293",
+    "label" : "Simiiformes",
+    "iri" : "http://purl.obolibrary.org/obo/NCBITaxon_314293",
+    "ontology_prefix" : "NCBITaxon"
+  }, {
+    "obo_id" : "NCBITaxon:314295",
+    "label" : "Hominoidea",
+    "iri" : "http://purl.obolibrary.org/obo/NCBITaxon_314295",
+    "ontology_prefix" : "NCBITaxon"
+  }, {
+    "obo_id" : "NCBITaxon:32523",
+    "label" : "Tetrapoda",
+    "iri" : "http://purl.obolibrary.org/obo/NCBITaxon_32523",
+    "ontology_prefix" : "NCBITaxon"
+  }, {
+    "obo_id" : "NCBITaxon:32524",
+    "label" : "Amniota",
+    "iri" : "http://purl.obolibrary.org/obo/NCBITaxon_32524",
+    "ontology_prefix" : "NCBITaxon"
+  }, {
+    "obo_id" : "NCBITaxon:32525",
+    "label" : "Theria <mammals>",
+    "iri" : "http://purl.obolibrary.org/obo/NCBITaxon_32525",
+    "ontology_prefix" : "NCBITaxon"
+  }, {
+    "obo_id" : "NCBITaxon:33154",
+    "label" : "Opisthokonta",
+    "iri" : "http://purl.obolibrary.org/obo/NCBITaxon_33154",
+    "ontology_prefix" : "NCBITaxon"
+  }, {
+    "obo_id" : "NCBITaxon:33208",
+    "label" : "Metazoa",
+    "iri" : "http://purl.obolibrary.org/obo/NCBITaxon_33208",
+    "ontology_prefix" : "NCBITaxon"
+  }, {
+    "obo_id" : "NCBITaxon:33213",
+    "label" : "Bilateria",
+    "iri" : "http://purl.obolibrary.org/obo/NCBITaxon_33213",
+    "ontology_prefix" : "NCBITaxon"
+  }, {
+    "obo_id" : "NCBITaxon:33511",
+    "label" : "Deuterostomia",
+    "iri" : "http://purl.obolibrary.org/obo/NCBITaxon_33511",
+    "ontology_prefix" : "NCBITaxon"
+  }, {
+    "obo_id" : "NCBITaxon:376913",
+    "label" : "Haplorrhini",
+    "iri" : "http://purl.obolibrary.org/obo/NCBITaxon_376913",
+    "ontology_prefix" : "NCBITaxon"
+  }, {
+    "obo_id" : "NCBITaxon:40674",
+    "label" : "Mammalia",
+    "iri" : "http://purl.obolibrary.org/obo/NCBITaxon_40674",
+    "ontology_prefix" : "NCBITaxon"
+  }, {
+    "obo_id" : "NCBITaxon:6072",
+    "label" : "Eumetazoa",
+    "iri" : "http://purl.obolibrary.org/obo/NCBITaxon_6072",
+    "ontology_prefix" : "NCBITaxon"
+  }, {
+    "obo_id" : "NCBITaxon:7711",
+    "label" : "Chordata",
+    "iri" : "http://purl.obolibrary.org/obo/NCBITaxon_7711",
+    "ontology_prefix" : "NCBITaxon"
+  }, {
+    "obo_id" : "NCBITaxon:7742",
+    "label" : "Vertebrata <vertebrates>",
+    "iri" : "http://purl.obolibrary.org/obo/NCBITaxon_7742",
+    "ontology_prefix" : "NCBITaxon"
+  }, {
+    "obo_id" : "NCBITaxon:7776",
+    "label" : "Gnathostomata <vertebrates>",
+    "iri" : "http://purl.obolibrary.org/obo/NCBITaxon_7776",
+    "ontology_prefix" : "NCBITaxon"
+  }, {
+    "obo_id" : "NCBITaxon:8287",
+    "label" : "Sarcopterygii",
+    "iri" : "http://purl.obolibrary.org/obo/NCBITaxon_8287",
+    "ontology_prefix" : "NCBITaxon"
+  }, {
+    "obo_id" : "NCBITaxon:89593",
+    "label" : "Craniata <chordates>",
+    "iri" : "http://purl.obolibrary.org/obo/NCBITaxon_89593",
+    "ontology_prefix" : "NCBITaxon"
+  }, {
+    "obo_id" : "NCBITaxon:9347",
+    "label" : "Eutheria",
+    "iri" : "http://purl.obolibrary.org/obo/NCBITaxon_9347",
+    "ontology_prefix" : "NCBITaxon"
+  }, {
+    "obo_id" : "NCBITaxon:9443",
+    "label" : "Primates",
+    "iri" : "http://purl.obolibrary.org/obo/NCBITaxon_9443",
+    "ontology_prefix" : "NCBITaxon"
+  }, {
+    "obo_id" : "NCBITaxon:9526",
+    "label" : "Catarrhini",
+    "iri" : "http://purl.obolibrary.org/obo/NCBITaxon_9526",
+    "ontology_prefix" : "NCBITaxon"
+  }, {
+    "obo_id" : "NCBITaxon:9604",
+    "label" : "Hominidae",
+    "iri" : "http://purl.obolibrary.org/obo/NCBITaxon_9604",
+    "ontology_prefix" : "NCBITaxon"
+  }, {
+    "obo_id" : "NCBITaxon:9605",
+    "label" : "Homo",
+    "iri" : "http://purl.obolibrary.org/obo/NCBITaxon_9605",
+    "ontology_prefix" : "NCBITaxon"
+  } ]
+}

@@ -1,0 +1,44 @@
+{
+  "term" : {
+    "obo_id" : "MS:1000532",
+    "label" : "Xcalibur",
+    "iri" : "http://purl.obolibrary.org/obo/MS_1000532",
+    "ontology_prefix" : "MS"
+  },
+  "ancestors" : [ {
+    "obo_id" : "MS:0000000",
+    "label" : "Proteomics Standards Initiative Mass Spectrometry Vocabularies",
+    "iri" : "http://purl.obolibrary.org/obo/MS_0000000",
+    "ontology_prefix" : "MS"
+  }, {
+    "obo_id" : "MS:1000531",
+    "label" : "software",
+    "iri" : "http://purl.obolibrary.org/obo/MS_1000531",
+    "ontology_prefix" : "MS"
+  }, {
+    "obo_id" : "MS:1000693",
+    "label" : "Thermo Finnigan software",
+    "iri" : "http://purl.obolibrary.org/obo/MS_1000693",
+    "ontology_prefix" : "MS"
+  }, {
+    "obo_id" : "MS:1001455",
+    "label" : "acquisition software",
+    "iri" : "http://purl.obolibrary.org/obo/MS_1001455",
+    "ontology_prefix" : "MS"
+  }, {
+    "obo_id" : "MS:1001456",
+    "label" : "analysis software",
+    "iri" : "http://purl.obolibrary.org/obo/MS_1001456",
+    "ontology_prefix" : "MS"
+  }, {
+    "obo_id" : "MS:1001457",
+    "label" : "data processing software",
+    "iri" : "http://purl.obolibrary.org/obo/MS_1001457",
+    "ontology_prefix" : "MS"
+  }, {
+    "obo_id" : "MS:1003961",
+    "label" : "Thermo Scientific software",
+    "iri" : "http://purl.obolibrary.org/obo/MS_1003961",
+    "ontology_prefix" : "MS"
+  } ]
+}

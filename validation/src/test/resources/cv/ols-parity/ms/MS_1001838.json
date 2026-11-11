@@ -1,0 +1,29 @@
+{
+  "term" : {
+    "obo_id" : "MS:1001838",
+    "label" : "SRM quantitation analysis",
+    "iri" : "http://purl.obolibrary.org/obo/MS_1001838",
+    "ontology_prefix" : "MS"
+  },
+  "ancestors" : [ {
+    "obo_id" : "MS:0000000",
+    "label" : "Proteomics Standards Initiative Mass Spectrometry Vocabularies",
+    "iri" : "http://purl.obolibrary.org/obo/MS_0000000",
+    "ontology_prefix" : "MS"
+  }, {
+    "obo_id" : "MS:1001000",
+    "label" : "spectrum interpretation",
+    "iri" : "http://purl.obolibrary.org/obo/MS_1001000",
+    "ontology_prefix" : "MS"
+  }, {
+    "obo_id" : "MS:1001129",
+    "label" : "quantification information",
+    "iri" : "http://purl.obolibrary.org/obo/MS_1001129",
+    "ontology_prefix" : "MS"
+  }, {
+    "obo_id" : "MS:1001833",
+    "label" : "quantitation analysis summary",
+    "iri" : "http://purl.obolibrary.org/obo/MS_1001833",
+    "ontology_prefix" : "MS"
+  } ]
+}
