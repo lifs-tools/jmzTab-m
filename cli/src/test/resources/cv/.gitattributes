@@ -1,0 +1,2 @@
+# The CLI tests pre-fill the cache with this vocabulary byte for byte (final review M7).
+*.obo -text

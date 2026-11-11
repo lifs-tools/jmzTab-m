@@ -1,0 +1,6 @@
+# Vocabulary fixtures are read byte for byte: TermIndexTest pins the SHA-256 of
+# indexes built from them, and the cache checksums them. Keep them as committed,
+# also in a Windows checkout with core.autocrlf=true (final review M7).
+*.obo -text
+*.owl -text
+*.ttl -text
