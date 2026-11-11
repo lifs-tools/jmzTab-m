@@ -62,8 +62,12 @@ import org.springframework.web.client.HttpClientErrorException;
  * downloads.</p>
  *
  * <p>
- * An ontology whose OLS version cannot be resolved locally is skipped with an
- * assumption naming it, the version and the reason (Ruling R-X); a difference
+ * An ontology for which OLS names no version, or whose OLS version is not
+ * at its source yet, is skipped with an assumption naming it, the version
+ * and the reason (Ruling R-X). Only that: the release must be
+ * NO_SUCH_RELEASE and absent from a readable release list, and the ontology
+ * one of {@link #EXPECTED_SKIPS}; any other failure, and any version other
+ * than OLS's (e.g. a fall back to the latest), fails the test. A difference
  * only OWL semantics the readers lack could remove is listed in
  * {@link #KNOWN_DIFFERENCES}, and the test then requires exactly that
  * difference (Ruling R-H).</p>
@@ -93,6 +97,19 @@ public class OlsParityTest {
             "OBI:0000094 is obsolete in OBI, under oboInOwl:ObsoleteClass; OLS gives that class, which is outside"
                 + " the OBO PURL space, the curie OIO:ObsoleteClass, while the OWL reader keeps any IRI outside"
                 + " that space whole"));
+
+    /**
+     * By ontology, the OLS versions known not to be at their source yet
+     * (Ruling R-X). Any other ontology that cannot be had at its OLS version
+     * fails the test; one listed here that resolves is compared as usual.
+     */
+    static final Map<String, String> EXPECTED_SKIPS = Map.of(
+        "chebi", "OLS serves CHEBI 257, its current release, which the FTP archive holds only once the next"
+            + " release is published (Ruling R-K)");
+
+    /** The reasons for a release at the version OLS reports: as declared, or the one current on that date. */
+    private static final Set<String> RESOLVED_AT_OLS_VERSION = Set.of("FILE", "FILE_DATE",
+        VocabularyResolver.FILE_DATE_FALLBACK);
 
     /** One recorded term. */
     record Fixture(String ontology, String name, String oboId, String label, String prefix, Set<String> olsAncestors,
@@ -195,10 +212,6 @@ public class OlsParityTest {
             () -> new AssertionError(f.ontology() + " is no vocabulary of the shipped resources"));
         assertEquals(entry, RESOURCES.forLabel(f.prefix()).orElseThrow(), f + ": the term's prefix " + f.prefix()
             + " names another vocabulary");
-        if (!entry.scheme().accepts(version) && !DeclaredVersion.isDate(version)) {
-            return new Resolution(null, version, Optional.of(version + " is no " + entry.scheme()
-                + " version and no date"));
-        }
         LookupPolicy policy = new LookupPolicy(Source.LOCAL, false, cache(), RESOURCES,
             CurrentReleaseSource.offline("OLS"));
         CV cv = new CV().label(f.prefix()).fullName(f.prefix()).version(version)
@@ -208,21 +221,52 @@ public class OlsParityTest {
         try {
             resolver.ancestors(parameter(f));
         } catch (VocabularyUnavailableException x) {
-            if (x.kind().filter(k -> k != Reason.NO_SUCH_RELEASE).isPresent()) {
-                throw new AssertionError(f.ontology() + " " + version + " cannot be had: " + x.reason(), x);
-            }
-            return new Resolution(resolver, version, Optional.of(x.reason()));
+            return new Resolution(resolver, version, Optional.of(notAtItsSource(f, entry, version, x)));
         } catch (HttpClientErrorException x) {
             // the term is missing: localAncestorsMatchOls reports it
         }
         ResolvedVocabulary used = resolver.resolved().get(0);
         System.out.printf("resolved %s at OLS's %s (from %s): %s %s (%s) in %d ms%n", f.ontology(), version, from,
             entry.key(), used.versionUsed(), used.reason(), (System.nanoTime() - start) / 1_000_000);
-        if (!used.reason().equals("FILE") && !used.reason().equals("FILE_DATE")) {
-            return new Resolution(resolver, version, Optional.of("the resolver used " + used.versionUsed()
-                + " (" + used.reason() + "), not OLS's version"));
+        if (!RESOLVED_AT_OLS_VERSION.contains(used.reason())) {
+            throw new AssertionError(f.ontology() + " at OLS's " + version + ": the resolver used "
+                + used.versionUsed() + " (" + used.reason() + "), not OLS's version");
         }
         return new Resolution(resolver, version, Optional.empty());
+    }
+
+    /**
+     * The reason to skip an ontology whose OLS version is not at its source
+     * (Ruling R-X), or an AssertionError for any other failure: the release
+     * must be NO_SUCH_RELEASE, its release list must be readable and must not
+     * list it, and the ontology must be one of {@link #EXPECTED_SKIPS}. So a
+     * regression that sends a version to a wrong URL, an import 404 or an
+     * unreadable release list fails the test instead of skipping it.
+     */
+    private static String notAtItsSource(Fixture f, VocabularyEntry entry, String version,
+        VocabularyUnavailableException x) {
+        String what = f.ontology() + " " + version;
+        if (!x.kind().equals(Optional.of(Reason.NO_SUCH_RELEASE)) || !version.equals(x.versionWanted())) {
+            throw new AssertionError(what + " cannot be had: " + x.kind() + " for " + x.versionWanted() + ": "
+                + x.reason(), x);
+        }
+        List<Release> releases;
+        try {
+            releases = cache().releases(entry);
+        } catch (ResolutionException y) {
+            throw new AssertionError(what + " is NO_SUCH_RELEASE (" + x.reason() + "), and its release list"
+                + " cannot be read: " + y.getMessage(), y);
+        }
+        if (releases.stream().anyMatch(r -> r.version().equals(version))) {
+            throw new AssertionError(what + " is a listed release, but NO_SUCH_RELEASE: " + x.reason(), x);
+        }
+        String expected = EXPECTED_SKIPS.get(f.ontology());
+        if (expected == null) {
+            throw new AssertionError(what + " is not at its source (" + x.reason() + "), and no skip is expected"
+                + " for " + f.ontology() + "; if OLS is ahead of the source, add it to EXPECTED_SKIPS (Ruling R-X)",
+                x);
+        }
+        return expected + ": " + x.reason();
     }
 
     private static String used(Resolution r) {

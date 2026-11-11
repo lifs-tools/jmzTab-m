@@ -41,7 +41,8 @@ import javax.xml.stream.XMLStreamReader;
  * {@code rdf:RDF}) with its IRI turned into an obo id, its {@code rdfs:label}
  * (one without language or {@code en} is preferred, else the first),
  * {@code owl:deprecated}, its {@code rdfs:subClassOf} to a named class
- * ({@code is_a}; {@code owl:Thing} is left out, as OLS leaves it out) and
+ * ({@code is_a}; {@code owl:Thing} is left out, as OLS's
+ * {@code hierarchicalParents} walk leaves it out) and
  * its {@code rdfs:subClassOf} restriction with a
  * {@code someValuesFrom} over {@link #HIERARCHICAL_PROPERTIES}
  * ({@code part_of}). The ontology's {@code owl:imports} and
@@ -63,9 +64,12 @@ public final class OwlRdfXmlReader {
     private static final String XML = "http://www.w3.org/XML/1998/namespace";
     private static final String OBO = "http://purl.obolibrary.org/obo/";
     /**
-     * The classes never taken as a parent: {@code owl:Thing}, the top class,
-     * which OLS lists among no term's hierarchical parents (parity with OLS:
-     * {@code msio/MSIO_0000148}).
+     * The classes never taken as a parent: {@code owl:Thing}, the top class.
+     * This matches OLS's {@code hierarchicalParents} walk, which the OLS
+     * client of the OLS lookup follows recursively and which never reaches
+     * {@code owl:Thing} (parity with OLS: {@code msio/MSIO_0000148}). Other
+     * OLS answers can list it: the {@code hierarchicalAncestors} of
+     * MSIO_0000148 include {@code OWL:Thing} (Ruling R-AC).
      */
     static final Set<String> NOT_PARENTS = Set.of(OWL + "Thing");
     private static final Pattern OBO_LOCAL = Pattern.compile("([^_/#]+)_([^/#]+)");
