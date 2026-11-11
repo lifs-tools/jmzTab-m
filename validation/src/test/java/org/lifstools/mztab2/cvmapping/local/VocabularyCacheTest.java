@@ -127,7 +127,7 @@ public class VocabularyCacheTest {
         assertEquals(URI.create(server.base() + MS_PATH), first.source());
         assertEquals(sha256(miniMs), first.sha256());
         assertEquals(folder.resolve("psi-ms.obo"), first.original());
-        assertEquals(folder.resolve("terms.idx"), first.index());
+        assertEquals(folder.resolve("terms-v" + TermIndex.VERSION + ".idx"), first.index());
         assertEquals(List.of(), first.imports());
         assertArrayEquals(miniMs, Files.readAllBytes(first.original()));
         assertTrue(Files.isRegularFile(folder.resolve("release.json")));
@@ -398,14 +398,31 @@ public class VocabularyCacheTest {
             .put("JMZTIDX1".getBytes(StandardCharsets.US_ASCII)).putInt(0).putInt(0).array());
     }
 
+    /**
+     * Turns a cached release into one an older build wrote: its index is
+     * {@code terms.idx}, of version 1, and this build's index is not there.
+     */
+    private static void makeOld(CachedRelease cached) throws IOException {
+        writeOldIndex(cached.index().resolveSibling("terms.idx"));
+        Files.delete(cached.index());
+    }
+
+    @Test
+    public void theIndexFileNameNamesTheIndexVersion() {
+        // minor 3 of the Task 11 review: builds of different index versions can share one cache
+        assertEquals("terms-v" + TermIndex.VERSION + ".idx", VocabularyCache.INDEX);
+    }
+
     @Test
     public void anIndexOfAnOlderVersionIsRebuiltFromTheCachedFile() throws Exception {
         server.file(MS_PATH, miniMs);
         CachedRelease cached = cache(false).get(ms(Map.of()), "4.1.200");
         Path folder = root.resolve("MS").resolve("4.1.200");
         byte[] releaseJson = Files.readAllBytes(folder.resolve("release.json"));
-        writeOldIndex(cached.index());
-        assertFalse(TermIndex.isCurrent(cached.index()));
+        makeOld(cached);
+        byte[] old = Files.readAllBytes(folder.resolve("terms.idx"));
+        // the index of another version beside it is not read, and left as it is
+        Files.writeString(folder.resolve("terms-v99.idx"), "another build's index");
 
         // offline and without a downloader: the index comes from the cached file alone
         VocabularyCache offline = new VocabularyCache(root, failingDownloader(), true, DAY, clock,
@@ -418,9 +435,25 @@ public class VocabularyCacheTest {
         }
         assertArrayEquals(releaseJson, Files.readAllBytes(folder.resolve("release.json")));
         assertArrayEquals(miniMs, Files.readAllBytes(cached.original()));
+        // the older build's index stays, untouched (Ruling R-N)
+        assertArrayEquals(old, Files.readAllBytes(folder.resolve("terms.idx")));
+        assertEquals("another build's index", Files.readString(folder.resolve("terms-v99.idx")));
         assertEquals(1, server.hits(MS_PATH));
-        assertEquals(Set.of("psi-ms.obo", "terms.idx", "release.json"), names(folder));
+        assertEquals(Set.of("psi-ms.obo", "terms.idx", "terms-v99.idx", VocabularyCache.INDEX, "release.json"),
+            names(folder));
         assertNoTemporaryFolders();
+    }
+
+    @Test
+    public void anUnreadableIndexOfThisVersionIsRebuiltToo() throws Exception {
+        server.file(MS_PATH, miniMs);
+        CachedRelease cached = cache(false).get(ms(Map.of()), "4.1.200");
+        Files.writeString(cached.index(), "half an index");
+
+        assertEquals(cached, cache(true).get(ms(Map.of()), "4.1.200"));
+
+        assertTrue(TermIndex.isCurrent(cached.index()));
+        assertEquals(1, server.hits(MS_PATH));
     }
 
     @Test
@@ -429,7 +462,7 @@ public class VocabularyCacheTest {
         server.file("/obo/mini-obi.owl", resource("/cv/mini-obi.owl"));
         CachedRelease cached = new VocabularyCache(root, purlToServer(), false, DAY, clock, server.api(),
             Optional.empty()).get(msio(), "1.0.1");
-        writeOldIndex(cached.index());
+        makeOld(cached);
 
         VocabularyCache offline = new VocabularyCache(root, failingDownloader(), true, DAY, clock,
             server.api(), Optional.empty());
@@ -441,6 +474,81 @@ public class VocabularyCacheTest {
         }
         assertEquals(1, server.hits("/obo/mini-obi.owl"));
         assertNoTemporaryFolders();
+    }
+
+    @Test
+    public void aCachedFileThatNoLongerMatchesItsChecksumIsNotRebuiltFrom() throws Exception {
+        // minor 1 of the Task 11 review: a corrupt cache entry is a strict error, never downloaded nor deleted
+        server.file(MS_PATH, miniMs);
+        CachedRelease cached = cache(false).get(ms(Map.of()), "4.1.200");
+        Path folder = root.resolve("MS").resolve("4.1.200");
+        makeOld(cached);
+        byte[] tampered = new String(miniMs, StandardCharsets.UTF_8).replace("instrument model", "instrument mode")
+            .getBytes(StandardCharsets.UTF_8);
+        Files.write(cached.original(), tampered);
+        byte[] releaseJson = Files.readAllBytes(folder.resolve("release.json"));
+
+        ResolutionException e = assertThrows(ResolutionException.class, () -> cache(false).get(ms(Map.of()),
+            "4.1.200"));
+
+        assertEquals(Reason.CHECKSUM_MISMATCH, e.reason());
+        assertTrue(e.getMessage().contains(sha256(tampered)), e.getMessage());
+        assertTrue(e.getMessage().contains(sha256(miniMs)), e.getMessage());
+        assertTrue(e.getMessage().contains(cached.original().toString()), e.getMessage());
+        assertEquals(1, server.hits(MS_PATH));
+        assertEquals(Set.of("psi-ms.obo", "terms.idx", "release.json"), names(folder));
+        assertArrayEquals(tampered, Files.readAllBytes(cached.original()));
+        assertArrayEquals(releaseJson, Files.readAllBytes(folder.resolve("release.json")));
+        assertNoTemporaryFolders();
+        // a missing file is a corrupt entry too
+        Files.delete(cached.original());
+        ResolutionException missing = assertThrows(ResolutionException.class, () -> cache(false).get(ms(Map.of()),
+            "4.1.200"));
+        assertEquals(Reason.CHECKSUM_MISMATCH, missing.reason());
+        assertEquals(1, server.hits(MS_PATH));
+        assertEquals(Set.of("terms.idx", "release.json"), names(folder));
+    }
+
+    @Test
+    public void aCachedImportThatNoLongerMatchesItsChecksumIsNotRebuiltFrom() throws Exception {
+        byte[] obi = resource("/cv/mini-obi.owl");
+        server.file("/msio/v1.0.1/msio.owl", resource("/cv/mini-msio.owl"));
+        server.file("/obo/mini-obi.owl", obi);
+        CachedRelease cached = new VocabularyCache(root, purlToServer(), false, DAY, clock, server.api(),
+            Optional.empty()).get(msio(), "1.0.1");
+        makeOld(cached);
+        Path imported = cached.imports().get(0).original();
+        byte[] tampered = new String(obi, StandardCharsets.UTF_8).replace("material processing", "processing")
+            .getBytes(StandardCharsets.UTF_8);
+        Files.write(imported, tampered);
+
+        ResolutionException e = assertThrows(ResolutionException.class, () -> new VocabularyCache(root,
+            purlToServer(), false, DAY, clock, server.api(), Optional.empty()).get(msio(), "1.0.1"));
+
+        assertEquals(Reason.CHECKSUM_MISMATCH, e.reason());
+        assertTrue(e.getMessage().contains(imported.toString()), e.getMessage());
+        assertTrue(e.getMessage().contains(sha256(obi)), e.getMessage());
+        assertEquals(1, server.hits("/obo/mini-obi.owl"));
+        assertEquals(1, server.hits("/msio/v1.0.1/msio.owl"));
+        assertArrayEquals(tampered, Files.readAllBytes(imported));
+        assertFalse(Files.exists(cached.index()));
+        assertNoTemporaryFolders();
+    }
+
+    @Test
+    public void aKnownChecksumIsCheckedBeforeTheIndexIsRebuilt() throws Exception {
+        // minor 2 of the Task 11 review
+        server.file(MS_PATH, miniMs);
+        CachedRelease cached = cache(false).get(ms(Map.of()), "4.1.200");
+        makeOld(cached);
+        String wrong = "0".repeat(64);
+
+        ResolutionException e = assertThrows(ResolutionException.class,
+            () -> cache(true).get(ms(Map.of("4.1.200", wrong)), "4.1.200"));
+
+        assertEquals(Reason.CHECKSUM_MISMATCH, e.reason());
+        assertTrue(e.getMessage().contains(wrong), e.getMessage());
+        assertFalse(Files.exists(cached.index()), "no index is built for a release the resources file refuses");
     }
 
     @Test
@@ -640,7 +748,7 @@ public class VocabularyCacheTest {
         CachedRelease r = cache.get(ms(Map.of("4.1.200", sha256(miniMs))), "4.1.200");
 
         assertEquals(folder.resolve("psi-ms.obo"), r.original());
-        assertEquals(folder.resolve("terms.idx"), r.index());
+        assertEquals(folder.resolve(VocabularyCache.INDEX), r.index());
         assertEquals(sha256(miniMs), r.sha256());
         assertEquals(URI.create(server.base() + MS_PATH), r.source());
         assertArrayEquals(miniMs, Files.readAllBytes(r.original()));
@@ -657,13 +765,15 @@ public class VocabularyCacheTest {
     public void aPrefilledFileIsAdoptedOffline() throws Exception {
         Path folder = Files.createDirectories(root.resolve("MS").resolve("4.1.200"));
         Files.write(folder.resolve("psi-ms.obo"), miniMs);
-        // the index an interrupted adoption left is replaced
-        Files.writeString(folder.resolve("terms.idx"), "half an index");
+        // the index an interrupted adoption left is replaced; an older build's index is left as it is
+        Files.writeString(folder.resolve(VocabularyCache.INDEX), "half an index");
+        Files.writeString(folder.resolve("terms.idx"), "an older build's index");
 
         CachedRelease r = cache(true).get(ms(Map.of()), "4.1.200");
 
         assertTrue(TermIndexStore.open(r).term("MS:1000031").isPresent());
-        assertEquals(Set.of("psi-ms.obo", "terms.idx", "release.json"), names(folder));
+        assertEquals(Set.of("psi-ms.obo", "terms.idx", VocabularyCache.INDEX, "release.json"), names(folder));
+        assertEquals("an older build's index", Files.readString(folder.resolve("terms.idx")));
         assertEquals(0, server.totalHits());
     }
 

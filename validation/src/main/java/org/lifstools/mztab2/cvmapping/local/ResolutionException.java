@@ -35,7 +35,12 @@ public final class ResolutionException extends Exception {
         NO_SUCH_RELEASE,
         /** A download or a release index request failed. */
         DOWNLOAD_FAILED,
-        /** The downloaded file's SHA-256 differs from the one the resources file knows. */
+        /**
+         * A SHA-256 differs: a downloaded or cached file's from the one the
+         * resources file knows, or a cached file's or import's from the one
+         * its release.json records (a corrupt cache entry, found before its
+         * index is rebuilt; it is neither downloaded again nor deleted).
+         */
         CHECKSUM_MISMATCH,
         /** The file is not of the format the resources file gives. */
         PARSE_FAILED,

@@ -57,6 +57,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -76,7 +77,8 @@ import org.slf4j.LoggerFactory;
  * <p>
  * The layout under the root:</p>
  * <pre>
- * &lt;key&gt;/&lt;version&gt;/           a release: the file as downloaded, terms.idx, release.json
+ * &lt;key&gt;/&lt;version&gt;/           a release: the file as downloaded, its index terms-v&lt;n&gt;.idx
+ *                            (n: {@link TermIndex#VERSION}), release.json
  * &lt;key&gt;/latest.json          the latest release, with the time it was looked up
  * &lt;key&gt;/releases.json        the release index, with the time it was read
  * _imports/&lt;hash&gt;/           an OWL import: the file and release.json; hash is the
@@ -126,7 +128,18 @@ public final class VocabularyCache {
     private static final Map<Path, ReentrantLock> LOCKS = new ConcurrentHashMap<>();
 
     private static final String RELEASE_JSON = "release.json";
-    private static final String INDEX = "terms.idx";
+    /** OWL gives no parent names. */
+    private static final BiConsumer<String, String> NO_NAMES = (id, name) -> {
+    };
+    /**
+     * The index file of a release: its name names the index version, so that
+     * builds of different versions sharing one cache each keep their own and
+     * none rebuilds another's. An older build's index ({@code terms.idx},
+     * {@code terms-v2.idx}) is left where it is and never read.
+     */
+    static final String INDEX = "terms-v" + TermIndex.VERSION + ".idx";
+    /** Any build's index file, which a pre-filled release may hold beside its file. */
+    private static final Pattern ANY_INDEX = Pattern.compile("terms(-v[0-9]+)?\\.idx");
     private static final String LATEST_JSON = "latest.json";
     private static final String RELEASES_JSON = "releases.json";
     private static final String IMPORTS = "_imports";
@@ -235,14 +248,15 @@ public final class VocabularyCache {
             }
         }
         CachedRelease release = cached.get();
-        if (!TermIndex.isCurrent(release.index())) {
-            reindex(e, release, url, keyFolder, folder);
-        }
+        // the resources file's checksum first: a refused release gets no index (minor 2 of the Task 11 review)
         String known = e.knownSha256().get(version);
         if (known != null && !known.equalsIgnoreCase(release.sha256())) {
             throw new ResolutionException(Reason.CHECKSUM_MISMATCH, "the cached copy in " + folder
                 + " has SHA-256 " + release.sha256() + ", but the resources file expects " + known
                 + "; remove the folder to download it again");
+        }
+        if (!TermIndex.isCurrent(release.index())) {
+            reindex(e, release, url, keyFolder, folder);
         }
         return release;
     }
@@ -254,7 +268,8 @@ public final class VocabularyCache {
             Path original = temporary.resolve(expectedFileName(e, url));
             Fetched fetched = download(url, original, e.key() + " " + version, "");
             checkKnownSha256(e, version, fetched.sha256(), "the file at " + url);
-            List<CachedRelease> imports = writeIndex(e.location().format(), original, url, temporary.resolve(INDEX));
+            List<CachedRelease> imports = writeIndex(e.location().format(), original, url, temporary.resolve(INDEX),
+                false);
             writeJson(temporary.resolve(RELEASE_JSON),
                 releaseJson(e, version, url, fetched.location(), fetched.sha256(), original.getFileName().toString(),
                     imports, folder));
@@ -267,12 +282,16 @@ public final class VocabularyCache {
     }
 
     /**
-     * Rebuilds the index of a cached release written with another index
-     * version (Ruling R-AB), from the cached file and its cached imports: no
-     * download (it works offline), and release.json, with its SHA-256, stays
-     * as it is. The new index is built in a temporary folder and moved over
-     * the old one atomically, under the release's lock; nothing else in the
-     * folder is touched.
+     * Builds this version's index of a cached release that lacks it, e.g. one
+     * an older build wrote (Ruling R-AB), from the cached file and its cached
+     * imports: no download (it works offline), and release.json, with its
+     * SHA-256, stays as it is. First the cached file and each import are
+     * checked against the SHA-256 release.json records; a file that differs
+     * or is missing is a corrupt cache entry, a CHECKSUM_MISMATCH, and is
+     * neither downloaded again nor deleted (Ruling R-N). The new index is
+     * built in a temporary folder and moved in atomically, under the
+     * release's lock; nothing else in the folder is touched, including the
+     * index files of other versions.
      */
     private void reindex(VocabularyEntry e, CachedRelease release, URI url, Path keyFolder, Path folder)
         throws ResolutionException {
@@ -282,13 +301,25 @@ public final class VocabularyCache {
                 // another thread rebuilt it
                 return;
             }
+            checkCached(release.original(), release.sha256(), folder);
+            for (CachedRelease i : release.imports()) {
+                checkCached(i.original(), i.sha256(), folder);
+            }
             OptionalInt old = TermIndex.version(release.index());
-            LOG.info("Rebuilding the index of {} {} from {}: it was written with index version {}, this build"
-                + " uses {}", e.key(), release.version(), release.original(),
-                old.isPresent() ? String.valueOf(old.getAsInt()) : "(none)", TermIndex.VERSION);
+            LOG.info("Building the index {} of {} {} from the cached {}: {}", INDEX, e.key(), release.version(),
+                release.original(), old.isPresent()
+                    ? "the one there was written with index version " + old.getAsInt()
+                    : Files.exists(release.index()) ? "the one there cannot be read"
+                    : "it was cached by a build of another index version");
             Path temporary = createTemporaryFolder(keyFolder);
             try {
-                writeIndex(e.location().format(), release.original(), url, temporary.resolve(INDEX));
+                List<CachedRelease> imports = writeIndex(e.location().format(), release.original(), url,
+                    temporary.resolve(INDEX), true);
+                if (!sameImports(imports, release.imports())) {
+                    throw new ResolutionException(Reason.CHECKSUM_MISMATCH, "the cached " + release.original()
+                        + " now reads the imports " + describe(imports) + ", but its " + folder.resolve(RELEASE_JSON)
+                        + " records " + describe(release.imports()) + "; remove the folder to download it again");
+                }
                 Files.move(temporary.resolve(INDEX), release.index(), StandardCopyOption.ATOMIC_MOVE,
                     StandardCopyOption.REPLACE_EXISTING);
             } catch (IOException x) {
@@ -301,12 +332,36 @@ public final class VocabularyCache {
         }
     }
 
+    /** A cached file of a release must be there and have the SHA-256 its release.json records. */
+    private static void checkCached(Path file, String recorded, Path folder) throws ResolutionException {
+        String corrupt = "; the cache entry is corrupt: remove the folder " + folder + " to download it again";
+        if (!Files.isRegularFile(file)) {
+            throw new ResolutionException(Reason.CHECKSUM_MISMATCH, "the cached file " + file + " is missing, but "
+                + folder.resolve(RELEASE_JSON) + " records it with SHA-256 " + recorded + corrupt);
+        }
+        String sha256 = sha256Of(file);
+        if (!sha256.equalsIgnoreCase(recorded)) {
+            throw new ResolutionException(Reason.CHECKSUM_MISMATCH, "the cached file " + file + " has SHA-256 "
+                + sha256 + ", but " + folder.resolve(RELEASE_JSON) + " records " + recorded + corrupt);
+        }
+    }
+
+    private static boolean sameImports(List<CachedRelease> read, List<CachedRelease> recorded) {
+        return describe(read).equals(describe(recorded));
+    }
+
+    private static List<String> describe(List<CachedRelease> imports) {
+        return imports.stream().map(i -> i.source() + " " + i.sha256().toLowerCase(Locale.ROOT)).toList();
+    }
+
     /**
      * Adopts a folder without release.json (Ruling R-N): a pre-filled release
      * is the vocabulary file alone, under the name a download would give it
-     * (a {@code terms.idx} that an interrupted adoption left may sit beside
-     * it). Its index and release.json are built in a temporary folder and
-     * moved in, release.json last. Anything else is left untouched and fails.
+     * (index files, {@code terms.idx} or {@code terms-v<n>.idx}, that an
+     * interrupted adoption or another build left may sit beside it; this
+     * build's is replaced, the others are left as they are). Its index and
+     * release.json are built in a temporary folder and moved in,
+     * release.json last. Anything else is left untouched and fails.
      * Works offline, as long as an OWL release's imports are cached.
      */
     private CachedRelease adopt(VocabularyEntry e, String version, URI url, Path keyFolder, Path folder)
@@ -320,7 +375,7 @@ public final class VocabularyCache {
             throw notAnEntry(folder, name);
         }
         boolean prefilled = Files.isRegularFile(original) && names.stream()
-            .allMatch(n -> n.equals(name) || n.equals(INDEX) && Files.isRegularFile(folder.resolve(INDEX)));
+            .allMatch(n -> n.equals(name) || ANY_INDEX.matcher(n).matches() && Files.isRegularFile(folder.resolve(n)));
         if (!prefilled) {
             throw notAnEntry(folder, name);
         }
@@ -329,7 +384,8 @@ public final class VocabularyCache {
         checkKnownSha256(e, version, sha256, "the pre-filled file " + original);
         Path temporary = createTemporaryFolder(keyFolder);
         try {
-            List<CachedRelease> imports = writeIndex(e.location().format(), original, url, temporary.resolve(INDEX));
+            List<CachedRelease> imports = writeIndex(e.location().format(), original, url, temporary.resolve(INDEX),
+                false);
             writeJson(temporary.resolve(RELEASE_JSON),
                 releaseJson(e, version, url, null, sha256, name, imports, folder));
             try {
@@ -385,11 +441,15 @@ public final class VocabularyCache {
         return HexFormat.of().formatHex(digest.digest());
     }
 
-    /** Writes the index of a release and its imports; the imports read. */
-    private List<CachedRelease> writeIndex(Format format, Path original, URI url, Path index)
-        throws ResolutionException {
+    /**
+     * Writes the index of a release and its imports; the imports read.
+     *
+     * @param cachedImportsOnly true to fail, not download, if an import is not cached
+     */
+    private List<CachedRelease> writeIndex(Format format, Path original, URI url, Path index,
+        boolean cachedImportsOnly) throws ResolutionException {
         try (TermIndexWriter writer = TermIndexWriter.open(index)) {
-            List<CachedRelease> imports = readTerms(format, original, url, writer);
+            List<CachedRelease> imports = readTerms(format, original, url, writer, cachedImportsOnly);
             commit(writer);
             return imports;
         } catch (IOException x) {
@@ -415,7 +475,6 @@ public final class VocabularyCache {
         }
         json.put("sha256", sha256);
         json.put("original", original);
-        json.put("index", INDEX);
         ArrayNode list = json.putArray("imports");
         for (CachedRelease i : imports) {
             ObjectNode item = list.addObject();
@@ -424,7 +483,6 @@ public final class VocabularyCache {
             item.put("source", i.source().toString());
             item.put("sha256", i.sha256());
             item.put("original", relative(folder, i.original()));
-            item.putNull("index");
         }
         if (finalUrl != null) {
             json.put("downloaded", clock.instant().toString());
@@ -441,10 +499,10 @@ public final class VocabularyCache {
      *
      * @return the imports read
      */
-    private List<CachedRelease> readTerms(Format format, Path file, URI url, Consumer<TermRecord> writer)
-        throws ResolutionException {
+    private List<CachedRelease> readTerms(Format format, Path file, URI url, TermIndexWriter writer,
+        boolean cachedImportsOnly) throws ResolutionException {
         List<String> direct = new ArrayList<>();
-        parse(format, file, writer, direct::add, v -> {
+        parse(format, file, writer, writer::parentName, direct::add, v -> {
         }, "the file from " + url);
         List<CachedRelease> imports = new ArrayList<>();
         Set<String> read = new HashSet<>();
@@ -454,7 +512,7 @@ public final class VocabularyCache {
             // the cycle guard: each IRI is read once
             if (read.add(iri)) {
                 List<String> next = new ArrayList<>();
-                imports.add(readImport(iri, writer, next::add));
+                imports.add(readImport(iri, writer, next::add, cachedImportsOnly));
                 queue.addAll(next);
             }
         }
@@ -467,8 +525,8 @@ public final class VocabularyCache {
      * Reads one import into the writer, from the cache or downloaded into it,
      * and reports the imports it declares.
      */
-    private CachedRelease readImport(String iri, Consumer<TermRecord> writer, Consumer<String> imports)
-        throws ResolutionException {
+    private CachedRelease readImport(String iri, Consumer<TermRecord> writer, Consumer<String> imports,
+        boolean cachedImportsOnly) throws ResolutionException {
         URI uri = importUri(iri);
         Path folder = root.resolve(IMPORTS).resolve(sha256(iri.getBytes(StandardCharsets.UTF_8)).substring(0, 16));
         Optional<CachedRelease> cached;
@@ -476,12 +534,16 @@ public final class VocabularyCache {
         try {
             cached = readImportEntry(folder, uri);
             if (cached.isEmpty()) {
+                if (cachedImportsOnly) {
+                    throw new ResolutionException(Reason.CHECKSUM_MISMATCH, "import " + iri + " is not cached in "
+                        + folder + ", and the index of a cached release is built from cached files only");
+                }
                 return downloadImport(iri, uri, folder, writer, imports);
             }
         } finally {
             lock.unlock();
         }
-        parse(Format.OWL_RDFXML, cached.get().original(), writer, imports, v -> {
+        parse(Format.OWL_RDFXML, cached.get().original(), writer, NO_NAMES, imports, v -> {
         }, "import " + iri);
         return cached.get();
     }
@@ -498,7 +560,7 @@ public final class VocabularyCache {
             Path original = temporary.resolve(fileName(uri, "import.owl"));
             Fetched fetched = download(uri, original, "import " + iri, "import " + iri + ": ");
             List<String> versionIris = new ArrayList<>();
-            parse(Format.OWL_RDFXML, original, writer, imports, versionIris::add, "import " + iri);
+            parse(Format.OWL_RDFXML, original, writer, NO_NAMES, imports, versionIris::add, "import " + iri);
             String[] keyAndVersion = importKeyAndVersion(iri, versionIris);
             ObjectNode json = JSON.createObjectNode();
             json.put("key", keyAndVersion[0]);
@@ -583,6 +645,11 @@ public final class VocabularyCache {
 
     // ---- reading release.json ----
 
+    /**
+     * The release of a folder, if it has a release.json. Its index is this
+     * build's {@link #INDEX}, whatever the {@code "index"} that older builds
+     * wrote into release.json names.
+     */
     private Optional<CachedRelease> readRelease(Path folder) throws ResolutionException {
         Optional<JsonNode> json = readJsonIfPresent(folder.resolve(RELEASE_JSON));
         if (json.isEmpty()) {
@@ -597,7 +664,7 @@ public final class VocabularyCache {
         }
         return Optional.of(new CachedRelease(text(j, "key", folder), text(j, "version", folder),
             uri(text(j, "source", folder), folder), text(j, "sha256", folder),
-            inCache(folder, text(j, "original", folder)), inCache(folder, text(j, "index", folder)), imports));
+            inCache(folder, text(j, "original", folder)), folder.resolve(INDEX), imports));
     }
 
     private Optional<JsonNode> readJsonIfPresent(Path file) throws ResolutionException {
@@ -708,14 +775,15 @@ public final class VocabularyCache {
     }
 
     /** Reads a file of the given format into the sink; OWL also reports its imports and versionIRIs. */
-    private static void parse(Format format, Path file, Consumer<TermRecord> sink, Consumer<String> imports,
-        Consumer<String> versionIris, String what) throws ResolutionException {
+    private static void parse(Format format, Path file, Consumer<TermRecord> sink,
+        BiConsumer<String, String> parentNames, Consumer<String> imports, Consumer<String> versionIris,
+        String what) throws ResolutionException {
         try (InputStream in = open(file, format)) {
             if (format == Format.OWL_RDFXML) {
                 new OwlRdfXmlReader().read(in, sink, imports, versionIris);
             } else {
                 new OboReader().read(in, sink, v -> {
-                });
+                }, parentNames);
             }
         } catch (UncheckedIOException e) {
             // the index writer's spill file

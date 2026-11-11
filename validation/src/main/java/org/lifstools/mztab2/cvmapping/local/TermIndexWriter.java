@@ -15,10 +15,13 @@
  */
 package org.lifstools.mztab2.cvmapping.local;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UncheckedIOException;
@@ -34,6 +37,7 @@ import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -60,7 +64,9 @@ import lombok.extern.slf4j.Slf4j;
  * one, its parents are the union per relation, and it is obsolete if any of
  * its records says so. A parent that is not among the terms, one named in
  * the file without a stanza of its own, is kept as a stub term (Ruling
- * R-AA): its id, its id as label, not obsolete, no parents. OLS lists such
+ * R-AA): its id, as label the first name a parent line gives it
+ * ({@link #parentName}, e.g. an OBO {@code ! name} comment) or else its id,
+ * not obsolete, no parents. OLS lists such
  * parents too (PRIDE's BFO:0000001), and leaving one out could hide a rule
  * term's ancestor.</p>
  *
@@ -81,6 +87,8 @@ public final class TermIndexWriter implements Consumer<TermRecord>, Closeable {
     private final DataOutputStream record = new DataOutputStream(recordBytes);
     private final Map<String, Integer> relations = new LinkedHashMap<>();
     private List<Entry> entries = new ArrayList<>();
+    private Path names;
+    private DataOutputStream namesOut;
     private long spillSize;
     private boolean finished;
 
@@ -178,6 +186,38 @@ public final class TermIndexWriter implements Consumer<TermRecord>, Closeable {
     }
 
     /**
+     * Gives the name a file's parent line gives a parent, e.g. {@code unit}
+     * for {@code is_a: UO:0000000 ! unit}. A parent without a stanza of its
+     * own gets the first non-empty name given for it as its label (Ruling
+     * R-AA), else its id; the names of terms with a stanza are not used. The
+     * names are spilled to a temporary file, as the records are.
+     *
+     * @param id the parent id
+     * @param name the name given for it; ignored if empty
+     * @throws UncheckedIOException if the spill file cannot be written
+     * @throws IllegalStateException after {@link #commit()} or {@link #close()}
+     */
+    public void parentName(String id, String name) {
+        if (finished) {
+            throw new IllegalStateException("the writer for " + target + " is finished");
+        }
+        if (name.isEmpty()) {
+            return;
+        }
+        try {
+            if (namesOut == null) {
+                names = createTemporary(target.getParent(), target.getFileName().toString(), ".names");
+                namesOut = new DataOutputStream(new BufferedOutputStream(Files.newOutputStream(names),
+                    BUFFER_SIZE));
+            }
+            writeString(namesOut, id);
+            writeString(namesOut, name);
+        } catch (IOException e) {
+            throw new UncheckedIOException("cannot spill a parent name for " + target, e);
+        }
+    }
+
+    /**
      * Writes the index and moves it onto the target. The writer is finished
      * afterwards.
      *
@@ -190,6 +230,9 @@ public final class TermIndexWriter implements Consumer<TermRecord>, Closeable {
         }
         finished = true;
         spillOut.close();
+        if (namesOut != null) {
+            namesOut.close();
+        }
         entries.sort((a, b) -> compareIds(a.id(), b.id()));
         int[] groupStarts = groupStarts(entries);
         int groupCount = groupStarts.length - 1;
@@ -210,6 +253,7 @@ public final class TermIndexWriter implements Consumer<TermRecord>, Closeable {
                 StandardOpenOption.TRUNCATE_EXISTING)) {
             MemorySegment spillSegment = spilled.map(FileChannel.MapMode.READ_ONLY, 0, spillSize, arena);
             Set<String> stubs = parentsWithoutStanza(spillSegment, termIds);
+            Map<String, String> stubNames = stubNames(stubs);
             String[] ids = merge(termIds, stubs);
             int termCount = ids.length;
             long dataStart = headerSize + 8L * termCount;
@@ -225,7 +269,7 @@ public final class TermIndexWriter implements Consumer<TermRecord>, Closeable {
                         relationOrder);
                     group++;
                 } else {
-                    writeStub(ids[t], relationOrder.size());
+                    writeStub(ids[t], stubNames.getOrDefault(ids[t], ids[t]), relationOrder.size());
                 }
                 recordBytes.writeTo(records);
                 position += recordBytes.size();
@@ -238,6 +282,9 @@ public final class TermIndexWriter implements Consumer<TermRecord>, Closeable {
         entries = null;
         Files.move(output, target, StandardCopyOption.ATOMIC_MOVE);
         Files.deleteIfExists(spill);
+        if (names != null) {
+            Files.deleteIfExists(names);
+        }
     }
 
     /**
@@ -252,9 +299,15 @@ public final class TermIndexWriter implements Consumer<TermRecord>, Closeable {
         entries = null;
         try {
             spillOut.close();
+            if (namesOut != null) {
+                namesOut.close();
+            }
         } finally {
             Files.deleteIfExists(spill);
             Files.deleteIfExists(output);
+            if (names != null) {
+                Files.deleteIfExists(names);
+            }
         }
     }
 
@@ -279,7 +332,6 @@ public final class TermIndexWriter implements Consumer<TermRecord>, Closeable {
         return a.length() - b.length();
     }
 
-    /** The first entry of each distinct id, then the entry count. */
     /** The parent ids, over all spilled records, that are none of the terms. */
     private Set<String> parentsWithoutStanza(MemorySegment spilled, String[] termIds) {
         Set<String> stubs = new TreeSet<>(TermIndexWriter::compareIds);
@@ -324,17 +376,43 @@ public final class TermIndexWriter implements Consumer<TermRecord>, Closeable {
         return ids;
     }
 
-    /** A parent without a stanza: its id as label, not obsolete, no parents. */
-    private void writeStub(String id, int relationCount) throws IOException {
+    /** The first name given for each stub, from the names spill file. */
+    private Map<String, String> stubNames(Set<String> stubs) throws IOException {
+        Map<String, String> found = new HashMap<>();
+        if (namesOut == null || stubs.isEmpty()) {
+            return found;
+        }
+        try (DataInputStream in = new DataInputStream(new BufferedInputStream(Files.newInputStream(names),
+            BUFFER_SIZE))) {
+            while (found.size() < stubs.size()) {
+                int length;
+                try {
+                    length = in.readInt();
+                } catch (EOFException end) {
+                    break;
+                }
+                String id = new String(in.readNBytes(length), StandardCharsets.UTF_8);
+                String name = new String(in.readNBytes(in.readInt()), StandardCharsets.UTF_8);
+                if (stubs.contains(id)) {
+                    found.putIfAbsent(id, name);
+                }
+            }
+        }
+        return found;
+    }
+
+    /** A parent without a stanza: the name its parent lines give it, else its id; not obsolete, no parents. */
+    private void writeStub(String id, String label, int relationCount) throws IOException {
         recordBytes.reset();
         writeString(record, id);
-        writeString(record, id);
+        writeString(record, label);
         record.writeBoolean(false);
         for (int r = 0; r < relationCount; r++) {
             record.writeShort(0);
         }
     }
 
+    /** The first entry of each distinct id, then the entry count. */
     private static int[] groupStarts(List<Entry> sorted) {
         int[] starts = new int[sorted.size() + 1];
         int groups = 0;

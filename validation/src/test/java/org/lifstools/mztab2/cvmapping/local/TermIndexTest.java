@@ -21,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -49,8 +50,29 @@ public class TermIndexTest {
 
     private TermIndex miniMsIndex() throws IOException {
         Path file = dir.resolve("terms.idx");
-        TermIndexWriter.write(OboReaderTest.readMiniMs().values(), file);
+        writeMiniMs(file);
         return TermIndex.open(file);
+    }
+
+    /** Writes the index of mini-ms.obo as the cache does: its terms, and the names its parent lines give. */
+    static void writeMiniMs(Path file) throws IOException {
+        try (TermIndexWriter writer = TermIndexWriter.open(file);
+            InputStream in = TermIndexTest.class.getResourceAsStream("/cv/mini-ms.obo")) {
+            new OboReader().read(in, writer, v -> { }, writer::parentName);
+            writer.commit();
+        }
+    }
+
+    /** Writes the index of mini-msio.owl and its import mini-obi.owl into one file, as the cache does (R-E). */
+    static void writeMiniMsio(Path file) throws IOException {
+        try (TermIndexWriter writer = TermIndexWriter.open(file)) {
+            for (String owl : List.of("/cv/mini-msio.owl", "/cv/mini-obi.owl")) {
+                try (InputStream in = TermIndexTest.class.getResourceAsStream(owl)) {
+                    new OwlRdfXmlReader().read(in, writer, i -> { }, v -> { });
+                }
+            }
+            writer.commit();
+        }
     }
 
     private static List<String> ids(List<TermRecord> terms) {
@@ -66,13 +88,13 @@ public class TermIndexTest {
     public void roundTripsEveryRecord() throws IOException {
         Map<String, TermRecord> terms = OboReaderTest.readMiniMs();
         try (TermIndex index = miniMsIndex()) {
-            // UO:0000000, a parent without a stanza, is a stub term of its own (Ruling R-AA)
+            // UO:0000000, a parent without a stanza, is a stub term of its own (Ruling R-AA), named as
+            // mini-ms.obo's "is_a: UO:0000000 ! unit" names it (minor 8 of the Task 11 review)
             assertEquals(terms.size() + 1, index.size());
             for (TermRecord t : terms.values()) {
                 assertEquals(Optional.of(t), index.term(t.id()), t.id());
             }
-            assertEquals(Optional.of(term("UO:0000000", "UO:0000000", false, Map.of())),
-                index.term("UO:0000000"));
+            assertEquals(Optional.of(term("UO:0000000", "unit", false, Map.of())), index.term("UO:0000000"));
         }
     }
 
@@ -117,6 +139,30 @@ public class TermIndexTest {
             assertEquals(Set.of("ZZ:9", "A:0", "M:2"), Set.copyOf(ids(index.ancestors("M:1"))));
             assertEquals(List.of(), index.ancestors("ZZ:9"));
         }
+        // the first non-empty name a parent line gives a stub is its label; a term keeps its own name
+        Path named = dir.resolve("named.idx");
+        try (TermIndexWriter writer = TermIndexWriter.open(named)) {
+            writer.parentName("ZZ:9", "");
+            writer.accept(term("M:1", "one", false, Map.of("is_a", List.of("ZZ:9", "A:0"),
+                "part_of", List.of("M:2"))));
+            writer.parentName("ZZ:9", "nine");
+            writer.parentName("M:2", "not two");
+            writer.accept(term("M:2", "two", false, Map.of("part_of", List.of("ZZ:9"))));
+            writer.parentName("ZZ:9", "other");
+            writer.parentName("Q:1", "no one's parent");
+            writer.commit();
+        }
+        try (TermIndex index = TermIndex.open(named)) {
+            assertEquals(4, index.size());
+            assertEquals(Optional.of(term("ZZ:9", "nine", false, Map.of())), index.term("ZZ:9"));
+            assertEquals(Optional.of(term("A:0", "A:0", false, Map.of())), index.term("A:0"));
+            assertEquals("two", index.term("M:2").orElseThrow().label());
+            assertEquals(Optional.empty(), index.term("Q:1"));
+        }
+        try (Stream<Path> left = Files.list(dir)) {
+            assertEquals(Set.of("terms.idx", "named.idx"),
+                left.map(f -> f.getFileName().toString()).collect(Collectors.toSet()), "no temporary file is left");
+        }
         Path truncated = dir.resolve("truncated.idx");
         byte[] whole = Files.readAllBytes(file);
         Files.write(truncated, Arrays.copyOf(whole, whole.length - 1));
@@ -129,7 +175,50 @@ public class TermIndexTest {
      * for one set of rules, so changing a rule means a new version here and
      * in {@link TermIndex#VERSION}.
      */
-    private static final Map<Integer, String> READER_FINGERPRINTS = Map.of(2, "9b132577b8052951");
+    private static final Map<Integer, String> READER_FINGERPRINTS = Map.of(2, "9b132577b8052951",
+        3, "9b132577b8052951");
+
+    /**
+     * The fingerprint of the index files of each index version built from
+     * fixed fixtures, an OBO file with a parent without a stanza and an OWL
+     * file with an import (minor 4 of the Task 11 review): whatever changes
+     * what the readers or the writer put into an index changes it, and needs
+     * a new {@link TermIndex#VERSION}. Version 2 had none.
+     */
+    private static final Map<Integer, String> INDEX_FINGERPRINTS = Map.of(3, "198f8d2686123bab");
+
+    /** The SHA-256 of the fixture indexes, mini-ms.obo's then mini-msio.owl's with mini-obi.owl. */
+    private String fixtureIndexes(String name) throws IOException {
+        Path obo = dir.resolve(name + "-obo.idx");
+        Path owl = dir.resolve(name + "-owl.idx");
+        writeMiniMs(obo);
+        writeMiniMsio(owl);
+        return sha256(Files.readAllBytes(obo)) + " " + sha256(Files.readAllBytes(owl));
+    }
+
+    private static String sha256(byte[] bytes) {
+        try {
+            return HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(bytes));
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
+    @Test
+    public void theIndexBytesAreTheSameEachTime() throws IOException {
+        assertEquals(fixtureIndexes("first"), fixtureIndexes("second"));
+    }
+
+    @Test
+    public void theIndexVersionCoversWhatTheReadersAndTheWriterWrite() throws IOException {
+        String shas = fixtureIndexes("pinned");
+        String fingerprint = fingerprint(shas);
+        assertEquals(INDEX_FINGERPRINTS.get(TermIndex.VERSION), fingerprint, "the index of the fixtures changed ("
+            + shas + "): bump TermIndex.VERSION and add it to INDEX_FINGERPRINTS with " + fingerprint
+            + "; if the index was meant to stay the same, find what changed it");
+        assertEquals(INDEX_FINGERPRINTS.size(), Set.copyOf(INDEX_FINGERPRINTS.values()).size(),
+            "two index versions with the same fixture index");
+    }
 
     /** The reader rules that decide an index's ancestors, as one canonical text. */
     static String readerRules() {

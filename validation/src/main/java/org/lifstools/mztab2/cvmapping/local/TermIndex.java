@@ -41,7 +41,8 @@ import java.util.Set;
 
 /**
  * The terms of one vocabulary release, read from an immutable, memory-mapped
- * {@code terms.idx} file written by {@link TermIndexWriter}.
+ * index file ({@code terms-v<version>.idx} in the cache) written by
+ * {@link TermIndexWriter}.
  *
  * <p>
  * The layout, big-endian:</p>
@@ -77,11 +78,17 @@ public final class TermIndex implements Closeable {
      * {@link OwlRdfXmlReader#NOT_PARENTS}) and of {@link TermIndexWriter} (a
      * parent without a stanza is a stub term). The cache rebuilds an index of
      * another version from its cached file. Bump it with any change of these
-     * rules, together with {@link #READER_FINGERPRINT}. Version 1: the layout
-     * {@code JMZTIDX1}; 2: the version in the header, part_of as
-     * {@code BFO:0000050}, no {@code owl:Thing} parent, stub parents.
+     * rules, together with {@link #READER_FINGERPRINT}; {@code TermIndexTest}
+     * also pins, per version, the bytes of the indexes of fixed fixture files,
+     * so that any change in what the readers or the writer write needs a new
+     * version too. The cache keeps each version in a file of its own,
+     * {@code terms-v<version>.idx}, so builds of different versions can share
+     * one cache. Version 1: the layout {@code JMZTIDX1}; 2: the version in the
+     * header, part_of as {@code BFO:0000050}, no {@code owl:Thing} parent,
+     * stub parents; 3: a stub parent named by the OBO {@code ! name} comment
+     * of its parent line.
      */
-    static final int VERSION = 2;
+    static final int VERSION = 3;
 
     /**
      * The fingerprint of the reader rules of {@link #VERSION} (the first 16 hex
@@ -106,10 +113,15 @@ public final class TermIndex implements Closeable {
         } catch (IOException e) {
             return OptionalInt.empty();
         }
+        return version(head, read);
+    }
+
+    /** The index version the first {@code read} bytes of a file name, if they are a term index header. */
+    private static OptionalInt version(byte[] head, int read) {
         if (read >= MAGIC_1.length && Arrays.equals(Arrays.copyOf(head, MAGIC_1.length), MAGIC_1)) {
             return OptionalInt.of(1);
         }
-        if (read == head.length && Arrays.equals(Arrays.copyOf(head, MAGIC.length), MAGIC)) {
+        if (read >= MAGIC.length + 4 && Arrays.equals(Arrays.copyOf(head, MAGIC.length), MAGIC)) {
             return OptionalInt.of(ByteBuffer.wrap(head, MAGIC.length, 4).getInt());
         }
         return OptionalInt.empty();
@@ -159,7 +171,9 @@ public final class TermIndex implements Closeable {
                 Arena.ofAuto());
             long size = segment.byteSize();
             long headerSize = MAGIC.length + 12L;
-            OptionalInt version = version(file);
+            // the version from the mapped bytes themselves, not from a second read of the file
+            byte[] head = segment.asSlice(0, Math.min(size, MAGIC.length + 4L)).toArray(BYTE);
+            OptionalInt version = version(head, head.length);
             if (version.isPresent() && version.getAsInt() != VERSION) {
                 throw new IOException(file + " is a term index of index version " + version.getAsInt()
                     + ", but this build reads version " + VERSION + "; the cache rebuilds it");

@@ -132,4 +132,35 @@ public class OboReaderTest {
             assertTrue(e.getMessage().contains("not an OBO file"), e.getMessage());
         }
     }
+
+    @Test
+    public void parentNamesComeFromTheCommentsOfParentLines() throws IOException {
+        // minor 8 of the Task 11 review: a stub term is named as its parent line names it
+        String obo = "format-version: 1.2\n\n[Term]\nid: X:1\nname: x\n"
+            + "is_a: A:1 ! alpha\n"
+            + "is_a: C:3\n"
+            + "is_a: D:4 {source=\"x\"} ! delta  \n"
+            + "is_a: E:5 !\n"
+            + "relationship: part_of B:2 ! beta gamma\n"
+            + "relationship: has_units U:1 ! unit\n"
+            + "relationship: BFO:0000050 F:6 ! zeta \\! eta\n"
+            + "\n[Typedef]\nid: part_of\nis_a: G:7 ! not a term's parent\n";
+        List<String> names = new ArrayList<>();
+        List<TermRecord> terms = new ArrayList<>();
+        new OboReader().read(stream(obo), terms::add, v -> { }, (id, name) -> names.add(id + "=" + name));
+
+        assertEquals(List.of("A:1=alpha", "D:4=delta", "B:2=beta gamma", "F:6=zeta ! eta"), names);
+        assertEquals(Map.of("is_a", List.of("A:1", "C:3", "D:4", "E:5"), "part_of", List.of("B:2"),
+            "BFO:0000050", List.of("F:6")), terms.get(0).parentsByRelation());
+    }
+
+    @Test
+    public void miniMsNamesItsParentWithoutAStanza() throws IOException {
+        Map<String, String> names = new LinkedHashMap<>();
+        try (InputStream in = getClass().getResourceAsStream(MINI_MS)) {
+            new OboReader().read(in, t -> { }, v -> { }, names::putIfAbsent);
+        }
+        assertEquals("unit", names.get("UO:0000000"));
+        assertEquals("ionization type", names.get("MS:1000008"));
+    }
 }
