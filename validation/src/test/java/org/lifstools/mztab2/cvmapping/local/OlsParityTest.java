@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -40,6 +41,7 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.lifstools.mztab2.cvmapping.CvMappingUtils;
 import org.lifstools.mztab2.cvmapping.local.LookupPolicy.Source;
 import org.lifstools.mztab2.cvmapping.local.ResolutionException.Reason;
 import org.lifstools.mztab2.model.CV;
@@ -52,7 +54,10 @@ import org.springframework.web.client.HttpClientErrorException;
  * OLS reported ({@code versions.json}'s {@code version}: config.version where
  * the vocabulary can resolve it, else the version the versionIri names, as
  * {@code versionFrom} says; Ruling R-Z) through the vocabulary cache and a
- * strict {@link VocabularyResolver}, and the ancestor id sets are compared.
+ * strict {@link VocabularyResolver}, and the ancestor id sets are compared,
+ * then the label of each ancestor on both sides, as
+ * {@code CvMappingUtils.isEqualTo} compares them in a rule check: ignoring
+ * case, and a missing local name matches any (Ruling R-AH).
  *
  * <p>
  * The releases are downloaded into the folder that the system property
@@ -83,8 +88,12 @@ public class OlsParityTest {
     private static final Map<String, Resolution> RESOLUTIONS = new ConcurrentHashMap<>();
     private static volatile VocabularyCache cache;
 
-    /** A difference the readers cannot remove, which the test requires as it is. */
-    record KnownDifference(Set<String> onlyOls, Set<String> onlyLocal, String reason) {
+    /**
+     * A difference the readers cannot remove, which the test requires as it
+     * is: the ids on each side only, and the ids of shared ancestors whose
+     * labels differ.
+     */
+    record KnownDifference(Set<String> onlyOls, Set<String> onlyLocal, Set<String> labelsDiffer, String reason) {
     }
 
     /**
@@ -93,7 +102,7 @@ public class OlsParityTest {
      */
     static final Map<String, KnownDifference> KNOWN_DIFFERENCES = Map.of(
         "obi/OBI_0000094", new KnownDifference(Set.of("OIO:ObsoleteClass"),
-            Set.of("http://www.geneontology.org/formats/oboInOwl#ObsoleteClass"),
+            Set.of("http://www.geneontology.org/formats/oboInOwl#ObsoleteClass"), Set.of(),
             "OBI:0000094 is obsolete in OBI, under oboInOwl:ObsoleteClass; OLS gives that class, which is outside"
                 + " the OBO PURL space, the curie OIO:ObsoleteClass, while the OWL reader keeps any IRI outside"
                 + " that space whole"));
@@ -113,7 +122,7 @@ public class OlsParityTest {
 
     /** One recorded term. */
     record Fixture(String ontology, String name, String oboId, String label, String prefix, Set<String> olsAncestors,
-        Set<String> olsPrefixes) {
+        Set<String> olsPrefixes, Map<String, String> olsLabels) {
 
         @Override
         public String toString() {
@@ -150,17 +159,41 @@ public class OlsParityTest {
         onlyOls.removeAll(localIds);
         Set<String> onlyLocal = new TreeSet<>(localIds);
         onlyLocal.removeAll(f.olsAncestors());
+        Map<String, String> labelsDiffer = labelsDiffer(f, local);
         KnownDifference known = KNOWN_DIFFERENCES.get(f.toString());
         if (known != null) {
             assertEquals(known.onlyOls(), onlyOls, f + ": the known difference (" + known.reason()
                 + ") changed; ids only in OLS");
             assertEquals(known.onlyLocal(), onlyLocal, f + ": the known difference (" + known.reason()
                 + ") changed; ids only local");
+            assertEquals(known.labelsDiffer(), labelsDiffer.keySet(), f + ": the known difference ("
+                + known.reason() + ") changed; labels that differ: " + labelsDiffer.values());
             return;
         }
-        if (!onlyOls.isEmpty() || !onlyLocal.isEmpty()) {
-            fail(mismatch(f, onlyOls, onlyLocal));
+        if (!onlyOls.isEmpty() || !onlyLocal.isEmpty() || !labelsDiffer.isEmpty()) {
+            fail(mismatch(f, onlyOls, onlyLocal, labelsDiffer));
         }
+    }
+
+    /**
+     * The ancestors on both sides whose labels differ as a rule check tells
+     * them apart ({@code CvMappingUtils.isEqualTo}, with the same cv label
+     * and id), by id: what OLS and the local index name each.
+     */
+    private static Map<String, String> labelsDiffer(Fixture f, List<Parameter> local) {
+        Map<String, String> differ = new TreeMap<>();
+        for (Parameter p : local) {
+            String id = p.getCvAccession();
+            if (!f.olsLabels().containsKey(id)) {
+                continue;
+            }
+            String ols = f.olsLabels().get(id);
+            Parameter asOls = new Parameter().cvLabel(p.getCvLabel()).cvAccession(id).name(ols);
+            if (!CvMappingUtils.isEqualTo(asOls, p)) {
+                differ.put(id, id + ": OLS \"" + ols + "\", local \"" + p.getName() + "\"");
+            }
+        }
+        return differ;
     }
 
     /**
@@ -275,7 +308,8 @@ public class OlsParityTest {
     }
 
     /** The term, the ids on each side only, and the relation the local index has for each such id. */
-    private static String mismatch(Fixture f, Set<String> onlyOls, Set<String> onlyLocal) {
+    private static String mismatch(Fixture f, Set<String> onlyOls, Set<String> onlyLocal,
+        Map<String, String> labelsDiffer) {
         Resolution r = resolution(f);
         TermIndex index;
         try {
@@ -291,6 +325,7 @@ public class OlsParityTest {
             + ": the ancestors differ from OLS's " + r.olsVersion());
         text.append("\n  only in OLS: ").append(onlyOls);
         text.append("\n  only local: ").append(onlyLocal);
+        labelsDiffer.values().forEach(d -> text.append("\n  label differs: ").append(d));
         for (String id : union(onlyOls, onlyLocal)) {
             text.append("\n  ").append(id).append(": ").append(relations(id, closure, index));
         }
@@ -327,13 +362,18 @@ public class OlsParityTest {
         JsonNode term = json.path("term");
         Set<String> ancestors = new TreeSet<>();
         Set<String> prefixes = new TreeSet<>();
+        Map<String, String> labels = new TreeMap<>();
         json.path("ancestors").forEach(a -> {
-            ancestors.add(a.path("obo_id").isTextual() ? a.path("obo_id").asText() : a.path("iri").asText());
+            String id = a.path("obo_id").isTextual() ? a.path("obo_id").asText() : a.path("iri").asText();
+            ancestors.add(id);
             prefixes.add(a.path("ontology_prefix").asText());
+            if (a.path("label").isTextual()) {
+                labels.put(id, a.path("label").asText());
+            }
         });
         String name = p.getFileName().toString().replaceFirst("\\.json$", "");
         return new Fixture(p.getParent().getFileName().toString(), name, term.path("obo_id").asText(),
-            term.path("label").asText(), term.path("ontology_prefix").asText(), ancestors, prefixes);
+            term.path("label").asText(), term.path("ontology_prefix").asText(), ancestors, prefixes, labels);
     }
 
     private static Path fixtureRoot() {
