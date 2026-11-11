@@ -26,7 +26,9 @@ public final class InvalidResourcesException extends Exception {
 
     private static final long serialVersionUID = 1L;
 
+    /** The key of the entry at fault, or null. */
     private final String entryKey;
+    /** The JSON pointer of the first problem; empty for the whole file. */
     private final String pointer;
 
     InvalidResourcesException(String message, String entryKey, String pointer, Throwable cause) {
@@ -35,12 +37,20 @@ public final class InvalidResourcesException extends Exception {
         this.pointer = pointer;
     }
 
-    /** @return the key of the entry at fault, empty if the problem is outside any entry */
+    /**
+     * The entry at fault.
+     *
+     * @return the key of the entry at fault, empty if the problem is outside any entry
+     */
     public Optional<String> entryKey() {
         return Optional.ofNullable(entryKey);
     }
 
-    /** @return the JSON pointer of the first problem; empty for the whole file */
+    /**
+     * Where in the file the problem is.
+     *
+     * @return the JSON pointer of the first problem; empty for the whole file
+     */
     public String pointer() {
         return pointer;
     }

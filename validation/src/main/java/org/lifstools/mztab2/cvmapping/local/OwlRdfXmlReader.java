@@ -113,6 +113,10 @@ public final class OwlRdfXmlReader {
         return iri;
     }
 
+    /** Creates a reader; it holds no state between reads. */
+    public OwlRdfXmlReader() {
+    }
+
     /**
      * Reads the classes of an OWL RDF/XML document.
      *

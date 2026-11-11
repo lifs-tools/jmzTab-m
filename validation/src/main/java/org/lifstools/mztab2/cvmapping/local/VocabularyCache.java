@@ -138,8 +138,8 @@ public final class VocabularyCache {
     /**
      * The index file of a release: its name names the index version, so that
      * builds of different versions sharing one cache each keep their own and
-     * none rebuilds another's. An older build's index ({@code terms.idx},
-     * {@code terms-v2.idx}) is left where it is and never read.
+     * none rebuilds another's. An older build's index, e.g. {@code terms.idx},
+     * is left where it is and never read.
      */
     static final String INDEX = "terms-v" + TermIndex.VERSION + ".idx";
     /** Any build's index file, which a pre-filled release may hold beside its file. */

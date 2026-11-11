@@ -66,6 +66,7 @@ public record DeclaredVersion(String original, Optional<String> normalised, Kind
         this(original, normalised, kind, Optional.empty());
     }
 
+    /** How a declared version was understood. */
     public enum Kind {
         /** Nothing declared (null or blank). */
         NONE,
@@ -90,6 +91,8 @@ public record DeclaredVersion(String original, Optional<String> normalised, Kind
     }
 
     /**
+     * Classifies a declared version.
+     *
      * @param declared the declared version text, may be null
      * @param scheme the vocabulary's version scheme
      * @param releases the known releases of the vocabulary

@@ -36,6 +36,8 @@ public enum VersionScheme {
     private static final Pattern NUMBER_FORM = Pattern.compile("\\d+");
 
     /**
+     * Whether a version is a release name of this scheme.
+     *
      * @param v a version string, may be null
      * @return true if v is a release name of this scheme
      */
@@ -58,6 +60,8 @@ public enum VersionScheme {
     /**
      * Compares two release names. Missing trailing dotted components count as 0.
      *
+     * @param a a release name
+     * @param b another release name
      * @return negative, zero or positive; empty if either value does not fit
      * this scheme
      */

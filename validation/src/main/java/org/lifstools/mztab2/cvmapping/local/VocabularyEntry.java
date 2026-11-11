@@ -45,6 +45,7 @@ public record VocabularyEntry(String key, Set<String> labels, String oboPrefix, 
     /** A version is put into a URL as one path segment, unescaped. */
     private static final Pattern URL_SAFE_VERSION = Pattern.compile("[A-Za-z0-9][A-Za-z0-9._-]*");
 
+    /** Checks that no part is missing, and copies the label set and the checksums. */
     public VocabularyEntry {
         Objects.requireNonNull(key, "key");
         labels = Set.copyOf(labels);
@@ -57,6 +58,9 @@ public record VocabularyEntry(String key, Set<String> labels, String oboPrefix, 
     }
 
     /**
+     * Whether a cv label names this vocabulary.
+     *
+     * @param cvLabel an mzTab-M cv label or an OBO prefix; may be null
      * @return true if the label or the OBO prefix is {@code cvLabel}, ignoring case
      */
     public boolean isKnownAs(String cvLabel) {
@@ -66,7 +70,12 @@ public record VocabularyEntry(String key, Set<String> labels, String oboPrefix, 
 
     /** The file format of a release. */
     public enum Format {
-        OBO("obo"), OBO_GZ("obo.gz"), OWL_RDFXML("owl");
+        /** An OBO flat file. */
+        OBO("obo"),
+        /** A gzipped OBO flat file. */
+        OBO_GZ("obo.gz"),
+        /** An OWL ontology in RDF/XML. */
+        OWL_RDFXML("owl");
 
         private final String extension;
 
@@ -74,7 +83,11 @@ public record VocabularyEntry(String key, Set<String> labels, String oboPrefix, 
             this.extension = extension;
         }
 
-        /** @return the file extension OBO Foundry uses for it, e.g. obo.gz */
+        /**
+         * The file extension of the format.
+         *
+         * @return the file extension OBO Foundry uses for it, e.g. obo.gz
+         */
         public String extension() {
             return extension;
         }
@@ -84,9 +97,14 @@ public record VocabularyEntry(String key, Set<String> labels, String oboPrefix, 
      * Where one release is downloaded: either a URL template with
      * {@code {version}}, or an OBO Foundry id for
      * {@code https://purl.obolibrary.org/obo/{id}/releases/{version}/{id}.{ext}}.
+     *
+     * @param format the file format of a release
+     * @param urlTemplate a URL with {@code {version}}, or empty
+     * @param oboFoundryId an OBO Foundry ontology id, or empty
      */
     public record Location(Format format, Optional<String> urlTemplate, Optional<String> oboFoundryId) {
 
+        /** Checks that the location has exactly one of a URL template and an OBO Foundry id. */
         public Location {
             Objects.requireNonNull(format, "format");
             if (urlTemplate.isPresent() == oboFoundryId.isPresent()) {
@@ -95,6 +113,8 @@ public record VocabularyEntry(String key, Set<String> labels, String oboPrefix, 
         }
 
         /**
+         * The URL of one release.
+         *
          * @param version a release name
          * @return the URL of that release
          * @throws IllegalArgumentException if the version is not a plain path
@@ -128,15 +148,25 @@ public record VocabularyEntry(String key, Set<String> labels, String oboPrefix, 
     /** How the releases of a vocabulary are listed, and how their dates are found. */
     public sealed interface ReleaseIndex {
 
+        /**
+         * How the dates of the releases are found.
+         *
+         * @return the source of the release dates
+         */
         ReleaseDates dates();
 
         /**
          * The tags of a GitHub repository that match a pattern, from the tags
          * API (paged). With {@code v{version}}, tag {@code v4.1.200} is version
          * {@code 4.1.200}.
+         *
+         * @param repo the repository, as owner/name
+         * @param tagPattern the tag of a release, with one {@code {version}}
+         * @param dates how the release dates are found
          */
         record GithubTags(String repo, String tagPattern, ReleaseDates dates) implements ReleaseIndex {
 
+            /** Checks the pattern, and that GitHub tags have no listed dates. */
             public GithubTags {
                 Objects.requireNonNull(repo, "repo");
                 requireVersionPattern(tagPattern);
@@ -145,12 +175,22 @@ public record VocabularyEntry(String key, Set<String> labels, String oboPrefix, 
                 }
             }
 
-            /** @return the tag of a version */
+            /**
+             * The tag of a release.
+             *
+             * @param version a release name
+             * @return the tag of that version
+             */
             public String tagFor(String version) {
                 return tagPattern.replace(VERSION, version);
             }
 
-            /** @return the version a tag names, if it matches the pattern */
+            /**
+             * The release a tag names.
+             *
+             * @param tag a tag of the repository
+             * @return the version the tag names, if it matches the pattern
+             */
             public Optional<String> versionOf(String tag) {
                 return versionIn(tagPattern, tag);
             }
@@ -159,9 +199,14 @@ public record VocabularyEntry(String key, Set<String> labels, String oboPrefix, 
         /**
          * The links of an HTTP directory index (e.g. an FTP archive served over
          * HTTP) whose names match a pattern, e.g. {@code rel{version}/}.
+         *
+         * @param url the directory index
+         * @param entryPattern the link of a release, with one {@code {version}}
+         * @param dates how the release dates are found: from the versions, or none
          */
         record DirectoryListing(URI url, String entryPattern, ReleaseDates dates) implements ReleaseIndex {
 
+            /** Checks the pattern, and that the dates come from the versions or are unknown. */
             public DirectoryListing {
                 Objects.requireNonNull(url, "url");
                 requireVersionPattern(entryPattern);
@@ -170,15 +215,25 @@ public record VocabularyEntry(String key, Set<String> labels, String oboPrefix, 
                 }
             }
 
-            /** @return the version a link names, if it matches the pattern */
+            /**
+             * The release a link names.
+             *
+             * @param link a link of the directory index
+             * @return the version the link names, if it matches the pattern
+             */
             public Optional<String> versionOf(String link) {
                 return versionIn(entryPattern, link);
             }
         }
 
-        /** The releases, written out, each with its date if known. */
+        /**
+         * The releases, written out, each with its date if known.
+         *
+         * @param releases the releases
+         */
         record Listed(List<Release> releases) implements ReleaseIndex {
 
+            /** Copies the releases. */
             public Listed {
                 releases = List.copyOf(releases);
             }
@@ -193,15 +248,26 @@ public record VocabularyEntry(String key, Set<String> labels, String oboPrefix, 
     /** How the latest release of a vocabulary is found. */
     public sealed interface Latest {
 
-        /** The newest tag of a GitHub repository that matches a pattern, by the entry's scheme. */
+        /**
+         * The newest tag of a GitHub repository that matches a pattern, by the entry's scheme.
+         *
+         * @param repo the repository, as owner/name
+         * @param tagPattern the tag of a release, with one {@code {version}}
+         */
         record GithubLatestTag(String repo, String tagPattern) implements Latest {
 
+            /** Checks the repository and the pattern. */
             public GithubLatestTag {
                 Objects.requireNonNull(repo, "repo");
                 requireVersionPattern(tagPattern);
             }
 
-            /** @return the version a tag names, if it matches the pattern */
+            /**
+             * The release a tag names.
+             *
+             * @param tag a tag of the repository
+             * @return the version the tag names, if it matches the pattern
+             */
             public Optional<String> versionOf(String tag) {
                 return versionIn(tagPattern, tag);
             }
@@ -212,9 +278,12 @@ public record VocabularyEntry(String key, Set<String> labels, String oboPrefix, 
          * header: {@code data-version:} (OBO) or {@code owl:versionIRI} (OWL).
          * The version is the segment of that value the entry's scheme accepts,
          * e.g. 2026-06-08 of {@code releases/2026-06-08}.
+         *
+         * @param url the unversioned file
          */
         record Header(URI url) implements Latest {
 
+            /** Checks that the URL is given. */
             public Header {
                 Objects.requireNonNull(url, "url");
             }

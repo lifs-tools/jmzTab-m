@@ -72,8 +72,11 @@ public final class PreferredResources {
     }
 
     /**
+     * The shipped default resources file, read once.
+     *
      * @return the shipped default
-     * @throws IllegalStateException if the shipped default is invalid
+     * @throws ExceptionInInitializerError wrapping an IllegalStateException if
+     * the shipped default is missing or invalid, a defect of the build
      */
     public static PreferredResources defaults() {
         return Defaults.INSTANCE;
@@ -97,6 +100,8 @@ public final class PreferredResources {
     }
 
     /**
+     * This file's entries, with a user's entries in place of those with the same key.
+     *
      * @param user entries that replace this file's entries with the same key
      * @return the entries of both; on a label both claim, the user's entry wins
      */
@@ -107,6 +112,8 @@ public final class PreferredResources {
     }
 
     /**
+     * The entry of a cv label.
+     *
      * @param cvLabel an mzTab-M cv label or an OBO prefix (the shipped entries
      * also list their mapping cvIdentifier as a label)
      * @return the first entry with that label or OBO prefix, ignoring case
@@ -115,7 +122,11 @@ public final class PreferredResources {
         return entries.values().stream().filter(e -> e.isKnownAs(cvLabel)).findFirst();
     }
 
-    /** @return all entries, in file order (a user's first after {@link #overriddenBy}) */
+    /**
+     * All entries.
+     *
+     * @return all entries, in file order (a user's first after {@link #overriddenBy})
+     */
     public List<VocabularyEntry> entries() {
         return List.copyOf(entries.values());
     }

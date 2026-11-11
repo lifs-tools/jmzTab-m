@@ -31,10 +31,15 @@ public final class VocabularyUnavailableException extends RuntimeException {
 
     private static final long serialVersionUID = 1L;
 
+    /** The vocabulary's cv label. */
     private final String label;
+    /** The version that could not be had. */
     private final String versionWanted;
+    /** Why it could not be had. */
     private final String reason;
+    /** The kind of failure, or null if none applies. */
     private final Reason kind;
+    /** The Error-3017. */
     private final MZTabError error;
 
     /**

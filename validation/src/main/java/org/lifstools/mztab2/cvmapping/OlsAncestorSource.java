@@ -30,6 +30,8 @@ public class OlsAncestorSource implements AncestorSource {
     private final OLSClient client;
 
     /**
+     * A source that asks OLS through the given client.
+     *
      * @param client the OLS client to ask
      */
     public OlsAncestorSource(OLSClient client) {
