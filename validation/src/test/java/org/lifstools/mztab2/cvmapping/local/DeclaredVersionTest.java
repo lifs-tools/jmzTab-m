@@ -85,9 +85,30 @@ public class DeclaredVersionTest {
     }
 
     @Test
-    public void anIsoDateUnderTheIsoDateSchemeIsARelease() {
-        List<Release> rs = List.of(new Release("2023-05-25", Optional.of(LocalDate.of(2023, 5, 25))));
+    public void aListedIsoDateUnderTheIsoDateSchemeIsARelease() {
+        List<Release> rs = List.of(new Release("2023-05-25", Optional.of(LocalDate.of(2023, 5, 25))),
+                new Release("2024-01-01", Optional.of(LocalDate.of(2024, 1, 1))));
         DeclaredVersion v = DeclaredVersion.of("2024-01-01", VersionScheme.ISO_DATE, rs);
+        assertEquals(Kind.RELEASE, v.kind());
+        assertEquals(Optional.of("2024-01-01"), v.normalised());
+    }
+
+    @Test
+    public void anUnlistedIsoDateUnderTheIsoDateSchemeIsADate() {
+        // Ruling R-Y: BTO's tag v2022-10-26 holds data-version 2021-10-26, released on 2021-10-26
+        List<Release> rs = List.of(new Release("2021-04-30", Optional.of(LocalDate.of(2021, 4, 30))),
+                new Release("2022-10-26", Optional.of(LocalDate.of(2021, 10, 26))));
+        DeclaredVersion v = DeclaredVersion.of("2021-10-26", VersionScheme.ISO_DATE, rs);
+        assertEquals(Kind.FROM_DATE, v.kind());
+        assertEquals(Optional.of("2022-10-26"), v.normalised());
+        assertEquals(Optional.of("2021-04-30"),
+                DeclaredVersion.of("2021-10-25", VersionScheme.ISO_DATE, rs).normalised());
+        assertEquals(Kind.NOT_RECOGNISED, DeclaredVersion.of("2020-01-01", VersionScheme.ISO_DATE, rs).kind());
+    }
+
+    @Test
+    public void anIsoDateWithoutAReleaseListStaysARelease() {
+        DeclaredVersion v = DeclaredVersion.of("2024-01-01", VersionScheme.ISO_DATE, List.of());
         assertEquals(Kind.RELEASE, v.kind());
         assertEquals(Optional.of("2024-01-01"), v.normalised());
     }

@@ -28,10 +28,14 @@ import java.util.Optional;
  * Rules, in order:
  * <ol>
  * <li>null or blank: NONE.</li>
- * <li>a value that fits the scheme and is one of the known releases, or any
- * value of an ISO_DATE scheme that fits it: RELEASE, as is.</li>
+ * <li>a value that fits the scheme and is one of the known releases, or a
+ * value of an ISO_DATE scheme that fits it when no release is known (the
+ * release list cannot be read): RELEASE, as is.</li>
  * <li>a value in a recognised date form: FROM_DATE, the newest release dated
- * on or before it, or NOT_RECOGNISED if there is none.</li>
+ * on or before it, or NOT_RECOGNISED if there is none. Under ISO_DATE this
+ * holds for an unlisted value too (Ruling R-Y): BTO's 2021-10-26, the
+ * data-version of the tag v2022-10-26 released that day, becomes
+ * 2022-10-26.</li>
  * <li>a value that fits the scheme but is no known release and no date
  * (e.g. 4.1.999): RELEASE, as is, so that a strict check can report it.</li>
  * <li>anything else: NOT_RECOGNISED.</li>
@@ -78,7 +82,7 @@ public record DeclaredVersion(String original, Optional<String> normalised, Kind
         }
         String value = declared.trim();
         boolean fits = scheme.accepts(value);
-        if (fits && (scheme == VersionScheme.ISO_DATE || isListed(value, releases))) {
+        if (fits && (isListed(value, releases) || scheme == VersionScheme.ISO_DATE && releases.isEmpty())) {
             return new DeclaredVersion(declared, Optional.of(value), Kind.RELEASE);
         }
         Optional<LocalDate> date = parseDate(value);
