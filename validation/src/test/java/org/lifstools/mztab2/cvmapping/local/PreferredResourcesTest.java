@@ -128,6 +128,49 @@ public class PreferredResourcesTest {
         assertEquals("/vocabularies/X/releases/dates", e.pointer());
     }
 
+    private static final String URL_ENTRY = """
+        {"vocabularies": {"X": {
+          "labels": ["X"], "oboPrefix": "X",
+          "location": {"format": "OBO", "urlTemplate": "%s"},
+          "scheme": "RELEASE_NUMBER",
+          "releases": {"kind": "directoryListing", "url": "%s", "entryPattern": "rel{version}/", "dates": "none"},
+          "latest": %s
+        }}}
+        """;
+    private static final String GOOD_TEMPLATE = "https://example.org/rel{version}/x.obo";
+    private static final String GOOD_LISTING = "https://example.org/archive/";
+    private static final String NEWEST = "{\"kind\": \"newestRelease\"}";
+
+    @Test
+    public void anInvalidUrlTemplateNamesTheEntry() throws Exception {
+        assertInvalidUrl(URL_ENTRY.formatted("https://example.org/a|b/{version}/x.obo", GOOD_LISTING, NEWEST),
+            "/vocabularies/X/location/urlTemplate");
+        assertInvalidUrl(URL_ENTRY.formatted("https://example.org/%zz/{version}/x.obo", GOOD_LISTING, NEWEST),
+            "/vocabularies/X/location/urlTemplate");
+    }
+
+    @Test
+    public void anInvalidDirectoryListingUrlNamesTheEntry() throws Exception {
+        assertInvalidUrl(URL_ENTRY.formatted(GOOD_TEMPLATE, "https://example.org/a|b/", NEWEST),
+            "/vocabularies/X/releases/url");
+    }
+
+    @Test
+    public void anInvalidHeaderUrlNamesTheEntry() throws Exception {
+        assertInvalidUrl(URL_ENTRY.formatted(GOOD_TEMPLATE, GOOD_LISTING,
+            "{\"kind\": \"header\", \"url\": \"https://example.org/a^b.obo\"}"),
+            "/vocabularies/X/latest/url");
+    }
+
+    private void assertInvalidUrl(String json, String pointer) throws Exception {
+        Path file = write(json);
+        InvalidResourcesException e = assertThrows(InvalidResourcesException.class,
+            () -> PreferredResources.load(file));
+        assertEquals(Optional.of("X"), e.entryKey());
+        assertEquals(pointer, e.pointer());
+        assertTrue(e.getMessage().contains("entry X") && e.getMessage().contains(pointer), e.getMessage());
+    }
+
     @Test
     public void aLabelClaimedByTwoEntriesNamesBoth() throws Exception {
         Path file = write("""

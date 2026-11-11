@@ -162,6 +162,12 @@ public final class PreferredResources {
         JsonNode loc = n.get("location");
         Location location = new Location(Format.valueOf(loc.get("format").asText()),
             text(loc, "urlTemplate"), text(loc, "oboFoundryId"));
+        try {
+            location.url("0");
+        } catch (IllegalArgumentException e) {
+            throw invalid(source, key, at + "/location/" + (loc.has("urlTemplate") ? "urlTemplate" : "oboFoundryId"),
+                "does not give a valid URL: " + e.getMessage());
+        }
         ReleaseIndex releases = releases(source, key, at + "/releases", n.get("releases"), scheme);
         Map<String, String> sha256 = new LinkedHashMap<>();
         if (n.has("knownSha256")) {
@@ -171,7 +177,7 @@ public final class PreferredResources {
             }
         }
         return new VocabularyEntry(key, labels, n.get("oboPrefix").asText(), location, scheme, releases,
-            latest(n.get("latest")), sha256);
+            latest(source, key, at + "/latest", n.get("latest")), sha256);
     }
 
     private static ReleaseIndex releases(String source, String key, String at, JsonNode n, VersionScheme scheme)
@@ -207,14 +213,15 @@ public final class PreferredResources {
         if ("githubTags".equals(kind)) {
             return new ReleaseIndex.GithubTags(n.get("repo").asText(), n.get("tagPattern").asText(), dates);
         }
-        return new ReleaseIndex.DirectoryListing(URI.create(n.get("url").asText()), n.get("entryPattern").asText(),
-            dates);
+        return new ReleaseIndex.DirectoryListing(uri(source, key, at + "/url", n.get("url").asText()),
+            n.get("entryPattern").asText(), dates);
     }
 
-    private static Latest latest(JsonNode n) {
+    private static Latest latest(String source, String key, String at, JsonNode n)
+        throws InvalidResourcesException {
         return switch (n.get("kind").asText()) {
             case "githubLatestTag" -> new Latest.GithubLatestTag(n.get("repo").asText(), n.get("tagPattern").asText());
-            case "header" -> new Latest.Header(URI.create(n.get("url").asText()));
+            case "header" -> new Latest.Header(uri(source, key, at + "/url", n.get("url").asText()));
             default -> new Latest.NewestRelease();
         };
     }
@@ -239,6 +246,14 @@ public final class PreferredResources {
         VersionScheme scheme) throws InvalidResourcesException {
         if (!scheme.accepts(version)) {
             throw invalid(source, key, pointer, "\"" + version + "\" is not a version of the " + scheme + " scheme");
+        }
+    }
+
+    private static URI uri(String source, String key, String pointer, String url) throws InvalidResourcesException {
+        try {
+            return URI.create(url);
+        } catch (IllegalArgumentException e) {
+            throw invalid(source, key, pointer, "is not a valid URL: " + e.getMessage());
         }
     }
 
