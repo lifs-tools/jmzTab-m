@@ -96,13 +96,13 @@ These options change where and how the terms are looked up. They have no short f
 |The terms are looked up in https://www.ebi.ac.uk/ols4[OLS], as before 2.1. OLS serves only its current release of each vocabulary, not the declared one, so this needs `--cvForce` (see below).
 
 |`--cvCache <folder>`
-|The cache folder. The default is `$XDG_CACHE_HOME/jmztabm/cv`, or `~/.cache/jmztabm/cv` if `XDG_CACHE_HOME` is not set.
+|The cache folder. The default is `$XDG_CACHE_HOME/jmztabm/cv`, or `~/.cache/jmztabm/cv` if `XDG_CACHE_HOME` is not set or not an absolute path.
 
 |`--cvResources <file>`
 |A preferred-resources file, whose entries replace the default's, per vocabulary (see below).
 
 |`--cvOffline`
-|Nothing is downloaded. A release that is not in the cache cannot be had.
+|No network is used: nothing is downloaded, and OLS is not asked. A release that is not in the cache cannot be had. It cannot be combined with `--cvSource ols`.
 
 |`--cvForce`
 |A release that cannot be had is a warning (Warn-3018) instead of an error (Error-3017), and another release is used instead.
@@ -119,15 +119,15 @@ After the semantic messages, the CLI prints one line per vocabulary used, the re
   CV MS: 4.1.2 (SUBSTITUTE_NEWER) from https://raw.githubusercontent.com/HUPO-PSI/psi-ms-CV/v4.1.2/psi-ms.obo
   CV MSIO: 1.0.1 (FILE) from https://raw.githubusercontent.com/MSI-Metabolomics-Standards-Initiative/MSIO/v1.0.1/releases/1.0.1/MSIO-merged-reasoned.owl
 
-The reasons are `FILE` (the declared release), `FILE_DATE` (the release current on the declared date), `MAPPING` (the mapping's version), `LATEST`, and, in a forced run, `SUBSTITUTE_NEWER`, `SUBSTITUTE_LATEST` and `OLS`. A vocabulary answered by OLS is marked `not re-runnable`: OLS may answer differently once it serves another release.
+The reasons are `FILE` (the declared release), `FILE_DATE` (the release current on the declared date), `MAPPING` (the mapping's version; the bundled mapping names no versions yet, so this comes only once mappings carry versions), `LATEST`, and, in a forced run, `SUBSTITUTE_NEWER`, `SUBSTITUTE_LATEST` and `OLS`. A vocabulary answered by OLS is marked `not re-runnable`: OLS may answer differently once it serves another release.
 
 ==== Strict and forced runs
 
 A run is strict by default. A release that cannot be had stops the semantic validation with one Error-3017 for that vocabulary, which names the version and the reason: the release does not exist at its source, the download fails or its checksum does not match a known one, the file cannot be parsed, it is not in the cache while `--cvOffline` is given, or the vocabulary is unknown to the resources file. The remaining rules are skipped, and the run fails, even if the structural validation passed. The structural messages are reported as usual.
 
-With `--cvForce`, the same problems are warnings (Warn-3018), and the validation goes on with the best release it can get: the nearest newer release, then the latest, then OLS's current release. A forced result is therefore not a check against the declared release: each substitute is named in a Warn-3018 and in the report line. In a forced run, `--cvOffline` stops the downloads, but OLS may still be asked as the last resort.
+With `--cvForce`, the same problems are warnings (Warn-3018), and the validation goes on with the best release it can get: the nearest newer release, then the latest, then OLS's current release. A forced result is therefore not a check against the declared release: each substitute is named in a Warn-3018 and in the report line. With `--cvOffline`, OLS is not asked: a forced offline run substitutes only from the cache, and a vocabulary with no release there is still an Error-3017.
 
-`--cvSource ols` needs `--cvForce`: without it, each vocabulary that is looked up is an Error-3017. With it, each one is a Warn-3018 and marked `not re-runnable`. A vocabulary for which OLS reports no version (`config.version` of `/api/ontologies/{id}`; at the time of writing, OLS reports PSI-MS only by its version IRI) is an Error-3017 even in a forced run.
+`--cvSource ols` needs `--cvForce`: without it, each vocabulary that is looked up is an Error-3017. With it, each one is a Warn-3018 and marked `not re-runnable`. The version recorded is the one OLS reports (`config.version` of `/api/ontologies/{id}`), else the one its version IRI names, e.g. `4.2.15` for `http://purl.obolibrary.org/obo/ms/4.2.15/ms.owl` (OLS reports PSI-MS this way). A vocabulary for which OLS names neither is an Error-3017 even in a forced run. `--cvSource ols` cannot be combined with `--cvOffline`.
 
 The exit code follows the same rule as before: the run fails if a message at or above the chosen level (`-l`) is a warning or an error. The new warnings (3018 to 3021 and 3023) therefore fail a run at the levels Info (the default) and Warn; run with `-l Error` to fail on errors only.
 
@@ -184,10 +184,10 @@ A file given with `--cvResources` replaces the default's entries with the same k
 |A vocabulary release is not available, in a forced run; another release, or OLS, was used instead.
 
 |Warn-3019
-|The file declares an older release than the one the mapping rules were written for.
+|The file declares an older release than the one the mapping rules were written for. Only with a mapping that names vocabulary versions; the bundled mapping does not yet.
 
 |Warn-3020
-|The declared release cannot be compared with the mapping's version; the declared one is used.
+|The declared release cannot be compared with the mapping's version; the declared one is used. Only with a mapping that names vocabulary versions, as Warn-3019.
 
 |Warn-3021
 |The declared version is not a version value; it is treated as undeclared.
