@@ -49,7 +49,9 @@ import org.springframework.web.client.HttpClientErrorException;
 /**
  * The local lookup gives the ancestors OLS gives (design §8): for each term
  * that {@link OlsRecorder} recorded, the vocabulary is resolved at the version
- * OLS reported ({@code versions.json}) through the vocabulary cache and a
+ * OLS reported ({@code versions.json}'s {@code version}: config.version where
+ * the vocabulary can resolve it, else the version the versionIri names, as
+ * {@code versionFrom} says; Ruling R-Z) through the vocabulary cache and a
  * strict {@link VocabularyResolver}, and the ancestor id sets are compared.
  *
  * <p>
@@ -82,19 +84,15 @@ public class OlsParityTest {
     }
 
     /**
-     * By fixture, {@code <ontology>/<SHORTFORM>}. Neither difference names a
-     * term a mapping rule could name, so no rule check differs.
+     * By fixture, {@code <ontology>/<SHORTFORM>}. The difference names no term
+     * a mapping rule could name, so no rule check differs.
      */
     static final Map<String, KnownDifference> KNOWN_DIFFERENCES = Map.of(
         "obi/OBI_0000094", new KnownDifference(Set.of("OIO:ObsoleteClass"),
             Set.of("http://www.geneontology.org/formats/oboInOwl#ObsoleteClass"),
             "OBI:0000094 is obsolete in OBI, under oboInOwl:ObsoleteClass; OLS gives that class, which is outside"
                 + " the OBO PURL space, the curie OIO:ObsoleteClass, while the OWL reader keeps any IRI outside"
-                + " that space whole"),
-        "pride/PRIDE_0000307", new KnownDifference(Set.of("BFO:0000001"), Set.of(),
-            "pride_cv.obo has is_a: BFO:0000001 but no [Term] stanza for BFO:0000001; the term index leaves a"
-                + " parent that is no term of the release out (TermIndexWriter), while OLS, loading pride_cv.owl,"
-                + " lists it"));
+                + " that space whole"));
 
     /** One recorded term. */
     record Fixture(String ontology, String name, String oboId, String label, String prefix, Set<String> olsAncestors,
@@ -188,6 +186,7 @@ public class OlsParityTest {
     private static Resolution resolve(Fixture f) {
         JsonNode recorded = versions().path("ontologies").path(f.ontology());
         String version = recorded.path("version").isTextual() ? recorded.path("version").asText() : null;
+        String from = recorded.path("versionFrom").asText("?");
         if (version == null) {
             return new Resolution(null, "(none)", Optional.of("OLS names no version (config.version "
                 + recorded.path("configVersion") + ", versionIri " + recorded.path("versionIri") + ")"));
@@ -197,7 +196,6 @@ public class OlsParityTest {
         assertEquals(entry, RESOURCES.forLabel(f.prefix()).orElseThrow(), f + ": the term's prefix " + f.prefix()
             + " names another vocabulary");
         if (!entry.scheme().accepts(version) && !DeclaredVersion.isDate(version)) {
-            // e.g. NCIT's 26.02d, NCI's release name: it names no release of the OBO Edition
             return new Resolution(null, version, Optional.of(version + " is no " + entry.scheme()
                 + " version and no date"));
         }
@@ -218,8 +216,8 @@ public class OlsParityTest {
             // the term is missing: localAncestorsMatchOls reports it
         }
         ResolvedVocabulary used = resolver.resolved().get(0);
-        System.out.printf("resolved %s at OLS's %s: %s %s (%s) in %d ms%n", f.ontology(), version, entry.key(),
-            used.versionUsed(), used.reason(), (System.nanoTime() - start) / 1_000_000);
+        System.out.printf("resolved %s at OLS's %s (from %s): %s %s (%s) in %d ms%n", f.ontology(), version, from,
+            entry.key(), used.versionUsed(), used.reason(), (System.nanoTime() - start) / 1_000_000);
         if (!used.reason().equals("FILE") && !used.reason().equals("FILE_DATE")) {
             return new Resolution(resolver, version, Optional.of("the resolver used " + used.versionUsed()
                 + " (" + used.reason() + "), not OLS's version"));

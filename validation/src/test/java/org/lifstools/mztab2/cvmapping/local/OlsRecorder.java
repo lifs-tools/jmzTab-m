@@ -65,8 +65,10 @@ import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
  * shape of the webapp's {@code ols-stub} ({@code {"term": {...}, "ancestors":
  * [...]}}). For each ontology it records {@code config.version} and
  * {@code config.versionIri} of {@code /api/ontologies/{o}}, the version
- * {@link OlsCurrentReleaseSource} derives from them, and the recording date,
- * in {@code versions.json}.</p>
+ * {@link OlsCurrentReleaseSource} derives from them ({@code olsCurrentVersion}),
+ * the parity's fixed {@code version} with {@code versionFrom} (Ruling R-Z:
+ * config.version where the vocabulary can resolve it, else the version the
+ * versionIri names), and the recording date, in {@code versions.json}.</p>
  */
 @Tag("network")
 @EnabledIfSystemProperty(named = OlsRecorder.OUT, matches = ".+")
@@ -161,24 +163,41 @@ public class OlsRecorder {
             JsonNode config = get(URI.create(OLS + "ontologies/" + o)).path("config");
             Optional<String> configVersion = text(config, "version");
             Optional<String> versionIri = text(config, "versionIri");
-            Optional<String> version = configVersion.isPresent() ? configVersion
-                : versionIri.flatMap(VocabularyCache::purlVersion);
+            Optional<String> iriVersion = versionIri.flatMap(VocabularyCache::purlVersion);
+            // what OlsCurrentReleaseSource reports (Ruling R-T)
+            Optional<String> current = configVersion.isPresent() ? configVersion : iriVersion;
+            // the parity's fixed version (Ruling R-Z): config.version where the vocabulary can resolve it
+            boolean configResolves = configVersion.filter(c -> resolvable(o, c)).isPresent();
+            Optional<String> version = configResolves ? configVersion : iriVersion;
             Map<String, Object> v = new LinkedHashMap<>();
             v.put("configVersion", configVersion.orElse(null));
             v.put("versionIri", versionIri.orElse(null));
+            v.put("olsCurrentVersion", current.orElse(null));
             v.put("version", version.orElse(null));
+            v.put("versionFrom", version.isEmpty() ? null : configResolves ? "config.version" : "versionIri");
             byOntology.put(o, v);
-            if (version.isEmpty()) {
+            if (current.isEmpty()) {
                 unversioned.add(o);
             }
-            System.out.printf("version %s: config.version=%s versionIri=%s -> %s (fileLocation %s)%n", o,
-                configVersion.orElse("-"), versionIri.orElse("-"), version.orElse("NONE"),
-                text(config, "fileLocation").orElse("-"));
+            System.out.printf("version %s: config.version=%s versionIri=%s -> %s, parity at %s (fileLocation %s)%n",
+                o, configVersion.orElse("-"), versionIri.orElse("-"), current.orElse("NONE"),
+                version.orElse("NONE"), text(config, "fileLocation").orElse("-"));
         }
         versions.put("ontologies", byOntology);
         JSON.writeValue(out.resolve("versions.json").toFile(), versions);
         System.out.println("no config.version and no versioned versionIri: " + unversioned);
         System.out.println("OLS requests: " + requests);
+    }
+
+    /**
+     * Whether the vocabulary's resolver can take the version: a value of its
+     * scheme, or a date (Ruling R-Y). NCIT's 26.02d, NCI's release name, is
+     * neither; its versionIri names the OBO Edition's 2026-03-19.
+     */
+    private static boolean resolvable(String ontology, String version) {
+        VocabularyEntry e = PreferredResources.defaults().forLabel(ontology).orElseThrow(
+            () -> new IllegalStateException(ontology + " is no vocabulary of the shipped resources"));
+        return e.scheme().accepts(version) || DeclaredVersion.isDate(version);
     }
 
     private Map<String, Object> fixture(String ontology, String oboId) throws IOException, InterruptedException {
