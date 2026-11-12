@@ -15,26 +15,23 @@ The CI workflow publishes snapshots on every push to `master` and `1.0.x`: to Gi
 
 == Publishing a release
 
+A release is staged and published from your machine with `scripts/release.sh`, so that the signing key never leaves it:
+
+* `scripts/release.sh stage` builds all modules from scratch with `./mvnw -B -Pcentral-release -DskipUpload=true clean deploy`, which runs the unit and integration tests and signs every file. It checks that the bundle holds the six modules `jmztabm` (parent POM), `jmztabm-api`, `jmztabm-io`, `jmztabm-validation`, `jmztabm-cli` and `jmztabm-test-utils`, each with its POM, jar, sources and javadoc jars and their `.asc` signatures. It uploads the bundle to the Central Portal and waits for the validation, but does not publish it. It refuses to run with uncommitted changes, with a SNAPSHOT version, or when the checked out commit is not tagged `release-<version>`.
+* `scripts/release.sh publish <id>` publishes exactly the staged files, without building again, after you type the deployment name to confirm. It then waits until the Portal reports them as published. `scripts/release.sh drop <id>` drops the deployment instead.
+
+Both refuse a deployment that is not named "jmzTab-m …" or contains components other than `org.lifs-tools:jmztabm*`. They use `scripts/central-portal.sh`, a small client of the https://central.sonatype.org/publish/publish-portal-api/[Publisher API], and need `curl` and `jq`.
+
 === Credentials (once)
 
-. A user token of the Central Portal (https://central.sonatype.com/account, "Generate User Token") for an account that may publish to the namespace `org.lifs-tools`. Add it to `~/.m2/settings.xml` as server `central`:
-+
-----
-<servers>
-  <server>
-    <id>central</id>
-    <username><!-- token username --></username>
-    <password><!-- token password --></password>
-  </server>
-</servers>
-----
-. A GPG key whose public key is on a key server, e.g. `gpg --keyserver keyserver.ubuntu.com --send-keys <KEY_ID>`. The default key is used; pass `-Dgpg.keyname=<KEY_ID>` for another one. The passphrase comes from the gpg agent or from the environment variable `MAVEN_GPG_PASSPHRASE`.
+. A user token of the Central Portal (https://central.sonatype.com/account, "Generate User Token") for an account that may publish to the namespace `org.lifs-tools`. `scripts/release.sh` asks for it, or reads it from the environment variables `CENTRAL_TOKEN_USERNAME` and `CENTRAL_TOKEN_PASSWORD`.
+. A GPG key whose public key is on a key server, e.g. `gpg --keyserver keyserver.ubuntu.com --send-keys <KEY_ID>`. The default key is used; pass `-Dgpg.keyname=<KEY_ID>` for another one (`scripts/release.sh stage -Dgpg.keyname=<KEY_ID>`). The passphrase comes from the gpg agent or from the environment variable `MAVEN_GPG_PASSPHRASE`.
 
 === Steps
 
 The example releases 1.0.8 from the `1.0.x` branch.
 
-. Check that the CI build of the branch passed, and run `./mvnw -B verify` locally: the CI build runs `package` only, so it does not run the integration tests.
+. Check that the CI build of the branch passed. The CI build runs `package` only, without the integration tests; `scripts/release.sh stage` runs them.
 . In the release notes below, replace "(unreleased)" with the release date.
 . Set the release version, commit and tag:
 +
@@ -43,14 +40,20 @@ The example releases 1.0.8 from the `1.0.x` branch.
 git commit -am "Release 1.0.8"
 git tag release-1.0.8
 ----
-. Build, sign and upload all modules to the Central Portal:
+. Build, test, sign and upload all modules to the Central Portal:
 +
 ----
-./mvnw -B -Pcentral-release deploy
+scripts/release.sh stage
 ----
 +
-The deployment is uploaded and validated, but not published (`autoPublish` is `false`).
-. Open the deployment "jmzTab-m 1.0.8" at https://central.sonatype.com/publishing/deployments. It must contain the six modules `jmztabm` (parent POM), `jmztabm-api`, `jmztabm-io`, `jmztabm-validation`, `jmztabm-cli` and `jmztabm-test-utils`, each with its POM, jar, sources and javadoc jars and their `.asc` signatures. Then click "Publish". If something is wrong, "Drop" the deployment, fix it and deploy again: a published version cannot be changed or deleted.
+At the end it prints the deployment id and the commands to publish or drop it. If the build or the validation fails, fix the problem, move the tag (`git tag -f release-1.0.8`) and stage again.
+. Check the deployment "jmzTab-m 1.0.8" at https://central.sonatype.com/publishing/deployments. To try the staged artifacts in another project first, see "Testing a staged deployment" below. Then publish it:
++
+----
+scripts/release.sh publish <DEPLOYMENT_ID>
+----
++
+If something is wrong, `scripts/release.sh drop <DEPLOYMENT_ID>`, fix it and stage again: a published version cannot be changed or deleted. "Publish" and "Drop" in the portal do the same.
 . Push the release commit and the tag:
 +
 ----
@@ -72,6 +75,41 @@ cp dist/jmztabm-validator-amd64-windows/jmztabm-validator.exe release/jmztabm-va
 gh release create release-1.0.8 -R lifs-tools/jmzTab-m --verify-tag --title "jmzTab-m 1.0.8" --notes-file notes.md release/*
 ----
 . Set the next development version, e.g. `./mvnw versions:set -DnewVersion=1.0.9-SNAPSHOT -DgenerateBackupPoms=false`, add a new "(unreleased)" section to the release notes, commit and push.
+
+Without the script, `./mvnw -B -Pcentral-release deploy` stages a release too: the plugin uploads the bundle itself, with the token from server `central` in `~/.m2/settings.xml` (`<username>` and `<password>`), and you publish it in the portal. It does not check the bundle or the tag.
+
+=== Testing a staged deployment
+
+A validated deployment can be used as a Maven repository before it is published (https://central.sonatype.org/publish/publish-portal-api/[Publisher API], "Manually testing a deployment bundle"). The Portal expects the header `Authorization: Bearer <token>`, where `<token>` is the output of `printf '%s:%s' '<token username>' '<token password>' | base64`. Add it to `~/.m2/settings.xml`:
+
+----
+<servers>
+  <server>
+    <id>central.manual.testing</id>
+    <configuration>
+      <httpHeaders>
+        <property>
+          <name>Authorization</name>
+          <value>Bearer <!-- token --></value>
+        </property>
+      </httpHeaders>
+    </configuration>
+  </server>
+</servers>
+<profiles>
+  <profile>
+    <id>central.manual.testing</id>
+    <repositories>
+      <repository>
+        <id>central.manual.testing</id>
+        <url>https://central.sonatype.com/api/v1/publisher/deployments/download/</url>
+      </repository>
+    </repositories>
+  </profile>
+</profiles>
+----
+
+Then build a project that uses jmzTab-m 1.0.8 with `-Pcentral.manual.testing`.
 
 == Release notes
 
