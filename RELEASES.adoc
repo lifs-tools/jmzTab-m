@@ -75,7 +75,7 @@ gh release create release-1.0.8 -R lifs-tools/jmzTab-m --verify-tag --title "jmz
 
 == Release notes
 
-=== 1.0.8 (unreleased)
+=== 1.0.8 2026-11-12
 
 . *Migration from 1.0.6:* 1.0.8 is the first release with the Maven `groupId` `org.lifs-tools`; up to 1.0.6 it was `de.isas.mztab` (1.0.7 was not released). The `artifactId`s are unchanged. The Java packages `de.isas.mztab2.*` are now `org.lifstools.mztab2.*`, and `de.isas.lipidomics.mztab2.validation.*` (bean validation in `jmztabm-api`) is now `org.lifstools.mztab2.validation.*`; `uk.ac.ebi.pride.jmztab2.*` is unchanged. Releases are published through the Central Portal (see "Publishing a release").
 . JSON (#194, from #218): metadata elements with an id (`ms_run`, `assay`, `sample`, `study_variable`, `instrument`, `cv`, `database`, …; the 13 schemas marked `x-mztab-serialize-by-id`) are read from and written as their id when they are referenced, as in 1.0.6. Before, JSON written by 1.0.6 (e.g. `"sample_ref": 1`) could not be read, and `--toJson` wrote nested copies instead of ids. The annotation is now declared in the OpenAPI spec, so a regenerated model keeps it. With `--fromJson`, a file that contains only `null` fails with a message instead of a NullPointerException. Still not readable: JSON whose `scan_polarity` is a string instead of a list of parameters, as in the MetaboScape example of HUPO-PSI/mzTab-M.
