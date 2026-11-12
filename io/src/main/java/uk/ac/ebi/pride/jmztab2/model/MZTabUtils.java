@@ -573,6 +573,14 @@ public class MZTabUtils {
                         throw new MZTabException(new MZTabError(
                             FormatErrorType.Publication, lineNumber, target, pub));
                     }
+                    if (type == PublicationItem.TypeEnum.DOI
+                        && accession.indexOf(COLON) >= 0
+                        && !accession.startsWith("10.")) {
+                        // only a DOI itself (10.…) may contain ':'; a DOI
+                        // URL or a doubled "doi:" stays invalid, as in 1.0.6
+                        throw new MZTabException(new MZTabError(
+                            FormatErrorType.Publication, lineNumber, target, pub));
+                    }
                     item = new PublicationItem().type(type).
                         accession(accession);
                     publication.addPublicationItemsItem(item);
