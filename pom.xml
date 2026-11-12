@@ -713,7 +713,7 @@
             </distributionManagement>
         </profile>
         <profile>
-            <id>jfrog</id>
+            <id>artifactory</id>
             <distributionManagement>
                 <repository>
                     <id>artifactory-releases</id>
