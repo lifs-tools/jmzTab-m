@@ -1,0 +1,39 @@
+{
+  "term" : {
+    "obo_id" : "MS:1000768",
+    "label" : "Thermo nativeID format",
+    "iri" : "http://purl.obolibrary.org/obo/MS_1000768",
+    "ontology_prefix" : "MS"
+  },
+  "ancestors" : [ {
+    "obo_id" : "MS:0000000",
+    "label" : "Proteomics Standards Initiative Mass Spectrometry Vocabularies",
+    "iri" : "http://purl.obolibrary.org/obo/MS_0000000",
+    "ontology_prefix" : "MS"
+  }, {
+    "obo_id" : "MS:1000442",
+    "label" : "spectrum",
+    "iri" : "http://purl.obolibrary.org/obo/MS_1000442",
+    "ontology_prefix" : "MS"
+  }, {
+    "obo_id" : "MS:1000499",
+    "label" : "spectrum attribute",
+    "iri" : "http://purl.obolibrary.org/obo/MS_1000499",
+    "ontology_prefix" : "MS"
+  }, {
+    "obo_id" : "MS:1000577",
+    "label" : "source data file",
+    "iri" : "http://purl.obolibrary.org/obo/MS_1000577",
+    "ontology_prefix" : "MS"
+  }, {
+    "obo_id" : "MS:1000767",
+    "label" : "native spectrum identifier format",
+    "iri" : "http://purl.obolibrary.org/obo/MS_1000767",
+    "ontology_prefix" : "MS"
+  }, {
+    "obo_id" : "MS:1001458",
+    "label" : "spectrum generation information",
+    "iri" : "http://purl.obolibrary.org/obo/MS_1001458",
+    "ontology_prefix" : "MS"
+  } ]
+}

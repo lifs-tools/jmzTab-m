@@ -1,0 +1,84 @@
+{
+  "term" : {
+    "obo_id" : "DOID:684",
+    "label" : "hepatocellular carcinoma",
+    "iri" : "http://purl.obolibrary.org/obo/DOID_684",
+    "ontology_prefix" : "DOID"
+  },
+  "ancestors" : [ {
+    "obo_id" : "DOID:0050686",
+    "label" : "organ system cancer",
+    "iri" : "http://purl.obolibrary.org/obo/DOID_0050686",
+    "ontology_prefix" : "DOID"
+  }, {
+    "obo_id" : "DOID:0050687",
+    "label" : "cell type cancer",
+    "iri" : "http://purl.obolibrary.org/obo/DOID_0050687",
+    "ontology_prefix" : "DOID"
+  }, {
+    "obo_id" : "DOID:0080355",
+    "label" : "hepatobiliary system cancer",
+    "iri" : "http://purl.obolibrary.org/obo/DOID_0080355",
+    "ontology_prefix" : "DOID"
+  }, {
+    "obo_id" : "DOID:14566",
+    "label" : "disease of cellular proliferation",
+    "iri" : "http://purl.obolibrary.org/obo/DOID_14566",
+    "ontology_prefix" : "DOID"
+  }, {
+    "obo_id" : "DOID:162",
+    "label" : "cancer",
+    "iri" : "http://purl.obolibrary.org/obo/DOID_162",
+    "ontology_prefix" : "DOID"
+  }, {
+    "obo_id" : "DOID:170",
+    "label" : "endocrine gland cancer",
+    "iri" : "http://purl.obolibrary.org/obo/DOID_170",
+    "ontology_prefix" : "DOID"
+  }, {
+    "obo_id" : "DOID:305",
+    "label" : "carcinoma",
+    "iri" : "http://purl.obolibrary.org/obo/DOID_305",
+    "ontology_prefix" : "DOID"
+  }, {
+    "obo_id" : "DOID:3118",
+    "label" : "hepatobiliary disease",
+    "iri" : "http://purl.obolibrary.org/obo/DOID_3118",
+    "ontology_prefix" : "DOID"
+  }, {
+    "obo_id" : "DOID:3119",
+    "label" : "gastrointestinal system cancer",
+    "iri" : "http://purl.obolibrary.org/obo/DOID_3119",
+    "ontology_prefix" : "DOID"
+  }, {
+    "obo_id" : "DOID:3571",
+    "label" : "liver cancer",
+    "iri" : "http://purl.obolibrary.org/obo/DOID_3571",
+    "ontology_prefix" : "DOID"
+  }, {
+    "obo_id" : "DOID:4",
+    "label" : "disease",
+    "iri" : "http://purl.obolibrary.org/obo/DOID_4",
+    "ontology_prefix" : "DOID"
+  }, {
+    "obo_id" : "DOID:409",
+    "label" : "liver disease",
+    "iri" : "http://purl.obolibrary.org/obo/DOID_409",
+    "ontology_prefix" : "DOID"
+  }, {
+    "obo_id" : "DOID:686",
+    "label" : "liver carcinoma",
+    "iri" : "http://purl.obolibrary.org/obo/DOID_686",
+    "ontology_prefix" : "DOID"
+  }, {
+    "obo_id" : "DOID:7",
+    "label" : "disease of anatomical entity",
+    "iri" : "http://purl.obolibrary.org/obo/DOID_7",
+    "ontology_prefix" : "DOID"
+  }, {
+    "obo_id" : "DOID:77",
+    "label" : "gastrointestinal system disease",
+    "iri" : "http://purl.obolibrary.org/obo/DOID_77",
+    "ontology_prefix" : "DOID"
+  } ]
+}

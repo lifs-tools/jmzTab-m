@@ -96,6 +96,10 @@
             <version>${olsclient.version}</version>
         </dependency>
         <dependency>
+            <groupId>com.networknt</groupId>
+            <artifactId>json-schema-validator</artifactId>
+        </dependency>
+        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>jmztabm-test-utils</artifactId>
             <version>${project.version}</version>

@@ -21,7 +21,12 @@ import org.lifstools.mztab2.cvmapping.CvParameterLookupService;
 import org.lifstools.mztab2.cvmapping.JxPathElement;
 import org.lifstools.mztab2.cvmapping.RemoveUserParams;
 import org.lifstools.mztab2.cvmapping.RuleEvaluationResult;
+import org.lifstools.mztab2.cvmapping.local.LookupPolicy;
+import org.lifstools.mztab2.cvmapping.local.ResolvedVocabulary;
+import org.lifstools.mztab2.cvmapping.local.VocabularyResolver;
+import org.lifstools.mztab2.cvmapping.local.VocabularyUnavailableException;
 import org.lifstools.mztab2.io.serialization.ParameterConverter;
+import org.lifstools.mztab2.model.CV;
 import org.lifstools.mztab2.model.MzTab;
 import org.lifstools.mztab2.model.Parameter;
 import org.lifstools.mztab2.model.ValidationMessage;
@@ -40,9 +45,12 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Unmarshaller;
@@ -61,6 +69,13 @@ import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabError;
  * First, all preValidators are run, then, the cv parameter validation is executed, before finally, 
  * the postValidators are run. Each validator can add validation messages to the output.
  *
+ * <p>The messages of {@link #validate(MzTab)} come in this order: the pre
+ * validators', the cv definition check's, the rules' (each rule's in turn),
+ * the Error-3017 of a vocabulary that cannot be had (strict runs; the
+ * remaining rules are then skipped), the lookup service's version messages
+ * ({@link CvParameterLookupService#sourceMessages()}, Warn-3018 to
+ * Warn-3023 and Info-3022), and last the post validators'.</p>
+ *
  * @author nilshoffmann
  */
 @Slf4j
@@ -68,6 +83,8 @@ import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabError;
 public class CvMappingValidator implements Validator<MzTab> {
 
     private final CvMapping mapping;
+    /** The lookup service the rule handler asks; may be null for a validator built without a factory. */
+    private final CvParameterLookupService client;
     private final CvRuleHandler ruleHandler;
     private final boolean errorIfTermNotInRule;
     private final CvTermValidationHandler andHandler;
@@ -113,18 +130,7 @@ public class CvMappingValidator implements Validator<MzTab> {
         JAXBContext jaxbContext = JAXBContext.newInstance(CvMapping.class);
         Unmarshaller u = jaxbContext.createUnmarshaller();
         CvMapping mapping = (CvMapping) u.unmarshal(mappingFile);
-        return new CvMappingValidator.CvMappingValidatorBuilder().mapping(
-            mapping).
-            ruleHandler(new ResolvingCvRuleHandler(client)).
-            errorIfTermNotInRule(errorIfTermNotInRule).
-            andHandler(new AndValidationHandler()).
-            orHandler(new OrValidationHandler()).
-            xorHandler(new XorValidationHandler()).
-            extraHandler(new ExtraParametersValidationHandler()).
-            sharedHandler(new SharedParametersValidationHandler()).
-            cvTermSelectionHandler(new RemoveUserParams()).
-            emptyRuleHandler(new EmptyRuleHandler()).
-            build();
+        return of(mapping, client, errorIfTermNotInRule);
     }
 
     /**
@@ -176,21 +182,48 @@ public class CvMappingValidator implements Validator<MzTab> {
      */
     public static CvMappingValidator of(URL mappingFile,
         CvParameterLookupService client, boolean errorIfTermNotInRule) throws JAXBException {
+        return of(readMapping(mappingFile), client, errorIfTermNotInRule);
+    }
+
+    /**
+     * Reads a cv mapping file.
+     *
+     * @param url the mapping file URL
+     * @return the mapping
+     * @throws JAXBException if errors occur during unmarshalling of the mapping xml file.
+     */
+    public static CvMapping readMapping(URL url) throws JAXBException {
         JAXBContext jaxbContext = JAXBContext.newInstance(CvMapping.class);
         Unmarshaller u = jaxbContext.createUnmarshaller();
-        CvMapping mapping = (CvMapping) u.unmarshal(mappingFile);
-        return new CvMappingValidator.CvMappingValidatorBuilder().mapping(
-            mapping).
-            ruleHandler(new ResolvingCvRuleHandler(client)).
-            errorIfTermNotInRule(errorIfTermNotInRule).
-            andHandler(new AndValidationHandler()).
-            orHandler(new OrValidationHandler()).
-            xorHandler(new XorValidationHandler()).
-            extraHandler(new ExtraParametersValidationHandler()).
-            sharedHandler(new SharedParametersValidationHandler()).
-            cvTermSelectionHandler(new RemoveUserParams()).
-            emptyRuleHandler(new EmptyRuleHandler()).
-            build();
+        return (CvMapping) u.unmarshal(url);
+    }
+
+    /**
+     * Create a new instance of CvMappingValidator for one file, whose terms
+     * are looked up as the policy says.
+     *
+     * The lookup service is built for this file only, from its
+     * {@code cv[n]} entries: validate this file with it, and build another
+     * validator for another file. A vocabulary is resolved when one of its
+     * terms is first looked up. Under a strict policy, a vocabulary that
+     * cannot be had gives one Error-3017 and the remaining rules are
+     * skipped; see {@link #validate(MzTab)}.
+     *
+     * @param mapping the cv mapping to use
+     * @param mzTab the file to validate, for its {@code cv[n]} entries
+     * @param policy where and how strictly vocabulary versions are resolved
+     * @param errorIfTermNotInRule raise an error if a term is not defined within an otherwise matching rule for the element
+     * @return a new CvMappingValidator instance
+     */
+    public static CvMappingValidator of(CvMapping mapping, MzTab mzTab,
+        LookupPolicy policy, boolean errorIfTermNotInRule) {
+        List<CV> cvs = mzTab.getMetadata() == null || mzTab.getMetadata().
+            getCv() == null ? List.of() : mzTab.getMetadata().getCv();
+        // phase 1: the mapping names no vocabulary versions yet
+        VocabularyResolver resolver = new VocabularyResolver(policy, cvs,
+            Map.of());
+        return of(mapping, new CvParameterLookupService(resolver),
+            errorIfTermNotInRule);
     }
 
     /**
@@ -208,6 +241,7 @@ public class CvMappingValidator implements Validator<MzTab> {
         boolean errorIfTermNotInRule) {
         return new CvMappingValidator.CvMappingValidatorBuilder().mapping(
             mapping).
+            client(client).
             ruleHandler(new ResolvingCvRuleHandler(client)).
             errorIfTermNotInRule(errorIfTermNotInRule).
             andHandler(new AndValidationHandler()).
@@ -220,6 +254,30 @@ public class CvMappingValidator implements Validator<MzTab> {
             build();
     }
 
+    /**
+     * The vocabulary releases the lookup used, for a validator made with a
+     * {@link LookupPolicy}; see
+     * {@link CvParameterLookupService#resolvedVocabularies()}.
+     *
+     * @return the vocabularies so far, in the order they were resolved; empty
+     * for OLS and for a validator built without a lookup service
+     */
+    public List<ResolvedVocabulary> resolvedVocabularies() {
+        return client == null ? List.of() : client.resolvedVocabularies();
+    }
+
+    /** The lookup service the rule handler asks, for tests. */
+    CvParameterLookupService lookupService() {
+        return client;
+    }
+
+    /**
+     * Validates the file. See the class description for the order of the
+     * messages.
+     *
+     * @param mzTab the file
+     * @return the messages
+     */
     @Override
     public List<ValidationMessage> validate(MzTab mzTab) {
         final List<ValidationMessage> messages = new LinkedList<>();
@@ -237,12 +295,22 @@ public class CvMappingValidator implements Validator<MzTab> {
             getCvMappingRuleList().
             getCvMappingRule().
             size());
-        mapping.getCvMappingRuleList().
-            getCvMappingRule().
-            forEach((rule) ->
-            {
-                messages.addAll(handleRule(context, rule, errorIfTermNotInRule));
-            });
+        // the labels of the vocabularies that cannot be had; one stops the rules
+        final Set<String> unavailable = new HashSet<>();
+        for (CvMappingRule rule : mapping.getCvMappingRuleList().
+            getCvMappingRule()) {
+            messages.addAll(handleRule(context, rule, errorIfTermNotInRule,
+                unavailable));
+            if (!unavailable.isEmpty()) {
+                log.debug("Skipping the remaining rules after rule {}: a vocabulary cannot be had",
+                    rule.getId());
+                break;
+            }
+        }
+        if (client != null) {
+            client.sourceMessages().
+                forEach((error) -> messages.add(error.toValidationMessage()));
+        }
         log.debug("Applying {} post validation steps.", postValidators.size());
         postValidators.stream().
             forEach((validator) ->
@@ -275,13 +343,22 @@ public class CvMappingValidator implements Validator<MzTab> {
     /**
      * Applies one rule. An exception while applying it is reported as an
      * error of that rule, after the messages it produced so far, so that the
-     * other rules still run.
+     * other rules still run. A vocabulary that cannot be had is reported
+     * instead by its Error-3017, once per vocabulary and not as an error of
+     * the rule, and its label is added to {@code unavailable}.
      */
     private List<ValidationMessage> handleRule(JXPathContext context,
-        CvMappingRule rule, boolean errorOnTermNotInRule) {
+        CvMappingRule rule, boolean errorOnTermNotInRule,
+        Set<String> unavailable) {
         final List<ValidationMessage> messages = new ArrayList<>();
         try {
             applyRule(context, rule, errorOnTermNotInRule, messages);
+        } catch (VocabularyUnavailableException vue) {
+            log.warn("Rule {} could not be applied: {}", rule.getId(), vue.
+                getMessage());
+            if (unavailable.add(vue.label().toUpperCase(Locale.ROOT))) {
+                messages.add(vue.error().toValidationMessage());
+            }
         } catch (RuntimeException re) {
             log.warn("Rule {} could not be applied: {}", rule.getId(), re.
                 toString());

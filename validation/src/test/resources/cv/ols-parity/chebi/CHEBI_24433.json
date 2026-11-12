@@ -1,0 +1,14 @@
+{
+  "term" : {
+    "obo_id" : "CHEBI:24433",
+    "label" : "group",
+    "iri" : "http://purl.obolibrary.org/obo/CHEBI_24433",
+    "ontology_prefix" : "CHEBI"
+  },
+  "ancestors" : [ {
+    "obo_id" : "CHEBI:24431",
+    "label" : "chemical entity",
+    "iri" : "http://purl.obolibrary.org/obo/CHEBI_24431",
+    "ontology_prefix" : "CHEBI"
+  } ]
+}

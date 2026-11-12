@@ -1,0 +1,29 @@
+{
+  "term" : {
+    "obo_id" : "UO:0000072",
+    "label" : "picomolal",
+    "iri" : "http://purl.obolibrary.org/obo/UO_0000072",
+    "ontology_prefix" : "UO"
+  },
+  "ancestors" : [ {
+    "obo_id" : "UO:0000000",
+    "label" : "unit",
+    "iri" : "http://purl.obolibrary.org/obo/UO_0000000",
+    "ontology_prefix" : "UO"
+  }, {
+    "obo_id" : "UO:0000051",
+    "label" : "concentration unit",
+    "iri" : "http://purl.obolibrary.org/obo/UO_0000051",
+    "ontology_prefix" : "UO"
+  }, {
+    "obo_id" : "UO:0000067",
+    "label" : "unit of molality",
+    "iri" : "http://purl.obolibrary.org/obo/UO_0000067",
+    "ontology_prefix" : "UO"
+  }, {
+    "obo_id" : "UO:1000068",
+    "label" : "molal based unit",
+    "iri" : "http://purl.obolibrary.org/obo/UO_1000068",
+    "ontology_prefix" : "UO"
+  } ]
+}

@@ -1,0 +1,283 @@
+{
+  "$schema": "../../validation/src/main/resources/cv/preferred-resources.schema.json",
+  "$comment": "Resources of the jar/native parity check (.github/scripts/compare-jar-native.sh). Each listed release is dated 2000-01-01, so that a declared date names the newest of them. MS lists every dotted MS version that a file of the CI corpus declares (test-utils/src/main/resources/metabolomics and the examples of HUPO-PSI/mzTab-M), so that those files resolve MS from the cache too; MSIO lists the one MSIO version they declare. .github/scripts/parity-cv-cache.sh pre-fills the cache with every listed release, from the mini vocabularies of validation/src/test/resources/cv/. The URLs are never asked: the runs are offline.",
+  "vocabularies": {
+    "MS": {
+      "labels": [
+        "MS"
+      ],
+      "oboPrefix": "MS",
+      "location": {
+        "format": "OBO",
+        "urlTemplate": "http://localhost.invalid/MS/{version}/psi-ms.obo"
+      },
+      "scheme": "DOTTED",
+      "releases": {
+        "kind": "listed",
+        "releases": [
+          {
+            "version": "3.54.0",
+            "date": "2000-01-01"
+          },
+          {
+            "version": "4.0.9",
+            "date": "2000-01-01"
+          },
+          {
+            "version": "4.0.18",
+            "date": "2000-01-01"
+          },
+          {
+            "version": "4.1.11",
+            "date": "2000-01-01"
+          },
+          {
+            "version": "4.1.138",
+            "date": "2000-01-01"
+          },
+          {
+            "version": "4.1.192",
+            "date": "2000-01-01"
+          },
+          {
+            "version": "4.1.199",
+            "date": "2000-01-01"
+          }
+        ]
+      },
+      "latest": {
+        "kind": "newestRelease"
+      }
+    },
+    "MSIO": {
+      "labels": [
+        "MSIO"
+      ],
+      "oboPrefix": "MSIO",
+      "location": {
+        "format": "OWL_RDFXML",
+        "urlTemplate": "http://localhost.invalid/MSIO/{version}/msio.owl"
+      },
+      "scheme": "DOTTED",
+      "releases": {
+        "kind": "listed",
+        "releases": [
+          {
+            "version": "1.0.1",
+            "date": "2000-01-01"
+          }
+        ]
+      },
+      "latest": {
+        "kind": "newestRelease"
+      }
+    },
+    "BTO": {
+      "labels": [
+        "BTO"
+      ],
+      "oboPrefix": "BTO",
+      "location": {
+        "format": "OBO",
+        "urlTemplate": "http://localhost.invalid/BTO/{version}/fixture.obo"
+      },
+      "scheme": "DOTTED",
+      "releases": {
+        "kind": "listed",
+        "releases": [
+          {
+            "version": "1.0.0",
+            "date": "2000-01-01"
+          }
+        ]
+      },
+      "latest": {
+        "kind": "newestRelease"
+      }
+    },
+    "CHEBI": {
+      "labels": [
+        "CHEBI"
+      ],
+      "oboPrefix": "CHEBI",
+      "location": {
+        "format": "OBO",
+        "urlTemplate": "http://localhost.invalid/CHEBI/{version}/fixture.obo"
+      },
+      "scheme": "DOTTED",
+      "releases": {
+        "kind": "listed",
+        "releases": [
+          {
+            "version": "1.0.0",
+            "date": "2000-01-01"
+          }
+        ]
+      },
+      "latest": {
+        "kind": "newestRelease"
+      }
+    },
+    "CL": {
+      "labels": [
+        "CL"
+      ],
+      "oboPrefix": "CL",
+      "location": {
+        "format": "OBO",
+        "urlTemplate": "http://localhost.invalid/CL/{version}/fixture.obo"
+      },
+      "scheme": "DOTTED",
+      "releases": {
+        "kind": "listed",
+        "releases": [
+          {
+            "version": "1.0.0",
+            "date": "2000-01-01"
+          }
+        ]
+      },
+      "latest": {
+        "kind": "newestRelease"
+      }
+    },
+    "DOID": {
+      "labels": [
+        "DOID"
+      ],
+      "oboPrefix": "DOID",
+      "location": {
+        "format": "OBO",
+        "urlTemplate": "http://localhost.invalid/DOID/{version}/fixture.obo"
+      },
+      "scheme": "DOTTED",
+      "releases": {
+        "kind": "listed",
+        "releases": [
+          {
+            "version": "1.0.0",
+            "date": "2000-01-01"
+          }
+        ]
+      },
+      "latest": {
+        "kind": "newestRelease"
+      }
+    },
+    "NCBITaxon": {
+      "labels": [
+        "NCBITaxon"
+      ],
+      "oboPrefix": "NCBITaxon",
+      "location": {
+        "format": "OBO",
+        "urlTemplate": "http://localhost.invalid/NCBITaxon/{version}/fixture.obo"
+      },
+      "scheme": "DOTTED",
+      "releases": {
+        "kind": "listed",
+        "releases": [
+          {
+            "version": "1.0.0",
+            "date": "2000-01-01"
+          }
+        ]
+      },
+      "latest": {
+        "kind": "newestRelease"
+      }
+    },
+    "NCIT": {
+      "labels": [
+        "NCIT"
+      ],
+      "oboPrefix": "NCIT",
+      "location": {
+        "format": "OBO",
+        "urlTemplate": "http://localhost.invalid/NCIT/{version}/fixture.obo"
+      },
+      "scheme": "DOTTED",
+      "releases": {
+        "kind": "listed",
+        "releases": [
+          {
+            "version": "1.0.0",
+            "date": "2000-01-01"
+          }
+        ]
+      },
+      "latest": {
+        "kind": "newestRelease"
+      }
+    },
+    "PRIDE": {
+      "labels": [
+        "PRIDE"
+      ],
+      "oboPrefix": "PRIDE",
+      "location": {
+        "format": "OBO",
+        "urlTemplate": "http://localhost.invalid/PRIDE/{version}/fixture.obo"
+      },
+      "scheme": "DOTTED",
+      "releases": {
+        "kind": "listed",
+        "releases": [
+          {
+            "version": "1.0.0",
+            "date": "2000-01-01"
+          }
+        ]
+      },
+      "latest": {
+        "kind": "newestRelease"
+      }
+    },
+    "STATO": {
+      "labels": [
+        "STATO"
+      ],
+      "oboPrefix": "STATO",
+      "location": {
+        "format": "OBO",
+        "urlTemplate": "http://localhost.invalid/STATO/{version}/fixture.obo"
+      },
+      "scheme": "DOTTED",
+      "releases": {
+        "kind": "listed",
+        "releases": [
+          {
+            "version": "1.0.0",
+            "date": "2000-01-01"
+          }
+        ]
+      },
+      "latest": {
+        "kind": "newestRelease"
+      }
+    },
+    "UO": {
+      "labels": [
+        "UO"
+      ],
+      "oboPrefix": "UO",
+      "location": {
+        "format": "OBO",
+        "urlTemplate": "http://localhost.invalid/UO/{version}/fixture.obo"
+      },
+      "scheme": "DOTTED",
+      "releases": {
+        "kind": "listed",
+        "releases": [
+          {
+            "version": "1.0.0",
+            "date": "2000-01-01"
+          }
+        ]
+      },
+      "latest": {
+        "kind": "newestRelease"
+      }
+    }
+  }
+}

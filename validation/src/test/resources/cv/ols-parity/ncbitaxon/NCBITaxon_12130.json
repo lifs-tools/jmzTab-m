@@ -1,0 +1,69 @@
+{
+  "term" : {
+    "obo_id" : "NCBITaxon:12130",
+    "label" : "rhinovirus A2",
+    "iri" : "http://purl.obolibrary.org/obo/NCBITaxon_12130",
+    "ontology_prefix" : "NCBITaxon"
+  },
+  "ancestors" : [ {
+    "obo_id" : "NCBITaxon:1",
+    "label" : "root",
+    "iri" : "http://purl.obolibrary.org/obo/NCBITaxon_1",
+    "ontology_prefix" : "NCBITaxon"
+  }, {
+    "obo_id" : "NCBITaxon:10239",
+    "label" : "Viruses",
+    "iri" : "http://purl.obolibrary.org/obo/NCBITaxon_10239",
+    "ontology_prefix" : "NCBITaxon"
+  }, {
+    "obo_id" : "NCBITaxon:12058",
+    "label" : "Picornaviridae",
+    "iri" : "http://purl.obolibrary.org/obo/NCBITaxon_12058",
+    "ontology_prefix" : "NCBITaxon"
+  }, {
+    "obo_id" : "NCBITaxon:12059",
+    "label" : "Enterovirus",
+    "iri" : "http://purl.obolibrary.org/obo/NCBITaxon_12059",
+    "ontology_prefix" : "NCBITaxon"
+  }, {
+    "obo_id" : "NCBITaxon:147711",
+    "label" : "Rhinovirus A",
+    "iri" : "http://purl.obolibrary.org/obo/NCBITaxon_147711",
+    "ontology_prefix" : "NCBITaxon"
+  }, {
+    "obo_id" : "NCBITaxon:2559587",
+    "label" : "Riboviria",
+    "iri" : "http://purl.obolibrary.org/obo/NCBITaxon_2559587",
+    "ontology_prefix" : "NCBITaxon"
+  }, {
+    "obo_id" : "NCBITaxon:2732396",
+    "label" : "Orthornavirae",
+    "iri" : "http://purl.obolibrary.org/obo/NCBITaxon_2732396",
+    "ontology_prefix" : "NCBITaxon"
+  }, {
+    "obo_id" : "NCBITaxon:2732408",
+    "label" : "Pisuviricota",
+    "iri" : "http://purl.obolibrary.org/obo/NCBITaxon_2732408",
+    "ontology_prefix" : "NCBITaxon"
+  }, {
+    "obo_id" : "NCBITaxon:2732506",
+    "label" : "Pisoniviricetes",
+    "iri" : "http://purl.obolibrary.org/obo/NCBITaxon_2732506",
+    "ontology_prefix" : "NCBITaxon"
+  }, {
+    "obo_id" : "NCBITaxon:2946630",
+    "label" : "Ensavirinae",
+    "iri" : "http://purl.obolibrary.org/obo/NCBITaxon_2946630",
+    "ontology_prefix" : "NCBITaxon"
+  }, {
+    "obo_id" : "NCBITaxon:3428501",
+    "label" : "Enterovirus alpharhino",
+    "iri" : "http://purl.obolibrary.org/obo/NCBITaxon_3428501",
+    "ontology_prefix" : "NCBITaxon"
+  }, {
+    "obo_id" : "NCBITaxon:464095",
+    "label" : "Picornavirales",
+    "iri" : "http://purl.obolibrary.org/obo/NCBITaxon_464095",
+    "ontology_prefix" : "NCBITaxon"
+  } ]
+}

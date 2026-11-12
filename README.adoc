@@ -77,6 +77,132 @@ To run a semantic validation based on a controlled vocabulary term mapping file,
 
   java -jar jmztabm-cli-<VERSION>.jar -c examples/MTBLS263.mztab -level Info -s cv-mapping/mzTab-M-mapping.xml
 
+=== Semantic validation with local controlled vocabularies
+
+The semantic validation looks up the terms of the file in the controlled vocabularies (CVs) it uses, e.g. whether `MS:1000073` is a kind of ion source. By default (`--cvSource local`), the terms are looked up in the vocabulary releases that the file declares in its `cv[1-n]-version` entries. Each release is downloaded once into a local cache and indexed there, so a later run, also without network, checks the file against the same releases and gives the same result.
+
+  java -jar jmztabm-cli-<VERSION>.jar -c examples/MTBLS263.mztab -s
+
+These options change where and how the terms are looked up. They have no short forms.
+
+[cols="1,3"]
+|===
+|Option |Meaning
+
+|`--cvSource local`
+|The default. The terms are looked up in the vocabulary releases in the cache, downloaded when first needed.
+
+|`--cvSource ols`
+|The terms are looked up in https://www.ebi.ac.uk/ols4[OLS], as before 2.1. OLS serves only its current release of each vocabulary, not the declared one, so this needs `--cvForce` (see below).
+
+|`--cvCache <folder>`
+|The cache folder. The default is `$XDG_CACHE_HOME/jmztabm/cv`, or `~/.cache/jmztabm/cv` if `XDG_CACHE_HOME` is not set or not an absolute path.
+
+|`--cvResources <file>`
+|A preferred-resources file, whose entries replace the default's, per vocabulary (see below).
+
+|`--cvOffline`
+|No network is used: nothing is downloaded, and OLS is not asked. A release that is not in the cache cannot be had. It cannot be combined with `--cvSource ols`.
+
+|`--cvForce`
+|A release that cannot be had is a warning (Warn-3018) instead of an error (Error-3017), and another release is used instead.
+|===
+
+==== Which release is used
+
+* Only the vocabularies in which a rule looks up a term are resolved, by the cv label of the parameter. A vocabulary that is declared but not used gets the Warn-3014 as before, and nothing is downloaded for it.
+* A declared version that names a release is used as is. A date, e.g. `20-06-2018` or `2018-06-20`, is read as the release that was current on that date. Any other value is treated as undeclared, with Warn-3021.
+* A vocabulary without a declared version is checked against its latest release, with Info-3022. "Latest" is always resolved to a concrete release. Which release is the latest, and the list of a vocabulary's releases, are kept in the cache for 24 hours (`<KEY>/latest.json` and `<KEY>/releases.json`); with `--cvOffline` they are used whatever their age, and so is a kept latest release when looking it up again fails to download (e.g. GitHub is down or its rate limit is reached), with a warning in the log that names its age. Offline, if the cache holds no latest release kept by an online run, the latest is the newest release in the cache, and the Info-3022 says so.
+
+After the semantic messages, the CLI prints one line per vocabulary used, the release it used, why, and where it came from, for example:
+
+  CV MS: 4.1.2 (SUBSTITUTE_NEWER) from https://raw.githubusercontent.com/HUPO-PSI/psi-ms-CV/v4.1.2/psi-ms.obo
+  CV MSIO: 1.0.1 (FILE) from https://raw.githubusercontent.com/MSI-Metabolomics-Standards-Initiative/MSIO/v1.0.1/releases/1.0.1/MSIO-merged-reasoned.owl
+
+The reasons are `FILE` (the declared release), `FILE_DATE` (the release current on the declared date), `FILE_DATE_FALLBACK` (a declared ISO date such as `2021-10-26` that is not a listed release is first looked for as a release of that name; only if it does not exist at its source is it read as a date, and the release current then is used), `MAPPING` (the mapping's version; the bundled mapping names no versions yet, so this comes only once mappings carry versions), `LATEST`, and, in a forced run, `SUBSTITUTE_NEWER`, `SUBSTITUTE_LATEST` and `OLS`. A vocabulary answered by OLS is marked `not re-runnable`: OLS may answer differently once it serves another release.
+
+==== Strict and forced runs
+
+A run is strict by default. A release that cannot be had stops the semantic validation with one Error-3017 for that vocabulary, which names the version and the reason: the release does not exist at its source, the download fails or its checksum does not match a known one, the file cannot be parsed, it is not in the cache while `--cvOffline` is given, or the vocabulary is unknown to the resources file. The remaining rules are skipped, and the run fails, even if the structural validation passed. The structural messages are reported as usual.
+
+With `--cvForce`, the same problems are warnings (Warn-3018), and the validation goes on with the best release it can get: the nearest newer release, then the latest, then OLS's current release. A forced result is therefore not a check against the declared release: each substitute is named in a Warn-3018 and in the report line. With `--cvOffline`, OLS is not asked: a forced offline run substitutes only from the cache, and a vocabulary with no release there is still an Error-3017.
+
+`--cvSource ols` needs `--cvForce`: without it, each vocabulary that is looked up is an Error-3017. With it, each one is a Warn-3018 and marked `not re-runnable`. The version recorded is the one OLS reports (`config.version` of `/api/ontologies/{id}`), else the one its version IRI names, e.g. `4.2.15` for `http://purl.obolibrary.org/obo/ms/4.2.15/ms.owl` (OLS reports PSI-MS this way). A vocabulary for which OLS names neither is an Error-3017 even in a forced run. `--cvSource ols` cannot be combined with `--cvOffline`.
+
+The exit code follows the same rule as before: the run fails if a message at or above the chosen level (`-l`) is a warning or an error. The new warnings (3018 to 3021 and 3023) therefore fail a run at the levels Info (the default) and Warn; run with `-l Error` to fail on errors only.
+
+==== The cache
+
+* The cache holds one folder per vocabulary and release, `<cache>/<KEY>/<version>/`, with the downloaded file, its index `terms-v<n>.idx` (`n` is the index version of the jmzTab-m build, currently 3) and a `release.json` that records where the file came from, its SHA-256 checksum and when it was downloaded. `KEY` is the key of the vocabulary in the resources file, e.g. `MS` or `NCBITaxon`.
+* A release is never downloaded again. Files are written under a temporary name and then renamed, so several runs can share one cache folder.
+* When an upgrade of jmzTab-m changes how vocabulary files are read, the first run that needs a cached release builds the new version's index from the cached file, without downloading it again and also with `--cvOffline`. It first checks the cached file and its cached imports against the SHA-256 in `release.json`; a file that differs or is missing is a corrupt entry, `CHECKSUM_MISMATCH` (an Error-3017 in a strict run), and the folder is left as it is: delete it to download the release again. The index of another version, such as an older build's `terms.idx`, is left in place and not read, so builds of different versions can share one cache.
+* The first run that needs a release downloads it, and logs its size, e.g. `Downloading MS 4.1.2 (699.3 kB) from https://...`. Some vocabularies are large: the releases of NCBITaxon, NCIT and CHEBI are hundreds of MB each. There is no size limit.
+* An OWL vocabulary's imports are downloaded and cached with it, under `<cache>/_imports/`. An import whose IRI names no version is kept as it was first downloaded; delete its folder to download it again.
+* Every download of the default resources file starts over https. A redirect from https to plain http is not followed: the downloader asks the same host, path and query over https and follows that if it answers, else refuses the redirect, as a cached release is kept and checksummed for good. An import IRI on `http://purl.obolibrary.org` is fetched over https; `release.json` records the IRI as written and the URL it came from. CHEBI's versioned PURL redirects to plain http on the EBI FTP archive, so it is fetched through that upgrade, for every release including those before 245.
+* The GitHub API, which lists the releases of e.g. PSI-MS and MSIO, allows 60 requests per hour without a token. Set the environment variable `GITHUB_TOKEN` to a GitHub token to use your own limit.
+* To validate without network, pre-fill the cache: copy a cache folder from a machine that has the releases, or put the vocabulary file alone into `<cache>/<KEY>/<version>/`, under the name of its download (the last part of its URL, e.g. `MS/4.1.2/psi-ms.obo`). The first run that needs it builds its index and writes its `release.json`, also with `--cvOffline`.
+** A pre-filled release answers a file that declares that release. A file without a version, or with a value that names no release, is checked against the latest release: offline, that is the one an earlier online run kept, else the newest release in the cache.
+** A declared date, e.g. `20-06-2018`, needs the list of the vocabulary's releases with their dates. Offline, only a list that an earlier online run kept (`<KEY>/releases.json`, so copy a whole cache folder), or one written out in a `--cvResources` entry (`"releases": {"kind": "listed", ...}`, see below), gives it. Without one, a date is an Error-3017 offline; with `--cvForce`, the newest release in the cache is used instead, with a Warn-3018.
+
+==== The resources file
+
+Where the releases of a vocabulary come from is set in a preferred-resources file. jmzTab-m ships a default, https://github.com/lifs-tools/jmzTab-m/blob/master/validation/src/main/resources/cv/preferred-resources.json[cv/preferred-resources.json], for the vocabularies of the bundled mapping file: PSI-MS, DOID, CL, BTO, NCBITaxon, UO, NCIT, PRIDE, MSIO, CHEBI and OBI. Its schema is https://github.com/lifs-tools/jmzTab-m/blob/master/validation/src/main/resources/cv/preferred-resources.schema.json[cv/preferred-resources.schema.json]. Each entry gives:
+
+* `labels`: the `cv[1-n]-label` values the vocabulary is known by, and `oboPrefix`, the prefix of its term ids;
+* `location`: the `format` (`OBO`, `OBO_GZ` or `OWL_RDFXML`) and either a `urlTemplate` with `{version}` or an `oboFoundryId`;
+* `scheme`: how its versions are compared, `DOTTED` (`4.1.30`), `ISO_DATE` (`2023-05-25`) or `RELEASE_NUMBER` (`230`);
+* `releases`: how its releases and their dates are listed: `githubTags`, `directoryListing`, or `listed` (written out);
+* `latest`: how its latest release is found: `githubLatestTag`, `header` or `newestRelease`;
+* optionally `knownSha256`, known checksums of release files by version.
+
+A file given with `--cvResources` replaces the default's entries with the same key; the other default entries stay. The file is checked against the schema when it is read. An invalid file stops the run before the validation, with a message that names the entry and the JSON pointer of the problem. For example, to get PSI-MS from a mirror, with the one release it holds:
+
+[source,json]
+----
+{
+  "vocabularies": {
+    "MS": {
+      "labels": ["MS", "PSI-MS"],
+      "oboPrefix": "MS",
+      "location": {"format": "OBO", "urlTemplate": "https://mirror.example.org/psi-ms/{version}/psi-ms.obo"},
+      "scheme": "DOTTED",
+      "releases": {"kind": "listed", "releases": [{"version": "4.1.200", "date": "2025-01-15"}]},
+      "latest": {"kind": "newestRelease"}
+    }
+  }
+}
+----
+
+  java -jar jmztabm-cli-<VERSION>.jar -c examples/MTBLS263.mztab -s --cvResources my-resources.json
+
+==== Messages
+
+[cols="1,3"]
+|===
+|Code |Meaning
+
+|Error-3017
+|A vocabulary release is not available, in a strict run. The semantic validation stops.
+
+|Warn-3018
+|A vocabulary release is not available, in a forced run; another release, or OLS, was used instead.
+
+|Warn-3019
+|The file declares an older release than the one the mapping rules were written for. Only with a mapping that names vocabulary versions; the bundled mapping does not yet.
+
+|Warn-3020
+|The declared release cannot be compared with the mapping's version; the declared one is used. Only with a mapping that names vocabulary versions, as Warn-3019.
+
+|Warn-3021
+|The declared version is not a version value; it is treated as undeclared.
+
+|Info-3022
+|No version is declared; the latest release was used.
+
+|Warn-3023
+|The same cv label is declared twice; the first entry is used.
+|===
+
 === Converting to JSON
 
 If you want to exchange your mzTab-M model in JSON format, you can transcode your mzTab-M TSV file into JSON as follows:

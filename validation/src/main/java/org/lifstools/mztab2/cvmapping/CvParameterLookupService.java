@@ -15,12 +15,16 @@
  */
 package org.lifstools.mztab2.cvmapping;
 
+import org.lifstools.mztab2.cvmapping.local.ResolvedVocabulary;
+import org.lifstools.mztab2.cvmapping.local.VocabularyResolver;
 import org.lifstools.mztab2.model.Parameter;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
+import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabError;
 import uk.ac.ebi.pride.utilities.ols.web.service.client.OLSClient;
 import uk.ac.ebi.pride.utilities.ols.web.service.config.OLSWsConfig;
 import uk.ac.ebi.pride.utilities.ols.web.service.model.Identifier;
@@ -34,7 +38,10 @@ import uk.ac.ebi.pride.utilities.ols.web.service.model.Identifier;
 @Slf4j
 public class CvParameterLookupService {
 
-    private final OLSClient client;
+    /** Builds the OLS client on first use, for the OLS-only queries. */
+    private final Supplier<OLSClient> clientFactory;
+    private OLSClient client;
+    private final AncestorSource source;
     private final Map<Parameter, List<Parameter>> childCache;
     private final Map<Parameter, List<Parameter>> parentCache;
 
@@ -73,7 +80,25 @@ public class CvParameterLookupService {
      * @param client the custom OLS client
      */
     public CvParameterLookupService(OLSClient client) {
+        this(() -> client, new OlsAncestorSource(client));
         this.client = client;
+    }
+
+    /**
+     * Create a new instance of the lookup service that gets ancestors from the given source.
+     * Children, and parents up to a given depth, are still resolved through
+     * OLS with the default configuration; that OLS client is built when
+     * first needed. The semantic validation asks for all ancestors only, so
+     * it reaches no OLS through this service.
+     * @param source the source of ancestors
+     */
+    public CvParameterLookupService(AncestorSource source) {
+        this(() -> new OLSClient(defaultConfig()), source);
+    }
+
+    private CvParameterLookupService(Supplier<OLSClient> clientFactory, AncestorSource source) {
+        this.clientFactory = clientFactory;
+        this.source = source;
         this.childCache = lruCache(4096);
         this.parentCache = lruCache(4096);
     }
@@ -86,6 +111,45 @@ public class CvParameterLookupService {
         this(new OLSClient(config));
     }
     
+    /**
+     * The messages of the source about the vocabulary versions it used:
+     * Warn-3018 to Warn-3023 and Info-3022, for a {@link VocabularyResolver}.
+     * A vocabulary that cannot be had is not among them: it is thrown as a
+     * {@link org.lifstools.mztab2.cvmapping.local.VocabularyUnavailableException}.
+     *
+     * @return the messages so far, in the order they arose; empty for OLS
+     */
+    public List<MZTabError> sourceMessages() {
+        return source instanceof VocabularyResolver resolver ? resolver.messages() : List.of();
+    }
+
+    /**
+     * The vocabularies the source used, for a {@link VocabularyResolver}.
+     *
+     * @return the vocabularies so far, in the order they were resolved; empty
+     * for OLS
+     */
+    public List<ResolvedVocabulary> resolvedVocabularies() {
+        return source instanceof VocabularyResolver resolver ? resolver.resolved() : List.of();
+    }
+
+    /** The source of ancestors, for tests. */
+    AncestorSource source() {
+        return source;
+    }
+
+    /** True once an OLS client was given or built, for tests. */
+    synchronized boolean hasOlsClient() {
+        return client != null;
+    }
+
+    private synchronized OLSClient client() {
+        if (client == null) {
+            client = clientFactory.get();
+        }
+        return client;
+    }
+
     /**
      * Clears all query result caches (parent and child).
      */
@@ -121,12 +185,17 @@ public class CvParameterLookupService {
             log.debug("Cache hit for parameter "+parameter+" in parent cache!");
             return parentCache.get(parameter);
         }
-        Identifier ident = new Identifier(parameter.getCvAccession(),
-            Identifier.IdentifierType.OBO);
-        List<Parameter> parents = client.getTermParents(ident, parameter.getCvLabel(), levels).
-            stream().
-            map(CvMappingUtils::asParameter).
-            collect(Collectors.toList());
+        List<Parameter> parents;
+        if (levels == -1) {
+            parents = source.ancestors(parameter);
+        } else {
+            Identifier ident = new Identifier(parameter.getCvAccession(),
+                Identifier.IdentifierType.OBO);
+            parents = client().getTermParents(ident, parameter.getCvLabel(), levels).
+                stream().
+                map(CvMappingUtils::asParameter).
+                collect(Collectors.toList());
+        }
         parentCache.put(parameter, parents);
         return parents;
     }
@@ -149,7 +218,7 @@ public class CvParameterLookupService {
         }
         Identifier ident = new Identifier(parameter.getCvAccession(),
             Identifier.IdentifierType.OBO);
-        List<Parameter> children = client.getTermChildren(ident, parameter.getCvLabel(), levels).
+        List<Parameter> children = client().getTermChildren(ident, parameter.getCvLabel(), levels).
             stream().
             map(CvMappingUtils::asParameter).
             collect(Collectors.toList());

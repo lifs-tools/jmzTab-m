@@ -1,0 +1,1236 @@
+/*
+ * Copyright 2026 LIFS Tools Consortium.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.lifstools.mztab2.cvmapping.local;
+
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assumptions.assumeFalse;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.read.ListAppender;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.UncheckedIOException;
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.attribute.FileTime;
+import java.nio.file.attribute.PosixFilePermissions;
+import java.security.MessageDigest;
+import java.time.Clock;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.util.ArrayList;
+import java.util.HexFormat;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Stream;
+import java.util.zip.GZIPOutputStream;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
+import org.junit.jupiter.api.io.TempDir;
+import org.lifstools.mztab2.cvmapping.local.ResolutionException.Reason;
+import org.lifstools.mztab2.cvmapping.local.VocabularyEntry.Format;
+import org.lifstools.mztab2.cvmapping.local.VocabularyEntry.Latest;
+import org.lifstools.mztab2.cvmapping.local.VocabularyEntry.Location;
+import org.lifstools.mztab2.cvmapping.local.VocabularyEntry.ReleaseDates;
+import org.lifstools.mztab2.cvmapping.local.VocabularyEntry.ReleaseIndex;
+import org.slf4j.LoggerFactory;
+
+@Timeout(60)
+public class VocabularyCacheTest {
+
+    private static final String PURL = "http://purl.obolibrary.org/";
+    private static final String HTTPS_PURL = "https://purl.obolibrary.org/";
+    private static final String MS_REPO = "HUPO-PSI/psi-ms-CV";
+    private static final String MS_PATH = "/ms/v4.1.200/psi-ms.obo";
+    private static final String TAGS = "/api/repos/" + MS_REPO + "/tags";
+    private static final String GITHUB_RELEASES = "/api/repos/" + MS_REPO + "/releases";
+    private static final Duration DAY = Duration.ofHours(24);
+
+    @TempDir
+    Path temp;
+
+    private TestServer server;
+    private Path root;
+    private MutableClock clock;
+    private byte[] miniMs;
+
+    @BeforeEach
+    public void start() throws IOException {
+        server = new TestServer();
+        root = temp.resolve("cache");
+        clock = new MutableClock(Instant.parse("2026-11-11T10:00:00Z"));
+        miniMs = resource("/cv/mini-ms.obo");
+    }
+
+    @AfterEach
+    public void stop() {
+        server.close();
+    }
+
+    // ---- the tests of the brief ----
+
+    @Test
+    public void aReleaseIsDownloadedOnceThenServedFromTheCache() throws Exception {
+        server.file(MS_PATH, miniMs);
+        VocabularyCache cache = cache(false);
+
+        CachedRelease first = cache.get(ms(Map.of()), "4.1.200");
+        CachedRelease second = cache.get(ms(Map.of()), "4.1.200");
+        CachedRelease third = cache(false).get(ms(Map.of()), "4.1.200");
+
+        assertEquals(1, server.hits(MS_PATH));
+        assertEquals(first, second);
+        assertEquals(first, third);
+        Path folder = root.resolve("MS").resolve("4.1.200");
+        assertEquals("MS", first.key());
+        assertEquals("4.1.200", first.version());
+        assertEquals(URI.create(server.base() + MS_PATH), first.source());
+        assertEquals(sha256(miniMs), first.sha256());
+        assertEquals(folder.resolve("psi-ms.obo"), first.original());
+        assertEquals(folder.resolve("terms-v" + TermIndex.VERSION + ".idx"), first.index());
+        assertEquals(List.of(), first.imports());
+        assertArrayEquals(miniMs, Files.readAllBytes(first.original()));
+        assertTrue(Files.isRegularFile(folder.resolve("release.json")));
+        assertEquals("instrument model", TermIndexStore.open(first).term("MS:1000031").orElseThrow().label());
+        assertNoTemporaryFolders();
+    }
+
+    @Test
+    public void aKnownChecksumThatDiffersIsRefused() throws Exception {
+        server.file(MS_PATH, miniMs);
+        String wrong = "0".repeat(64);
+
+        ResolutionException e = assertThrows(ResolutionException.class,
+            () -> cache(false).get(ms(Map.of("4.1.200", wrong)), "4.1.200"));
+
+        assertEquals(Reason.CHECKSUM_MISMATCH, e.reason());
+        assertTrue(e.getMessage().contains(wrong), e.getMessage());
+        assertTrue(e.getMessage().contains(sha256(miniMs)), e.getMessage());
+        assertFalse(Files.exists(root.resolve("MS").resolve("4.1.200")));
+        assertNoTemporaryFolders();
+        // the right checksum is accepted
+        CachedRelease r = cache(false).get(ms(Map.of("4.1.200", sha256(miniMs))), "4.1.200");
+        assertEquals(sha256(miniMs), r.sha256());
+    }
+
+    @Test
+    public void offlineWithoutACachedCopyIsOfflineNotCached() {
+        server.file(MS_PATH, miniMs);
+        VocabularyCache offline = cache(true);
+
+        assertEquals(Reason.OFFLINE_NOT_CACHED,
+            assertThrows(ResolutionException.class, () -> offline.get(ms(Map.of()), "4.1.200")).reason());
+        assertEquals(Reason.OFFLINE_NOT_CACHED,
+            assertThrows(ResolutionException.class, () -> offline.latest(ms(Map.of()))).reason());
+        assertEquals(Reason.OFFLINE_NOT_CACHED,
+            assertThrows(ResolutionException.class, () -> offline.releases(ms(Map.of()))).reason());
+        assertEquals(0, server.totalHits());
+    }
+
+    @Test
+    public void offlineWithACachedCopyWorks() throws Exception {
+        server.file(MS_PATH, miniMs);
+        serveMsTags(List.of("v4.1.200"));
+        server.json(GITHUB_RELEASES, page -> "[]");
+        VocabularyCache online = cache(false);
+        CachedRelease cached = online.get(ms(Map.of()), "4.1.200");
+        online.latest(ms(Map.of()));
+        online.releases(ms(Map.of()));
+        int hits = server.totalHits();
+
+        // long after the latest answer's time to live
+        clock.advance(Duration.ofDays(30));
+        VocabularyCache offline = new VocabularyCache(root, failingDownloader(), true, DAY, clock,
+            server.api(), Optional.empty());
+
+        assertEquals(cached, offline.get(ms(Map.of()), "4.1.200"));
+        assertEquals(Optional.of("4.1.200"), offline.latest(ms(Map.of())));
+        assertEquals(List.of(new Release("4.1.200", Optional.empty())), offline.releases(ms(Map.of())));
+        assertEquals(hits, server.totalHits());
+    }
+
+    @Test
+    public void anInterruptedDownloadLeavesNoEntry() throws Exception {
+        AtomicBoolean interrupt = new AtomicBoolean(true);
+        server.route(MS_PATH, x -> {
+            if (interrupt.getAndSet(false)) {
+                x.sendResponseHeaders(200, miniMs.length);
+                OutputStream out = x.getResponseBody();
+                out.write(miniMs, 0, miniMs.length / 2);
+                out.flush();
+                // a handler that fails makes the server drop the connection
+                throw new IOException("the server breaks off the download");
+            } else {
+                TestServer.send(x, 200, miniMs);
+            }
+        });
+        VocabularyCache cache = cache(false);
+
+        ResolutionException e = assertThrows(ResolutionException.class,
+            () -> cache.get(ms(Map.of()), "4.1.200"));
+
+        assertEquals(Reason.DOWNLOAD_FAILED, e.reason());
+        assertFalse(Files.exists(root.resolve("MS").resolve("4.1.200")));
+        assertNoTemporaryFolders();
+        CachedRelease r = cache.get(ms(Map.of()), "4.1.200");
+        assertEquals(sha256(miniMs), r.sha256());
+        assertEquals(2, server.hits(MS_PATH));
+    }
+
+    @Test
+    public void aStalledDownloadTimesOut() throws Exception {
+        CountDownLatch release = new CountDownLatch(1);
+        server.route(MS_PATH, x -> {
+            x.sendResponseHeaders(200, miniMs.length);
+            OutputStream out = x.getResponseBody();
+            out.write(miniMs, 0, 100);
+            out.flush();
+            try {
+                release.await(30, TimeUnit.SECONDS);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+            throw new IOException("the stalled download ends");
+        });
+        VocabularyCache cache = new VocabularyCache(root, Downloader.http(Duration.ofMillis(500)), false, DAY,
+            clock, server.api(), Optional.empty());
+        try {
+            long start = System.nanoTime();
+            ResolutionException e = assertThrows(ResolutionException.class,
+                () -> cache.get(ms(Map.of()), "4.1.200"));
+
+            assertEquals(Reason.DOWNLOAD_FAILED, e.reason());
+            assertTrue(e.getMessage().contains("no data for 500 ms"), e.getMessage());
+            assertTrue(Duration.ofNanos(System.nanoTime() - start).compareTo(Duration.ofSeconds(10)) < 0);
+            assertFalse(Files.exists(root.resolve("MS").resolve("4.1.200")));
+            assertNoTemporaryFolders();
+        } finally {
+            release.countDown();
+        }
+    }
+
+    @Test
+    public void concurrentResolutionsDownloadOnce() throws Exception {
+        server.route(MS_PATH, x -> {
+            sleep(300);
+            TestServer.send(x, 200, miniMs);
+        });
+        VocabularyCache cache = cache(false);
+        int threads = 8;
+        CountDownLatch ready = new CountDownLatch(threads);
+        ExecutorService pool = Executors.newFixedThreadPool(threads);
+        try {
+            List<Future<CachedRelease>> results = new ArrayList<>();
+            for (int i = 0; i < threads; i++) {
+                // half the threads use an engine of their own on the same folder
+                VocabularyCache engine = i % 2 == 0 ? cache : cache(false);
+                results.add(pool.submit(() -> {
+                    ready.countDown();
+                    ready.await();
+                    return engine.get(ms(Map.of()), "4.1.200");
+                }));
+            }
+            List<CachedRelease> releases = new ArrayList<>();
+            for (Future<CachedRelease> f : results) {
+                releases.add(f.get(30, TimeUnit.SECONDS));
+            }
+            assertEquals(1, server.hits(MS_PATH));
+            TermIndex index = TermIndexStore.open(releases.get(0));
+            for (CachedRelease r : releases) {
+                assertEquals(releases.get(0), r);
+                assertSame(index, TermIndexStore.open(r));
+            }
+        } finally {
+            pool.shutdownNow();
+        }
+    }
+
+    @Test
+    public void aFailedWriteLeavesNoEntryAndNamesTheReason() throws Exception {
+        assumeTrue(FileSystems.getDefault().supportedFileAttributeViews().contains("posix"));
+        server.file(MS_PATH, miniMs);
+        Files.createDirectories(root);
+        Files.setPosixFilePermissions(root, PosixFilePermissions.fromString("r-xr-xr-x"));
+        try {
+            assumeFalse(Files.isWritable(root), "the user can write to a read-only folder");
+
+            ResolutionException e = assertThrows(ResolutionException.class,
+                () -> cache(false).get(ms(Map.of()), "4.1.200"));
+
+            assertEquals(Reason.WRITE_FAILED, e.reason());
+            assertTrue(e.getMessage().contains(root.resolve("MS").toString()), e.getMessage());
+            assertTrue(e.getMessage().contains("AccessDenied"), e.getMessage());
+            assertFalse(e.getMessage().endsWith("."), e.getMessage());
+            assertFalse(Files.exists(root.resolve("MS")));
+        } finally {
+            Files.setPosixFilePermissions(root, PosixFilePermissions.fromString("rwxr-xr-x"));
+        }
+        // a read-only release folder: the temporary folder cannot be created
+        Path key = Files.createDirectories(root.resolve("MS"));
+        Files.setPosixFilePermissions(key, PosixFilePermissions.fromString("r-xr-xr-x"));
+        try {
+            ResolutionException e = assertThrows(ResolutionException.class,
+                () -> cache(false).get(ms(Map.of()), "4.1.200"));
+            assertEquals(Reason.WRITE_FAILED, e.reason());
+            try (Stream<Path> files = Files.list(key)) {
+                assertEquals(List.of(), files.toList());
+            }
+        } finally {
+            Files.setPosixFilePermissions(key, PosixFilePermissions.fromString("rwxr-xr-x"));
+        }
+    }
+
+    @Test
+    public void latestIsCachedForItsTtl() throws Exception {
+        serveMsTags(List.of("v4.1.200", "v4.2.15", "v4.2.9", "nightly"));
+        VocabularyCache cache = cache(false);
+
+        assertEquals(Optional.of("4.2.15"), cache.latest(ms(Map.of())));
+        assertEquals(Optional.of("4.2.15"), cache.latest(ms(Map.of())));
+        clock.advance(Duration.ofHours(23));
+        assertEquals(Optional.of("4.2.15"), cache(false).latest(ms(Map.of())));
+        assertEquals(1, server.hits(TAGS));
+        JsonNode latest = new ObjectMapper().readTree(root.resolve("MS").resolve("latest.json").toFile());
+        assertEquals("PT24H", latest.path("ttl").asText(), latest.toString());
+        assertEquals("2026-11-11T10:00:00Z", latest.path("time").asText(), latest.toString());
+
+        serveMsTags(List.of("v4.1.200", "v4.2.15", "v4.2.16"));
+        clock.advance(Duration.ofHours(2));
+        assertEquals(Optional.of("4.2.16"), cache.latest(ms(Map.of())));
+        assertEquals(2, server.hits(TAGS));
+    }
+
+    @Test
+    public void aStaleLatestIsUsedWithAWarningWhenItsLookupFails() throws Exception {
+        // final review M2: GitHub down or rate-limited must not turn a kept latest into a 3017
+        serveMsTags(List.of("v4.1.200", "v4.2.15"));
+        assertEquals(Optional.of("4.2.15"), cache(false).latest(ms(Map.of())));
+        server.route(TAGS, x -> TestServer.send(x, 503, new byte[0]));
+        clock.advance(Duration.ofHours(30));
+        Logger logger = (Logger) LoggerFactory.getLogger(VocabularyCache.class);
+        ListAppender<ILoggingEvent> appender = new ListAppender<>();
+        appender.start();
+        logger.addAppender(appender);
+        try {
+            assertEquals(Optional.of("4.2.15"), cache(false).latest(ms(Map.of())));
+        } finally {
+            logger.detachAppender(appender);
+        }
+        assertTrue(appender.list.stream().anyMatch(e -> e.getLevel() == ch.qos.logback.classic.Level.WARN
+            && e.getFormattedMessage().contains("4.2.15")
+            && e.getFormattedMessage().contains("looked up 30 hours ago")), appender.list.toString());
+        JsonNode latest = new ObjectMapper().readTree(root.resolve("MS").resolve("latest.json").toFile());
+        assertEquals("2026-11-11T10:00:00Z", latest.path("time").asText(), "the kept answer stays as it was");
+
+        // without a kept answer, the failure is reported as before
+        Files.delete(root.resolve("MS").resolve("latest.json"));
+        ResolutionException e = assertThrows(ResolutionException.class, () -> cache(false).latest(ms(Map.of())));
+        assertEquals(Reason.DOWNLOAD_FAILED, e.reason());
+    }
+
+    @Test
+    public void anOwlReleaseCachesItsImports() throws Exception {
+        byte[] msio = resource("/cv/mini-msio.owl");
+        String ro = PURL + "obo/ro/releases/2024-04-24/ro-core.owl";
+        // mini-obi imports ro-core, which imports mini-obi again: a cycle
+        byte[] obi = new String(resource("/cv/mini-obi.owl"), StandardCharsets.UTF_8)
+            .replace("<owl:Ontology rdf:about=\"http://purl.obolibrary.org/obo/mini-obi.owl\"/>",
+                "<owl:Ontology rdf:about=\"http://purl.obolibrary.org/obo/mini-obi.owl\">"
+                + "<owl:imports rdf:resource=\"" + ro + "\"/></owl:Ontology>")
+            .getBytes(StandardCharsets.UTF_8);
+        byte[] roCore = owl("http://purl.obolibrary.org/obo/ro.owl", PURL + "obo/mini-obi.owl",
+            "http://purl.obolibrary.org/obo/RO_0002000", "boundary of");
+        server.file("/msio/v1.0.1/msio.owl", msio);
+        server.file("/msio/v1.0.2/msio.owl", msio);
+        server.file("/obo/mini-obi.owl", obi);
+        server.file("/obo/ro/releases/2024-04-24/ro-core.owl", roCore);
+        VocabularyCache cache = new VocabularyCache(root, purlToServer(), false, DAY, clock, server.api(),
+            Optional.empty());
+
+        CachedRelease r = cache.get(msio(), "1.0.1");
+
+        assertEquals(2, r.imports().size(), r.imports().toString());
+        CachedRelease obiImport = r.imports().get(0);
+        assertEquals("mini-obi", obiImport.key());
+        assertEquals("unversioned", obiImport.version());
+        assertEquals(URI.create(PURL + "obo/mini-obi.owl"), obiImport.source());
+        assertEquals(sha256(obi), obiImport.sha256());
+        assertNull(obiImport.index());
+        assertEquals(List.of(), obiImport.imports());
+        assertImportFolder(obiImport, PURL + "obo/mini-obi.owl", obi);
+        CachedRelease roImport = r.imports().get(1);
+        assertEquals("ro", roImport.key());
+        assertEquals("2024-04-24", roImport.version());
+        assertImportFolder(roImport, ro, roCore);
+        // fetched over https, recorded as written (Ruling R-AG)
+        JsonNode recorded = new ObjectMapper().readTree(r.original().resolveSibling("release.json").toFile());
+        assertEquals(PURL + "obo/mini-obi.owl", recorded.path("imports").get(0).path("source").asText());
+        JsonNode obiJson = new ObjectMapper().readTree(
+            obiImport.original().resolveSibling("release.json").toFile());
+        assertEquals(PURL + "obo/mini-obi.owl", obiJson.path("iri").asText());
+        assertEquals(server.base() + "/obo/mini-obi.owl", obiJson.path("finalUrl").asText());
+        // one index of the release and everything it imports
+        TermIndex index = TermIndexStore.open(r);
+        assertEquals("material processing", index.term("OBI:0000094").orElseThrow().label());
+        assertEquals(List.of("OBI:0000011"),
+            index.ancestors("OBI:0000094").stream().map(TermRecord::id).toList());
+        assertEquals("boundary of", index.term("RO:0002000").orElseThrow().label());
+        assertEquals("kept thing", index.term("MSIO:0000003").orElseThrow().label());
+        assertEquals(1, server.hits("/obo/mini-obi.owl"));
+        assertEquals(1, server.hits("/obo/ro/releases/2024-04-24/ro-core.owl"));
+        // another release reads the cached imports
+        CachedRelease next = cache.get(msio(), "1.0.2");
+        assertEquals(r.imports(), next.imports());
+        assertEquals(1, server.hits("/obo/mini-obi.owl"));
+        assertTrue(TermIndexStore.open(next).term("RO:0002000").isPresent());
+        // and the cached release reads its imports back
+        assertEquals(r, cache(true).get(msio(), "1.0.1"));
+    }
+
+    @Test
+    public void onlyAPlainOboPurlIsFetchedOverHttps() {
+        assertEquals(URI.create("https://purl.obolibrary.org/obo/ro/releases/2024-04-24/ro-core.owl"),
+            VocabularyCache.fetchUri(URI.create(PURL + "obo/ro/releases/2024-04-24/ro-core.owl")));
+        assertEquals(URI.create("https://purl.obolibrary.org/obo/uo.owl"),
+            VocabularyCache.fetchUri(URI.create("HTTP://PURL.obolibrary.org/obo/uo.owl")));
+        for (String asWritten : List.of(HTTPS_PURL + "obo/uo.owl", "http://example.org/obo/uo.owl",
+            "http://purl.obolibrary.org:8080/obo/uo.owl")) {
+            assertEquals(URI.create(asWritten), VocabularyCache.fetchUri(URI.create(asWritten)));
+        }
+    }
+
+    /** An index of the layout before index versions (Ruling R-AB): magic JMZTIDX1, then the counts. */
+    private static void writeOldIndex(Path index) throws IOException {
+        Files.write(index, java.nio.ByteBuffer.allocate(16)
+            .put("JMZTIDX1".getBytes(StandardCharsets.US_ASCII)).putInt(0).putInt(0).array());
+    }
+
+    /**
+     * Turns a cached release into one an older build wrote: its index is
+     * {@code terms.idx}, of version 1, and this build's index is not there.
+     */
+    private static void makeOld(CachedRelease cached) throws IOException {
+        writeOldIndex(cached.index().resolveSibling("terms.idx"));
+        Files.delete(cached.index());
+    }
+
+    @Test
+    public void theIndexFileNameNamesTheIndexVersion() {
+        // minor 3 of the Task 11 review: builds of different index versions can share one cache
+        assertEquals("terms-v" + TermIndex.VERSION + ".idx", VocabularyCache.INDEX);
+    }
+
+    @Test
+    public void anIndexOfAnOlderVersionIsRebuiltFromTheCachedFile() throws Exception {
+        server.file(MS_PATH, miniMs);
+        CachedRelease cached = cache(false).get(ms(Map.of()), "4.1.200");
+        Path folder = root.resolve("MS").resolve("4.1.200");
+        byte[] releaseJson = Files.readAllBytes(folder.resolve("release.json"));
+        makeOld(cached);
+        byte[] old = Files.readAllBytes(folder.resolve("terms.idx"));
+        // the index of another version beside it is not read, and left as it is
+        Files.writeString(folder.resolve("terms-v99.idx"), "another build's index");
+
+        // offline and without a downloader: the index comes from the cached file alone
+        VocabularyCache offline = new VocabularyCache(root, failingDownloader(), true, DAY, clock,
+            server.api(), Optional.empty());
+        assertEquals(cached, offline.get(ms(Map.of()), "4.1.200"));
+
+        assertTrue(TermIndex.isCurrent(cached.index()));
+        TermIndex index = TermIndex.open(cached.index());
+        assertEquals("instrument model", index.term("MS:1000031").orElseThrow().label());
+        assertArrayEquals(releaseJson, Files.readAllBytes(folder.resolve("release.json")));
+        assertArrayEquals(miniMs, Files.readAllBytes(cached.original()));
+        // the older build's index stays, untouched (Ruling R-N)
+        assertArrayEquals(old, Files.readAllBytes(folder.resolve("terms.idx")));
+        assertEquals("another build's index", Files.readString(folder.resolve("terms-v99.idx")));
+        assertEquals(1, server.hits(MS_PATH));
+        assertEquals(Set.of("psi-ms.obo", "terms.idx", "terms-v99.idx", VocabularyCache.INDEX, "release.json"),
+            names(folder));
+        assertNoTemporaryFolders();
+    }
+
+    @Test
+    public void anUnreadableIndexOfThisVersionIsRebuiltToo() throws Exception {
+        server.file(MS_PATH, miniMs);
+        CachedRelease cached = cache(false).get(ms(Map.of()), "4.1.200");
+        Files.writeString(cached.index(), "half an index");
+
+        assertEquals(cached, cache(true).get(ms(Map.of()), "4.1.200"));
+
+        assertTrue(TermIndex.isCurrent(cached.index()));
+        assertEquals(1, server.hits(MS_PATH));
+    }
+
+    @Test
+    public void anOwlIndexOfAnOlderVersionIsRebuiltWithItsCachedImports() throws Exception {
+        server.file("/msio/v1.0.1/msio.owl", resource("/cv/mini-msio.owl"));
+        server.file("/obo/mini-obi.owl", resource("/cv/mini-obi.owl"));
+        CachedRelease cached = new VocabularyCache(root, purlToServer(), false, DAY, clock, server.api(),
+            Optional.empty()).get(msio(), "1.0.1");
+        makeOld(cached);
+
+        VocabularyCache offline = new VocabularyCache(root, failingDownloader(), true, DAY, clock,
+            server.api(), Optional.empty());
+        assertEquals(cached, offline.get(msio(), "1.0.1"));
+
+        TermIndex index = TermIndex.open(cached.index());
+        // OBI:0000094 comes from the cached import
+        assertEquals("material processing", index.term("OBI:0000094").orElseThrow().label());
+        assertEquals(1, server.hits("/obo/mini-obi.owl"));
+        assertNoTemporaryFolders();
+    }
+
+    @Test
+    public void aCachedFileThatNoLongerMatchesItsChecksumIsNotRebuiltFrom() throws Exception {
+        // minor 1 of the Task 11 review: a corrupt cache entry is a strict error, never downloaded nor deleted
+        server.file(MS_PATH, miniMs);
+        CachedRelease cached = cache(false).get(ms(Map.of()), "4.1.200");
+        Path folder = root.resolve("MS").resolve("4.1.200");
+        makeOld(cached);
+        byte[] tampered = new String(miniMs, StandardCharsets.UTF_8).replace("instrument model", "instrument mode")
+            .getBytes(StandardCharsets.UTF_8);
+        Files.write(cached.original(), tampered);
+        byte[] releaseJson = Files.readAllBytes(folder.resolve("release.json"));
+
+        ResolutionException e = assertThrows(ResolutionException.class, () -> cache(false).get(ms(Map.of()),
+            "4.1.200"));
+
+        assertEquals(Reason.CHECKSUM_MISMATCH, e.reason());
+        assertTrue(e.getMessage().contains(sha256(tampered)), e.getMessage());
+        assertTrue(e.getMessage().contains(sha256(miniMs)), e.getMessage());
+        assertTrue(e.getMessage().contains(cached.original().toString()), e.getMessage());
+        assertEquals(1, server.hits(MS_PATH));
+        assertEquals(Set.of("psi-ms.obo", "terms.idx", "release.json"), names(folder));
+        assertArrayEquals(tampered, Files.readAllBytes(cached.original()));
+        assertArrayEquals(releaseJson, Files.readAllBytes(folder.resolve("release.json")));
+        assertNoTemporaryFolders();
+        // a missing file is a corrupt entry too
+        Files.delete(cached.original());
+        ResolutionException missing = assertThrows(ResolutionException.class, () -> cache(false).get(ms(Map.of()),
+            "4.1.200"));
+        assertEquals(Reason.CHECKSUM_MISMATCH, missing.reason());
+        assertEquals(1, server.hits(MS_PATH));
+        assertEquals(Set.of("terms.idx", "release.json"), names(folder));
+    }
+
+    @Test
+    public void aCachedImportThatNoLongerMatchesItsChecksumIsNotRebuiltFrom() throws Exception {
+        byte[] obi = resource("/cv/mini-obi.owl");
+        server.file("/msio/v1.0.1/msio.owl", resource("/cv/mini-msio.owl"));
+        server.file("/obo/mini-obi.owl", obi);
+        CachedRelease cached = new VocabularyCache(root, purlToServer(), false, DAY, clock, server.api(),
+            Optional.empty()).get(msio(), "1.0.1");
+        makeOld(cached);
+        Path imported = cached.imports().get(0).original();
+        byte[] tampered = new String(obi, StandardCharsets.UTF_8).replace("material processing", "processing")
+            .getBytes(StandardCharsets.UTF_8);
+        Files.write(imported, tampered);
+
+        ResolutionException e = assertThrows(ResolutionException.class, () -> new VocabularyCache(root,
+            purlToServer(), false, DAY, clock, server.api(), Optional.empty()).get(msio(), "1.0.1"));
+
+        assertEquals(Reason.CHECKSUM_MISMATCH, e.reason());
+        assertTrue(e.getMessage().contains(imported.toString()), e.getMessage());
+        assertTrue(e.getMessage().contains(sha256(obi)), e.getMessage());
+        assertEquals(1, server.hits("/obo/mini-obi.owl"));
+        assertEquals(1, server.hits("/msio/v1.0.1/msio.owl"));
+        assertArrayEquals(tampered, Files.readAllBytes(imported));
+        assertFalse(Files.exists(cached.index()));
+        assertNoTemporaryFolders();
+    }
+
+    @Test
+    public void aKnownChecksumIsCheckedBeforeTheIndexIsRebuilt() throws Exception {
+        // minor 2 of the Task 11 review
+        server.file(MS_PATH, miniMs);
+        CachedRelease cached = cache(false).get(ms(Map.of()), "4.1.200");
+        makeOld(cached);
+        String wrong = "0".repeat(64);
+
+        ResolutionException e = assertThrows(ResolutionException.class,
+            () -> cache(true).get(ms(Map.of("4.1.200", wrong)), "4.1.200"));
+
+        assertEquals(Reason.CHECKSUM_MISMATCH, e.reason());
+        assertTrue(e.getMessage().contains(wrong), e.getMessage());
+        assertFalse(Files.exists(cached.index()), "no index is built for a release the resources file refuses");
+    }
+
+    @Test
+    public void anImportThatCannotBeDownloadedFailsTheRelease() throws Exception {
+        server.file("/msio/v1.0.1/msio.owl", resource("/cv/mini-msio.owl"));
+        VocabularyCache cache = new VocabularyCache(root, purlToServer(), false, DAY, clock, server.api(),
+            Optional.empty());
+
+        ResolutionException missing = assertThrows(ResolutionException.class, () -> cache.get(msio(), "1.0.1"));
+
+        assertEquals(Reason.NO_SUCH_RELEASE, missing.reason());
+        assertTrue(missing.getMessage().startsWith("import " + PURL + "obo/mini-obi.owl: "), missing.getMessage());
+        assertFalse(Files.exists(root.resolve("MSIO").resolve("1.0.1")));
+        server.route("/obo/mini-obi.owl", x -> TestServer.send(x, 500, new byte[0]));
+        ResolutionException failed = assertThrows(ResolutionException.class, () -> cache.get(msio(), "1.0.1"));
+        assertEquals(Reason.DOWNLOAD_FAILED, failed.reason());
+        assertTrue(failed.getMessage().contains(PURL + "obo/mini-obi.owl"), failed.getMessage());
+        assertFalse(Files.exists(root.resolve("MSIO").resolve("1.0.1")));
+        assertNoTemporaryFolders();
+    }
+
+    // ---- what each kind of index and latest needs ----
+
+    @Test
+    public void aMissingReleaseIsNoSuchRelease() throws IOException {
+        ResolutionException e = assertThrows(ResolutionException.class,
+            () -> cache(false).get(ms(Map.of()), "9.9.9"));
+
+        assertEquals(Reason.NO_SUCH_RELEASE, e.reason());
+        assertTrue(e.getMessage().contains("/ms/v9.9.9/psi-ms.obo"), e.getMessage());
+        assertFalse(e.getMessage().endsWith("."), e.getMessage());
+        assertFalse(Files.exists(root.resolve("MS").resolve("9.9.9")));
+        assertNoTemporaryFolders();
+    }
+
+    @Test
+    public void aServerErrorIsDownloadFailed() {
+        server.route(MS_PATH, x -> TestServer.send(x, 503, "busy".getBytes(StandardCharsets.UTF_8)));
+
+        ResolutionException e = assertThrows(ResolutionException.class,
+            () -> cache(false).get(ms(Map.of()), "4.1.200"));
+
+        assertEquals(Reason.DOWNLOAD_FAILED, e.reason());
+        assertTrue(e.getMessage().contains("503"), e.getMessage());
+    }
+
+    @Test
+    public void aVersionThatIsNotAPathSegmentIsRefused() {
+        VocabularyCache cache = cache(false);
+        for (String version : List.of("../4.1.200", "4.1/200", "..", "")) {
+            ResolutionException e = assertThrows(ResolutionException.class,
+                () -> cache.get(ms(Map.of()), version));
+            assertEquals(Reason.NO_SUCH_RELEASE, e.reason(), version);
+        }
+        assertEquals(0, server.totalHits());
+        assertFalse(Files.exists(root));
+    }
+
+    @Test
+    public void anHtmlPageIsAParseFailure() throws IOException {
+        // OBI's /releases/ PURL answered 200 with a SourceForge page
+        server.file(MS_PATH, "<!DOCTYPE html>\n<html><body>moved</body></html>".getBytes(StandardCharsets.UTF_8));
+
+        ResolutionException e = assertThrows(ResolutionException.class,
+            () -> cache(false).get(ms(Map.of()), "4.1.200"));
+
+        assertEquals(Reason.PARSE_FAILED, e.reason());
+        assertTrue(e.getMessage().contains("not an OBO file"), e.getMessage());
+        assertFalse(Files.exists(root.resolve("MS").resolve("4.1.200")));
+        assertNoTemporaryFolders();
+    }
+
+    @Test
+    public void aDirectoryListingNamesTheReleasesAndAnyVersionDownloads() throws Exception {
+        server.route("/chebi/archive/", x -> TestServer.send(x, 200, ("<html><body>"
+            + "<a href=\"../\">Parent</a> <a href=\"rel245/\">rel245/</a> <a href='rel256/'>rel256/</a>"
+            + " <a href=\"/pub/databases/chebi/archive/rel250/\">rel250/</a> <a href=\"README\">README</a>"
+            + " <a href=\"relx/\">relx/</a></body></html>").getBytes(StandardCharsets.UTF_8)));
+        byte[] gz = gzip(miniMs);
+        server.file("/chebi/200/chebi.obo.gz", gz);
+        VocabularyCache cache = cache(false);
+
+        assertEquals(List.of(new Release("245", Optional.empty()), new Release("250", Optional.empty()),
+            new Release("256", Optional.empty())), cache.releases(chebi()));
+        // NewestRelease takes the newest of the listing
+        assertEquals(Optional.of("256"), cache.latest(chebi()));
+        assertEquals(1, server.hits("/chebi/archive/"));
+        // 200 is not listed, but its URL serves it: the gzipped file is kept as it came
+        CachedRelease r = cache.get(chebi(), "200");
+        assertArrayEquals(gz, Files.readAllBytes(r.original()));
+        assertEquals("chebi.obo.gz", r.original().getFileName().toString());
+        assertEquals(sha256(gz), r.sha256());
+        assertTrue(TermIndexStore.open(r).term("MS:1000031").isPresent());
+    }
+
+    @Test
+    public void githubTagsArePagedAndDatedByTheirGithubReleases() throws Exception {
+        List<String> tags = new ArrayList<>();
+        for (int i = 0; i < 100; i++) {
+            tags.add("v4.0." + i);
+        }
+        tags.add("v4.1.200");
+        tags.add("nightly");
+        serveMsTags(tags);
+        server.json(GITHUB_RELEASES, page -> page == 1
+            ? "[{\"tag_name\": \"v4.1.200\", \"published_at\": \"2025-01-15T23:30:00Z\"},"
+            + " {\"tag_name\": \"v4.0.1\", \"draft\": true, \"published_at\": null}]"
+            : "[]");
+
+        List<Release> releases = cache(false).releases(ms(Map.of()));
+
+        assertEquals(101, releases.size());
+        assertEquals(new Release("4.0.0", Optional.empty()), releases.get(0));
+        assertEquals(new Release("4.0.1", Optional.empty()), releases.get(1));
+        assertEquals(new Release("4.0.10", Optional.empty()), releases.get(10));
+        assertEquals(new Release("4.1.200", Optional.of(LocalDate.of(2025, 1, 15))), releases.get(100));
+        assertEquals(2, server.hits(TAGS));
+        JsonNode kept = new ObjectMapper().readTree(root.resolve("MS").resolve("releases.json").toFile());
+        assertEquals("PT24H", kept.path("ttl").asText(), kept.toString());
+    }
+
+    @Test
+    public void isoDateVersionsAreTheirOwnDates() throws Exception {
+        server.json("/api/repos/obo/uo/tags", page -> page == 1
+            ? "[{\"name\": \"v2026-10-12\"}, {\"name\": \"v2023-05-23\"}, {\"name\": \"vv2016-06-10\"}]" : "[]");
+        VocabularyEntry uo = uo(new ReleaseIndex.GithubTags("obo/uo", "v{version}", ReleaseDates.VERSION),
+            new Latest.GithubLatestTag("obo/uo", "v{version}"));
+        VocabularyCache cache = cache(false);
+
+        assertEquals(List.of(new Release("2023-05-23", Optional.of(LocalDate.of(2023, 5, 23))),
+            new Release("2026-10-12", Optional.of(LocalDate.of(2026, 10, 12)))), cache.releases(uo));
+        assertEquals(Optional.of("2026-10-12"), cache.latest(uo));
+        // the listed kind gives its own releases, and is cached like the others
+        List<Release> listed = List.of(new Release("2020-01-01", Optional.empty()));
+        assertEquals(listed, cache.releases(uo(new ReleaseIndex.Listed(listed), new Latest.NewestRelease())));
+    }
+
+    @Test
+    public void aHeaderLatestIsTheVersionInTheFileHeader() throws Exception {
+        server.file("/uo.obo", ("format-version: 1.2\ndata-version: releases/2026-10-12\nontology: uo\n\n"
+            + "[Term]\nid: UO:0000000\nname: unit\n").getBytes(StandardCharsets.UTF_8));
+        server.file("/uo.owl", owlWithVersion(PURL + "obo/uo/releases/2026-09-01/uo.owl"));
+        server.file("/plain.obo", "format-version: 1.2\ndata-version: 2026-08-01\n".getBytes(StandardCharsets.UTF_8));
+        server.file("/none.obo", "format-version: 1.2\n\n[Term]\nid: UO:1\n".getBytes(StandardCharsets.UTF_8));
+        VocabularyCache cache = cache(false);
+        ReleaseIndex none = new ReleaseIndex.Listed(List.of());
+
+        assertEquals(Optional.of("2026-10-12"), cache.latest(uo(none, header("/uo.obo"))));
+        assertEquals(Optional.of("2026-09-01"),
+            cache.latest(uo(Format.OWL_RDFXML, "UO2", none, header("/uo.owl"))));
+        assertEquals(Optional.of("2026-08-01"), cache.latest(uo(Format.OBO, "UO3", none, header("/plain.obo"))));
+        assertEquals(Optional.empty(), cache.latest(uo(Format.OBO, "UO4", none, header("/none.obo"))));
+    }
+
+    @Test
+    public void theGithubTokenIsSentOnlyToTheApi() throws Exception {
+        serveMsTags(List.of("v4.1.200"));
+        server.file(MS_PATH, miniMs);
+        VocabularyCache cache = new VocabularyCache(root, Downloader.http(Duration.ofSeconds(10)), false, DAY,
+            clock, server.api(), Optional.of("s3cret"));
+
+        cache.latest(ms(Map.of()));
+        cache.get(ms(Map.of()), "4.1.200");
+
+        assertEquals(List.of("Bearer s3cret"), server.authorizations(TAGS));
+        assertEquals(List.of(), server.authorizations(MS_PATH));
+        assertEquals(List.of("jmzTab-m"), server.userAgents(MS_PATH));
+    }
+
+    @Test
+    public void theDownloadIsLoggedWithItsSize() throws Exception {
+        server.file(MS_PATH, miniMs);
+        Logger logger = (Logger) LoggerFactory.getLogger(VocabularyCache.class);
+        ListAppender<ILoggingEvent> appender = new ListAppender<>();
+        appender.start();
+        logger.addAppender(appender);
+        try {
+            cache(false).get(ms(Map.of()), "4.1.200");
+        } finally {
+            logger.detachAppender(appender);
+        }
+        String expected = String.format(java.util.Locale.ROOT, "Downloading MS 4.1.200 (%.1f kB) from %s",
+            miniMs.length / 1000.0, server.base() + MS_PATH);
+        assertTrue(appender.list.stream().anyMatch(e -> e.getLevel() == ch.qos.logback.classic.Level.INFO
+            && e.getFormattedMessage().equals(expected)), appender.list.toString());
+    }
+
+    // ---- folders without release.json (Ruling R-N) ----
+
+    @Test
+    public void aPrefilledFileIsAdoptedInPlace() throws Exception {
+        Path folder = Files.createDirectories(root.resolve("MS").resolve("4.1.200"));
+        Files.write(folder.resolve("psi-ms.obo"), miniMs);
+        VocabularyCache cache = new VocabularyCache(root, failingDownloader(), false, DAY, clock, server.api(),
+            Optional.empty());
+
+        CachedRelease r = cache.get(ms(Map.of("4.1.200", sha256(miniMs))), "4.1.200");
+
+        assertEquals(folder.resolve("psi-ms.obo"), r.original());
+        assertEquals(folder.resolve(VocabularyCache.INDEX), r.index());
+        assertEquals(sha256(miniMs), r.sha256());
+        assertEquals(URI.create(server.base() + MS_PATH), r.source());
+        assertArrayEquals(miniMs, Files.readAllBytes(r.original()));
+        assertTrue(TermIndexStore.open(r).term("MS:1000031").isPresent());
+        JsonNode json = new ObjectMapper().readTree(folder.resolve("release.json").toFile());
+        assertTrue(json.path("prefilled").asBoolean(false), json.toString());
+        assertTrue(json.has("adopted"), json.toString());
+        assertFalse(json.has("finalUrl"), json.toString());
+        assertEquals(r, cache(true).get(ms(Map.of()), "4.1.200"));
+        assertNoTemporaryFolders();
+    }
+
+    @Test
+    public void aPrefilledFileIsAdoptedOffline() throws Exception {
+        Path folder = Files.createDirectories(root.resolve("MS").resolve("4.1.200"));
+        Files.write(folder.resolve("psi-ms.obo"), miniMs);
+        // the index an interrupted adoption left is replaced; an older build's index is left as it is
+        Files.writeString(folder.resolve(VocabularyCache.INDEX), "half an index");
+        Files.writeString(folder.resolve("terms.idx"), "an older build's index");
+
+        CachedRelease r = cache(true).get(ms(Map.of()), "4.1.200");
+
+        assertTrue(TermIndexStore.open(r).term("MS:1000031").isPresent());
+        assertEquals(Set.of("psi-ms.obo", "terms.idx", VocabularyCache.INDEX, "release.json"), names(folder));
+        assertEquals("an older build's index", Files.readString(folder.resolve("terms.idx")));
+        assertEquals(0, server.totalHits());
+    }
+
+    @Test
+    public void aPrefilledFileThatFailsIsLeftAsItWas() throws Exception {
+        Path folder = Files.createDirectories(root.resolve("MS").resolve("4.1.200"));
+        Files.write(folder.resolve("psi-ms.obo"), miniMs);
+
+        ResolutionException mismatch = assertThrows(ResolutionException.class,
+            () -> cache(true).get(ms(Map.of("4.1.200", "0".repeat(64))), "4.1.200"));
+        assertEquals(Reason.CHECKSUM_MISMATCH, mismatch.reason());
+        assertTrue(mismatch.getMessage().contains(sha256(miniMs)), mismatch.getMessage());
+        assertEquals(Set.of("psi-ms.obo"), names(folder));
+
+        Files.writeString(folder.resolve("psi-ms.obo"), "<!DOCTYPE html>\n<html></html>\n");
+        ResolutionException html = assertThrows(ResolutionException.class,
+            () -> cache(false).get(ms(Map.of()), "4.1.200"));
+        assertEquals(Reason.PARSE_FAILED, html.reason());
+        assertTrue(html.getMessage().contains("not an OBO file"), html.getMessage());
+        assertEquals(Set.of("psi-ms.obo"), names(folder));
+        assertEquals(0, server.totalHits());
+        assertNoTemporaryFolders();
+    }
+
+    @Test
+    public void aPrefilledOwlReleaseNeedsItsImportsCachedOffline() throws Exception {
+        Path folder = Files.createDirectories(root.resolve("MSIO").resolve("1.0.1"));
+        Files.write(folder.resolve("msio.owl"), resource("/cv/mini-msio.owl"));
+
+        ResolutionException e = assertThrows(ResolutionException.class, () -> cache(true).get(msio(), "1.0.1"));
+
+        assertEquals(Reason.OFFLINE_NOT_CACHED, e.reason());
+        assertTrue(e.getMessage().contains("import " + PURL + "obo/mini-obi.owl"), e.getMessage());
+        assertEquals(Set.of("msio.owl"), names(folder));
+        // online, the import is downloaded and the release adopted
+        server.file("/obo/mini-obi.owl", resource("/cv/mini-obi.owl"));
+        CachedRelease r = new VocabularyCache(root, purlToServer(), false, DAY, clock, server.api(),
+            Optional.empty()).get(msio(), "1.0.1");
+        assertEquals(1, r.imports().size());
+        assertTrue(TermIndexStore.open(r).term("OBI:0000011").isPresent());
+    }
+
+    @Test
+    public void aFolderThatIsNoEntryIsNeverTouched() throws Exception {
+        server.file(MS_PATH, miniMs);
+        Path folder = Files.createDirectories(root.resolve("MS").resolve("4.1.200"));
+        Files.write(folder.resolve("psi-ms.obo"), miniMs);
+        Files.writeString(folder.resolve("notes.txt"), "an operator's copy in progress");
+
+        ResolutionException online = assertThrows(ResolutionException.class,
+            () -> cache(false).get(ms(Map.of()), "4.1.200"));
+        ResolutionException offline = assertThrows(ResolutionException.class,
+            () -> cache(true).get(ms(Map.of()), "4.1.200"));
+
+        assertEquals(Reason.WRITE_FAILED, online.reason());
+        assertEquals(Reason.OFFLINE_NOT_CACHED, offline.reason());
+        for (ResolutionException e : List.of(online, offline)) {
+            assertTrue(e.getMessage().contains(folder.toString()), e.getMessage());
+            assertTrue(e.getMessage().contains("holds no release.json"), e.getMessage());
+            assertTrue(e.getMessage().contains("remove it, or leave only the vocabulary file psi-ms.obo"),
+                e.getMessage());
+        }
+        assertEquals(Set.of("psi-ms.obo", "notes.txt"), names(folder));
+        // a file under another name, and an empty folder, are no pre-filled release either
+        Files.delete(folder.resolve("psi-ms.obo"));
+        Files.delete(folder.resolve("notes.txt"));
+        assertEquals(Reason.WRITE_FAILED,
+            assertThrows(ResolutionException.class, () -> cache(false).get(ms(Map.of()), "4.1.200")).reason());
+        Files.writeString(folder.resolve("partial"), "half");
+        assertEquals(Reason.WRITE_FAILED,
+            assertThrows(ResolutionException.class, () -> cache(false).get(ms(Map.of()), "4.1.200")).reason());
+        assertEquals(Set.of("partial"), names(folder));
+        assertEquals(0, server.hits(MS_PATH));
+    }
+
+    @Test
+    public void aFolderThatAppearsDuringADownloadIsNotReplaced() throws Exception {
+        server.file(MS_PATH, miniMs);
+        Path folder = root.resolve("MS").resolve("4.1.200");
+        Downloader http = Downloader.http(Duration.ofSeconds(10));
+        Downloader copying = uri -> {
+            Files.createDirectories(folder);
+            Files.writeString(folder.resolve("psi-ms.obo"), "being copied");
+            Files.writeString(folder.resolve("more"), "being copied");
+            return http.get(uri);
+        };
+
+        ResolutionException e = assertThrows(ResolutionException.class,
+            () -> new VocabularyCache(root, copying, false, DAY, clock, server.api(), Optional.empty())
+                .get(ms(Map.of()), "4.1.200"));
+
+        assertEquals(Reason.WRITE_FAILED, e.reason());
+        assertTrue(e.getMessage().contains("holds no release.json"), e.getMessage());
+        assertEquals(Set.of("psi-ms.obo", "more"), names(folder));
+        assertNoTemporaryFolders();
+    }
+
+    // ---- redirects ----
+
+    @Test
+    public void aRedirectToAnotherOriginGetsNoToken() throws Exception {
+        try (TestServer other = new TestServer()) {
+            server.redirect(TAGS, other.base() + "/elsewhere/tags", 302);
+            other.json("/elsewhere/tags", page -> "[{\"name\": \"v4.1.200\"}]");
+            VocabularyCache cache = new VocabularyCache(root, Downloader.http(Duration.ofSeconds(10)), false, DAY,
+                clock, server.api(), Optional.of("s3cret"));
+
+            assertEquals(Optional.of("4.1.200"), cache.latest(ms(Map.of())));
+
+            assertEquals(List.of("Bearer s3cret"), server.authorizations(TAGS));
+            assertEquals(1, other.hits("/elsewhere/tags"));
+            assertEquals(List.of(), other.authorizations("/elsewhere/tags"));
+        }
+    }
+
+    @Test
+    public void aRedirectWithinTheOriginKeepsTheHeaders() throws Exception {
+        server.redirect("/api/a/start", server.base() + "/api/b/end", 307);
+        server.file("/api/b/end", "y".getBytes(StandardCharsets.UTF_8));
+
+        try (InputStream in = Downloader.http(Duration.ofSeconds(10))
+            .get(URI.create(server.base() + "/api/a/start"), Map.of("Authorization", "Bearer s3cret"))) {
+            assertEquals("y", new String(in.readAllBytes(), StandardCharsets.UTF_8));
+            assertEquals(URI.create(server.base() + "/api/b/end"), ((Downloader.Download) in).location());
+        }
+        assertEquals(List.of("Bearer s3cret"), server.authorizations("/api/b/end"));
+    }
+
+    @Test
+    public void aRelativeLocationIsResolved() throws Exception {
+        server.redirect("/a/start", "next", 301);
+        server.redirect("/a/next", "/b/end", 303);
+        server.file("/b/end", "z".getBytes(StandardCharsets.UTF_8));
+
+        try (InputStream in = Downloader.http(Duration.ofSeconds(10)).get(URI.create(server.base() + "/a/start"))) {
+            assertEquals("z", new String(in.readAllBytes(), StandardCharsets.UTF_8));
+            assertEquals(URI.create(server.base() + "/b/end"), ((Downloader.Download) in).location());
+        }
+        assertEquals(1, server.hits("/a/next"));
+    }
+
+    @Test
+    public void aMissingFileAfterARedirectNamesBothUrls() {
+        server.redirect(MS_PATH, "/moved/psi-ms.obo", 302);
+
+        ResolutionException e = assertThrows(ResolutionException.class,
+            () -> cache(false).get(ms(Map.of()), "4.1.200"));
+
+        assertEquals(Reason.NO_SUCH_RELEASE, e.reason());
+        assertTrue(e.getMessage().contains(server.base() + MS_PATH), e.getMessage());
+        assertTrue(e.getMessage().contains(server.base() + "/moved/psi-ms.obo"), e.getMessage());
+    }
+
+    @Test
+    public void moreThanTenRedirectsFail() {
+        server.redirect(MS_PATH, MS_PATH, 302);
+
+        ResolutionException e = assertThrows(ResolutionException.class,
+            () -> cache(false).get(ms(Map.of()), "4.1.200"));
+
+        assertEquals(Reason.DOWNLOAD_FAILED, e.reason());
+        assertTrue(e.getMessage().contains("more than 10 redirects"), e.getMessage());
+        assertEquals(11, server.hits(MS_PATH));
+    }
+
+    @Test
+    public void aTemporaryFolderLeftForADayIsRemoved() throws Exception {
+        server.file(MS_PATH, miniMs);
+        Path key = Files.createDirectories(root.resolve("MS"));
+        Path old = Files.createDirectory(key.resolve(".tmp-old"));
+        Files.writeString(old.resolve("psi-ms.obo"), "half");
+        Files.setLastModifiedTime(old, FileTime.from(Instant.now().minus(Duration.ofHours(25))));
+        Path recent = Files.createDirectory(key.resolve(".tmp-recent"));
+
+        cache(false).get(ms(Map.of()), "4.1.200");
+
+        assertFalse(Files.exists(old));
+        assertTrue(Files.isDirectory(recent));
+    }
+
+    @Test
+    public void theLoserOfARenameRaceUsesTheWinnersEntry() throws Exception {
+        server.file(MS_PATH, miniMs);
+        Path elsewhere = temp.resolve("winner");
+        CachedRelease built = new VocabularyCache(elsewhere, Downloader.http(Duration.ofSeconds(10)), false, DAY,
+            clock, server.api(), Optional.empty()).get(ms(Map.of()), "4.1.200");
+        Path winner = built.original().getParent();
+        Files.writeString(winner.resolve("marker"), "won");
+        Downloader http = Downloader.http(Duration.ofSeconds(10));
+        // another process finishes the same release while this one downloads
+        Downloader racing = uri -> {
+            copyTree(winner, root.resolve("MS").resolve("4.1.200"));
+            return http.get(uri);
+        };
+
+        CachedRelease r = new VocabularyCache(root, racing, false, DAY, clock, server.api(), Optional.empty())
+            .get(ms(Map.of()), "4.1.200");
+
+        assertTrue(Files.exists(r.original().getParent().resolve("marker")));
+        assertEquals(root.resolve("MS").resolve("4.1.200").resolve("psi-ms.obo"), r.original());
+        assertNoTemporaryFolders();
+    }
+
+    @Test
+    public void aCacheFolderCanBeCopiedElsewhere() throws Exception {
+        server.file(MS_PATH, miniMs);
+        cache(false).get(ms(Map.of()), "4.1.200");
+        Path copy = temp.resolve("copy");
+        copyTree(root, copy);
+
+        CachedRelease r = new VocabularyCache(copy, failingDownloader(), true, DAY, clock, server.api(),
+            Optional.empty()).get(ms(Map.of()), "4.1.200");
+
+        assertEquals(copy.resolve("MS").resolve("4.1.200").resolve("psi-ms.obo"), r.original());
+        assertTrue(TermIndexStore.open(r).term("MS:1000031").isPresent());
+    }
+
+    @Test
+    public void theDefaultRootIsTheUserCacheFolder() {
+        Path root = VocabularyCache.defaultRoot();
+        String xdg = System.getenv("XDG_CACHE_HOME");
+        Path base = xdg != null && !xdg.isBlank() && Path.of(xdg).isAbsolute()
+            ? Path.of(xdg) : Path.of(System.getProperty("user.home"), ".cache");
+        assertEquals(base.resolve("jmztabm").resolve("cv"), root);
+    }
+
+    // ---- fixtures ----
+
+    private VocabularyCache cache(boolean offline) {
+        return new VocabularyCache(root, Downloader.http(Duration.ofSeconds(10)), offline, DAY, clock, server.api(),
+            Optional.empty());
+    }
+
+    private VocabularyEntry ms(Map<String, String> knownSha256) {
+        return new VocabularyEntry("MS", Set.of("MS", "PSI-MS"), "MS",
+            new Location(Format.OBO, Optional.of(server.base() + "/ms/v{version}/psi-ms.obo"), Optional.empty()),
+            VersionScheme.DOTTED, new ReleaseIndex.GithubTags(MS_REPO, "v{version}", ReleaseDates.GITHUB_RELEASES),
+            new Latest.GithubLatestTag(MS_REPO, "v{version}"), knownSha256);
+    }
+
+    private VocabularyEntry msio() {
+        return new VocabularyEntry("MSIO", Set.of("MSIO"), "MSIO",
+            new Location(Format.OWL_RDFXML, Optional.of(server.base() + "/msio/v{version}/msio.owl"),
+                Optional.empty()),
+            VersionScheme.DOTTED, new ReleaseIndex.Listed(List.of()), new Latest.NewestRelease(), Map.of());
+    }
+
+    private VocabularyEntry chebi() {
+        return new VocabularyEntry("CHEBI", Set.of("CHEBI"), "CHEBI",
+            new Location(Format.OBO_GZ, Optional.of(server.base() + "/chebi/{version}/chebi.obo.gz"),
+                Optional.empty()),
+            VersionScheme.RELEASE_NUMBER,
+            new ReleaseIndex.DirectoryListing(URI.create(server.base() + "/chebi/archive/"), "rel{version}/",
+                ReleaseDates.NONE),
+            new Latest.NewestRelease(), Map.of());
+    }
+
+    private VocabularyEntry uo(ReleaseIndex releases, Latest latest) {
+        return uo(Format.OBO, "UO", releases, latest);
+    }
+
+    private VocabularyEntry uo(Format format, String key, ReleaseIndex releases, Latest latest) {
+        return new VocabularyEntry(key, Set.of(key), key,
+            new Location(format, Optional.of(server.base() + "/uo/{version}/uo." + format.extension()),
+                Optional.empty()),
+            VersionScheme.ISO_DATE, releases, latest, Map.of());
+    }
+
+    private Latest header(String path) {
+        return new Latest.Header(URI.create(server.base() + path));
+    }
+
+    private void serveMsTags(List<String> tags) {
+        server.json(TAGS, page -> {
+            int from = Math.min((page - 1) * 100, tags.size());
+            int to = Math.min(page * 100, tags.size());
+            return tags.subList(from, to).stream().map(t -> "{\"name\": \"" + t + "\"}")
+                .reduce((a, b) -> a + "," + b).map(s -> "[" + s + "]").orElse("[]");
+        });
+    }
+
+    /**
+     * A downloader that fetches the purl.obolibrary.org IRIs from the test
+     * server, over https only (Ruling R-AG): a plaintext PURL fails the test.
+     */
+    private Downloader purlToServer() {
+        return purlToServer(server);
+    }
+
+    static Downloader purlToServer(TestServer server) {
+        Downloader http = Downloader.http(Duration.ofSeconds(10));
+        return uri -> {
+            if (uri.toString().startsWith(PURL)) {
+                throw new AssertionError("a PURL is fetched over plain http: " + uri);
+            }
+            return http.get(URI.create(uri.toString().replace(HTTPS_PURL, server.base() + "/")));
+        };
+    }
+
+    private static Set<String> names(Path folder) throws IOException {
+        try (Stream<Path> files = Files.list(folder)) {
+            return files.map(p -> p.getFileName().toString()).collect(java.util.stream.Collectors.toSet());
+        }
+    }
+
+    private static Downloader failingDownloader() {
+        return uri -> {
+            throw new AssertionError("no download expected: " + uri);
+        };
+    }
+
+    private void assertImportFolder(CachedRelease imported, String iri, byte[] content) throws Exception {
+        String hash = sha256(iri.getBytes(StandardCharsets.UTF_8)).substring(0, 16);
+        Path folder = root.resolve("_imports").resolve(hash);
+        assertEquals(folder, imported.original().getParent());
+        assertArrayEquals(content, Files.readAllBytes(imported.original()));
+        assertTrue(Files.isRegularFile(folder.resolve("release.json")));
+    }
+
+    private void assertNoTemporaryFolders() throws IOException {
+        if (!Files.exists(root)) {
+            return;
+        }
+        try (Stream<Path> files = Files.walk(root)) {
+            List<Path> temporary = files.filter(p -> p.getFileName().toString().startsWith(".tmp-")).toList();
+            assertEquals(List.of(), temporary);
+        }
+    }
+
+    private static byte[] owl(String ontology, String imports, String classIri, String label) {
+        return ("<?xml version=\"1.0\"?>\n<rdf:RDF xmlns:owl=\"http://www.w3.org/2002/07/owl#\""
+            + " xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\""
+            + " xmlns:rdfs=\"http://www.w3.org/2000/01/rdf-schema#\">\n"
+            + "<owl:Ontology rdf:about=\"" + ontology + "\"><owl:imports rdf:resource=\"" + imports + "\"/>"
+            + "</owl:Ontology>\n<owl:Class rdf:about=\"" + classIri + "\"><rdfs:label>" + label
+            + "</rdfs:label></owl:Class>\n</rdf:RDF>\n").getBytes(StandardCharsets.UTF_8);
+    }
+
+    private static byte[] owlWithVersion(String versionIri) {
+        return ("<?xml version=\"1.0\"?>\n<rdf:RDF xmlns:owl=\"http://www.w3.org/2002/07/owl#\""
+            + " xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">\n"
+            + "<owl:Ontology rdf:about=\"http://purl.obolibrary.org/obo/uo.owl\"><owl:versionIRI rdf:resource=\""
+            + versionIri + "\"/></owl:Ontology>\n</rdf:RDF>\n").getBytes(StandardCharsets.UTF_8);
+    }
+
+    private static byte[] resource(String name) throws IOException {
+        try (InputStream in = VocabularyCacheTest.class.getResourceAsStream(name)) {
+            return in.readAllBytes();
+        }
+    }
+
+    private static byte[] gzip(byte[] data) throws IOException {
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        try (GZIPOutputStream out = new GZIPOutputStream(bytes)) {
+            out.write(data);
+        }
+        return bytes.toByteArray();
+    }
+
+    private static String sha256(byte[] data) throws Exception {
+        return HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(data));
+    }
+
+    private static void copyTree(Path from, Path to) {
+        try (Stream<Path> files = Files.walk(from)) {
+            for (Path p : files.toList()) {
+                Path target = to.resolve(from.relativize(p).toString());
+                if (Files.isDirectory(p)) {
+                    Files.createDirectories(target);
+                } else {
+                    Files.copy(p, target);
+                }
+            }
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+    }
+
+    private static void sleep(long millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    private static final class MutableClock extends Clock {
+
+        private volatile Instant now;
+
+        MutableClock(Instant now) {
+            this.now = now;
+        }
+
+        void advance(Duration d) {
+            now = now.plus(d);
+        }
+
+        @Override
+        public ZoneId getZone() {
+            return ZoneOffset.UTC;
+        }
+
+        @Override
+        public Clock withZone(ZoneId zone) {
+            return this;
+        }
+
+        @Override
+        public Instant instant() {
+            return now;
+        }
+    }
+}

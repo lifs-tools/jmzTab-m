@@ -1,0 +1,224 @@
+{
+  "term" : {
+    "obo_id" : "CL:0000182",
+    "label" : "hepatocyte",
+    "iri" : "http://purl.obolibrary.org/obo/CL_0000182",
+    "ontology_prefix" : "CL"
+  },
+  "ancestors" : [ {
+    "obo_id" : "BFO:0000002",
+    "label" : "BFO_0000002",
+    "iri" : "http://purl.obolibrary.org/obo/BFO_0000002",
+    "ontology_prefix" : "CL"
+  }, {
+    "obo_id" : "BFO:0000004",
+    "label" : "BFO_0000004",
+    "iri" : "http://purl.obolibrary.org/obo/BFO_0000004",
+    "ontology_prefix" : "CL"
+  }, {
+    "obo_id" : "BFO:0000040",
+    "label" : "BFO_0000040",
+    "iri" : "http://purl.obolibrary.org/obo/BFO_0000040",
+    "ontology_prefix" : "CL"
+  }, {
+    "obo_id" : "CL:0000000",
+    "label" : "cell",
+    "iri" : "http://purl.obolibrary.org/obo/CL_0000000",
+    "ontology_prefix" : "CL"
+  }, {
+    "obo_id" : "CL:0000066",
+    "label" : "epithelial cell",
+    "iri" : "http://purl.obolibrary.org/obo/CL_0000066",
+    "ontology_prefix" : "CL"
+  }, {
+    "obo_id" : "CL:0000255",
+    "label" : "eukaryotic cell",
+    "iri" : "http://purl.obolibrary.org/obo/CL_0000255",
+    "ontology_prefix" : "CL"
+  }, {
+    "obo_id" : "CL:0000412",
+    "label" : "polyploid cell",
+    "iri" : "http://purl.obolibrary.org/obo/CL_0000412",
+    "ontology_prefix" : "CL"
+  }, {
+    "obo_id" : "CL:0000417",
+    "label" : "endopolyploid cell",
+    "iri" : "http://purl.obolibrary.org/obo/CL_0000417",
+    "ontology_prefix" : "CL"
+  }, {
+    "obo_id" : "UBERON:0000061",
+    "label" : "anatomical structure",
+    "iri" : "http://purl.obolibrary.org/obo/UBERON_0000061",
+    "ontology_prefix" : "CL"
+  }, {
+    "obo_id" : "UBERON:0000062",
+    "label" : "organ",
+    "iri" : "http://purl.obolibrary.org/obo/UBERON_0000062",
+    "ontology_prefix" : "CL"
+  }, {
+    "obo_id" : "UBERON:0000465",
+    "label" : "material anatomical entity",
+    "iri" : "http://purl.obolibrary.org/obo/UBERON_0000465",
+    "ontology_prefix" : "CL"
+  }, {
+    "obo_id" : "UBERON:0000467",
+    "label" : "anatomical system",
+    "iri" : "http://purl.obolibrary.org/obo/UBERON_0000467",
+    "ontology_prefix" : "CL"
+  }, {
+    "obo_id" : "UBERON:0000468",
+    "label" : "multicellular organism",
+    "iri" : "http://purl.obolibrary.org/obo/UBERON_0000468",
+    "ontology_prefix" : "CL"
+  }, {
+    "obo_id" : "UBERON:0000475",
+    "label" : "organism subdivision",
+    "iri" : "http://purl.obolibrary.org/obo/UBERON_0000475",
+    "ontology_prefix" : "CL"
+  }, {
+    "obo_id" : "UBERON:0000479",
+    "label" : "tissue",
+    "iri" : "http://purl.obolibrary.org/obo/UBERON_0000479",
+    "ontology_prefix" : "CL"
+  }, {
+    "obo_id" : "UBERON:0000483",
+    "label" : "epithelium",
+    "iri" : "http://purl.obolibrary.org/obo/UBERON_0000483",
+    "ontology_prefix" : "CL"
+  }, {
+    "obo_id" : "UBERON:0000916",
+    "label" : "abdomen",
+    "iri" : "http://purl.obolibrary.org/obo/UBERON_0000916",
+    "ontology_prefix" : "CL"
+  }, {
+    "obo_id" : "UBERON:0000949",
+    "label" : "endocrine system",
+    "iri" : "http://purl.obolibrary.org/obo/UBERON_0000949",
+    "ontology_prefix" : "CL"
+  }, {
+    "obo_id" : "UBERON:0001007",
+    "label" : "digestive system",
+    "iri" : "http://purl.obolibrary.org/obo/UBERON_0001007",
+    "ontology_prefix" : "CL"
+  }, {
+    "obo_id" : "UBERON:0001062",
+    "label" : "anatomical entity",
+    "iri" : "http://purl.obolibrary.org/obo/UBERON_0001062",
+    "ontology_prefix" : "CL"
+  }, {
+    "obo_id" : "UBERON:0002100",
+    "label" : "trunk",
+    "iri" : "http://purl.obolibrary.org/obo/UBERON_0002100",
+    "ontology_prefix" : "CL"
+  }, {
+    "obo_id" : "UBERON:0002107",
+    "label" : "liver",
+    "iri" : "http://purl.obolibrary.org/obo/UBERON_0002107",
+    "ontology_prefix" : "CL"
+  }, {
+    "obo_id" : "UBERON:0002330",
+    "label" : "exocrine system",
+    "iri" : "http://purl.obolibrary.org/obo/UBERON_0002330",
+    "ontology_prefix" : "CL"
+  }, {
+    "obo_id" : "UBERON:0002365",
+    "label" : "exocrine gland",
+    "iri" : "http://purl.obolibrary.org/obo/UBERON_0002365",
+    "ontology_prefix" : "CL"
+  }, {
+    "obo_id" : "UBERON:0002368",
+    "label" : "endocrine gland",
+    "iri" : "http://purl.obolibrary.org/obo/UBERON_0002368",
+    "ontology_prefix" : "CL"
+  }, {
+    "obo_id" : "UBERON:0002417",
+    "label" : "abdominal segment of trunk",
+    "iri" : "http://purl.obolibrary.org/obo/UBERON_0002417",
+    "ontology_prefix" : "CL"
+  }, {
+    "obo_id" : "UBERON:0002423",
+    "label" : "hepatobiliary system",
+    "iri" : "http://purl.obolibrary.org/obo/UBERON_0002423",
+    "ontology_prefix" : "CL"
+  }, {
+    "obo_id" : "UBERON:0002530",
+    "label" : "gland",
+    "iri" : "http://purl.obolibrary.org/obo/UBERON_0002530",
+    "ontology_prefix" : "CL"
+  }, {
+    "obo_id" : "UBERON:0004119",
+    "label" : "endoderm-derived structure",
+    "iri" : "http://purl.obolibrary.org/obo/UBERON_0004119",
+    "ontology_prefix" : "CL"
+  }, {
+    "obo_id" : "UBERON:0005172",
+    "label" : "abdomen element",
+    "iri" : "http://purl.obolibrary.org/obo/UBERON_0005172",
+    "ontology_prefix" : "CL"
+  }, {
+    "obo_id" : "UBERON:0005173",
+    "label" : "abdominal segment element",
+    "iri" : "http://purl.obolibrary.org/obo/UBERON_0005173",
+    "ontology_prefix" : "CL"
+  }, {
+    "obo_id" : "UBERON:0005177",
+    "label" : "trunk region element",
+    "iri" : "http://purl.obolibrary.org/obo/UBERON_0005177",
+    "ontology_prefix" : "CL"
+  }, {
+    "obo_id" : "UBERON:0006925",
+    "label" : "digestive system gland",
+    "iri" : "http://purl.obolibrary.org/obo/UBERON_0006925",
+    "ontology_prefix" : "CL"
+  }, {
+    "obo_id" : "UBERON:0009569",
+    "label" : "subdivision of trunk",
+    "iri" : "http://purl.obolibrary.org/obo/UBERON_0009569",
+    "ontology_prefix" : "CL"
+  }, {
+    "obo_id" : "UBERON:0010000",
+    "label" : "multicellular anatomical structure",
+    "iri" : "http://purl.obolibrary.org/obo/UBERON_0010000",
+    "ontology_prefix" : "CL"
+  }, {
+    "obo_id" : "UBERON:0011216",
+    "label" : "organ system subdivision",
+    "iri" : "http://purl.obolibrary.org/obo/UBERON_0011216",
+    "ontology_prefix" : "CL"
+  }, {
+    "obo_id" : "UBERON:0011676",
+    "label" : "subdivision of organism along main body axis",
+    "iri" : "http://purl.obolibrary.org/obo/UBERON_0011676",
+    "ontology_prefix" : "CL"
+  }, {
+    "obo_id" : "UBERON:0013701",
+    "label" : "main body axis",
+    "iri" : "http://purl.obolibrary.org/obo/UBERON_0013701",
+    "ontology_prefix" : "CL"
+  }, {
+    "obo_id" : "UBERON:0013702",
+    "label" : "body proper",
+    "iri" : "http://purl.obolibrary.org/obo/UBERON_0013702",
+    "ontology_prefix" : "CL"
+  }, {
+    "obo_id" : "UBERON:0013765",
+    "label" : "digestive system element",
+    "iri" : "http://purl.obolibrary.org/obo/UBERON_0013765",
+    "ontology_prefix" : "CL"
+  }, {
+    "obo_id" : "UBERON:0015203",
+    "label" : "non-connected functional system",
+    "iri" : "http://purl.obolibrary.org/obo/UBERON_0015203",
+    "ontology_prefix" : "CL"
+  }, {
+    "obo_id" : "UBERON:0015204",
+    "label" : "glandular system",
+    "iri" : "http://purl.obolibrary.org/obo/UBERON_0015204",
+    "ontology_prefix" : "CL"
+  }, {
+    "obo_id" : "UBERON:0034923",
+    "label" : "disconnected anatomical group",
+    "iri" : "http://purl.obolibrary.org/obo/UBERON_0034923",
+    "ontology_prefix" : "CL"
+  } ]
+}

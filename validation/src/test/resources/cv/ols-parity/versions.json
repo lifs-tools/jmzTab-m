@@ -1,0 +1,83 @@
+{
+  "recorded" : "2026-11-11",
+  "source" : "https://www.ebi.ac.uk/ols4/api/",
+  "ontologies" : {
+    "bto" : {
+      "configVersion" : null,
+      "versionIri" : "http://purl.obolibrary.org/obo/bto/releases/2021-10-26/bto.owl",
+      "olsCurrentVersion" : "2021-10-26",
+      "version" : "2021-10-26",
+      "versionFrom" : "versionIri"
+    },
+    "chebi" : {
+      "configVersion" : "257",
+      "versionIri" : "http://purl.obolibrary.org/obo/chebi/257/chebi.owl",
+      "olsCurrentVersion" : "257",
+      "version" : "257",
+      "versionFrom" : "config.version"
+    },
+    "cl" : {
+      "configVersion" : "2026-06-08",
+      "versionIri" : "http://purl.obolibrary.org/obo/cl/releases/2026-06-08/cl.owl",
+      "olsCurrentVersion" : "2026-06-08",
+      "version" : "2026-06-08",
+      "versionFrom" : "config.version"
+    },
+    "doid" : {
+      "configVersion" : "2026-10-29",
+      "versionIri" : "http://purl.obolibrary.org/obo/doid/releases/2026-10-29/translations/doid-international.owl",
+      "olsCurrentVersion" : "2026-10-29",
+      "version" : "2026-10-29",
+      "versionFrom" : "config.version"
+    },
+    "ms" : {
+      "configVersion" : null,
+      "versionIri" : "http://purl.obolibrary.org/obo/ms/4.2.15/ms.owl",
+      "olsCurrentVersion" : "4.2.15",
+      "version" : "4.2.15",
+      "versionFrom" : "versionIri"
+    },
+    "msio" : {
+      "configVersion" : "1.0.1",
+      "versionIri" : null,
+      "olsCurrentVersion" : "1.0.1",
+      "version" : "1.0.1",
+      "versionFrom" : "config.version"
+    },
+    "ncbitaxon" : {
+      "configVersion" : "2026-11-09",
+      "versionIri" : "http://purl.obolibrary.org/obo/ncbitaxon/2026-11-09/ncbitaxon.owl",
+      "olsCurrentVersion" : "2026-11-09",
+      "version" : "2026-11-09",
+      "versionFrom" : "config.version"
+    },
+    "ncit" : {
+      "configVersion" : "26.02d",
+      "versionIri" : "http://purl.obolibrary.org/obo/ncit/releases/2026-03-19/ncit.owl",
+      "olsCurrentVersion" : "26.02d",
+      "version" : "2026-03-19",
+      "versionFrom" : "versionIri"
+    },
+    "obi" : {
+      "configVersion" : "2026-07-27",
+      "versionIri" : "http://purl.obolibrary.org/obo/obi/2026-07-27/obi.owl",
+      "olsCurrentVersion" : "2026-07-27",
+      "version" : "2026-07-27",
+      "versionFrom" : "config.version"
+    },
+    "pride" : {
+      "configVersion" : null,
+      "versionIri" : "http://purl.obolibrary.org/obo/pride/releases/2026-10-26/pride.owl",
+      "olsCurrentVersion" : "2026-10-26",
+      "version" : "2026-10-26",
+      "versionFrom" : "versionIri"
+    },
+    "uo" : {
+      "configVersion" : "2026-10-12",
+      "versionIri" : "http://purl.obolibrary.org/obo/uo/releases/2026-10-12/uo.owl",
+      "olsCurrentVersion" : "2026-10-12",
+      "version" : "2026-10-12",
+      "versionFrom" : "config.version"
+    }
+  }
+}

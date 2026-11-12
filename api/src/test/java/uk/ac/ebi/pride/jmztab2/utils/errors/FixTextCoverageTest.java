@@ -25,7 +25,7 @@ class FixTextCoverageTest {
 
     @Test
     void allTypesAreCovered() {
-        assertEquals(122, allTypes().count());
+        assertEquals(129, allTypes().count());
     }
 
     @ParameterizedTest

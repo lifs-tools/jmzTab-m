@@ -1,0 +1,44 @@
+{
+  "term" : {
+    "obo_id" : "MS:1002890",
+    "label" : "fragmentation score",
+    "iri" : "http://purl.obolibrary.org/obo/MS_1002890",
+    "ontology_prefix" : "MS"
+  },
+  "ancestors" : [ {
+    "obo_id" : "MS:0000000",
+    "label" : "Proteomics Standards Initiative Mass Spectrometry Vocabularies",
+    "iri" : "http://purl.obolibrary.org/obo/MS_0000000",
+    "ontology_prefix" : "MS"
+  }, {
+    "obo_id" : "MS:1001000",
+    "label" : "spectrum interpretation",
+    "iri" : "http://purl.obolibrary.org/obo/MS_1001000",
+    "ontology_prefix" : "MS"
+  }, {
+    "obo_id" : "MS:1001405",
+    "label" : "spectrum identification result details",
+    "iri" : "http://purl.obolibrary.org/obo/MS_1001405",
+    "ontology_prefix" : "MS"
+  }, {
+    "obo_id" : "MS:1002687",
+    "label" : "analysis attribute",
+    "iri" : "http://purl.obolibrary.org/obo/MS_1002687",
+    "ontology_prefix" : "MS"
+  }, {
+    "obo_id" : "MS:1002693",
+    "label" : "identification attribute",
+    "iri" : "http://purl.obolibrary.org/obo/MS_1002693",
+    "ontology_prefix" : "MS"
+  }, {
+    "obo_id" : "MS:1002694",
+    "label" : "single identification result attribute",
+    "iri" : "http://purl.obolibrary.org/obo/MS_1002694",
+    "ontology_prefix" : "MS"
+  }, {
+    "obo_id" : "MS:1002888",
+    "label" : "small molecule confidence measure",
+    "iri" : "http://purl.obolibrary.org/obo/MS_1002888",
+    "ontology_prefix" : "MS"
+  } ]
+}

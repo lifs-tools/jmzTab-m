@@ -1,0 +1,59 @@
+{
+  "term" : {
+    "obo_id" : "DOID:9452",
+    "label" : "steatotic liver disease",
+    "iri" : "http://purl.obolibrary.org/obo/DOID_9452",
+    "ontology_prefix" : "DOID"
+  },
+  "ancestors" : [ {
+    "obo_id" : "DOID:0014667",
+    "label" : "disease of metabolism",
+    "iri" : "http://purl.obolibrary.org/obo/DOID_0014667",
+    "ontology_prefix" : "DOID"
+  }, {
+    "obo_id" : "DOID:3118",
+    "label" : "hepatobiliary disease",
+    "iri" : "http://purl.obolibrary.org/obo/DOID_3118",
+    "ontology_prefix" : "DOID"
+  }, {
+    "obo_id" : "DOID:3211",
+    "label" : "lysosomal storage disease",
+    "iri" : "http://purl.obolibrary.org/obo/DOID_3211",
+    "ontology_prefix" : "DOID"
+  }, {
+    "obo_id" : "DOID:4",
+    "label" : "disease",
+    "iri" : "http://purl.obolibrary.org/obo/DOID_4",
+    "ontology_prefix" : "DOID"
+  }, {
+    "obo_id" : "DOID:409",
+    "label" : "liver disease",
+    "iri" : "http://purl.obolibrary.org/obo/DOID_409",
+    "ontology_prefix" : "DOID"
+  }, {
+    "obo_id" : "DOID:630",
+    "label" : "genetic disease",
+    "iri" : "http://purl.obolibrary.org/obo/DOID_630",
+    "ontology_prefix" : "DOID"
+  }, {
+    "obo_id" : "DOID:655",
+    "label" : "inherited metabolic disorder",
+    "iri" : "http://purl.obolibrary.org/obo/DOID_655",
+    "ontology_prefix" : "DOID"
+  }, {
+    "obo_id" : "DOID:7",
+    "label" : "disease of anatomical entity",
+    "iri" : "http://purl.obolibrary.org/obo/DOID_7",
+    "ontology_prefix" : "DOID"
+  }, {
+    "obo_id" : "DOID:77",
+    "label" : "gastrointestinal system disease",
+    "iri" : "http://purl.obolibrary.org/obo/DOID_77",
+    "ontology_prefix" : "DOID"
+  }, {
+    "obo_id" : "DOID:9455",
+    "label" : "lipid storage disease",
+    "iri" : "http://purl.obolibrary.org/obo/DOID_9455",
+    "ontology_prefix" : "DOID"
+  } ]
+}

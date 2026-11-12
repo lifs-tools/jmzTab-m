@@ -1,0 +1,19 @@
+{
+  "term" : {
+    "obo_id" : "PRIDE:0000307",
+    "label" : "Quantification method",
+    "iri" : "http://purl.obolibrary.org/obo/PRIDE_0000307",
+    "ontology_prefix" : "PRIDE"
+  },
+  "ancestors" : [ {
+    "obo_id" : "BFO:0000001",
+    "label" : "entity",
+    "iri" : "http://purl.obolibrary.org/obo/BFO_0000001",
+    "ontology_prefix" : "PRIDE"
+  }, {
+    "obo_id" : "PRIDE:0000391",
+    "label" : "Quantification parameter",
+    "iri" : "http://purl.obolibrary.org/obo/PRIDE_0000391",
+    "ontology_prefix" : "PRIDE"
+  } ]
+}

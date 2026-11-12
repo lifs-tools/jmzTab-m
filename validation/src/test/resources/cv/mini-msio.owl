@@ -1,0 +1,77 @@
+<?xml version="1.0"?>
+<!DOCTYPE rdf:RDF [
+    <!ENTITY obo "http://purl.obolibrary.org/obo/">
+    <!ENTITY owl "http://www.w3.org/2002/07/owl#">
+    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#">
+]>
+<rdf:RDF xmlns="http://purl.obolibrary.org/obo/msio.owl#"
+     xml:base="http://purl.obolibrary.org/obo/msio.owl"
+     xmlns:obo="http://purl.obolibrary.org/obo/"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#">
+    <owl:Ontology rdf:about="&obo;msio.owl">
+        <owl:versionIRI rdf:resource="&obo;msio/releases/2023-05-01/msio.owl"/>
+        <owl:imports rdf:resource="mini-obi.owl"/>
+        <rdfs:comment>a class in an annotation is not a term</rdfs:comment>
+    </owl:Ontology>
+
+    <owl:Class rdf:about="&obo;MSIO_0000001">
+        <rdfs:label xml:lang="de">Massenspektrometrie</rdfs:label>
+        <rdfs:label xml:lang="en">mass spectrometry</rdfs:label>
+    </owl:Class>
+
+    <owl:Class rdf:about="&obo;MSIO_0000002">
+        <rdfs:label>old thing</rdfs:label>
+        <owl:deprecated rdf:datatype="&xsd;boolean">true</owl:deprecated>
+    </owl:Class>
+
+    <owl:Class rdf:about="&obo;MSIO_0000003">
+        <rdfs:label>kept thing</rdfs:label>
+        <owl:deprecated rdf:datatype="&xsd;boolean">false</owl:deprecated>
+        <rdfs:subClassOf rdf:resource="&obo;MSIO_0000001"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="&obo;BFO_0000050"/>
+                <owl:someValuesFrom rdf:resource="&obo;MSIO_0000002"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="&obo;RO_0000057"/>
+                <owl:someValuesFrom rdf:resource="&obo;MSIO_0000099"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="&obo;MSIO_0000098"/>
+                </owl:intersectionOf>
+            </owl:Class>
+        </rdfs:subClassOf>
+    </owl:Class>
+
+    <!-- a stub for a term the imported OBI file describes -->
+    <owl:Class rdf:about="&obo;OBI_0000094"/>
+
+    <!-- anonymous classes are ignored -->
+    <owl:Class>
+        <rdfs:label>anonymous</rdfs:label>
+    </owl:Class>
+
+    <rdf:Description rdf:about="&obo;MSIO_0000004">
+        <rdfs:subClassOf rdf:resource="&obo;MSIO_0000003"/>
+        <rdf:type rdf:resource="&owl;Class"/>
+        <rdfs:label>described thing</rdfs:label>
+    </rdf:Description>
+
+    <owl:ObjectProperty rdf:about="&obo;BFO_0000050">
+        <rdfs:label>part of</rdfs:label>
+    </owl:ObjectProperty>
+
+    <owl:Axiom>
+        <owl:annotatedSource rdf:resource="&obo;MSIO_0000003"/>
+        <rdfs:label>an axiom is ignored</rdfs:label>
+    </owl:Axiom>
+</rdf:RDF>

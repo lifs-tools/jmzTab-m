@@ -25,6 +25,7 @@ import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import uk.ac.ebi.pride.utilities.ols.web.service.client.OLSClient;
 import uk.ac.ebi.pride.utilities.ols.web.service.config.OLSWsConfig;
@@ -38,6 +39,7 @@ import uk.ac.ebi.pride.utilities.ols.web.service.model.Term;
  *
  * @author nilshoffmann
  */
+@Tag("network")
 public class OlsLookupServiceTest {
 
     @Test

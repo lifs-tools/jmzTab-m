@@ -20,6 +20,8 @@ import ch.qos.logback.classic.LoggerContext;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import org.lifstools.mztab2.cvmapping.local.LookupPolicy;
+import org.lifstools.mztab2.cvmapping.local.ResolvedVocabulary;
 import org.lifstools.mztab2.io.MzTabFileParser;
 import org.lifstools.mztab2.io.MzTabNonValidatingWriter;
 import org.lifstools.mztab2.model.MzTab;
@@ -41,6 +43,7 @@ import java.util.Properties;
 import java.util.stream.Collectors;
 import jakarta.xml.bind.JAXBException;
 import org.apache.commons.cli.*;
+import org.apache.commons.jxpath.JXPathContextFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.ebi.pride.jmztab2.utils.errors.MZTabError;
@@ -110,6 +113,7 @@ public class MZTabCommandLine {
      */
     @SuppressWarnings("static-access")
     public static void main(String[] args) throws Exception {
+        nameTheJXPathFactory();
         MZTabErrorTypeMap typeMap = new MZTabErrorTypeMap();
         CommandLineParser parser = new PosixParser();
         Options options = new Options();
@@ -123,6 +127,7 @@ public class MZTabCommandLine {
         String serializeOpt = addSerializeOption(options);
         String deserializeOpt = addDeserializeOption(options);
         String checkSemanticOpt = addCheckSemanticOption(options);
+        CvLookupOptions.addTo(options);
 
         //TODO add option to set whether extra terms not defined in mapping file create a warning or error
 //        options.addOption()
@@ -151,6 +156,20 @@ public class MZTabCommandLine {
         }
     }
 
+    /**
+     * Names JXPath's context factory, unless a system property already does.
+     * Without it, JXPath 1.4 looks for {@code $java.home/lib/jxpath.properties}
+     * first; a native image has no {@code java.home}, and the semantic
+     * validation failed there with a NullPointerException in
+     * {@code JXPathContextFactory}'s initializer.
+     */
+    private static void nameTheJXPathFactory() {
+        if (System.getProperty(JXPathContextFactory.FACTORY_NAME_PROPERTY) == null) {
+            System.setProperty(JXPathContextFactory.FACTORY_NAME_PROPERTY,
+                "org.apache.commons.jxpath.ri.JXPathContextFactoryReferenceImpl");
+        }
+    }
+
     protected static String addVersionOption(Options options) {
         String versionOpt = "version";
         options.addOption("v", versionOpt, false, "Print version information.");
@@ -169,7 +188,7 @@ public class MZTabCommandLine {
             withLongOpt("checkSemantic").
             isRequired(false).
             hasOptionalArgs(1).
-            withDescription("Example: -s /path/to/mappingFile.xml. Use the provided mapping file for semantic validation. If no mapping file is provided, the default one will be used. Requires an active internet connection!").
+            withDescription("Example: -s /path/to/mappingFile.xml. Use the provided mapping file for semantic validation. If no mapping file is provided, the default one will be used. Terms are looked up as --cvSource says; the first run downloads the vocabulary releases.").
             create(checkSemanticOpt);
         options.addOption(checkSemanticOption);
         return checkSemanticOpt;
@@ -341,6 +360,21 @@ public class MZTabCommandLine {
                 throw new IllegalArgumentException("No input file provided for validation!");
             }
             File inFile = new File(value.trim());
+            LookupPolicy policy = null;
+            List<String> lookupOptions = CvLookupOptions.given(line);
+            if (!line.hasOption(checkSemanticOpt) && !lookupOptions.isEmpty()) {
+                LOGGER.warn("{} {} ignored without -s (semantic validation)",
+                    String.join(", ", lookupOptions), lookupOptions.size() == 1 ? "is" : "are");
+            }
+            if (line.hasOption(checkSemanticOpt)) {
+                // stop before any validation on an invalid lookup option
+                try {
+                    policy = CvLookupOptions.policy(line);
+                } catch (IllegalArgumentException ex) {
+                    LOGGER.error("{}", ex.getMessage());
+                    return true;
+                }
+            }
             if (fromJson) {
                 File tmpFile = new File(inFile.getParentFile(),
                     inFile.getName() + ".mztab");
@@ -412,7 +446,7 @@ public class MZTabCommandLine {
                 // not ||: semantic validation also runs after structural warnings
                 errorsOrWarnings |= handleSemanticValidation(line,
                     checkSemanticOpt, inFile, outFile,
-                    mzTabParser, level);
+                    mzTabParser, level, policy);
                 LOGGER.info("Finished validation!");
             } catch(IOException | RuntimeException ex) {
                 LOGGER.error("Validation of file '" + inFile.getAbsolutePath() + "' failed with exception: ", ex);
@@ -438,7 +472,7 @@ public class MZTabCommandLine {
     protected static boolean handleSemanticValidation(CommandLine line,
         String checkSemanticOpt, File inFile, PrintStream outFile,
         MzTabFileParser mzTabParser,
-        MZTabErrorType.Level level) throws JAXBException, MalformedURLException, URISyntaxException {
+        MZTabErrorType.Level level, LookupPolicy policy) throws JAXBException, MalformedURLException, URISyntaxException {
         boolean errorsOrWarnings = false;
         if (line.hasOption(checkSemanticOpt)) {
             String semValue = line.getOptionValue(
@@ -477,8 +511,9 @@ public class MZTabCommandLine {
                     toASCIIString());
             CvMappingValidator cvMappingValidator;
             try {
-                cvMappingValidator = CvMappingValidator.of(mappingFile.toURL(),
-                    true);
+                cvMappingValidator = CvMappingValidator.of(
+                    CvMappingValidator.readMapping(mappingFile.toURL()),
+                    mzTabParser.getMZTabFile(), policy, true);
             } catch (JAXBException ex) {
                 LOGGER.error(
                     "Mapping file '{}' is not a valid CV mapping file: {}",
@@ -526,6 +561,15 @@ public class MZTabCommandLine {
             } else {
                 for (ValidationMessage message : validationMessages) {
                     LOGGER.error("{}", message);
+                }
+            }
+            // the vocabulary releases the terms were looked up in
+            for (ResolvedVocabulary vocabulary : cvMappingValidator.resolvedVocabularies()) {
+                String report = CvLookupOptions.reportLine(vocabulary);
+                if (outFile != null) {
+                    outFile.println(report);
+                } else {
+                    LOGGER.info(report);
                 }
             }
             if (!validationMessages.isEmpty()) {

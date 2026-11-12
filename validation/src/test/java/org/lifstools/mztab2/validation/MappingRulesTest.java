@@ -41,7 +41,7 @@ import org.lifstools.mztab2.model.ValidationMessage;
  */
 public class MappingRulesTest {
 
-    private static final StubLookupService LOOKUP = new StubLookupService(Map.of(
+    static final StubLookupService LOOKUP = new StubLookupService(Map.of(
         "MS:1001805", Set.of("MS:1001844", "MS:1002887"),
         "MS:1003303", Set.of("MS:1003306"),
         "MS:1002888", Set.of("MS:1002890"),
@@ -60,13 +60,23 @@ public class MappingRulesTest {
 
     @BeforeEach
     public void setUp() {
-        mzTab = MzTabValidatorTest.createTestFile();
+        mzTab = fixture();
+    }
+
+    /**
+     * The file these tests start from.
+     *
+     * @return a new copy
+     */
+    static MzTab fixture() {
+        MzTab mzTab = MzTabValidatorTest.createTestFile();
         mzTab.getMetadata().
             smallMoleculeQuantificationUnit(param("UO", "UO:0000065", "nanomolar")).
             smallMoleculeFeatureQuantificationUnit(param("UO", "UO:0000065", "nanomolar")).
             addIdConfidenceMeasureItem(param("MS", "MS:1002890", "fragmentation score"));
         mzTab.addSmallMoleculeSummaryItem(new SmallMoleculeSummary().smlId(1).
             bestIdConfidenceMeasure(param("MS", "MS:1002890", "fragmentation score")));
+        return mzTab;
     }
 
     @Test
@@ -159,7 +169,7 @@ public class MappingRulesTest {
             collect(Collectors.toList());
     }
 
-    private static CvMapping mapping() {
+    static CvMapping mapping() {
         try {
             return (CvMapping) JAXBContext.newInstance(CvMapping.class).
                 createUnmarshaller().
