@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.lifs-tools</groupId>
         <artifactId>jmztabm</artifactId>
-        <version>1.0.8</version>
+        <version>1.0.9-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>jmztabm-validation</artifactId>
