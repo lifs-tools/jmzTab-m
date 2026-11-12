@@ -70,7 +70,7 @@ jobs:
             printf '%s' "$ARTIFACTORY_TOKEN" | jf c add lifs-tools --url=https://m.lifs-tools.org/ --user=github-deployer --password-stdin --basic-auth-only --enc-password=false --interactive=false --overwrite
             jf c use lifs-tools
             jf mvn-config --repo-deploy-releases=lifs-libs-release-local --repo-deploy-snapshots=lifs-libs-snapshot-local
-            jf mvn -B deploy -DskipTests -DskipITs -Pjfrog --file pom.xml
+            jf mvn -B deploy -DskipTests -DskipITs -Partifactory --file pom.xml
             jf rt bp
     - name: Upload CLI distribution zip
       uses: actions/upload-artifact@v4
