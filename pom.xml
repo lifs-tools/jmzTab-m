@@ -545,7 +545,7 @@
         <jxpath.version>1.4.0</jxpath.version>
         <json-schema-validator.version>1.5.9</json-schema-validator.version>
         <spring.version>7.0.10</spring.version>
-        <logback.version>1.6.7</logback.version>
+        <logback.version>1.6.8</logback.version>
         <diffutils.version>2.2</diffutils.version>
         <javaobjectdiff.version>0.95</javaobjectdiff.version>
         <jakarta.annotation-api.version>3.0.0</jakarta.annotation-api.version>
