@@ -534,7 +534,7 @@
         <!-- JUnit tags left out of surefire and failsafe; the network profile clears it -->
         <test.excludedGroups>network</test.excludedGroups>
         <jackson.version>2.23.0</jackson.version>
-        <hibernate.validator.version>9.1.6.Final</hibernate.validator.version>
+        <hibernate.validator.version>9.2.0.Final</hibernate.validator.version>
         <slf4j.version>2.0.20</slf4j.version>
         <commons-cli.version>1.11.0</commons-cli.version>
         <javax.el.version>4.0.2</javax.el.version>
